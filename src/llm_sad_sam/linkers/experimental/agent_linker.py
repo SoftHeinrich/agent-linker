@@ -899,12 +899,19 @@ JSON only:"""
         comp_names = self._get_comp_names(components)
         doc_lines = [f"S{s.number}: {s.text}" for s in sentences[:100]]
 
-        prompt1 = f"""Find all ways components are referred to.
+        prompt1 = f"""Find SPECIFIC alternative names used for these components in the document.
 
 COMPONENTS: {', '.join(comp_names)}
 
 DOCUMENT:
 {chr(10).join(doc_lines)}
+
+Rules:
+- ONLY include terms that are SPECIFIC NAMES for a component, not generic descriptions
+- Abbreviations: shortened forms explicitly defined in the text (e.g. "KMS" for "Kurento Media Server")
+- Synonyms: proper names or specific technical terms used as interchangeable names (e.g. "ImageProvider service" for "ImageProvider")
+- DO NOT include generic English phrases like "business logic", "utility code", "front-end", "helper classes", "storage layer", "web pages" — these describe concepts, not specific components
+- Partial references: shortened but distinctive references (e.g. "BigBlueButton client" for "HTML5 Client")
 
 Return JSON:
 {{
@@ -931,14 +938,19 @@ JSON only:"""
         if all_mappings:
             mapping_list = [f"'{k}' -> {v[1]} ({v[0]})" for k, v in list(all_mappings.items())[:25]]
 
-            prompt2 = f"""JUDGE: Review these mappings.
+            prompt2 = f"""JUDGE: Review these proposed component name mappings. Be STRICT.
 
 COMPONENTS: {', '.join(comp_names)}
 
 PROPOSED:
 {chr(10).join(mapping_list)}
 
-Identify terms that are TOO GENERIC.
+REJECT any mapping where the term is:
+- A generic English phrase describing a concept rather than naming the specific component (e.g. "business logic", "utility code", "helper classes", "storage layer", "front-end", "web pages", "data transfer objects")
+- A phrase that could apply to many systems, not specifically to this component
+- A common programming concept rather than a proper name
+
+APPROVE only mappings where the term is a SPECIFIC NAME used in this document to refer to exactly that component.
 
 Return JSON:
 {{
