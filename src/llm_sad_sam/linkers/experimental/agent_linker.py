@@ -966,11 +966,33 @@ JSON only:"""
             approved = set()
             generic_terms = set()
 
+        # Code-level filter: reject synonyms/partials that are generic English phrases
+        # The LLM judge sometimes approves these despite instructions not to.
+        _GENERIC_WORDS = {
+            'logic', 'code', 'utility', 'helper', 'classes', 'layer', 'storage',
+            'front', 'end', 'back', 'pages', 'page', 'objects', 'data', 'transfer',
+            'business', 'web', 'service', 'testing', 'purposes', 'administrative',
+        }
+
+        def _is_generic_phrase(term):
+            """Reject multi-word terms where all words are common English."""
+            words = re.findall(r'[a-zA-Z]+', term.lower())
+            if len(words) < 2:
+                return False  # Single words are OK (abbreviations, proper names)
+            # If all words are generic English, it's a generic phrase
+            return all(w in _GENERIC_WORDS for w in words)
+
         knowledge = DocumentKnowledge()
         knowledge.generic_terms = generic_terms
+        code_rejected = []
 
         for term, (typ, comp) in all_mappings.items():
             if term in approved:
+                # Code-level safety: reject generic multi-word phrases
+                if typ in ("synonym", "partial") and _is_generic_phrase(term):
+                    code_rejected.append(term)
+                    generic_terms.add(term)
+                    continue
                 if typ == "abbrev":
                     knowledge.abbreviations[term] = comp
                     print(f"    Abbrev: {term} -> {comp}")
