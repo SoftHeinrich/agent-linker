@@ -104,8 +104,8 @@ Return JSON:
 
 IMPORTANT GUIDELINES:
 - Almost all names should be classified as "architectural" — these ARE component names from a real architecture model
-- Architectural: ANY name that could identify a specific component in a software system. This includes short names like "Cache", "DB", "Auth", "UI", "Facade", "Logic", "Storage", "Server", "Client" — in context, these ARE specific components
-- Ambiguous: ONLY classify a name as ambiguous if it is an extremely generic word that could never distinguish a component (e.g., "Common", "Util", "Misc", "Other", "Base")
+- Architectural: ANY name that could identify a specific component in a software system, even if the name is short or could also be a common word. If it names a distinct role or responsibility in the system, it is architectural.
+- Ambiguous: ONLY classify a name as ambiguous if it is an extremely generic utility word that could never distinguish one component from another (e.g., "Util", "Misc", "Other", "Base")
 - When in doubt, classify as architectural
 
 JSON only:"""
