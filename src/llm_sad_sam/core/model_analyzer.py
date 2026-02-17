@@ -116,7 +116,15 @@ JSON only:"""
         if data:
             valid_names = set(names)
             knowledge.architectural_names = set(data.get("architectural", [])) & valid_names
-            knowledge.ambiguous_names = set(data.get("ambiguous", [])) & valid_names
+            # Only accept ambiguous classification for short single-word names
+            # (e.g., "UI", "Common", "Logic"). Multi-word or longer names are always
+            # architectural even if the LLM marks them ambiguous — they name distinct
+            # components. This prevents LLM variance from excluding real components.
+            raw_ambiguous = set(data.get("ambiguous", [])) & valid_names
+            knowledge.ambiguous_names = {
+                n for n in raw_ambiguous
+                if len(n.split()) == 1 and len(n) <= 6
+            }
 
     def build_name_maps(
         self, components: list[ArchitectureComponent]
