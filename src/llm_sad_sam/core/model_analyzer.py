@@ -92,19 +92,21 @@ class ModelAnalyzer:
 
     def _classify_components(self, names: list[str], knowledge: ModelKnowledge):
         """Use LLM to classify components as architectural vs ambiguous."""
-        prompt = f"""Classify these software component names.
+        prompt = f"""Classify these software architecture component names from a Palladio Component Model (PCM).
 
 NAMES: {', '.join(names)}
 
 Return JSON:
 {{
-  "architectural": ["names that are clearly architecture component names"],
-  "ambiguous": ["names that could be common English words or generic terms"]
+  "architectural": ["names that refer to specific software components"],
+  "ambiguous": ["names that are extremely generic single English words with no technical meaning"]
 }}
 
-Guidelines:
-- Architectural: Names clearly representing software components (e.g., "PaymentGateway", "NotificationService", "UserRepository")
-- Ambiguous: Names that are common English words (e.g., "Util", "Core", "Data", "Handler")
+IMPORTANT GUIDELINES:
+- Almost all names should be classified as "architectural" — these ARE component names from a real architecture model
+- Architectural: ANY name that could identify a specific component in a software system. This includes short names like "Cache", "DB", "Auth", "UI", "Facade", "Logic", "Storage", "Server", "Client" — in context, these ARE specific components
+- Ambiguous: ONLY classify a name as ambiguous if it is an extremely generic word that could never distinguish a component (e.g., "Common", "Util", "Misc", "Other", "Base")
+- When in doubt, classify as architectural
 
 JSON only:"""
 
