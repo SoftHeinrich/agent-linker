@@ -1,0 +1,201 @@
+@startuml V22 Pipeline
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #F0F8FF
+skinparam activityBorderColor #4682B4
+skinparam activityDiamondBackgroundColor #FFF8DC
+skinparam activityDiamondBorderColor #DAA520
+skinparam arrowColor #4682B4
+skinparam noteBorderColor #778899
+skinparam noteBackgroundColor #FFFACD
+
+title **AgentLinker V22 — Trace Link Recovery Pipeline**\n(V16 + 5 fixes: generic override, compound-noun guard,\nparent-overlap guard, smaller batches, enhanced judge)
+
+start
+
+partition "**Phase 0: Document Profile**" #E8F5E9 {
+  :Load components from PCM model\n& sentences from text file;
+  :Compute document statistics:\n• pronoun_ratio\n• mention_density\n• sentences/component ratio;
+  :Determine **structural complexity**:\nuncovered_ratio > 0.5 AND spc > 5\n→ complex = True/False;
+  note right
+    Pure deterministic.
+    No LLM calls.
+  end note
+}
+
+partition "**Phase 1: Model Structure**" #E8F5E9 {
+  :Classify components as\n**architectural** vs **ambiguous**;
+  note right
+    Inherited from AgentLinker.
+    Ambiguity labels logged
+    but NOT used for decisions.
+    Per-mention check instead.
+  end note
+}
+
+partition "**Phase 2: Pattern Learning**" #E3F2FD {
+  :Learn document patterns\nvia **LLM debate** (2-pass);
+  :Extract:\n• subprocess_terms\n• action_indicators\n• effect_indicators;
+  note right
+    Two independent LLM passes
+    cross-validate patterns.
+    Subprocesses used to filter
+    coref/validation later.
+  end note
+}
+
+partition "**Phase 3: Document Knowledge**" #E3F2FD {
+  :LLM Pass 1: Find abbreviations,\nsynonyms, partial references;
+  :LLM Pass 2 (Judge): Validate mappings\nREJECT generic / wrong / hallucinated;
+
+  if (Rejected as generic?) then (yes)
+    :Apply overrides:;
+    :**(Fix A)** CamelCase override\n(e.g. "DataStorage" rescued);
+    :Uppercase override\n(short acronyms rescued);
+    :Component-name override\n(capitalized non-common terms);
+  endif
+
+  :Deterministic CamelCase-split injection\n"ImageProvider" → "Image Provider";
+
+  :Output: **DocumentKnowledge**\n{abbreviations, synonyms,\npartial_references, generic_terms};
+}
+
+partition "**Phase 3b: Multi-word Partial Enrichment**" #E8F5E9 {
+  :For multi-word components,\ncheck if last word appears ≥3x\nas standalone partial;
+  :Auto-add partials\n(e.g. "Backend" → "ServiceBackend");
+  note right
+    Deterministic.
+    Skips if last word <4 chars,
+    if another component shares
+    the suffix, or if already known.
+  end note
+}
+
+partition "**Phase 4: TransArc Baseline**" #FFF3E0 {
+  :Load TransArc CSV baseline links;
+  :Map component IDs → names;
+  :Output: **transarc_links**\n(highest priority, immune to judge);
+  note right
+    TransArc links have 90%+
+    precision — never filtered
+    or judged downstream.
+  end note
+}
+
+partition "**Phase 5: Entity Extraction** (Fix D)" #E3F2FD {
+  :LLM extracts component references\nfrom document in **batches of 50**\n(timeout: 240s per batch);
+  :Match types: exact | synonym |\npartial | functional;
+  :Verify matched_text in sentence\n+ generic mention pre-check;
+  :Apply **abbreviation guard**:\nreject false abbreviation matches;
+  :Output: entity **candidates**\n(need validation);
+  note right
+    **Fix D**: Smaller batches (50 vs 100)
+    + longer timeout (240s vs 120s)
+    for more reliable extraction.
+  end note
+}
+
+partition "**Phase 5b: Targeted Recovery** (Fix C)" #E3F2FD {
+  :Identify unlinked components\n(no TransArc + no entity match);
+
+  if (Unlinked components?) then (yes)
+    :Per-component LLM search\nfor direct/functional/role refs;
+    :**(Fix C)** Parent-overlap guard:\nskip sub-type if parent\nalready linked to sentence;
+    :Add extra candidates;
+  endif
+}
+
+partition "**Phase 6: Validation**" #F3E5F5 {
+  :Reject generic mentions\n(single lowercase word in text);
+
+  :Step 1 — **Code-first auto-approve**:\nword-boundary match for\nname/alias in sentence text;
+  note right
+    Deterministic. Handles
+    short names (UI, DB)
+    via word-boundary regex.
+  end note
+
+  :Step 2 — **2-pass LLM intersect**:\nPass A: actor role focus\nPass B: direct reference focus\n→ approve only if BOTH approve;
+
+  if (Generic-risk component?) then (yes)
+    :Step 3 — **Evidence post-filter**:\nLLM must cite exact text\nsubstring as evidence;
+    :Verify evidence contains\nalias of target component;
+  endif
+
+  :Output: **validated** candidates;
+}
+
+partition "**Phase 7: Coreference Resolution**" #E3F2FD {
+  if (Complex document?) then (yes)
+    :Mode: **debate**\n(20-sentence batches\n+ context window);
+  else (no)
+    :Build discourse model\n(recent mentions, topic);
+    :Mode: **discourse**\n(12-sentence batches\n+ 3-sentence prev context);
+  endif
+
+  :Require **antecedent citation**:\n• component name in antecedent sentence\n• within 3 sentences\n• pronoun is grammatical subject;
+
+  :Apply **generic coref filter**:\nsingle-word components need\nrecent mention (2 sentences);
+
+  :Apply **deterministic pronoun coref**:\n"It..." / "As such, it..."\n→ unambiguous lookback (1-3 sents);
+
+  :Output: **coref_links**;
+}
+
+partition "**Phase 8: Implicit References**" #FFEBEE {
+  #FF8A80:SKIPPED\n(dead weight — adds noise,\nnot enough signal);
+}
+
+partition "**Phase 8b: Partial Injection** (Fix B)" #FFF3E0 {
+  :For each partial reference\nin doc_knowledge, scan all sentences;
+  :Inject links where partial\nappears as clean mention;
+  :**(Fix B)** Compound-noun guard:\nblock if short partial (≤3 chars)\nfollowed by common noun\n(e.g. "UI name", "UI type");
+  :Output: **partial_inject** links;
+}
+
+:**Combine & Deduplicate**\ntransarc + entity + coref + partial\n(keep highest-priority source);
+
+partition "**Phase 8c: Boundary Filters**\n(non-TransArc only)" #FFEBEE {
+  :Filter 1: **package_path**\n— name only in dotted path;
+  :Filter 2: **generic_word**\n— preceded by modifier word;
+  :Filter 3: **weak_partial**\n— partial is a generic word;
+  :Filter 4: **abbrev_guard**\n— abbreviation false match;
+  note right
+    TransArc links are
+    **immune** to all filters.
+  end note
+}
+
+partition "**Phase 9: Judge Review** (Fix E)" #F3E5F5 {
+  :Separate **safe** vs **review** links;
+
+  :Safe (skip judge):\n• TransArc links (immune)\n• Standalone component name in text\n• Alias mention in text;
+
+  :For review links,\nbuild cases with context\n(prev sentences, match text, source);
+
+  :**(Fix E)** Enhanced judge prompt\nwith **4 explicit rules**:\n1. REFERENCE (not string-match)\n2. ARCHITECTURAL LEVEL (not impl)\n3. TOPIC (not incidental)\n4. NOT GENERIC (not English word);
+
+  :Union voting (2 passes):\n→ reject ONLY if **both** reject;
+
+  :Output: **approved** links;
+}
+
+partition "**Phase 10: FN Recovery**" #FFEBEE {
+  #FF8A80:SKIPPED\n(dead weight — unreliable);
+}
+
+:Save phase log to JSON;
+:Return **final links**;
+
+stop
+
+legend right
+  |= Color |= Meaning |
+  | <#E8F5E9> | Deterministic (no LLM) |
+  | <#E3F2FD> | LLM-based phase |
+  | <#F3E5F5> | Multi-pass LLM (voting/intersect) |
+  | <#FFF3E0> | Data loading / injection |
+  | <#FFEBEE> | Skipped / filtering |
+endlegend
+
+@enduml

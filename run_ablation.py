@@ -77,6 +77,8 @@ VARIANTS = {
     "v5":                 dict(linker_class="v5"),
     # --- V6: dot-filter fix + generic judge examples ---
     "v6":                 dict(linker_class="v6"),
+    "v6b":                dict(linker_class="v6b"),  # V6 + abbreviation guard
+    "v6c":                dict(linker_class="v6c"),  # V6 + deterministic boundary filters
     # --- V6 voting strategies ---
     "v6_vote":            dict(linker_class="v6_vote", n_runs=3),
     "v6_phase_vote":      dict(linker_class="v6_phase_vote", n_runs=3),
@@ -92,6 +94,94 @@ VARIANTS = {
     "v4_iso_old_embed":   dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="context", unjudged_mode="rejudge"),
     "v4_iso_old_judge":   dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="name_only", unjudged_mode="approve"),
     "v4_iso_old_both":    dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="context", unjudged_mode="approve"),
+    # --- V9T: error-driven features on V5 ---
+    "v9t":      dict(linker_class="v9t"),  # all features on
+    "v9t_A":    dict(linker_class="v9t", only_feature="A"),
+    "v9t_B":    dict(linker_class="v9t", only_feature="B"),
+    "v9t_C":    dict(linker_class="v9t", only_feature="C"),
+    "v9t_D":    dict(linker_class="v9t", only_feature="D"),
+    "v9t_E":    dict(linker_class="v9t", only_feature="E"),
+    "v9t_F":    dict(linker_class="v9t", only_feature="F"),
+    "v9t_noE":  dict(linker_class="v9t", ambiguous_recovery=False),  # all except riskiest
+    "v9t_ABD":  dict(linker_class="v9t", fix_dot_filter=True, abbreviation_guard=True,
+                     coref_distance_filter=False, generic_word_filter=True,
+                     ambiguous_recovery=False, section_heading_safe=False),  # best safe combo
+    "v9t_AB":   dict(linker_class="v9t", fix_dot_filter=True, abbreviation_guard=True,
+                     coref_distance_filter=False, generic_word_filter=False,
+                     ambiguous_recovery=False, section_heading_safe=False),  # A+B only
+    # --- V11: generic-name-aware pipeline ---
+    "v11":                dict(linker_class="v11"),
+    # --- V12: V11 + contextual stoplist + test-infra filter ---
+    "v12":                dict(linker_class="v12"),
+    # --- V13: targeted generic filtering + TransArc protection ---
+    "v13":                dict(linker_class="v13"),
+    # --- V14: deterministic Phase 1 + structured judge + enriched prompts ---
+    "v14":                dict(linker_class="v14"),
+    # --- V15: V14 + TransArc immunity + split validation + targeted recovery ---
+    "v15":                dict(linker_class="v15"),
+    # --- V16: V15 + trimmed ambiguous list + no data leakage ---
+    "v16":                dict(linker_class="v16"),
+    # --- W16: V16 + 3 targeted fixes (parent overlap, link-aware antecedent, generic overrides) ---
+    "w16":                dict(linker_class="w16"),
+    # --- V17: V16 + togglable V6 features ---
+    "v17_A":              dict(linker_class="v17", intersect_validation=True),
+    "v17_BC":             dict(linker_class="v17", enable_implicit=True, enable_fn_recovery=True),
+    "v17_D":              dict(linker_class="v17", nuanced_transarc=True),
+    "v17_ABCD":           dict(linker_class="v17", intersect_validation=True, enable_implicit=True, enable_fn_recovery=True, nuanced_transarc=True),
+    # --- V17 Judge prompt fixes (all include A:intersect as base) ---
+    "v17_A_J1":           dict(linker_class="v17", intersect_validation=True, judge_doc_knowledge=True),
+    "v17_A_J2":           dict(linker_class="v17", intersect_validation=True, judge_full_context=True),
+    "v17_A_J3":           dict(linker_class="v17", intersect_validation=True, judge_validated_bias=True),
+    # --- V17 Judge prompt v2 fixes ---
+    "v17_A_J4":           dict(linker_class="v17", intersect_validation=True, judge_strict_def=True),
+    "v17_A_J5":           dict(linker_class="v17", intersect_validation=True, judge_adaptive_ctx=True),
+    "v17_A_J6":           dict(linker_class="v17", intersect_validation=True, judge_show_match=True),
+    "v17_A_J456":         dict(linker_class="v17", intersect_validation=True, judge_strict_def=True, judge_adaptive_ctx=True, judge_show_match=True),
+    "v17_A_J56":          dict(linker_class="v17", intersect_validation=True, judge_adaptive_ctx=True, judge_show_match=True),
+    "v18":                dict(linker_class="v18"),
+    "v19":                dict(linker_class="v19"),
+    "v20a":               dict(linker_class="v20a"),
+    "v20b":               dict(linker_class="v20b"),
+    "v20c":               dict(linker_class="v20c"),
+    "v20":                dict(linker_class="v20"),
+    # --- V21-V23: prompt optimization series ---
+    "v21":                dict(linker_class="v21"),
+    "v22":                dict(linker_class="v22"),
+    "v23":                dict(linker_class="v23"),
+    "v23a":               dict(linker_class="v23a"),
+    "v23b":               dict(linker_class="v23b"),
+    "v23c":               dict(linker_class="v23c"),
+    "v23d":               dict(linker_class="v23d"),
+    "v23e":               dict(linker_class="v23e"),
+    # --- V24: hardcoded lists removed ---
+    "v24":                dict(linker_class="v24"),
+    # --- V25: benchmark-clean SE textbook prompts ---
+    "v25":                dict(linker_class="v25"),
+    # --- V25a/b: V25 + deliberation TransArc judge ---
+    "v25a":               dict(linker_class="v25a"),
+    "v25b":               dict(linker_class="v25b"),
+    "v26":                dict(linker_class="v26"),
+    "v26a":               dict(linker_class="v26a"),
+    # --- Analyzer variants: Phase 1 classification without len<=6 threshold ---
+    "analyzer2a":         dict(linker_class="v26a", classify_strategy="tight_prompt"),
+    "analyzer2b":         dict(linker_class="v26a", classify_strategy="two_pass"),
+    "v26b":               dict(linker_class="v26b"),
+    "v26c":               dict(linker_class="v26c"),
+    "v26d":               dict(linker_class="v26d"),
+    # --- V27 family: GoT / Deliberation experiments ---
+    "v27g":               dict(linker_class="v27g"),  # GoT sub-judges + source-aware weighting
+    "v27b":               dict(linker_class="v27b"),  # Deliberation Phase 3B generic judge
+    "v27f":               dict(linker_class="v27f"),  # Parallel branch pipeline + GoT aggregation
+    "v28":                dict(linker_class="v28"),    # V26d + package-path TransArc filter
+    "v29":                dict(linker_class="v29"),    # V26a + decomposed contrastive TransArc judge
+    # --- W24: V24 + deliberation TransArc judge ---
+    "w24":                dict(linker_class="w24"),
+    "w24-scratchpad":     dict(linker_class="w24", transarc_judge_strategy="scratchpad"),
+    "w24-batna":          dict(linker_class="w24", transarc_judge_strategy="batna"),
+    # --- ILinker: pure LLM (no TransArc) ---
+    "i1":                 dict(linker_class="i1"),
+    "i2":                 dict(linker_class="i2"),       # precision-focused, no contextual
+    "v26a_i2":            dict(linker_class="v26a_i2"),  # V26a with ILinker2 replacing TransArc
 }
 
 BENCHMARK_BASE = Path(
@@ -169,9 +259,9 @@ def eval_metrics(predicted, gold):
 
 
 def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
-                gold_pairs: set, transarc_pairs: set, id_to_name: dict, sent_map: dict):
+                gold_pairs: set, transarc_pairs: set, id_to_name: dict, sent_map: dict,
+                resume_from_phase=None):
     """Run a single ablation variant on a single dataset."""
-    from llm_sad_sam.linkers.experimental.agent_linker_ablation import AgentLinkerAblation
     from llm_sad_sam.linkers.experimental.agent_linker import export_links_csv
 
     print(f"\n  --- Variant: {variant_name} ---")
@@ -208,10 +298,160 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
         pf = flags.pop("post_filter", "none")
         n_runs = flags.pop("n_runs", 3)
         linker = AgentLinkerV6PhaseVote(backend=BACKEND, post_filter=pf, n_runs=n_runs)
+    elif linker_class == "v23":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23 import AgentLinkerV23
+        linker = AgentLinkerV23(backend=BACKEND)
+    elif linker_class == "v23a":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23a import AgentLinkerV23a
+        linker = AgentLinkerV23a(backend=BACKEND)
+    elif linker_class == "v23b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23b import AgentLinkerV23b
+        linker = AgentLinkerV23b(backend=BACKEND)
+    elif linker_class == "v23c":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23c import AgentLinkerV23c
+        linker = AgentLinkerV23c(backend=BACKEND)
+    elif linker_class == "v23d":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23d import AgentLinkerV23d
+        linker = AgentLinkerV23d(backend=BACKEND)
+    elif linker_class == "v23e":
+        from llm_sad_sam.linkers.experimental.agent_linker_v23e import AgentLinkerV23e
+        linker = AgentLinkerV23e(backend=BACKEND)
+    elif linker_class == "v24":
+        from llm_sad_sam.linkers.experimental.agent_linker_v24 import AgentLinkerV24
+        linker = AgentLinkerV24(backend=BACKEND)
+    elif linker_class == "w24":
+        from llm_sad_sam.linkers.experimental.agent_linker_w24 import AgentLinkerW24
+        strategy = cfg.get("transarc_judge_strategy", "advocate")
+        linker = AgentLinkerW24(backend=BACKEND, transarc_judge_strategy=strategy)
+    elif linker_class == "v25":
+        from llm_sad_sam.linkers.experimental.agent_linker_v25 import AgentLinkerV25
+        linker = AgentLinkerV25(backend=BACKEND)
+    elif linker_class == "v25a":
+        from llm_sad_sam.linkers.experimental.agent_linker_v25a import AgentLinkerV25a
+        linker = AgentLinkerV25a(backend=BACKEND)
+    elif linker_class == "v25b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v25b import AgentLinkerV25b
+        linker = AgentLinkerV25b(backend=BACKEND)
+    elif linker_class == "v26":
+        from llm_sad_sam.linkers.experimental.agent_linker_v26 import AgentLinkerV26
+        linker = AgentLinkerV26(backend=BACKEND)
+    elif linker_class == "v26a":
+        from llm_sad_sam.linkers.experimental.agent_linker_v26a import AgentLinkerV26a
+        cs = flags.pop("classify_strategy", "tight_prompt")
+        linker = AgentLinkerV26a(backend=BACKEND, classify_strategy=cs)
+    elif linker_class == "v26b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v26b import AgentLinkerV26b
+        linker = AgentLinkerV26b(backend=BACKEND)
+    elif linker_class == "v26c":
+        from llm_sad_sam.linkers.experimental.agent_linker_v26c import AgentLinkerV26c
+        linker = AgentLinkerV26c(backend=BACKEND)
+    elif linker_class == "v26d":
+        from llm_sad_sam.linkers.experimental.agent_linker_v26d import AgentLinkerV26d
+        linker = AgentLinkerV26d(backend=BACKEND)
+    elif linker_class == "v29":
+        from llm_sad_sam.linkers.experimental.agent_linker_v29 import AgentLinkerV29
+        linker = AgentLinkerV29(backend=BACKEND)
+    elif linker_class == "v28":
+        from llm_sad_sam.linkers.experimental.agent_linker_v28 import AgentLinkerV28
+        linker = AgentLinkerV28(backend=BACKEND)
+    elif linker_class == "v27g":
+        from llm_sad_sam.linkers.experimental.agent_linker_v27g import AgentLinkerV27g
+        linker = AgentLinkerV27g(backend=BACKEND)
+    elif linker_class == "v27b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v27b import AgentLinkerV27b
+        linker = AgentLinkerV27b(backend=BACKEND)
+    elif linker_class == "v27f":
+        from llm_sad_sam.linkers.experimental.agent_linker_v27f import AgentLinkerV27f
+        linker = AgentLinkerV27f(backend=BACKEND)
+    elif linker_class == "v22":
+        from llm_sad_sam.linkers.experimental.agent_linker_v22 import AgentLinkerV22
+        linker = AgentLinkerV22(backend=BACKEND)
+    elif linker_class == "v21":
+        from llm_sad_sam.linkers.experimental.agent_linker_v21 import AgentLinkerV21
+        linker = AgentLinkerV21(backend=BACKEND)
+    elif linker_class == "v18":
+        from llm_sad_sam.linkers.experimental.agent_linker_v18 import AgentLinkerV18
+        linker = AgentLinkerV18(backend=BACKEND)
+    elif linker_class == "v19":
+        from llm_sad_sam.linkers.experimental.agent_linker_v19 import AgentLinkerV19
+        linker = AgentLinkerV19(backend=BACKEND)
+    elif linker_class == "v20a":
+        from llm_sad_sam.linkers.experimental.agent_linker_v20a import AgentLinkerV20a
+        linker = AgentLinkerV20a(backend=BACKEND)
+    elif linker_class == "v20b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v20b import AgentLinkerV20b
+        linker = AgentLinkerV20b(backend=BACKEND)
+    elif linker_class == "v20c":
+        from llm_sad_sam.linkers.experimental.agent_linker_v20c import AgentLinkerV20c
+        linker = AgentLinkerV20c(backend=BACKEND)
+    elif linker_class == "v20":
+        from llm_sad_sam.linkers.experimental.agent_linker_v20 import AgentLinkerV20
+        linker = AgentLinkerV20(backend=BACKEND)
+    elif linker_class == "v17":
+        from llm_sad_sam.linkers.experimental.agent_linker_v17 import AgentLinkerV17
+        linker = AgentLinkerV17(
+            backend=BACKEND,
+            intersect_validation=flags.pop("intersect_validation", False),
+            enable_implicit=flags.pop("enable_implicit", False),
+            enable_fn_recovery=flags.pop("enable_fn_recovery", False),
+            nuanced_transarc=flags.pop("nuanced_transarc", False),
+            judge_doc_knowledge=flags.pop("judge_doc_knowledge", False),
+            judge_full_context=flags.pop("judge_full_context", False),
+            judge_validated_bias=flags.pop("judge_validated_bias", False),
+            judge_strict_def=flags.pop("judge_strict_def", False),
+            judge_adaptive_ctx=flags.pop("judge_adaptive_ctx", False),
+            judge_show_match=flags.pop("judge_show_match", False),
+        )
+    elif linker_class == "w16":
+        from llm_sad_sam.linkers.experimental.agent_linker_w16 import AgentLinkerW16
+        linker = AgentLinkerW16(backend=BACKEND)
+    elif linker_class == "v16":
+        from llm_sad_sam.linkers.experimental.agent_linker_v16 import AgentLinkerV16
+        linker = AgentLinkerV16(backend=BACKEND)
+    elif linker_class == "v15":
+        from llm_sad_sam.linkers.experimental.agent_linker_v15 import AgentLinkerV15
+        linker = AgentLinkerV15(backend=BACKEND)
+    elif linker_class == "v14":
+        from llm_sad_sam.linkers.experimental.agent_linker_v14 import AgentLinkerV14
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV14(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v13":
+        from llm_sad_sam.linkers.experimental.agent_linker_v13 import AgentLinkerV13
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV13(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v12":
+        from llm_sad_sam.linkers.experimental.agent_linker_v12 import AgentLinkerV12
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV12(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v11":
+        from llm_sad_sam.linkers.experimental.agent_linker_v11 import AgentLinkerV11
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV11(backend=BACKEND, post_filter=pf)
     elif linker_class == "v6":
         from llm_sad_sam.linkers.experimental.agent_linker_v6 import AgentLinkerV6
         pf = flags.pop("post_filter", "none")
         linker = AgentLinkerV6(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v6b":
+        from llm_sad_sam.linkers.experimental.agent_linker_v6b import AgentLinkerV6B
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV6B(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v6c":
+        from llm_sad_sam.linkers.experimental.agent_linker_v6c import AgentLinkerV6C
+        pf = flags.pop("post_filter", "none")
+        linker = AgentLinkerV6C(backend=BACKEND, post_filter=pf)
+    elif linker_class == "v9t":
+        from llm_sad_sam.linkers.experimental.agent_linker_v9t import AgentLinkerV9T
+        pf = flags.pop("post_filter", "none")
+        only_feature = flags.pop("only_feature", None)
+        # Feature flags: default all True unless only_feature is set
+        feature_map = {"A": "fix_dot_filter", "B": "abbreviation_guard",
+                       "C": "coref_distance_filter", "D": "generic_word_filter",
+                       "E": "ambiguous_recovery", "F": "section_heading_safe"}
+        if only_feature:
+            feature_kwargs = {v: (k == only_feature) for k, v in feature_map.items()}
+        else:
+            feature_kwargs = {v: flags.pop(v, True) for v in feature_map.values()}
+        linker = AgentLinkerV9T(backend=BACKEND, post_filter=pf, **feature_kwargs)
     elif linker_class == "v5":
         from llm_sad_sam.linkers.experimental.agent_linker_v5 import AgentLinkerV5
         pf = flags.pop("post_filter", "none")
@@ -236,13 +476,26 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
             linker = AgentLinkerV2Ablation(backend=BACKEND, **flags)
         else:
             linker = AgentLinkerV2(backend=BACKEND)
+    elif linker_class == "i1":
+        from llm_sad_sam.linkers.experimental.ilinker1 import ILinker1
+        linker = ILinker1(backend=BACKEND)
+    elif linker_class == "i2":
+        from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
+        linker = ILinker2(backend=BACKEND)
+    elif linker_class == "v26a_i2":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a import ILinker2V26a
+        linker = ILinker2V26a(backend=BACKEND)
     else:
+        from llm_sad_sam.linkers.experimental.agent_linker_ablation import AgentLinkerAblation
         linker = AgentLinkerAblation(backend=BACKEND, **flags)
-    preds = linker.link(
+    link_kwargs = dict(
         text_path=str(paths["text"]),
         model_path=str(paths["model"]),
         transarc_csv=str(paths["transarc_sam"]),
     )
+    if resume_from_phase is not None and hasattr(linker, '_resume_from'):
+        link_kwargs["resume_from_phase"] = resume_from_phase
+    preds = linker.link(**link_kwargs)
     elapsed = time.time() - t0
 
     pred_pairs = {(l.sentence_number, l.component_id) for l in preds}
@@ -446,6 +699,7 @@ def print_fp_source_comparison(all_results: dict, selected_variants: list[str]):
 def main():
     selected_datasets = list(DATASETS.keys())
     selected_variants = list(VARIANTS.keys())
+    resume_from_phase = None
 
     args = sys.argv[1:]
     i = 0
@@ -462,6 +716,10 @@ def main():
             while i < len(args) and not args[i].startswith("--"):
                 selected_variants.append(args[i])
                 i += 1
+        elif args[i] == "--resume-from-phase":
+            i += 1
+            resume_from_phase = int(args[i])
+            i += 1
         else:
             i += 1
 
@@ -509,6 +767,7 @@ def main():
                 variant_name, VARIANTS[variant_name],
                 ds_name, paths, gold_pairs,
                 transarc_pairs, id_to_name, sent_map,
+                resume_from_phase=resume_from_phase,
             )
             all_results[ds_name][variant_name] = result
 

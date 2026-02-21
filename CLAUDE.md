@@ -93,6 +93,27 @@ All queries are logged to JSONL files with token usage tracking.
 
 Always use **Claude Sonnet** as the LLM model unless explicitly told otherwise. Never use Opus — it is too expensive for the pipeline's many LLM calls. Ensure `CLAUDE_MODEL` is set to `"sonnet"` (via `os.environ` or env var) before any linker runs.
 
+## Phase Checkpointing
+
+When creating new linker versions, **always save intermediate phase outputs** as JSON checkpoints so that later phases (especially Phase 9 Judge) can be re-run without repeating expensive earlier LLM calls.
+
+- Save checkpoints after each major phase boundary using `_save_checkpoint(text_path, phase_label, state_dict)`
+- At minimum, save a `pre9` checkpoint before Phase 9 (the judge) containing: preliminary links, transarc_set, model_knowledge, doc_knowledge, is_complex, generic_component_words, generic_partials
+- Support `resume_from_phase=N` parameter in `link()` to reload from checkpoint and skip phases 0..N-1
+- Checkpoint directory: `results/phase_cache/{dataset}/phase_{label}.json` (configurable via `PHASE_CACHE_DIR` env var)
+- Use `_links_to_json()` / `_links_from_json()` for serializing link lists
+- See `agent_linker_v26d.py` for reference implementation
+
+This enables rapid iteration on judge prompts without re-running the full 50-minute pipeline.
+
+```bash
+# Full run (saves checkpoints automatically)
+python run_ablation.py --variants v26d --datasets mediastore
+
+# Resume from Phase 9 checkpoint (only re-runs judge)
+python run_ablation.py --variants v26d --datasets mediastore --resume-from-phase 9
+```
+
 ## Evaluation
 
 This project is evaluated against ARDoCo's gold standards. See the parent `CLAUDE.md` for evaluation details (the `metrics_output/evaluate.py` script, gold standard enrollment for code links, expected values from TLR test files).
