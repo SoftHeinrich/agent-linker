@@ -56,6 +56,8 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`pcm_parser.py`** — XML parsing of Palladio Component Model `.repository` files using lxml
 - **`llm_client.py`** — LLM abstraction with three backends and two modes (see below)
 - **`linkers/experimental/transarc_refined_linker_v45.py`** — The V45 linker implementation (~1073 lines)
+- **`linkers/experimental/agent_linker_v26a.py`** — V26a pipeline (current best with TransArc seed, 95.4% macro F1)
+- **`linkers/experimental/ilinker2_v30a.py`** — V30a: ILinker2 seed + V26a pipeline + fully prompt-driven Phase 3 (zero code overrides)
 
 ### LLM Client
 

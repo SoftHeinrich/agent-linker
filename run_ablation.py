@@ -162,9 +162,6 @@ VARIANTS = {
     "v25b":               dict(linker_class="v25b"),
     "v26":                dict(linker_class="v26"),
     "v26a":               dict(linker_class="v26a"),
-    # --- Analyzer variants: Phase 1 classification without len<=6 threshold ---
-    "analyzer2a":         dict(linker_class="v26a", classify_strategy="tight_prompt"),
-    "analyzer2b":         dict(linker_class="v26a", classify_strategy="two_pass"),
     "v26b":               dict(linker_class="v26b"),
     "v26c":               dict(linker_class="v26c"),
     "v26d":               dict(linker_class="v26d"),
@@ -182,6 +179,32 @@ VARIANTS = {
     "i1":                 dict(linker_class="i1"),
     "i2":                 dict(linker_class="i2"),       # precision-focused, no contextual
     "v26a_i2":            dict(linker_class="v26a_i2"),  # V26a with ILinker2 replacing TransArc
+    "v26a_i2_dk":         dict(linker_class="v26a_i2_dk"),  # V26a+I2 + DA warm-start
+    "i2_pure":            dict(linker_class="i2_pure"),      # Zero-heuristic: I2 + LLM synonym/coref/validation
+    "v26a_i2_ndf":        dict(linker_class="v26a_i2_ndf"),  # V26a+I2 without dot filter
+    # --- Phase 3 stabilization variants ---
+    "s1":                 dict(linker_class="s1"),   # Fix B restricted to abbrevs only
+    "s2":                 dict(linker_class="s2"),   # Phase 6 min alias len >= 3
+    "s3":                 dict(linker_class="s3"),   # s1 + s2 combined
+    "s4":                 dict(linker_class="s4"),   # 3x extraction voting
+    "s5":                 dict(linker_class="s5"),   # All-reject guard
+    "s6":                 dict(linker_class="s6"),   # Full stack (s1+s2+s4+s5)
+    # --- S7-S10: General-rule stabilization (no hardcoded length thresholds) ---
+    "s7":                 dict(linker_class="s7"),   # Design A: prompt-hardened
+    "s8":                 dict(linker_class="s8"),   # Design B: trust-the-judge
+    "s9":                 dict(linker_class="s9"),   # Design C: doc-frequency gating
+    "s10":                dict(linker_class="s10"),  # Design A+B combined
+    "s11":                dict(linker_class="s11"),  # s7 cleaned: Fix B/V24 removed
+    # --- V30/V30a: ILinker2 + V26a with hardened Phase 3 ---
+    "v30":                dict(linker_class="v30"),   # ILinker2 + V26a + hardened prompts + Fix A/C
+    "v30a":               dict(linker_class="v30a"),  # ILinker2 + V26a + prompt-only Phase 3
+    # --- CNR: Component Name Recovery (no-model) ---
+    "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
+    "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
+    "cnr_v26a":           dict(linker_class="cnr_v26a"),   # Discovery + full V26a pipeline
+    # --- CNR-DK: Document Knowledge-Informed CNR ---
+    "cnr_dk":             dict(linker_class="cnr_dk"),     # CNR + Document Analysis
+    "cnr_dk_v26a":        dict(linker_class="cnr_dk_v26a"),  # CNR-DK + full V26a + Phase 3 warm-start
 }
 
 BENCHMARK_BASE = Path(
@@ -337,8 +360,7 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
         linker = AgentLinkerV26(backend=BACKEND)
     elif linker_class == "v26a":
         from llm_sad_sam.linkers.experimental.agent_linker_v26a import AgentLinkerV26a
-        cs = flags.pop("classify_strategy", "tight_prompt")
-        linker = AgentLinkerV26a(backend=BACKEND, classify_strategy=cs)
+        linker = AgentLinkerV26a(backend=BACKEND)
     elif linker_class == "v26b":
         from llm_sad_sam.linkers.experimental.agent_linker_v26b import AgentLinkerV26b
         linker = AgentLinkerV26b(backend=BACKEND)
@@ -485,6 +507,69 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v26a_i2":
         from llm_sad_sam.linkers.experimental.ilinker2_v26a import ILinker2V26a
         linker = ILinker2V26a(backend=BACKEND)
+    elif linker_class == "v26a_i2_dk":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a import ILinker2V26a
+        linker = ILinker2V26a(backend=BACKEND, enable_da=True)
+    elif linker_class == "i2_pure":
+        from llm_sad_sam.linkers.experimental.ilinker2_pure import ILinker2Pure
+        linker = ILinker2Pure(backend=BACKEND)
+    elif linker_class == "v26a_i2_ndf":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_ndf import ILinker2V26aNDF
+        linker = ILinker2V26aNDF(backend=BACKEND)
+    elif linker_class == "s1":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s1 import ILinker2V26aS1
+        linker = ILinker2V26aS1(backend=BACKEND)
+    elif linker_class == "s2":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s2 import ILinker2V26aS2
+        linker = ILinker2V26aS2(backend=BACKEND)
+    elif linker_class == "s3":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s3 import ILinker2V26aS3
+        linker = ILinker2V26aS3(backend=BACKEND)
+    elif linker_class == "s4":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s4 import ILinker2V26aS4
+        linker = ILinker2V26aS4(backend=BACKEND)
+    elif linker_class == "s5":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s5 import ILinker2V26aS5
+        linker = ILinker2V26aS5(backend=BACKEND)
+    elif linker_class == "s6":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s6 import ILinker2V26aS6
+        linker = ILinker2V26aS6(backend=BACKEND)
+    elif linker_class == "s7":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s7 import ILinker2V26aS7
+        linker = ILinker2V26aS7(backend=BACKEND)
+    elif linker_class == "s8":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s8 import ILinker2V26aS8
+        linker = ILinker2V26aS8(backend=BACKEND)
+    elif linker_class == "s9":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s9 import ILinker2V26aS9
+        linker = ILinker2V26aS9(backend=BACKEND)
+    elif linker_class == "s10":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s10 import ILinker2V26aS10
+        linker = ILinker2V26aS10(backend=BACKEND)
+    elif linker_class == "s11":
+        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s11 import ILinker2V26aS11
+        linker = ILinker2V26aS11(backend=BACKEND)
+    elif linker_class == "v30":
+        from llm_sad_sam.linkers.experimental.ilinker2_v30 import ILinker2V30
+        linker = ILinker2V30(backend=BACKEND)
+    elif linker_class == "v30a":
+        from llm_sad_sam.linkers.experimental.ilinker2_v30a import ILinker2V30a
+        linker = ILinker2V30a(backend=BACKEND)
+    elif linker_class == "cnr":
+        from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
+        linker = CNRLinker(backend=BACKEND)
+    elif linker_class == "cnr_i2":
+        from llm_sad_sam.linkers.experimental.cnr_i2_linker import CNRI2Linker
+        linker = CNRI2Linker(backend=BACKEND)
+    elif linker_class == "cnr_v26a":
+        from llm_sad_sam.linkers.experimental.cnr_v26a_linker import CNRV26aLinker
+        linker = CNRV26aLinker(backend=BACKEND)
+    elif linker_class == "cnr_dk":
+        from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
+        linker = CNRLinker(backend=BACKEND, enable_da=True)
+    elif linker_class == "cnr_dk_v26a":
+        from llm_sad_sam.linkers.experimental.cnr_v26a_linker import CNRV26aLinker
+        linker = CNRV26aLinker(backend=BACKEND, enable_da=True)
     else:
         from llm_sad_sam.linkers.experimental.agent_linker_ablation import AgentLinkerAblation
         linker = AgentLinkerAblation(backend=BACKEND, **flags)

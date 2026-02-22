@@ -56,17 +56,14 @@ class AgentLinkerV26a(AgentLinker):
         "above", "below", "between", "under", "over",
     }
 
-    def __init__(self, backend: Optional[LLMBackend] = None,
-                 classify_strategy: str = "tight_prompt"):
+    def __init__(self, backend: Optional[LLMBackend] = None):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
         super().__init__(backend=backend or LLMBackend.CLAUDE)
         self._phase_log = []
         self._is_complex = None
         self._discovered_generic_partials = set()
-        self._classify_strategy = classify_strategy
         print(f"AgentLinkerV26a: V26 + synonym-safe judge bypass")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
-        print(f"  Classify strategy: {classify_strategy}")
 
     # ── Logging ──────────────────────────────────────────────────────────
 
@@ -438,99 +435,83 @@ class AgentLinkerV26a(AgentLinker):
                     word_to_comps.setdefault(w, []).append(name)
         knowledge.shared_vocabulary = {w: list(set(c)) for w, c in word_to_comps.items() if len(set(c)) > 1}
 
-        if self._classify_strategy == "two_pass":
-            self._classify_two_pass(names, knowledge)
-        else:  # tight_prompt
-            self._classify_tight_prompt(names, knowledge)
+        self._classify_components(names, knowledge)
 
         return knowledge
 
-    def _classify_tight_prompt(self, names, knowledge):
-        """Strategy A: Single LLM call with restrictive prompt, no code filter."""
+    # Few-shot examples (safe textbook domains only)
+    _FEW_SHOT = """
+EXAMPLE 1:
+NAMES: Lexer, Parser, CodeGenerator, Optimizer, Core, Util, AST, SymbolTable, Base
+→ architectural: ["Lexer", "Parser", "CodeGenerator", "Optimizer", "AST", "SymbolTable"]
+→ ambiguous: ["Core", "Util", "Base"]
+Reasoning: Lexer/Parser/Optimizer name specific compilation roles. Core/Util/Base are
+organizational labels that tell you nothing about what the component does.
+
+EXAMPLE 2:
+NAMES: Scheduler, Dispatcher, MemoryManager, Monitor, Pool, Helper, ProcessTable
+→ architectural: ["Scheduler", "Dispatcher", "MemoryManager", "ProcessTable"]
+→ ambiguous: ["Monitor", "Pool", "Helper"]
+Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are common
+English words regularly used generically ("monitor performance", "thread pool").
+Helper is an organizational label.
+
+EXAMPLE 3:
+NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
+→ architectural: ["RenderEngine", "SceneGraph", "Socket", "Router"]
+→ ambiguous: ["Pipeline", "Layer", "Proxy"]
+Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
+Socket/Router name specific networking roles. Pipeline/Layer/Proxy are common words
+used generically in documentation ("processing pipeline", "network layer", "behind a proxy").""".strip()
+
+    @staticmethod
+    def _is_structurally_unambiguous(name):
+        """CamelCase, multi-word, or all-caps → always architectural."""
+        if ' ' in name or '-' in name:
+            return True
+        if re.search(r'[a-z][A-Z]', name):
+            return True
+        if name.isupper():
+            return True
+        return False
+
+    def _classify_components(self, names, knowledge):
+        """Classify components using few-shot prompt + structural code guard."""
         prompt = f"""Classify these software architecture component names.
 
 NAMES: {', '.join(names)}
 
+{self._FEW_SHOT}
+
+NOW CLASSIFY THE NAMES ABOVE.
+
 Return JSON:
 {{
   "architectural": ["names that identify specific components"],
-  "ambiguous": ["names that are too vague to identify a specific component"]
+  "ambiguous": ["names that could easily be used as ordinary words in documentation"]
 }}
 
-CLASSIFICATION RULES:
-1. A name is ARCHITECTURAL if it describes a specific responsibility or role in the system.
-   Even single common English words are architectural if they name what the component DOES.
-   Examples: "Scheduler" schedules, "Renderer" renders, "Dispatcher" dispatches — all architectural.
+RULES:
+1. ARCHITECTURAL: Names that refer to a specific role or responsibility. If the name tells you
+   WHAT the component does (scheduling, parsing, rendering, storing data, managing users), it is
+   architectural — even if the word also exists in a dictionary.
+   Multi-word names, CamelCase compounds, and abbreviations (DB, API, UI) → always architectural.
 
-2. A name is AMBIGUOUS only if it is so vague that it could apply to ANY part of ANY system
-   and tells you nothing about what the component does.
-   Examples of truly ambiguous: "Util", "Misc", "Other", "Base", "Helper", "Core", "Main".
-   These words describe no specific responsibility — they are organizational labels, not role names.
-
-3. Multi-word names and CamelCase compounds are ALWAYS architectural — they are invented identifiers.
-
-4. All-uppercase short names (DB, UI, API) are abbreviations → architectural.
-
-5. When in doubt, classify as architectural. The bar for "ambiguous" is very high.
+2. AMBIGUOUS: Short single words that writers commonly use generically in software documentation.
+   The test: "Could a technical writer naturally write this word in a sentence about ANY system
+   without referring to a specific component?" If yes → ambiguous.
 
 JSON only:"""
 
         data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
         if data:
-            knowledge.architectural_names = set(data.get("architectural", [])) & set(names)
-            raw_ambiguous = set(data.get("ambiguous", [])) & set(names)
-            knowledge.ambiguous_names = {n for n in raw_ambiguous if len(n.split()) == 1}
-
-    def _classify_two_pass(self, names, knowledge):
-        """Strategy B: Two LLM calls with different framings, intersect."""
-        prompt_a = f"""Classify these component names from a software architecture model.
-
-NAMES: {', '.join(names)}
-
-Return JSON:
-{{
-  "architectural": ["names that refer to specific software components"],
-  "ambiguous": ["names that are generic English words with no specific technical role"]
-}}
-
-Rules:
-- Architectural: names that describe a specific responsibility (e.g., "Scheduler", "Parser", "Renderer")
-- Ambiguous: names so generic they could mean anything (e.g., "Util", "Misc", "Helper", "Base")
-- Multi-word names and CamelCase → always architectural
-- When in doubt → architectural
-
-JSON only:"""
-
-        prompt_b = f"""You are reviewing component names from a software architecture.
-
-NAMES: {', '.join(names)}
-
-TASK: Which names could be confused with general English words when they appear in documentation?
-A name is confusable ONLY if it is a single common word that people would use in ordinary
-sentences without meaning the component (e.g., "other" in "other components", "base" in "base class").
-
-Names that describe a specific function (scheduling, parsing, rendering) are NOT confusable —
-they clearly refer to the component when used in architecture documentation.
-
-Return JSON:
-{{
-  "clear": ["names that clearly identify components"],
-  "confusable": ["names that could be mistaken for ordinary English in documentation"]
-}}
-
-JSON only:"""
-
-        data_a = self.llm.extract_json(self.llm.query(prompt_a, timeout=100))
-        data_b = self.llm.extract_json(self.llm.query(prompt_b, timeout=100))
-
-        ambig_a, ambig_b = set(), set()
-        if data_a:
-            knowledge.architectural_names = set(data_a.get("architectural", [])) & set(names)
-            ambig_a = set(data_a.get("ambiguous", [])) & set(names)
-        if data_b:
-            ambig_b = set(data_b.get("confusable", [])) & set(names)
-
-        knowledge.ambiguous_names = {n for n in (ambig_a & ambig_b) if len(n.split()) == 1}
+            valid = set(names)
+            knowledge.architectural_names = set(data.get("architectural", [])) & valid
+            raw_ambiguous = set(data.get("ambiguous", [])) & valid
+            knowledge.ambiguous_names = {
+                n for n in raw_ambiguous
+                if len(n.split()) == 1 and not self._is_structurally_unambiguous(n)
+            }
 
     # ═════════════════════════════════════════════════════════════════════
     # Phase 3b: Multi-word partial enrichment
