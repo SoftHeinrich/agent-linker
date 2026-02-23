@@ -198,6 +198,33 @@ VARIANTS = {
     # --- V30/V30a: ILinker2 + V26a with hardened Phase 3 ---
     "v30":                dict(linker_class="v30"),   # ILinker2 + V26a + hardened prompts + Fix A/C
     "v30a":               dict(linker_class="v30a"),  # ILinker2 + V26a + prompt-only Phase 3
+    "v30b":               dict(linker_class="v30b"),  # ILinker2 + V26a + few-shot calibrated judge
+    "v30c":               dict(linker_class="v30c"),  # V30b + NDF: few-shot judge + no dot filter
+    "v30d":               dict(linker_class="v30d"),  # V30c + resume + CamelCase Phase 3 override
+    "v30d_r3":            dict(linker_class="v30d", resume_from=3),  # Resume from phase 3
+    "v30d_r9":            dict(linker_class="v30d", resume_from=9),  # Resume from pre-judge
+    "v30d_p3":            dict(linker_class="v30d", run_only=3),  # Phase 3: CamelCase only
+    "v30d_p3_v24":        dict(linker_class="v30d", run_only=3, v30d_v24=True),  # Phase 3: CC + V24 overrides
+    "v30d_p3_all":        dict(linker_class="v30d", run_only=3, v30d_v24=True, v30d_uc=True),  # Phase 3: CC + V24 + uppercase
+    "v30d_p3_pt5":        dict(linker_class="v30d", run_only=3, v30d_pt=5),  # Phase 3: partial threshold 5
+    "v30d_p3_pt7":        dict(linker_class="v30d", run_only=3, v30d_pt=7),  # Phase 3: partial threshold 7
+    "v30d_p6":            dict(linker_class="v30d", run_only=6),  # Single: Phase 6 only
+    "v30d_p7":            dict(linker_class="v30d", run_only=7),  # Single: Phase 7 only
+    "v30d_p9":            dict(linker_class="v30d", run_only=9),  # Single: Phase 9 only
+    # --- V30d heuristic ablation (resume from affected phase) ---
+    "v30d_no_genm":       dict(linker_class="v30d", resume_from=6, no_genm=True),      # Phase 6: no _is_generic_mention
+    "v30d_no_gencf":      dict(linker_class="v30d", resume_from=7, no_gencf=True),     # Phase 7: no _filter_generic_coref
+    "v30d_no_pron":       dict(linker_class="v30d", resume_from=7, no_pron=True),      # Phase 7: no _deterministic_pronoun_coref
+    "v30d_no_bf":         dict(linker_class="v30d", resume_from=8, no_bf=True),        # Phase 8c: no boundary filters
+    "v30d_no_pi":         dict(linker_class="v30d", resume_from=8, no_pi=True),        # Phase 8b: no partial injection
+    "v30d_no_synsafe":    dict(linker_class="v30d", resume_from=9, no_synsafe=True),   # Phase 9: no synonym-safe bypass
+    "v30d_no_po":         dict(linker_class="v30d", resume_from=8, no_po=True),        # Phase 8: no parent-overlap guard
+    "v30d_no_ag":         dict(linker_class="v30d", resume_from=5, no_ag=True),        # Phase 5: no abbreviation guard
+    # Single-phase tests for LLM-dependent heuristics
+    "v30d_p9_no_synsafe": dict(linker_class="v30d", run_only=9, no_synsafe=True),     # P9 only: judge sees all links
+    "v30d_p9_no_pi":      dict(linker_class="v30d", run_only=9, no_pi=True),          # P9 only: no partial injection (uses pre_judge from v30c)
+    # --- V31: V30c + CamelCase rescue only ---
+    "v31":                dict(linker_class="v31"),
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -555,6 +582,31 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v30a":
         from llm_sad_sam.linkers.experimental.ilinker2_v30a import ILinker2V30a
         linker = ILinker2V30a(backend=BACKEND)
+    elif linker_class == "v30b":
+        from llm_sad_sam.linkers.experimental.ilinker2_v30b import ILinker2V30b
+        linker = ILinker2V30b(backend=BACKEND)
+    elif linker_class == "v30c":
+        from llm_sad_sam.linkers.experimental.ilinker2_v30c import ILinker2V30c
+        linker = ILinker2V30c(backend=BACKEND)
+    elif linker_class == "v30d":
+        from llm_sad_sam.linkers.experimental.ilinker2_v30d import ILinker2V30d
+        linker = ILinker2V30d(
+            backend=BACKEND,
+            enable_v24=flags.get("v30d_v24", False),
+            enable_uppercase=flags.get("v30d_uc", False),
+            partial_min_count=flags.get("v30d_pt", 3),
+            disable_generic_mention=flags.get("no_genm", False),
+            disable_generic_coref=flags.get("no_gencf", False),
+            disable_pronoun_coref=flags.get("no_pron", False),
+            disable_boundary_filters=flags.get("no_bf", False),
+            disable_partial_injection=flags.get("no_pi", False),
+            disable_syn_safe=flags.get("no_synsafe", False),
+            disable_parent_overlap=flags.get("no_po", False),
+            disable_abbrev_guard=flags.get("no_ag", False),
+        )
+    elif linker_class == "v31":
+        from llm_sad_sam.linkers.experimental.ilinker2_v31 import ILinker2V31
+        linker = ILinker2V31(backend=BACKEND)
     elif linker_class == "cnr":
         from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
         linker = CNRLinker(backend=BACKEND)
@@ -578,8 +630,22 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
         model_path=str(paths["model"]),
         transarc_csv=str(paths["transarc_sam"]),
     )
-    if resume_from_phase is not None and hasattr(linker, '_resume_from'):
-        link_kwargs["resume_from_phase"] = resume_from_phase
+    # Support run_only (single-phase) mode
+    run_only = flags.get("run_only")
+    if run_only is not None and hasattr(linker, 'run_single_phase'):
+        result = linker.run_single_phase(str(paths["text"]), str(paths["model"]), int(run_only))
+        elapsed = time.time() - t0
+        print(f"\n  Single-phase {run_only} completed in {elapsed:.0f}s")
+        print(f"  Output keys: {list(result.keys())}")
+        # For single-phase, return empty results (no F1 scoring)
+        return {"P": 0, "R": 0, "F1": 0, "tp": 0, "fp": 0, "fn": 0,
+                "time": elapsed, "sources": {}, "fp_by_source": {},
+                "phase_output": result}
+
+    # Support resume_from_phase from CLI arg or variant dict
+    rfp = flags.get("resume_from") or resume_from_phase
+    if rfp is not None and "resume_from_phase" in linker.link.__code__.co_varnames:
+        link_kwargs["resume_from_phase"] = int(rfp)
     preds = linker.link(**link_kwargs)
     elapsed = time.time() - t0
 

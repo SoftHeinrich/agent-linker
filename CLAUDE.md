@@ -58,6 +58,10 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/transarc_refined_linker_v45.py`** — The V45 linker implementation (~1073 lines)
 - **`linkers/experimental/agent_linker_v26a.py`** — V26a pipeline (current best with TransArc seed, 95.4% macro F1)
 - **`linkers/experimental/ilinker2_v30a.py`** — V30a: ILinker2 seed + V26a pipeline + fully prompt-driven Phase 3 (zero code overrides)
+- **`linkers/experimental/ilinker2_v30b.py`** — V30b: few-shot calibrated Phase 3 judge, zero code overrides (94.1% macro F1)
+- **`linkers/experimental/ilinker2_v30c.py`** — V30c: V30b + no dotted-path regex + pickle checkpoints for ablation
+- **`linkers/experimental/ilinker2_v30d.py`** — V30d: V30c + resume support + CamelCase rescue + heuristic toggle flags for ablation
+- **`linkers/experimental/ilinker2_v31.py`** — V31: clean V30c + CamelCase rescue only (standalone)
 
 ### LLM Client
 

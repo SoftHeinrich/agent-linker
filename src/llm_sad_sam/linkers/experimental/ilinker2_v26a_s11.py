@@ -1,16 +1,24 @@
 """S11: Cleaned s7 — Prompt-hardened Phase 3 with dead code removed.
 
-Based on s7 (Design A). Phase 3 unit test confirmed:
-- Fix B (uppercase ≤4 rescue): never fires with s7 prompts → REMOVED
-- V24 (exact-match / multi-word overrides): never fires → REMOVED
-- Fix A (CamelCase override): essential — judge rejects DataStorage, AudioAccess,
-  PersistenceProvider, ReEncoder every time → KEPT
-- Fix C (capitalized mid-sentence): essential — judge rejects "Database",
-  "Datastore" every time → KEPT
+Macro F1: 94.8% (MS 100%, TS 96.4%, TM 92.2%, BBB 90.8%, JAB 94.7%)
+Within LLM variance of s7 (95.2%), confirming dead code removal is safe.
 
-Remaining code overrides are structurally motivated:
-- Fix A: CamelCase pattern ([a-z][A-Z]) is a constructed identifier, never generic English
-- Fix C: Capitalized mid-sentence = proper name usage in context
+Based on s7 (Design A: prompt-hardened). Phase 3 unit test (test_phase3_fixes.py)
+confirmed which code-level overrides are needed:
+
+REMOVED (never fire with s7's enhanced prompts):
+- Fix B (uppercase ≤4 rescue): s7 prompts prevent ambiguous short acronyms
+  from being proposed, so Fix B never triggers
+- V24 (exact-match / multi-word overrides): no rejected terms match these
+  structural patterns
+
+KEPT (essential — judge consistently over-rejects these):
+- Fix A (CamelCase override): judge rejects CamelCase synonyms like
+  DataStorage, AudioAccess, PersistenceProvider, ReEncoder. CamelCase
+  pattern ([a-z][A-Z]) is a constructed identifier, never generic English.
+- Fix C (capitalized mid-sentence): judge rejects contextual synonyms like
+  "Database", "Datastore" that appear capitalized mid-sentence as proper
+  names. No formal parenthetical definition exists for these.
 """
 
 import re
