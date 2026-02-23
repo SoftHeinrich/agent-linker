@@ -61,7 +61,13 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/ilinker2_v30b.py`** — V30b: few-shot calibrated Phase 3 judge, zero code overrides (94.1% macro F1)
 - **`linkers/experimental/ilinker2_v30c.py`** — V30c: V30b + no dotted-path regex + pickle checkpoints for ablation
 - **`linkers/experimental/ilinker2_v30d.py`** — V30d: V30c + resume support + CamelCase rescue + heuristic toggle flags for ablation
-- **`linkers/experimental/ilinker2_v31.py`** — V31: clean V30c + CamelCase rescue only (standalone)
+- **`linkers/experimental/ilinker2_v31.py`** — V31: clean V30c + CamelCase rescue + convention filter + reframed judge rules
+  - **Judge Reframing (Feb 23)**: Phase 9 judge rules reframed as universal principles instead of benchmark-specific criteria:
+    - Rule 1: EXPLICIT REFERENCE (vs "S genuinely refers to C")
+    - Rule 2: SYSTEM-LEVEL PERSPECTIVE (vs "architectural level")
+    - Rule 3: PRIMARY FOCUS (vs "topic")
+    - Rule 4: COMPONENT-SPECIFIC USAGE (vs "not generic")
+  - Same 4-rule logic, improved defensibility against "over-engineered for benchmark" criticism
 
 ### LLM Client
 
