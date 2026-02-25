@@ -65,7 +65,7 @@ in an architectural role is LINK for that other component.
 **2a. Technology / methodology confusion:**
 
 CRITICAL RULE: If a component IS NAMED AFTER a technology (e.g., the architecture
-has a component called "Redis PubSub" or "kurento" or "FreeSWITCH"), then ANY sentence
+has a component called "Kafka Broker" or "Nginx Proxy" or "Zookeeper"), then ANY sentence
 describing that technology's capabilities, role, or behavior IS about the component → LINK.
 This rule applies because architecture components are often named after the technology they wrap.
 
@@ -93,7 +93,7 @@ LINK — system-level architectural sense:
 If neither Step 1 nor Step 2 applies → LINK.
 
 ### IMPORTANT GUARDRAILS:
-- Multi-word component names (e.g., "HTML5 Server", "Recording Service") are NEVER generic words → LINK
+- Multi-word component names (e.g., "Kafka Broker", "Nginx Proxy") are NEVER generic words → LINK
 - CamelCase identifiers are NEVER generic words → LINK
 - Sentences describing how components interact, connect, or communicate → LINK for ALL components involved (not just the grammatical subject). "X connects to Y" is LINK for both X and Y.
 - Sentences about what a component does, provides, or handles → LINK

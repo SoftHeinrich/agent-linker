@@ -40,14 +40,14 @@ The most common reason for NO_LINK: the sentence mentions the component name onl
 as part of a HIERARCHICAL/QUALIFIED NAME (dotted path, namespace, module path) that
 refers to an internal sub-unit, not the component's own architectural role.
 
-Software documentation commonly uses hierarchical naming (e.g., "X.config", "X/handlers",
-"X::internal") to refer to parts inside a component. The component name appears only as
+Software documentation commonly uses hierarchical naming (e.g., "X.settings", "X/handlers",
+"X::private") to refer to parts inside a component. The component name appears only as
 a prefix, not as the subject.
 
 Recognize these patterns — all are NO_LINK for component X:
-- "X.config loads environment variables" — dotted sub-unit reference
+- "X.settings loads environment variables" — dotted sub-unit reference
 - "X.handlers, X.mappers, X.converters follow a pipeline" — listing internals of X
-- "Classes in the X.internal module are not visible outside" — even with
+- "Classes in the X.private module are not visible outside" — even with
   architectural language, if the subject is X's sub-unit → NO_LINK
 - Bare name mixed with qualified paths: "X, Y.adapters, Y.transformers follow
   a pipeline design" — treat ALL as hierarchical references → NO_LINK
@@ -76,9 +76,9 @@ LINK when components INTERACT with or connect THROUGH the technology.
 
 **2b. Generic word collision:**
 NO_LINK — narrow, non-architectural sense:
-- Process/activity modifier: "cascade X", "retry X", "validation X"
-- Hardware/deployment: "a dedicated hardware node", "32-core server"
-- Possessive/personal: "her settings", "their preferences"
+- Process/activity modifier: "throttle X", "batch X", "polling X"
+- Hardware/deployment: "a physical rack-mounted appliance", "multi-socket machine"
+- Possessive/personal: "her bookmarks", "their account"
 
 LINK — system-level architectural sense:
 - System name + word: "the [System] gateway"
