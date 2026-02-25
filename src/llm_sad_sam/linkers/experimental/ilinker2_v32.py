@@ -85,6 +85,13 @@ LINK — system-level architectural sense:
 ### STEP 3 — Default: LINK.
 If neither Step 1 nor Step 2 applies → LINK.
 
+### IMPORTANT GUARDRAILS:
+- Multi-word component names (e.g., "HTML5 Server", "Recording Service") are NEVER generic words → LINK
+- CamelCase identifiers are NEVER generic words → LINK
+- Sentences describing how components interact, connect, or communicate → LINK (even if indirect)
+- Sentences about what a component does, provides, or handles → LINK
+- Only use NO_LINK when you are CONFIDENT the name is NOT used as a component reference
+
 ### Priority:
 Be AGGRESSIVE with NO_LINK on sub-package descriptions (Step 1).
 For Step 2, only NO_LINK when confident. Default to LINK."""

@@ -131,7 +131,7 @@ NOT a valid reference:
 - A sentence that merely describes related functionality without naming or clearly referring to the component
 
 Return ONLY valid JSON:
-{{"links": [{{"s": <sentence_number>, "c": "<ComponentName>", "text": "<matched text>", "type": "exact|synonym|partial"}}]}}
+{{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "matched text", "type": "exact|synonym|partial"}}]}}
 
 Precision is critical — only include links with clear textual evidence."""
 
@@ -158,9 +158,9 @@ Rules:
 - Do NOT match generic English words used in their ordinary sense (e.g., "optimized code" does NOT reference "Optimizer").
 
 Return ONLY valid JSON:
-{{"links": [{{"s": <sentence_number>, "c": "<ComponentName>", "text": "<evidence>", "type": "exact|synonym|partial"}}]}}
+{{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "evidence", "type": "exact|synonym|partial"}}]}}
 
-Be conservative — omit uncertain links."""
+Include links where the component is clearly the subject or actor. Omit pronoun-only references."""
 
     # ── LLM + parse ─────────────────────────────────────────────────────
 
@@ -181,6 +181,13 @@ Be conservative — omit uncertain links."""
             cname = item.get("c", "")
             if not snum or not cname:
                 continue
+            # Handle "S101" format from some backends (strip "S" prefix)
+            if isinstance(snum, str):
+                snum = snum.lstrip("S")
+            try:
+                snum = int(snum)
+            except (ValueError, TypeError):
+                continue
 
             cid = name_to_id.get(cname)
             if not cid:
@@ -192,7 +199,7 @@ Be conservative — omit uncertain links."""
                 continue
 
             links.append(ExtractedLink(
-                sentence_number=int(snum),
+                sentence_number=snum,
                 component_name=cname,
                 component_id=cid,
                 matched_text=item.get("text", ""),
