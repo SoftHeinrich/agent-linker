@@ -265,6 +265,7 @@ class LLMClient:
                 model=self.openai_model,
                 messages=messages,
                 temperature=self.temperature,
+                seed=42,
                 max_completion_tokens=4096,
                 timeout=timeout
             )
@@ -633,6 +634,7 @@ class LLMClient:
                         }
                     ],
                     temperature=self.temperature,
+                    seed=42,
                     max_completion_tokens=4096,
                     timeout=timeout
                 )
