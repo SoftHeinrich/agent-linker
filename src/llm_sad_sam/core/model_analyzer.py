@@ -21,7 +21,7 @@ EXAMPLE 2:
 NAMES: Scheduler, Dispatcher, MemoryManager, Monitor, Pool, Helper, ProcessTable
 → architectural: ["Scheduler", "Dispatcher", "MemoryManager", "ProcessTable"]
 → ambiguous: ["Monitor", "Pool", "Helper"]
-Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are common
+Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are ordinary
 English words regularly used generically ("monitor performance", "thread pool").
 Helper is an organizational label.
 
@@ -30,7 +30,7 @@ NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
 → architectural: ["RenderEngine", "SceneGraph", "Socket", "Router"]
 → ambiguous: ["Pipeline", "Layer", "Proxy"]
 Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
-Socket/Router name specific networking roles. Pipeline/Layer/Proxy are common words
+Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
 used generically in documentation ("processing pipeline", "network layer", "behind a proxy").""".strip()
 
 
@@ -128,14 +128,29 @@ Return JSON:
 }}
 
 RULES:
-1. ARCHITECTURAL: Names that refer to a specific role or responsibility. If the name tells you
-   WHAT the component does (scheduling, parsing, rendering, storing data, managing users), it is
-   architectural — even if the word also exists in a dictionary.
-   Multi-word names, CamelCase compounds, and abbreviations (DB, API, UI) → always architectural.
+1. ARCHITECTURAL: Names that identify a specific component role or function.
+   Always architectural:
+   - Multi-word names, hyphenated names
+   - CamelCase compounds
+   - ALL-UPPERCASE abbreviations (API, TCP, RPC)
+   - Well-known computing abbreviations in ANY letter case (vm, io, os, tcp, rpc)
+   - Names that describe a specific technical function: Scheduler (=task scheduling),
+     Dispatcher (=event routing), Router (=request routing), Renderer (=rendering output)
 
-2. AMBIGUOUS: Short single words that writers commonly use generically in software documentation.
-   The test: "Could a technical writer naturally write this word in a sentence about ANY system
-   without referring to a specific component?" If yes → ambiguous.
+2. AMBIGUOUS: Single words that a technical writer would use as a GENERIC noun
+   in everyday documentation, where the word has a strong plain-English meaning separate
+   from any component.
+   The test: "Would a writer use this word generically in 'the system X' or 'the X layer'
+   without referring to a specific component?"
+   - "the system core" → yes, "core" is generic → AMBIGUOUS
+   - "a utility module" → yes, "util" is generic → AMBIGUOUS
+   - "the base class" → yes, "base" is generic → AMBIGUOUS
+   - "a helper function" → yes, "helper" is generic → AMBIGUOUS
+   - "a processing pipeline" → yes, "pipeline" is generic → AMBIGUOUS
+   - "the network layer" → yes, "layer" is generic → AMBIGUOUS
+   Counter-examples where the word IS a specific role (from the few-shot examples):
+   - "the Scheduler assigns threads" → "Scheduler" names a specific function → ARCHITECTURAL
+   - "the Router forwards packets" → "Router" names a specific function → ARCHITECTURAL
 
 JSON only:"""
 

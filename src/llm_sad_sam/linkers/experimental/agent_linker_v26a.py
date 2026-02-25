@@ -452,7 +452,7 @@ EXAMPLE 2:
 NAMES: Scheduler, Dispatcher, MemoryManager, Monitor, Pool, Helper, ProcessTable
 → architectural: ["Scheduler", "Dispatcher", "MemoryManager", "ProcessTable"]
 → ambiguous: ["Monitor", "Pool", "Helper"]
-Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are common
+Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are ordinary
 English words regularly used generically ("monitor performance", "thread pool").
 Helper is an organizational label.
 
@@ -461,7 +461,7 @@ NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
 → architectural: ["RenderEngine", "SceneGraph", "Socket", "Router"]
 → ambiguous: ["Pipeline", "Layer", "Proxy"]
 Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
-Socket/Router name specific networking roles. Pipeline/Layer/Proxy are common words
+Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
 used generically in documentation ("processing pipeline", "network layer", "behind a proxy").""".strip()
 
     @staticmethod
@@ -495,9 +495,9 @@ RULES:
 1. ARCHITECTURAL: Names that refer to a specific role or responsibility. If the name tells you
    WHAT the component does (scheduling, parsing, rendering, storing data, managing users), it is
    architectural — even if the word also exists in a dictionary.
-   Multi-word names, CamelCase compounds, and abbreviations (DB, API, UI) → always architectural.
+   Multi-word names, CamelCase compounds, and abbreviations (API, TCP, RPC) → always architectural.
 
-2. AMBIGUOUS: Short single words that writers commonly use generically in software documentation.
+2. AMBIGUOUS: Short single words that writers regularly use generically in software documentation.
    The test: "Could a technical writer naturally write this word in a sentence about ANY system
    without referring to a specific component?" If yes → ambiguous.
 
@@ -591,7 +591,7 @@ WHAT TO FIND:
 3. PARTIAL REFERENCES: A shorter form of a multi-word component name used alone.
    Rule: A trailing word from a multi-word name that, in this document, consistently means the full name.
    APPROVE: Only if the short form is unambiguous — no other component shares this word
-   REJECT: Common words that have ordinary English meanings beyond the component
+   REJECT: Ordinary words that have plain English meanings beyond the component
 
 DOCUMENT:
 {chr(10).join(doc_lines)}
@@ -783,7 +783,7 @@ DOCUMENT:
 {chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
 
 Return JSON:
-{{"references": [{{"sentence": N, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial|functional"}}]}}
+{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial|functional"}}]}}
 JSON only:"""
 
             # Retry once on empty response
@@ -800,6 +800,13 @@ JSON only:"""
             for ref in data.get("references", []):
                 snum, cname = ref.get("sentence"), ref.get("component")
                 if not (snum and cname and cname in name_to_id):
+                    continue
+                # Handle "S101" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
+                try:
+                    snum = int(snum)
+                except (ValueError, TypeError):
                     continue
                 sent = sent_map.get(snum)
                 if not sent or self._in_dotted_path(sent.text, cname):
@@ -882,7 +889,7 @@ DOCUMENT:
 {doc_text}
 
 Return JSON:
-{{"references": [{{"sentence": N, "matched_text": "text found", "reason": "why this refers to {comp.name}"}}]}}
+{{"references": [{{"sentence": N_INTEGER, "matched_text": "text found", "reason": "why this refers to {comp.name}"}}]}}
 
 Be thorough — find ALL sentences that discuss this component.
 JSON only:"""
@@ -895,6 +902,9 @@ JSON only:"""
                 snum = ref.get("sentence")
                 if not snum:
                     continue
+                # Handle "S6" format from some backends
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
                 try:
                     snum = int(snum)
                 except (ValueError, TypeError):
@@ -1190,7 +1200,7 @@ Like in technical writing: "The Scheduler assigns tasks to threads. It uses a pr
 — "It" clearly refers to "the Scheduler" because it was the subject of the previous sentence.
 
 Return JSON:
-{"resolutions": [{"case": 1, "sentence": N, "pronoun": "it", "component": "Name", "antecedent_sentence": M, "antecedent_text": "exact text with component name"}]}
+{"resolutions": [{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact text with component name"}]}
 
 Only include resolutions you are CERTAIN about. JSON only:"""
 
@@ -1203,6 +1213,9 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 snum = res.get("sentence")
                 if not (comp and snum and comp in name_to_id):
                     continue
+                # Handle "S6" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
                 try:
                     snum = int(snum)
                 except (ValueError, TypeError):
@@ -1211,6 +1224,8 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 # Verify antecedent citation
                 ant_snum = res.get("antecedent_sentence")
                 if ant_snum is not None:
+                    if isinstance(ant_snum, str):
+                        ant_snum = ant_snum.lstrip("S")
                     try:
                         ant_snum = int(ant_snum)
                     except (ValueError, TypeError):
@@ -1273,7 +1288,7 @@ RULES (all must hold):
 5. If the pronoun could refer to multiple components, do NOT resolve it
 
 Return JSON:
-{{"resolutions": [{{"sentence": N, "pronoun": "it", "component": "Name", "antecedent_sentence": M, "antecedent_text": "exact quote with component name"}}]}}
+{{"resolutions": [{{"sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}}]}}
 
 Only include resolutions you are CERTAIN about. JSON only:"""
 
@@ -1290,6 +1305,9 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 snum = res.get("sentence")
                 if not (comp and snum and comp in name_to_id):
                     continue
+                # Handle "S6" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
                 try:
                     snum = int(snum)
                 except (ValueError, TypeError):
@@ -1297,6 +1315,8 @@ Only include resolutions you are CERTAIN about. JSON only:"""
 
                 ant_snum = res.get("antecedent_sentence")
                 if ant_snum is not None:
+                    if isinstance(ant_snum, str):
+                        ant_snum = ant_snum.lstrip("S")
                     try:
                         ant_snum = int(ant_snum)
                     except (ValueError, TypeError):
@@ -1749,7 +1769,7 @@ SENTENCES linked to {comp}:
 {sents_block}
 
 Return JSON:
-{{"judgments": [{{"sentence": N, "approve": true/false, "reason": "brief"}}]}}
+{{"judgments": [{{"sentence": N_INTEGER, "approve": true/false, "reason": "brief"}}]}}
 JSON only:"""
 
         data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
@@ -1907,7 +1927,7 @@ RULE 3 — TOPIC: C is what S is primarily about, not a passing mention.
   Like "The Lexer tokenizes input" is about the Lexer, but "tokens from the Lexer feed into..." mentions Lexer incidentally.
   REJECT when C is mentioned only in passing while S discusses something else.
 
-RULE 4 — NOT GENERIC: The reference is to C as a named entity, not a common English word.
+RULE 4 — NOT GENERIC: The reference is to C as a named entity, not an ordinary English word.
   Like "Broker" in "The Broker mediates between publishers and subscribers" is the component,
   but "broker" in "a message broker pattern" is the generic concept.
   REJECT when the word is used in its dictionary sense rather than as the component's name.
@@ -1992,7 +2012,7 @@ SENTENCE: {sent_text}
 ALL COMPONENTS: {comp_names_str}
 
 Your job: Find CLEAR evidence that this is a SPURIOUS match. Only these patterns warrant rejection:
-1. "{comp_name.lower()}" is used as a modifier/adjective in a compound phrase (e.g., "cascade {comp_name.lower()}", "minimal {comp_name.lower()}") — NOT as a standalone noun referring to the component.
+1. "{comp_name.lower()}" is used as a modifier/adjective in a compound phrase (e.g., "throttle {comp_name.lower()}", "minimal {comp_name.lower()}") — NOT as a standalone noun referring to the component.
 2. The sentence is primarily about a DIFFERENT component, and "{comp_name.lower()}" is purely incidental.
 3. "{comp_name.lower()}" refers to a technology/protocol/tool, not the architecture component.
 4. This is a package listing or dotted path (like x.foo.bar) where the match is coincidental.
@@ -2023,7 +2043,7 @@ PROSECUTOR argues: {pros_arg}
 
 Rule: APPROVE when "{comp_name.lower()}" is used as a standalone noun referring to a layer/part
 of the system (its role, behavior, interactions, or testing). REJECT only when "{comp_name.lower()}"
-is clearly used as a modifier in a compound phrase ("cascade {comp_name.lower()}"), a technology name,
+is clearly used as a modifier in a compound phrase ("throttle {comp_name.lower()}"), a technology name,
 or the sentence is entirely about a different component.
 
 Return JSON: {{"verdict": "APPROVE" or "REJECT", "reason": "brief explanation"}}
