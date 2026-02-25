@@ -462,7 +462,18 @@ NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
 → ambiguous: ["Pipeline", "Layer", "Proxy"]
 Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
 Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
-used generically in documentation ("processing pipeline", "network layer", "behind a proxy").""".strip()
+used generically in documentation ("processing pipeline", "network layer", "behind a proxy").
+
+EXAMPLE 4:
+NAMES: PaymentGateway, OrderProcessor, Connector, Controller, Adapter, Worker, Agent
+→ architectural: ["PaymentGateway", "OrderProcessor", "Worker"]
+→ ambiguous: ["Connector", "Controller", "Adapter", "Agent"]
+Reasoning: PaymentGateway/OrderProcessor are CamelCase compounds naming specific roles.
+Worker names a specific concurrency mechanism. But Connector/Controller/Adapter/Agent
+seem functional yet are GENERIC categories writers use without referring to any specific
+component: "a database connector", "the main controller", "a protocol adapter", "a
+background agent". They describe WHAT KIND of thing it is, not WHICH specific mechanism
+— so they are ambiguous.""".strip()
 
     @staticmethod
     def _is_structurally_unambiguous(name):
@@ -497,9 +508,15 @@ RULES:
    architectural — even if the word also exists in a dictionary.
    Multi-word names, CamelCase compounds, and abbreviations (API, TCP, RPC) → always architectural.
 
-2. AMBIGUOUS: Short single words that writers regularly use generically in software documentation.
+2. AMBIGUOUS: Single words that writers regularly use generically in software documentation.
+   This includes TWO categories:
+   Category A — Organizational labels: core, util, base, helper (tell you nothing about function)
+   Category B — Generic functional categories: connector, controller, adapter, agent
+   (describe WHAT KIND of thing, not WHICH specific mechanism)
    The test: "Could a technical writer naturally write this word in a sentence about ANY system
    without referring to a specific component?" If yes → ambiguous.
+   Key: Scheduler/Router describe HOW (specific mechanism) → ARCHITECTURAL.
+         Connector/Controller/Adapter describe WHAT KIND (generic category) → AMBIGUOUS.
 
 JSON only:"""
 

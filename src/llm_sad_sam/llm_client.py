@@ -107,6 +107,7 @@ class LLMClient:
         self._request_count = 0
         self._session_usage = TokenUsage()
         self._logger = None
+        self._log_file_handle = None  # Keep open to avoid fd churn
 
         # Dedicated working directory for CLI subprocesses (avoids cwd side-effects)
         self._subprocess_cwd = Path(
@@ -124,6 +125,15 @@ class LLMClient:
 
         if self.enable_logging:
             self._setup_logging()
+
+    def close(self):
+        """Close open file handles."""
+        if self._log_file_handle and not self._log_file_handle.closed:
+            self._log_file_handle.close()
+            self._log_file_handle = None
+
+    def __del__(self):
+        self.close()
 
     # ==================== Conversation Mode ====================
 
@@ -411,8 +421,11 @@ class LLMClient:
                 "total_tokens": response.token_usage.total_tokens if response.token_usage else None,
             } if response.token_usage else None
         }
-        with open(detail_file, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(log_entry) + "\n")
+        if self._log_file_handle is None or self._log_file_handle.closed:
+            self.log_dir.mkdir(parents=True, exist_ok=True)
+            self._log_file_handle = open(detail_file, 'a', encoding='utf-8')
+        self._log_file_handle.write(json.dumps(log_entry) + "\n")
+        self._log_file_handle.flush()
 
     def get_session_usage(self) -> dict:
         """Get token usage for this session."""
@@ -593,10 +606,11 @@ class LLMClient:
             return LLMResponse(text="", success=False, error=str(e))
 
     def _get_openai_client(self):
-        """Lazily initialize OpenAI client."""
+        """Lazily initialize OpenAI client with connection pool management."""
         if self._openai_client is None:
             try:
                 from openai import OpenAI
+                import httpx
             except ImportError:
                 raise ImportError("OpenAI package not installed. Install with: pip install openai")
 
@@ -604,7 +618,11 @@ class LLMClient:
             if not api_key:
                 raise ValueError("OPENAI_API_KEY environment variable not set")
 
-            self._openai_client = OpenAI(api_key=api_key)
+            # Limit connection pool to prevent fd exhaustion on high-volume runs
+            http_client = httpx.Client(
+                limits=httpx.Limits(max_connections=20, max_keepalive_connections=5)
+            )
+            self._openai_client = OpenAI(api_key=api_key, http_client=http_client)
         return self._openai_client
 
     def _query_openai(self, prompt: str, timeout: int, max_retries: int = 3) -> LLMResponse:

@@ -31,7 +31,18 @@ NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
 → ambiguous: ["Pipeline", "Layer", "Proxy"]
 Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
 Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
-used generically in documentation ("processing pipeline", "network layer", "behind a proxy").""".strip()
+used generically in documentation ("processing pipeline", "network layer", "behind a proxy").
+
+EXAMPLE 4:
+NAMES: PaymentGateway, OrderProcessor, Connector, Controller, Adapter, Worker, Agent
+→ architectural: ["PaymentGateway", "OrderProcessor", "Worker"]
+→ ambiguous: ["Connector", "Controller", "Adapter", "Agent"]
+Reasoning: PaymentGateway/OrderProcessor are CamelCase compounds naming specific roles.
+Worker names a specific concurrency mechanism. But Connector/Controller/Adapter/Agent
+seem functional yet are GENERIC categories writers use without referring to any specific
+component: "a database connector", "the main controller", "a protocol adapter", "a
+background agent". They describe WHAT KIND of thing it is, not WHICH specific mechanism
+— so they are ambiguous.""".strip()
 
 
 class ModelAnalyzer:
@@ -139,18 +150,25 @@ RULES:
 
 2. AMBIGUOUS: Single words that a technical writer would use as a GENERIC noun
    in everyday documentation, where the word has a strong plain-English meaning separate
-   from any component.
-   The test: "Would a writer use this word generically in 'the system X' or 'the X layer'
-   without referring to a specific component?"
-   - "the system core" → yes, "core" is generic → AMBIGUOUS
-   - "a utility module" → yes, "util" is generic → AMBIGUOUS
-   - "the base class" → yes, "base" is generic → AMBIGUOUS
-   - "a helper function" → yes, "helper" is generic → AMBIGUOUS
-   - "a processing pipeline" → yes, "pipeline" is generic → AMBIGUOUS
-   - "the network layer" → yes, "layer" is generic → AMBIGUOUS
-   Counter-examples where the word IS a specific role (from the few-shot examples):
-   - "the Scheduler assigns threads" → "Scheduler" names a specific function → ARCHITECTURAL
-   - "the Router forwards packets" → "Router" names a specific function → ARCHITECTURAL
+   from any component. This includes TWO categories:
+
+   Category A — Organizational labels (tell you nothing about function):
+   - "the system core" → AMBIGUOUS
+   - "a utility module" → AMBIGUOUS
+   - "the base class" → AMBIGUOUS
+   - "a helper function" → AMBIGUOUS
+
+   Category B — Generic functional categories (describe WHAT KIND, not WHICH):
+   - "a database connector" → "connector" describes a category → AMBIGUOUS
+   - "the main controller" → "controller" describes a pattern → AMBIGUOUS
+   - "a protocol adapter" → "adapter" describes a role type → AMBIGUOUS
+   - "a background agent" → "agent" describes a pattern → AMBIGUOUS
+
+   Counter-examples where the word IS a specific mechanism:
+   - "the Scheduler assigns threads" → "Scheduler" names a SPECIFIC mechanism → ARCHITECTURAL
+   - "the Router forwards packets" → "Router" names a SPECIFIC mechanism → ARCHITECTURAL
+   Key difference: Scheduler/Router describe HOW something works (specific mechanism).
+   Connector/Controller/Adapter describe WHAT KIND of thing it is (generic category).
 
 JSON only:"""
 
