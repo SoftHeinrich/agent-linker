@@ -63,14 +63,21 @@ in an architectural role is LINK for that other component.
 ### STEP 2 — Component name confused with a different entity?
 
 **2a. Technology / methodology confusion:**
-NO_LINK when the sentence:
-- Describes what a technology IS (definition, capabilities)
-- Lists technologies as stack dependencies
-- Names a COMPOUND ENTITY containing the component name
-  ("X Protocol specification" → NO_LINK for "X")
+
+CRITICAL RULE: If a component IS NAMED AFTER a technology (e.g., the architecture
+has a component called "Redis PubSub" or "kurento" or "FreeSWITCH"), then ANY sentence
+describing that technology's capabilities, role, or behavior IS about the component → LINK.
+This rule applies because architecture components are often named after the technology they wrap.
+
+NO_LINK ONLY when:
+- The sentence describes a technology that is NOT one of our components
+- The name appears in a compound entity unrelated to the component
+  ("X Protocol specification" → NO_LINK for "X" if X is not about that protocol)
 - Uses the name as part of a METHODOLOGY ("X testing in CI" → NO_LINK for "X")
 
-LINK when components INTERACT with or connect THROUGH the technology.
+LINK when:
+- The technology IS one of our architecture components (always LINK)
+- Components INTERACT with or connect THROUGH the technology
 
 **2b. Generic word collision:**
 NO_LINK — narrow, non-architectural sense:
@@ -88,8 +95,9 @@ If neither Step 1 nor Step 2 applies → LINK.
 ### IMPORTANT GUARDRAILS:
 - Multi-word component names (e.g., "HTML5 Server", "Recording Service") are NEVER generic words → LINK
 - CamelCase identifiers are NEVER generic words → LINK
-- Sentences describing how components interact, connect, or communicate → LINK (even if indirect)
+- Sentences describing how components interact, connect, or communicate → LINK for ALL components involved (not just the grammatical subject). "X connects to Y" is LINK for both X and Y.
 - Sentences about what a component does, provides, or handles → LINK
+- A component does NOT need to be the grammatical subject to be relevant. If a sentence says "X sends data to Y", both X and Y get LINK.
 - Only use NO_LINK when you are CONFIDENT the name is NOT used as a component reference
 
 ### Priority:

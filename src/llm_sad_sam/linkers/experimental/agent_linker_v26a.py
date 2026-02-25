@@ -772,6 +772,8 @@ RULES — include a reference when:
 2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
 3. The sentence describes what a specific component does by name or role
 4. A known synonym or partial reference is used
+5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
+6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
 
 RULES — exclude when:
 1. The name appears only inside a dotted path (e.g., com.example.name)

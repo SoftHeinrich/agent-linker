@@ -144,23 +144,33 @@ ARCHITECTURE COMPONENTS:
 DOCUMENT:
 {doc_block}
 
-TASK: For each sentence, determine which architecture component is the SUBJECT or primary ACTOR.
+TASK: For each sentence, determine which architecture components are ARCHITECTURALLY RELEVANT — meaning the sentence describes their role, behavior, interactions, or responsibilities.
 
-Ask yourself:
-- Which component is this sentence ABOUT?
-- Which component PERFORMS or RECEIVES the described action?
-- Is the component named, abbreviated, or referred to by a recognizable alias?
+"Architecturally relevant" means ANY of these:
+- The component PERFORMS an action described in the sentence
+- The component RECEIVES an action or is acted upon
+- The component INTERACTS WITH another component described in the sentence
+- The component's role, responsibility, or behavior is described
+
+IMPORTANT: A sentence like "X connects to Y" is relevant to BOTH X and Y.
+Do not limit to just the grammatical subject — report ALL named components that participate.
+
+CAUTION with single-word component names (e.g., "Logic", "Storage", "Client"):
+- These words have ordinary English meanings beyond the component
+- Only report them when the sentence SPECIFICALLY discusses that component's architectural role
+- "the system logic" or "client request" uses the word generically → do NOT report
+- "the Logic component handles requests" or "Client connects to Server" → report
 
 Rules:
 - Only report components that are explicitly named, abbreviated, or identified by a clear synonym/partial name IN THE SENTENCE TEXT.
-- Do NOT report contextual or pronoun-based references (e.g., "It does X" — skip these).
+- Do NOT report pronoun-only references (e.g., "It does X" — skip these).
 - Do NOT match component names inside dotted package paths (e.g., "renderer.utils.config" does NOT reference "Renderer").
 - Do NOT match generic English words used in their ordinary sense (e.g., "optimized code" does NOT reference "Optimizer").
 
 Return ONLY valid JSON:
 {{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "evidence", "type": "exact|synonym|partial"}}]}}
 
-Include links where the component is clearly the subject or actor. Omit pronoun-only references."""
+Report ALL architecturally relevant components per sentence, not just the primary subject."""
 
     # ── LLM + parse ─────────────────────────────────────────────────────
 
