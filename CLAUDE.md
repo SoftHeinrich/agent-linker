@@ -62,18 +62,21 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/ilinker2_v30c.py`** — V30c: V30b + no dotted-path regex + pickle checkpoints for ablation
 - **`linkers/experimental/ilinker2_v30d.py`** — V30d: V30c + resume support + CamelCase rescue + heuristic toggle flags for ablation
 - **`linkers/experimental/ilinker2_v31.py`** — V31: clean V30c + CamelCase rescue + convention filter + reframed judge rules
-  - **Judge Reframing (Feb 23)**: Phase 9 judge rules reframed as universal principles instead of benchmark-specific criteria:
-    - Rule 1: EXPLICIT REFERENCE (vs "S genuinely refers to C")
-    - Rule 2: SYSTEM-LEVEL PERSPECTIVE (vs "architectural level")
-    - Rule 3: PRIMARY FOCUS (vs "topic")
-    - Rule 4: COMPONENT-SPECIFIC USAGE (vs "not generic")
-  - Same 4-rule logic, improved defensibility against "over-engineered for benchmark" criticism
+- **`linkers/experimental/ilinker2_v32.py`** — V32: V31 + convention filter covers partial_inject (no immunity) + zero prompt leakage + GPT-5.2 compatibility
+  - **Judge Reframing (Feb 23)**: Phase 9 judge rules reframed as universal principles instead of benchmark-specific criteria
+  - **GPT-5.2 Compatibility (Feb 25-26)**: Prompts optimized for cross-model portability:
+    - Phase 1: Example 4 teaches "WHAT KIND vs WHICH mechanism" distinction for ambiguity detection
+    - ILinker2 Pass B: "architecturally relevant" framing (not just grammatical subject)
+    - Convention filter: technology-as-component rule, multi-word/CamelCase guardrails
+    - Phase 3: Approve-biased judge for GPT's conservative tendencies
+    - S-prefix fix, N_INTEGER hints in JSON templates
+  - Claude Sonnet: 94.5% macro F1 | GPT-5.2: ~90.6% macro F1
 
 ### LLM Client
 
 Supports three backends selected via `LLM_BACKEND` env var:
 - **`claude`** (default) — Calls `claude -p --output-format json --dangerously-skip-permissions` as subprocess
-- **`openai`** — Uses OpenAI SDK (temperature 0.1, max 4096 tokens, exponential backoff retry)
+- **`openai`** — Uses OpenAI SDK (temperature 0.1, seed=42, max 4096 tokens, exponential backoff retry, httpx connection pool limits)
 - **`codex`** — Calls `codex exec` as subprocess
 
 Two operation modes:
