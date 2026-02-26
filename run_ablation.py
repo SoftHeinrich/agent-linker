@@ -225,6 +225,8 @@ VARIANTS = {
     "v30d_p9_no_pi":      dict(linker_class="v30d", run_only=9, no_pi=True),          # P9 only: no partial injection (uses pre_judge from v30c)
     # --- V31: V30c + CamelCase rescue only ---
     "v31":                dict(linker_class="v31"),
+    # --- V32: V31 + convention filter covers partial_inject + zero prompt leakage ---
+    "v32":                dict(linker_class="v32"),
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -607,6 +609,9 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v31":
         from llm_sad_sam.linkers.experimental.ilinker2_v31 import ILinker2V31
         linker = ILinker2V31(backend=BACKEND)
+    elif linker_class == "v32":
+        from llm_sad_sam.linkers.experimental.ilinker2_v32 import ILinker2V32
+        linker = ILinker2V32(backend=BACKEND)
     elif linker_class == "cnr":
         from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
         linker = CNRLinker(backend=BACKEND)

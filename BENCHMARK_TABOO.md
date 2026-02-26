@@ -43,6 +43,13 @@ Keywords: gui, cli, preferences, globals, bibdatabase, bibentry
 - persistence (TeaStore)
 - facade (MediaStore)
 - recording (BBB)
+- cascade (Teammates — "cascade logic", "cascade delete")
+- conversion (BBB — Presentation Conversion component)
+- validation (Teammates — "input validation")
+- dedicated (MediaStore — "dedicated file server")
+- preferences (JabRef component)
+- config (BBB — bbb config files)
+- internal (BBB/Teammates — "X.internal module")
 
 ## Safe SE Textbook Examples (confirmed not in benchmark)
 Use these domains for prompt examples:
