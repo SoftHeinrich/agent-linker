@@ -172,8 +172,17 @@ def llm_p8b_context(sentences, partials, name_to_id, existing, llm, components,
                           all_sentences=sentences)
 
 
+def llm_p8b_aliases(sentences, partials, name_to_id, existing, llm, components,
+                     existing_links=None, doc_knowledge=None):
+    """LLM-aware partial injection v3: context + aliases + component descriptions."""
+    return _llm_p8b_impl(sentences, partials, name_to_id, existing, llm, components,
+                          use_context=True, existing_links=existing_links,
+                          all_sentences=sentences, doc_knowledge=doc_knowledge)
+
+
 def _llm_p8b_impl(sentences, partials, name_to_id, existing, llm, components,
-                    use_context=False, existing_links=None, all_sentences=None):
+                    use_context=False, existing_links=None, all_sentences=None,
+                    doc_knowledge=None):
     """LLM-aware partial injection implementation."""
     # Build sentence lookup
     sent_by_num = {s.number: s for s in sentences}
@@ -203,11 +212,32 @@ def _llm_p8b_impl(sentences, partials, name_to_id, existing, llm, components,
     comp_names = [c.name for c in components]
     id_to_name = {c.id: c.name for c in components}
 
+    # Build alias map per component
+    alias_map = defaultdict(list)
+    if doc_knowledge:
+        for a, c in doc_knowledge.abbreviations.items():
+            alias_map[c].append(f"{a} (abbrev)")
+        for s, c in doc_knowledge.synonyms.items():
+            alias_map[c].append(f"{s} (synonym)")
+        for p, c in doc_knowledge.partial_references.items():
+            alias_map[c].append(f"{p} (partial)")
+
     # Build existing link map for context
     existing_comp_by_sent = defaultdict(set)
     if existing_links and use_context:
         for lk in existing_links:
             existing_comp_by_sent[lk.sentence_number].add(lk.component_name)
+
+    # Build component knowledge block
+    alias_block = ""
+    if doc_knowledge:
+        alias_lines = []
+        for comp_name in comp_names:
+            aliases = alias_map.get(comp_name, [])
+            if aliases:
+                alias_lines.append(f"  {comp_name}: {', '.join(aliases)}")
+        if alias_lines:
+            alias_block = "\nKNOWN ALIASES (from document analysis):\n" + "\n".join(alias_lines) + "\n"
 
     # Build items with optional context
     items = []
@@ -221,7 +251,6 @@ def _llm_p8b_impl(sentences, partials, name_to_id, existing, llm, components,
                 s = sent_by_num.get(snum + offset)
                 if s:
                     marker = ">>>" if offset == 0 else "   "
-                    # Show existing links for this sentence
                     linked_comps = existing_comp_by_sent.get(s.number, set())
                     link_info = f" [linked to: {', '.join(sorted(linked_comps))}]" if linked_comps else ""
                     context_lines.append(f"  {marker} S{s.number}: {s.text}{link_info}")
@@ -245,12 +274,14 @@ CONTEXT SIGNALS — use these to help disambiguate:
   If nearby sentences link to the target component, the partial name likely refers to it too.
 - Section headers (short sentences, often just a component name) indicate which component
   is being discussed. Sentences following a header about component X likely discuss X.
+- KNOWN ALIASES show all names discovered for each component in the document.
+  Use these to understand which component owns which name.
 """
 
     prompt = f"""Disambiguate partial component name references in architecture documentation.
 
 ARCHITECTURE COMPONENTS: {', '.join(comp_names)}
-
+{alias_block}
 For each item below, a partial name (short form) was found in the sentence.
 The partial name maps to a specific multi-word component. Your task: does the
 partial name IN THIS SENTENCE actually refer to that specific component?
@@ -376,7 +407,6 @@ def main():
         print(f"\n  LLM P8b (no ctx): {len(llm_links)} links ({llm_tp} TP, {llm_fp} FP)")
 
         # ── LLM P8b (with context) ──
-        # Build existing link list from all earlier phases
         existing_link_list = (data4.get("transarc_links", []) +
                               [SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, c.source)
                                for c in data6["validated"]] +
@@ -389,19 +419,31 @@ def main():
         )
         ctx_tp = sum(1 for l in ctx_links if (l.sentence_number, l.component_id) in gold)
         ctx_fp = len(ctx_links) - ctx_tp
+        print(f"\n  LLM P8b (ctx): {len(ctx_links)} links ({ctx_tp} TP, {ctx_fp} FP)")
 
-        print(f"\n  LLM P8b (with ctx): {len(ctx_links)} links ({ctx_tp} TP, {ctx_fp} FP)")
-        for l in ctx_links:
+        # ── LLM P8b v3 (context + aliases) ──
+        print(f"\n  LLM P8b (context + aliases):")
+        doc_knowledge = data3["doc_knowledge"]
+        alias_links = llm_p8b_aliases(
+            sentences, partials, name_to_id, existing.copy(), llm, components,
+            existing_links=existing_link_list, doc_knowledge=doc_knowledge
+        )
+        alias_tp = sum(1 for l in alias_links if (l.sentence_number, l.component_id) in gold)
+        alias_fp = len(alias_links) - alias_tp
+        print(f"\n  LLM P8b (aliases): {len(alias_links)} links ({alias_tp} TP, {alias_fp} FP)")
+        for l in alias_links:
             is_tp = (l.sentence_number, l.component_id) in gold
             label = "TP" if is_tp else "FP"
             print(f"    [{label}] S{l.sentence_number} → {l.component_name}")
 
         # ── Comparison ──
         print(f"\n  COMPARISON:")
-        print(f"    Original:      {orig_tp} TP, {orig_fp} FP")
-        print(f"    LLM (no ctx):  {llm_tp} TP, {llm_fp} FP")
-        print(f"    LLM (ctx):     {ctx_tp} TP, {ctx_fp} FP")
-        for label, tp, fp in [("no ctx", llm_tp, llm_fp), ("ctx", ctx_tp, ctx_fp)]:
+        print(f"    Original:        {orig_tp} TP, {orig_fp} FP")
+        print(f"    LLM (no ctx):    {llm_tp} TP, {llm_fp} FP")
+        print(f"    LLM (ctx):       {ctx_tp} TP, {ctx_fp} FP")
+        print(f"    LLM (ctx+alias): {alias_tp} TP, {alias_fp} FP")
+        for label, tp, fp in [("no ctx", llm_tp, llm_fp), ("ctx", ctx_tp, ctx_fp),
+                               ("ctx+alias", alias_tp, alias_fp)]:
             delta_tp = tp - orig_tp
             delta_fp = fp - orig_fp
             verdict = ("BETTER" if delta_tp >= 0 and delta_fp < 0

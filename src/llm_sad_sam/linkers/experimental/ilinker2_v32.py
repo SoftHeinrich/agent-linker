@@ -731,10 +731,7 @@ JSON only:"""
 
         all_extra = []
         for comp in unlinked_components:
-            if len(sentences) <= 60:
-                doc_sents = sentences
-            else:
-                doc_sents = sentences[:30] + sentences[-30:]
+            doc_sents = sentences
 
             doc_text = "\n".join([f"S{s.number}: {s.text}" for s in doc_sents])
 

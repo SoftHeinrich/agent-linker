@@ -73,27 +73,34 @@ A trace link connects a documentation sentence to an architectural component whe
 the sentence is RELEVANT to that component's role in the system architecture.
 The bar for LINK is low — any architectural relevance counts. When in doubt, default to LINK.
 
-### STEP 1 — Sub-package / internal structure description?
+### STEP 1 — Hierarchical name reference (not about the component itself)?
 
-The most common reason for NO_LINK: the sentence describes what is INSIDE a component
-(its sub-packages, internal classes, internal structure) rather than the component's
-architectural role.
+The most common reason for NO_LINK: the sentence mentions the component name only
+as part of a HIERARCHICAL/QUALIFIED NAME (dotted path, namespace, module path) that
+refers to an internal sub-unit, not the component's own architectural role.
+
+Software documentation commonly uses hierarchical naming (e.g., "X.config", "X/handlers",
+"X::internal") to refer to parts inside a component. The component name appears only as
+a prefix, not as the subject.
 
 Recognize these patterns — all are NO_LINK for component X:
-- "X.config loads environment variables" — dotted sub-package description
-- "Package overview contains X.handlers, X.mappers, X.converters" — internal package listing
-- "Classes in the X.internal package are not visible outside this module" — even with
-  architectural language, if the subject is a sub-package → NO_LINK
-- Bare name listed alongside dotted paths: "X, Y.adapters, Y.transformers follow a pipeline
-  design" — when a bare name appears as a peer of qualified names, treat ALL as sub-package
-  references → NO_LINK for both X and Y
+- "X.config loads environment variables" — dotted sub-unit reference
+- "X.handlers, X.mappers, X.converters follow a pipeline" — listing internals of X
+- "Classes in the X.internal module are not visible outside" — even with
+  architectural language, if the subject is X's sub-unit → NO_LINK
+- Bare name mixed with qualified paths: "X, Y.adapters, Y.transformers follow
+  a pipeline design" — treat ALL as hierarchical references → NO_LINK
 
-EXCEPTION: If the sentence also explicitly names the target component AS A PROPER NOUN —
+KEY DISTINCTION: Sentences that describe what X DOES or HOW X INTERACTS with other
+components are LINK, even if they mention implementation details (e.g., "X uses Y
+technology for Z" → LINK for X, because it describes X's behavior).
+
+EXCEPTION: If the sentence explicitly names the target component AS A PROPER NOUN —
 typically with the word "component" (e.g., "for the X component", "from the Y component") —
 the explicit component reference overrides → LINK. But if the component name only appears
 in lowercase or as a generic descriptor of an activity, the exception does NOT apply.
 
-Cross-reference rule: A sub-package sentence that mentions a DIFFERENT component in an
+Cross-reference rule: A sub-unit sentence mentioning a DIFFERENT component in an
 architectural role is LINK for that other component.
 
 ### STEP 2 — Component name confused with a different entity?

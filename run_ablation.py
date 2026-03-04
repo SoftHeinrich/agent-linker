@@ -227,6 +227,8 @@ VARIANTS = {
     "v31":                dict(linker_class="v31"),
     # --- V32: V31 + convention filter covers partial_inject + zero prompt leakage ---
     "v32":                dict(linker_class="v32"),
+    # --- V33: V32 + GPT-5.2 prompt fixes (generic mention, judge, validation, coref) ---
+    "v33":                dict(linker_class="v33"),
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -275,6 +277,7 @@ DATASETS = {
 }
 
 BACKEND = LLMBackend.CLAUDE
+os.environ["OPENAI_MODEL_NAME"] = "gpt-5.2"
 os.environ["CLAUDE_MODEL"] = "sonnet"
 
 
@@ -612,6 +615,15 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v32":
         from llm_sad_sam.linkers.experimental.ilinker2_v32 import ILinker2V32
         linker = ILinker2V32(backend=BACKEND)
+    elif linker_class == "v33":
+        from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
+        linker = ILinker2V33(backend=BACKEND)
+    elif linker_class == "v33f":
+        from llm_sad_sam.linkers.experimental.ilinker2_v33f import ILinker2V33f
+        linker = ILinker2V33f(backend=BACKEND)
+    elif linker_class == "v33g":
+        from llm_sad_sam.linkers.experimental.ilinker2_v33g import ILinker2V33g
+        linker = ILinker2V33g(backend=BACKEND)
     elif linker_class == "cnr":
         from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
         linker = CNRLinker(backend=BACKEND)
