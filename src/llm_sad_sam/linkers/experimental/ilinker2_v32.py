@@ -1,4 +1,7 @@
-"""ILinker2 V32 — V31 + convention filter covers partial_inject + zero prompt leakage.
+"""ILinker2 V32 standalone — V26a pipeline + ILinker2 seed + few-shot Phase 3 + CamelCase rescue + convention filter + checkpoints.
+
+Fully self-contained: no inheritance from AgentLinker or AgentLinkerV26a.
+All methods inlined from the parent classes.
 
 Changes vs V31:
 - CONVENTION_GUIDE: replaced all benchmark-derived examples with safe abstractions
@@ -10,8 +13,6 @@ Changes vs V31:
   is safe — it uses structural patterns (dotted paths, word modifiers) not semantics.
 - Syn-safe judge bypass: KEPT for partial_inject (judge kills TPs, tested).
 - Checkpoint dir: v32.
-
-Everything else identical to V31.
 """
 
 import json
@@ -20,14 +21,17 @@ import pickle
 import re
 import time
 from collections import defaultdict
+from typing import Optional
 
 from llm_sad_sam.core.data_types import (
-    SadSamLink, CandidateLink, DocumentKnowledge, LearnedThresholds,
+    SadSamLink, CandidateLink, DocumentProfile, LearnedThresholds,
+    ModelKnowledge, DocumentKnowledge, LearnedPatterns, EntityMention,
+    DiscourseContext,
 )
-from llm_sad_sam.core.document_loader import DocumentLoader
-from llm_sad_sam.linkers.experimental.agent_linker_v26a import AgentLinkerV26a
+from llm_sad_sam.core.document_loader import DocumentLoader, Sentence
 from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
 from llm_sad_sam.pcm_parser import parse_pcm_repository
+from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 # ── 3-step reasoning guide for convention-aware boundary filtering ────
 # All examples use abstract placeholders (X, Y) or safe SE textbook domains.
@@ -105,12 +109,82 @@ Be AGGRESSIVE with NO_LINK on sub-package descriptions (Step 1).
 For Step 2, only NO_LINK when confident. Default to LINK."""
 
 
-class ILinker2V32(AgentLinkerV26a):
-    """V26a pipeline with ILinker2 seed + few-shot Phase 3 + CamelCase rescue + checkpoints."""
+class ILinker2V32:
+    """V32 standalone: V26a pipeline + ILinker2 seed + few-shot Phase 3 + CamelCase rescue + convention filter + checkpoints."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    CONTEXT_WINDOW = 3
+    PRONOUN_PATTERN = re.compile(
+        r'\b(it|they|this|these|that|those|its|their|the component|the service)\b',
+        re.IGNORECASE
+    )
+    SOURCE_PRIORITY = {
+        "transarc": 5, "validated": 4, "entity": 3,
+        "coreference": 2, "partial_inject": 1, "recovered": 0,
+    }
+    NON_MODIFIERS = {
+        "the", "a", "an", "this", "that", "these", "those", "its", "their",
+        "our", "your", "my", "his", "her", "some", "any", "all", "each",
+        "every", "no", "is", "are", "was", "were", "be", "been", "being",
+        "has", "have", "had", "do", "does", "did", "will", "would", "can",
+        "could", "shall", "should", "may", "might", "must",
+        "in", "on", "at", "to", "for", "of", "with", "by", "from",
+        "and", "or", "but", "not", "if", "then", "than", "as",
+        "about", "into", "through", "during", "before", "after",
+        "above", "below", "between", "under", "over",
+    }
+    GENERIC_COMPONENT_WORDS = set()
+    GENERIC_PARTIALS = set()
+
+    # Few-shot examples (safe textbook domains only)
+    _FEW_SHOT = """
+EXAMPLE 1:
+NAMES: Lexer, Parser, CodeGenerator, Optimizer, Core, Util, AST, SymbolTable, Base
+→ architectural: ["Lexer", "Parser", "CodeGenerator", "Optimizer", "AST", "SymbolTable"]
+→ ambiguous: ["Core", "Util", "Base"]
+Reasoning: Lexer/Parser/Optimizer name specific compilation roles. Core/Util/Base are
+organizational labels that tell you nothing about what the component does.
+
+EXAMPLE 2:
+NAMES: Scheduler, Dispatcher, MemoryManager, Monitor, Pool, Helper, ProcessTable
+→ architectural: ["Scheduler", "Dispatcher", "MemoryManager", "ProcessTable"]
+→ ambiguous: ["Monitor", "Pool", "Helper"]
+Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are ordinary
+English words regularly used generically ("monitor performance", "thread pool").
+Helper is an organizational label.
+
+EXAMPLE 3:
+NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
+→ architectural: ["RenderEngine", "SceneGraph", "Socket", "Router"]
+→ ambiguous: ["Pipeline", "Layer", "Proxy"]
+Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
+Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
+used generically in documentation ("processing pipeline", "network layer", "behind a proxy").
+
+EXAMPLE 4:
+NAMES: PaymentGateway, OrderProcessor, Connector, Controller, Adapter, Worker, Agent
+→ architectural: ["PaymentGateway", "OrderProcessor", "Worker"]
+→ ambiguous: ["Connector", "Controller", "Adapter", "Agent"]
+Reasoning: PaymentGateway/OrderProcessor are CamelCase compounds naming specific roles.
+Worker names a specific concurrency mechanism. But Connector/Controller/Adapter/Agent
+seem functional yet are GENERIC categories writers use without referring to any specific
+component: "a database connector", "the main controller", "a protocol adapter", "a
+background agent". They describe WHAT KIND of thing it is, not WHICH specific mechanism
+— so they are ambiguous.""".strip()
+
+    def __init__(self, backend: Optional[LLMBackend] = None):
+        os.environ.setdefault("CLAUDE_MODEL", "sonnet")
+        self.llm = LLMClient(backend=backend or LLMBackend.CLAUDE)
+        self.model_knowledge: Optional[ModelKnowledge] = None
+        self.doc_knowledge: Optional[DocumentKnowledge] = None
+        self.learned_patterns: Optional[LearnedPatterns] = None
+        self.thresholds: Optional[LearnedThresholds] = None
+        self.doc_profile: Optional[DocumentProfile] = None
+        self._phase_log = []
+        self._is_complex = None
+        self._discovered_generic_partials = set()
         self._ilinker2 = ILinker2(backend=self.llm.backend)
+        print(f"ILinker2V32 standalone")
+        print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ── Checkpoint helpers ───────────────────────────────────────────────
 
@@ -141,7 +215,60 @@ class ILinker2V32(AgentLinkerV26a):
     def _in_dotted_path(self, text: str, comp_name: str) -> bool:
         return False
 
-    # ── Main pipeline with per-phase checkpoints ─────────────────────────
+    # ── Logging ──────────────────────────────────────────────────────────
+
+    def _log(self, phase, input_summary, output_summary, links=None):
+        entry = {"phase": phase, "ts": time.time(), "in": input_summary, "out": output_summary}
+        if links is not None:
+            entry["links"] = [
+                {"s": l.sentence_number, "c": l.component_name, "src": l.source}
+                for l in links
+            ]
+        self._phase_log.append(entry)
+
+    def _save_log(self, text_path):
+        log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
+        os.makedirs(log_dir, exist_ok=True)
+        ds = os.path.splitext(os.path.basename(text_path))[0]
+        path = os.path.join(log_dir, f"v25_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        with open(path, "w") as f:
+            json.dump(self._phase_log, f, indent=2, default=str)
+        print(f"  Phase log saved: {path}")
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Per-mention generic check
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _is_generic_mention(self, comp_name, sentence_text):
+        if ' ' in comp_name or '-' in comp_name:
+            return False
+        if re.search(r'[a-z][A-Z]', comp_name):
+            return False
+        if comp_name.isupper():
+            return False
+        if comp_name[0].islower():
+            return False
+        if self._has_standalone_mention(comp_name, sentence_text):
+            return False
+        word_lower = comp_name.lower()
+        if re.search(rf'\b{re.escape(word_lower)}\b', sentence_text):
+            return True
+        return False
+
+    def _needs_antecedent_check(self, comp_name):
+        if ' ' in comp_name or '-' in comp_name:
+            return False
+        if re.search(r'[a-z][A-Z]', comp_name):
+            return False
+        if comp_name.isupper():
+            return False
+        if comp_name[0].islower():
+            return False
+        return True
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Main pipeline with per-phase checkpoints
+    # ═════════════════════════════════════════════════════════════════════
 
     def link(self, text_path, model_path, transarc_csv=None):
         self._cached_text_path = text_path
@@ -592,7 +719,7 @@ JSON only:"""
     # ── Convention-aware boundary filter (replaces regex P8c) ──────────
 
     def _apply_boundary_filters(self, links, sent_map, transarc_set):
-        """Override: LLM convention filter using 3-step reasoning guide.
+        """LLM convention filter using 3-step reasoning guide.
 
         V32 change: partial_inject links are NO LONGER immune. The convention
         filter uses structural patterns (dotted paths, word modifiers) that
@@ -708,7 +835,7 @@ JSON only:"""
 
     def _targeted_extraction(self, unlinked_components, sentences, name_to_id, sent_map,
                               components=None, transarc_links=None, entity_candidates=None):
-        """Override: adds dotted-path exclusion instruction to the prompt."""
+        """Adds dotted-path exclusion instruction to the prompt."""
         if not unlinked_components:
             return []
 
@@ -802,7 +929,7 @@ JSON only:"""
         return all_extra
 
     def _build_judge_prompt(self, comp_names, cases):
-        """Override: Generalized 4-rule judge with reframed criteria."""
+        """Generalized 4-rule judge with reframed criteria."""
         return f"""JUDGE: Validate trace links between documentation and software architecture components.
 
 APPROVAL CRITERIA:
@@ -839,3 +966,1333 @@ LINKS:
 Return JSON:
 {{"judgments": [{{"case": 1, "approve": true/false, "reason": "brief explanation"}}]}}
 JSON only:"""
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 0: Document profile + structural complexity
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _learn_document_profile(self, sentences, components):
+        texts = [s.text for s in sentences]
+        comp_names = [c.name for c in components]
+        pron = r'\b(it|they|this|these|that|those|its|their)\b'
+        pronoun_ratio = sum(1 for t in texts if re.search(pron, t.lower())) / max(1, len(sentences))
+        mentions = sum(1 for t in texts for c in comp_names if c.lower() in t.lower())
+        density = mentions / max(1, len(sentences))
+        spc = len(sentences) / max(1, len(components))
+        return DocumentProfile(
+            sentence_count=len(sentences), component_count=len(components),
+            pronoun_ratio=pronoun_ratio, technical_density=density,
+            component_mention_density=density,
+            complexity_score=min(1.0, spc / 20),
+            recommended_strictness="balanced",
+        )
+
+    def _structural_complexity(self, sentences, components):
+        """Dynamic threshold based on document characteristics, not hardcoded spc_min."""
+        comp_names = [c.name for c in components]
+        mention_count = sum(1 for sent in sentences
+                          if any(cn.lower() in sent.text.lower() for cn in comp_names))
+        uncovered_ratio = 1.0 - (mention_count / max(1, len(sentences)))
+        spc = len(sentences) / max(1, len(components))
+        result = uncovered_ratio > 0.5 and spc > 4
+        print(f"  Structural complexity: uncovered={uncovered_ratio:.1%}, spc={spc:.1f} -> {result}")
+        return result
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 1: Model Structure Analysis
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _analyze_model(self, components):
+        """Analyze model structure."""
+        names = [c.name for c in components]
+        knowledge = ModelKnowledge()
+
+        for name in names:
+            for other in names:
+                if other != name and len(other) >= 3 and other in name:
+                    idx = name.find(other)
+                    prefix, suffix = name[:idx], name[idx + len(other):]
+                    if prefix and len(prefix) >= 2:
+                        knowledge.impl_indicators.append(prefix)
+                        knowledge.impl_to_abstract[name] = other
+                    if suffix and len(suffix) >= 2:
+                        knowledge.impl_indicators.append(suffix)
+                        knowledge.impl_to_abstract[name] = other
+
+        knowledge.impl_indicators = list(set(knowledge.impl_indicators))
+
+        word_to_comps = {}
+        for name in names:
+            for word in re.findall(r'[A-Z][a-z]+|[a-z]+|[A-Z]+(?=[A-Z]|$)', name):
+                w = word.lower()
+                if len(w) >= 3:
+                    word_to_comps.setdefault(w, []).append(name)
+        knowledge.shared_vocabulary = {w: list(set(c)) for w, c in word_to_comps.items() if len(set(c)) > 1}
+
+        self._classify_components(names, knowledge)
+
+        return knowledge
+
+    @staticmethod
+    def _is_structurally_unambiguous(name):
+        """CamelCase, multi-word, or all-caps → always architectural."""
+        if ' ' in name or '-' in name:
+            return True
+        if re.search(r'[a-z][A-Z]', name):
+            return True
+        if name.isupper():
+            return True
+        return False
+
+    def _classify_components(self, names, knowledge):
+        """Classify components using few-shot prompt + structural code guard."""
+        prompt = f"""Classify these software architecture component names.
+
+NAMES: {', '.join(names)}
+
+{self._FEW_SHOT}
+
+NOW CLASSIFY THE NAMES ABOVE.
+
+Return JSON:
+{{
+  "architectural": ["names that identify specific components"],
+  "ambiguous": ["names that could easily be used as ordinary words in documentation"]
+}}
+
+RULES:
+1. ARCHITECTURAL: Names that refer to a specific role or responsibility. If the name tells you
+   WHAT the component does (scheduling, parsing, rendering, storing data, managing users), it is
+   architectural — even if the word also exists in a dictionary.
+   Multi-word names, CamelCase compounds, and abbreviations (API, TCP, RPC) → always architectural.
+
+2. AMBIGUOUS: Single words that writers regularly use generically in software documentation.
+   This includes TWO categories:
+   Category A — Organizational labels: core, util, base, helper (tell you nothing about function)
+   Category B — Generic functional categories: connector, controller, adapter, agent
+   (describe WHAT KIND of thing, not WHICH specific mechanism)
+   The test: "Could a technical writer naturally write this word in a sentence about ANY system
+   without referring to a specific component?" If yes → ambiguous.
+   Key: Scheduler/Router describe HOW (specific mechanism) → ARCHITECTURAL.
+         Connector/Controller/Adapter describe WHAT KIND (generic category) → AMBIGUOUS.
+
+JSON only:"""
+
+        data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
+        if data:
+            valid = set(names)
+            knowledge.architectural_names = set(data.get("architectural", [])) & valid
+            raw_ambiguous = set(data.get("ambiguous", [])) & valid
+            knowledge.ambiguous_names = {
+                n for n in raw_ambiguous
+                if len(n.split()) == 1 and not self._is_structurally_unambiguous(n)
+            }
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 3b: Multi-word partial enrichment
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _enrich_multiword_partials(self, sentences, components):
+        if not self.doc_knowledge:
+            return
+
+        added = []
+        for comp in components:
+            parts = comp.name.split()
+            if len(parts) < 2:
+                continue
+            last_word = parts[-1]
+            if len(last_word) < 4:
+                continue
+            last_lower = last_word.lower()
+
+            other_match = any(
+                c.name != comp.name and c.name.lower().endswith(last_lower)
+                for c in components
+            )
+            if other_match:
+                continue
+            if last_lower in {s.lower() for s in self.doc_knowledge.synonyms}:
+                continue
+            if last_lower in {p.lower() for p in self.doc_knowledge.partial_references}:
+                continue
+
+            is_generic_word = last_lower in self.GENERIC_PARTIALS
+            full_lower = comp.name.lower()
+            mention_count = 0
+            for sent in sentences:
+                sl = sent.text.lower()
+                if last_lower in sl and full_lower not in sl:
+                    if is_generic_word:
+                        cap_word = last_word[0].upper() + last_word[1:]
+                        if re.search(rf'\b{re.escape(cap_word)}\b', sent.text):
+                            mention_count += 1
+                    else:
+                        if re.search(rf'\b{re.escape(last_word)}\b', sent.text, re.IGNORECASE):
+                            mention_count += 1
+
+            if mention_count >= 3:
+                self.doc_knowledge.partial_references[last_word] = comp.name
+                added.append(f"{last_word} -> {comp.name} ({mention_count} caps mentions)")
+
+        if added:
+            print(f"\n[Phase 3b] Multi-word Enrichment")
+            for a in added:
+                print(f"    Auto-partial: {a}")
+            self._log("phase_3b", {}, {"added": added})
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 5: Entity extraction (enriched prompt)
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _extract_entities_enriched(self, sentences, components, name_to_id, sent_map):
+        """Phase 5 v2: Balanced prompt + retry on empty response."""
+        comp_names = self._get_comp_names(components)
+        comp_lower = {n.lower() for n in comp_names}
+
+        mappings = []
+        if self.doc_knowledge:
+            mappings.extend([f"{a}={c}" for a, c in self.doc_knowledge.abbreviations.items()])
+            mappings.extend([f"{s}={c}" for s, c in self.doc_knowledge.synonyms.items()])
+            mappings.extend([f"{p}={c}" for p, c in self.doc_knowledge.partial_references.items()])
+
+        batch_size = 50
+        all_candidates = {}
+
+        for batch_start in range(0, len(sentences), batch_size):
+            batch = sentences[batch_start:batch_start + batch_size]
+
+            if len(sentences) > batch_size:
+                print(f"    Entity batch {batch_start//batch_size + 1}: "
+                      f"S{batch[0].number}-S{batch[-1].number} ({len(batch)} sents)")
+
+            prompt = f"""Extract ALL references to software architecture components from this document.
+
+COMPONENTS: {', '.join(comp_names)}
+{f'KNOWN ALIASES: {", ".join(mappings[:20])}' if mappings else ''}
+
+RULES — include a reference when:
+1. The component name (or known alias) appears directly in the sentence
+2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
+3. The sentence describes what a specific component does by name or role
+4. A known synonym or partial reference is used
+5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
+6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
+
+RULES — exclude when:
+1. The name appears only inside a dotted path (e.g., com.example.name)
+2. The name is used as an ordinary English word, not as a component reference
+
+Favor inclusion over exclusion — later validation will filter borderline cases.
+
+DOCUMENT:
+{chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
+
+Return JSON:
+{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial|functional"}}]}}
+JSON only:"""
+
+            # Retry once on empty response
+            for attempt in range(2):
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=240))
+                if data and data.get("references"):
+                    break
+                if attempt == 0:
+                    print(f"    Empty response, retrying batch...")
+
+            if not data:
+                continue
+
+            for ref in data.get("references", []):
+                snum, cname = ref.get("sentence"), ref.get("component")
+                if not (snum and cname and cname in name_to_id):
+                    continue
+                # Handle "S101" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
+                try:
+                    snum = int(snum)
+                except (ValueError, TypeError):
+                    continue
+                sent = sent_map.get(snum)
+                if not sent or self._in_dotted_path(sent.text, cname):
+                    continue
+
+                # Verify matched_text is actually in sentence
+                matched = ref.get("matched_text", "")
+                if matched and matched.lower() not in sent.text.lower():
+                    continue
+
+                matched_lower = matched.lower() if matched else ""
+                is_exact = matched_lower in comp_lower or cname.lower() in matched_lower
+                is_generic_here = self._is_generic_mention(cname, sent.text)
+                needs_val = not is_exact or ref.get("match_type") != "exact" or is_generic_here
+
+                key = (snum, name_to_id[cname])
+                if key not in all_candidates:
+                    all_candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
+                                               matched, 0.85, "entity",
+                                               ref.get("match_type", "exact"), needs_val)
+
+        return list(all_candidates.values())
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 6: Validation — Code-first + LLM-fallback
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _word_boundary_match(self, name, text):
+        """Check if name appears as standalone word in text (word-boundary match)."""
+        return bool(re.search(r'\b' + re.escape(name) + r'\b', text, re.IGNORECASE))
+
+    def _validate_intersect(self, candidates, components, sent_map):
+        """Phase 6: Code-first v2 + 2-pass intersect + evidence post-filter for generic names."""
+        if not candidates:
+            return []
+
+        comp_names = self._get_comp_names(components)
+        needs = [c for c in candidates if c.needs_validation]
+        direct = [c for c in candidates if not c.needs_validation]
+
+        if not needs:
+            return candidates
+
+        # Pre-check: reject generic mentions
+        remaining = []
+        for c in needs:
+            sent = sent_map.get(c.sentence_number)
+            if sent and self._is_generic_mention(c.component_name, sent.text):
+                print(f"    Generic mention reject: S{c.sentence_number} -> {c.component_name}")
+            else:
+                remaining.append(c)
+        needs = remaining
+
+        # Build alias lookup — include ALL aliases for word-boundary matching
+        alias_map = {}
+        for c in components:
+            aliases = {c.name}
+            if self.doc_knowledge:
+                for a, cn in self.doc_knowledge.abbreviations.items():
+                    if cn == c.name:
+                        aliases.add(a)
+                for s, cn in self.doc_knowledge.synonyms.items():
+                    if cn == c.name:
+                        aliases.add(s)
+                for p, cn in self.doc_knowledge.partial_references.items():
+                    if cn == c.name:
+                        aliases.add(p)
+            alias_map[c.name] = aliases
+
+        # Step 1: Word-boundary code-first — handles short names (UI, DB) correctly
+        auto_approved = []
+        llm_needed = []
+        for c in needs:
+            sent = sent_map.get(c.sentence_number)
+            if not sent:
+                continue
+            matched = False
+            for a in alias_map.get(c.component_name, set()):
+                if len(a) >= 3:
+                    if a.lower() in sent.text.lower():
+                        matched = True
+                        break
+                elif len(a) >= 2:
+                    if self._word_boundary_match(a, sent.text):
+                        matched = True
+                        break
+            if matched:
+                c.confidence = 1.0
+                c.source = "validated"
+                auto_approved.append(c)
+            else:
+                llm_needed.append(c)
+
+        print(f"    Code-first v2 auto-approved: {len(auto_approved)}, LLM needed: {len(llm_needed)}")
+
+        # Classify generic-risk components
+        generic_risk = set()
+        if self.model_knowledge and self.model_knowledge.ambiguous_names:
+            generic_risk |= self.model_knowledge.ambiguous_names
+        for c in components:
+            if c.name.lower() in self.GENERIC_COMPONENT_WORDS:
+                generic_risk.add(c.name)
+
+        # Step 2: 2-pass intersect for ALL LLM-needed
+        ctx = []
+        if self.learned_patterns:
+            if self.learned_patterns.action_indicators:
+                ctx.append(f"ACTION: {', '.join(self.learned_patterns.action_indicators[:4])}")
+            if self.learned_patterns.effect_indicators:
+                ctx.append(f"EFFECT (reject): {', '.join(self.learned_patterns.effect_indicators[:3])}")
+            if self.learned_patterns.subprocess_terms:
+                ctx.append(f"Subprocess (reject): {', '.join(list(self.learned_patterns.subprocess_terms)[:5])}")
+
+        twopass_approved = []
+        generic_to_verify = []
+        for batch_start in range(0, len(llm_needed), 25):
+            batch = llm_needed[batch_start:batch_start + 25]
+            cases = []
+            for i, c in enumerate(batch):
+                prev = sent_map.get(c.sentence_number - 1)
+                p = f"[prev: {prev.text[:35]}...] " if prev else ""
+                cases.append(f'Case {i+1}: "{c.matched_text}" -> {c.component_name}\n  {p}"{c.sentence_text}"')
+
+            r1 = self._qual_validation_pass(comp_names, ctx, cases,
+                "Focus on ACTOR role: is the component performing an action or being described?")
+            r2 = self._qual_validation_pass(comp_names, ctx, cases,
+                "Focus on DIRECT reference: does the text refer to the SPECIFIC architectural component, not a generic concept?")
+
+            for i, c in enumerate(batch):
+                if r1.get(i, False) and r2.get(i, False):
+                    if c.component_name in generic_risk:
+                        generic_to_verify.append(c)
+                    else:
+                        c.confidence = 1.0
+                        c.source = "validated"
+                        twopass_approved.append(c)
+
+        print(f"    2-pass approved: {len(twopass_approved)} specific, "
+              f"{len(generic_to_verify)} generic need evidence")
+
+        # Step 3: Evidence post-filter for generic-risk that passed 2-pass
+        generic_validated = []
+        if generic_to_verify:
+            for batch_start in range(0, len(generic_to_verify), 25):
+                batch = generic_to_verify[batch_start:batch_start + 25]
+                cases = []
+                for i, c in enumerate(batch):
+                    cases.append(
+                        f'Case {i+1}: S{c.sentence_number} "{c.sentence_text}"\n'
+                        f'  Candidate: {c.component_name}'
+                    )
+
+                prompt = f"""For each case, find the EXACT text in the sentence that refers to the architecture component.
+
+COMPONENTS: {', '.join(comp_names)}
+
+CASES:
+{chr(10).join(cases)}
+
+For each case, provide:
+- evidence_text: the EXACT substring from the sentence that names or references the component
+- If you cannot find specific text evidence, set evidence_text to null
+
+Return JSON:
+{{"validations": [{{"case": 1, "evidence_text": "exact substring or null"}}]}}
+JSON only:"""
+
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+                if not data:
+                    continue
+
+                for v in data.get("validations", []):
+                    idx = v.get("case", 0) - 1
+                    if idx < 0 or idx >= len(batch):
+                        continue
+                    c = batch[idx]
+                    evidence = v.get("evidence_text")
+                    if not evidence:
+                        continue
+                    sent = sent_map.get(c.sentence_number)
+                    if not sent:
+                        continue
+                    if evidence.lower() not in sent.text.lower():
+                        continue
+                    ev_lower = evidence.lower()
+                    aliases = alias_map.get(c.component_name, {c.component_name.lower()})
+                    if any(a.lower() in ev_lower for a in aliases if len(a) >= 2):
+                        c.confidence = 1.0
+                        c.source = "validated"
+                        generic_validated.append(c)
+
+            print(f"    Generic evidence: {len(generic_validated)}/{len(generic_to_verify)}")
+
+        return direct + auto_approved + twopass_approved + generic_validated
+
+    def _qual_validation_pass(self, comp_names, ctx, cases, focus):
+        prompt = f"""Validate component references in a software architecture document. {focus}
+
+COMPONENTS: {', '.join(comp_names)}
+
+{chr(10).join(ctx)}
+
+DECISION RULES:
+APPROVE when:
+- The component is the grammatical actor or subject (the sentence is ABOUT the component)
+- A section heading names the component (introduces that component's topic)
+- The sentence describes what the component does, provides, or interacts with
+
+REJECT when:
+- The name is used as an ordinary English word, not as a proper name
+  (Like "proxy" in "proxy pattern" is the design pattern concept, not the Proxy component — reject the component link)
+- The name is a modifier inside a larger phrase, not a standalone reference
+  (Like "observer" in "observer pattern" modifies pattern — reject if Observer is a component)
+- The sentence is about a subprocess, algorithm, or implementation detail — not the component itself
+
+CASES:
+{chr(10).join(cases)}
+
+Return JSON:
+{{"validations": [{{"case": 1, "approve": true/false}}]}}
+JSON only:"""
+
+        data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+        results = {}
+        if data:
+            for v in data.get("validations", []):
+                idx = v.get("case", 0) - 1
+                if 0 <= idx < len(cases):
+                    results[idx] = v.get("approve", False)
+        return results
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 7: Coreference
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _coref_discourse(self, sentences, components, name_to_id, sent_map, discourse_model):
+        """Phase 7 discourse mode with required antecedent citation."""
+        comp_names = self._get_comp_names(components)
+        all_coref = []
+        pronoun_sents = [s for s in sentences if self.PRONOUN_PATTERN.search(s.text)]
+
+        for batch_start in range(0, len(pronoun_sents), 12):
+            batch = pronoun_sents[batch_start:batch_start + 12]
+            cases = []
+            for sent in batch:
+                ctx = discourse_model.get(sent.number, DiscourseContext())
+                prev = []
+                for i in range(1, 4):
+                    p = sent_map.get(sent.number - i)
+                    if p:
+                        prev.append(f"S{p.number}: {p.text}")
+                cases.append({"sent": sent, "ctx": ctx, "prev": prev})
+
+            prompt = f"""Resolve pronoun references to architecture components.
+
+COMPONENTS: {', '.join(comp_names)}
+
+"""
+            for i, case in enumerate(cases):
+                prompt += f"--- Case {i+1}: S{case['sent'].number} ---\n"
+                if case["prev"]:
+                    prompt += "PREVIOUS:\n  " + "\n  ".join(reversed(case["prev"])) + "\n"
+                prompt += f">>> {case['sent'].text}\n\n"
+
+            prompt += """For each pronoun that refers to a component, provide:
+- antecedent_sentence: the sentence number where the component was EXPLICITLY NAMED
+- antecedent_text: the EXACT quote from that sentence containing the component name
+
+RULES (all must hold):
+1. The component name (or known alias) MUST appear verbatim in the antecedent sentence
+2. The antecedent MUST be within the previous 3 sentences
+3. The pronoun MUST grammatically refer back to that component as its subject
+4. If the pronoun could refer to multiple things, DO NOT resolve it
+
+Like in technical writing: "The Scheduler assigns tasks to threads. It uses a priority queue internally."
+— "It" clearly refers to "the Scheduler" because it was the subject of the previous sentence.
+
+Return JSON:
+{"resolutions": [{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact text with component name"}]}
+
+Only include resolutions you are CERTAIN about. JSON only:"""
+
+            data = self.llm.extract_json(self.llm.query(prompt, timeout=150))
+            if not data:
+                continue
+
+            for res in data.get("resolutions", []):
+                comp = res.get("component")
+                snum = res.get("sentence")
+                if not (comp and snum and comp in name_to_id):
+                    continue
+                # Handle "S6" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
+                try:
+                    snum = int(snum)
+                except (ValueError, TypeError):
+                    continue
+
+                # Verify antecedent citation
+                ant_snum = res.get("antecedent_sentence")
+                if ant_snum is not None:
+                    if isinstance(ant_snum, str):
+                        ant_snum = ant_snum.lstrip("S")
+                    try:
+                        ant_snum = int(ant_snum)
+                    except (ValueError, TypeError):
+                        ant_snum = None
+
+                if ant_snum is not None:
+                    ant_sent = sent_map.get(ant_snum)
+                    if not ant_sent:
+                        print(f"    Coref skip (bad antecedent S{ant_snum}): S{snum} -> {comp}")
+                        continue
+                    if not (self._has_standalone_mention(comp, ant_sent.text) or
+                            self._has_alias_mention(comp, ant_sent.text)):
+                        print(f"    Coref skip (comp not in antecedent S{ant_snum}): S{snum} -> {comp}")
+                        continue
+                    if abs(snum - ant_snum) > 3:
+                        print(f"    Coref skip (antecedent too far S{ant_snum}): S{snum} -> {comp}")
+                        continue
+
+                sent = sent_map.get(snum)
+                if sent and self.learned_patterns and self.learned_patterns.is_subprocess(sent.text):
+                    continue
+                all_coref.append(SadSamLink(snum, name_to_id[comp], comp, 1.0, "coreference"))
+
+        return all_coref
+
+    def _coref_debate(self, sentences, components, name_to_id, sent_map):
+        """Phase 7 debate mode with required antecedent citation."""
+        comp_names = self._get_comp_names(components)
+        all_coref = []
+
+        ctx = []
+        if self.learned_patterns and self.learned_patterns.subprocess_terms:
+            ctx.append(f"Subprocesses (don't link): {', '.join(list(self.learned_patterns.subprocess_terms)[:5])}")
+
+        for batch_start in range(0, len(sentences), 20):
+            batch = sentences[batch_start:min(batch_start + 20, len(sentences))]
+            ctx_start = max(0, batch_start - self.CONTEXT_WINDOW)
+            ctx_sents = sentences[ctx_start:batch_start + 20]
+            doc_lines = [
+                f"{'*' if s.number >= batch[0].number else ' '}S{s.number}: {s.text}"
+                for s in ctx_sents
+            ]
+
+            prompt1 = f"""Resolve pronoun references to architecture components.
+
+COMPONENTS: {', '.join(comp_names)}
+
+{chr(10).join(ctx)}
+
+DOCUMENT (* = analyze these sentences):
+{chr(10).join(doc_lines)}
+
+Find pronouns (it, they, this, these) in starred sentences that refer to a component.
+
+RULES (all must hold):
+1. You MUST cite the antecedent_sentence where the component was EXPLICITLY NAMED
+2. The component name (or known alias) MUST appear verbatim in the antecedent sentence
+3. The antecedent MUST be within the previous 3 sentences
+4. Do NOT resolve pronouns in sentences about subprocesses or implementation details
+5. If the pronoun could refer to multiple components, do NOT resolve it
+
+Return JSON:
+{{"resolutions": [{{"sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}}]}}
+
+Only include resolutions you are CERTAIN about. JSON only:"""
+
+            data1 = self.llm.extract_json(self.llm.query(prompt1, timeout=100))
+            if not data1:
+                continue
+            proposed = data1.get("resolutions", [])
+            if not proposed:
+                continue
+
+            # Verify antecedent citations in code
+            for res in proposed:
+                comp = res.get("component")
+                snum = res.get("sentence")
+                if not (comp and snum and comp in name_to_id):
+                    continue
+                # Handle "S6" format from some backends (strip "S" prefix)
+                if isinstance(snum, str):
+                    snum = snum.lstrip("S")
+                try:
+                    snum = int(snum)
+                except (ValueError, TypeError):
+                    continue
+
+                ant_snum = res.get("antecedent_sentence")
+                if ant_snum is not None:
+                    if isinstance(ant_snum, str):
+                        ant_snum = ant_snum.lstrip("S")
+                    try:
+                        ant_snum = int(ant_snum)
+                    except (ValueError, TypeError):
+                        ant_snum = None
+
+                if ant_snum is not None:
+                    ant_sent = sent_map.get(ant_snum)
+                    if not ant_sent:
+                        continue
+                    if not (self._has_standalone_mention(comp, ant_sent.text) or
+                            self._has_alias_mention(comp, ant_sent.text)):
+                        print(f"    Coref verify-fail (S{ant_snum} doesn't mention {comp}): S{snum} -> {comp}")
+                        continue
+                    if abs(snum - ant_snum) > 3:
+                        continue
+
+                sent = sent_map.get(snum)
+                if sent and self.learned_patterns and self.learned_patterns.is_subprocess(sent.text):
+                    continue
+                all_coref.append(SadSamLink(snum, name_to_id[comp], comp, 1.0, "coreference"))
+
+        return all_coref
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Partial reference helpers
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _has_clean_mention(self, term, text):
+        pattern = rf'\b{re.escape(term)}\b'
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            s, e = m.start(), m.end()
+            if s > 0 and text[s-1] == '.':
+                continue
+            if e < len(text) and text[e] == '.' and e + 1 < len(text) and text[e+1].isalpha():
+                continue
+            if (s > 0 and text[s-1] == '-') or (e < len(text) and text[e] == '-'):
+                continue
+            return True
+        return False
+
+    def _inject_partial_references(self, sentences, components, name_to_id,
+                                    transarc_set, validated_set, coref_set, implicit_set):
+        if not self.doc_knowledge or not self.doc_knowledge.partial_references:
+            return []
+
+        existing = transarc_set | validated_set | coref_set | implicit_set
+        injected = []
+
+        for partial, comp_name in self.doc_knowledge.partial_references.items():
+            if comp_name not in name_to_id:
+                continue
+            comp_id = name_to_id[comp_name]
+            for sent in sentences:
+                key = (sent.number, comp_id)
+                if key in existing:
+                    continue
+                if self._has_clean_mention(partial, sent.text):
+                    injected.append(SadSamLink(
+                        sent.number, comp_id, comp_name, 0.8, "partial_inject"
+                    ))
+                    existing.add(key)
+
+        return injected
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Abbreviation guard
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _abbreviation_match_is_valid(self, abbrev, comp_name, sentence_text):
+        comp_parts = comp_name.split()
+        if len(comp_parts) < 2:
+            return True
+        if not comp_name.upper().startswith(abbrev.upper()):
+            return True
+        pattern = rf'\b{re.escape(abbrev)}\b'
+        full_rest = comp_name[len(abbrev):].strip()
+        found_valid = False
+        for m in re.finditer(pattern, sentence_text, re.IGNORECASE):
+            end = m.end()
+            rest = sentence_text[end:].lstrip()
+            if not rest:
+                found_valid = True
+                break
+            if rest.lower().startswith(full_rest.lower()):
+                found_valid = True
+                break
+            next_word_m = re.match(r'(\w+)', rest)
+            if next_word_m:
+                next_word = next_word_m.group(1).lower()
+                expected_next = full_rest.split()[0].lower() if full_rest else ""
+                if next_word != expected_next and next_word.isalpha():
+                    continue
+            found_valid = True
+            break
+        return found_valid
+
+    def _apply_abbreviation_guard_to_candidates(self, candidates, sent_map):
+        if not self.doc_knowledge:
+            return candidates
+        abbrev_to_comp = {}
+        comp_to_abbrevs = {}
+        for abbr, comp in self.doc_knowledge.abbreviations.items():
+            abbrev_to_comp[abbr.lower()] = comp
+            comp_to_abbrevs.setdefault(comp, []).append(abbr)
+
+        filtered = []
+        for c in candidates:
+            matched_lower = c.matched_text.lower() if c.matched_text else ""
+            comp = c.component_name
+            sent = sent_map.get(c.sentence_number)
+            if matched_lower in abbrev_to_comp and abbrev_to_comp[matched_lower] == comp:
+                if sent and not self._abbreviation_match_is_valid(c.matched_text, comp, sent.text):
+                    print(f"    Abbrev guard: rejected S{c.sentence_number} {c.matched_text} -> {comp}")
+                    continue
+            if sent and comp in comp_to_abbrevs and ' ' in comp:
+                full_in_text = re.search(rf'\b{re.escape(comp)}\b', sent.text, re.IGNORECASE)
+                if not full_in_text:
+                    rejected = False
+                    for abbr in comp_to_abbrevs[comp]:
+                        if re.search(rf'\b{re.escape(abbr)}\b', sent.text, re.IGNORECASE):
+                            if not self._abbreviation_match_is_valid(abbr, comp, sent.text):
+                                print(f"    Abbrev guard (inferred): rejected S{c.sentence_number} {abbr} -> {comp}")
+                                rejected = True
+                                break
+                    if rejected:
+                        continue
+            filtered.append(c)
+        return filtered
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 9: Judge — TransArc immune, adaptive ctx, show match
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _has_standalone_mention(self, comp_name, text):
+        is_single = ' ' not in comp_name
+        if is_single:
+            cap_name = comp_name[0].upper() + comp_name[1:]
+            pattern = rf'\b{re.escape(cap_name)}\b'
+            flags = 0
+        else:
+            pattern = rf'\b{re.escape(comp_name)}\b'
+            flags = re.IGNORECASE
+
+        for m in re.finditer(pattern, text, flags):
+            s, e = m.start(), m.end()
+            if s > 0 and text[s-1] == '.':
+                continue
+            if e < len(text) and text[e] == '.' and e + 1 < len(text) and text[e+1].isalpha():
+                continue
+            if s > 0 and text[s-1] == '-':
+                continue
+            if e < len(text) and text[e] == '-' and '-' not in comp_name:
+                continue
+            return True
+        return False
+
+    def _has_alias_mention(self, comp_name, sentence_text):
+        """Check if any known synonym or partial reference for this component appears in the text."""
+        if not self.doc_knowledge:
+            return False
+        text_lower = sentence_text.lower()
+        for syn, target in self.doc_knowledge.synonyms.items():
+            if target == comp_name:
+                if re.search(rf'\b{re.escape(syn.lower())}\b', text_lower):
+                    return True
+        for partial, target in self.doc_knowledge.partial_references.items():
+            if target == comp_name:
+                if re.search(rf'\b{re.escape(partial.lower())}\b', text_lower):
+                    return True
+        return False
+
+    def _is_ambiguous_name_component(self, comp_name):
+        """True if component name is single-word, not CamelCase, not all-uppercase,
+        and was classified as ambiguous by Phase 1."""
+        if ' ' in comp_name or '-' in comp_name:
+            return False
+        if re.search(r'[a-z][A-Z]', comp_name):
+            return False
+        if comp_name.isupper():
+            return False
+        if not self.model_knowledge or not self.model_knowledge.ambiguous_names:
+            return False
+        return comp_name in self.model_knowledge.ambiguous_names
+
+    def _judge_review(self, links, sentences, components, sent_map, transarc_set):
+        if len(links) < 5:
+            return links
+
+        comp_names = self._get_comp_names(components)
+
+        # Triage: safe (TransArc/standalone/synonym-backed), alias-matched, no-match, ta-review
+        safe, alias_links, nomatch_links, ta_review = [], [], [], []
+        syn_safe_count = 0
+        for l in links:
+            is_ta = (l.sentence_number, l.component_id) in transarc_set
+            sent = sent_map.get(l.sentence_number)
+            # Synonym-safe: if a Phase 3 synonym/partial appears in the sentence,
+            # trust the doc_knowledge and skip judge review entirely
+            if sent and self._has_alias_mention(l.component_name, sent.text):
+                safe.append(l)
+                syn_safe_count += 1
+                continue
+            if is_ta:
+                if self._is_ambiguous_name_component(l.component_name):
+                    ta_review.append(l)
+                else:
+                    safe.append(l)
+                continue
+            if not sent:
+                nomatch_links.append(l)
+                continue
+            if self._has_standalone_mention(l.component_name, sent.text):
+                safe.append(l)
+            else:
+                nomatch_links.append(l)
+
+        print(f"  Triage: {len(safe)} safe ({syn_safe_count} syn-safe), {len(ta_review)} ta-review, "
+              f"{len(alias_links)} alias, {len(nomatch_links)} no-match")
+
+        # ── Advocate-Prosecutor deliberation for ambiguous TransArc links ──
+        ta_approved = self._deliberate_transarc(ta_review, comp_names, sent_map)
+
+        # ── Hybrid judge for alias links: batch (3+) or union-individual ──
+        alias_approved = self._judge_alias_hybrid(alias_links, comp_names, sent_map)
+
+        # ── Standard 4-rule judge for no-match links ──
+        nomatch_approved = self._judge_nomatch(nomatch_links, comp_names, sent_map)
+
+        return safe + ta_approved + alias_approved + nomatch_approved
+
+    def _judge_alias_hybrid(self, alias_links, comp_names, sent_map):
+        """Hybrid judge for alias-matched links."""
+        if not alias_links:
+            return []
+
+        by_comp = defaultdict(list)
+        for l in alias_links:
+            by_comp[l.component_name].append(l)
+
+        approved = []
+
+        for comp, group in by_comp.items():
+            if len(group) >= 3:
+                approved.extend(self._batch_judge_alias(comp, group, comp_names, sent_map))
+            else:
+                approved.extend(self._union_judge_alias(comp, group, comp_names, sent_map))
+
+        return approved
+
+    def _batch_judge_alias(self, comp, links, comp_names, sent_map):
+        """Batch judge: all alias links for one component in a single prompt."""
+        match_terms = set()
+        for l in links:
+            sent = sent_map.get(l.sentence_number)
+            if sent:
+                match = self._find_match_text(l.component_name, sent.text)
+                if match:
+                    match_terms.add(match)
+        alias_str = ", ".join(f'"{t}"' for t in match_terms) if match_terms else "known alias"
+
+        sents_block = "\n".join(
+            f"  S{l.sentence_number}: {sent_map[l.sentence_number].text}"
+            for l in links if l.sentence_number in sent_map
+        )
+
+        prompt = f"""JUDGE: {alias_str} is a confirmed alias for "{comp}" in this document.
+
+Review each sentence: does it discuss "{comp}" at the architectural level?
+
+APPROVE: Describes {comp}'s role, behavior, data flow, or interaction with other components.
+REJECT: {comp} is incidental, or sentence is about implementation details, or is a fragment.
+
+COMPONENTS: {', '.join(comp_names)}
+
+SENTENCES linked to {comp}:
+{sents_block}
+
+Return JSON:
+{{"judgments": [{{"sentence": N_INTEGER, "approve": true/false, "reason": "brief"}}]}}
+JSON only:"""
+
+        data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+        approved_snums = set()
+        if data:
+            for j in data.get("judgments", []):
+                if j.get("approve", True):
+                    approved_snums.add(j.get("sentence"))
+
+        result = []
+        for l in links:
+            if l.sentence_number in approved_snums:
+                result.append(l)
+            else:
+                # Default approve if sentence wasn't in response (safety)
+                if l.sentence_number not in {j.get("sentence") for j in (data.get("judgments", []) if data else [])}:
+                    result.append(l)
+                else:
+                    print(f"    Batch reject: S{l.sentence_number} -> {comp}")
+        return result
+
+    def _union_judge_alias(self, comp, links, comp_names, sent_map):
+        """Individual 4-rule judge with union voting for alias links."""
+        result = []
+        for l in links:
+            sent = sent_map.get(l.sentence_number)
+            if not sent:
+                result.append(l)
+                continue
+
+            match = self._find_match_text(l.component_name, sent.text)
+            match_info = f'match:"{match}"' if match else "match:NONE(pronoun/context)"
+            prompt = f"""Should S{l.sentence_number} be linked to "{l.component_name}"? ({match_info}, src:{l.source})
+
+S{l.sentence_number}: {sent.text}
+
+COMPONENTS: {', '.join(comp_names)}
+RULE: Approve if S discusses {l.component_name} at the architectural level.
+
+Answer JSON: {{"approve": true/false, "reason": "brief"}}
+JSON only:"""
+
+            d1 = self.llm.extract_json(self.llm.query(prompt, timeout=60))
+            d2 = self.llm.extract_json(self.llm.query(prompt, timeout=60))
+            r1 = d1.get("approve", True) if d1 else True
+            r2 = d2.get("approve", True) if d2 else True
+            if r1 or r2:  # Union: reject only if BOTH reject
+                result.append(l)
+            else:
+                print(f"    Union reject: S{l.sentence_number} -> {comp}")
+        return result
+
+    def _judge_nomatch(self, nomatch_links, comp_names, sent_map):
+        """Standard 4-rule judge for non-alias links, with union voting."""
+        if not nomatch_links:
+            return []
+
+        cases = self._build_judge_cases(nomatch_links, sent_map)
+        prompt = self._build_judge_prompt(comp_names, cases)
+        n = min(30, len(nomatch_links))
+
+        # Union voting: reject only if BOTH passes reject
+        data1 = self.llm.extract_json(self.llm.query(prompt, timeout=180))
+        data2 = self.llm.extract_json(self.llm.query(prompt, timeout=180))
+
+        rej1 = self._parse_rejections(data1, n)
+        rej2 = self._parse_rejections(data2, n)
+        rejected = rej1 & rej2
+
+        result = []
+        for i in range(n):
+            if i not in rejected:
+                result.append(nomatch_links[i])
+            else:
+                print(f"    4-rule reject: S{nomatch_links[i].sentence_number} -> {nomatch_links[i].component_name}")
+        result.extend(nomatch_links[n:])
+        return result
+
+    def _parse_rejections(self, data, n):
+        rejected = set()
+        if data:
+            for j in data.get("judgments", []):
+                idx = j.get("case", 0) - 1
+                if 0 <= idx < n and not j.get("approve", False):
+                    rejected.add(idx)
+        return rejected
+
+    def _find_match_text(self, comp_name, sent_text):
+        """Find what text in the sentence triggered the match to this component."""
+        if not sent_text:
+            return None
+        text_lower = sent_text.lower()
+        if re.search(rf'\b{re.escape(comp_name)}\b', sent_text, re.IGNORECASE):
+            return comp_name
+        if self.doc_knowledge:
+            for alias, comp in self.doc_knowledge.synonyms.items():
+                if comp == comp_name and re.search(rf'\b{re.escape(alias)}\b', sent_text, re.IGNORECASE):
+                    return alias
+            for alias, comp in self.doc_knowledge.abbreviations.items():
+                if comp == comp_name and re.search(rf'\b{re.escape(alias)}\b', sent_text, re.IGNORECASE):
+                    return alias
+            for partial, comp in self.doc_knowledge.partial_references.items():
+                if comp == comp_name and partial.lower() in text_lower:
+                    return partial
+        return None
+
+    def _build_judge_cases(self, review, sent_map):
+        # Adaptive context: full for simple docs, truncated for complex
+        use_full_ctx = not self._is_complex
+
+        cases = []
+        for i, l in enumerate(review[:30]):
+            sent = sent_map.get(l.sentence_number)
+            ctx_lines = []
+            if l.source in ("implicit", "coreference"):
+                p2 = sent_map.get(l.sentence_number - 2)
+                if p2:
+                    txt = p2.text if use_full_ctx else f"{p2.text[:45]}..."
+                    ctx_lines.append(f"    PREV2: {txt}")
+            p1 = sent_map.get(l.sentence_number - 1)
+            if p1:
+                txt = p1.text if use_full_ctx else f"{p1.text[:45]}..."
+                ctx_lines.append(f"    PREV: {txt}")
+            ctx_lines.append(f"    >>> S{l.sentence_number}: {sent.text if sent else '?'}")
+
+            # Show match text (J6)
+            src_info = f"src:{l.source}"
+            if sent:
+                match = self._find_match_text(l.component_name, sent.text)
+                if match and match.lower() != l.component_name.lower():
+                    src_info += f', match:"{match}"'
+                elif not match:
+                    src_info += ', match:NONE(pronoun/context)'
+
+            cases.append(f"Case {i+1}: S{l.sentence_number} -> {l.component_name} ({src_info})\n"
+                         + chr(10).join(ctx_lines))
+        return cases
+
+    # ── Advocate-Prosecutor Deliberation for TransArc links ──────────
+
+    def _deliberate_transarc(self, links, comp_names, sent_map):
+        """Advocate-Prosecutor deliberation for ambiguous-name TransArc links."""
+        if not links:
+            return []
+
+        print(f"  Deliberating {len(links)} ambiguous-name TransArc links (advocate-prosecutor)")
+
+        approved = []
+        for l in links:
+            sent = sent_map.get(l.sentence_number)
+            if not sent:
+                approved.append(l)
+                continue
+
+            # Union voting: two independent deliberation passes
+            verdicts = []
+            for pass_num in range(2):
+                verdict = self._single_advocate_prosecutor_pass(
+                    l.sentence_number, l.component_name, sent.text, comp_names)
+                verdicts.append(verdict)
+
+            if verdicts[0] or verdicts[1]:  # Union: approve if either pass approves
+                approved.append(l)
+                if not verdicts[0] or not verdicts[1]:
+                    print(f"    Deliberation union-save: S{l.sentence_number} -> {l.component_name}")
+            else:
+                print(f"    Deliberation reject: S{l.sentence_number} -> {l.component_name}")
+
+        return approved
+
+    def _single_advocate_prosecutor_pass(self, snum, comp_name, sent_text, comp_names):
+        """Run one pass of advocate-prosecutor-jury. Returns True=approve, False=reject."""
+        comp_names_str = ', '.join(comp_names)
+
+        advocate_prompt = f"""You are the ADVOCATE for linking sentence S{snum} to component "{comp_name}".
+
+The system has a component literally named "{comp_name}". Your job is to defend valid links.
+
+SENTENCE: {sent_text}
+ALL COMPONENTS: {comp_names_str}
+
+Your job: Find the STRONGEST evidence that this sentence discusses "{comp_name}" at the architectural level. Consider:
+- Does the sentence describe {comp_name}'s role, behavior, interactions, or testing?
+- Is "{comp_name.lower()}" used as a standalone noun/noun-phrase referring to a layer or part of the system?
+- In architecture docs, even generic words like "the {comp_name.lower()} of the application" typically
+  refer to the named component when such a component exists.
+
+Provide your argument in 2-3 sentences. Then give your verdict.
+Return JSON: {{"argument": "your argument", "verdict": "APPROVE" or "REJECT"}}
+JSON only:"""
+
+        prosecutor_prompt = f"""You are the PROSECUTOR arguing AGAINST linking sentence S{snum} to component "{comp_name}".
+
+You should only argue REJECT when there is CLEAR evidence the match is spurious — not just because the word has generic meanings.
+
+SENTENCE: {sent_text}
+ALL COMPONENTS: {comp_names_str}
+
+Your job: Find CLEAR evidence that this is a SPURIOUS match. Only these patterns warrant rejection:
+1. "{comp_name.lower()}" is used as a modifier/adjective in a compound phrase (e.g., "throttle {comp_name.lower()}", "minimal {comp_name.lower()}") — NOT as a standalone noun referring to the component.
+2. The sentence is primarily about a DIFFERENT component, and "{comp_name.lower()}" is purely incidental.
+3. "{comp_name.lower()}" refers to a technology/protocol/tool, not the architecture component.
+4. This is a package listing or dotted path (like x.foo.bar) where the match is coincidental.
+
+If "{comp_name.lower()}" appears as a standalone noun describing a layer/part of the system, that is NOT spurious.
+
+Provide your argument in 2-3 sentences. Then give your verdict.
+Return JSON: {{"argument": "your argument", "verdict": "APPROVE" or "REJECT"}}
+JSON only:"""
+
+        # Run advocate and prosecutor independently
+        adv_data = self.llm.extract_json(self.llm.query(advocate_prompt, timeout=60))
+        pros_data = self.llm.extract_json(self.llm.query(prosecutor_prompt, timeout=60))
+
+        adv_arg = adv_data.get("argument", "") if adv_data else ""
+        pros_arg = pros_data.get("argument", "") if pros_data else ""
+
+        # Jury sees both arguments
+        jury_prompt = f"""JURY: Decide if sentence S{snum} should be linked to component "{comp_name}".
+
+The system has a component literally named "{comp_name}". REJECT only with clear evidence — when in doubt, APPROVE.
+
+SENTENCE: {sent_text}
+
+ADVOCATE argues: {adv_arg}
+
+PROSECUTOR argues: {pros_arg}
+
+Rule: APPROVE when "{comp_name.lower()}" is used as a standalone noun referring to a layer/part
+of the system (its role, behavior, interactions, or testing). REJECT only when "{comp_name.lower()}"
+is clearly used as a modifier in a compound phrase ("throttle {comp_name.lower()}"), a technology name,
+or the sentence is entirely about a different component.
+
+Return JSON: {{"verdict": "APPROVE" or "REJECT", "reason": "brief explanation"}}
+JSON only:"""
+
+        jury_data = self.llm.extract_json(self.llm.query(jury_prompt, timeout=60))
+        if jury_data:
+            return jury_data.get("verdict", "APPROVE").upper() == "APPROVE"
+        return True  # Default approve on failure
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Helper methods from AgentLinker (grandparent)
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _get_comp_names(self, components) -> list[str]:
+        """Get non-implementation component names."""
+        return [c.name for c in components
+                if not (self.model_knowledge and self.model_knowledge.is_implementation(c.name))]
+
+    def _build_discourse_model(
+        self, sentences: list[Sentence], components: list, name_to_id: dict
+    ) -> dict[int, DiscourseContext]:
+        """Build discourse context for each sentence."""
+        comp_names = self._get_comp_names(components)
+        discourse_map = {}
+        context = DiscourseContext()
+        para_mentions: dict[str, int] = {}
+
+        for sent in sentences:
+            # Detect paragraph boundary
+            if self._is_paragraph_boundary(sentences, sent.number):
+                context.start_new_paragraph(sent.number)
+                para_mentions = {}
+
+            # Find explicit mentions in this sentence
+            text_lower = sent.text.lower()
+            for comp in comp_names:
+                if comp.lower() in text_lower:
+                    if self._in_dotted_path(sent.text, comp):
+                        continue
+
+                    is_subject = self._is_subject(sent.text, comp)
+                    mention = EntityMention(
+                        sentence_number=sent.number,
+                        component_name=comp,
+                        component_id=name_to_id.get(comp, ''),
+                        mention_text=comp,
+                        is_subject=is_subject
+                    )
+                    context.add_mention(mention)
+                    para_mentions[comp] = para_mentions.get(comp, 0) + 1
+
+            # Update paragraph topic
+            if para_mentions:
+                context.paragraph_topic = max(para_mentions.keys(), key=lambda k: para_mentions[k])
+
+            # Store snapshot for this sentence
+            discourse_map[sent.number] = DiscourseContext(
+                recent_mentions=list(context.recent_mentions),
+                paragraph_topic=context.paragraph_topic,
+                paragraph_start=context.paragraph_start,
+                active_entity=context.active_entity
+            )
+
+        return discourse_map
+
+    def _is_paragraph_boundary(self, sentences: list[Sentence], sent_num: int) -> bool:
+        """Detect paragraph boundaries."""
+        if sent_num <= 1:
+            return True
+
+        sent_map = {s.number: s for s in sentences}
+        curr = sent_map.get(sent_num)
+        if not curr:
+            return False
+
+        transitions = ['however', 'furthermore', 'additionally', 'in addition',
+                      'moreover', 'on the other hand', 'the following']
+        curr_lower = curr.text.lower()
+        if any(curr_lower.startswith(t) for t in transitions):
+            return True
+
+        return False
+
+    def _is_subject(self, sentence: str, component: str) -> bool:
+        """Check if component is the grammatical subject."""
+        sent_lower = sentence.lower()
+        comp_lower = component.lower()
+        comp_pos = sent_lower.find(comp_lower)
+
+        if comp_pos == -1:
+            return False
+
+        if comp_pos < 60:
+            verbs = ['is', 'are', 'does', 'do', 'has', 'have', 'provides', 'handles',
+                    'manages', 'stores', 'sends', 'receives', 'creates', 'processes']
+            for verb in verbs:
+                verb_pos = sent_lower.find(f' {verb} ')
+                if verb_pos > comp_pos:
+                    return True
+        return False
+
+    # ═════════════════════════════════════════════════════════════════════
+    # Phase 2: Pattern learning with debate
+    # ═════════════════════════════════════════════════════════════════════
+
+    def _learn_patterns_with_debate(self, sentences, components) -> LearnedPatterns:
+        """Learn patterns using agent debate."""
+        comp_names = self._get_comp_names(components)
+        sample = [f"S{s.number}: {s.text}" for s in sentences[:70]]
+
+        prompt1 = f"""Find terms that refer to INTERNAL PARTS of components (subprocesses).
+
+COMPONENTS: {', '.join(comp_names)}
+
+DOCUMENT:
+{chr(10).join(sample)}
+
+Return JSON:
+{{
+  "subprocess_terms": ["term1", "term2"],
+  "reasoning": {{"term": "why"}}
+}}
+JSON only:"""
+
+        data1 = self.llm.extract_json(self.llm.query(prompt1, timeout=120))
+        proposed = data1.get("subprocess_terms", []) if data1 else []
+        reasonings = data1.get("reasoning", {}) if data1 else {}
+
+        if proposed:
+            prompt2 = f"""DEBATE: Validate these subprocess terms.
+
+COMPONENTS: {', '.join(comp_names)}
+
+PROPOSED:
+{chr(10).join([f"- {t}: {reasonings.get(t, '')}" for t in proposed[:15]])}
+
+SAMPLE:
+{chr(10).join(sample[:30])}
+
+Return JSON:
+{{
+  "validated": ["terms that ARE subprocesses"],
+  "rejected": ["terms that might be valid component references"]
+}}
+JSON only:"""
+
+            data2 = self.llm.extract_json(self.llm.query(prompt2, timeout=120))
+            validated_terms = set(data2.get("validated", [])) if data2 else set(proposed)
+        else:
+            validated_terms = set()
+
+        prompt3 = f"""Find linguistic patterns.
+
+COMPONENTS: {', '.join(comp_names)}
+
+DOCUMENT:
+{chr(10).join(sample[:40])}
+
+Return JSON:
+{{
+  "action_indicators": ["verbs when component DOES something"],
+  "effect_indicators": ["verbs for RESULTS"]
+}}
+JSON only:"""
+
+        data3 = self.llm.extract_json(self.llm.query(prompt3, timeout=100))
+
+        patterns = LearnedPatterns()
+        patterns.subprocess_terms = validated_terms
+        if data3:
+            patterns.action_indicators = data3.get("action_indicators", [])
+            patterns.effect_indicators = data3.get("effect_indicators", [])
+
+        for t in list(validated_terms)[:8]:
+            print(f"    Subprocess: '{t}'")
+
+        return patterns
