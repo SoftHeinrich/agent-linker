@@ -61,16 +61,12 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/ilinker2_v30b.py`** — V30b: few-shot calibrated Phase 3 judge, zero code overrides (94.1% macro F1)
 - **`linkers/experimental/ilinker2_v30c.py`** — V30c: V30b + no dotted-path regex + pickle checkpoints for ablation
 - **`linkers/experimental/ilinker2_v30d.py`** — V30d: V30c + resume support + CamelCase rescue + heuristic toggle flags for ablation
-- **`linkers/experimental/ilinker2_v31.py`** — V31: clean V30c + CamelCase rescue + convention filter + reframed judge rules
-- **`linkers/experimental/ilinker2_v32.py`** — V32: V31 + convention filter covers partial_inject (no immunity) + zero prompt leakage + GPT-5.2 compatibility
-  - **Judge Reframing (Feb 23)**: Phase 9 judge rules reframed as universal principles instead of benchmark-specific criteria
-  - **GPT-5.2 Compatibility (Feb 25-26)**: Prompts optimized for cross-model portability:
-    - Phase 1: Example 4 teaches "WHAT KIND vs WHICH mechanism" distinction for ambiguity detection
-    - ILinker2 Pass B: "architecturally relevant" framing (not just grammatical subject)
-    - Convention filter: technology-as-component rule, multi-word/CamelCase guardrails
-    - Phase 3: Approve-biased judge for GPT's conservative tendencies
-    - S-prefix fix, N_INTEGER hints in JSON templates
-  - Claude Sonnet: 94.5% macro F1 | GPT-5.2: ~90.6% macro F1
+- **`linkers/experimental/ilinker2_v31.py`** — V31 standalone: clean V30c + CamelCase rescue + convention filter (partial_inject immune) + reframed judge rules. 94.5% macro F1.
+- **`linkers/experimental/ilinker2_v32.py`** — V32 standalone: V31 + convention filter covers partial_inject (no immunity) + zero prompt leakage + GPT-5.2 compatibility. Claude Sonnet: 94.5% macro F1 | GPT-5.2: ~90.6% macro F1.
+- **`linkers/experimental/ilinker2_v33.py`** — V33 standalone: V32 + Pareto-safe cross-model fixes (pure-LLM generic mention handling, judge Rule 4 exception for named components).
+- **`linkers/experimental/ilinker2_v33f.py`** — V33f standalone: V33 + forward coref ×2 union for variance stabilization.
+- **`linkers/experimental/ilinker2_v33g.py`** — V33g standalone: V33f + Java TransArc CSV seed option (deterministic Phase 4, falls back to ILinker2 if no CSV).
+  - **Note**: V31-V33g are all standalone files (no inheritance). Each inlines ~49 methods from the former AgentLinkerV26a/AgentLinker base classes for independent evolution.
 
 ### LLM Client
 
