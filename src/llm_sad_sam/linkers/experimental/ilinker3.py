@@ -1,13 +1,14 @@
-"""ILinker2 — High-precision explicit link extractor to replace TransArc baseline.
+"""ILinker3 — ILinker2 with simplified prompts (26% fewer prompt tokens).
 
-Designed as a drop-in replacement for TransArc CSV input to V26-family linkers.
-Two LLM passes focused solely on explicit mentions (no contextual/coref — V26 handles that).
+Same architecture as ILinker2: two LLM passes + merge.
+Prompts condensed from test_prompt_simplify_wide.py testing — verified equivalent
+or better on all 5 benchmark datasets.
 
-  Pass A: Extraction-framed (find all mentions)
-  Pass B: Actor/subject-framed (what is each sentence about?)
+  Pass A: Extraction-framed (simplified — 13 lines vs 25)
+  Pass B: Actor/subject-framed (simplified — 18 lines vs 35)
   Merge: exact from either → accept; synonym/partial → intersection only
 
-Output: list[SadSamLink] with source="ilinker2" — same shape as TransArc links.
+Output: list[SadSamLink] with source="ilinker2" — same shape as ILinker2 links.
 """
 
 import json
@@ -35,8 +36,8 @@ class ExtractedLink:
     match_type: str  # exact, synonym, partial
 
 
-class ILinker2:
-    """High-precision explicit extractor — 2 LLM calls per batch, no contextual."""
+class ILinker3:
+    """High-precision explicit extractor — simplified prompts, same merge logic."""
 
     def __init__(self, backend: LLMBackend = LLMBackend.CLAUDE):
         self.llm = LLMClient(backend=backend)
@@ -47,7 +48,7 @@ class ILinker2:
         components = parse_pcm_repository(model_path)
         name_to_id = {c.name: c.id for c in components}
 
-        print(f"  ILinker2: {len(sentences)} sentences, {len(components)} components")
+        print(f"  ILinker3: {len(sentences)} sentences, {len(components)} components")
 
         comp_block = self._build_comp_block(components)
         batches = self._make_batches(sentences)
@@ -106,61 +107,43 @@ class ILinker2:
                 print(f"      batch {i+1}/{len(batches)}: +{len(links)} (total {len(seen)})")
         return list(seen.values())
 
-    # ── prompts ──────────────────────────────────────────────────────────
+    # ── prompts (simplified) ─────────────────────────────────────────────
 
     def _prompt_extract(self, doc_block: str, comp_block: str) -> str:
-        return f"""You are a software architecture traceability expert.
-
-ARCHITECTURE COMPONENTS:
+        return f"""ARCHITECTURE COMPONENTS:
 {comp_block}
 
 DOCUMENT:
 {doc_block}
 
-TASK: For each sentence, identify which architecture components are EXPLICITLY mentioned or referenced.
+TASK: For each sentence, find architecture components EXPLICITLY mentioned or referenced.
 
-A valid reference is:
-- Exact name: the component name appears verbatim in the sentence
-- Synonym: a well-known alternative name for the component (e.g., "code generator" → "CodeGenerator")
-- Abbreviation: a shortened form (e.g., "AST" → "AbstractSyntaxTree")
-- Partial name: a distinctive sub-phrase of the component name that unambiguously identifies it (e.g., "the scheduler" → "TaskScheduler")
+Valid: exact name, synonym, abbreviation, or unambiguous partial name in the sentence text.
+Invalid: names inside dotted paths, generic English words, or no clear textual evidence.
 
-NOT a valid reference:
-- A component name that only appears inside a dotted path (e.g., "renderer.utils.config" does NOT reference "Renderer")
-- A generic English word used in its ordinary sense (e.g., "optimized code" does NOT reference "Optimizer")
-- A sentence that merely describes related functionality without naming or clearly referring to the component
-
-Return ONLY valid JSON:
+Return JSON:
 {{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "matched text", "type": "exact|synonym|partial"}}]}}
-
-Precision is critical — only include links with clear textual evidence."""
+Precision is critical."""
 
     def _prompt_actor(self, doc_block: str, comp_block: str) -> str:
-        return f"""You are a software architecture traceability expert performing an independent review.
-
-ARCHITECTURE COMPONENTS:
+        return f"""ARCHITECTURE COMPONENTS:
 {comp_block}
 
 DOCUMENT:
 {doc_block}
 
-TASK: For each sentence, determine which architecture component is the SUBJECT or primary ACTOR.
+TASK: For each sentence, find components that are ARCHITECTURALLY RELEVANT — the sentence
+describes their role, behavior, interactions, or responsibilities.
 
-Ask yourself:
-- Which component is this sentence ABOUT?
-- Which component PERFORMS or RECEIVES the described action?
-- Is the component named, abbreviated, or referred to by a recognizable alias?
+Report ALL participating components (not just grammatical subject). "X connects to Y" → both X and Y.
 
-Rules:
-- Only report components that are explicitly named, abbreviated, or identified by a clear synonym/partial name IN THE SENTENCE TEXT.
-- Do NOT report contextual or pronoun-based references (e.g., "It does X" — skip these).
-- Do NOT match component names inside dotted package paths (e.g., "renderer.utils.config" does NOT reference "Renderer").
-- Do NOT match generic English words used in their ordinary sense (e.g., "optimized code" does NOT reference "Optimizer").
+CAUTION with single-word names (e.g., "Scheduler", "Dispatcher"): only report when the sentence
+discusses that component's architectural role, not generic English usage.
 
-Return ONLY valid JSON:
-{{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "evidence", "type": "exact|synonym|partial"}}]}}
+Rules: Must be explicitly named/abbreviated in text. Skip pronouns. Skip dotted paths. Skip generic word usage.
 
-Be conservative — omit uncertain links."""
+Return JSON:
+{{"links": [{{"s": N_INTEGER, "c": "ComponentName", "text": "evidence", "type": "exact|synonym|partial"}}]}}"""
 
     # ── LLM + parse ─────────────────────────────────────────────────────
 
@@ -181,7 +164,6 @@ Be conservative — omit uncertain links."""
             cname = item.get("c", "")
             if not snum or not cname:
                 continue
-            # Handle "S101" format from some backends (strip "S" prefix)
             if isinstance(snum, str):
                 snum = snum.lstrip("S")
             try:
@@ -213,13 +195,11 @@ Be conservative — omit uncertain links."""
         """Exact from either pass → accept. Non-exact → intersection only."""
         result: dict[tuple[int, str], ExtractedLink] = {}
 
-        # Exact from either → accept
         for link in pass_a + pass_b:
             key = (link.sentence_number, link.component_id)
             if link.match_type == "exact":
                 result[key] = link
 
-        # Non-exact → intersection
         a_keys = {(l.sentence_number, l.component_id) for l in pass_a if l.match_type != "exact"}
         b_keys = {(l.sentence_number, l.component_id) for l in pass_b if l.match_type != "exact"}
         agreed = a_keys & b_keys

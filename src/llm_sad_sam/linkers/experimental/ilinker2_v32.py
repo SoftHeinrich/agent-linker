@@ -24,9 +24,8 @@ from collections import defaultdict
 from typing import Optional
 
 from llm_sad_sam.core.data_types import (
-    SadSamLink, CandidateLink, DocumentProfile, LearnedThresholds,
+    SadSamLink, CandidateLink, DocumentProfile,
     ModelKnowledge, DocumentKnowledge, LearnedPatterns, EntityMention,
-    DiscourseContext,
 )
 from llm_sad_sam.core.document_loader import DocumentLoader, Sentence
 from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
@@ -119,21 +118,8 @@ class ILinker2V32:
     )
     SOURCE_PRIORITY = {
         "transarc": 5, "validated": 4, "entity": 3,
-        "coreference": 2, "partial_inject": 1, "recovered": 0,
+        "coreference": 2, "partial_inject": 1,
     }
-    NON_MODIFIERS = {
-        "the", "a", "an", "this", "that", "these", "those", "its", "their",
-        "our", "your", "my", "his", "her", "some", "any", "all", "each",
-        "every", "no", "is", "are", "was", "were", "be", "been", "being",
-        "has", "have", "had", "do", "does", "did", "will", "would", "can",
-        "could", "shall", "should", "may", "might", "must",
-        "in", "on", "at", "to", "for", "of", "with", "by", "from",
-        "and", "or", "but", "not", "if", "then", "than", "as",
-        "about", "into", "through", "during", "before", "after",
-        "above", "below", "between", "under", "over",
-    }
-    GENERIC_COMPONENT_WORDS = set()
-    GENERIC_PARTIALS = set()
 
     # Few-shot examples (safe textbook domains only)
     _FEW_SHOT = """
@@ -177,11 +163,9 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         self.model_knowledge: Optional[ModelKnowledge] = None
         self.doc_knowledge: Optional[DocumentKnowledge] = None
         self.learned_patterns: Optional[LearnedPatterns] = None
-        self.thresholds: Optional[LearnedThresholds] = None
         self.doc_profile: Optional[DocumentProfile] = None
         self._phase_log = []
         self._is_complex = None
-        self._discovered_generic_partials = set()
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         print(f"ILinker2V32 standalone")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
@@ -201,19 +185,6 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         with open(path, "wb") as f:
             pickle.dump(state, f)
         print(f"  Checkpoint: {phase_name} saved")
-
-    def _load_phase(self, text_path, phase_name):
-        d = self._checkpoint_dir(text_path)
-        path = os.path.join(d, f"{phase_name}.pkl")
-        if not os.path.exists(path):
-            return None
-        with open(path, "rb") as f:
-            return pickle.load(f)
-
-    # ── NDF: disable dotted-path regex ───────────────────────────────────
-
-    def _in_dotted_path(self, text: str, comp_name: str) -> bool:
-        return False
 
     # ── Logging ──────────────────────────────────────────────────────────
 
@@ -255,17 +226,6 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
             return True
         return False
 
-    def _needs_antecedent_check(self, comp_name):
-        if ' ' in comp_name or '-' in comp_name:
-            return False
-        if re.search(r'[a-z][A-Z]', comp_name):
-            return False
-        if comp_name.isupper():
-            return False
-        if comp_name[0].islower():
-            return False
-        return True
-
     # ═════════════════════════════════════════════════════════════════════
     # Main pipeline with per-phase checkpoints
     # ═════════════════════════════════════════════════════════════════════
@@ -279,9 +239,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         components = parse_pcm_repository(model_path)
         sentences = DocumentLoader.load_sentences(text_path)
         name_to_id = {c.name: c.id for c in components}
-        id_to_name = {c.id: c.name for c in components}
         sent_map = DocumentLoader.build_sent_map(sentences)
-        self._cached_sent_map = sent_map
         self._cached_components = components
 
         print(f"Loaded {len(components)} components, {len(sentences)} sentences")
@@ -293,7 +251,6 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         spc = len(sentences) / max(1, len(components))
         print(f"  Stats: {spc:.1f} sents/comp, {self.doc_profile.pronoun_ratio:.0%} pronouns")
         print(f"  Complex: {self._is_complex}")
-        self.thresholds = LearnedThresholds(0, 0, 0, 0, "qualitative", 0)
         self._log("phase_0", {"sents": len(sentences), "comps": len(components)},
                   {"spc": spc, "complex": self._is_complex})
 
@@ -373,7 +330,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
 
         # ── Phase 4 ─────────────────────────────────────────────────────
         print("\n[Phase 4] TransArc")
-        transarc_links = self._process_transarc(transarc_csv, id_to_name, sent_map, name_to_id)
+        transarc_links = self._process_transarc()
         transarc_set = {(l.sentence_number, l.component_id) for l in transarc_links}
         print(f"  Links: {len(transarc_links)}")
         self._log("phase_4", {"csv": transarc_csv}, {"count": len(transarc_links)}, transarc_links)
@@ -433,9 +390,8 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
             print(f"  Mode: debate (complex, {len(sentences)} sents)")
             coref_links = self._coref_debate(sentences, components, name_to_id, sent_map)
         else:
-            discourse_model = self._build_discourse_model(sentences, components, name_to_id)
             print(f"  Mode: discourse ({len(sentences)} sents)")
-            coref_links = self._coref_discourse(sentences, components, name_to_id, sent_map, discourse_model)
+            coref_links = self._coref_discourse(sentences, components, name_to_id, sent_map)
 
         print(f"  Coref links: {len(coref_links)}")
         self._log("phase_7", {"method": "debate" if self._is_complex else "discourse"},
@@ -446,9 +402,6 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         })
 
         # ── Phase 8b ────────────────────────────────────────────────────
-        existing = (transarc_set
-                    | {(c.sentence_number, c.component_id) for c in validated}
-                    | {(l.sentence_number, l.component_id) for l in coref_links})
         partial_links = self._inject_partial_references(
             sentences, components, name_to_id, transarc_set,
             {(c.sentence_number, c.component_id) for c in validated},
@@ -543,8 +496,8 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
 
     # ── Phase 4: ILinker2 seed ───────────────────────────────────────────
 
-    def _process_transarc(self, transarc_csv, id_to_name, sent_map, name_to_id):
-        """Override: run ILinker2 instead of loading TransArc CSV."""
+    def _process_transarc(self):
+        """Run ILinker2 for seed link generation."""
         raw_links = self._ilinker2.link(self._cached_text_path, self._cached_model_path)
 
         result = []
@@ -1215,7 +1168,7 @@ JSON only:"""
                 except (ValueError, TypeError):
                     continue
                 sent = sent_map.get(snum)
-                if not sent or self._in_dotted_path(sent.text, cname):
+                if not sent:
                     continue
 
                 # Verify matched_text is actually in sentence
@@ -1448,7 +1401,7 @@ JSON only:"""
     # Phase 7: Coreference
     # ═════════════════════════════════════════════════════════════════════
 
-    def _coref_discourse(self, sentences, components, name_to_id, sent_map, discourse_model):
+    def _coref_discourse(self, sentences, components, name_to_id, sent_map):
         """Phase 7 discourse mode with required antecedent citation."""
         comp_names = self._get_comp_names(components)
         all_coref = []
@@ -1458,13 +1411,12 @@ JSON only:"""
             batch = pronoun_sents[batch_start:batch_start + 12]
             cases = []
             for sent in batch:
-                ctx = discourse_model.get(sent.number, DiscourseContext())
                 prev = []
                 for i in range(1, 4):
                     p = sent_map.get(sent.number - i)
                     if p:
                         prev.append(f"S{p.number}: {p.text}")
-                cases.append({"sent": sent, "ctx": ctx, "prev": prev})
+                cases.append({"sent": sent, "prev": prev})
 
             prompt = f"""Resolve pronoun references to architecture components.
 
@@ -1799,7 +1751,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         comp_names = self._get_comp_names(components)
 
         # Triage: safe (TransArc/standalone/synonym-backed), alias-matched, no-match, ta-review
-        safe, alias_links, nomatch_links, ta_review = [], [], [], []
+        safe, nomatch_links, ta_review = [], [], []
         syn_safe_count = 0
         for l in links:
             is_ta = (l.sentence_number, l.component_id) in transarc_set
@@ -1825,119 +1777,15 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 nomatch_links.append(l)
 
         print(f"  Triage: {len(safe)} safe ({syn_safe_count} syn-safe), {len(ta_review)} ta-review, "
-              f"{len(alias_links)} alias, {len(nomatch_links)} no-match")
+              f"{len(nomatch_links)} no-match")
 
         # ── Advocate-Prosecutor deliberation for ambiguous TransArc links ──
         ta_approved = self._deliberate_transarc(ta_review, comp_names, sent_map)
 
-        # ── Hybrid judge for alias links: batch (3+) or union-individual ──
-        alias_approved = self._judge_alias_hybrid(alias_links, comp_names, sent_map)
-
         # ── Standard 4-rule judge for no-match links ──
         nomatch_approved = self._judge_nomatch(nomatch_links, comp_names, sent_map)
 
-        return safe + ta_approved + alias_approved + nomatch_approved
-
-    def _judge_alias_hybrid(self, alias_links, comp_names, sent_map):
-        """Hybrid judge for alias-matched links."""
-        if not alias_links:
-            return []
-
-        by_comp = defaultdict(list)
-        for l in alias_links:
-            by_comp[l.component_name].append(l)
-
-        approved = []
-
-        for comp, group in by_comp.items():
-            if len(group) >= 3:
-                approved.extend(self._batch_judge_alias(comp, group, comp_names, sent_map))
-            else:
-                approved.extend(self._union_judge_alias(comp, group, comp_names, sent_map))
-
-        return approved
-
-    def _batch_judge_alias(self, comp, links, comp_names, sent_map):
-        """Batch judge: all alias links for one component in a single prompt."""
-        match_terms = set()
-        for l in links:
-            sent = sent_map.get(l.sentence_number)
-            if sent:
-                match = self._find_match_text(l.component_name, sent.text)
-                if match:
-                    match_terms.add(match)
-        alias_str = ", ".join(f'"{t}"' for t in match_terms) if match_terms else "known alias"
-
-        sents_block = "\n".join(
-            f"  S{l.sentence_number}: {sent_map[l.sentence_number].text}"
-            for l in links if l.sentence_number in sent_map
-        )
-
-        prompt = f"""JUDGE: {alias_str} is a confirmed alias for "{comp}" in this document.
-
-Review each sentence: does it discuss "{comp}" at the architectural level?
-
-APPROVE: Describes {comp}'s role, behavior, data flow, or interaction with other components.
-REJECT: {comp} is incidental, or sentence is about implementation details, or is a fragment.
-
-COMPONENTS: {', '.join(comp_names)}
-
-SENTENCES linked to {comp}:
-{sents_block}
-
-Return JSON:
-{{"judgments": [{{"sentence": N_INTEGER, "approve": true/false, "reason": "brief"}}]}}
-JSON only:"""
-
-        data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
-        approved_snums = set()
-        if data:
-            for j in data.get("judgments", []):
-                if j.get("approve", True):
-                    approved_snums.add(j.get("sentence"))
-
-        result = []
-        for l in links:
-            if l.sentence_number in approved_snums:
-                result.append(l)
-            else:
-                # Default approve if sentence wasn't in response (safety)
-                if l.sentence_number not in {j.get("sentence") for j in (data.get("judgments", []) if data else [])}:
-                    result.append(l)
-                else:
-                    print(f"    Batch reject: S{l.sentence_number} -> {comp}")
-        return result
-
-    def _union_judge_alias(self, comp, links, comp_names, sent_map):
-        """Individual 4-rule judge with union voting for alias links."""
-        result = []
-        for l in links:
-            sent = sent_map.get(l.sentence_number)
-            if not sent:
-                result.append(l)
-                continue
-
-            match = self._find_match_text(l.component_name, sent.text)
-            match_info = f'match:"{match}"' if match else "match:NONE(pronoun/context)"
-            prompt = f"""Should S{l.sentence_number} be linked to "{l.component_name}"? ({match_info}, src:{l.source})
-
-S{l.sentence_number}: {sent.text}
-
-COMPONENTS: {', '.join(comp_names)}
-RULE: Approve if S discusses {l.component_name} at the architectural level.
-
-Answer JSON: {{"approve": true/false, "reason": "brief"}}
-JSON only:"""
-
-            d1 = self.llm.extract_json(self.llm.query(prompt, timeout=60))
-            d2 = self.llm.extract_json(self.llm.query(prompt, timeout=60))
-            r1 = d1.get("approve", True) if d1 else True
-            r2 = d2.get("approve", True) if d2 else True
-            if r1 or r2:  # Union: reject only if BOTH reject
-                result.append(l)
-            else:
-                print(f"    Union reject: S{l.sentence_number} -> {comp}")
-        return result
+        return safe + ta_approved + nomatch_approved
 
     def _judge_nomatch(self, nomatch_links, comp_names, sent_map):
         """Standard 4-rule judge for non-alias links, with union voting."""
@@ -2001,7 +1849,7 @@ JSON only:"""
         for i, l in enumerate(review[:30]):
             sent = sent_map.get(l.sentence_number)
             ctx_lines = []
-            if l.source in ("implicit", "coreference"):
+            if l.source == "coreference":
                 p2 = sent_map.get(l.sentence_number - 2)
                 if p2:
                     txt = p2.text if use_full_ctx else f"{p2.text[:45]}..."
@@ -2136,89 +1984,6 @@ JSON only:"""
         """Get non-implementation component names."""
         return [c.name for c in components
                 if not (self.model_knowledge and self.model_knowledge.is_implementation(c.name))]
-
-    def _build_discourse_model(
-        self, sentences: list[Sentence], components: list, name_to_id: dict
-    ) -> dict[int, DiscourseContext]:
-        """Build discourse context for each sentence."""
-        comp_names = self._get_comp_names(components)
-        discourse_map = {}
-        context = DiscourseContext()
-        para_mentions: dict[str, int] = {}
-
-        for sent in sentences:
-            # Detect paragraph boundary
-            if self._is_paragraph_boundary(sentences, sent.number):
-                context.start_new_paragraph(sent.number)
-                para_mentions = {}
-
-            # Find explicit mentions in this sentence
-            text_lower = sent.text.lower()
-            for comp in comp_names:
-                if comp.lower() in text_lower:
-                    if self._in_dotted_path(sent.text, comp):
-                        continue
-
-                    is_subject = self._is_subject(sent.text, comp)
-                    mention = EntityMention(
-                        sentence_number=sent.number,
-                        component_name=comp,
-                        component_id=name_to_id.get(comp, ''),
-                        mention_text=comp,
-                        is_subject=is_subject
-                    )
-                    context.add_mention(mention)
-                    para_mentions[comp] = para_mentions.get(comp, 0) + 1
-
-            # Update paragraph topic
-            if para_mentions:
-                context.paragraph_topic = max(para_mentions.keys(), key=lambda k: para_mentions[k])
-
-            # Store snapshot for this sentence
-            discourse_map[sent.number] = DiscourseContext(
-                recent_mentions=list(context.recent_mentions),
-                paragraph_topic=context.paragraph_topic,
-                paragraph_start=context.paragraph_start,
-                active_entity=context.active_entity
-            )
-
-        return discourse_map
-
-    def _is_paragraph_boundary(self, sentences: list[Sentence], sent_num: int) -> bool:
-        """Detect paragraph boundaries."""
-        if sent_num <= 1:
-            return True
-
-        sent_map = {s.number: s for s in sentences}
-        curr = sent_map.get(sent_num)
-        if not curr:
-            return False
-
-        transitions = ['however', 'furthermore', 'additionally', 'in addition',
-                      'moreover', 'on the other hand', 'the following']
-        curr_lower = curr.text.lower()
-        if any(curr_lower.startswith(t) for t in transitions):
-            return True
-
-        return False
-
-    def _is_subject(self, sentence: str, component: str) -> bool:
-        """Check if component is the grammatical subject."""
-        sent_lower = sentence.lower()
-        comp_lower = component.lower()
-        comp_pos = sent_lower.find(comp_lower)
-
-        if comp_pos == -1:
-            return False
-
-        if comp_pos < 60:
-            verbs = ['is', 'are', 'does', 'do', 'has', 'have', 'provides', 'handles',
-                    'manages', 'stores', 'sends', 'receives', 'creates', 'processes']
-            for verb in verbs:
-                verb_pos = sent_lower.find(f' {verb} ')
-                if verb_pos > comp_pos:
-                    return True
-        return False
 
     # ═════════════════════════════════════════════════════════════════════
     # Phase 2: Pattern learning with debate
