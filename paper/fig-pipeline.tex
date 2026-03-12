@@ -1,0 +1,78 @@
+% ============================================================================
+% TikZ figure for the pipeline DAG
+% Requires: \usepackage{tikz}, \usetikzlibrary{positioning,arrows.meta,fit}
+% ============================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm and 0.6cm,
+    phase/.style={draw, rounded corners, minimum width=2.2cm, minimum height=0.7cm,
+                  font=\footnotesize, align=center},
+    tier1/.style={phase, fill=blue!8},
+    tier2/.style={phase, fill=orange!10},
+    tier3/.style={phase, fill=green!8},
+    arr/.style={-{Stealth[length=2mm]}, thick, gray!70},
+    tierbox/.style={draw=gray!40, dashed, rounded corners=3pt, inner sep=6pt},
+    tierlabel/.style={font=\scriptsize\sffamily, gray!60},
+]
+
+% Tier 1: Knowledge Acquisition
+\node[tier1] (model)   {Model\\Analysis};
+\node[tier1, right=1.2cm of model] (doc) {Document\\Analysis};
+\node[tier1, right=1.2cm of doc] (pattern) {Pattern\\Learning};
+
+% Tier 1: no internal dependencies (all three are fully parallel)
+
+% Tier 2: Link Recovery
+\node[tier2, below=1.4cm of model, xshift=-0.8cm] (seed) {Seed\\Extraction};
+\node[tier2, right=0.6cm of seed] (entity) {Entity Extraction\\+ Validation};
+\node[tier2, right=0.6cm of entity] (coref) {Coreference\\Resolution};
+\node[tier2, right=0.6cm of coref] (partial) {Partial\\Injection};
+
+% Knowledge flow arrows (Tier 1 -> Tier 2)
+\draw[arr] (model.south) -- (entity.north);
+\draw[arr] (model.south) -- (coref.north);
+\draw[arr] (doc.south) -- (entity.north);
+\draw[arr] (doc.south) -- (coref.north);
+\draw[arr] (doc.south) -- (partial.north);
+\draw[arr] (pattern.south) -- (entity.north);
+\draw[arr] (pattern.south) -- (coref.north);
+
+% Tier 3: Merge + Review
+\node[tier3, below=1.4cm of entity, xshift=0.8cm] (merge) {Priority Merge};
+\node[tier3, below=0.5cm of merge] (boundary) {Boundary Filter};
+\node[tier3, below=0.5cm of boundary] (judge) {Judicial Review};
+
+% Tier 2 -> Tier 3
+\draw[arr] (seed.south) -- (merge.north west);
+\draw[arr] (entity.south) -- (merge.north);
+\draw[arr] (coref.south) -- (merge.north);
+\draw[arr] (partial.south) -- (merge.north east);
+
+\draw[arr] (merge) -- (boundary);
+\draw[arr] (boundary) -- (judge);
+
+% Output
+\node[below=0.4cm of judge, font=\footnotesize\itshape] (out) {Trace Links $L$};
+\draw[arr] (judge) -- (out);
+
+% Tier labels
+\node[tierlabel, left=0.3cm of model] {Tier 1};
+\node[tierlabel, left=0.3cm of seed] {Tier 2};
+\node[tierlabel, left=0.8cm of merge] {Tier 3};
+
+% Tier boxes (optional, comment out if too cluttered)
+\begin{scope}[on background layer]
+    \node[tierbox, fit=(model)(pattern), label={[tierlabel]above:Knowledge Acquisition}] {};
+    \node[tierbox, fit=(seed)(partial), label={[tierlabel]above left:Link Recovery}] {};
+    \node[tierbox, fit=(merge)(judge)] {};
+\end{scope}
+
+\end{tikzpicture}
+\caption{Pipeline architecture as a staged DAG. Tier~1 builds shared knowledge
+(all three analyses are fully parallel). Tier~2 runs four link recovery
+strategies; seed extraction requires no knowledge and can start immediately.
+Tier~3 merges all candidates and applies judicial review.}
+\label{fig:pipeline}
+\end{figure*}
