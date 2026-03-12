@@ -1,0 +1,985 @@
+
+================================================================================
+  PROJECT: MEDIASTORE
+================================================================================
+
+── SAD-SAM Distribution ──
+  Total links: 31
+  Unique sentences: 27
+  Unique model elements: 10
+  Avg links/element: 3.1
+  Avg links/sentence: 1.1
+
+  Per-element breakdown:
+    Component: DB                               7 sentences  [23, 24, 25, 31, 32, 33, 34]
+    Component: MediaAccess                      5 sentences  [25, 26, 27, 28, 34]
+    Component: MediaManagement                  4 sentences  [7, 8, 9, 17]
+    Component: Facade                           3 sentences  [1, 3, 6]
+    Component: UserDBAdapter                    3 sentences  [12, 29, 30]
+    _qxAiILg7EeSNPorBlo7                        3 sentences  [33, 35, 36]
+    Component: TagWatermarking                  2 sentences  [16, 17]
+    Component: UserManagement                   2 sentences  [11, 13]
+    Component: Packaging                        1 sentences  [19]
+    Component: Reencoding                       1 sentences  [20]
+
+  Multi-component sentences: 4 / 27 (15%)
+    S17: Component: TagWatermarking, Component: MediaManagement
+    S25: Component: MediaAccess, Component: DB
+    S33: _qxAiILg7EeSNPorBlo7, Component: DB
+    S34: Component: MediaAccess, Component: DB
+
+── SAM-CODE Distribution ──
+  Total entries: 55
+  Directory entries: 3 (5%)
+  File entries: 52 (95%)
+  Model elements with code: 19
+
+  Per-element enrollment:
+    Component: AudioWatermarking              raw=  1  enrolled=   3  ratio=3.0x
+    Component: Cache                          raw=  1  enrolled=   3  ratio=3.0x
+    Component: DB                             raw=  4  enrolled=   4  ratio=1.0x
+    Component: Facade                         raw=  1  enrolled=   1  ratio=1.0x
+    Component: MediaAccess                    raw=  2  enrolled=   2  ratio=1.0x
+    Component: MediaManagement                raw=  1  enrolled=   1  ratio=1.0x
+    Component: Packaging                      raw=  1  enrolled=   1  ratio=1.0x
+    Component: Reencoding                     raw=  1  enrolled=   1  ratio=1.0x
+    Component: TagWatermarking                raw=  1  enrolled=   1  ratio=1.0x
+    Component: UserDBAdapter                  raw=  2  enrolled=   2  ratio=1.0x
+    Component: UserManagement                 raw=  1  enrolled=   2  ratio=2.0x
+    Interface: IDB                            raw=  2  enrolled=   2  ratio=1.0x
+    Interface: IDownload                      raw= 16  enrolled=  16  ratio=1.0x
+    Interface: IFacade                        raw=  3  enrolled=   3  ratio=1.0x
+    Interface: IMediaAccess                   raw=  6  enrolled=   6  ratio=1.0x
+    Interface: IMediaManagement               raw=  3  enrolled=   3  ratio=1.0x
+    Interface: IPackaging                     raw=  3  enrolled=   3  ratio=1.0x
+    Interface: IUserDB                        raw=  3  enrolled=   3  ratio=1.0x
+    Interface: IUserManagement                raw=  3  enrolled=   3  ratio=1.0x
+  Total enrolled files: 60 (from 55 raw entries, 1.1x)
+
+── Ghost Elements (in SAD-SAM but NOT in SAM-CODE) ──
+    _qxAiILg7EeSNPorBlo7x9g                   3 SAD-SAM links (sentences: [33, 35, 36])
+
+── Orphan Code Elements (in SAM-CODE but NOT in SAD-SAM) ──
+    Interface: IMediaManagement               3 code entries
+    Interface: IUserDB                        3 code entries
+    Interface: IPackaging                     3 code entries
+    Component: AudioWatermarking              1 code entries
+    Interface: IDownload                      16 code entries
+    Interface: IUserManagement                3 code entries
+    Interface: IDB                            2 code entries
+    Interface: IMediaAccess                   6 code entries
+    Component: Cache                          1 code entries
+    Interface: IFacade                        3 code entries
+
+── Transitive Product Analysis ──
+  Transitive product (raw): 57 (sentence, code) pairs
+  SAD-CODE gold (raw):      57 (sentence, code) pairs
+
+  Raw-level set comparison:
+    Match (in both):                57
+    FRICTION (transitive but ¬gold): 0
+    NON-TRANSITIVE (gold but ¬trans): 0
+
+  Directory-aware non-transitive analysis:
+    Explained by directory containment: 0
+    TRULY non-transitive:               0
+
+  Directory-aware friction analysis:
+    Explained by directory containment: 0
+    REAL friction (trans ∧ ¬gold):      0
+
+── Enrolled (File-Level) Comparison ──
+  Transitive product (enrolled): 59 file-level pairs
+  SAD-CODE gold (enrolled):      59 file-level pairs
+  Match:                         59
+  FRICTION (trans ∧ ¬gold):      0
+  NON-TRANSITIVE (gold ∧ ¬trans): 0
+
+  Ceiling_R (enrolled): 1.0000 (100.0%)
+  Structurally impossible FNs: 0 / 59 (0.0%)
+
+── Ceiling Metrics Summary ──
+  Gold (enrolled):           59 file-level links
+  Transitive reach:          59 file-level links
+  Gold ∩ Trans (reachable):   59
+  Gold \ Trans (impossible):  0
+  Trans \ Gold (friction):    0
+  Ceiling_R: 1.0000
+
+================================================================================
+  PROJECT: TEASTORE
+================================================================================
+
+── SAD-SAM Distribution ──
+  Total links: 27
+  Unique sentences: 23
+  Unique model elements: 6
+  Avg links/element: 4.5
+  Avg links/sentence: 1.2
+
+  Per-element breakdown:
+    Component: WebUI                            6 sentences  [2, 5, 6, 7, 8, 10]
+    Component: Persistence                      6 sentences  [4, 22, 23, 24, 25, 26]
+    Component: ImageProvider                    5 sentences  [2, 7, 10, 11, 12]
+    Component: Registry                         5 sentences  [1, 37, 38, 41, 43]
+    Component: Recommender                      3 sentences  [4, 27, 28]
+    Component: Auth                             2 sentences  [3, 18]
+
+  Multi-component sentences: 4 / 23 (17%)
+    S2: Component: ImageProvider, Component: WebUI
+    S4: Component: Persistence, Component: Recommender
+    S7: Component: ImageProvider, Component: WebUI
+    S10: Component: ImageProvider, Component: WebUI
+
+── SAM-CODE Distribution ──
+  Total entries: 37
+  Directory entries: 10 (27%)
+  File entries: 27 (73%)
+  Model elements with code: 19
+
+  Per-element enrollment:
+    Component: Auth                           raw=  2  enrolled=  13  ratio=6.5x
+    Component: DummyRecommender               raw=  2  enrolled=   2  ratio=1.0x
+    Component: ImageProvider                  raw=  2  enrolled=  64  ratio=32.0x
+    Component: OrderBasedRecommender          raw=  2  enrolled=   2  ratio=1.0x
+    Component: Persistence                    raw=  2  enrolled=  30  ratio=15.0x
+    Component: PopularityBasedRecommender     raw=  2  enrolled=   2  ratio=1.0x
+    Component: PreprocessedSlopeOneRecommender  raw=  2  enrolled=   2  ratio=1.0x
+    Component: Recommender                    raw=  9  enrolled=  14  ratio=1.6x
+    Component: Registry                       raw=  1  enrolled=   5  ratio=5.0x
+    Component: SlopeOneRecommender            raw=  2  enrolled=   2  ratio=1.0x
+    Component: WebUI                          raw=  2  enrolled=  19  ratio=9.5x
+    Interface: AuthCart                       raw=  2  enrolled=   2  ratio=1.0x
+    Interface: CartActions                    raw=  1  enrolled=   1  ratio=1.0x
+    Interface: ImageProvider                  raw=  1  enrolled=   1  ratio=1.0x
+    Interface: LoadBalancer                   raw=  1  enrolled=   1  ratio=1.0x
+    Interface: Persistence                    raw=  1  enrolled=   1  ratio=1.0x
+    Interface: ProductActions                 raw=  1  enrolled=   1  ratio=1.0x
+    Interface: Recommender                    raw=  1  enrolled=   1  ratio=1.0x
+    Interface: RecommenderStrategy            raw=  1  enrolled=   1  ratio=1.0x
+  Total enrolled files: 164 (from 37 raw entries, 4.4x)
+
+  No ghost elements (all SAD-SAM elements appear in SAM-CODE)
+
+── Orphan Code Elements (in SAM-CODE but NOT in SAD-SAM) ──
+    Interface: ImageProvider                  1 code entries
+    Component: DummyRecommender               2 code entries
+    Interface: AuthCart                       2 code entries
+    Component: PopularityBasedRecommender     2 code entries
+    Component: OrderBasedRecommender          2 code entries
+    Component: SlopeOneRecommender            2 code entries
+    Interface: LoadBalancer                   1 code entries
+    Interface: RecommenderStrategy            1 code entries
+    Interface: Persistence                    1 code entries
+    Component: PreprocessedSlopeOneRecommender  2 code entries
+    Interface: CartActions                    1 code entries
+    Interface: ProductActions                 1 code entries
+    Interface: Recommender                    1 code entries
+
+── Transitive Product Analysis ──
+  Transitive product (raw): 70 (sentence, code) pairs
+  SAD-CODE gold (raw):      70 (sentence, code) pairs
+
+  Raw-level set comparison:
+    Match (in both):                70
+    FRICTION (transitive but ¬gold): 0
+    NON-TRANSITIVE (gold but ¬trans): 0
+
+  Directory-aware non-transitive analysis:
+    Explained by directory containment: 0
+    TRULY non-transitive:               0
+
+  Directory-aware friction analysis:
+    Explained by directory containment: 0
+    REAL friction (trans ∧ ¬gold):      0
+
+── Enrolled (File-Level) Comparison ──
+  Transitive product (enrolled): 707 file-level pairs
+  SAD-CODE gold (enrolled):      707 file-level pairs
+  Match:                         707
+  FRICTION (trans ∧ ¬gold):      0
+  NON-TRANSITIVE (gold ∧ ¬trans): 0
+
+  Ceiling_R (enrolled): 1.0000 (100.0%)
+  Structurally impossible FNs: 0 / 707 (0.0%)
+
+── Ceiling Metrics Summary ──
+  Gold (enrolled):           707 file-level links
+  Transitive reach:          707 file-level links
+  Gold ∩ Trans (reachable):   707
+  Gold \ Trans (impossible):  0
+  Trans \ Gold (friction):    0
+  Ceiling_R: 1.0000
+
+================================================================================
+  PROJECT: TEAMMATES
+================================================================================
+
+── SAD-SAM Distribution ──
+  Total links: 57
+  Unique sentences: 45
+  Unique model elements: 8
+  Avg links/element: 7.1
+  Avg links/sentence: 1.3
+
+  Per-element breakdown:
+    Component: Logic                           15 sentences  [1, 7, 8, 47, 68, 77, 78, 87, 88, 97...]
+    Component: Storage                         10 sentences  [1, 9, 88, 101, 118, 119, 120, 123, 128, 177]
+    Component: UI                               9 sentences  [1, 4, 5, 7, 25, 29, 81, 85, 97]
+    _KGVMcKETEeu-mYqkDsk                        5 sentences  [9, 122, 137, 138, 141]
+    Component: E2E                              5 sentences  [1, 15, 16, 185, 186]
+    Component: Common                           5 sentences  [1, 20, 155, 174, 175]
+    Component: Test Driver                      4 sentences  [1, 10, 163, 168]
+    Component: Client                           4 sentences  [1, 18, 19, 194]
+
+  Multi-component sentences: 7 / 45 (16%)
+    S1: Component: Storage, Component: Common, Component: Logic, Component: UI, Component: E2E, Component: Client, Component: Test Driver
+    S7: Component: UI, Component: Logic
+    S9: Component: Storage, _KGVMcKETEeu-mYqkDsk
+    S88: Component: Storage, Component: Logic
+    S97: Component: UI, Component: Logic
+    S122: _KGVMcKETEeu-mYqkDsk, Component: Logic
+    S185: Component: E2E, Component: Logic
+
+── SAM-CODE Distribution ──
+  Total entries: 22
+  Directory entries: 22 (100%)
+  File entries: 0 (0%)
+  Model elements with code: 14
+
+  Per-element enrollment:
+    Component: Client                         raw=  1  enrolled=  40  ratio=40.0x
+    Component: Common                         raw=  2  enrolled= 150  ratio=75.0x
+    Component: E2E                            raw=  1  enrolled= 123  ratio=123.0x
+    Component: Logic                          raw=  2  enrolled=  71  ratio=35.5x
+    Component: Storage                        raw=  2  enrolled=  59  ratio=29.5x
+    Component: Test Driver                    raw=  1  enrolled=  17  ratio=17.0x
+    Component: UI                             raw=  2  enrolled= 348  ratio=174.0x
+    Interface: Client                         raw=  1  enrolled=  40  ratio=40.0x
+    Interface: Common                         raw=  2  enrolled= 150  ratio=75.0x
+    Interface: E2E                            raw=  1  enrolled= 123  ratio=123.0x
+    Interface: Logic                          raw=  2  enrolled=  71  ratio=35.5x
+    Interface: Storage                        raw=  2  enrolled=  59  ratio=29.5x
+    Interface: Test Driver                    raw=  1  enrolled=  17  ratio=17.0x
+    Interface: UI                             raw=  2  enrolled= 348  ratio=174.0x
+  Total enrolled files: 1616 (from 22 raw entries, 73.5x)
+
+── Ghost Elements (in SAD-SAM but NOT in SAM-CODE) ──
+    _KGVMcKETEeu-mYqkDskRow                   5 SAD-SAM links (sentences: [9, 122, 137, 138, 141])
+
+── Orphan Code Elements (in SAM-CODE but NOT in SAD-SAM) ──
+    Interface: Test Driver                    1 code entries
+    Interface: Client                         1 code entries
+    Interface: Common                         2 code entries
+    Interface: UI                             2 code entries
+    Interface: Logic                          2 code entries
+    Interface: Storage                        2 code entries
+    Interface: E2E                            1 code entries
+
+── Transitive Product Analysis ──
+  Transitive product (raw): 91 (sentence, code) pairs
+  SAD-CODE gold (raw):      228 (sentence, code) pairs
+
+  Raw-level set comparison:
+    Match (in both):                91
+    FRICTION (transitive but ¬gold): 0
+    NON-TRANSITIVE (gold but ¬trans): 137
+
+  Directory-aware non-transitive analysis:
+    Explained by directory containment: 9
+    TRULY non-transitive:               128
+
+  Directory-aware friction analysis:
+    Explained by directory containment: 0
+    REAL friction (trans ∧ ¬gold):      0
+
+── Enrolled (File-Level) Comparison ──
+  Transitive product (enrolled): 6380 file-level pairs
+  SAD-CODE gold (enrolled):      8097 file-level pairs
+  Match:                         6380
+  FRICTION (trans ∧ ¬gold):      0
+  NON-TRANSITIVE (gold ∧ ¬trans): 1717
+
+  Ceiling_R (enrolled): 0.7879 (78.8%)
+  Structurally impossible FNs: 1717 / 8097 (21.2%)
+
+── TRULY Non-Transitive Gold Entries (detail) ──
+
+  S22 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/ [via Interface: Logic]
+      REASON: sentence 22 has NO SAD-SAM link
+    → src/main/java/teammates/ui/webapi/ [via Interface: UI]
+      REASON: sentence 22 has NO SAD-SAM link
+
+  S32 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/OriginCheckFilter.java [via Interface: UI]
+      REASON: sentence 32 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/OriginCheckFilterTest.java [via Interface: UI]
+      REASON: sentence 32 has NO SAD-SAM link
+
+  S39 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebPageServlet.java [via Interface: UI]
+      REASON: sentence 39 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebPageServletTest.java [via Interface: UI]
+      REASON: sentence 39 has NO SAD-SAM link
+
+  S40 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebPageServlet.java [via Interface: UI]
+      REASON: sentence 40 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebPageServletTest.java [via Interface: UI]
+      REASON: sentence 40 has NO SAD-SAM link
+
+  S43 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebApiServlet.java [via Interface: UI]
+      REASON: sentence 43 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebApiServletTest.java [via Interface: UI]
+      REASON: sentence 43 has NO SAD-SAM link
+
+  S44 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebApiServlet.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+    → src/main/java/teammates/ui/webapi/Action.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+    → src/main/java/teammates/ui/webapi/ActionFactory.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebApiServletTest.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+    → src/test/java/teammates/ui/webapi/ActionFactoryTest.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+    → src/test/java/teammates/ui/webapi/BaseActionTest.java [via Interface: UI]
+      REASON: sentence 44 has NO SAD-SAM link
+
+  S45 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebApiServlet.java [via Interface: UI]
+      REASON: sentence 45 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebApiServletTest.java [via Interface: UI]
+      REASON: sentence 45 has NO SAD-SAM link
+
+  S46 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/Action.java [via Interface: UI]
+      REASON: sentence 46 has NO SAD-SAM link
+
+  S47 (SAD-SAM components: Component: Logic)
+    → src/test/java/teammates/ui/webapi/BaseActionTest.java [via Interface: UI]
+      REASON: S47 not linked to Interface: UI in SAD-SAM (linked to: Component: Logic)
+
+  S48 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/Action.java [via Interface: UI]
+      REASON: sentence 48 has NO SAD-SAM link
+    → src/main/java/teammates/ui/webapi/ActionResult.java [via Interface: UI]
+      REASON: sentence 48 has NO SAD-SAM link
+    → src/test/java/teammates/ui/webapi/BaseActionTest.java [via Interface: UI]
+      REASON: sentence 48 has NO SAD-SAM link
+
+  S49 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/JsonResult.java [via Interface: UI]
+      REASON: sentence 49 has NO SAD-SAM link
+
+  S50 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/servlets/WebApiServlet.java [via Interface: UI]
+      REASON: sentence 50 has NO SAD-SAM link
+    → src/test/java/teammates/ui/servlets/WebApiServletTest.java [via Interface: UI]
+      REASON: sentence 50 has NO SAD-SAM link
+
+  S52 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/ [via Interface: UI]
+      REASON: sentence 52 has NO SAD-SAM link
+
+  S66 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/CompileLogsAction.java [via Interface: UI]
+      REASON: sentence 66 has NO SAD-SAM link
+
+  S67 (SAD-SAM components: NONE)
+    → src/test/java/teammates/ui/webapi/CompileLogsActionTest.java [via Interface: UI]
+      REASON: sentence 67 has NO SAD-SAM link
+
+  S75 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/util/Const.java [via Interface: Common]
+      REASON: sentence 75 has NO SAD-SAM link
+
+  S76 (SAD-SAM components: NONE)
+    → src/main/java/teammates/ui/webapi/Action.java [via Interface: UI]
+      REASON: sentence 76 has NO SAD-SAM link
+    → src/test/java/teammates/ui/webapi/BaseActionTest.java [via Interface: UI]
+      REASON: sentence 76 has NO SAD-SAM link
+
+  S84 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/api/ [via Interface: Logic]
+      REASON: sentence 84 has NO SAD-SAM link
+    → src/main/java/teammates/logic/core/ [via Interface: Logic]
+      REASON: sentence 84 has NO SAD-SAM link
+    → src/test/java/teammates/logic/api/ [via Interface: Logic]
+      REASON: sentence 84 has NO SAD-SAM link
+    → src/test/java/teammates/logic/core/ [via Interface: Logic]
+      REASON: sentence 84 has NO SAD-SAM link
+
+  S85 (SAD-SAM components: Component: UI)
+    → src/main/java/teammates/logic/api/ [via Interface: Logic]
+      REASON: S85 not linked to Interface: Logic in SAD-SAM (linked to: Component: UI)
+    → src/test/java/teammates/logic/api/ [via Interface: Logic]
+      REASON: S85 not linked to Interface: Logic in SAD-SAM (linked to: Component: UI)
+
+  S86 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/core/ [via Interface: Logic]
+      REASON: sentence 86 has NO SAD-SAM link
+    → src/test/java/teammates/logic/core/ [via Interface: Logic]
+      REASON: sentence 86 has NO SAD-SAM link
+
+  S90 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/api/EmailGenerator.java [via Interface: Logic]
+      REASON: sentence 90 has NO SAD-SAM link
+    → src/test/java/teammates/logic/api/EmailGeneratorTest.java [via Interface: Logic]
+      REASON: sentence 90 has NO SAD-SAM link
+
+  S91 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/api/EmailSender.java [via Interface: Logic]
+      REASON: sentence 91 has NO SAD-SAM link
+    → src/test/java/teammates/logic/api/EmailSenderTest.java [via Interface: Logic]
+      REASON: sentence 91 has NO SAD-SAM link
+
+  S93 (SAD-SAM components: NONE)
+    → src/main/java/teammates/logic/api/TaskQueuer.java [via Interface: Logic]
+      REASON: sentence 93 has NO SAD-SAM link
+
+  S100 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/InvalidParametersException.java [via Interface: Common]
+      REASON: sentence 100 has NO SAD-SAM link
+
+  S101 (SAD-SAM components: Component: Storage)
+    → src/main/java/teammates/common/exception/EntityAlreadyExistsException.java [via Interface: Common]
+      REASON: S101 not linked to Interface: Common in SAD-SAM (linked to: Component: Storage)
+
+  S107 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/attributes/AccountAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/AccountRequestAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/CourseAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/DeadlineExtensionAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/EntityAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackQuestionAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackResponseAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackResponseCommentAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackSessionAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/InstructorAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/NotificationAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/StudentAttributes.java [via Interface: Common]
+      REASON: sentence 107 has NO SAD-SAM link
+
+  S108 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/attributes/AccountAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/AccountRequestAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/CourseAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/DeadlineExtensionAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackQuestionAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackResponseAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackResponseCommentAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/FeedbackSessionAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/InstructorAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/NotificationAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/StudentAttributes.java [via Interface: Common]
+      REASON: sentence 108 has NO SAD-SAM link
+
+  S109 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/EntityDoesNotExistException.java [via Interface: Common]
+      REASON: sentence 109 has NO SAD-SAM link
+
+  S110 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/InvalidParametersException.java [via Interface: Common]
+      REASON: sentence 110 has NO SAD-SAM link
+
+  S125 (SAD-SAM components: NONE)
+    → src/main/java/teammates/storage/entity/ [via Interface: Storage]
+      REASON: sentence 125 has NO SAD-SAM link
+
+  S126 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/attributes/CourseAttributes.java [via Interface: Common]
+      REASON: sentence 126 has NO SAD-SAM link
+    → src/main/java/teammates/common/datatransfer/attributes/EntityAttributes.java [via Interface: Common]
+      REASON: sentence 126 has NO SAD-SAM link
+    → src/main/java/teammates/storage/entity/Course.java [via Interface: Storage]
+      REASON: sentence 126 has NO SAD-SAM link
+    → src/test/java/teammates/common/datatransfer/attributes/CourseAttributesTest.java [via Interface: Common]
+      REASON: sentence 126 has NO SAD-SAM link
+
+  S127 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 127 has NO SAD-SAM link
+    → src/test/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 127 has NO SAD-SAM link
+
+  S130 (SAD-SAM components: NONE)
+    → src/main/java/teammates/storage/api/ [via Interface: Storage]
+      REASON: sentence 130 has NO SAD-SAM link
+    → src/main/java/teammates/storage/entity/ [via Interface: Storage]
+      REASON: sentence 130 has NO SAD-SAM link
+    → src/main/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 130 has NO SAD-SAM link
+    → src/test/java/teammates/storage/api/ [via Interface: Storage]
+      REASON: sentence 130 has NO SAD-SAM link
+    → src/test/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 130 has NO SAD-SAM link
+
+  S131 (SAD-SAM components: Component: Logic)
+    → src/main/java/teammates/storage/api/ [via Interface: Storage]
+      REASON: S131 not linked to Interface: Storage in SAD-SAM (linked to: Component: Logic)
+    → src/test/java/teammates/storage/api/ [via Interface: Storage]
+      REASON: S131 not linked to Interface: Storage in SAD-SAM (linked to: Component: Logic)
+
+  S132 (SAD-SAM components: NONE)
+    → src/main/java/teammates/storage/entity/ [via Interface: Storage]
+      REASON: sentence 132 has NO SAD-SAM link
+
+  S133 (SAD-SAM components: NONE)
+    → src/main/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 133 has NO SAD-SAM link
+    → src/test/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 133 has NO SAD-SAM link
+
+  S146 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/EntityAlreadyExistsException.java [via Interface: Common]
+      REASON: sentence 146 has NO SAD-SAM link
+
+  S147 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/InvalidParametersException.java [via Interface: Common]
+      REASON: sentence 147 has NO SAD-SAM link
+
+  S151 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/EntityDoesNotExistException.java [via Interface: Common]
+      REASON: sentence 151 has NO SAD-SAM link
+
+  S152 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/InvalidParametersException.java [via Interface: Common]
+      REASON: sentence 152 has NO SAD-SAM link
+
+  S156 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 156 has NO SAD-SAM link
+    → src/main/java/teammates/common/exception/ [via Interface: Common]
+      REASON: sentence 156 has NO SAD-SAM link
+    → src/main/java/teammates/common/util/ [via Interface: Common]
+      REASON: sentence 156 has NO SAD-SAM link
+    → src/test/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 156 has NO SAD-SAM link
+    → src/test/java/teammates/common/util/ [via Interface: Common]
+      REASON: sentence 156 has NO SAD-SAM link
+
+  S157 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/util/ [via Interface: Common]
+      REASON: sentence 157 has NO SAD-SAM link
+    → src/test/java/teammates/common/util/ [via Interface: Common]
+      REASON: sentence 157 has NO SAD-SAM link
+
+  S158 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/exception/ [via Interface: Common]
+      REASON: sentence 158 has NO SAD-SAM link
+
+  S159 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 159 has NO SAD-SAM link
+    → src/test/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 159 has NO SAD-SAM link
+
+  S160 (SAD-SAM components: NONE)
+    → src/main/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 160 has NO SAD-SAM link
+    → src/test/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 160 has NO SAD-SAM link
+
+  S163 (SAD-SAM components: Component: Test Driver)
+    → src/main/java/teammates/common/datatransfer/DataBundle.java [via Interface: Common]
+      REASON: S163 not linked to Interface: Common in SAD-SAM (linked to: Component: Test Driver)
+
+  S172 (SAD-SAM components: NONE)
+    → src/test/java/teammates/common/datatransfer/ [via Interface: Common]
+      REASON: sentence 172 has NO SAD-SAM link
+    → src/test/java/teammates/common/util/ [via Interface: Common]
+      REASON: sentence 172 has NO SAD-SAM link
+    → src/test/java/teammates/logic/ [via Interface: Logic]
+      REASON: sentence 172 has NO SAD-SAM link
+    → src/test/java/teammates/storage/ [via Interface: Storage]
+      REASON: sentence 172 has NO SAD-SAM link
+    → src/test/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 172 has NO SAD-SAM link
+    → src/test/java/teammates/ui/webapi/ [via Interface: UI]
+      REASON: sentence 172 has NO SAD-SAM link
+
+  S178 (SAD-SAM components: NONE)
+    → src/test/java/teammates/storage/search/ [via Interface: Storage]
+      REASON: sentence 178 has NO SAD-SAM link
+
+  S179 (SAD-SAM components: NONE)
+    → src/test/java/teammates/ui/webapi/ [via Interface: UI]
+      REASON: sentence 179 has NO SAD-SAM link
+
+  S187 (SAD-SAM components: NONE)
+    → src/e2e/java/teammates/e2e/cases/ [via Interface: E2E]
+      REASON: sentence 187 has NO SAD-SAM link
+    → src/e2e/java/teammates/e2e/pageobjects/ [via Interface: E2E]
+      REASON: sentence 187 has NO SAD-SAM link
+    → src/e2e/java/teammates/e2e/util/ [via Interface: E2E]
+      REASON: sentence 187 has NO SAD-SAM link
+    → src/lnp/java/teammates/lnp/ [NO SAM-CODE match]
+      REASON: sentence 187 has NO SAD-SAM link
+
+  S188 (SAD-SAM components: NONE)
+    → src/e2e/java/teammates/e2e/cases/ [via Interface: E2E]
+      REASON: sentence 188 has NO SAD-SAM link
+    → src/e2e/java/teammates/e2e/pageobjects/ [via Interface: E2E]
+      REASON: sentence 188 has NO SAD-SAM link
+    → src/e2e/java/teammates/e2e/util/ [via Interface: E2E]
+      REASON: sentence 188 has NO SAD-SAM link
+
+  S193 (SAD-SAM components: NONE)
+    → src/lnp/java/teammates/lnp/ [NO SAM-CODE match]
+      REASON: sentence 193 has NO SAD-SAM link
+
+  S195 (SAD-SAM components: NONE)
+    → src/client/java/teammates/client/connector/ [via Interface: Client]
+      REASON: sentence 195 has NO SAD-SAM link
+    → src/client/java/teammates/client/script/ [via Interface: Client]
+      REASON: sentence 195 has NO SAD-SAM link
+    → src/client/java/teammates/client/util/ [via Interface: Client]
+      REASON: sentence 195 has NO SAD-SAM link
+
+  S196 (SAD-SAM components: NONE)
+    → src/client/java/teammates/client/util/ [via Interface: Client]
+      REASON: sentence 196 has NO SAD-SAM link
+
+  S197 (SAD-SAM components: NONE)
+    → src/client/java/teammates/client/connector/ [via Interface: Client]
+      REASON: sentence 197 has NO SAD-SAM link
+
+  S198 (SAD-SAM components: NONE)
+    → src/client/java/teammates/client/script/ [via Interface: Client]
+      REASON: sentence 198 has NO SAD-SAM link
+
+── Ceiling Metrics Summary ──
+  Gold (enrolled):           8097 file-level links
+  Transitive reach:          6380 file-level links
+  Gold ∩ Trans (reachable):   6380
+  Gold \ Trans (impossible):  1717
+  Trans \ Gold (friction):    0
+  Ceiling_R: 0.7879
+
+================================================================================
+  PROJECT: BIGBLUEBUTTON
+================================================================================
+
+── SAD-SAM Distribution ──
+  Total links: 62
+  Unique sentences: 48
+  Unique model elements: 11
+  Avg links/element: 5.6
+  Avg links/sentence: 1.3
+
+  Per-element breakdown:
+    Component: HTML5 Client                    14 sentences  [4, 5, 6, 9, 10, 11, 12, 13, 14, 19...]
+    Component: HTML5 Server                    13 sentences  [6, 8, 9, 10, 12, 13, 15, 19, 20, 21...]
+    Component: FreeSWITCH                       7 sentences  [58, 59, 61, 62, 63, 66, 72]
+    Component: Apps                             6 sentences  [26, 51, 52, 53, 54, 60]
+    Component: BBB web                          5 sentences  [30, 36, 37, 38, 78]
+    Component: WebRTC-SFU                       4 sentences  [65, 67, 70, 73]
+    Component: Redis PubSub                     4 sentences  [46, 47, 60, 79]
+    _oN4CMFkHEeyewPSmlgs                        3 sentences  [67, 68, 69]
+    Component: Presentation Conversion          2 sentences  [80, 81]
+    Component: FSESL                            2 sentences  [57, 60]
+    Component: Redis DB                         2 sentences  [48, 49]
+
+  Multi-component sentences: 12 / 48 (25%)
+    S6: Component: HTML5 Client, Component: HTML5 Server
+    S9: Component: HTML5 Client, Component: HTML5 Server
+    S10: Component: HTML5 Client, Component: HTML5 Server
+    S12: Component: HTML5 Client, Component: HTML5 Server
+    S13: Component: HTML5 Client, Component: HTML5 Server
+    S19: Component: HTML5 Client, Component: HTML5 Server
+    S47: Component: HTML5 Server, Component: Redis PubSub
+    S60: Component: Apps, Component: FSESL, Component: Redis PubSub
+    S67: _oN4CMFkHEeyewPSmlgs, Component: WebRTC-SFU
+    S72: Component: FreeSWITCH, Component: HTML5 Client
+    S73: Component: WebRTC-SFU, Component: HTML5 Client, Component: HTML5 Server
+    S79: Component: HTML5 Client, Component: Redis PubSub
+
+── SAM-CODE Distribution ──
+  Total entries: 64
+  Directory entries: 42 (66%)
+  File entries: 22 (34%)
+  Model elements with code: 22
+
+  Per-element enrollment:
+    Component: Apps                           raw=  2  enrolled=  15  ratio=7.5x
+    Component: BBB web                        raw=  3  enrolled=  33  ratio=11.0x
+    Component: FSESL                          raw=  3  enrolled=  92  ratio=30.7x
+    Component: FreeSWITCH                     raw=  6  enrolled=  94  ratio=15.7x
+    Component: HTML5 Client                   raw=  2  enrolled=  16  ratio=8.0x
+    Component: HTML5 Server                   raw=  2  enrolled=  16  ratio=8.0x
+    Component: Presentation Conversion        raw=  1  enrolled=  70  ratio=70.0x
+    Component: Recording Service              raw=  7  enrolled=  13  ratio=1.9x
+    Component: Redis DB                       raw=  3  enrolled=   3  ratio=1.0x
+    Component: Redis PubSub                   raw=  1  enrolled=   7  ratio=7.0x
+    Component: WebRTC-SFU                     raw=  2  enrolled=   6  ratio=3.0x
+    Interface: Apps                           raw=  2  enrolled=  15  ratio=7.5x
+    Interface: BBB web                        raw=  3  enrolled=  33  ratio=11.0x
+    Interface: FSESL                          raw=  3  enrolled=  92  ratio=30.7x
+    Interface: FreeSWITCH                     raw=  6  enrolled=  94  ratio=15.7x
+    Interface: HTML5 Client                   raw=  2  enrolled=  16  ratio=8.0x
+    Interface: HTML5 Server                   raw=  2  enrolled=  16  ratio=8.0x
+    Interface: Presentation Conversion        raw=  1  enrolled=  70  ratio=70.0x
+    Interface: Recording Service              raw=  7  enrolled=  13  ratio=1.9x
+    Interface: Redis DB                       raw=  3  enrolled=   3  ratio=1.0x
+    Interface: Redis PubSub                   raw=  1  enrolled=   7  ratio=7.0x
+    Interface: WebRTC-SFU                     raw=  2  enrolled=   6  ratio=3.0x
+  Total enrolled files: 730 (from 64 raw entries, 11.4x)
+
+── Ghost Elements (in SAD-SAM but NOT in SAM-CODE) ──
+    _oN4CMFkHEeyewPSmlgszyA                   3 SAD-SAM links (sentences: [67, 68, 69])
+
+── Orphan Code Elements (in SAM-CODE but NOT in SAD-SAM) ──
+    Interface: Apps                           2 code entries
+    Interface: Recording Service              7 code entries
+    Interface: FSESL                          3 code entries
+    Interface: FreeSWITCH                     6 code entries
+    Interface: Presentation Conversion        1 code entries
+    Interface: Redis PubSub                   1 code entries
+    Interface: Redis DB                       3 code entries
+    Component: Recording Service              7 code entries
+    Interface: BBB web                        3 code entries
+    Interface: HTML5 Server                   2 code entries
+    Interface: HTML5 Client                   2 code entries
+    Interface: WebRTC-SFU                     2 code entries
+
+── Transitive Product Analysis ──
+  Transitive product (raw): 135 (sentence, code) pairs
+  SAD-CODE gold (raw):      132 (sentence, code) pairs
+
+  Raw-level set comparison:
+    Match (in both):                129
+    FRICTION (transitive but ¬gold): 6
+    NON-TRANSITIVE (gold but ¬trans): 3
+
+  Directory-aware non-transitive analysis:
+    Explained by directory containment: 0
+    TRULY non-transitive:               3
+
+  Directory-aware friction analysis:
+    Explained by directory containment: 0
+    REAL friction (trans ∧ ¬gold):      6
+
+── Enrolled (File-Level) Comparison ──
+  Transitive product (enrolled): 1615 file-level pairs
+  SAD-CODE gold (enrolled):      1529 file-level pairs
+  Match:                         1521
+  FRICTION (trans ∧ ¬gold):      94
+  NON-TRANSITIVE (gold ∧ ¬trans): 8
+
+  Ceiling_R (enrolled): 0.9948 (99.5%)
+  Structurally impossible FNs: 8 / 1529 (0.5%)
+
+── TRULY Non-Transitive Gold Entries (detail) ──
+
+  S58 (SAD-SAM components: Component: FreeSWITCH)
+    → akka-bbb-fsesl/ [via Component: FSESL]
+      REASON: S58 not linked to Component: FSESL in SAD-SAM (linked to: Component: FreeSWITCH)
+    → bbb-fsesl-client/ [via Component: FSESL]
+      REASON: S58 not linked to Component: FSESL in SAD-SAM (linked to: Component: FreeSWITCH)
+    → build/packages-template/bbb-fsesl-akka/ [via Component: FSESL]
+      REASON: S58 not linked to Component: FSESL in SAD-SAM (linked to: Component: FreeSWITCH)
+
+── REAL Friction Entries (transitive product says YES, gold says NO) ──
+
+  S59 (SAD-SAM: Component: FreeSWITCH)
+    → akka-bbb-fsesl/src/main/java/org/bigbluebutton/freeswitch/
+      VIA: Component: FreeSWITCH
+    → bbb-fsesl-client/src/main/java/org/freeswitch/
+      VIA: Component: FreeSWITCH
+    → bbb-fsesl-client/src/test/java/org/freeswitch/
+      VIA: Component: FreeSWITCH
+    → build/packages-template/bbb-freeswitch-core/
+      VIA: Component: FreeSWITCH
+    → build/packages-template/bbb-freeswitch-sounds/
+      VIA: Component: FreeSWITCH
+    → freeswitch.placeholder.sh
+      VIA: Component: FreeSWITCH
+
+── Ceiling Metrics Summary ──
+  Gold (enrolled):           1529 file-level links
+  Transitive reach:          1615 file-level links
+  Gold ∩ Trans (reachable):   1521
+  Gold \ Trans (impossible):  8
+  Trans \ Gold (friction):    94
+  Ceiling_R: 0.9948
+
+================================================================================
+  PROJECT: JABREF
+================================================================================
+
+── SAD-SAM Distribution ──
+  Total links: 18
+  Unique sentences: 10
+  Unique model elements: 5
+  Avg links/element: 3.6
+  Avg links/sentence: 1.8
+
+  Per-element breakdown:
+    Component: model                            6 sentences  [1, 4, 5, 6, 9, 12]
+    Component: logic                            4 sentences  [1, 4, 6, 9]
+    Component: gui                              4 sentences  [1, 4, 6, 7]
+    Component: cli                              2 sentences  [2, 10]
+    Component: preferences                      2 sentences  [2, 11]
+
+  Multi-component sentences: 5 / 10 (50%)
+    S1: Component: gui, Component: model, Component: logic
+    S2: Component: preferences, Component: cli
+    S4: Component: gui, Component: model, Component: logic
+    S6: Component: gui, Component: model, Component: logic
+    S9: Component: model, Component: logic
+
+── SAM-CODE Distribution ──
+  Total entries: 11
+  Directory entries: 10 (91%)
+  File entries: 1 (9%)
+  Model elements with code: 6
+
+  Per-element enrollment:
+    Component: cli                            raw=  2  enrolled=   8  ratio=4.0x
+    Component: globals                        raw=  1  enrolled=   1  ratio=1.0x
+    Component: gui                            raw=  2  enrolled= 707  ratio=353.5x
+    Component: logic                          raw=  3  enrolled= 972  ratio=324.0x
+    Component: model                          raw=  2  enrolled= 250  ratio=125.0x
+    Component: preferences                    raw=  1  enrolled=  18  ratio=18.0x
+  Total enrolled files: 1956 (from 11 raw entries, 177.8x)
+
+  No ghost elements (all SAD-SAM elements appear in SAM-CODE)
+
+── Orphan Code Elements (in SAM-CODE but NOT in SAD-SAM) ──
+    Component: globals                        1 code entries
+
+── Transitive Product Analysis ──
+  Transitive product (raw): 38 (sentence, code) pairs
+  SAD-CODE gold (raw):      38 (sentence, code) pairs
+
+  Raw-level set comparison:
+    Match (in both):                38
+    FRICTION (transitive but ¬gold): 0
+    NON-TRANSITIVE (gold but ¬trans): 0
+
+  Directory-aware non-transitive analysis:
+    Explained by directory containment: 0
+    TRULY non-transitive:               0
+
+  Directory-aware friction analysis:
+    Explained by directory containment: 0
+    REAL friction (trans ∧ ¬gold):      0
+
+── Enrolled (File-Level) Comparison ──
+  Transitive product (enrolled): 8268 file-level pairs
+  SAD-CODE gold (enrolled):      8268 file-level pairs
+  Match:                         8268
+  FRICTION (trans ∧ ¬gold):      0
+  NON-TRANSITIVE (gold ∧ ¬trans): 0
+
+  Ceiling_R (enrolled): 1.0000 (100.0%)
+  Structurally impossible FNs: 0 / 8268 (0.0%)
+
+── Ceiling Metrics Summary ──
+  Gold (enrolled):           8268 file-level links
+  Transitive reach:          8268 file-level links
+  Gold ∩ Trans (reachable):   8268
+  Gold \ Trans (impossible):  0
+  Trans \ Gold (friction):    0
+  Ceiling_R: 1.0000
+
+── Dark Matter Analysis: MEDIASTORE ──
+  Sentences in SAD-SAM gold: 27
+  Sentences in SAD-CODE gold: 25
+
+  Sentences in SAD-SAM but NOT SAD-CODE: 2
+    Sentence IDs: [35, 36]
+    S35 → _qxAiILg7EeSNPorBlo7: NO SAM-CODE mapping (element has no code)
+    S36 → _qxAiILg7EeSNPorBlo7: NO SAM-CODE mapping (element has no code)
+
+── Dark Matter Analysis: TEASTORE ──
+  Sentences in SAD-SAM gold: 23
+  Sentences in SAD-CODE gold: 23
+
+── Dark Matter Analysis: TEAMMATES ──
+  Sentences in SAD-SAM gold: 45
+  Sentences in SAD-CODE gold: 93
+
+  Sentences in SAD-CODE but NOT SAD-SAM: 51
+    Sentence IDs: [22, 32, 39, 40, 43, 44, 45, 46, 48, 49, 50, 52, 66, 67, 75, 76, 84, 86, 90, 91, 93, 100, 107, 108, 109, 110, 125, 126, 127, 130, 132, 133, 146, 147, 151, 152, 156, 157, 158, 159, 160, 172, 178, 179, 187, 188, 193, 195, 196, 197, 198]
+
+  Sentences in SAD-SAM but NOT SAD-CODE: 3
+    Sentence IDs: [137, 138, 141]
+    S137 → _KGVMcKETEeu-mYqkDsk: NO SAM-CODE mapping (element has no code)
+    S138 → _KGVMcKETEeu-mYqkDsk: NO SAM-CODE mapping (element has no code)
+    S141 → _KGVMcKETEeu-mYqkDsk: NO SAM-CODE mapping (element has no code)
+
+── Dark Matter Analysis: BIGBLUEBUTTON ──
+  Sentences in SAD-SAM gold: 48
+  Sentences in SAD-CODE gold: 45
+
+  Sentences in SAD-SAM but NOT SAD-CODE: 3
+    Sentence IDs: [59, 68, 69]
+    S59 → Component: FreeSWITCH: has SAM-CODE but SAD-CODE missing this sentence
+    S68 → _oN4CMFkHEeyewPSmlgs: NO SAM-CODE mapping (element has no code)
+    S69 → _oN4CMFkHEeyewPSmlgs: NO SAM-CODE mapping (element has no code)
+
+── Dark Matter Analysis: JABREF ──
+  Sentences in SAD-SAM gold: 10
+  Sentences in SAD-CODE gold: 10
+
+====================================================================================================
+  AGGREGATE SUMMARY
+====================================================================================================
+Project          SAD-SAM SAM-CODE SAD-CODE    Trans   Friction   NonTrans      CeilR   Ghosts
+----------------------------------------------------------------------------------------------------
+mediastore            31       55       57       57          0          0      1.000        1
+teastore              27       37       70       70          0          0      1.000        0
+teammates             57       22      228       91          0        128      0.788        1
+bigbluebutton         62       64      132      135          6          3      0.995        1
+jabref                18       11       38       38          0          0      1.000        0
+----------------------------------------------------------------------------------------------------
+TOTAL/AVG            195      189      525      391          6        131      0.957        3
+
+── Enrolled (File-Level) Summary ──
+Project          Gold(enr) Trans(enr)      Match   Friction   NonTrans    CeilR
+--------------------------------------------------------------------------------
+mediastore              59         59         59          0          0    1.000
+teastore               707        707        707          0          0    1.000
+teammates             8097       6380       6380          0       1717    0.788
+bigbluebutton         1529       1615       1521         94          8    0.995
+jabref                8268       8268       8268          0          0    1.000
+
+── Multi-Component Sentence Summary ──
+  mediastore     :   4 /  27 sentences (15%)
+  teastore       :   4 /  23 sentences (17%)
+  teammates      :   7 /  45 sentences (16%)
+  bigbluebutton  :  12 /  48 sentences (25%)
+  jabref         :   5 /  10 sentences (50%)
+
+── Element Coverage ──
+  mediastore     : SAD-SAM elements=10, SAM-CODE elements=19, ghosts=1, orphans=10
+  teastore       : SAD-SAM elements=6, SAM-CODE elements=19, ghosts=0, orphans=13
+  teammates      : SAD-SAM elements=8, SAM-CODE elements=14, ghosts=1, orphans=7
+  bigbluebutton  : SAD-SAM elements=11, SAM-CODE elements=22, ghosts=1, orphans=12
+  jabref         : SAD-SAM elements=5, SAM-CODE elements=6, ghosts=0, orphans=1
