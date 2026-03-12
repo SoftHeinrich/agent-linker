@@ -1,0 +1,33 @@
+\section{AALinker}
+
+We propose a multi-agent workflow for recovering  trace links between architectural doc and model components.
+Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ and an architectural model containing components ${c_1, \ldots, c_m}$, our approach produces a set of trace links $L \subseteq S
+  \times C$, where each link $(s_i, c_j)$ asserts that sentence $s_i$ discusses component $c_j$'s architectural responsibilities.
+
+The workflow is organized as a staged DAG with three layers
+\begin{enumerate}
+\item \textbf{Project knowledge discovery} (layer~1): Three independent agents analyze extract structured knowledge from the raw inputs: model structure, architectural document vocabulary, and linguistic patterns. 
+These analyses operate solely on the raw document and model.
+And the extracted knowledge will be reused in downstream layers.
+\item \textbf{Candidate Link recovery} (layer~2): Four complementary agents recover candidate links via different mechanisms: component mentioning match, entity extraction, component coreference resolution, and deterministic partial-reference injection. 
+The strategies are largely independent: each targets a different type of implicit component reference.
+\item \textbf{Architectural judge review} (layer~3): A single stage merges all candidate links, judging recovered trace links with discovered project knowledge and traceability knowledge.
+\todo{benefits}
+\end{enumerate}
+
+\subsection{Project Knowledge Discovery}
+%%% provides initial seed links, could be transarc or ilinkerX
+This sub-agent serves as provide initial seed links by looking at explicit mentions only.
+It use two LLM pass each focus on different 
+
+\subsection{Coarse link recovery: Lissa style}
+
+\subsection{Context aware/ knowledge enhanced link recovery}
+
+\subsection{Trace Link knowledge based Judge}
+
+
+
+
+
+\section{Holistic Evaluation of Architectural Traceability Tasks}
