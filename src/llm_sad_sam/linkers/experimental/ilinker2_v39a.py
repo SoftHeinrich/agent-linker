@@ -1,20 +1,14 @@
-"""ILinker2 V39 standalone — V38 + LLM-based partial usage classification + calibrated judge.
+"""ILinker2 V39a standalone — V39 + Phase 5 two-pass intersection for variance reduction.
 
 Fully self-contained: no inheritance from AgentLinker or AgentLinkerV26a.
 All methods inlined from the parent classes.
 
-Changes vs V38:
-- Phase 3c: After discovering partial references, asks the LLM to classify
-  each single-word generic partial as NAME (used as a component name) or
-  ORDINARY (used as an ordinary English word). This is document-adaptive with
-  zero hardcoded word lists.
-- Phase 9 triage: NAME-type partials keep syn-safe bypass (auto-approve).
-  ORDINARY-type partials lose syn-safe and go to calibrated batch judge.
-- Calibrated batch judge: Groups all ORDINARY-partial links by (partial, component),
-  finds full-name anchor sentences from the document as calibration, runs one
-  LLM call per partial with union voting (2 passes). More effective than per-link
-  context judge because it shows document-level evidence of component naming patterns.
-- Checkpoint dir: v39.
+Changes vs V39:
+- Phase 5: Entity extraction now runs TWO independent passes and keeps only
+  candidates found in BOTH (intersection). This eliminates variance-driven FPs
+  where one pass over-extracts candidates the other doesn't find.
+  Cost: 2x Phase 5 LLM calls. Benefit: ~50% FP reduction from Phase 5 variance.
+- Checkpoint dir: v39a.
 """
 
 import json
@@ -110,7 +104,7 @@ Be AGGRESSIVE with NO_LINK on sub-package descriptions (Step 1).
 For Step 2, only NO_LINK when confident. Default to LINK."""
 
 
-class ILinker2V39:
+class ILinker2V39a:
     """V39 standalone: V38 + LLM partial usage classification for targeted syn-safe."""
 
     CONTEXT_WINDOW = 3
@@ -170,7 +164,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         self._is_complex = None
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._activity_partials = set()  # Populated by Phase 3c
-        print(f"ILinker2V39 standalone")
+        print(f"ILinker2V39a standalone")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ── Checkpoint helpers ───────────────────────────────────────────────
@@ -178,7 +172,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
     def _checkpoint_dir(self, text_path):
         cache_dir = os.environ.get("PHASE_CACHE_DIR", "./results/phase_cache")
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        d = os.path.join(cache_dir, "v39", ds)
+        d = os.path.join(cache_dir, "v39a", ds)
         os.makedirs(d, exist_ok=True)
         return d
 
@@ -204,7 +198,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
         os.makedirs(log_dir, exist_ok=True)
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        path = os.path.join(log_dir, f"v39_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        path = os.path.join(log_dir, f"v39a_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
         with open(path, "w") as f:
             json.dump(self._phase_log, f, indent=2, default=str)
         print(f"  Phase log saved: {path}")
@@ -1240,25 +1234,17 @@ JSON only:"""
     # Phase 5: Entity extraction (enriched prompt)
     # ═════════════════════════════════════════════════════════════════════
 
-    def _extract_entities_enriched(self, sentences, components, name_to_id, sent_map):
-        """Phase 5 v2: Balanced prompt + retry on empty response."""
-        comp_names = self._get_comp_names(components)
-        comp_lower = {n.lower() for n in comp_names}
-
-        mappings = []
-        if self.doc_knowledge:
-            mappings.extend([f"{a}={c}" for a, c in self.doc_knowledge.abbreviations.items()])
-            mappings.extend([f"{s}={c}" for s, c in self.doc_knowledge.synonyms.items()])
-            mappings.extend([f"{p}={c}" for p, c in self.doc_knowledge.partial_references.items()])
-
+    def _run_single_extraction_pass(self, sentences, comp_names, comp_lower, mappings,
+                                     name_to_id, sent_map, pass_label=""):
+        """Run one pass of entity extraction over all batches. Returns dict of (snum, cid) -> CandidateLink."""
         batch_size = 50
-        all_candidates = {}
+        candidates = {}
 
         for batch_start in range(0, len(sentences), batch_size):
             batch = sentences[batch_start:batch_start + batch_size]
 
             if len(sentences) > batch_size:
-                print(f"    Entity batch {batch_start//batch_size + 1}: "
+                print(f"    {pass_label}Entity batch {batch_start//batch_size + 1}: "
                       f"S{batch[0].number}-S{batch[-1].number} ({len(batch)} sents)")
 
             prompt = f"""Extract ALL references to software architecture components from this document.
@@ -1293,7 +1279,7 @@ JSON only:"""
                 if data and data.get("references"):
                     break
                 if attempt == 0:
-                    print(f"    Empty response, retrying batch...")
+                    print(f"    {pass_label}Empty response, retrying batch...")
 
             if not data:
                 continue
@@ -1302,7 +1288,6 @@ JSON only:"""
                 snum, cname = ref.get("sentence"), ref.get("component")
                 if not (snum and cname and cname in name_to_id):
                     continue
-                # Handle "S101" format from some backends (strip "S" prefix)
                 if isinstance(snum, str):
                     snum = snum.lstrip("S")
                 try:
@@ -1313,7 +1298,6 @@ JSON only:"""
                 if not sent:
                     continue
 
-                # Verify matched_text is actually in sentence
                 matched = ref.get("matched_text", "")
                 if matched and matched.lower() not in sent.text.lower():
                     continue
@@ -1324,12 +1308,46 @@ JSON only:"""
                 needs_val = not is_exact or ref.get("match_type") != "exact" or is_generic_here
 
                 key = (snum, name_to_id[cname])
-                if key not in all_candidates:
-                    all_candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
+                if key not in candidates:
+                    candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
                                                matched, 0.85, "entity",
                                                ref.get("match_type", "exact"), needs_val)
 
-        return list(all_candidates.values())
+        return candidates
+
+    def _extract_entities_enriched(self, sentences, components, name_to_id, sent_map):
+        """Phase 5 v2: Two-pass intersection for variance reduction.
+
+        Runs entity extraction twice independently, keeps only candidates found
+        in BOTH passes. This eliminates variance-driven FPs where one pass
+        over-extracts candidates the other doesn't find.
+        """
+        comp_names = self._get_comp_names(components)
+        comp_lower = {n.lower() for n in comp_names}
+
+        mappings = []
+        if self.doc_knowledge:
+            mappings.extend([f"{a}={c}" for a, c in self.doc_knowledge.abbreviations.items()])
+            mappings.extend([f"{s}={c}" for s, c in self.doc_knowledge.synonyms.items()])
+            mappings.extend([f"{p}={c}" for p, c in self.doc_knowledge.partial_references.items()])
+
+        # Pass 1
+        print("    Phase 5 Pass 1:")
+        pass1 = self._run_single_extraction_pass(
+            sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P1] ")
+
+        # Pass 2
+        print("    Phase 5 Pass 2:")
+        pass2 = self._run_single_extraction_pass(
+            sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P2] ")
+
+        # Intersection: keep only candidates found in BOTH passes
+        intersected = {key: pass1[key] for key in pass1 if key in pass2}
+
+        print(f"    Phase 5 intersection: Pass1={len(pass1)}, Pass2={len(pass2)}, "
+              f"Intersect={len(intersected)} (dropped {len(pass1) + len(pass2) - 2*len(intersected)} unique-to-one-pass)")
+
+        return list(intersected.values())
 
     # ═════════════════════════════════════════════════════════════════════
     # Phase 6: Validation — Code-first + LLM-fallback
