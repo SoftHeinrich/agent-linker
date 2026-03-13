@@ -19,7 +19,7 @@ The strategies are largely independent: each targets a different type of implici
 %%% provides initial seed links, could be transarc or ilinkerX
 Layer~1 builds a shared knowledge base from the architectural document and model.
 This layer contains three independent analysis steps: each reads only the input sentences and components.
-This layer finds ambiguous component names, 
+This layer finds ambiguous component names, XX 
 
 \subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
 Architectural components operates on high level, so ambiguous as real world concepts.
@@ -32,6 +32,9 @@ Therefore, analyze component names from the input architecture model to identify
 Motivated by previously work on camelcase identifiers, acronyms, 
 We combine these rules with a few-shot LLM prompt to mark ambiguous components.
 
+Additionally, we also check component names with each other, to build a hiearchy.
+Because XXX. arch model are hiearchical.
+In order to disambiguates when a doc refer to parent component.
 
 
 
