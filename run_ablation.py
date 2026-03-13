@@ -23,6 +23,15 @@ from pathlib import Path
 sys.stdout.reconfigure(line_buffering=True)
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
+# Load .env file for API keys
+_env_file = Path(__file__).parent / ".env"
+if _env_file.exists():
+    for line in _env_file.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
+
 from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMBackend
 from llm_sad_sam.core import DocumentLoader, SadSamLink
@@ -227,8 +236,24 @@ VARIANTS = {
     "v31":                dict(linker_class="v31"),
     # --- V32: V31 + convention filter covers partial_inject + zero prompt leakage ---
     "v32":                dict(linker_class="v32"),
+    # --- ALinker: Adaptive Agent Linker with orchestrator, monitor, review agents ---
+    "alinker":            dict(linker_class="alinker"),
     # --- V33: V32 + GPT-5.2 prompt fixes (generic mention, judge, validation, coref) ---
     "v33":                dict(linker_class="v33"),
+    # --- V34: V33 + simplified prompts (26% fewer tokens) ---
+    "v34":                dict(linker_class="v34"),
+    # --- V35: V32 + 6 prompt proposals (example guide, compact P3, GPT self-consistency) ---
+    "v35":                dict(linker_class="v35"),
+    "v35a":               dict(linker_class="v35a"),  # P2 only: example-driven CONVENTION_GUIDE
+    "v35b":               dict(linker_class="v35b"),  # P6 only: compact Phase 3 judge
+    "v35c":               dict(linker_class="v35c"),  # P4 only: concrete JSON output examples
+
+    "v36a":               dict(linker_class="v36a"),  # V32 + ILinker2 few-shot examples (Phase 4)
+    "v36b":               dict(linker_class="v36b"),  # V32 + Phase 9 judge few-shot examples
+
+    "v37":                dict(linker_class="v37"),    # V32 + structural syn-safe restriction
+    "v38":                dict(linker_class="v38"),    # V32 + context-aware judge replacing syn-safe bypass
+    "v39":                dict(linker_class="v39"),    # V38 + LLM partial usage classification for targeted syn-safe
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -276,9 +301,10 @@ DATASETS = {
     },
 }
 
-BACKEND = LLMBackend.CLAUDE
-os.environ["OPENAI_MODEL_NAME"] = "gpt-5.2"
-os.environ["CLAUDE_MODEL"] = "sonnet"
+_backend_env = os.environ.get("LLM_BACKEND", "claude")
+BACKEND = LLMBackend.OPENAI if _backend_env == "openai" else LLMBackend.CLAUDE
+os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.2")
+os.environ.setdefault("CLAUDE_MODEL", "sonnet")
 
 
 def load_gold_sam(gold_path: str) -> set[tuple[int, str]]:
@@ -615,9 +641,42 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v32":
         from llm_sad_sam.linkers.experimental.ilinker2_v32 import ILinker2V32
         linker = ILinker2V32(backend=BACKEND)
+    elif linker_class == "alinker":
+        from llm_sad_sam.linkers.experimental.alinker import ALinker
+        linker = ALinker(backend=BACKEND)
+    elif linker_class == "v35":
+        from llm_sad_sam.linkers.experimental.ilinker2_v35 import ILinker2V35
+        linker = ILinker2V35(backend=BACKEND)
+    elif linker_class == "v35a":
+        from llm_sad_sam.linkers.experimental.ilinker2_v35a import ILinker2V35a
+        linker = ILinker2V35a(backend=BACKEND)
+    elif linker_class == "v35b":
+        from llm_sad_sam.linkers.experimental.ilinker2_v35b import ILinker2V35b
+        linker = ILinker2V35b(backend=BACKEND)
+    elif linker_class == "v35c":
+        from llm_sad_sam.linkers.experimental.ilinker2_v35c import ILinker2V35c
+        linker = ILinker2V35c(backend=BACKEND)
+    elif linker_class == "v36a":
+        from llm_sad_sam.linkers.experimental.ilinker2_v36a import ILinker2V36a
+        linker = ILinker2V36a(backend=BACKEND)
+    elif linker_class == "v36b":
+        from llm_sad_sam.linkers.experimental.ilinker2_v36b import ILinker2V36b
+        linker = ILinker2V36b(backend=BACKEND)
+    elif linker_class == "v37":
+        from llm_sad_sam.linkers.experimental.ilinker2_v37 import ILinker2V37
+        linker = ILinker2V37(backend=BACKEND)
+    elif linker_class == "v38":
+        from llm_sad_sam.linkers.experimental.ilinker2_v38 import ILinker2V38
+        linker = ILinker2V38(backend=BACKEND)
+    elif linker_class == "v39":
+        from llm_sad_sam.linkers.experimental.ilinker2_v39 import ILinker2V39
+        linker = ILinker2V39(backend=BACKEND)
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)
+    elif linker_class == "v34":
+        from llm_sad_sam.linkers.experimental.ilinker2_v34 import ILinker2V34
+        linker = ILinker2V34(backend=BACKEND)
     elif linker_class == "v33f":
         from llm_sad_sam.linkers.experimental.ilinker2_v33f import ILinker2V33f
         linker = ILinker2V33f(backend=BACKEND)

@@ -271,14 +271,17 @@ class LLMClient:
             messages.append({"role": msg.role, "content": msg.content})
 
         try:
-            response = client.chat.completions.create(
+            create_kwargs = dict(
                 model=self.openai_model,
                 messages=messages,
                 temperature=self.temperature,
                 seed=42,
                 max_completion_tokens=4096,
-                timeout=timeout
+                timeout=timeout,
             )
+            if os.environ.get("OPENAI_SERVICE_TIER"):
+                create_kwargs["service_tier"] = os.environ["OPENAI_SERVICE_TIER"]
+            response = client.chat.completions.create(**create_kwargs)
 
             token_usage = None
             if response.usage:
@@ -481,36 +484,72 @@ class LLMClient:
 
         return summary
 
-    def query(self, prompt: str, timeout: int = 180) -> LLMResponse:
+    def query(self, prompt: str, timeout: int = 180, max_retries: int = 3) -> LLMResponse:
         """Send a prompt to the LLM and get a response.
+
+        Retries on transient failures (timeout, connection errors) with
+        exponential backoff. Raises RuntimeError after all retries exhausted.
 
         Args:
             prompt: The prompt to send
             timeout: Timeout in seconds
+            max_retries: Max retry attempts for transient errors (default 3)
 
         Returns:
             LLMResponse with the result
+
+        Raises:
+            RuntimeError: If all retries exhausted on transient errors
         """
         import time
-        start_time = time.time()
 
-        if self.backend == LLMBackend.CODEX:
-            response = self._query_codex(prompt, timeout)
-        elif self.backend == LLMBackend.CLAUDE:
-            response = self._query_claude(prompt, timeout)
-        elif self.backend == LLMBackend.OPENAI:
-            response = self._query_openai(prompt, timeout)
-        else:
-            response = LLMResponse(text="", success=False, error=f"Unknown backend: {self.backend}")
+        last_response = None
+        for attempt in range(max_retries):
+            start_time = time.time()
 
-        latency_ms = int((time.time() - start_time) * 1000)
-        response.latency_ms = latency_ms
+            if self.backend == LLMBackend.CODEX:
+                response = self._query_codex(prompt, timeout)
+            elif self.backend == LLMBackend.CLAUDE:
+                response = self._query_claude(prompt, timeout)
+            elif self.backend == LLMBackend.OPENAI:
+                response = self._query_openai(prompt, timeout)
+            else:
+                response = LLMResponse(text="", success=False, error=f"Unknown backend: {self.backend}")
 
-        # Log the request
-        if self.enable_logging:
-            self._log_request(prompt, response, latency_ms)
+            latency_ms = int((time.time() - start_time) * 1000)
+            response.latency_ms = latency_ms
 
-        return response
+            # Log the request
+            if self.enable_logging:
+                self._log_request(prompt, response, latency_ms)
+
+            # Success — return immediately
+            if response.success:
+                return response
+
+            last_response = response
+
+            # Check if error is transient (retryable)
+            error_lower = (response.error or "").lower()
+            is_transient = any(keyword in error_lower for keyword in [
+                "timed out", "timeout", "connection", "503", "502", "504",
+                "overloaded", "rate_limit", "rate limit", "server_error",
+            ])
+
+            if not is_transient:
+                # Non-transient error (e.g., bad prompt, auth failure) — don't retry
+                return response
+
+            if attempt < max_retries - 1:
+                wait_time = (2 ** attempt) * 2 + 1  # 3s, 5s, 9s
+                print(f"    LLM error: {response.error} — retrying in {wait_time}s "
+                      f"(attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
+
+        # All retries exhausted on transient error — raise
+        raise RuntimeError(
+            f"LLM query failed after {max_retries} retries: {last_response.error}"
+        )
 
     def _query_codex(self, prompt: str, timeout: int) -> LLMResponse:
         """Query using Codex CLI."""
@@ -639,7 +678,7 @@ class LLMClient:
         last_error = None
         for attempt in range(max_retries):
             try:
-                response = client.chat.completions.create(
+                create_kwargs = dict(
                     model=self.openai_model,
                     messages=[
                         {
@@ -654,8 +693,11 @@ class LLMClient:
                     temperature=self.temperature,
                     seed=42,
                     max_completion_tokens=4096,
-                    timeout=timeout
+                    timeout=timeout,
                 )
+                if os.environ.get("OPENAI_SERVICE_TIER"):
+                    create_kwargs["service_tier"] = os.environ["OPENAI_SERVICE_TIER"]
+                response = client.chat.completions.create(**create_kwargs)
 
                 # Extract token usage
                 token_usage = None

@@ -1,15 +1,19 @@
-"""ILinker2 V39 standalone — V38 + LLM-based partial usage classification.
+"""ILinker2 V39 standalone — V38 + LLM-based partial usage classification + calibrated judge.
 
 Fully self-contained: no inheritance from AgentLinker or AgentLinkerV26a.
 All methods inlined from the parent classes.
 
 Changes vs V38:
 - Phase 3c: After discovering partial references, asks the LLM to classify
-  each single-word generic partial as ENTITY (used as a component name) or
-  ACTIVITY (used as an ordinary English word). This is document-adaptive with
+  each single-word generic partial as NAME (used as a component name) or
+  ORDINARY (used as an ordinary English word). This is document-adaptive with
   zero hardcoded word lists.
-- Phase 9 triage: entity-type partials keep syn-safe bypass (auto-approve).
-  Activity-type partials lose syn-safe and go to context-aware judge.
+- Phase 9 triage: NAME-type partials keep syn-safe bypass (auto-approve).
+  ORDINARY-type partials lose syn-safe and go to calibrated batch judge.
+- Calibrated batch judge: Groups all ORDINARY-partial links by (partial, component),
+  finds full-name anchor sentences from the document as calibration, runs one
+  LLM call per partial with union voting (2 passes). More effective than per-link
+  context judge because it shows document-level evidence of component naming patterns.
 - Checkpoint dir: v39.
 """
 
@@ -699,6 +703,28 @@ JSON only:"""
         if not to_review:
             return safe, []
 
+        # Build Phase 3 context: only NAME-type aliases (not ORDINARY/activity)
+        # ORDINARY partials are excluded so the LLM can
+        # correctly judge generic uses without being primed.
+        alias_context = ""
+        if self.doc_knowledge:
+            alias_lines = []
+            for partial, comp in self.doc_knowledge.partial_references.items():
+                if partial not in self._activity_partials:
+                    alias_lines.append(f'  "{partial}" is a confirmed short name for {comp}')
+            for syn, comp in self.doc_knowledge.synonyms.items():
+                alias_lines.append(f'  "{syn}" is a confirmed synonym for {comp}')
+            for abbr, comp in self.doc_knowledge.abbreviations.items():
+                alias_lines.append(f'  "{abbr}" is a confirmed abbreviation for {comp}')
+            if alias_lines:
+                alias_context = (
+                    "CONFIRMED ALIASES (from document analysis):\n"
+                    + "\n".join(alias_lines)
+                    + "\n\nIMPORTANT: When a confirmed alias appears in a sentence, it IS a reference "
+                    "to that component — even inside compound phrases. For example, if \"Svc\" is a "
+                    "confirmed short name for BackendSvc, then \"Svc handler\" in a sentence IS about BackendSvc.\n"
+                )
+
         # Build items for LLM
         items = []
         for i, lk in enumerate(to_review):
@@ -720,7 +746,7 @@ JSON only:"""
 
 ARCHITECTURE COMPONENTS: {', '.join(comp_names)}
 
-{CONVENTION_GUIDE}
+{alias_context}{CONVENTION_GUIDE}
 
 ---
 
@@ -1188,7 +1214,7 @@ Examples of entity reference: "the {partial.lower()} connects to...", "sends dat
 Classify as ORDINARY only if EVERY occurrence uses the word as part of a compound phrase,
 modifier, or generic descriptor — never as a standalone entity.
 Examples of purely ordinary: "{partial.lower()} process", "automated {partial.lower()}",
-"{partial.lower()} fallback", "{partial.lower()}-based"
+"{partial.lower()} strategy", "{partial.lower()}-based"
 
 The threshold is: if even ONE sentence uses "{partial}" as a standalone entity reference,
 classify as NAME. Only classify as ORDINARY when you see ZERO standalone entity uses.
@@ -1944,104 +1970,133 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         return None, None
 
     def _judge_syn_safe(self, syn_links, comp_names, sent_map):
-        """Context-aware judge for synonym-backed links. Uses Phase 3 context."""
+        """Calibrated batch judge for activity-partial links.
+
+        Groups links by (partial, component), finds full-name anchor sentences,
+        and runs one LLM call per partial with union voting (2 passes).
+        Non-partial or multi-word partial links are auto-approved.
+        """
         if not syn_links:
             return []
 
         print(f"  Judging {len(syn_links)} synonym-backed links with context-aware judge")
-        comp_names_str = ', '.join(comp_names)
 
-        approved = []
+        # Group by (partial, component) for batch processing
+        partial_groups = defaultdict(list)  # (partial, comp_name) -> [link]
+        auto_approve = []
+
         for l in syn_links:
             sent = sent_map.get(l.sentence_number)
             if not sent:
-                approved.append(l)
+                auto_approve.append(l)
                 continue
 
-            ctx_str = self._build_context_string(l.component_name)
-            if not ctx_str:
-                # No context available — fall back to auto-approve (same as V32)
-                approved.append(l)
-                continue
-
-            # Find which alias matched and whether it's a single-word partial
             alias, alias_type = self._find_matching_alias(l.component_name, sent.text)
             is_generic_partial = (alias_type == "partial" and alias
                                   and ' ' not in alias
                                   and not re.search(r'[a-z][A-Z]', alias))
 
-            # Union voting: reject only if BOTH passes reject
-            verdicts = []
-            for _ in range(2):
-                v = self._context_judge_pass(l.sentence_number, l.component_name,
-                                              sent.text, comp_names_str, ctx_str,
-                                              alias, is_generic_partial)
-                verdicts.append(v)
-
-            if verdicts[0] or verdicts[1]:  # Union: approve if either pass approves
-                approved.append(l)
-                if not verdicts[0] or not verdicts[1]:
-                    print(f"    Context union-save: S{l.sentence_number} -> {l.component_name}")
+            if is_generic_partial:
+                partial_groups[(alias, l.component_name)].append(l)
             else:
-                print(f"    Context reject: S{l.sentence_number} -> {l.component_name}")
+                # Non-generic (synonym, CamelCase, multi-word) → auto-approve
+                auto_approve.append(l)
 
-        return approved
+        if not partial_groups:
+            return auto_approve + syn_links  # all auto-approved
 
-    def _context_judge_pass(self, snum, comp_name, sent_text, comp_names_str,
-                            context_str, alias, is_generic_partial):
-        """Single pass of context-aware judge. Returns True=approve, False=reject."""
-        # Build the generic-partial disambiguation guide when applicable
-        generic_guide = ""
-        if is_generic_partial and alias:
-            generic_guide = f"""
-CRITICAL — NAMING vs GENERIC USE:
-The matching short name "{alias}" is a common English word. Apply the SUBSTITUTION
-TEST before anything else:
+        # Find full-name anchor sentences for each component
+        all_sents = list(sent_map.values())
+        anchors = {}  # comp_name -> [(snum, text)]
+        for (partial, comp), links in partial_groups.items():
+            if comp in anchors:
+                continue
+            comp_anchors = []
+            for s in all_sents:
+                if re.search(rf'\b{re.escape(comp)}\b', s.text, re.IGNORECASE):
+                    comp_anchors.append((s.number, s.text))
+            anchors[comp] = comp_anchors[:5]
 
-  Replace every occurrence of "{alias}" in the sentence with the full component name
-  "{comp_name}". Read the result aloud. Does the sentence STILL MAKE SENSE and
-  MEAN THE SAME THING?
+        # Run calibrated batch judge per (partial, component)
+        approved = list(auto_approve)
 
-  YES → the author is referring to the component. Proceed to Steps 1-3.
-  NO  → the author is using the word generically. REJECT immediately.
+        for (partial, comp), links in sorted(partial_groups.items()):
+            comp_anchors = anchors.get(comp, [])
 
-This test is DECISIVE. Do not override it. A sentence can describe topics closely
-related to what a component does without actually referring to that component by name.
-"""
+            # Build anchor section
+            if comp_anchors:
+                anchor_lines = "\n".join(
+                    f"  S{snum}: {text}" for snum, text in comp_anchors
+                )
+                anchor_section = (
+                    f'FULL-NAME REFERENCES (calibration — these definitely refer to {comp}):\n'
+                    f'{anchor_lines}\n\n'
+                    f'In these sentences, the author uses the full name "{comp}". This shows how\n'
+                    f'the author refers to this component when being explicit.'
+                )
+            else:
+                anchor_section = f"(No full-name references found for {comp} in this document.)"
 
-        prompt = f"""JUDGE: Should sentence S{snum} be linked to component "{comp_name}"?
+            # Build cases
+            sorted_links = sorted(links, key=lambda x: x.sentence_number)
+            case_lines = []
+            for i, l in enumerate(sorted_links):
+                sent = sent_map.get(l.sentence_number)
+                text = sent.text if sent else "(no text)"
+                case_lines.append(f"  Case {i+1} (S{l.sentence_number}): {text}")
+            cases_section = "\n".join(case_lines)
 
-DOCUMENT ANALYSIS CONTEXT:
-{context_str}
-These mappings were confirmed by prior analysis of this document's terminology.
+            prompt = f"""BATCH CLASSIFICATION: For each sentence below, determine whether "{partial}"
+refers to the architecture component "{comp}", or is used as an ordinary English word.
 
-SENTENCE: {sent_text}
-ALL COMPONENTS: {comp_names_str}
+{anchor_section}
 
-IMPORTANT: A synonym/short name appearing in the sentence is NECESSARY but NOT SUFFICIENT.
-{generic_guide}
-Step 1 — REFERENCE CHECK: Does the component name or a confirmed synonym/short name appear
-in the sentence as a reference to the component? REJECT if:
-  - It is a hyphenated modifier with no standalone usage (e.g., "X-side processing")
-  - It is part of a different proper name not in the synonym list
-  - It is only in a transitional/navigational phrase (e.g., "see the X section above")
-  NOTE: "the X", "on the X side" DO count as references when the word is used as a noun
-  referring to a system participant, even in a prepositional phrase.
+SENTENCES TO CLASSIFY (only the short name "{partial}" appears, not the full name):
+{cases_section}
 
-Step 2 — ARCHITECTURAL RELEVANCE: Does the sentence describe what this component does,
-how it interacts with other components, or its role in the system? A sentence that merely
-mentions the component as a location or recipient without describing its behavior is still
-relevant if the interaction itself is architectural.
+For each case, apply this test:
+Does "{partial}" in that sentence follow the SAME usage pattern as the full-name
+references above — identifying the same system component as a participant?
+Or is "{partial}" used in its ordinary English sense — describing a general concept,
+activity, or type that happens to share the word?
 
-Step 3 — NOT PURELY INCIDENTAL: The component should be a meaningful participant in what
-the sentence describes, not just a passing mention in a list or aside.
+A sentence can describe activities RELATED to what {comp} does without actually
+referring to {comp} by name. If "{partial}" is part of a descriptive phrase like
+"{partial.lower()} process", "automated {partial.lower()}", or "{partial.lower()} fallback" — where
+the word describes a generic activity or type — that is ordinary English, not a
+component reference.
 
-Return JSON: {{"approve": true/false, "reason": "brief explanation"}}
+Return JSON:
+{{"classifications": [
+  {{"case": 1, "refers_to_component": true/false, "reason": "brief"}},
+  ...
+]}}
 JSON only:"""
-        data = self.llm.extract_json(self.llm.query(prompt, timeout=60))
-        if data:
-            return data.get("approve", True)
-        return True  # Default approve on parse failure
+
+            # Union voting: 2 passes, reject only if BOTH reject
+            all_pass_results = []
+            for _ in range(2):
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+                pass_results = {}
+                if data:
+                    for c in data.get("classifications", []):
+                        idx = c.get("case", 0) - 1
+                        refers = c.get("refers_to_component", True)
+                        reason = c.get("reason", "")
+                        pass_results[idx] = (refers, reason)
+                all_pass_results.append(pass_results)
+
+            for i, l in enumerate(sorted_links):
+                p1_refers, _ = all_pass_results[0].get(i, (True, "missing"))
+                p2_refers, _ = all_pass_results[1].get(i, (True, "missing"))
+                union_approved = p1_refers or p2_refers
+
+                if union_approved:
+                    approved.append(l)
+                    if not p1_refers or not p2_refers:
+                        print(f"    Context union-save: S{l.sentence_number} -> {l.component_name}")
+                else:
+                    print(f"    Context reject: S{l.sentence_number} -> {l.component_name}")
 
     def _judge_nomatch(self, nomatch_links, comp_names, sent_map):
         """Standard 4-rule judge for non-alias links, with union voting."""
