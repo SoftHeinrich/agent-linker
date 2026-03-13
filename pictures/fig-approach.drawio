@@ -1,0 +1,45 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1" pages="2">
+  <diagram name="Page-1" id="WICAdKFq6CsmOsBgAepT">
+    <mxGraphModel dx="570" dy="369" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Model Analysis" vertex="1">
+          <mxGeometry height="60" width="120" x="160" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="120" x="350" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Doc" vertex="1">
+          <mxGeometry height="50" width="70" x="160" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Model" vertex="1">
+          <mxGeometry height="50" width="70" x="290" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-5" edge="1" parent="1" source="dQefVQt4oBgzIhiXaNqw-4" style="endArrow=classic;html=1;rounded=0;exitX=0.443;exitY=0.991;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.544;entryY=-0.031;entryDx=0;entryDy=0;entryPerimeter=0;" target="dQefVQt4oBgzIhiXaNqw-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="320" y="170" as="sourcePoint" />
+            <mxPoint x="370" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dQefVQt4oBgzIhiXaNqw-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Ambiguous names" vertex="1">
+          <mxGeometry height="60" width="70" x="140" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="fsC3fKboepq1yE1VzDCC-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="component parent-kid&lt;div&gt;relationship&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="80" x="230" y="220" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="aUFAvCYMWP7wOaWnb5uW" name="notes for ambiguous names">
+    <mxGraphModel dx="2651" dy="1715" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="eJF-0FlHICtBYtwfRO---1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;div style=&quot;background-color:#ffffff;color:#080808&quot;&gt;&lt;pre style=&quot;font-family:&#39;JetBrains Mono&#39;,monospace;font-size:9.8pt;&quot;&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;EXAMPLE 1:&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;NAMES: Lexer, Parser, CodeGenerator, Optimizer, Core, Util, AST, SymbolTable, Base&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ architectural: [&quot;Lexer&quot;, &quot;Parser&quot;, &quot;CodeGenerator&quot;, &quot;Optimizer&quot;, &quot;AST&quot;, &quot;SymbolTable&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ ambiguous: [&quot;Core&quot;, &quot;Util&quot;, &quot;Base&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Reasoning: Lexer/Parser/Optimizer name specific compilation roles. Core/Util/Base are&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;organizational labels that tell you nothing about what the component does.&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;EXAMPLE 2:&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;NAMES: Scheduler, Dispatcher, MemoryManager, Monitor, Pool, Helper, ProcessTable&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ architectural: [&quot;Scheduler&quot;, &quot;Dispatcher&quot;, &quot;MemoryManager&quot;, &quot;ProcessTable&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ ambiguous: [&quot;Monitor&quot;, &quot;Pool&quot;, &quot;Helper&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Reasoning: Scheduler/Dispatcher name specific OS roles. Monitor and Pool are ordinary&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;English words regularly used generically (&quot;monitor performance&quot;, &quot;thread pool&quot;).&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Helper is an organizational label.&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;EXAMPLE 3:&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ architectural: [&quot;RenderEngine&quot;, &quot;SceneGraph&quot;, &quot;Socket&quot;, &quot;Router&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ ambiguous: [&quot;Pipeline&quot;, &quot;Layer&quot;, &quot;Proxy&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;used generically in documentation (&quot;processing pipeline&quot;, &quot;network layer&quot;, &quot;behind a proxy&quot;).&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;EXAMPLE 4:&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;NAMES: PaymentGateway, OrderProcessor, Connector, Controller, Adapter, Worker, Agent&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ architectural: [&quot;PaymentGateway&quot;, &quot;OrderProcessor&quot;, &quot;Worker&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;→ ambiguous: [&quot;Connector&quot;, &quot;Controller&quot;, &quot;Adapter&quot;, &quot;Agent&quot;]&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Reasoning: PaymentGateway/OrderProcessor are CamelCase compounds naming specific roles.&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;Worker names a specific concurrency mechanism. But Connector/Controller/Adapter/Agent&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;seem functional yet are GENERIC categories writers use without referring to any specific&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;component: &quot;a database connector&quot;, &quot;the main controller&quot;, &quot;a protocol adapter&quot;, &quot;a&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;background agent&quot;. They describe WHAT KIND of thing it is, not WHICH specific mechanism&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;color:#067d17;&quot;&gt;— so they are ambiguous.&quot;&quot;&quot;&lt;/span&gt;.strip()&lt;/pre&gt;&lt;/div&gt;&lt;/h1&gt;" vertex="1">
+          <mxGeometry height="780" width="730" x="-1690" y="-1070" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
