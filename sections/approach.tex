@@ -17,9 +17,26 @@ The strategies are largely independent: each targets a different type of implici
 
 \subsection{Project Knowledge Discovery}
 %%% provides initial seed links, could be transarc or ilinkerX
-Layer~1 Tier~1 builds a shared knowledge base from the architectural document and model.
+Layer~1 builds a shared knowledge base from the architectural document and model.
 This layer contains three independent analysis steps: each reads only the input sentences and components.
 This layer finds ambiguous component names, 
+
+\subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
+Architectural components operates on high level, so ambiguous as real world concepts.
+This pose the challenge of XX.
+YY more on this challenge.
+Therefore, blindly matching mentions of generic usage would cause false positive links.
+motivating by xx paper, todo, cite ref, we extract knowledge from it.
+Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
+
+Motivated by previously work on camelcase identifiers, acronyms, 
+We combine these rules with a few-shot LLM prompt to mark ambiguous components.
+
+
+
+
+
+
 \subsection{Coarse link recovery: Lissa style}
 This sub-agent serves as provide initial seed links by looking at explicit mentions only.
 It use two LLM pass each focus on different. 
