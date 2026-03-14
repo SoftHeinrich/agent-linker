@@ -28,7 +28,11 @@ from llm_sad_sam.core.data_types import (
 )
 from llm_sad_sam.core.document_loader import DocumentLoader
 from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
-from llm_sad_sam.linkers.experimental.prompts import CONVENTION_GUIDE, AMBIGUITY_FEW_SHOT
+from llm_sad_sam.linkers.experimental.prompts import (
+    CONVENTION_GUIDE, AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
+    DOC_KNOWLEDGE_JUDGE_EXAMPLES, DOC_KNOWLEDGE_JUDGE_RULES,
+    ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
+)
 from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
@@ -367,21 +371,7 @@ Return JSON:
   "ambiguous": ["names that could easily be used as ordinary words in documentation"]
 }}
 
-RULES:
-1. ARCHITECTURAL: Names that refer to a specific role or responsibility. If the name tells you
-   WHAT the component does (scheduling, parsing, rendering, storing data, managing users), it is
-   architectural — even if the word also exists in a dictionary.
-   Multi-word names, CamelCase compounds, and abbreviations (API, TCP, RPC) → always architectural.
-
-2. AMBIGUOUS: Single words that writers regularly use generically in software documentation.
-   This includes TWO categories:
-   Category A — Organizational labels: core, util, base, helper (tell you nothing about function)
-   Category B — Generic functional categories: connector, controller, adapter, agent
-   (describe WHAT KIND of thing, not WHICH specific mechanism)
-   The test: "Could a technical writer naturally write this word in a sentence about ANY system
-   without referring to a specific component?" If yes → ambiguous.
-   Key: Scheduler/Router describe HOW (specific mechanism) → ARCHITECTURAL.
-         Connector/Controller/Adapter describe WHAT KIND (generic category) → AMBIGUOUS.
+{AMBIGUITY_RULES}
 
 JSON only:"""
 
@@ -490,52 +480,9 @@ COMPONENTS: {', '.join(comp_names)}
 PROPOSED MAPPINGS:
 {chr(10).join(mapping_list)}
 
-EXAMPLES — study these to calibrate your judgment:
+{DOC_KNOWLEDGE_JUDGE_EXAMPLES}
 
-Example 1 — APPROVE (abbreviation from component name):
-  'AST' -> AbstractSyntaxTree (abbrev)
-  Verdict: APPROVE. "AST" is the initials of "AbstractSyntaxTree". Abbreviations
-  formed from the component name's words are always valid.
-
-Example 2 — APPROVE (trailing word of multi-word name):
-  'Dispatcher' -> EventDispatcher (partial)
-  Verdict: APPROVE. "Dispatcher" is the last word of "EventDispatcher".
-  If no other component ends in "Dispatcher", this partial is unambiguous.
-
-Example 3 — APPROVE (CamelCase identifier):
-  'RenderEngine' -> GameRenderEngine (synonym)
-  Verdict: APPROVE. CamelCase is a constructed identifier — always a proper name.
-
-Example 4 — APPROVE (trailing word of multi-word name):
-  'Table' -> SymbolTable (partial)
-  Verdict: APPROVE. "Table" is the trailing word of "SymbolTable" and
-  likely refers to this specific component when no other component uses "Table".
-
-Example 5 — REJECT (ordinary English verb/noun):
-  'process' -> OrderProcessor (partial)
-  Verdict: REJECT. "process" is an ordinary English verb/noun used generically
-  in many contexts ("process requests", "the process").
-
-Example 6 — REJECT (refers to whole system):
-  'system' -> PaymentSystem (partial)
-  Verdict: REJECT. "system" is too generic — it could refer to the overall system.
-
-DECISION RULES (apply in order):
-
-1. AUTO-APPROVE these — they are always valid mappings:
-   - Abbreviations formed from the component name's initials or words
-   - Trailing words of multi-word component names (if no other component shares that word)
-   - CamelCase identifiers
-   - Multi-word phrases that contain the component name
-
-2. APPROVE if the term plausibly refers to exactly one component and is NOT
-   a generic word like "system", "process", "service", "component", "module".
-
-3. REJECT only if the term is clearly generic and could refer to anything,
-   or clearly refers to a different component or the system as a whole.
-
-IMPORTANT: When in doubt, APPROVE. False approvals are filtered by later
-pipeline stages; false rejections cause permanent recall loss.
+{DOC_KNOWLEDGE_JUDGE_RULES}
 
 Return JSON:
 {{
@@ -886,19 +833,7 @@ JSON only:"""
 COMPONENTS: {', '.join(comp_names)}
 {f'KNOWN ALIASES: {", ".join(mappings[:20])}' if mappings else ''}
 
-RULES — include a reference when:
-1. The component name (or known alias) appears directly in the sentence
-2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
-3. The sentence describes what a specific component does by name or role
-4. A known synonym or partial reference is used
-5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
-6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
-
-RULES — exclude when:
-1. The name appears only inside a dotted path (e.g., com.example.name)
-2. The name is used as an ordinary English word, not as a component reference
-
-Favor inclusion over exclusion — later validation will filter borderline cases.
+{ENTITY_EXTRACTION_RULES}
 
 DOCUMENT:
 {chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
@@ -1355,18 +1290,7 @@ COMPONENTS: {', '.join(comp_names)}
 
 {chr(10).join(ctx)}
 
-DECISION RULES:
-APPROVE when:
-- The component is the grammatical actor or subject (the sentence is ABOUT the component)
-- A section heading names the component (introduces that component's topic)
-- The sentence describes what the component does, provides, or interacts with
-
-REJECT when:
-- The name is used as an ordinary English word, not as a proper name
-  (Like "proxy" in "proxy pattern" is the design pattern concept, not the Proxy component — reject the component link)
-- The name is a modifier inside a larger phrase, not a standalone reference
-  (Like "observer" in "observer pattern" modifies pattern — reject if Observer is a component)
-- The sentence is about a subprocess, algorithm, or implementation detail — not the component itself
+{VALIDATION_RULES}
 
 CASES:
 {chr(10).join(cases)}
@@ -1422,17 +1346,7 @@ COMPONENTS: {', '.join(comp_names)}
                 prompt += "CONTEXT:\n" + "\n".join(case["context"]) + "\n"
                 prompt += f"TARGET: S{case['sent'].number} (marked with >>>)\n\n"
 
-            prompt += """For each case, determine if any pronoun in the TARGET sentence refers to a component.
-
-RULES (all must hold):
-1. The component name (or known alias) MUST appear verbatim in the antecedent sentence
-2. The antecedent MUST be within the previous 3 sentences
-3. The pronoun MUST grammatically refer back to that component as its subject
-4. If the pronoun could refer to multiple things, DO NOT resolve it
-5. Do NOT resolve pronouns about subprocesses or implementation details
-
-Like in technical writing: "The Scheduler assigns tasks to threads. It uses a priority queue internally."
-— "It" clearly refers to "the Scheduler" because it was the subject of the previous sentence.
+            prompt += """{COREF_RULES}
 
 Return JSON:
 {"resolutions": [{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}]}
