@@ -42,7 +42,25 @@ TODO example needed.
 \subsubsection{Architectural Document Understanding}
 Since architectural documents contain heavy synonym, abbraviations, \todo{cite support}
 this step is to find all alternative names for architectural components. 
+\paragraph{Alternative name discovery.}
+An LLM extracts three categories of alternative names:
+\begin{itemize}
+    \item \emph{Abbreviations}: short forms introduced via parenthetical definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
+    \item \emph{Synonyms}: alternative names that unambiguously identify exactly one component. \todo{example from prompt}
+    \item \emph{Partial references}: trailing words of multi-word component names used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
+\end{itemize}
 
+After the extraction, a few-shot judge validates each proposed mapping.
+\todo{introduce generic terms, defs, problems}
+The judge rejects generic terms like (\emph{system}, \emph{process}).
+
+partial references are ambiguous, Because XX
+generic names. 
+For each partial references to ambiguous terms,
+ we use only  capitalized occurences as they refer to specific usage. 
+%TODO: check how partial refernces added 
+
+Further 
 
 \subsection{Coarse link recovery: Lissa style}
 This sub-agent serves as provide initial seed links by looking at explicit mentions only.
