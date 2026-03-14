@@ -247,7 +247,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         })
 
         self.model_knowledge = t1["model"]
-        self._is_complex, pronoun_ratio = t1["complexity"]
+        self._is_complex = t1["complexity"]
         self.doc_knowledge = t1["doc_knowledge"]
         seed_links = t1["seed"]
         seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
@@ -255,20 +255,18 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         # Derive generic word sets from model analysis
         self._compute_generic_sets(components)
 
-        spc = len(sentences) / max(1, len(components))
-        arch = self.model_knowledge.architectural_names
         ambig = self.model_knowledge.ambiguous_names
-        print(f"  Model: {len(arch)} architectural, {len(ambig)} ambiguous")
-        print(f"  Complexity: spc={spc:.1f}, pronouns={pronoun_ratio:.0%}, complex={self._is_complex}")
+        print(f"  Model: {len(ambig)} ambiguous (of {len(components)} components)")
+        print(f"  Complexity: complex={self._is_complex}")
         print(f"  Doc knowledge: {len(self.doc_knowledge.abbreviations)} abbrev, "
               f"{len(self.doc_knowledge.synonyms)} syn, "
-              f"{len(self.doc_knowledge.generic_terms)} generic")
+              f"{len(self.doc_knowledge.partial_references)} partial")
         print(f"  Seed: {len(seed_links)} links")
         print(f"  Generic words: {sorted(self.GENERIC_COMPONENT_WORDS)}")
         print(f"  Generic partials: {sorted(self.GENERIC_PARTIALS)}")
 
         self._log("tier1", {"sents": len(sentences), "comps": len(components)},
-                  {"model": len(arch), "ambig": len(ambig), "seed": len(seed_links),
+                  {"ambig": len(ambig), "seed": len(seed_links),
                    "abbrev": len(self.doc_knowledge.abbreviations)})
 
         self._save_phase(text_path, "tier1", {
@@ -437,14 +435,6 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
 
         knowledge.impl_indicators = list(set(knowledge.impl_indicators))
 
-        word_to_comps = {}
-        for name in names:
-            for word in re.findall(r'[A-Z][a-z]+|[a-z]+|[A-Z]+(?=[A-Z]|$)', name):
-                w = word.lower()
-                if len(w) >= 3:
-                    word_to_comps.setdefault(w, []).append(name)
-        knowledge.shared_vocabulary = {w: list(set(c)) for w, c in word_to_comps.items() if len(set(c)) > 1}
-
         self._classify_components(names, knowledge)
 
         return knowledge
@@ -497,7 +487,6 @@ JSON only:"""
         data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
         if data:
             valid = set(names)
-            knowledge.architectural_names = set(data.get("architectural", [])) & valid
             raw_ambiguous = set(data.get("ambiguous", [])) & valid
             knowledge.ambiguous_names = {
                 n for n in raw_ambiguous
@@ -505,23 +494,17 @@ JSON only:"""
             }
 
     def _compute_complexity(self, sentences, components):
-        """Compute document complexity flag and pronoun ratio.
+        """Compute document complexity flag.
 
-        Returns:
-            tuple[bool, float]: (is_complex, pronoun_ratio)
+        A document is complex when explicit mention coverage is below 50%
+        and the sentence-to-component ratio exceeds 4.
         """
         comp_names = [c.name for c in components]
-        texts = [s.text for s in sentences]
-        pron = r'\b(it|they|this|these|that|those|its|their)\b'
-        pronoun_ratio = sum(1 for t in texts if re.search(pron, t.lower())) / max(1, len(sentences))
-
         mention_count = sum(1 for sent in sentences
                            if any(cn.lower() in sent.text.lower() for cn in comp_names))
         uncovered_ratio = 1.0 - (mention_count / max(1, len(sentences)))
         spc = len(sentences) / max(1, len(components))
-        is_complex = uncovered_ratio > 0.5 and spc > 4
-
-        return is_complex, pronoun_ratio
+        return uncovered_ratio > 0.5 and spc > 4
 
     def _compute_generic_sets(self, components):
         """Derive generic word sets from model analysis results."""
@@ -675,7 +658,6 @@ JSON only:"""
                 print(f"    CamelCase override (rescued): {term}")
 
         knowledge = DocumentKnowledge()
-        knowledge.generic_terms = generic_terms
 
         for term, (typ, comp) in all_mappings.items():
             if term in approved:
@@ -688,9 +670,6 @@ JSON only:"""
                 else:
                     knowledge.partial_references[term] = comp
                     print(f"    Partial: {term} -> {comp}")
-
-        if generic_terms:
-            print(f"    Generic (rejected): {', '.join(list(generic_terms)[:5])}")
 
         # Deterministic CamelCase-split synonym injection
         for comp in [c.name for c in components]:
