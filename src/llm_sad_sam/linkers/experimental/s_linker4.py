@@ -31,7 +31,7 @@ from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
 from llm_sad_sam.linkers.experimental.prompts import (
     CONVENTION_GUIDE, AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
     DOC_KNOWLEDGE_JUDGE_EXAMPLES, DOC_KNOWLEDGE_JUDGE_RULES,
-    DOC_KNOWLEDGE_EXTRACTION_RULES,
+    DOC_KNOWLEDGE_EXTRACTION_RULES, WORD_USAGE_PROMPT,
     ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
 )
 from llm_sad_sam.pcm_parser import parse_pcm_repository
@@ -712,33 +712,9 @@ JSON only:"""
             else:
                 calibration = ""
 
-            prompt = f"""WORD USAGE CLASSIFICATION
-
-In this document, the word "{partial}" could be a short name for an architecture
-component called "{comp_name}".
-
-{calibration}Below are ALL sentences where "{partial}" appears WITHOUT the full name "{comp_name}".
-Analyze how the word "{partial}" is used across these sentences:
-
-{sent_block}
-
-QUESTION: Is "{partial}" used as a standalone entity reference in ANY of these sentences?
-
-Classify as NAME if the word appears as a standalone noun phrase referring to a specific
-system entity in at least SOME sentences — even if other sentences use it generically.
-Examples of entity reference: "the {partial.lower()} connects to...", "sends data to the
-{partial.lower()}", "the {partial.lower()} handles...", "on the {partial.lower()}"
-
-Classify as ORDINARY only if EVERY occurrence uses the word as part of a compound phrase,
-modifier, or generic descriptor — never as a standalone entity.
-Examples of purely ordinary: "{partial.lower()} process", "automated {partial.lower()}",
-"{partial.lower()} strategy", "{partial.lower()}-based"
-
-The threshold is: if even ONE sentence uses "{partial}" as a standalone entity reference,
-classify as NAME. Only classify as ORDINARY when you see ZERO standalone entity uses.
-
-Return JSON: {{"classification": "name" or "ordinary", "reason": "brief explanation"}}
-JSON only:"""
+            prompt = WORD_USAGE_PROMPT.format(
+                partial=partial, partial_lower=partial.lower(),
+                comp_name=comp_name, calibration=calibration, sent_block=sent_block)
 
             data = self.llm.extract_json(self.llm.query(prompt, timeout=60))
             if data:

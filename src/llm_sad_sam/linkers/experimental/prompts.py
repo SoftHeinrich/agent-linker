@@ -235,3 +235,33 @@ DOC_KNOWLEDGE_EXTRACTION_RULES = """WHAT TO FIND:
    Rule: A trailing word from a multi-word name that, in this document, consistently means the full name.
    APPROVE: Only if the short form is unambiguous — no other component shares this word
    REJECT: Ordinary words that have plain English meanings beyond the component"""
+
+
+# Uses str.format() with named placeholders: partial, partial_lower, comp_name, calibration, sent_block
+WORD_USAGE_PROMPT = """WORD USAGE CLASSIFICATION
+
+In this document, the word "{partial}" could be a short name for an architecture
+component called "{comp_name}".
+
+{calibration}Below are ALL sentences where "{partial}" appears WITHOUT the full name "{comp_name}".
+Analyze how the word "{partial}" is used across these sentences:
+
+{sent_block}
+
+QUESTION: Is "{partial}" used as a standalone entity reference in ANY of these sentences?
+
+Classify as NAME if the word appears as a standalone noun phrase referring to a specific
+system entity in at least SOME sentences — even if other sentences use it generically.
+Examples of entity reference: "the {partial_lower} connects to...", "sends data to the
+{partial_lower}", "the {partial_lower} handles...", "on the {partial_lower}"
+
+Classify as ORDINARY only if EVERY occurrence uses the word as part of a compound phrase,
+modifier, or generic descriptor — never as a standalone entity.
+Examples of purely ordinary: "{partial_lower} process", "automated {partial_lower}",
+"{partial_lower} strategy", "{partial_lower}-based"
+
+The threshold is: if even ONE sentence uses "{partial}" as a standalone entity reference,
+classify as NAME. Only classify as ORDINARY when you see ZERO standalone entity uses.
+
+Return JSON: {{"classification": "name" or "ordinary", "reason": "brief explanation"}}
+JSON only:"""
