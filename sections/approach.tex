@@ -40,7 +40,8 @@ shared partial words, like XX, will be used for better coreference.
 TODO example needed.
 
 \subsubsection{Architectural Document Understanding}
-
+Since architectural documents contain heavy synonym, abbraviations, \todo{cite support}
+this step is to find all alternative names for architectural components. 
 
 
 \subsection{Coarse link recovery: Lissa style}
@@ -48,7 +49,11 @@ This sub-agent serves as provide initial seed links by looking at explicit menti
 It use two LLM pass each focus on different. 
 
 
-\subsection{Context aware/ knowledge enhanced link recovery}
+\subsection{Context aware/ knowledge enhanced link recovery}\label{sec:recovery}
+Layer~2 comprises four complementary strategies that recover candidate links.
+Each targets a different type of reference---exact mentions, explicit entity mentions, pronominal references, and abbreviated names
+
+
 
 \subsection{Trace Link knowledge based Judge}
 
