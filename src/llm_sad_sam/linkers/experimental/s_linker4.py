@@ -9,7 +9,7 @@ Derived from S-Linker3. Key change vs S-Linker3:
 Everything else identical to S-Linker3:
 - Unified coreference (Variant E, cases-in-context, ±5 bidirectional)
 - Keep_coref filter (no LLM judge)
-- DAG-based tier architecture
+- DAG-based layer architecture
 - Checkpoint dir: s_linker4.
 """
 
@@ -40,7 +40,6 @@ from llm_sad_sam.llm_client import LLMClient, LLMBackend
 class SLinker4:
     """DAG-based SAD-SAM trace link recovery (standalone). Unified coref + no judge."""
 
-    CONTEXT_WINDOW = 3
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their|the component|the service)\b',
         re.IGNORECASE
@@ -58,7 +57,6 @@ class SLinker4:
         self.model_knowledge: Optional[ModelKnowledge] = None
         self.doc_knowledge: Optional[DocumentKnowledge] = None
         self.learned_patterns: Optional[LearnedPatterns] = None
-        self._is_complex: Optional[bool] = None
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._activity_partials: set = set()
@@ -127,13 +125,11 @@ class SLinker4:
         print("\n[Tier 1] Knowledge Acquisition (parallel)")
         t1 = self._run_parallel({
             "model": lambda: self._analyze_model(components),
-            "complexity": lambda: self._compute_complexity(sentences, components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
             "seed": lambda: self._run_seed(text_path, model_path),
         })
 
         self.model_knowledge = t1["model"]
-        self._is_complex = t1["complexity"]
         self.doc_knowledge = t1["doc_knowledge"]
         seed_links = t1["seed"]
         seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
@@ -143,7 +139,6 @@ class SLinker4:
 
         ambig = self.model_knowledge.ambiguous_names
         print(f"  Model: {len(ambig)} ambiguous (of {len(components)} components)")
-        print(f"  Complexity: complex={self._is_complex}")
         print(f"  Doc knowledge: {len(self.doc_knowledge.abbreviations)} abbrev, "
               f"{len(self.doc_knowledge.synonyms)} syn, "
               f"{len(self.doc_knowledge.partial_references)} partial")
@@ -157,7 +152,6 @@ class SLinker4:
 
         self._save_phase(text_path, "tier1", {
             "model_knowledge": self.model_knowledge,
-            "is_complex": self._is_complex,
             "doc_knowledge": self.doc_knowledge,
             "seed_links": seed_links,
             "seed_set": seed_set,
@@ -261,7 +255,7 @@ class SLinker4:
 
         # Boundary filter
         preliminary, boundary_rejected = self._apply_boundary_filters(
-            preliminary, sent_map, seed_set
+            preliminary, sent_map
         )
         if boundary_rejected:
             print(f"  Boundary filter: rejected {len(boundary_rejected)}")
@@ -384,19 +378,6 @@ JSON only:"""
                 n for n in raw_ambiguous
                 if len(n.split()) == 1 and not self._is_structurally_unambiguous(n)
             }
-
-    def _compute_complexity(self, sentences, components):
-        """Compute document complexity flag.
-
-        A document is complex when explicit mention coverage is below 50%
-        and the sentence-to-component ratio exceeds 4.
-        """
-        comp_names = [c.name for c in components]
-        mention_count = sum(1 for sent in sentences
-                           if any(cn.lower() in sent.text.lower() for cn in comp_names))
-        uncovered_ratio = 1.0 - (mention_count / max(1, len(sentences)))
-        spc = len(sentences) / max(1, len(components))
-        return uncovered_ratio > 0.5 and spc > 4
 
     def _compute_generic_sets(self, components):
         """Derive generic word sets from model analysis results."""
@@ -1391,7 +1372,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     # Tier 3: Merge + Filter + Judge
     # ═══════════════════════════════════════════════════════════════════════
 
-    def _apply_boundary_filters(self, links, sent_map, seed_set):
+    def _apply_boundary_filters(self, links, sent_map):
         """LLM convention filter using 3-step reasoning guide.
 
         V4 change: ALL links go through the filter, including seed links.
@@ -1579,21 +1560,6 @@ JSON only:"""
         if not self.model_knowledge or not self.model_knowledge.ambiguous_names:
             return False
         return comp_name in self.model_knowledge.ambiguous_names
-
-    def _find_matching_alias(self, comp_name, sent_text):
-        """Find which alias triggered the match (synonym or partial)."""
-        if not self.doc_knowledge:
-            return None, None
-        text_lower = sent_text.lower()
-        for syn, target in self.doc_knowledge.synonyms.items():
-            if target == comp_name:
-                if re.search(rf'\b{re.escape(syn.lower())}\b', text_lower):
-                    return syn, "synonym"
-        for partial, target in self.doc_knowledge.partial_references.items():
-            if target == comp_name:
-                if re.search(rf'\b{re.escape(partial.lower())}\b', text_lower):
-                    return partial, "partial"
-        return None, None
 
     def _abbreviation_match_is_valid(self, abbrev, comp_name, sentence_text):
         """Context-aware validation for abbreviation matches."""

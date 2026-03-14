@@ -1,6 +1,6 @@
 % ============================================================================
 % ICSE Paper — Approach Section
-% ILinker2: LLM-Driven Trace Link Recovery between Architecture Documents and Models
+% LLM-Driven Trace Link Recovery between Architecture Documents and Models
 % ============================================================================
 
 \section{Approach}\label{sec:approach}
@@ -16,36 +16,39 @@ $L \subseteq S \times C$, where each link $(s_i, c_j)$ asserts that
 sentence~$s_i$ discusses component~$c_j$.
 
 The pipeline is organized as a \emph{fan-out / fan-in} staged DAG
-(Figure~\ref{fig:pipeline}) with three tiers:
+(Figure~\ref{fig:pipeline}) with three layers:
 
 \begin{enumerate}
-    \item \textbf{Knowledge acquisition} (Tier~1): Independent analyses
+    \item \textbf{Knowledge acquisition} (Layer~1): Independent analyses
       extract structured knowledge from the raw inputs---model structure,
       document vocabulary, and linguistic patterns.
-      Model analysis, document analysis, and seed extraction share
-      no data dependencies; pattern learning and multiword enrichment
-      depend on model analysis results and run in a brief enrichment
-      step once the initial analyses complete.
-    \item \textbf{Link recovery} (Tier~2): Four complementary strategies
-      produce candidate links via different mechanisms---high-precision seed
-      extraction, explicit entity extraction, pronominal coreference
-      resolution, and deterministic partial-reference injection. The
-      strategies are largely independent: each targets a different type
-      of reference, and their outputs converge only at the merge point.
-    \item \textbf{Merge and filtering} (Tier~3): A single fan-in stage
-      merges all candidate links, applies convention-aware boundary filtering
-      to \emph{all} links regardless of provenance, and removes residual
-      false positives via a lightweight deterministic evidence filter.
+      Model analysis, document analysis, and explicit reference
+      extraction share no data dependencies; pattern learning and
+      multiword enrichment depend on model analysis results and run
+      once the initial analyses complete.
+    \item \textbf{Link recovery} (Layer~2): Four complementary strategies
+      produce candidate links, each targeting a distinct reference type:
+      \emph{explicit} references (verbatim names), \emph{contextual}
+      references (aliases, functional descriptions), \emph{anaphoric}
+      references (pronouns), and \emph{abbreviated} references (partial
+      names).
+      The strategies are largely independent, and their outputs converge
+      only at the merge point.
+    \item \textbf{Link consolidation} (Layer~3): A single fan-in stage
+      merges all candidate links, applies convention-aware boundary
+      filtering to \emph{all} links regardless of provenance, and removes
+      residual false positives via a deterministic evidence filter.
 \end{enumerate}
 
-\noindent This architecture offers two key advantages.
-First, the recovery strategies contribute additively---seed extraction
-captures high-precision explicit links, entity extraction finds remaining
-mentions, coreference recovers pronoun-based references, and partial
-injection catches abbreviated names---without interference or ordering
-constraints between strategies.
+\noindent This architecture offers two advantages.
+First, the recovery strategies contribute additively---explicit
+extraction captures high-precision named references, contextual
+discovery finds alias-based and functional references, anaphoric
+resolution recovers pronoun-based references, and abbreviated matching
+catches partial names---without interference or ordering constraints
+between strategies.
 Second, the separation of knowledge acquisition from link recovery
-enables each knowledge source to be refined or replaced independently
+allows each knowledge source to be refined or replaced independently
 without affecting the recovery strategies.
 
 % ---------------------------------------------------------------------------
@@ -53,10 +56,10 @@ without affecting the recovery strategies.
 \centering
 \small
 \begin{verbatim}
-    Tier 1: Knowledge Acquisition (concurrent)
+    Layer 1: Knowledge Acquisition (concurrent)
   ┌──────────┐  ┌──────────┐  ┌──────────┐
-  │  Model    │  │ Document │  │   Seed   │
-  │ Analysis  │  │ Analysis │  │Extraction│
+  │  Model    │  │ Document │  │ Explicit │
+  │ Analysis  │  │ Analysis │  │Ref. Extr.│
   └─────┬────┘  └────┬─────┘  └────┬─────┘
         │             │             │
         ├─────────────┤             │
@@ -69,18 +72,18 @@ without affecting the recovery strategies.
                │  shared knowledge  │
                ▼                    │
   ┌──────────────┐ ┌───────────┐   │
-  │   Entity     │ │Coreference│   │
-  │  Extraction  │ │Resolution │   │
+  │ Contextual   │ │ Anaphoric │   │
+  │  Ref. Disc.  │ │ Ref. Res. │   │
   │+ Validation  │ │           │   │
   └──────┬───────┘ └─────┬─────┘   │
          │               │         │
          ├───────────────┤         │
          ▼               │         │
   ┌──────────┐           │         │
-  │ Partial  │           │         │
-  │Injection │           │         │
+  │Abbrev.   │           │         │
+  │Ref. Match│           │         │
   └────┬─────┘           │         │
-       │   Tier 2: Link Recovery   │
+       │  Layer 2: Link Recovery   │
        └──────────┬───────────────┘
                   ▼
         ┌──────────────────┐
@@ -88,24 +91,25 @@ without affecting the recovery strategies.
         │ Filter + Evidence│
         │     Filter       │
         └──────────────────┘
-       Tier 3: Merge & Filter
+      Layer 3: Link Consolidation
 \end{verbatim}
-\caption{Fan-out / fan-in pipeline architecture. Tier~1 acquires knowledge
+\caption{Fan-out / fan-in pipeline architecture. Layer~1 acquires knowledge
 concurrently; pattern learning depends on model analysis and runs after the
-initial analyses. Tier~2 runs link recovery strategies that converge at the
-merge point. Seed extraction requires no knowledge inputs and runs in Tier~1.}
+initial analyses. Layer~2 runs four reference-type-specific recovery strategies
+that converge at the merge point. Explicit reference extraction has no
+knowledge dependencies and runs in Layer~1.}
 \label{fig:pipeline}
 \end{figure}
 % ---------------------------------------------------------------------------
 
 \subsection{Knowledge Acquisition}\label{sec:knowledge}
 
-Tier~1 builds a shared knowledge base from the raw document and model.
-Model analysis, document analysis, and seed extraction are mutually
-independent---each reads only the raw inputs---enabling concurrent
-execution. Pattern learning and multiword enrichment depend on the
-model analysis results (filtered component list and generic-word
-classification) and run once the initial analyses complete.
+Layer~1 builds a shared knowledge base from the raw document and model.
+Model analysis, document analysis, and explicit reference extraction
+are mutually independent---each reads only the raw inputs---enabling
+concurrent execution.
+Pattern learning and multiword enrichment depend on model analysis
+results and run once the initial analyses complete.
 
 \subsubsection{Model Analysis}\label{sec:model-analysis}
 
@@ -132,21 +136,14 @@ identified by shared substrings; (b)~\emph{shared vocabulary} across
 components, mapping words that appear in multiple component names;
 and (c)~\emph{generic partial words}, the set of ambiguous-classified
 words that also appear as subwords of other component names, used later
-to calibrate partial-reference matching.
+to calibrate abbreviated reference matching.
 
 \subsubsection{Document Analysis}\label{sec:doc-analysis}
 
-Document analysis extracts two kinds of information: structural
-characteristics and alternative component names.
+Document analysis discovers alternative names by which components are
+referenced in the text.
 
-\paragraph{Document profiling.}
-We compute the pronoun ratio (fraction of sentences containing anaphoric
-pronouns such as \emph{it}, \emph{they}, \emph{this}), component mention
-density, and sentence-to-component ratio.
-These metrics are logged for diagnostic purposes and inform threshold
-calibration in downstream phases.
-
-\paragraph{Alternative name extraction.}
+\paragraph{Alternative name discovery.}
 An LLM extracts three categories of alternative names:
 \begin{itemize}
     \item \emph{Abbreviations}: short forms introduced via parenthetical
@@ -174,11 +171,12 @@ the match requires capitalized occurrences to avoid false positives.
 
 A subsequent \emph{partial usage classification} step uses per-partial
 LLM calls to determine whether each single-word generic partial is
-typically used as a component reference (NAME) or as an ordinary English
-word (ORDINARY) in the document.
-ORDINARY-classified partials are excluded from the confirmed-alias
-context provided to the Tier~3 boundary filter, preventing the filter
-from treating generic uses as validated component references.
+typically used as a component reference (\textsc{name}) or as an ordinary
+English word (\textsc{ordinary}) in the document.
+\textsc{Ordinary}-classified partials are excluded from the
+confirmed-alias context provided to the Layer~3 boundary filter,
+preventing the filter from treating generic uses as validated
+component references.
 
 \subsubsection{Pattern Learning}\label{sec:patterns}
 
@@ -191,41 +189,62 @@ This debate mechanism reduces the risk of over-filtering in later
 validation phases.
 The phase also extracts \emph{action indicators} (verbs used when a
 component performs an action) and \emph{effect indicators} (verbs
-describing results), which are used as contextual signals during
-validation.
+describing results), which serve as contextual signals during validation.
 
 Pattern learning reads the filtered component list (excluding
 implementation names identified by model analysis) and the document
 sentences.
-This dependency places pattern learning after model analysis completes,
-forming a brief enrichment step between knowledge acquisition and link
-recovery.
+This dependency places pattern learning after model analysis,
+forming a brief enrichment step between knowledge acquisition and
+link recovery.
 
 % ---------------------------------------------------------------------------
 
-\subsection{Link Recovery Strategies}\label{sec:recovery}
+\subsection{Link Recovery}\label{sec:recovery}
 
-Tier~2 comprises four complementary strategies that produce candidate links.
-Each targets a different \emph{type} of reference---high-precision seed
-links, explicit entity mentions, pronominal references, and abbreviated
-names---and their contributions converge only at the Tier~3 merge point.
-Seed extraction requires no knowledge inputs and runs concurrently
-with Tier~1 knowledge acquisition; the remaining three strategies
-consume the shared knowledge base.
-
-\subsubsection{Seed Extraction}\label{sec:seed}
-
-The pipeline accepts either an external baseline (e.g., TransArc CSV)
-or runs a self-contained LLM-based seed extractor called \textbf{ILinker2}.
-ILinker2 is a high-precision explicit link extractor that
-operates independently of all knowledge phases---its only inputs are the
-raw sentences and component list.
-
-ILinker2 uses two complementary LLM passes over batched document segments
-(50~sentences per batch with 5-sentence overlap):
+Layer~2 comprises four complementary strategies, each targeting a
+distinct reference type that the others cannot efficiently capture:
 
 \begin{itemize}
-    \item \textbf{Pass~A (extraction-framed):} ``For each sentence, identify
+    \item \textbf{Explicit reference extraction} recovers verbatim
+      component names using only raw inputs (no Layer~1 knowledge),
+      optimizing for precision at the cost of recall.
+    \item \textbf{Contextual reference discovery} uses the full
+      knowledge base (aliases, synonyms, partial names) to recover
+      references that require contextual understanding---functional
+      descriptions, interaction participants, and known aliases---then
+      validates candidates through a multi-step pipeline.
+    \item \textbf{Anaphoric reference resolution} resolves pronominal
+      and definite-description references (``it'', ``the service'')
+      back to previously mentioned components.
+    \item \textbf{Abbreviated reference matching} deterministically
+      matches abbreviated component names discovered during document
+      analysis.
+\end{itemize}
+
+\noindent All four strategies' outputs converge only at the Layer~3
+merge point.
+Explicit extraction has no knowledge dependencies and runs
+concurrently with Layer~1; the remaining three strategies consume the
+shared knowledge base.
+
+\subsubsection{Explicit Reference Extraction}\label{sec:seed}
+
+Explicit extraction establishes a high-precision baseline before
+any knowledge is available.
+It accepts either an external baseline (e.g., TransArc CSV)
+or runs a self-contained LLM-based extractor called \textbf{ILinker2}.
+Because ILinker2 reads only the raw sentences and component
+list---no abbreviations, synonyms, or partial references---it runs
+concurrently with Layer~1 knowledge acquisition, overlapping its
+LLM cost with the knowledge phases rather than waiting for them.
+
+ILinker2 uses two complementary LLM passes over batched document segments
+(50~sentences per batch with 5-sentence overlap), each with a
+\emph{different prompt framing}:
+
+\begin{itemize}
+    \item \textbf{Pass~A (mention-framed):} ``For each sentence, identify
       which components are explicitly mentioned.'' This pass is optimized
       for exhaustive recall of named references.
     \item \textbf{Pass~B (actor-framed):} ``For each sentence, determine
@@ -243,37 +262,73 @@ The merge strategy applies \emph{asymmetric voting}:
 exact-name matches from \emph{either} pass are accepted (union), while
 non-exact matches (synonyms, partials) require agreement from \emph{both}
 passes (intersection).
-This exploits the observation that exact matches are reliably identified
-by a single pass, while fuzzy matches benefit from independent agreement
-to suppress hallucinations.
+Exact matches are reliably identified by a single pass, while fuzzy
+matches benefit from independent agreement to suppress hallucinations.
 
-ILinker2 achieves approximately 95\% precision but only 76\% recall as a
-standalone extractor, deliberately trading recall for precision since
-the remaining strategies recover the missing links.
+As a standalone extractor, ILinker2 achieves approximately 95\% precision
+but only 76\% recall, deliberately trading recall for precision.
+The recall gap---alias-based references, functional descriptions,
+pronominal coreferences---is addressed by the three knowledge-enriched
+strategies in Layer~2.
 
-\subsubsection{Entity Extraction and Validation}\label{sec:entity}
+\subsubsection{Contextual Reference Discovery}\label{sec:entity}
 
-\paragraph{Extraction.}
-An LLM prompt, enriched with the abbreviations, synonyms, and partial
-references from document analysis, identifies all component references in
-batches of 50~sentences.
-The prompt covers six inclusion patterns: direct name matches,
-space-separated forms of compound names, functional descriptions,
-known aliases, interaction participants (``X sends data to Y'' references
-both X and Y), and passive/prepositional mentions (``handled by X'').
-An \emph{abbreviation guard} rejects invalid abbreviation expansions by
-verifying that the context following the abbreviation is consistent with
-the full component name.
-
-For components that receive no links from either the seed or batch
-extraction, a \emph{targeted recovery} step issues single-component
-prompts with all known aliases, recovering references missed by the
-broad-scope batch extraction.
-
-\paragraph{Validation.}
-Candidates undergo a three-step validation process:
+Where explicit extraction finds only references recognizable from the
+component name alone, contextual discovery leverages the full Layer~1
+knowledge base to recover references that \emph{require} contextual
+understanding.
+The two strategies differ in three ways:
 
 \begin{enumerate}
+    \item \textbf{Knowledge-enriched prompts.}
+      The discovery prompt receives all abbreviations, synonyms, and
+      partial references from document analysis, enabling it to
+      recognize aliases (e.g., ``AST'' for \texttt{AbstractSyntaxTree})
+      and partial names (e.g., ``Dispatcher'' for
+      \texttt{EventDispatcher}) that the knowledge-free explicit
+      extractor cannot.
+    \item \textbf{Broader inclusion scope.}
+      Beyond direct name matches, the prompt covers six reference
+      patterns: space-separated forms of compound names, functional
+      descriptions, known aliases, interaction participants (``X sends
+      data to Y'' references both X and Y), and passive/prepositional
+      mentions (``handled by X'').
+      Explicit extraction is limited to named and actor references.
+    \item \textbf{Same-prompt intersection for variance reduction.}
+      Rather than using two different prompt framings (as explicit
+      extraction does), contextual discovery runs the \emph{same}
+      prompt \emph{twice} independently and keeps only candidates
+      found in \emph{both} passes (intersection).
+      This eliminates spurious candidates that a single pass might
+      over-extract due to LLM non-determinism---a risk that grows
+      with the broader inclusion scope.
+\end{enumerate}
+
+\noindent An \emph{abbreviation guard} rejects invalid abbreviation
+expansions by verifying that the context following the abbreviation is
+consistent with the full component name.
+
+For components that receive no links from either explicit extraction
+or the discovery phase, a \emph{targeted recovery} step issues
+single-component prompts with all known aliases, recovering references
+missed by the broad-scope batch processing.
+
+\paragraph{Validation.}
+Candidates from contextual discovery undergo a four-step validation
+process:
+
+\begin{enumerate}
+    \item \emph{Generic-mention detection:}
+      For candidates where an ambiguous component name appears only in
+      lowercase (e.g., ``core'' rather than ``Core''), an LLM pre-check
+      determines whether the usage refers to the specific architectural
+      component or is an ordinary English word.
+      The LLM sees anchor sentences where the full name appears
+      (for calibration) alongside the candidate sentences, and classifies
+      each as \textsc{component} or \textsc{generic}.
+      Generic-classified candidates are rejected before the main
+      validation pipeline, preventing downstream false positives from
+      coincidental word overlap.
     \item \emph{Code-first auto-approval:} Candidates where a component
       name or known alias appears verbatim in the sentence text (verified
       by word-boundary matching in code) are approved without LLM cost.
@@ -291,7 +346,7 @@ Candidates undergo a three-step validation process:
       code, rejecting hallucinated evidence.
 \end{enumerate}
 
-\subsubsection{Coreference Resolution}\label{sec:coref}
+\subsubsection{Anaphoric Reference Resolution}\label{sec:coref}
 
 Sentences containing anaphoric expressions---pronouns (\emph{it},
 \emph{its}, \emph{they}, \emph{their}, \emph{this}, \emph{these},
@@ -311,11 +366,10 @@ simple and complex documents, eliminating the need for document
 complexity gating.
 
 The resolution enforces a \emph{citation-grounded verification}
-protocol.
-The LLM must cite an antecedent sentence where the component was
-explicitly named, along with the exact quote containing the component
-name.
-This citation is then verified deterministically in code:
+protocol: the LLM must cite an antecedent sentence where the component
+was explicitly named, along with the exact quote containing the
+component name.
+This citation is verified deterministically in code:
 \begin{enumerate}
     \item The component name (or a known alias) must appear verbatim in
       the cited antecedent sentence.
@@ -325,69 +379,72 @@ This citation is then verified deterministically in code:
 \end{enumerate}
 
 \noindent This hybrid LLM-plus-code verification eliminates a class of
-hallucinated coreference links where the LLM fabricates a plausible but
+hallucinated resolutions where the LLM fabricates a plausible but
 nonexistent antecedent.
-Because the antecedent verification is strict (verbatim name match
-within 3~sentences), false positives from hallucinated resolutions are
-effectively eliminated at the code level, making coreference links
-safe to accept without further LLM review in Tier~3.
+Because the verification is strict (verbatim name match within
+3~sentences), false positives are effectively eliminated at the code
+level, making anaphoric links safe to accept without further review in
+Layer~3.
 
-\subsubsection{Partial Reference Injection}\label{sec:partial}
+\subsubsection{Abbreviated Reference Matching}\label{sec:partial}
 
 For each partial reference learned during document analysis
 (e.g., ``Dispatcher''~$\to$~\texttt{EventDispatcher}), the pipeline
-deterministically scans all sentences for word-boundary matches, injecting
-links for any sentence-component pairs not already covered by the seed,
-entity extraction, or coreference strategies.
+deterministically scans all sentences for word-boundary matches,
+producing links for any sentence-component pairs not already covered
+by the preceding strategies.
 A \emph{clean mention} filter ensures the partial name appears as a
 standalone word---not inside a dotted path (\texttt{x.Dispatcher.init}),
-a hyphenated compound, or adjacent to a period indicating a qualified name.
+a hyphenated compound, or adjacent to a period indicating a qualified
+name.
 
 This strategy is entirely deterministic (no LLM calls), providing
-stable recall for abbreviated references at zero additional inference cost.
-Its output is filtered by the convention-aware boundary filter in Tier~3.
+stable recall for abbreviated references at zero additional inference
+cost.
+Its output is filtered by the convention-aware boundary filter in
+Layer~3.
 
 % ---------------------------------------------------------------------------
 
-\subsection{Merge and Filtering}\label{sec:merge}
+\subsection{Link Consolidation}\label{sec:merge}
 
-Tier~3 merges the outputs of all recovery strategies and applies
-two layers of filtering to remove false positives.
+Layer~3 merges the outputs of all recovery strategies and applies
+two filtering stages to remove false positives.
 
 \subsubsection{Priority-Based Merge}\label{sec:dedup}
 
-Links from all sources (seed, entity extraction, coreference, partial
-injection) are deduplicated by $(sentence, component)$ pair.
-When multiple sources produce the same link, the highest-priority source
-is retained according to a fixed ranking:
-$\text{seed} > \text{validated} > \text{entity} > \text{coreference} > \text{partial\_inject}$.
-An optional \emph{parent-overlap guard} removes links to implementation
-components when the abstract parent component is already linked to the
-same sentence (e.g., if both \texttt{Scheduler} and
+Links from all four strategies are deduplicated by
+$(sentence, component)$ pair.
+When multiple strategies produce the same link, the highest-priority
+source is retained according to a fixed ranking:
+$\text{explicit} > \text{contextual} > \text{anaphoric} > \text{abbreviated}$.
+A \emph{parent-overlap guard} removes links to implementation
+components when the abstract parent is already linked to the same
+sentence (e.g., if both \texttt{Scheduler} and
 \texttt{BasicScheduler} are linked to a sentence, the implementation
 variant is dropped).
 
 \subsubsection{Convention-Aware Boundary Filter}\label{sec:boundary}
 
-A structured LLM filter applies a 3-step reasoning guide to \emph{all}
-links, regardless of provenance (including seed links):
+A structured LLM filter applies a three-step reasoning guide to
+\emph{all} links, regardless of provenance:
 
 \begin{enumerate}
-    \item \textbf{Hierarchical name reference (Step~1):}
+    \item \textbf{Hierarchical name reference:}
       Reject if the component name appears only as a prefix in a
       dotted or qualified path (e.g., ``\texttt{X.utils} provides
       helper functions'' does not reference component~X).
       An exception preserves links when the sentence also names
       the component with the word ``component''
       (e.g., ``for the X component'').
-    \item \textbf{Entity confusion (Step~2):}
+    \item \textbf{Name confusion:}
       Reject if the name is used as a technology, methodology, or
       generic English word in a non-architectural sense.
       A critical exception preserves links when a component is
       \emph{named after} a technology (e.g., a component called
       ``Kafka Broker'')---any sentence describing that technology's
       capabilities is about the component.
-    \item \textbf{Default (Step~3):}
+    \item \textbf{Default:}
       If neither rejection pattern applies, the link is kept.
 \end{enumerate}
 
@@ -397,10 +454,9 @@ interaction sentences produce links for all participating components.
 
 \subsubsection{Evidence Filter}\label{sec:evidence-filter}
 
-After the boundary filter, a lightweight deterministic
-\emph{evidence filter} removes links that lack textual grounding
-in the sentence.
-A link $s \to c$ is kept if \emph{any} of the following holds:
+After boundary filtering, a lightweight deterministic
+\emph{evidence filter} removes links that lack textual grounding.
+A link $s \to c$ is retained if \emph{any} of the following holds:
 
 \begin{enumerate}
     \item The component name appears as a standalone word-boundary
@@ -409,48 +465,49 @@ A link $s \to c$ is kept if \emph{any} of the following holds:
       inside dotted paths or hyphenated compounds.
     \item A known alias (synonym, abbreviation, or partial reference
       from document analysis) appears in the sentence text.
-    \item The link originates from the seed extractor, which already
-      verified explicit mentions.
-    \item The link originates from coreference resolution, which
-      already verified the antecedent citation.
+    \item The link originates from explicit extraction, which already
+      verified the named reference.
+    \item The link originates from anaphoric resolution, which already
+      verified the antecedent citation.
 \end{enumerate}
 
 \noindent Links that satisfy none of these conditions---where the
 component name is absent from the sentence and no alias or prior
 verification provides evidence---are dropped.
 This filter requires zero LLM calls and removes residual false
-positives introduced by entity extraction or validation when the
-LLM hallucinated a reference that does not appear in the text.
+positives from contextual discovery when the LLM hallucinated a
+reference that does not appear in the text.
 
-The rationale for trusting coreference links without additional
-review is that antecedent verification (\S\ref{sec:coref}) already
-provides strong evidence: the component was explicitly named in a
-nearby sentence and the pronoun grammatically refers back to it.
-Empirically, applying an LLM judge to coreference links kills true
-positives but never catches false positives, since the code-level
+The rationale for accepting anaphoric links without additional review
+is that antecedent verification (\S\ref{sec:coref}) already provides
+strong evidence: the component was explicitly named in a nearby sentence
+and the pronoun grammatically refers back to it.
+Empirically, applying an LLM judge to anaphoric links removes true
+positives but never catches false positives, as the code-level
 verification is more reliable than LLM re-evaluation.
 
 % ---------------------------------------------------------------------------
 
 \subsection{Cross-Cutting Design Principles}\label{sec:principles}
 
-Three principles guide the pipeline design across all tiers:
+Three principles guide the pipeline design across all layers:
 
 \paragraph{Asymmetric voting.}
-We use \emph{intersection} voting (both passes must agree) for
-precision-critical decisions: seed merge for non-exact matches
-(\S\ref{sec:seed}) and entity validation (\S\ref{sec:entity}).
-This reflects the observation that false positives in early stages
+We apply \emph{intersection} voting (both passes must agree) for
+precision-critical decisions: explicit extraction merge for non-exact
+matches (\S\ref{sec:seed}) and contextual discovery validation
+(\S\ref{sec:entity}).
+This reflects the observation that false positives in early layers
 propagate through the pipeline and are difficult to remove later.
 
 \paragraph{Citation-grounded verification.}
 Rather than trusting LLM judgments as opaque decisions, we require the
 LLM to produce \emph{verifiable evidence}---antecedent sentence citations
-in coreference, exact-substring evidence in validation---that is checked
-deterministically in code.
+in anaphoric resolution, exact-substring evidence in validation---that
+is checked deterministically in code.
 This hybrid approach leverages LLM reasoning for semantic understanding
 while using programmatic guards to catch hallucinations.
-The pattern applies in two places: coreference antecedent verification
+The pattern applies in two places: anaphoric antecedent verification
 (\S\ref{sec:coref}) and the evidence post-filter for ambiguous names
 (\S\ref{sec:entity}).
 A complementary but purely deterministic guard---the abbreviation guard
