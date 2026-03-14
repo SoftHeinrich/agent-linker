@@ -19,10 +19,13 @@ The pipeline is organized as a \emph{fan-out / fan-in} staged DAG
 (Figure~\ref{fig:pipeline}) with three tiers:
 
 \begin{enumerate}
-    \item \textbf{Knowledge acquisition} (Tier~1): Three independent analyses
+    \item \textbf{Knowledge acquisition} (Tier~1): Independent analyses
       extract structured knowledge from the raw inputs---model structure,
-      document vocabulary, and linguistic patterns. These analyses share
-      no data dependencies and operate solely on the raw document and model.
+      document vocabulary, and linguistic patterns.
+      Model analysis, document analysis, and seed extraction share
+      no data dependencies; pattern learning and multiword enrichment
+      depend on model analysis results and run in a brief enrichment
+      step once the initial analyses complete.
     \item \textbf{Link recovery} (Tier~2): Four complementary strategies
       produce candidate links via different mechanisms---high-precision seed
       extraction, explicit entity extraction, pronominal coreference
@@ -50,32 +53,46 @@ without affecting the recovery strategies.
 \centering
 \small
 \begin{verbatim}
-       Tier 1: Knowledge Acquisition (independent)
+    Tier 1: Knowledge Acquisition (concurrent)
   ┌──────────┐  ┌──────────┐  ┌──────────┐
-  │  Model    │  │ Document │  │ Pattern  │
-  │ Analysis  │  │ Analysis │  │ Learning │
+  │  Model    │  │ Document │  │   Seed   │
+  │ Analysis  │  │ Analysis │  │Extraction│
   └─────┬────┘  └────┬─────┘  └────┬─────┘
         │             │             │
-        └──────┬──────┴─────────────┘
-               │  shared knowledge
-               ▼
-  ┌──────────┐ ┌──────────────┐ ┌───────────┐ ┌──────────┐
-  │  Seed    │ │   Entity     │ │Coreference│ │ Partial  │
-  │Extraction│ │  Extraction  │ │Resolution │ │Injection │
-  │          │ │+ Validation  │ │           │ │          │
-  └────┬─────┘ └──────┬───────┘ └─────┬─────┘ └────┬─────┘
-       │   Tier 2: Link Recovery      │             │
-       └──────────┬───────────────────┴─────────────┘
+        ├─────────────┤             │
+        ▼             │             │
+  ┌──────────┐        │             │
+  │ Pattern  │        │             │
+  │ Learning │        │             │
+  └─────┬────┘        │             │
+        └──────┬──────┘             │
+               │  shared knowledge  │
+               ▼                    │
+  ┌──────────────┐ ┌───────────┐   │
+  │   Entity     │ │Coreference│   │
+  │  Extraction  │ │Resolution │   │
+  │+ Validation  │ │           │   │
+  └──────┬───────┘ └─────┬─────┘   │
+         │               │         │
+         ├───────────────┤         │
+         ▼               │         │
+  ┌──────────┐           │         │
+  │ Partial  │           │         │
+  │Injection │           │         │
+  └────┬─────┘           │         │
+       │   Tier 2: Link Recovery   │
+       └──────────┬───────────────┘
                   ▼
         ┌──────────────────┐
         │ Merge + Boundary │
         │ Filter + Judge   │
         └──────────────────┘
-          Tier 3: Review
+       Tier 3: Judicial Review
 \end{verbatim}
-\caption{Fan-out / fan-in pipeline architecture. Tier~1 builds shared knowledge;
-Tier~2 runs four link recovery strategies that converge at the merge point.
-Seed extraction requires no knowledge inputs and runs alongside Tier~1.}
+\caption{Fan-out / fan-in pipeline architecture. Tier~1 acquires knowledge
+concurrently; pattern learning depends on model analysis and runs after the
+initial analyses. Tier~2 runs link recovery strategies that converge at the
+merge point. Seed extraction requires no knowledge inputs and runs in Tier~1.}
 \label{fig:pipeline}
 \end{figure}
 % ---------------------------------------------------------------------------
@@ -83,8 +100,11 @@ Seed extraction requires no knowledge inputs and runs alongside Tier~1.}
 \subsection{Knowledge Acquisition}\label{sec:knowledge}
 
 Tier~1 builds a shared knowledge base from the raw document and model.
-The three analyses are mutually independent---each reads only the input
-sentences and components---enabling concurrent execution.
+Model analysis, document analysis, and seed extraction are mutually
+independent---each reads only the raw inputs---enabling concurrent
+execution. Pattern learning and multiword enrichment depend on the
+model analysis results (filtered component list and generic-word
+classification) and run once the initial analyses complete.
 
 \subsubsection{Model Analysis}\label{sec:model-analysis}
 
@@ -152,6 +172,13 @@ the partial mapping is added automatically.
 For trailing words that are generic (i.e., appear in the ambiguous set),
 the match requires capitalized occurrences to avoid false positives.
 
+A subsequent \emph{partial usage classification} step uses per-partial
+LLM calls to determine whether each single-word generic partial is
+typically used as a component reference (NAME) or as an ordinary English
+word (ORDINARY) in the document.
+ORDINARY-classified partials lose their synonym-safe bypass in the
+Tier~3 judge and instead receive calibrated batch review.
+
 \subsubsection{Pattern Learning}\label{sec:patterns}
 
 Two independent LLM passes identify \emph{subprocess terms}---words that
@@ -166,9 +193,12 @@ component performs an action) and \emph{effect indicators} (verbs
 describing results), which are used as contextual signals during
 validation.
 
-Pattern learning operates on the raw component list and document
-sentences, with no dependency on model analysis results.
-All three Tier~1 analyses are therefore fully parallel.
+Pattern learning reads the filtered component list (excluding
+implementation names identified by model analysis) and the document
+sentences.
+This dependency places pattern learning after model analysis completes,
+forming a brief enrichment step between knowledge acquisition and link
+recovery.
 
 % ---------------------------------------------------------------------------
 
@@ -178,8 +208,9 @@ Tier~2 comprises four complementary strategies that produce candidate links.
 Each targets a different \emph{type} of reference---high-precision seed
 links, explicit entity mentions, pronominal references, and abbreviated
 names---and their contributions converge only at the Tier~3 merge point.
-Seed extraction requires no knowledge inputs and can run concurrently
-with Tier~1; the remaining three strategies consume the shared knowledge base.
+Seed extraction requires no knowledge inputs and runs concurrently
+with Tier~1 knowledge acquisition; the remaining three strategies
+consume the shared knowledge base.
 
 \subsubsection{Seed Extraction}\label{sec:seed}
 
@@ -275,8 +306,9 @@ classification from Tier~1:
       sentence. Pronoun-bearing sentences are processed in batches of~12
       with their preceding 3-sentence context.
     \item \emph{Debate mode} (complex documents): Sentences are processed
-      in sliding windows of~20 with 3-sentence overlap, without a
-      discourse model, relying instead on the LLM's contextual reasoning.
+      in non-overlapping windows of~20 with 3 preceding context sentences,
+      without a discourse model, relying instead on the LLM's contextual
+      reasoning.
 \end{itemize}
 
 \noindent Both modes enforce a \emph{citation-grounded verification}
@@ -297,6 +329,9 @@ This citation is then verified deterministically in code:
 hallucinated coreference links where the LLM fabricates a plausible but
 nonexistent antecedent.
 
+% TODO: Coreference 2x union is described here but only implemented in
+% V39a (variance stabilization variant). S-Linker currently runs a single
+% pass. Either port V39a's double-run logic or remove this paragraph.
 To reduce variance from LLM non-determinism, each coreference pass is
 executed \emph{twice} and the results are unioned.
 This stabilizes recall without degrading precision, since both passes
@@ -332,7 +367,7 @@ Links from all sources (seed, entity extraction, coreference, partial
 injection) are deduplicated by $(sentence, component)$ pair.
 When multiple sources produce the same link, the highest-priority source
 is retained according to a fixed ranking:
-$\text{seed} > \text{validated} > \text{entity} > \text{coreference} > \text{partial}$.
+$\text{seed} > \text{validated} > \text{entity} > \text{coreference} > \text{partial\_inject}$.
 An optional \emph{parent-overlap guard} removes links to implementation
 components when the abstract parent component is already linked to the
 same sentence (e.g., if both \texttt{Scheduler} and
@@ -396,8 +431,13 @@ and tailor review intensity to link provenance:
       unambiguous---either structurally (multi-word, CamelCase, all-caps)
       or as classified by model analysis---bypass the judge entirely.
     \item \textbf{Synonym-safe:} Links backed by a synonym or
-      partial reference from document analysis appearing in the sentence
-      text bypass review, trusting the validated document knowledge.
+      multi-word partial reference from document analysis appearing in
+      the sentence text bypass review, trusting the validated document
+      knowledge.
+      Single-word generic partials classified as activity-type
+      (e.g., a partial that is used as an ordinary word rather than
+      a component reference) instead receive a calibrated batch judge
+      with union voting.
     \item \textbf{Mention-safe:} Non-seed links where the component
       name appears as a standalone word-boundary match in the sentence
       bypass review, since the explicit textual presence provides

@@ -9,14 +9,18 @@ Derived from ILinker2V39. Key changes vs V39:
 - Simplified document profiling (Phase 0 merged into _compute_complexity)
 
 Architecture (from paper §3):
-  Tier 1: Knowledge Acquisition — model analysis, doc profiling, doc knowledge,
-          seed extraction (all independent, run concurrently)
-  Tier 1.5: Knowledge Enrichment — pattern learning, multiword partial enrichment
-            (need Tier 1 outputs), then partial usage classification
-  Tier 2: Link Recovery — entity pipeline (extract→guard→target→validate) runs
-          concurrently with coreference resolution; then partial injection
-  Tier 3: Merge + Judicial Review — priority dedup, parent-overlap guard,
-          boundary filter, triage judge (sequential)
+  Tier 1: Knowledge Acquisition
+    Concurrent: model analysis, document profiling, document knowledge,
+                seed extraction (all independent)
+    Then: pattern learning + multiword enrichment (need model analysis),
+          then partial usage classification
+  Tier 2: Link Recovery
+    Concurrent: entity pipeline (extract→guard→recover→validate)
+                ∥ coreference resolution
+    Then: partial reference injection (needs both)
+  Tier 3: Merge and Judicial Review (sequential)
+    Priority dedup → parent-overlap guard → convention-aware boundary
+    filter → triage-based judicial review
 """
 
 import json
@@ -331,7 +335,7 @@ background agent". They describe WHAT KIND of thing it is, not WHICH specific me
         })
 
         # ═══ TIER 3: Merge + Filter + Judge (sequential) ═══
-        print("\n[Tier 3] Merge + Filter + Judge")
+        print("\n[Tier 3] Merge + Boundary Filter + Judicial Review")
 
         # Priority-based deduplication
         entity_links = [
@@ -962,7 +966,7 @@ JSON only:"""
 
         if unlinked:
             print(f"    Targeted recovery: {len(unlinked)} unlinked components")
-            extra = self._targeted_extraction(unlinked, sentences, name_to_id, sent_map,
+            extra = self._targeted_recovery(unlinked, sentences, name_to_id, sent_map,
                                               components=components, seed_links=seed_links,
                                               entity_candidates=candidates)
             if extra:
@@ -1101,7 +1105,7 @@ JSON only:"""
             filtered.append(c)
         return filtered
 
-    def _targeted_extraction(self, unlinked_components, sentences, name_to_id, sent_map,
+    def _targeted_recovery(self, unlinked_components, sentences, name_to_id, sent_map,
                               components=None, seed_links=None, entity_candidates=None):
         """Single-component LLM prompts for unlinked components."""
         if not unlinked_components:
@@ -1687,13 +1691,13 @@ JSON only:"""
         return kept, rejected
 
     def _judge_review(self, links, sentences, components, sent_map, seed_set):
-        """Triage-based judge: safe → syn-review → seed-review → no-match."""
+        """Triage-based judge: immune/synonym-safe/mention-safe → advocate-prosecutor → standard."""
         if len(links) < 5:
             return links
 
         comp_names = self._get_comp_names(components)
 
-        safe, syn_review, nomatch_links, seed_review = [], [], [], []
+        safe, syn_review, standard_links, seed_review = [], [], [], []
         for l in links:
             is_seed = (l.sentence_number, l.component_id) in seed_set
             sent = sent_map.get(l.sentence_number)
@@ -1711,21 +1715,21 @@ JSON only:"""
                     safe.append(l)
                 continue
             if not sent:
-                nomatch_links.append(l)
+                standard_links.append(l)
                 continue
             if self._has_standalone_mention(l.component_name, sent.text):
                 safe.append(l)
             else:
-                nomatch_links.append(l)
+                standard_links.append(l)
 
-        print(f"  Triage: {len(safe)} safe, {len(syn_review)} activity-partial, "
-              f"{len(seed_review)} seed-review, {len(nomatch_links)} no-match")
+        print(f"  Triage: {len(safe)} immune/syn-safe/mention-safe, {len(syn_review)} activity-partial, "
+              f"{len(seed_review)} advocate-prosecutor, {len(standard_links)} standard-review")
 
         syn_approved = self._judge_syn_safe(syn_review, sent_map)
         seed_approved = self._deliberate_seed(seed_review, comp_names, sent_map)
-        nomatch_approved = self._judge_nomatch(nomatch_links, comp_names, sent_map)
+        standard_approved = self._judge_standard(standard_links, comp_names, sent_map)
 
-        return safe + syn_approved + seed_approved + nomatch_approved
+        return safe + syn_approved + seed_approved + standard_approved
 
     def _judge_syn_safe(self, syn_links, sent_map):
         """Calibrated batch judge for activity-partial links.
@@ -1851,14 +1855,14 @@ JSON only:"""
 
         return approved
 
-    def _judge_nomatch(self, nomatch_links, comp_names, sent_map):
+    def _judge_standard(self, standard_links, comp_names, sent_map):
         """Standard 4-rule judge for non-alias links, with union voting."""
-        if not nomatch_links:
+        if not standard_links:
             return []
 
-        cases = self._build_judge_cases(nomatch_links, sent_map)
+        cases = self._build_judge_cases(standard_links, sent_map)
         prompt = self._build_judge_prompt(comp_names, cases)
-        n = min(30, len(nomatch_links))
+        n = min(30, len(standard_links))
 
         data1 = self.llm.extract_json(self.llm.query(prompt, timeout=180))
         data2 = self.llm.extract_json(self.llm.query(prompt, timeout=180))
@@ -1870,12 +1874,12 @@ JSON only:"""
         result = []
         for i in range(n):
             if i not in rejected:
-                result.append(nomatch_links[i])
+                result.append(standard_links[i])
             else:
-                print(f"    4-rule reject: S{nomatch_links[i].sentence_number} -> {nomatch_links[i].component_name}")
-        if len(nomatch_links) > n:
-            print(f"    WARNING: {len(nomatch_links) - n} nomatch links skipped judge (cap={n})")
-        result.extend(nomatch_links[n:])
+                print(f"    4-rule reject: S{standard_links[i].sentence_number} -> {standard_links[i].component_name}")
+        if len(standard_links) > n:
+            print(f"    WARNING: {len(standard_links) - n} nomatch links skipped judge (cap={n})")
+        result.extend(standard_links[n:])
         return result
 
     def _build_judge_prompt(self, comp_names, cases):

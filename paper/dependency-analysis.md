@@ -8,19 +8,21 @@ presentation.
 
 | Phase | Reads (instance vars) | Reads (local data) | Produces |
 |---|---|---|---|
-| Model Analysis | — | components | model_knowledge, GENERIC_COMPONENT_WORDS, GENERIC_PARTIALS |
-| Document Profiling | — | sentences, components | doc_profile, _is_complex |
+| Model Analysis | — | components | model_knowledge |
+| Generic Set Derivation | model_knowledge | components | GENERIC_COMPONENT_WORDS, GENERIC_PARTIALS |
+| Document Profiling | — | sentences, components | _is_complex, pronoun_ratio |
 | Document Knowledge | — | sentences, components | doc_knowledge |
-| Doc Knowledge Enrichment | GENERIC_PARTIALS | sentences, components, doc_knowledge | mutates doc_knowledge |
+| Doc Knowledge Enrichment | GENERIC_PARTIALS, doc_knowledge | sentences, components | mutates doc_knowledge |
+| Partial Usage Classification | doc_knowledge | sentences | _activity_partials |
 | Pattern Learning | model_knowledge | sentences, components | learned_patterns |
-| Seed Extraction | — | text_path, model_path | transarc_links, transarc_set |
+| Seed Extraction | — | text_path, model_path | seed_links, seed_set |
 | Entity Extraction | model_knowledge, doc_knowledge | sentences, components | candidates |
-| Targeted Recovery | doc_knowledge | sentences, transarc_links, candidates | appends to candidates |
+| Targeted Recovery | doc_knowledge | sentences, seed_links, candidates | appends to candidates |
 | Validation | model_knowledge, learned_patterns, doc_knowledge, GENERIC_COMPONENT_WORDS | candidates | validated |
 | Coreference | _is_complex, model_knowledge, learned_patterns, doc_knowledge | sentences, components | coref_links |
-| Partial Injection | doc_knowledge | sentences, transarc_set, validated, coref_links | partial_links |
-| Boundary Filter | model_knowledge | preliminary, transarc_set | filtered preliminary |
-| Judge Review | _is_complex, model_knowledge, doc_knowledge | preliminary, transarc_set | final links |
+| Partial Injection | doc_knowledge | sentences, seed_set, validated, coref_links | partial_links |
+| Boundary Filter | model_knowledge, doc_knowledge, _activity_partials | preliminary, seed_set | filtered preliminary |
+| Judge Review | _is_complex, model_knowledge, doc_knowledge, _activity_partials | preliminary, seed_set | final links |
 
 ## Dependency DAG (edges = "must complete before")
 
@@ -48,6 +50,13 @@ Document Knowledge ──┬──→ Doc Knowledge Enrichment
 Pattern Learning ────┬──→ Validation
                      └──→ Coreference (subprocess filter)
 
+Doc Knowledge Enrichment ─→ Partial Usage Classification
+
+Partial Usage Classification ┬──→ Boundary Filter (_activity_partials)
+                             └──→ Judge Review (_activity_partials)
+
+Document Knowledge ──────────────→ Boundary Filter (alias context)
+
 Seed Extraction ─────┬──→ Targeted Recovery (coverage check)
                      ├──→ Partial Injection (dedup)
                      ├──→ Boundary Filter (immunity)
@@ -72,13 +81,13 @@ Boundary Filter ─────────→ Judge Review
 | Slot | Running | Bottleneck |
 |---|---|---|
 | T1 | Model Analysis, Document Profiling, Document Knowledge, Seed Extraction | Seed (ILinker2 = multiple LLM batches) |
+| T1b | Generic Set Derivation (from model_knowledge) | Fast, deterministic |
 | T2 | Pattern Learning, Doc Knowledge Enrichment | Both short |
-| T3 | Entity Extraction ∥ Coreference | Coreference (2x full pass) |
-| T4 | Targeted Recovery | Needs Seed + Entity outputs |
-| T5 | Validation | Needs Targeted Recovery + Patterns |
-| T6 | Partial Injection | Merge point: needs Validation + Coreference |
-| T7 | Merge + Boundary Filter | Sequential |
-| T8 | Judge Review | Sequential |
+| T2b | Partial Usage Classification | Per-partial LLM calls |
+| T3 | Entity Pipeline (extract→guard→recover→validate) ∥ Coreference | Coreference (full pass) |
+| T3b | Partial Injection | Needs Validation + Coreference |
+| T4 | Merge + Boundary Filter | Sequential |
+| T5 | Judicial Review | Sequential |
 
 ## Critical Path
 
@@ -101,17 +110,21 @@ figure should communicate.
 
 ## Mapping: Code Phases → Paper Sections
 
-| Code Phase | Paper Section |
+| S-Linker Method | Paper Section |
 |---|---|
-| Phase 0 | §3.2 Document Analysis (profiling paragraph) |
-| Phase 1 | §3.2 Model Analysis |
-| Phase 2 | §3.2 Pattern Learning |
-| Phase 3, 3b | §3.2 Document Analysis (alternative names paragraph) |
-| Phase 4 | §3.3 Seed Extraction |
-| Phase 5, 5b | §3.3 Entity Extraction and Validation (extraction) |
-| Phase 6 | §3.3 Entity Extraction and Validation (validation) |
-| Phase 7 | §3.3 Coreference Resolution |
-| Phase 8b | §3.3 Partial Reference Injection |
-| Combine | §3.4 Priority-Based Merge |
-| Phase 8c | §3.4 Convention-Aware Boundary Filter |
-| Phase 9 | §3.4 Judicial Review |
+| `_compute_complexity` | §3.2.2 Document Analysis (profiling paragraph) |
+| `_analyze_model` | §3.2.1 Model Analysis |
+| `_compute_generic_sets` | §3.2.1 Model Analysis (generic partial words) |
+| `_learn_document_knowledge_enriched` | §3.2.2 Document Analysis (alternative names) |
+| `_enrich_multiword_partials` | §3.2.2 Document Analysis (enrichment paragraph) |
+| `_classify_partial_usage` | §3.2.2 Document Analysis (partial usage classification) |
+| `_learn_patterns_with_debate` | §3.2.3 Pattern Learning |
+| `_run_seed` | §3.3.1 Seed Extraction |
+| `_extract_entities_enriched` | §3.3.2 Entity Extraction and Validation (extraction) |
+| `_targeted_recovery` | §3.3.2 Entity Extraction and Validation (targeted recovery) |
+| `_validate_intersect` | §3.3.2 Entity Extraction and Validation (validation) |
+| `_coref_discourse` / `_coref_debate` | §3.3.3 Coreference Resolution |
+| `_inject_partial_references` | §3.3.4 Partial Reference Injection |
+| `_combine_links` | §3.4.1 Priority-Based Merge |
+| `_apply_boundary_filters` | §3.4.2 Convention-Aware Boundary Filter |
+| `_judge_review` | §3.4.3 Judicial Review |
