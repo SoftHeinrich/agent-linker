@@ -39,10 +39,10 @@
 \draw[arr] (pattern.south) -- (entity.north);
 \draw[arr] (pattern.south) -- (coref.north);
 
-% Tier 3: Merge + Review
+% Tier 3: Merge + Filter
 \node[tier3, below=1.4cm of entity, xshift=0.8cm] (merge) {Priority Merge};
 \node[tier3, below=0.5cm of merge] (boundary) {Boundary Filter};
-\node[tier3, below=0.5cm of boundary] (judge) {Judicial Review};
+\node[tier3, below=0.5cm of boundary] (judge) {Evidence Filter};
 
 % Tier 2 -> Tier 3
 \draw[arr] (seed.south) -- (merge.north west);
@@ -73,6 +73,6 @@
 \caption{Pipeline architecture as a staged DAG. Tier~1 builds shared knowledge
 (all three analyses are fully parallel). Tier~2 runs four link recovery
 strategies; seed extraction requires no knowledge and can start immediately.
-Tier~3 merges all candidates and applies judicial review.}
+Tier~3 merges all candidates and applies boundary and evidence filtering.}
 \label{fig:pipeline}
 \end{figure*}

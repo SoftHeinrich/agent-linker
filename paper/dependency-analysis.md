@@ -19,10 +19,10 @@ presentation.
 | Entity Extraction | model_knowledge, doc_knowledge | sentences, components | candidates |
 | Targeted Recovery | doc_knowledge | sentences, seed_links, candidates | appends to candidates |
 | Validation | model_knowledge, learned_patterns, doc_knowledge, GENERIC_COMPONENT_WORDS | candidates | validated |
-| Coreference | _is_complex, model_knowledge, learned_patterns, doc_knowledge | sentences, components | coref_links |
+| Coreference | model_knowledge, learned_patterns, doc_knowledge | sentences, components | coref_links |
 | Partial Injection | doc_knowledge | sentences, seed_set, validated, coref_links | partial_links |
-| Boundary Filter | model_knowledge, doc_knowledge, _activity_partials | preliminary, seed_set | filtered preliminary |
-| Judge Review | _is_complex, model_knowledge, doc_knowledge, _activity_partials | preliminary, seed_set | final links |
+| Boundary Filter | model_knowledge, doc_knowledge, _activity_partials | preliminary | filtered preliminary |
+| Evidence Filter | doc_knowledge | filtered preliminary, seed_set | final links |
 
 ## Dependency DAG (edges = "must complete before")
 
@@ -33,11 +33,9 @@ Model Analysis ──────┬──→ Pattern Learning
                      ├──→ Validation
                      ├──→ Coreference
                      ├──→ Boundary Filter
-                     ├──→ Judge Review
                      └──→ Merge (parent-overlap guard)
 
-Document Profiling ──┬──→ Coreference (mode selection)
-                     └──→ Judge Review (adaptive context)
+Document Profiling ──────→ (diagnostic logging only; no downstream consumers)
 
 Document Knowledge ──┬──→ Doc Knowledge Enrichment
                      ├──→ Entity Extraction
@@ -45,22 +43,20 @@ Document Knowledge ──┬──→ Doc Knowledge Enrichment
                      ├──→ Validation
                      ├──→ Coreference (alias checks)
                      ├──→ Partial Injection
-                     └──→ Judge Review
+                     └──→ Evidence Filter (alias lookup)
 
 Pattern Learning ────┬──→ Validation
                      └──→ Coreference (subprocess filter)
 
 Doc Knowledge Enrichment ─→ Partial Usage Classification
 
-Partial Usage Classification ┬──→ Boundary Filter (_activity_partials)
-                             └──→ Judge Review (_activity_partials)
+Partial Usage Classification ────→ Boundary Filter (_activity_partials)
 
 Document Knowledge ──────────────→ Boundary Filter (alias context)
 
 Seed Extraction ─────┬──→ Targeted Recovery (coverage check)
                      ├──→ Partial Injection (dedup)
-                     ├──→ Boundary Filter (immunity)
-                     └──→ Judge Review (immunity)
+                     └──→ Evidence Filter (seed provenance check)
 
 Entity Extraction ───┬──→ Targeted Recovery (coverage check)
                      └──→ Validation
@@ -73,7 +69,7 @@ Coreference ─────────┬──→ Partial Injection (dedup)
 
 Partial Injection ───────→ Merge
 Merge ───────────────────→ Boundary Filter
-Boundary Filter ─────────→ Judge Review
+Boundary Filter ─────────→ Evidence Filter
 ```
 
 ## Parallel Groups (maximum parallelism schedule)
@@ -86,8 +82,7 @@ Boundary Filter ─────────→ Judge Review
 | T2b | Partial Usage Classification | Per-partial LLM calls |
 | T3 | Entity Pipeline (extract→guard→recover→validate) ∥ Coreference | Coreference (full pass) |
 | T3b | Partial Injection | Needs Validation + Coreference |
-| T4 | Merge + Boundary Filter | Sequential |
-| T5 | Judicial Review | Sequential |
+| T4 | Merge + Boundary Filter + Evidence Filter | Sequential (deterministic evidence filter is instant) |
 
 ## Critical Path
 
@@ -99,8 +94,7 @@ Document Knowledge → Enrichment ──→ Entity Extraction → Targeted Recov
 Seed Extraction ──────────────────→ Targeted Recovery
 
 **Chain B (coreference path):**
-Document Profiling ───────────────┐
-Model Analysis → Pattern Learning ┼→ Coreference ──→ Merge
+Model Analysis → Pattern Learning ┬→ Coreference ──→ Merge
 Document Knowledge → Enrichment ──┘
 
 Phase 7 (Coreference) and Phase 5→5b→6 (Entity path) are on separate
@@ -123,8 +117,8 @@ figure should communicate.
 | `_extract_entities_enriched` | §3.3.2 Entity Extraction and Validation (extraction) |
 | `_targeted_recovery` | §3.3.2 Entity Extraction and Validation (targeted recovery) |
 | `_validate_intersect` | §3.3.2 Entity Extraction and Validation (validation) |
-| `_coref_discourse` / `_coref_debate` | §3.3.3 Coreference Resolution |
+| `_coref_cases_in_context` | §3.3.3 Coreference Resolution |
 | `_inject_partial_references` | §3.3.4 Partial Reference Injection |
 | `_combine_links` | §3.4.1 Priority-Based Merge |
 | `_apply_boundary_filters` | §3.4.2 Convention-Aware Boundary Filter |
-| `_judge_review` | §3.4.3 Judicial Review |
+| keep_coref filter (inline in `link()`) | §3.4.3 Evidence Filter |

@@ -32,10 +32,10 @@ The pipeline is organized as a \emph{fan-out / fan-in} staged DAG
       resolution, and deterministic partial-reference injection. The
       strategies are largely independent: each targets a different type
       of reference, and their outputs converge only at the merge point.
-    \item \textbf{Merge and judicial review} (Tier~3): A single fan-in stage
-      merges all candidate links, applies convention-aware boundary filtering,
-      and subjects the result to a structured LLM judge with
-      provenance-differentiated review tracks.
+    \item \textbf{Merge and filtering} (Tier~3): A single fan-in stage
+      merges all candidate links, applies convention-aware boundary filtering
+      to \emph{all} links regardless of provenance, and removes residual
+      false positives via a lightweight deterministic evidence filter.
 \end{enumerate}
 
 \noindent This architecture offers two key advantages.
@@ -85,9 +85,10 @@ without affecting the recovery strategies.
                   ▼
         ┌──────────────────┐
         │ Merge + Boundary │
-        │ Filter + Judge   │
+        │ Filter + Evidence│
+        │     Filter       │
         └──────────────────┘
-       Tier 3: Judicial Review
+       Tier 3: Merge & Filter
 \end{verbatim}
 \caption{Fan-out / fan-in pipeline architecture. Tier~1 acquires knowledge
 concurrently; pattern learning depends on model analysis and runs after the
@@ -142,9 +143,8 @@ characteristics and alternative component names.
 We compute the pronoun ratio (fraction of sentences containing anaphoric
 pronouns such as \emph{it}, \emph{they}, \emph{this}), component mention
 density, and sentence-to-component ratio.
-A document is classified as \emph{complex} when the explicit-mention
-coverage is below 50\% and the sentence-to-component ratio exceeds~4.
-This classification determines the coreference strategy selection in Tier~2.
+These metrics are logged for diagnostic purposes and inform threshold
+calibration in downstream phases.
 
 \paragraph{Alternative name extraction.}
 An LLM extracts three categories of alternative names:
@@ -176,8 +176,9 @@ A subsequent \emph{partial usage classification} step uses per-partial
 LLM calls to determine whether each single-word generic partial is
 typically used as a component reference (NAME) or as an ordinary English
 word (ORDINARY) in the document.
-ORDINARY-classified partials lose their synonym-safe bypass in the
-Tier~3 judge and instead receive calibrated batch review.
+ORDINARY-classified partials are excluded from the confirmed-alias
+context provided to the Tier~3 boundary filter, preventing the filter
+from treating generic uses as validated component references.
 
 \subsubsection{Pattern Learning}\label{sec:patterns}
 
@@ -297,21 +298,19 @@ Sentences containing anaphoric expressions---pronouns (\emph{it},
 \emph{that}, \emph{those}) and definite descriptions (\emph{the
 component}, \emph{the service})---are analyzed to resolve references
 back to architecture components.
-The pipeline selects between two modes based on the document complexity
-classification from Tier~1:
 
-\begin{itemize}
-    \item \emph{Discourse mode} (simple documents): A discourse model
-      tracks recent mentions, paragraph topics, and active entities per
-      sentence. Pronoun-bearing sentences are processed in batches of~12
-      with their preceding 3-sentence context.
-    \item \emph{Debate mode} (complex documents): Sentences are processed
-      in non-overlapping windows of~20 with 3 preceding context sentences,
-      without a discourse model, relying instead on the LLM's contextual
-      reasoning.
-\end{itemize}
+The pipeline uses a unified \emph{cases-in-context} strategy:
+each pronoun-bearing sentence is presented as an individual case with
+a $\pm5$-sentence bidirectional context window, processed in batches
+of~10.
+The LLM sees each case's surrounding context (marked with
+\texttt{>>>} for the target sentence) and resolves any pronoun
+that refers to an architecture component.
+This per-case presentation with local context is robust across both
+simple and complex documents, eliminating the need for document
+complexity gating.
 
-\noindent Both modes enforce a \emph{citation-grounded verification}
+The resolution enforces a \emph{citation-grounded verification}
 protocol.
 The LLM must cite an antecedent sentence where the component was
 explicitly named, along with the exact quote containing the component
@@ -328,16 +327,10 @@ This citation is then verified deterministically in code:
 \noindent This hybrid LLM-plus-code verification eliminates a class of
 hallucinated coreference links where the LLM fabricates a plausible but
 nonexistent antecedent.
-
-% TODO: Coreference 2x union is described here but only implemented in
-% V39a (variance stabilization variant). S-Linker currently runs a single
-% pass. Either port V39a's double-run logic or remove this paragraph.
-To reduce variance from LLM non-determinism, each coreference pass is
-executed \emph{twice} and the results are unioned.
-This stabilizes recall without degrading precision, since both passes
-share the same strict verification filter: any link that passes
-verification in either run is a genuine resolution, while hallucinated
-links are unlikely to survive verification in either run.
+Because the antecedent verification is strict (verbatim name match
+within 3~sentences), false positives from hallucinated resolutions are
+effectively eliminated at the code level, making coreference links
+safe to accept without further LLM review in Tier~3.
 
 \subsubsection{Partial Reference Injection}\label{sec:partial}
 
@@ -356,7 +349,7 @@ Its output is filtered by the convention-aware boundary filter in Tier~3.
 
 % ---------------------------------------------------------------------------
 
-\subsection{Merge and Judicial Review}\label{sec:merge}
+\subsection{Merge and Filtering}\label{sec:merge}
 
 Tier~3 merges the outputs of all recovery strategies and applies
 two layers of filtering to remove false positives.
@@ -376,8 +369,8 @@ variant is dropped).
 
 \subsubsection{Convention-Aware Boundary Filter}\label{sec:boundary}
 
-A structured LLM filter applies a 3-step reasoning guide to all
-non-seed links:
+A structured LLM filter applies a 3-step reasoning guide to \emph{all}
+links, regardless of provenance (including seed links):
 
 \begin{enumerate}
     \item \textbf{Hierarchical name reference (Step~1):}
@@ -402,56 +395,40 @@ non-seed links:
 CamelCase identifiers are never treated as generic words, and that
 interaction sentences produce links for all participating components.
 
-\subsubsection{Judicial Review}\label{sec:judge}
+\subsubsection{Evidence Filter}\label{sec:evidence-filter}
 
-The final review applies a structured 4-rule judge to the remaining links.
-A link $s \to c$ is approved when:
+After the boundary filter, a lightweight deterministic
+\emph{evidence filter} removes links that lack textual grounding
+in the sentence.
+A link $s \to c$ is kept if \emph{any} of the following holds:
 
 \begin{enumerate}
-    \item \textbf{Explicit reference:} The component name appears as a
-      clear entity being discussed, not an incidental mention.
-    \item \textbf{System-level perspective:} The sentence describes the
-      component's architectural role, responsibilities, or interactions,
-      not internal implementation details.
-    \item \textbf{Primary focus:} The component is the main subject of
-      the sentence, not secondary or tangential.
-    \item \textbf{Component-specific usage:} The reference is to the
-      named architectural entity, not a generic concept sharing the
-      same name. A critical exception: when the system has a component
-      literally named after a common word (e.g., \texttt{Scheduler}),
-      architectural descriptions of that concept \emph{are} treated as
-      component-specific.
+    \item The component name appears as a standalone word-boundary
+      match in the sentence text (case-sensitive for single-word names,
+      case-insensitive for multi-word names), excluding occurrences
+      inside dotted paths or hyphenated compounds.
+    \item A known alias (synonym, abbreviation, or partial reference
+      from document analysis) appears in the sentence text.
+    \item The link originates from the seed extractor, which already
+      verified explicit mentions.
+    \item The link originates from coreference resolution, which
+      already verified the antecedent citation.
 \end{enumerate}
 
-\noindent The judge uses a \emph{triage} strategy to minimize LLM calls
-and tailor review intensity to link provenance:
+\noindent Links that satisfy none of these conditions---where the
+component name is absent from the sentence and no alias or prior
+verification provides evidence---are dropped.
+This filter requires zero LLM calls and removes residual false
+positives introduced by entity extraction or validation when the
+LLM hallucinated a reference that does not appear in the text.
 
-\begin{itemize}
-    \item \textbf{Immune:} Seed links whose component names are
-      unambiguous---either structurally (multi-word, CamelCase, all-caps)
-      or as classified by model analysis---bypass the judge entirely.
-    \item \textbf{Synonym-safe:} Links backed by a synonym or
-      multi-word partial reference from document analysis appearing in
-      the sentence text bypass review, trusting the validated document
-      knowledge.
-      Single-word generic partials classified as activity-type
-      (e.g., a partial that is used as an ordinary word rather than
-      a component reference) instead receive a calibrated batch judge
-      with union voting.
-    \item \textbf{Mention-safe:} Non-seed links where the component
-      name appears as a standalone word-boundary match in the sentence
-      bypass review, since the explicit textual presence provides
-      sufficient evidence.
-    \item \textbf{Advocate-prosecutor deliberation:} Seed links with
-      ambiguous names undergo a three-call deliberation: an advocate
-      argues for the link, a prosecutor argues against, and a jury
-      weighs both arguments. Two independent deliberation rounds use
-      union voting (reject only if both rounds reject).
-    \item \textbf{Standard review:} Remaining links receive the 4-rule
-      judge prompt. Two independent passes use \emph{union voting}---a
-      link is rejected only if both passes reject it---reducing the risk
-      of over-filtering.
-\end{itemize}
+The rationale for trusting coreference links without additional
+review is that antecedent verification (\S\ref{sec:coref}) already
+provides strong evidence: the component was explicitly named in a
+nearby sentence and the pronoun grammatically refers back to it.
+Empirically, applying an LLM judge to coreference links kills true
+positives but never catches false positives, since the code-level
+verification is more reliable than LLM re-evaluation.
 
 % ---------------------------------------------------------------------------
 
@@ -463,12 +440,8 @@ Three principles guide the pipeline design across all tiers:
 We use \emph{intersection} voting (both passes must agree) for
 precision-critical decisions: seed merge for non-exact matches
 (\S\ref{sec:seed}) and entity validation (\S\ref{sec:entity}).
-We use \emph{union} voting (either pass suffices) for recall-critical
-decisions: coreference resolution (\S\ref{sec:coref}) and judicial
-review (\S\ref{sec:judge}).
 This reflects the observation that false positives in early stages
-propagate through the pipeline, while false negatives in later stages
-are unrecoverable.
+propagate through the pipeline and are difficult to remove later.
 
 \paragraph{Citation-grounded verification.}
 Rather than trusting LLM judgments as opaque decisions, we require the
