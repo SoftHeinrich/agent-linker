@@ -15,91 +15,69 @@ $\{c_1, \ldots, c_m\}$, our approach produces a set of trace links
 $L \subseteq S \times C$, where each link $(s_i, c_j)$ asserts that
 sentence~$s_i$ discusses component~$c_j$.
 
-The pipeline is organized as a \emph{fan-out / fan-in} staged DAG
+\paragraph{Challenge.}
+Architecture documents refer to components in diverse ways:
+by canonical name, by abbreviation, by functional description,
+by trailing word of a compound name (e.g., ``Dispatcher'' for
+\texttt{EventDispatcher}), or implicitly via pronouns.
+No single extraction strategy handles all reference types
+well---a high-precision name matcher misses aliases and pronouns,
+while a broad semantic extractor introduces false positives from
+coincidental word overlap.
+
+\paragraph{Key insight.}
+Different reference types require different resolution
+strategies, but these strategies can operate independently as long
+as they share a common knowledge base.
+This suggests a fan-out architecture where each strategy addresses
+exactly one reference type, contributing candidates additively without
+interfering with each other's precision/recall trade-offs.
+
+\paragraph{Design principles.}
+Three principles guide the pipeline design:
+\begin{itemize}
+    \item \emph{Multi-pass consensus:}
+      Precision-critical decisions use intersection voting---two
+      independent LLM passes must agree---to suppress hallucinations
+      and LLM non-determinism (\S\ref{sec:seed},
+      \S\ref{sec:entity}, \S\ref{sec:patterns}).
+    \item \emph{Citation-grounded verification:}
+      Rather than trusting LLM judgments as opaque decisions, we
+      require the LLM to produce verifiable evidence (antecedent
+      citations, exact substrings) that is checked deterministically
+      in code (\S\ref{sec:coref}, \S\ref{sec:entity}).
+    \item \emph{Benchmark-clean prompts:}
+      All few-shot examples use abstract placeholders or safe
+      textbook domains; no benchmark names or gold-standard
+      information appears in any prompt.
+\end{itemize}
+
+\paragraph{Architecture.}
+The pipeline is organized as a staged DAG
 (Figure~\ref{fig:pipeline}) with three layers:
 
 \begin{enumerate}
-    \item \textbf{Knowledge acquisition} (Layer~1): Independent analyses
-      extract structured knowledge from the raw inputs---model structure,
-      document vocabulary, and linguistic patterns.
-      Model analysis, document analysis, and explicit reference
-      extraction share no data dependencies; pattern learning and
-      multiword enrichment depend on model analysis results and run
-      once the initial analyses complete.
-    \item \textbf{Link recovery} (Layer~2): Four complementary strategies
-      produce candidate links, each targeting a distinct reference type:
-      \emph{explicit} references (verbatim names), \emph{contextual}
-      references (aliases, functional descriptions), \emph{anaphoric}
-      references (pronouns), and \emph{abbreviated} references (partial
-      names).
-      The strategies are largely independent, and their outputs converge
+    \item \textbf{Knowledge acquisition} (Layer~1): Independent
+      analyses extract structured knowledge from the raw inputs---model
+      structure, document vocabulary, and linguistic patterns.
+    \item \textbf{Link recovery} (Layer~2): Four complementary
+      strategies produce candidate links, each targeting a distinct
+      reference type (\S\ref{sec:recovery}). Their outputs converge
       only at the merge point.
-    \item \textbf{Link consolidation} (Layer~3): A single fan-in stage
-      merges all candidate links, applies convention-aware boundary
-      filtering to \emph{all} links regardless of provenance, and removes
-      residual false positives via a deterministic evidence filter.
+    \item \textbf{Link consolidation} (Layer~3): A single fan-in
+      stage merges all candidates, applies convention-aware boundary
+      filtering to \emph{all} links regardless of provenance, and
+      removes residual false positives via a deterministic evidence
+      filter.
 \end{enumerate}
 
-\noindent This architecture offers two advantages.
-First, the recovery strategies contribute additively---explicit
-extraction captures high-precision named references, contextual
-discovery finds alias-based and functional references, anaphoric
-resolution recovers pronoun-based references, and abbreviated matching
-catches partial names---without interference or ordering constraints
-between strategies.
-Second, the separation of knowledge acquisition from link recovery
-allows each knowledge source to be refined or replaced independently
-without affecting the recovery strategies.
+\noindent Explicit reference extraction is logically a Layer~2
+strategy (it produces links, not knowledge), but because it requires
+no Layer~1 knowledge, it runs concurrently with Layer~1 to overlap
+its LLM cost with the knowledge phases.
 
 % ---------------------------------------------------------------------------
-\begin{figure}[t]
-\centering
-\small
-\begin{verbatim}
-    Layer 1: Knowledge Acquisition (concurrent)
-  ┌──────────┐  ┌──────────┐  ┌──────────┐
-  │  Model    │  │ Document │  │ Explicit │
-  │ Analysis  │  │ Analysis │  │Ref. Extr.│
-  └─────┬────┘  └────┬─────┘  └────┬─────┘
-        │             │             │
-        ├─────────────┤             │
-        ▼             │             │
-  ┌──────────┐        │             │
-  │ Pattern  │        │             │
-  │ Learning │        │             │
-  └─────┬────┘        │             │
-        └──────┬──────┘             │
-               │  shared knowledge  │
-               ▼                    │
-  ┌──────────────┐ ┌───────────┐   │
-  │ Contextual   │ │ Anaphoric │   │
-  │  Ref. Disc.  │ │ Ref. Res. │   │
-  │+ Validation  │ │           │   │
-  └──────┬───────┘ └─────┬─────┘   │
-         │               │         │
-         ├───────────────┤         │
-         ▼               │         │
-  ┌──────────┐           │         │
-  │Abbrev.   │           │         │
-  │Ref. Match│           │         │
-  └────┬─────┘           │         │
-       │  Layer 2: Link Recovery   │
-       └──────────┬───────────────┘
-                  ▼
-        ┌──────────────────┐
-        │ Merge + Boundary │
-        │ Filter + Evidence│
-        │     Filter       │
-        └──────────────────┘
-      Layer 3: Link Consolidation
-\end{verbatim}
-\caption{Fan-out / fan-in pipeline architecture. Layer~1 acquires knowledge
-concurrently; pattern learning depends on model analysis and runs after the
-initial analyses. Layer~2 runs four reference-type-specific recovery strategies
-that converge at the merge point. Explicit reference extraction has no
-knowledge dependencies and runs in Layer~1.}
-\label{fig:pipeline}
-\end{figure}
+\input{fig-pipeline}
 % ---------------------------------------------------------------------------
 
 \subsection{Knowledge Acquisition}\label{sec:knowledge}
@@ -108,299 +86,236 @@ Layer~1 builds a shared knowledge base from the raw document and model.
 Model analysis, document analysis, and explicit reference extraction
 are mutually independent---each reads only the raw inputs---enabling
 concurrent execution.
-Pattern learning and multiword enrichment depend on model analysis
-results and run once the initial analyses complete.
+Pattern learning depends on model analysis results and runs once
+the initial analyses complete.
 
 \subsubsection{Model Analysis}\label{sec:model-analysis}
 
-We analyze component names from the architecture model to distinguish
-\emph{architectural} names from \emph{ambiguous} ones.
-Architectural names (e.g., \texttt{TaskScheduler}, \texttt{RenderEngine})
-identify specific system roles, while ambiguous names
-(e.g., \texttt{Core}, \texttt{Adapter}) are single common-English words
-that documentation authors frequently use generically.
+Component names vary widely in specificity.
+Constructed identifiers like \texttt{TaskScheduler} unambiguously name
+architectural roles, but single common-English words like \texttt{Core}
+or \texttt{Adapter} appear frequently in non-referential contexts.
+To distinguish them, we classify each name as \emph{architectural}
+or \emph{ambiguous} using a two-step hybrid:
+a few-shot LLM prompt makes an initial classification, then a
+deterministic structural guard overrides the LLM for names with
+unambiguous structure---multi-word names, CamelCase compounds, and
+all-uppercase acronyms are always classified as architectural.
+This ensures LLM judgment is used only where structural cues are absent.
 
-Classification uses a few-shot LLM prompt with examples drawn from
-software-engineering textbook domains (compilers, operating systems,
-networking), followed by a deterministic structural guard:
-multi-word names, CamelCase compounds (detected via the regex pattern
-\texttt{[a-z][A-Z]}), and all-uppercase acronyms are always classified
-as architectural, regardless of LLM output.
-This hybrid approach leverages LLM judgment for ambiguous cases while
-guaranteeing that structurally unambiguous identifiers are never
-misclassified.
-
-The analysis additionally extracts: (a)~\emph{implementation relationships}
-between component names (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}),
-identified by shared substrings; (b)~\emph{shared vocabulary} across
-components, mapping words that appear in multiple component names;
-and (c)~\emph{generic partial words}, the set of ambiguous-classified
-words that also appear as subwords of other component names, used later
-to calibrate abbreviated reference matching.
+The analysis additionally extracts \emph{implementation relationships}
+between component names
+(e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}),
+identified by shared substrings, and \emph{generic partial words}---the
+set of ambiguous words that also appear as subwords of other component
+names---used later to calibrate abbreviated reference matching
+(\S\ref{sec:partial}).
 
 \subsubsection{Document Analysis}\label{sec:doc-analysis}
 
-Document analysis builds an \emph{alias table}---a mapping from
-alternative names to their canonical component---that downstream phases
-use to recognize references the raw component list alone cannot match.
-The document text itself is never modified; only the mapping is produced.
-
-\paragraph{Why alias discovery matters.}
 Architecture documents rarely refer to components exclusively by their
 canonical model names.
 Authors abbreviate (\emph{AST} for \texttt{AbstractSyntaxTree}),
 use trailing words as shorthand (\emph{Dispatcher} for
 \texttt{EventDispatcher}), or introduce synonyms (\emph{task runner}
 for \texttt{TaskScheduler}).
-Without an alias table, any strategy that matches only canonical
-names will systematically miss these references, capping recall.
+Without an \emph{alias table}---a mapping from alternative names to
+canonical components---any name-matching strategy will systematically
+miss these references, capping recall.
 
-\paragraph{Alternative name discovery.}
+\paragraph{Alias discovery.}
 An LLM extracts three categories of aliases from the document:
 \begin{itemize}
-    \item \emph{Abbreviations}: short forms introduced via parenthetical
-      definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
-    \item \emph{Synonyms}: alternative names that unambiguously identify
-      exactly one component.
-    \item \emph{Partial references}: trailing words of multi-word component
-      names used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
+    \item \emph{Abbreviations}: short forms via parenthetical
+      definitions (e.g., ``Abstract Syntax Tree (AST)'').
+    \item \emph{Synonyms}: alternative names that unambiguously
+      identify exactly one component.
+    \item \emph{Partial references}: trailing words of multi-word
+      component names used alone (e.g., ``Dispatcher'' for
+      \texttt{EventDispatcher}).
 \end{itemize}
 
-\noindent A calibrated few-shot judge validates each proposed mapping.
-The judge auto-approves abbreviations formed from component-name initials,
+\noindent A calibrated few-shot judge validates each proposed mapping,
+auto-approving abbreviations formed from component-name initials,
 trailing words of multi-word names, and CamelCase identifiers, while
 rejecting generic terms (\emph{system}, \emph{process}).
-A deterministic \emph{CamelCase rescue} overrides any judge rejection of
-CamelCase identifiers, since constructed identifiers are never generic
-English words.
+A deterministic \emph{CamelCase rescue} overrides any judge rejection
+of CamelCase identifiers, since constructed identifiers are never
+generic English words.
 
-\paragraph{The challenge of partial references.}
+\paragraph{Partial-reference refinement.}
 Among the three alias types, partial references require the most
-careful handling because they sit at the intersection of two
-conflicting goals.
-On the one hand, trailing-word shorthands are pervasive in
-architecture documents---authors naturally write ``Server'' after
-introducing ``HTML5 Server''---so ignoring them sacrifices recall.
-On the other hand, many trailing words are ordinary English words
-(\emph{server}, \emph{manager}, \emph{core}) that appear frequently
-in non-referential contexts, creating false positives if matched
-indiscriminately.
-Abbreviations and synonyms do not share this tension:
-abbreviations are structurally distinctive (uppercase acronyms),
-and synonyms are validated for uniqueness.
-Partial references, by contrast, are often single common words
-whose referential status depends on context.
-
-This ambiguity motivates a three-step pipeline that progressively
-refines which partials are safe to use and in what context:
-
+careful handling: trailing-word shorthands are pervasive in
+architecture documents, but many trailing words are ordinary English
+words whose referential status depends on context.
+A three-step pipeline progressively refines which partials are safe:
 \begin{enumerate}
-    \item \emph{Statistical enrichment.}
-      For each multi-word component, if its trailing word appears
-      in at least three sentences where the full name is absent,
-      and no other component shares that trailing word,
-      the partial mapping is added automatically.
-      For trailing words classified as ambiguous by model analysis,
-      the match requires capitalized occurrences to avoid
-      coincidental overlap with generic uses.
-      This step catches patterns the LLM missed by relying on
-      distributional evidence rather than semantic judgment.
-    \item \emph{Usage classification.}
-      Per-partial LLM calls determine whether each single-word
-      generic partial is typically used as a component reference
-      (\textsc{name}) or as an ordinary English word
-      (\textsc{ordinary}) in the document.
-      For example, ``Server'' might be classified as \textsc{name}
-      in a document that consistently capitalizes it when referring
-      to the component, but as \textsc{ordinary} in a document
-      where ``server'' appears generically dozens of times.
-    \item \emph{Downstream gating.}
+    \item \emph{Statistical enrichment:}
+      If a trailing word appears in $\ge3$ sentences where the full
+      name is absent and no other component shares that word, the
+      partial mapping is added automatically.
+      Ambiguous trailing words require capitalized occurrences.
+    \item \emph{Usage classification:}
+      Per-partial LLM calls determine whether each generic partial
+      is typically used as a component reference (\textsc{name}) or
+      as an ordinary English word (\textsc{ordinary}).
+    \item \emph{Downstream gating:}
       \textsc{Ordinary}-classified partials remain in the alias table
-      for deterministic link creation
-      (abbreviated reference matching, \S\ref{sec:partial}),
-      but are excluded from the confirmed-alias context provided
-      to the Layer~3 boundary filter.
-      This prevents the filter from treating generic uses as
-      validated component references while still allowing the
-      deterministic matcher to produce candidate links that the
-      filter can then evaluate individually.
+      for abbreviated reference matching (\S\ref{sec:partial})
+      but are excluded from the confirmed-alias context provided to
+      the boundary filter (\S\ref{sec:boundary}), preventing it from
+      treating generic uses as validated references.
 \end{enumerate}
 
 \subsubsection{Pattern Learning}\label{sec:patterns}
 
-Two independent LLM passes identify \emph{subprocess terms}---words that
-refer to internal parts of components rather than the components themselves
-(e.g., ``garbage collector'' inside a \texttt{MemoryManager}).
-The first pass proposes candidates; the second cross-validates them in a
-debate structure, rejecting terms that may be valid component references.
-This debate mechanism reduces the risk of over-filtering in later
-validation phases.
-The phase also extracts \emph{action indicators} (verbs used when a
-component performs an action) and \emph{effect indicators} (verbs
-describing results), which serve as contextual signals during validation.
+Architecture documents describe not only components but also their
+internal parts---subprocess terms like ``garbage collector'' inside a
+\texttt{MemoryManager}.
+If left unrecognized, these terms cause false positive links in
+downstream validation and anaphoric resolution, where a sentence about
+a subprocess is misattributed to the enclosing component.
+
+Two independent LLM passes identify subprocess terms via a
+cross-validation protocol:
+the first pass proposes candidates; the second independently
+validates them, rejecting terms that may be valid component references.
+Only terms confirmed by both passes are retained.
+Subprocess terms serve as exclusion criteria in contextual validation
+(\S\ref{sec:entity}) and anaphoric resolution (\S\ref{sec:coref}).
 
 Pattern learning reads the filtered component list (excluding
-implementation names identified by model analysis) and the document
-sentences.
-This dependency places pattern learning after model analysis,
-forming a brief enrichment step between knowledge acquisition and
-link recovery.
+implementation names) and the document sentences.
+This dependency on model analysis places it after the initial
+knowledge acquisition, forming a brief enrichment step before
+link recovery begins.
 
 % ---------------------------------------------------------------------------
 
 \subsection{Link Recovery}\label{sec:recovery}
 
 Layer~2 comprises four complementary strategies, each targeting a
-distinct reference type that the others cannot efficiently capture:
+distinct reference type:
 
 \begin{itemize}
-    \item \textbf{Explicit reference extraction} recovers verbatim
-      component names using only raw inputs (no Layer~1 knowledge),
-      optimizing for precision at the cost of recall.
-    \item \textbf{Contextual reference discovery} uses the full
-      knowledge base (aliases, synonyms, partial names) to recover
-      references that require contextual understanding---functional
-      descriptions, interaction participants, and known aliases---then
-      validates candidates through a multi-step pipeline.
-    \item \textbf{Anaphoric reference resolution} resolves pronominal
-      and definite-description references (``it'', ``the service'')
+    \item \textbf{Explicit reference extraction} (\S\ref{sec:seed})
+      recovers verbatim component names using only raw inputs,
+      optimizing for precision.
+    \item \textbf{Contextual reference discovery} (\S\ref{sec:entity})
+      uses the full alias table to recover references requiring
+      contextual understanding, then validates candidates through
+      a multi-step pipeline.
+    \item \textbf{Anaphoric reference resolution} (\S\ref{sec:coref})
+      resolves pronominal and definite-description references
       back to previously mentioned components.
-    \item \textbf{Abbreviated reference matching} deterministically
-      matches abbreviated component names discovered during document
-      analysis.
+    \item \textbf{Abbreviated reference matching} (\S\ref{sec:partial})
+      deterministically matches partial names from the alias table.
 \end{itemize}
-
-\noindent All four strategies' outputs converge only at the Layer~3
-merge point.
-Explicit extraction has no knowledge dependencies and runs
-concurrently with Layer~1; the remaining three strategies consume the
-shared knowledge base.
 
 \subsubsection{Explicit Reference Extraction}\label{sec:seed}
 
-Explicit extraction establishes a high-precision baseline before
-any knowledge is available.
-It accepts either an external baseline (e.g., TransArc CSV)
-or runs a self-contained LLM-based extractor called \textbf{ILinker2}.
-Because ILinker2 reads only the raw sentences and component
-list---no abbreviations, synonyms, or partial references---it runs
-concurrently with Layer~1 knowledge acquisition, overlapping its
-LLM cost with the knowledge phases rather than waiting for them.
+Explicit extraction establishes a high-precision baseline
+\emph{before} any knowledge is available.
+It runs a self-contained LLM-based extractor (\textbf{ILinker2})
+that reads only the raw sentences and component list---no
+abbreviations, synonyms, or partial references---enabling concurrent
+execution with Layer~1 knowledge acquisition.
 
-ILinker2 uses two complementary LLM passes over batched document segments
-(50~sentences per batch with 5-sentence overlap), each with a
-\emph{different prompt framing}:
+ILinker2 uses two complementary LLM passes over batched document
+segments, each with a different prompt framing:
 
 \begin{itemize}
-    \item \textbf{Pass~A (mention-framed):} ``For each sentence, identify
-      which components are explicitly mentioned.'' This pass is optimized
-      for exhaustive recall of named references.
-    \item \textbf{Pass~B (actor-framed):} ``For each sentence, determine
-      which component is the subject or primary actor.'' This reframing
-      surfaces references that Pass~A may miss by focusing on agency
-      rather than name matching.
+    \item \textbf{Pass~A (mention-framed):} ``For each sentence,
+      identify which components are explicitly mentioned.''
+    \item \textbf{Pass~B (actor-framed):} ``For each sentence,
+      determine which component is the subject or primary actor.''
 \end{itemize}
 
-\noindent Both passes share exclusion rules that reject names appearing
-only inside dotted package paths (e.g., \texttt{renderer.utils.config}
-does not reference \texttt{Renderer}) and generic English words used in
+\noindent Both passes reject names appearing only inside dotted
+package paths (e.g., \texttt{renderer.utils.config} does not
+reference \texttt{Renderer}) and generic English words used in
 their ordinary sense.
 
 The merge strategy applies \emph{asymmetric voting}:
-exact-name matches from \emph{either} pass are accepted (union), while
-non-exact matches (synonyms, partials) require agreement from \emph{both}
-passes (intersection).
-Exact matches are reliably identified by a single pass, while fuzzy
-matches benefit from independent agreement to suppress hallucinations.
-
-As a standalone extractor, ILinker2 achieves approximately 95\% precision
-but only 76\% recall, deliberately trading recall for precision.
-The recall gap---alias-based references, functional descriptions,
+exact-name matches from \emph{either} pass are accepted (union),
+while non-exact matches require agreement from \emph{both} passes
+(intersection).
+ILinker2 is designed for high precision at the cost of recall;
+the recall gap---alias-based references, functional descriptions,
 pronominal coreferences---is addressed by the three knowledge-enriched
-strategies in Layer~2.
+strategies that follow.
 
 \subsubsection{Contextual Reference Discovery}\label{sec:entity}
 
 Where explicit extraction finds only references recognizable from the
-component name alone, contextual discovery leverages the full Layer~1
-knowledge base to recover references that \emph{require} contextual
+component name alone, contextual discovery leverages the full alias
+table to recover references that \emph{require} contextual
 understanding.
-The two strategies differ in three ways:
+It differs from explicit extraction in three ways:
 
 \begin{enumerate}
     \item \textbf{Knowledge-enriched prompts.}
       The discovery prompt receives all abbreviations, synonyms, and
-      partial references from document analysis, enabling it to
+      partial references from the alias table, enabling it to
       recognize aliases (e.g., ``AST'' for \texttt{AbstractSyntaxTree})
-      and partial names (e.g., ``Dispatcher'' for
-      \texttt{EventDispatcher}) that the knowledge-free explicit
-      extractor cannot.
+      that the knowledge-free explicit extractor cannot.
     \item \textbf{Broader inclusion scope.}
-      Beyond direct name matches, the prompt covers six reference
-      patterns: space-separated forms of compound names, functional
-      descriptions, known aliases, interaction participants (``X sends
-      data to Y'' references both X and Y), and passive/prepositional
-      mentions (``handled by X'').
-      Explicit extraction is limited to named and actor references.
-    \item \textbf{Same-prompt intersection for variance reduction.}
-      Rather than using two different prompt framings (as explicit
-      extraction does), contextual discovery runs the \emph{same}
-      prompt \emph{twice} independently and keeps only candidates
-      found in \emph{both} passes (intersection).
-      This eliminates spurious candidates that a single pass might
-      over-extract due to LLM non-determinism---a risk that grows
-      with the broader inclusion scope.
+      Beyond direct name matches, the prompt covers additional
+      reference patterns: space-separated forms of compound names,
+      functional descriptions, known aliases, interaction participants
+      (``X sends data to Y'' references both X and Y), and
+      passive/prepositional mentions (``handled by X'').
+    \item \textbf{Same-prompt intersection.}
+      Contextual discovery runs the \emph{same} prompt \emph{twice}
+      independently and keeps only candidates found in \emph{both}
+      passes.
+      This eliminates spurious candidates from LLM non-determinism---a
+      risk that grows with the broader inclusion scope.
 \end{enumerate}
-
-\noindent An \emph{abbreviation guard} rejects invalid abbreviation
-expansions by verifying that the context following the abbreviation is
-consistent with the full component name.
 
 For components that receive no links from either explicit extraction
 or the discovery phase, a \emph{targeted recovery} step issues
 single-component prompts with all known aliases, recovering references
-missed by the broad-scope batch processing.
+missed by broad-scope batch processing.
 
 \paragraph{Validation.}
-Candidates from contextual discovery undergo a four-step validation
-process:
+Candidates from contextual discovery undergo a three-step validation
+pipeline:
 
 \begin{enumerate}
-    \item \emph{Generic-mention detection:}
-      For candidates where an ambiguous component name appears only in
-      lowercase (e.g., ``core'' rather than ``Core''), an LLM pre-check
-      determines whether the usage refers to the specific architectural
-      component or is an ordinary English word.
-      The LLM sees anchor sentences where the full name appears
-      (for calibration) alongside the candidate sentences, and classifies
-      each as \textsc{component} or \textsc{generic}.
-      Generic-classified candidates are rejected before the main
-      validation pipeline, preventing downstream false positives from
-      coincidental word overlap.
-    \item \emph{Code-first auto-approval:} Candidates where a component
-      name or known alias appears verbatim in the sentence text (verified
-      by word-boundary matching in code) are approved without LLM cost.
-    \item \emph{Two-pass LLM intersection:} Remaining candidates are
-      validated by two independent LLM passes with complementary
-      foci---one on \emph{actor role} (``is the component performing
-      an action?'') and one on \emph{direct reference} (``does the text
-      refer to the specific architectural component?'').
-      A candidate is accepted only if \emph{both} passes approve it,
-      applying intersection voting for precision.
-    \item \emph{Evidence post-filter:} For components classified as
-      ambiguous by model analysis, an additional LLM pass must cite the
-      \emph{exact substring} from the sentence that names the component.
-      The cited text is verified against the actual sentence content in
-      code, rejecting hallucinated evidence.
+    \item \emph{Generic-mention detection.}
+      For candidates involving an ambiguous component name in lowercase
+      (e.g., ``core'' rather than ``Core''), an LLM determines whether
+      the usage refers to the architectural component or is an ordinary
+      English word.
+      The LLM sees anchor sentences where the full name appears for
+      calibration, and classifies each candidate as \textsc{component}
+      or \textsc{generic}.
+      Generic-classified candidates are rejected before further
+      validation.
+    \item \emph{Code-first auto-approval.}
+      Candidates where a component name or alias appears verbatim
+      in the sentence text (verified by word-boundary matching in
+      code) are approved without LLM cost.
+    \item \emph{Two-pass intersection.}
+      Remaining candidates are validated by two independent LLM passes
+      with complementary foci---one on \emph{actor role}, one on
+      \emph{direct reference}.
+      A candidate is accepted only if both passes approve it.
 \end{enumerate}
 
 \subsubsection{Anaphoric Reference Resolution}\label{sec:coref}
 
-Sentences containing anaphoric expressions---pronouns (\emph{it},
-\emph{its}, \emph{they}, \emph{their}, \emph{this}, \emph{these},
-\emph{that}, \emph{those}) and definite descriptions (\emph{the
-component}, \emph{the service})---are analyzed to resolve references
-back to architecture components.
+Sentences containing pronouns (\emph{it}, \emph{they}, \emph{this},
+\emph{these}, \emph{that}, \emph{those}) and definite descriptions
+(\emph{the component}, \emph{the service}) carry valid trace
+information but contain no component name, making them invisible to
+explicit extraction and contextual discovery.
+However, the component a pronoun refers to was typically named
+explicitly in a nearby sentence.
+If the LLM can identify this \emph{antecedent}---and the antecedent
+can be verified deterministically---the resolution becomes trustworthy
+without additional review.
 
 The pipeline uses a unified \emph{cases-in-context} strategy:
 each pronoun-bearing sentence is presented as an individual case with
@@ -409,15 +324,13 @@ of~10.
 The LLM sees each case's surrounding context (marked with
 \texttt{>>>} for the target sentence) and resolves any pronoun
 that refers to an architecture component.
-This per-case presentation with local context is robust across both
-simple and complex documents, eliminating the need for document
-complexity gating.
+This per-case presentation is robust across both simple and complex
+documents, eliminating the need for document-complexity gating.
 
-The resolution enforces a \emph{citation-grounded verification}
-protocol: the LLM must cite an antecedent sentence where the component
-was explicitly named, along with the exact quote containing the
-component name.
-This citation is verified deterministically in code:
+The resolution enforces citation-grounded verification:
+the LLM must cite an antecedent sentence where the component was
+explicitly named, along with the exact quote containing the name.
+This citation is verified deterministically:
 \begin{enumerate}
     \item The component name (or a known alias) must appear verbatim in
       the cited antecedent sentence.
@@ -426,31 +339,31 @@ This citation is verified deterministically in code:
       learning are excluded.
 \end{enumerate}
 
-\noindent This hybrid LLM-plus-code verification eliminates a class of
-hallucinated resolutions where the LLM fabricates a plausible but
-nonexistent antecedent.
+\noindent This hybrid LLM-plus-code verification prevents hallucinated
+resolutions where the LLM fabricates a nonexistent antecedent.
 Because the verification is strict (verbatim name match within
-3~sentences), false positives are effectively eliminated at the code
-level, making anaphoric links safe to accept without further review in
-Layer~3.
+3~sentences), the code-level check effectively guards against false
+positives, making anaphoric links safe to accept without further review
+(validated empirically in \S\ref{sec:evaluation}).
 
 \subsubsection{Abbreviated Reference Matching}\label{sec:partial}
 
-For each partial reference learned during document analysis
-(e.g., ``Dispatcher''~$\to$~\texttt{EventDispatcher}), the pipeline
-deterministically scans all sentences for word-boundary matches,
-producing links for any sentence-component pairs not already covered
-by the preceding strategies.
-A \emph{clean mention} filter ensures the partial name appears as a
-standalone word---not inside a dotted path (\texttt{x.Dispatcher.init}),
-a hyphenated compound, or adjacent to a period indicating a qualified
-name.
+Contextual discovery may miss sentences where a partial name appears
+without surrounding semantic cues.
+Determining whether a partial name like ``Server'' refers to the
+component or is used generically requires project-specific context
+that a single LLM prompt cannot reliably encode.
 
-This strategy is entirely deterministic (no LLM calls), providing
-stable recall for abbreviated references at zero additional inference
-cost.
-Its output is filtered by the convention-aware boundary filter in
-Layer~3.
+Instead, the pipeline deterministically scans all sentences for
+word-boundary matches of each partial reference from the alias table,
+producing links for pairs not already covered by preceding strategies.
+A \emph{clean mention} filter ensures the partial name appears as a
+standalone word---not inside a dotted path, a hyphenated compound,
+or adjacent to a period indicating a qualified name.
+This strategy uses no LLM calls, providing stable recall at zero
+additional inference cost.
+Its output is evaluated individually by the boundary filter in
+Layer~3 (\S\ref{sec:boundary}).
 
 % ---------------------------------------------------------------------------
 
@@ -461,19 +374,22 @@ two filtering stages to remove false positives.
 
 \subsubsection{Priority-Based Merge}\label{sec:dedup}
 
-Links from all four strategies are deduplicated by
-$(sentence, component)$ pair.
+The merge stage deduplicates links by $(s_i, c_j)$ pair.
 When multiple strategies produce the same link, the highest-priority
-source is retained according to a fixed ranking:
-$\text{explicit} > \text{contextual} > \text{anaphoric} > \text{abbreviated}$.
+source is retained:
+$\text{explicit} > \text{contextual} > \text{anaphoric} >
+\text{abbreviated}$,
+reflecting decreasing levels of direct textual evidence.
 A \emph{parent-overlap guard} removes links to implementation
 components when the abstract parent is already linked to the same
 sentence (e.g., if both \texttt{Scheduler} and
-\texttt{BasicScheduler} are linked to a sentence, the implementation
-variant is dropped).
+\texttt{BasicScheduler} are linked, the implementation variant is
+dropped).
 
 \subsubsection{Convention-Aware Boundary Filter}\label{sec:boundary}
 
+Even after merge, some links survive where a component name appears
+in a sentence but is used in a non-architectural sense.
 A structured LLM filter applies a three-step reasoning guide to
 \emph{all} links, regardless of provenance:
 
@@ -483,15 +399,13 @@ A structured LLM filter applies a three-step reasoning guide to
       dotted or qualified path (e.g., ``\texttt{X.utils} provides
       helper functions'' does not reference component~X).
       An exception preserves links when the sentence also names
-      the component with the word ``component''
-      (e.g., ``for the X component'').
+      the component explicitly.
     \item \textbf{Name confusion:}
       Reject if the name is used as a technology, methodology, or
       generic English word in a non-architectural sense.
       A critical exception preserves links when a component is
-      \emph{named after} a technology (e.g., a component called
-      ``Kafka Broker'')---any sentence describing that technology's
-      capabilities is about the component.
+      \emph{named after} a technology---any sentence describing that
+      technology's capabilities is about the component.
     \item \textbf{Default:}
       If neither rejection pattern applies, the link is kept.
 \end{enumerate}
@@ -502,71 +416,23 @@ interaction sentences produce links for all participating components.
 
 \subsubsection{Evidence Filter}\label{sec:evidence-filter}
 
-After boundary filtering, a lightweight deterministic
-\emph{evidence filter} removes links that lack textual grounding.
-A link $s \to c$ is retained if \emph{any} of the following holds:
+A lightweight deterministic filter removes links that lack textual
+evidence.
+A link $(s_i, c_j)$ is retained if \emph{any} of the following holds:
 
 \begin{enumerate}
     \item The component name appears as a standalone word-boundary
-      match in the sentence text (case-sensitive for single-word names,
-      case-insensitive for multi-word names), excluding occurrences
-      inside dotted paths or hyphenated compounds.
-    \item A known alias (synonym, abbreviation, or partial reference
-      from document analysis) appears in the sentence text.
-    \item The link originates from explicit extraction, which already
-      verified the named reference.
-    \item The link originates from anaphoric resolution, which already
-      verified the antecedent citation.
+      match in the sentence text, excluding occurrences inside dotted
+      paths or hyphenated compounds.
+    \item A known alias from the alias table appears in the sentence.
+    \item The link originates from explicit extraction or anaphoric
+      resolution, both of which already verified the reference at
+      their respective extraction stages.
 \end{enumerate}
 
-\noindent Links that satisfy none of these conditions---where the
-component name is absent from the sentence and no alias or prior
-verification provides evidence---are dropped.
-This filter requires zero LLM calls and removes residual false
-positives from contextual discovery when the LLM hallucinated a
-reference that does not appear in the text.
-
-The rationale for accepting anaphoric links without additional review
-is that antecedent verification (\S\ref{sec:coref}) already provides
-strong evidence: the component was explicitly named in a nearby sentence
-and the pronoun grammatically refers back to it.
-Empirically, applying an LLM judge to anaphoric links removes true
-positives but never catches false positives, as the code-level
-verification is more reliable than LLM re-evaluation.
-
-% ---------------------------------------------------------------------------
-
-\subsection{Cross-Cutting Design Principles}\label{sec:principles}
-
-Three principles guide the pipeline design across all layers:
-
-\paragraph{Asymmetric voting.}
-We apply \emph{intersection} voting (both passes must agree) for
-precision-critical decisions: explicit extraction merge for non-exact
-matches (\S\ref{sec:seed}) and contextual discovery validation
-(\S\ref{sec:entity}).
-This reflects the observation that false positives in early layers
-propagate through the pipeline and are difficult to remove later.
-
-\paragraph{Citation-grounded verification.}
-Rather than trusting LLM judgments as opaque decisions, we require the
-LLM to produce \emph{verifiable evidence}---antecedent sentence citations
-in anaphoric resolution, exact-substring evidence in validation---that
-is checked deterministically in code.
-This hybrid approach leverages LLM reasoning for semantic understanding
-while using programmatic guards to catch hallucinations.
-The pattern applies in two places: anaphoric antecedent verification
-(\S\ref{sec:coref}) and the evidence post-filter for ambiguous names
-(\S\ref{sec:entity}).
-A complementary but purely deterministic guard---the abbreviation guard
-(\S\ref{sec:entity})---validates abbreviation expansions via string
-matching without LLM involvement.
-
-\paragraph{Benchmark-clean prompt design.}
-All few-shot examples, reasoning guides, and prompt templates use
-abstract placeholders (X, Y) or safe software-engineering textbook
-domains (compilers, operating systems, networking).
-No benchmark component names, dataset-specific vocabulary, or
-gold-standard information appears in any prompt, ensuring that
-measured performance reflects genuine generalization rather than
-data leakage.
+\noindent Links satisfying none of these conditions---where neither
+the component name, an alias, nor prior verification provides
+evidence---are dropped.
+This filter requires no LLM calls and catches residual false
+positives where contextual discovery hallucinated a reference that
+does not appear in the text.

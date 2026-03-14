@@ -1,6 +1,6 @@
 % ============================================================================
 % TikZ figure for the pipeline DAG
-% Requires: \usepackage{tikz}, \usetikzlibrary{positioning,arrows.meta,fit}
+% Requires: \usepackage{tikz}, \usetikzlibrary{positioning,arrows.meta,fit,backgrounds}
 % ============================================================================
 
 \begin{figure*}[t]
@@ -67,7 +67,7 @@
 \begin{scope}[on background layer]
     \node[layerbox, fit=(model)(pattern), label={[layerlabel]above:Knowledge Acquisition}] {};
     \node[layerbox, fit=(explicit)(abbreviated), label={[layerlabel]above left:Link Recovery}] {};
-    \node[layerbox, fit=(merge)(evidence)] {};
+    \node[layerbox, fit=(merge)(evidence), label={[layerlabel]above left:Link Consolidation}] {};
 \end{scope}
 
 \end{tikzpicture}

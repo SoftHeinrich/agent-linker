@@ -262,6 +262,7 @@ VARIANTS = {
     "s_linker2":          dict(linker_class="s_linker2"), # S-Linker + V40c (LLM generic detection + coref exempt + bug fixes)
     "s_linker3":          dict(linker_class="s_linker3"), # S-Linker2 + unified coref (Variant E) + keep_coref (no judge)
     "s_linker4":          dict(linker_class="s_linker4"), # S-Linker3 + seed links go through convention filter (no immunity)
+    "s_linker5":          dict(linker_class="s_linker5"), # S-Linker4 + dead code removal + marginal filter cleanup
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -703,6 +704,9 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "s_linker4":
         from llm_sad_sam.linkers.experimental.s_linker4 import SLinker4
         linker = SLinker4(backend=BACKEND)
+    elif linker_class == "s_linker5":
+        from llm_sad_sam.linkers.experimental.s_linker5 import SLinker5
+        linker = SLinker5(backend=BACKEND)
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)
