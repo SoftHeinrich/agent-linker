@@ -65,7 +65,7 @@ class SLinker4:
         self._components = []
         self.GENERIC_COMPONENT_WORDS: set = set()
         self.GENERIC_PARTIALS: set = set()
-        print(f"SLinker3 (unified coref + no judge)")
+        print(f"SLinker4 (unified coref + no judge + universal boundary filter)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -110,7 +110,7 @@ class SLinker4:
             list[SadSamLink]: Recovered trace links.
         """
         if transarc_csv:
-            print("  WARNING: transarc_csv provided but SLinker3 uses ILinker2 seed; ignoring.")
+            print("  WARNING: transarc_csv provided but SLinker4 uses ILinker2 seed; ignoring.")
         self._phase_log = []
         t0 = time.time()
 
