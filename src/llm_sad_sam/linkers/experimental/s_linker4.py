@@ -31,6 +31,7 @@ from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
 from llm_sad_sam.linkers.experimental.prompts import (
     CONVENTION_GUIDE, AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
     DOC_KNOWLEDGE_JUDGE_EXAMPLES, DOC_KNOWLEDGE_JUDGE_RULES,
+    DOC_KNOWLEDGE_EXTRACTION_RULES,
     ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
 )
 from llm_sad_sam.pcm_parser import parse_pcm_repository
@@ -430,20 +431,7 @@ JSON only:"""
 
 COMPONENTS: {', '.join(comp_names)}
 
-WHAT TO FIND:
-1. ABBREVIATIONS: Short forms explicitly introduced in the document.
-   Rule: The abbreviation must be defined in the text, e.g., "Full Name (FN)" introduces FN.
-   Like "Abstract Syntax Tree (AST)" defines AST — look for the same parenthetical pattern.
-
-2. SYNONYMS: Alternative names that SPECIFICALLY refer to one component.
-   Rule: The alternative name must unambiguously identify exactly ONE component.
-   APPROVE: A proper name, role title, or technical alias used interchangeably with the component
-   REJECT: A generic description that could apply to anything (like "the system" or "the process")
-
-3. PARTIAL REFERENCES: A shorter form of a multi-word component name used alone.
-   Rule: A trailing word from a multi-word name that, in this document, consistently means the full name.
-   APPROVE: Only if the short form is unambiguous — no other component shares this word
-   REJECT: Ordinary words that have plain English meanings beyond the component
+{DOC_KNOWLEDGE_EXTRACTION_RULES}
 
 DOCUMENT:
 {chr(10).join(doc_lines)}
@@ -1346,10 +1334,10 @@ COMPONENTS: {', '.join(comp_names)}
                 prompt += "CONTEXT:\n" + "\n".join(case["context"]) + "\n"
                 prompt += f"TARGET: S{case['sent'].number} (marked with >>>)\n\n"
 
-            prompt += """{COREF_RULES}
+            prompt += f"""{COREF_RULES}
 
 Return JSON:
-{"resolutions": [{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}]}
+{{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}}]}}
 
 Only include resolutions you are CERTAIN about. JSON only:"""
 

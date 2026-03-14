@@ -219,3 +219,19 @@ RULES (all must hold):
 
 Like in technical writing: "The Scheduler assigns tasks to threads. It uses a priority queue internally."
 — "It" clearly refers to "the Scheduler" because it was the subject of the previous sentence."""
+
+
+DOC_KNOWLEDGE_EXTRACTION_RULES = """WHAT TO FIND:
+1. ABBREVIATIONS: Short forms explicitly introduced in the document.
+   Rule: The abbreviation must be defined in the text, e.g., "Full Name (FN)" introduces FN.
+   Like "Abstract Syntax Tree (AST)" defines AST — look for the same parenthetical pattern.
+
+2. SYNONYMS: Alternative names that SPECIFICALLY refer to one component.
+   Rule: The alternative name must unambiguously identify exactly ONE component.
+   APPROVE: A proper name, role title, or technical alias used interchangeably with the component
+   REJECT: A generic description that could apply to anything (like "the system" or "the process")
+
+3. PARTIAL REFERENCES: A shorter form of a multi-word component name used alone.
+   Rule: A trailing word from a multi-word name that, in this document, consistently means the full name.
+   APPROVE: Only if the short form is unambiguous — no other component shares this word
+   REJECT: Ordinary words that have plain English meanings beyond the component"""
