@@ -140,11 +140,23 @@ to calibrate abbreviated reference matching.
 
 \subsubsection{Document Analysis}\label{sec:doc-analysis}
 
-Document analysis discovers alternative names by which components are
-referenced in the text.
+Document analysis builds an \emph{alias table}---a mapping from
+alternative names to their canonical component---that downstream phases
+use to recognize references the raw component list alone cannot match.
+The document text itself is never modified; only the mapping is produced.
+
+\paragraph{Why alias discovery matters.}
+Architecture documents rarely refer to components exclusively by their
+canonical model names.
+Authors abbreviate (\emph{AST} for \texttt{AbstractSyntaxTree}),
+use trailing words as shorthand (\emph{Dispatcher} for
+\texttt{EventDispatcher}), or introduce synonyms (\emph{task runner}
+for \texttt{TaskScheduler}).
+Without an alias table, any strategy that matches only canonical
+names will systematically miss these references, capping recall.
 
 \paragraph{Alternative name discovery.}
-An LLM extracts three categories of alternative names:
+An LLM extracts three categories of aliases from the document:
 \begin{itemize}
     \item \emph{Abbreviations}: short forms introduced via parenthetical
       definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
@@ -162,21 +174,57 @@ A deterministic \emph{CamelCase rescue} overrides any judge rejection of
 CamelCase identifiers, since constructed identifiers are never generic
 English words.
 
-An enrichment step further expands partial references: for each multi-word
-component, if its trailing word appears in at least three sentences where
-the full name is absent, and no other component shares that trailing word,
-the partial mapping is added automatically.
-For trailing words that are generic (i.e., appear in the ambiguous set),
-the match requires capitalized occurrences to avoid false positives.
+\paragraph{The challenge of partial references.}
+Among the three alias types, partial references require the most
+careful handling because they sit at the intersection of two
+conflicting goals.
+On the one hand, trailing-word shorthands are pervasive in
+architecture documents---authors naturally write ``Server'' after
+introducing ``HTML5 Server''---so ignoring them sacrifices recall.
+On the other hand, many trailing words are ordinary English words
+(\emph{server}, \emph{manager}, \emph{core}) that appear frequently
+in non-referential contexts, creating false positives if matched
+indiscriminately.
+Abbreviations and synonyms do not share this tension:
+abbreviations are structurally distinctive (uppercase acronyms),
+and synonyms are validated for uniqueness.
+Partial references, by contrast, are often single common words
+whose referential status depends on context.
 
-A subsequent \emph{partial usage classification} step uses per-partial
-LLM calls to determine whether each single-word generic partial is
-typically used as a component reference (\textsc{name}) or as an ordinary
-English word (\textsc{ordinary}) in the document.
-\textsc{Ordinary}-classified partials are excluded from the
-confirmed-alias context provided to the Layer~3 boundary filter,
-preventing the filter from treating generic uses as validated
-component references.
+This ambiguity motivates a three-step pipeline that progressively
+refines which partials are safe to use and in what context:
+
+\begin{enumerate}
+    \item \emph{Statistical enrichment.}
+      For each multi-word component, if its trailing word appears
+      in at least three sentences where the full name is absent,
+      and no other component shares that trailing word,
+      the partial mapping is added automatically.
+      For trailing words classified as ambiguous by model analysis,
+      the match requires capitalized occurrences to avoid
+      coincidental overlap with generic uses.
+      This step catches patterns the LLM missed by relying on
+      distributional evidence rather than semantic judgment.
+    \item \emph{Usage classification.}
+      Per-partial LLM calls determine whether each single-word
+      generic partial is typically used as a component reference
+      (\textsc{name}) or as an ordinary English word
+      (\textsc{ordinary}) in the document.
+      For example, ``Server'' might be classified as \textsc{name}
+      in a document that consistently capitalizes it when referring
+      to the component, but as \textsc{ordinary} in a document
+      where ``server'' appears generically dozens of times.
+    \item \emph{Downstream gating.}
+      \textsc{Ordinary}-classified partials remain in the alias table
+      for deterministic link creation
+      (abbreviated reference matching, \S\ref{sec:partial}),
+      but are excluded from the confirmed-alias context provided
+      to the Layer~3 boundary filter.
+      This prevents the filter from treating generic uses as
+      validated component references while still allowing the
+      deterministic matcher to produce candidate links that the
+      filter can then evaluate individually.
+\end{enumerate}
 
 \subsubsection{Pattern Learning}\label{sec:patterns}
 
