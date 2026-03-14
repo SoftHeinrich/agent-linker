@@ -255,7 +255,13 @@ VARIANTS = {
     "v38":                dict(linker_class="v38"),    # V32 + context-aware judge replacing syn-safe bypass
     "v39":                dict(linker_class="v39"),    # V38 + LLM partial usage classification for targeted syn-safe
     "v39a":               dict(linker_class="v39a"),   # V39 + Phase 5 two-pass intersection for variance reduction
+    "v40a":               dict(linker_class="v40a"),   # V39a + exempt coref from Phase 9 judge
+    "v40b":               dict(linker_class="v40b"),   # V39a + Phase 7 two-pass union coref + coref exempt
+    "v40c":               dict(linker_class="v40c"),   # V39a + LLM generic mention detection + coref exempt
     "s_linker":           dict(linker_class="s_linker"), # DAG-based standalone (V39 + dead code removal + DAG tiers)
+    "s_linker2":          dict(linker_class="s_linker2"), # S-Linker + V40c (LLM generic detection + coref exempt + bug fixes)
+    "s_linker3":          dict(linker_class="s_linker3"), # S-Linker2 + unified coref (Variant E) + keep_coref (no judge)
+    "s_linker4":          dict(linker_class="s_linker4"), # S-Linker3 + seed links go through convention filter (no immunity)
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -676,9 +682,27 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "v39a":
         from llm_sad_sam.linkers.experimental.ilinker2_v39a import ILinker2V39a
         linker = ILinker2V39a(backend=BACKEND)
+    elif linker_class == "v40a":
+        from llm_sad_sam.linkers.experimental.ilinker2_v40a import ILinker2V40a
+        linker = ILinker2V40a(backend=BACKEND)
+    elif linker_class == "v40b":
+        from llm_sad_sam.linkers.experimental.ilinker2_v40b import ILinker2V40b
+        linker = ILinker2V40b(backend=BACKEND)
+    elif linker_class == "v40c":
+        from llm_sad_sam.linkers.experimental.ilinker2_v40c import ILinker2V40c
+        linker = ILinker2V40c(backend=BACKEND)
     elif linker_class == "s_linker":
         from llm_sad_sam.linkers.experimental.s_linker import SLinker
         linker = SLinker(backend=BACKEND)
+    elif linker_class == "s_linker2":
+        from llm_sad_sam.linkers.experimental.s_linker2 import SLinker2
+        linker = SLinker2(backend=BACKEND)
+    elif linker_class == "s_linker3":
+        from llm_sad_sam.linkers.experimental.s_linker3 import SLinker3
+        linker = SLinker3(backend=BACKEND)
+    elif linker_class == "s_linker4":
+        from llm_sad_sam.linkers.experimental.s_linker4 import SLinker4
+        linker = SLinker4(backend=BACKEND)
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)

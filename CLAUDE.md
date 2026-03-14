@@ -67,6 +67,10 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/ilinker2_v33f.py`** — V33f standalone: V33 + forward coref ×2 union for variance stabilization.
 - **`linkers/experimental/ilinker2_v33g.py`** — V33g standalone: V33f + Java TransArc CSV seed option (deterministic Phase 4, falls back to ILinker2 if no CSV).
   - **Note**: V31-V33g are all standalone files (no inheritance). Each inlines ~49 methods from the former AgentLinkerV26a/AgentLinker base classes for independent evolution.
+- **`linkers/experimental/s_linker.py`** — S-Linker: DAG-based standalone (V39 + dead code removal + DAG tiers).
+- **`linkers/experimental/s_linker2.py`** — S-Linker2: S-Linker + V40c (LLM generic detection + coref exempt + bug fixes).
+- **`linkers/experimental/s_linker3.py`** — S-Linker3: S-Linker2 + unified coref (Variant E) + keep_coref (no judge). 94.0% macro F1.
+- **`linkers/experimental/s_linker4.py`** — S-Linker4: S-Linker3 + seed links go through convention filter (no immunity). 94.0% macro F1. Catches 3 additional seed FPs (dotted-path, compound names) with 0 TPs killed.
 
 ### LLM Client
 
