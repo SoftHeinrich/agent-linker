@@ -17,28 +17,30 @@
     layerlabel/.style={font=\scriptsize\sffamily, gray!60},
 ]
 
-% Layer 1: Knowledge Acquisition
+% Layer 1a: Independent analyses (top row)
 \node[layer1] (model)   {Model\\Analysis};
-\node[layer1, right=1.2cm of model] (doc) {Document\\Analysis};
-\node[layer1, right=1.2cm of doc] (pattern) {Pattern\\Learning};
+\node[layer1, right=1.2cm of model] (doc) {Document\\Analysis\\{\scriptsize(core)}};
 
-% Layer 1 internal dependency: pattern learning needs model analysis
-\draw[arr] (model.east) -- (pattern.west);
+% Layer 1b: Enrichment (second row, needs 1a results)
+\node[layer1, below=0.7cm of model] (pattern) {Pattern\\Learning};
+\node[layer1, right=1.2cm of pattern] (enrich) {Partial-Ref.\\Refinement};
+
+% Layer 1 internal dependencies
+\draw[arr] (model.south) -- (pattern.north);
+\draw[arr] (model.south east) -- (enrich.north west);
+\draw[arr] (doc.south) -- (enrich.north);
 
 % Layer 2: Link Recovery
-\node[layer2, below=1.4cm of model, xshift=-0.8cm] (explicit) {Explicit\\Ref.\ Extr.};
+\node[layer2, below=1.4cm of pattern, xshift=-1.2cm] (explicit) {Explicit\\Ref.\ Extr.};
 \node[layer2, right=0.6cm of explicit] (contextual) {Contextual\\Ref.\ Disc.};
 \node[layer2, right=0.6cm of contextual] (anaphoric) {Anaphoric\\Ref.\ Res.};
 \node[layer2, right=0.6cm of anaphoric] (abbreviated) {Abbreviated\\Ref.\ Match};
 
 % Knowledge flow arrows (Layer 1 -> Layer 2)
-\draw[arr] (model.south) -- (contextual.north);
-\draw[arr] (model.south) -- (anaphoric.north);
-\draw[arr] (doc.south) -- (contextual.north);
-\draw[arr] (doc.south) -- (anaphoric.north);
-\draw[arr] (doc.south) -- (abbreviated.north);
 \draw[arr] (pattern.south) -- (contextual.north);
 \draw[arr] (pattern.south) -- (anaphoric.north);
+\draw[arr] (enrich.south) -- (contextual.north east);
+\draw[arr] (enrich.south) -- (abbreviated.north);
 
 % Layer 3: Link Consolidation
 \node[layer3, below=1.4cm of contextual, xshift=0.8cm] (merge) {Priority Merge};
@@ -59,22 +61,25 @@
 \draw[arr] (evidence) -- (out);
 
 % Layer labels
-\node[layerlabel, left=0.3cm of model] {Layer 1};
+\node[layerlabel, left=0.3cm of model] {Layer 1a};
+\node[layerlabel, left=0.3cm of pattern] {Layer 1b};
 \node[layerlabel, left=0.3cm of explicit] {Layer 2};
 \node[layerlabel, left=0.8cm of merge] {Layer 3};
 
 % Layer boxes
 \begin{scope}[on background layer]
-    \node[layerbox, fit=(model)(pattern), label={[layerlabel]above:Knowledge Acquisition}] {};
+    \node[layerbox, fit=(model)(enrich), label={[layerlabel]above:Knowledge Acquisition}] {};
     \node[layerbox, fit=(explicit)(abbreviated), label={[layerlabel]above left:Link Recovery}] {};
     \node[layerbox, fit=(merge)(evidence), label={[layerlabel]above left:Link Consolidation}] {};
 \end{scope}
 
 \end{tikzpicture}
 \caption{Pipeline architecture as a staged DAG. Layer~1 acquires knowledge
-concurrently; pattern learning depends on model analysis results.
-Layer~2 runs four reference-type-specific recovery strategies; explicit
-reference extraction has no knowledge dependencies and starts immediately.
-Layer~3 merges all candidates and applies boundary and evidence filtering.}
+in two sub-tiers: model analysis and document analysis (core) run
+concurrently (1a); pattern learning and partial-reference refinement
+depend on their results and run in a second concurrent step (1b).
+Explicit reference extraction has no knowledge dependencies and
+starts immediately.
+Layer~2 runs four recovery strategies; Layer~3 merges and filters.}
 \label{fig:pipeline}
 \end{figure*}
