@@ -40,7 +40,7 @@ Three principles guide the pipeline design:
       Precision-critical decisions use intersection voting---two
       independent LLM passes must agree---to suppress hallucinations
       and LLM non-determinism (\S\ref{sec:seed},
-      \S\ref{sec:entity}, \S\ref{sec:patterns}).
+      \S\ref{sec:entity}, \S\ref{sec:subprocess}).
     \item \emph{Citation-grounded verification:}
       Rather than trusting LLM judgments as opaque decisions, we
       require the LLM to produce verifiable evidence (antecedent
@@ -59,10 +59,10 @@ The pipeline is organized as a staged DAG
 \begin{enumerate}
     \item \textbf{Knowledge acquisition} (Layer~1): Analyses
       extract structured knowledge from the raw inputs---model
-      structure, document vocabulary, and linguistic patterns.
+      structure, document vocabulary, and subprocess terms.
       Model analysis, document analysis, and explicit reference
-      extraction are mutually independent; pattern learning and
-      partial-reference refinement depend on earlier results and
+      extraction are mutually independent; subprocess term learning
+      and partial-reference refinement depend on earlier results and
       run once the initial analyses complete.
     \item \textbf{Link recovery} (Layer~2): Four complementary
       strategies produce candidate links, each targeting a distinct
@@ -93,7 +93,7 @@ model analysis, document analysis (core alias discovery), and explicit
 reference extraction---each reads only the raw inputs.
 The second sub-tier runs once the first completes, executing two
 enrichment steps in parallel:
-pattern learning (which reads the model analysis results) and
+subprocess term learning (which reads the model analysis results) and
 partial-reference refinement (which reads \emph{both} the model
 analysis results and the initial alias table from document analysis).
 A final sequential step, partial usage classification, reads the
@@ -189,7 +189,7 @@ A three-step pipeline progressively refines which partials are safe:
       treating generic uses as validated references.
 \end{enumerate}
 
-\subsubsection{Pattern Learning}\label{sec:patterns}
+\subsubsection{Subprocess Term Learning}\label{sec:subprocess}
 
 Architecture documents describe not only components but also their
 internal parts---subprocess terms like ``garbage collector'' inside a
@@ -206,9 +206,9 @@ Only terms confirmed by both passes are retained.
 Subprocess terms serve as exclusion criteria in contextual validation
 (\S\ref{sec:entity}) and anaphoric resolution (\S\ref{sec:coref}).
 
-Pattern learning reads the filtered component list (excluding
+This step reads the filtered component list (excluding
 implementation names) and the document sentences.
-This dependency on model analysis places it in the second sub-tier
+The dependency on model analysis places it in the second sub-tier
 of Layer~1 (1b), alongside partial-reference refinement.
 
 % ---------------------------------------------------------------------------
@@ -356,8 +356,8 @@ This citation is verified deterministically:
     \item The component name (or a known alias) must appear verbatim in
       the cited antecedent sentence.
     \item The antecedent must be within 3~sentences of the pronoun.
-    \item Sentences identified as subprocess descriptions by pattern
-      learning are excluded.
+    \item Sentences identified as subprocess descriptions
+      (\S\ref{sec:subprocess}) are excluded.
 \end{enumerate}
 
 \noindent This hybrid LLM-plus-code verification prevents hallucinated

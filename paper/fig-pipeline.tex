@@ -22,7 +22,7 @@
 \node[layer1, right=1.2cm of model] (doc) {Document\\Analysis\\{\scriptsize(core)}};
 
 % Layer 1b: Enrichment (second row, needs 1a results)
-\node[layer1, below=0.7cm of model] (pattern) {Pattern\\Learning};
+\node[layer1, below=0.7cm of model] (pattern) {Subprocess\\Term Learn.};
 \node[layer1, right=1.2cm of pattern] (enrich) {Partial-Ref.\\Refinement};
 
 % Layer 1 internal dependencies
@@ -76,8 +76,9 @@
 \end{tikzpicture}
 \caption{Pipeline architecture as a staged DAG. Layer~1 acquires knowledge
 in two sub-tiers: model analysis and document analysis (core) run
-concurrently (1a); pattern learning and partial-reference refinement
-depend on their results and run in a second concurrent step (1b).
+concurrently (1a); subprocess term learning and partial-reference
+refinement depend on their results and run in a second concurrent
+step (1b).
 Explicit reference extraction has no knowledge dependencies and
 starts immediately.
 Layer~2 runs four recovery strategies; Layer~3 merges and filters.}
