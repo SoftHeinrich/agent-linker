@@ -203,8 +203,13 @@ cross-validation protocol:
 the first pass proposes candidates; the second independently
 validates them, rejecting terms that may be valid component references.
 Only terms confirmed by both passes are retained.
-Subprocess terms serve as exclusion criteria in contextual validation
-(\S\ref{sec:entity}) and anaphoric resolution (\S\ref{sec:coref}).
+Subprocess terms are used in two ways downstream:
+as a \emph{hard filter} in anaphoric resolution (\S\ref{sec:coref}),
+where sentences classified as subprocess descriptions are
+deterministically excluded from coreference linking;
+and as \emph{contextual hints} in validation prompts
+(\S\ref{sec:entity}), where the LLM sees them as guidance but
+no code-level exclusion is enforced.
 
 This step reads the filtered component list (excluding
 implementation names) and the document sentences.
