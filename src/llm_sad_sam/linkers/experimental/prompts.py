@@ -231,12 +231,10 @@ Software documentation commonly uses hierarchical naming (e.g., "X.utils", "X/ha
 a prefix, not as the subject.
 
 Recognize these patterns — all are NO_LINK for component X:
-- "X.utils provides helper functions" — dotted sub-unit reference
+- "X.utils provides helper functions" — dotted sub-unit reference to the X's utils
 - "X.handlers, X.mappers, X.adapters follow a pipeline" — listing sub-packages of X
-- "Classes in the X.impl package are not exported" — even with
-  architectural language, if the subject is X's sub-unit → NO_LINK
-- Bare name mixed with qualified paths: "X, Y.adapters, Y.transformers follow
-  a pipeline design" — treat ALL as hierarchical references → NO_LINK
+- "Classes in the X.impl package are not exported" — even with architectural language, if the subject is X's sub-unit → NO_LINK
+- Bare name mixed with qualified paths: "X, Y.adapters, Y.transformers follow a pipeline design" — treat ALL as hierarchical references → NO_LINK
 
 KEY DISTINCTION: Sentences that describe what X DOES or HOW X INTERACTS with other
 components are LINK, even if they mention implementation details (e.g., "X uses Y

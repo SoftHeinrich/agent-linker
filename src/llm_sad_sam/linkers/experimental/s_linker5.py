@@ -712,7 +712,6 @@ JSON only:"""
     def _run_entity_pipeline(self, sentences, components, name_to_id, sent_map, seed_links):
         """Entity extraction → targeted recovery → validation.
 
-        Removed: abbreviation guard (nearly always returns True, zero filtering).
         """
         # Extract
         candidates = self._extract_entities_enriched(sentences, components, name_to_id, sent_map)
@@ -742,7 +741,6 @@ JSON only:"""
         """Unified coreference: cases-in-context (Variant E).
 
         Per-case presentation with ±5 bidirectional context window.
-        No complexity gate. Cross-model Pareto winner (0 FP on both Claude and GPT-5.2).
         """
         pronoun_count = sum(1 for s in sentences if self.PRONOUN_PATTERN.search(s.text))
         print(f"    Coreference: cases-in-context ({pronoun_count} pronoun sents / {len(sentences)} total)")
