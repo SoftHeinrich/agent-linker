@@ -6,8 +6,7 @@ Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ a
 
 The workflow is organized as a staged DAG with three layers
 \begin{enumerate}
-\item \textbf{Project knowledge discovery} (layer~1): Three independent agents analyze extract structured knowledge from the raw inputs: model structure, architectural document vocabulary, and linguistic patterns. 
-These analyses operate solely on the raw document and model.
+\item \textbf{Project knowledge discovery} (layer~1): Three agents analyze and extract structured knowledge from architectural documents and models. 
 And the extracted knowledge will be reused in downstream layers.
 \item \textbf{Candidate Link recovery} (layer~2): Four complementary agents recover candidate links via different mechanisms: component mentioning match, entity extraction, component coreference resolution, and deterministic partial-reference injection. 
 The strategies are largely independent: each targets a different type of implicit component reference.
@@ -18,18 +17,27 @@ The strategies are largely independent: each targets a different type of implici
 \subsection{Project Knowledge Discovery}
 %%% provides initial seed links, could be transarc or ilinkerX
 Layer~1 builds a shared knowledge base from the architectural document and model.
-This layer contains three independent analysis steps: each reads only the input sentences and components.
-This layer finds ambiguous component names, XX 
+It first call two sub-agent analyze the architectural model to obtaining component relationships and indentify ambiguous components
+and document to extract component alias each.
+Then merge them to obtain: list of ambiguous components, alias mapping table, component relationships. 
 
 \subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
-Architectural components operates on high level, so ambiguous as real world concepts.
-This pose the challenge of XX.
-YY more on this challenge.
+Architectural components operates on high level, so containing ambiguous as real world concepts.
+Component names vary widely in specificity.
+Constructed identifiers like \texttt{TaskScheduler} unambiguously name architectural roles, 
+but single common-English words like \texttt{Core} or \texttt{Adapter} appear frequently in both refering specific component and general concepts.
+\todo{source}
+This pose challenges to those trace link recovery. may intro false positive. 
+And confuse LLM about the trace link is not guided with reasoning paths. 
+Therefore, we build a knowledge base at this step to help downstream trace link recovery\emph{architectural}
+or \emph{ambiguous} using a two-step hybrid:
+
 Therefore, blindly matching mentions of generic usage would cause false positive links.
 motivating by xx paper, todo, cite ref, we extract knowledge from it.
 Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
+This can serve as knowledge and provide context for to guide futher LLM trace linker when evaluating the link. 
 
-Motivated by previously work on camelcase identifiers, acronyms, 
+Motivated by previously work on camelcase identifiers, acronyms, \todo{cite}
 We combine these rules with a few-shot LLM prompt to mark ambiguous components.
 We marked coumpound names like CamelCase, acronyms as non-ambiguous, and use LLM to find others.\todo{cite for retionale}
 
@@ -38,6 +46,17 @@ Because XXX. arch model are hiearchical.
 In order to disambiguates trace inks when a doc refer to parent component.
 shared partial words, like XX, will be used for better coreference.
 TODO example needed.
+
+
+The analysis additionally extracts partial words among components. 
+Because partial words can bring ambiguity by confusing 
+\begin{enumerate}
+  \item two components:  (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}), when the document only say Scheduler
+  \item a component and general concepts: (todo: example)
+\end{enumerate}
+Such information will be feed to Abbreviations linking agents in layer to.
+
+(\S\ref{sec:partial}).
 
 \subsubsection{Architectural Document Understanding}
 Since architectural documents contain heavy synonym, abbraviations, \todo{cite support}
@@ -50,14 +69,19 @@ An LLM extracts three categories of alternative names:
     \item \emph{Partial references}: trailing words of multi-word component names used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
 \end{itemize}
 
-After the extraction, a few-shot judge validates each proposed mapping.
-\todo{introduce generic terms, defs, problems}
-The judge rejects generic terms like (\emph{system}, \emph{process}).
+\paragraph{Partial-reference refinement.}
+Among the three alias types, partial references require the most careful handling: 
+trailing-word shorthands are pervasive in architecture documents, but many trailing words are generic English words whose referential status depends on context.
+Therefore, identify corect partial-reference needs the detected ambiguous component names from the model understanding agent.
 
-partial references are ambiguous, Because XX
-generic names. 
-For each partial references to ambiguous terms,
- we use only  capitalized occurences as they refer to specific usage. 
+After the extraction, a few-shot judge validates each proposed mapping.
+Finally, this output a mapping table, which later linkers can use to XX. 
+
+
+% partial references are ambiguous, Because XX
+% generic names. 
+% For each partial references to ambiguous terms,
+%  we use only  capitalized occurences as they refer to specific usage. 
 %TODO: check how partial refernces added 
 
 Further 
@@ -79,4 +103,3 @@ Each targets a different type of reference---exact mentions, explicit entity men
 
 
 
-\section{Holistic Evaluation of Architectural Traceability Tasks}
