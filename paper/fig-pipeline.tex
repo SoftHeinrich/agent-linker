@@ -21,31 +21,28 @@
 \node[layer1] (model)   {Model\\Analysis};
 \node[layer1, right=1.2cm of model] (doc) {Document\\Analysis\\{\scriptsize(core)}};
 
-% Layer 1b: Enrichment (second row, needs 1a results)
-\node[layer1, below=0.7cm of model] (pattern) {Subprocess\\Term Learn.};
-\node[layer1, right=1.2cm of pattern] (enrich) {Partial-Ref.\\Refinement};
+% Layer 1b: Enrichment (needs 1a results)
+\node[layer1, below=0.7cm of model, xshift=1.7cm] (enrich) {Partial-Ref.\\Refinement};
 
 % Layer 1 internal dependencies
-\draw[arr] (model.south) -- (pattern.north);
 \draw[arr] (model.south east) -- (enrich.north west);
-\draw[arr] (doc.south) -- (enrich.north);
+\draw[arr] (doc.south west) -- (enrich.north east);
 
 % Layer 2: Link Recovery
-\node[layer2, below=1.4cm of pattern, xshift=-1.2cm] (explicit) {Explicit\\Ref.\ Extr.};
+\node[layer2, below=1.4cm of enrich, xshift=-2.0cm] (explicit) {Explicit\\Ref.\ Extr.};
 \node[layer2, right=0.6cm of explicit] (contextual) {Contextual\\Ref.\ Disc.};
 \node[layer2, right=0.6cm of contextual] (anaphoric) {Anaphoric\\Ref.\ Res.};
 \node[layer2, right=0.6cm of anaphoric] (abbreviated) {Abbreviated\\Ref.\ Match};
 
 % Knowledge flow arrows (Layer 1 -> Layer 2)
-\draw[arr] (pattern.south) -- (contextual.north);
-\draw[arr] (pattern.south) -- (anaphoric.north);
-\draw[arr] (enrich.south) -- (contextual.north east);
-\draw[arr] (enrich.south) -- (abbreviated.north);
+\draw[arr] (model.south) -- (contextual.north west);
+\draw[arr] (enrich.south) -- (contextual.north);
+\draw[arr] (enrich.south east) -- (anaphoric.north);
+\draw[arr] (enrich.south east) -- (abbreviated.north west);
 
 % Layer 3: Link Consolidation
 \node[layer3, below=1.4cm of contextual, xshift=0.8cm] (merge) {Priority Merge};
 \node[layer3, below=0.5cm of merge] (boundary) {Boundary Filter};
-\node[layer3, below=0.5cm of boundary] (evidence) {Evidence Filter};
 
 % Layer 2 -> Layer 3
 \draw[arr] (explicit.south) -- (merge.north west);
@@ -54,31 +51,29 @@
 \draw[arr] (abbreviated.south) -- (merge.north east);
 
 \draw[arr] (merge) -- (boundary);
-\draw[arr] (boundary) -- (evidence);
 
 % Output
-\node[below=0.4cm of evidence, font=\footnotesize\itshape] (out) {Trace Links $L$};
-\draw[arr] (evidence) -- (out);
+\node[below=0.4cm of boundary, font=\footnotesize\itshape] (out) {Trace Links $L$};
+\draw[arr] (boundary) -- (out);
 
 % Layer labels
 \node[layerlabel, left=0.3cm of model] {Layer 1a};
-\node[layerlabel, left=0.3cm of pattern] {Layer 1b};
+\node[layerlabel, left=0.3cm of enrich] {Layer 1b};
 \node[layerlabel, left=0.3cm of explicit] {Layer 2};
 \node[layerlabel, left=0.8cm of merge] {Layer 3};
 
 % Layer boxes
 \begin{scope}[on background layer]
-    \node[layerbox, fit=(model)(enrich), label={[layerlabel]above:Knowledge Acquisition}] {};
+    \node[layerbox, fit=(model)(doc)(enrich), label={[layerlabel]above:Knowledge Acquisition}] {};
     \node[layerbox, fit=(explicit)(abbreviated), label={[layerlabel]above left:Link Recovery}] {};
-    \node[layerbox, fit=(merge)(evidence), label={[layerlabel]above left:Link Consolidation}] {};
+    \node[layerbox, fit=(merge)(boundary), label={[layerlabel]above left:Link Consolidation}] {};
 \end{scope}
 
 \end{tikzpicture}
 \caption{Pipeline architecture as a staged DAG. Layer~1 acquires knowledge
 in two sub-tiers: model analysis and document analysis (core) run
-concurrently (1a); subprocess term learning and partial-reference
-refinement depend on their results and run in a second concurrent
-step (1b).
+concurrently (1a); partial-reference refinement depends on their
+results (1b).
 Explicit reference extraction has no knowledge dependencies and
 starts immediately.
 Layer~2 runs four recovery strategies; Layer~3 merges and filters.}
