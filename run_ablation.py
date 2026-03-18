@@ -264,6 +264,11 @@ VARIANTS = {
     "s_linker4":          dict(linker_class="s_linker4"), # S-Linker3 + seed links go through convention filter (no immunity)
     "s_linker5":          dict(linker_class="s_linker5"), # S-Linker4 + dead code removal + marginal filter cleanup
     "s_linker6":          dict(linker_class="s_linker6"), # S-Linker5 simplified: no subprocess, no targeted, no keep-coref
+    "s_linker7":          dict(linker_class="s_linker7"), # S-Linker6 - boundary filter (ICSE paper version)
+    "s_linker7a":         dict(linker_class="s_linker7a"), # S-Linker7 + partials through validation
+    "s_linker7b":         dict(linker_class="s_linker7b"), # S-Linker7a + clean-mention auto-approval
+    "s_linker8":          dict(linker_class="s_linker8"), # S-Linker7a promoted: partials through validation (93.0%)
+    "s_linker9":          dict(linker_class="s_linker9"), # S-Linker8 + remove impl variant filtering
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -711,6 +716,21 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "s_linker6":
         from llm_sad_sam.linkers.experimental.s_linker6 import SLinker6
         linker = SLinker6(backend=BACKEND)
+    elif linker_class == "s_linker7":
+        from llm_sad_sam.linkers.experimental.s_linker7 import SLinker7
+        linker = SLinker7(backend=BACKEND)
+    elif linker_class == "s_linker7a":
+        from llm_sad_sam.linkers.experimental.s_linker7a import SLinker7a
+        linker = SLinker7a(backend=BACKEND)
+    elif linker_class == "s_linker7b":
+        from llm_sad_sam.linkers.experimental.s_linker7b import SLinker7b
+        linker = SLinker7b(backend=BACKEND)
+    elif linker_class == "s_linker8":
+        from llm_sad_sam.linkers.experimental.s_linker8 import SLinker8
+        linker = SLinker8(backend=BACKEND)
+    elif linker_class == "s_linker9":
+        from llm_sad_sam.linkers.experimental.s_linker9 import SLinker9
+        linker = SLinker9(backend=BACKEND)
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)

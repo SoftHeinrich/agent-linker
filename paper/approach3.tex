@@ -98,7 +98,7 @@ C4 LLM non-determinism
     & Multi-pass consensus; citation verif.
     & \S\ref{sec:seed}, \S\ref{sec:entity}; \S\ref{sec:coref} \\
 C5 Strategy overlap
-    & Priority-based deduplication
+    & First-seen deduplication
     & \S\ref{sec:merge} \\
 \bottomrule
 \end{tabular}
@@ -223,14 +223,6 @@ which candidates require generic-mention detection
 (\S\ref{sec:entity}) and
 which trailing words need capitalized matching
 (\S\ref{sec:alias}).
-
-Name analysis also detects \emph{implementation relationships}
-(e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}) by
-shared-substring matching.
-Implementation variants are excluded from later LLM prompts to
-reduce prompt length and prevent duplicate matches, since sentences
-mentioning a variant are typically linked through the shared name
-of the parent component.
 
 \subsubsection{Alternative Name Discovery}\label{sec:alias}
 
@@ -449,8 +441,8 @@ sets, each already validated by its own C4 mitigation pattern
 (Table~\ref{tab:strategies}).
 Because strategies operate independently, they may discover the
 same $(s_i, c_j)$ pair via different evidence.
-Overlaps are deduplicated by retaining the highest-priority source:
-$\text{explicit} > \text{contextual} > \text{anaphoric} >
-\text{abbreviated}$,
-reflecting decreasing levels of direct textual evidence.
+Overlaps are deduplicated by first-seen priority:
+candidates are processed in strategy order
+(explicit, contextual, anaphoric, abbreviated),
+and the first source to discover a pair is retained.
 

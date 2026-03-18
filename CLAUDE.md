@@ -71,6 +71,10 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/s_linker2.py`** — S-Linker2: S-Linker + V40c (LLM generic detection + coref exempt + bug fixes).
 - **`linkers/experimental/s_linker3.py`** — S-Linker3: S-Linker2 + unified coref (Variant E) + keep_coref (no judge). 94.0% macro F1.
 - **`linkers/experimental/s_linker4.py`** — S-Linker4: S-Linker3 + seed links go through convention filter (no immunity). 94.0% macro F1. Catches 3 additional seed FPs (dotted-path, compound names) with 0 TPs killed.
+- **`linkers/experimental/s_linker5.py`** — S-Linker5: S-Linker4 + dead code removal + marginal filter cleanup.
+- **`linkers/experimental/s_linker6.py`** — S-Linker6: S-Linker5 simplified — no subprocess term learning, no targeted recovery, no keep-coref flag. 94.9% macro F1.
+- **`linkers/experimental/s_linker7.py`** — S-Linker7: S-Linker6 − boundary/convention filter (ICSE simplification). 92.3% macro F1.
+- **`linkers/experimental/s_linker8.py`** — **S-Linker8 (current ICSE)**: S-Linker7 + partials routed through validation + dead code removal + truncation fix. 93.1% macro F1. Cleanest pipeline: no boundary filter, no judge, partials validated by same 2-pass intersection as entity candidates.
 
 ### LLM Client
 
