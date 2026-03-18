@@ -44,8 +44,10 @@ and standalone LLM classifiers:
       and broadening extraction to capture diverse references increases
       false positives from such ambiguous names.
     \item[C3 --- Knowledge gap.]
-      Alias tables and ambiguity classifications do not exist in
-      advance; the system must discover this knowledge from raw
+      Alias tables (mappings from abbreviations, synonyms, and
+      partial names to canonical component names) and ambiguity
+      classifications do not exist in advance; the system must
+      discover this knowledge from raw
       inputs using the same LLM that will consume it---and the
       LLM may hallucinate aliases or misjudge ambiguity.
     \item[C4 --- LLM non-determinism.]
@@ -160,9 +162,9 @@ The pipeline is organized as a staged DAG
 \textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{C4 pattern} & \textbf{LLM} \\
 \midrule
 Explicit & Canonical name & None & Asymmetric voting & 2 passes \\
-Contextual & Alias, functional & Alias table, ambig. & Same-prompt $\cap$ & 2+2\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig. & $\cap$ voting & 2+2\rlap{$^*$} \\
 Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
-Abbreviated & Partial name & Alias table & Same-prompt $\cap$ & 0+2\rlap{$^\dagger$} \\
+Abbreviated & Partial name & Alias table & $\cap$ voting & 0+2\rlap{$^\dagger$} \\
 \bottomrule
 \end{tabular}
 \\[2pt]
@@ -185,8 +187,14 @@ Before linking can begin, the pipeline must build structured
 knowledge that later stages use.
 Layer~1 addresses two knowledge gaps---name ambiguity
 (\S\ref{sec:names}) and alternative names
-(\S\ref{sec:alias})---through targeted analyses shown in the DAG
-(Figure~\ref{fig:pipeline}).
+(\S\ref{sec:alias})---through three analyses shown in the DAG
+(Figure~\ref{fig:pipeline}):
+Model Analysis classifies name ambiguity;
+Document Analysis discovers aliases;
+Partial-Ref.\ Refinement enriches the alias table with
+frequency-based partial mappings.
+All downstream stages consume the enriched alias table from
+the refinement step.
 
 \subsubsection{Name Ambiguity Classification}\label{sec:names}
 
@@ -219,7 +227,10 @@ which trailing words need capitalized matching
 Name analysis also detects \emph{implementation relationships}
 (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}) by
 shared-substring matching.
-Implementation variants are excluded from later LLM prompts.
+Implementation variants are excluded from later LLM prompts to
+reduce prompt length and prevent duplicate matches, since sentences
+mentioning a variant are typically linked through the shared name
+of the parent component.
 
 \subsubsection{Alternative Name Discovery}\label{sec:alias}
 
@@ -234,13 +245,15 @@ But building the table is itself error-prone~(C3): the LLM may
 hallucinate mappings or accept generic words as aliases.
 
 \emph{Insight:}
-Different alias types require different validation rules.
-Abbreviations and synonyms are validated structurally
-(CamelCase $\to$ auto-approve) or semantically (judge prompt
-with calibrated few-shot examples).
-Partial references are the hardest case: whether a partial name
-refers to a component depends on the surrounding context and
-requires frequency-based evidence.
+Abbreviations carry structural evidence---their letters match
+the component name's initials---enabling deterministic validation.
+Synonyms lack such structure and need semantic judgment, but
+CamelCase identifiers can still be auto-approved since they are
+constructed names that cannot be ordinary English.
+Partial references are the hardest case: the same trailing word
+may be a component reference in one context and a generic noun
+in another, so validation must rely on frequency-based evidence
+across the document.
 
 \emph{Design:}
 
@@ -349,7 +362,7 @@ Candidates undergo multi-step validation:
       an LLM determines whether each lowercase occurrence is a
       component reference or ordinary English usage,
       given the surrounding sentence context.
-    \item \emph{Code-first auto-approval:}
+    \item \emph{Anchor-based auto-approval:}
       Candidates where the component name or a known alias appears
       verbatim in the sentence text (\emph{anchor sentence}) are
       accepted without further LLM review.
@@ -406,16 +419,20 @@ as a generic word requires project-specific context that a single
 LLM prompt cannot reliably capture.
 
 \emph{Insight:}
-Deterministic matching gives stable recall at zero extraction cost;
-the same two-pass intersection validation used for contextual
-candidates (\S\ref{sec:entity}) can then filter false positives,
-since both tasks require the same judgment---whether the sentence
-references the component.
+Partial names are short strings with high surface-level match rates,
+making LLM extraction unreliable: it tends to either over-generate
+or miss occurrences in unfamiliar contexts.
+Deterministic scanning guarantees recall completeness for known
+partials, and the two-pass intersection validation from
+\S\ref{sec:entity}---which judges concrete sentence--component
+pairs rather than performing open-ended extraction---is a simpler
+task where LLMs are more reliable.
 
 \emph{Design:}
 The pipeline deterministically scans all sentences for
 word-boundary matches of each partial reference from the alias
-table, producing candidates for uncovered pairs.
+table, producing candidates for sentence--component pairs not
+already found by earlier strategies.
 A clean-mention check ensures the partial name appears as a
 standalone word---not inside a dotted path, hyphenated compound,
 or qualified name.
