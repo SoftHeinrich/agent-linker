@@ -19,7 +19,7 @@
 
 % Layer 1a: Independent analyses (top row)
 \node[layer1] (model)   {Model\\Analysis};
-\node[layer1, right=1.2cm of model] (doc) {Document\\Analysis\\{\scriptsize(core)}};
+\node[layer1, right=1.2cm of model] (doc) {Document\\Analysis};
 
 % Layer 1b: Enrichment (needs 1a results)
 \node[layer1, below=0.7cm of model, xshift=1.7cm] (enrich) {Partial-Ref.\\Refinement};
@@ -41,8 +41,7 @@
 \draw[arr] (enrich.south east) -- (abbreviated.north west);
 
 % Layer 3: Link Consolidation
-\node[layer3, below=1.4cm of contextual, xshift=0.8cm] (merge) {Priority Merge};
-\node[layer3, below=0.5cm of merge] (boundary) {Boundary Filter};
+\node[layer3, below=1.4cm of contextual, xshift=0.8cm] (merge) {Merge};
 
 % Layer 2 -> Layer 3
 \draw[arr] (explicit.south) -- (merge.north west);
@@ -50,11 +49,9 @@
 \draw[arr] (anaphoric.south) -- (merge.north);
 \draw[arr] (abbreviated.south) -- (merge.north east);
 
-\draw[arr] (merge) -- (boundary);
-
 % Output
-\node[below=0.4cm of boundary, font=\footnotesize\itshape] (out) {Trace Links $L$};
-\draw[arr] (boundary) -- (out);
+\node[below=0.4cm of merge, font=\footnotesize\itshape] (out) {Trace Links $L$};
+\draw[arr] (merge) -- (out);
 
 % Layer labels
 \node[layerlabel, left=0.3cm of model] {Layer 1a};
@@ -66,16 +63,17 @@
 \begin{scope}[on background layer]
     \node[layerbox, fit=(model)(doc)(enrich), label={[layerlabel]above:Knowledge Acquisition}] {};
     \node[layerbox, fit=(explicit)(abbreviated), label={[layerlabel]above left:Link Recovery}] {};
-    \node[layerbox, fit=(merge)(boundary), label={[layerlabel]above left:Link Consolidation}] {};
+    \node[layerbox, fit=(merge), label={[layerlabel]above left:Link Consolidation}] {};
 \end{scope}
 
 \end{tikzpicture}
 \caption{Pipeline architecture as a staged DAG. Layer~1 acquires knowledge
-in two sub-tiers: model analysis and document analysis (core) run
-concurrently (1a); partial-reference refinement depends on their
-results (1b).
+in two sub-tiers: model analysis and document analysis run
+concurrently~(1a); partial-reference refinement depends on their
+results~(1b).
 Explicit reference extraction has no knowledge dependencies and
-starts immediately.
-Layer~2 runs four recovery strategies; Layer~3 merges and filters.}
+starts concurrently with Layer~1 (shown here under Link Recovery
+for grouping).
+Layer~2 runs four recovery strategies; Layer~3 deduplicates their output.}
 \label{fig:pipeline}
 \end{figure*}
