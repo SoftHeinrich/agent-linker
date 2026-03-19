@@ -125,7 +125,13 @@ throughout the pipeline:
       either pass but requires agreement for uncertain ones
       (\S\ref{sec:seed});
       \emph{same-prompt intersection} runs an identical prompt twice
-      and keeps only shared results (\S\ref{sec:entity}).
+      and keeps only shared results (extraction in
+      \S\ref{sec:entity});
+      \emph{alias-aware hybrid voting} provides alias context to
+      each validation pass and accepts alias-confirmed matches from
+      either pass (union) while requiring agreement for exact-name
+      matches (intersection) (\S\ref{sec:entity},
+      \S\ref{sec:partial}).
     \item \emph{Citation-grounded verification:}
       Instead of trusting unverifiable LLM judgments, we require the
       LLM to produce checkable evidence---antecedent sentence
@@ -162,15 +168,15 @@ The pipeline is organized as a staged DAG
 \textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{C4 pattern} & \textbf{LLM} \\
 \midrule
 Explicit & Canonical name & None & Asymmetric voting & 2 passes \\
-Contextual & Alias, functional & Alias table, ambig. & $\cap$ voting & 2+2\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig. & $\cap$ extr.\ + hybrid valid. & 2+2\rlap{$^*$} \\
 Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
-Abbreviated & Partial name & Alias table & $\cap$ voting & 0+2\rlap{$^\dagger$} \\
+Abbreviated & Partial name & Alias table & Hybrid valid. & 0+2\rlap{$^\dagger$} \\
 \bottomrule
 \end{tabular}
 \\[2pt]
 {\scriptsize $^*$2 extraction + 2 validation passes.
 $^\dagger$0 extraction (deterministic) + 2 validation passes.
-Each pair intersected independently.}
+Hybrid: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.}
 \end{table}
 
 \noindent Explicit reference extraction requires no Layer~1 knowledge
@@ -347,23 +353,27 @@ The same prompt runs twice independently, and only candidates
 found in both passes are kept.
 
 \paragraph{Validation.}
-Candidates undergo multi-step validation:
+Candidates undergo two-stage validation:
 \begin{enumerate}
     \item \emph{Generic-mention detection:}
       For components classified as ambiguous (\S\ref{sec:names}),
       an LLM determines whether each lowercase occurrence is a
       component reference or ordinary English usage,
       given the surrounding sentence context.
-    \item \emph{Anchor-based auto-approval:}
-      Candidates where the component name or a known alias appears
-      verbatim in the sentence text (\emph{anchor sentence}) are
-      accepted without further LLM review.
-    \item \emph{Two-pass intersection:}
-      Remaining candidates are validated by two independent LLM
+    \item \emph{Alias-aware hybrid voting:}
+      All remaining candidates are validated by two independent LLM
       passes with complementary foci---\emph{actor-role}
       (is the component the subject?) and \emph{direct-reference}
       (does the sentence reference the component at all?).
-      Only candidates approved by \emph{both} passes are retained.
+      When a candidate was matched via a known alias, the validation
+      prompt includes the alias relationship (e.g., ``Server is a
+      known partial reference for HTML5Server''), and a single
+      approving pass suffices (union).
+      Exact-name matches require agreement from both passes
+      (intersection).
+      This hybrid rule reflects confidence: alias-confirmed matches
+      carry prior knowledge that justifies a lower agreement
+      threshold.
 \end{enumerate}
 
 \subsubsection{Anaphoric Reference Resolution}\label{sec:coref}
@@ -415,10 +425,13 @@ Partial names are short strings with high surface-level match rates,
 making LLM extraction unreliable: it tends to either over-generate
 or miss occurrences in unfamiliar contexts.
 Deterministic scanning guarantees recall completeness for known
-partials, and the two-pass intersection validation from
+partials, and the alias-aware hybrid validation from
 \S\ref{sec:entity}---which judges concrete sentence--component
 pairs rather than performing open-ended extraction---is a simpler
 task where LLMs are more reliable.
+Since every partial candidate is alias-confirmed by construction,
+all receive union voting, giving them a lower rejection threshold
+than exact-name matches.
 
 \emph{Design:}
 The pipeline deterministically scans all sentences for
@@ -428,9 +441,11 @@ already found by earlier strategies.
 A clean-mention check ensures the partial name appears as a
 standalone word---not inside a dotted path, hyphenated compound,
 or qualified name.
-The resulting candidates are then validated by the same two-pass
-intersection used in contextual discovery (\S\ref{sec:entity}):
-only candidates approved by both passes are retained.
+The resulting candidates are then validated by the same
+alias-aware hybrid voting used in contextual discovery
+(\S\ref{sec:entity}).
+Since partials are alias-confirmed, they receive union voting:
+a single approving pass suffices.
 
 % ---------------------------------------------------------------------------
 
