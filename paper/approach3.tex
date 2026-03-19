@@ -128,7 +128,8 @@ throughout the pipeline:
       and keeps only shared results (extraction in
       \S\ref{sec:entity});
       \emph{alias-aware hybrid voting} provides alias context to
-      each validation pass and accepts alias-confirmed matches from
+      each validation pass and accepts matches that were confirmed
+      via a known alias (called \emph{alias-confirmed}) from
       either pass (union) while requiring agreement for exact-name
       matches (intersection) (\S\ref{sec:entity},
       \S\ref{sec:partial}).
@@ -170,13 +171,14 @@ The pipeline is organized as a staged DAG
 Explicit & Canonical name & None & Asymmetric voting & 2 passes \\
 Contextual & Alias, functional & Alias table, ambig. & $\cap$ extr.\ + hybrid valid. & 2+2\rlap{$^*$} \\
 Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
-Abbreviated & Partial name & Alias table & Hybrid valid. & 0+2\rlap{$^\dagger$} \\
+Abbreviated & Partial name & Alias table & Union valid. & 0+2\rlap{$^\dagger$} \\
 \bottomrule
 \end{tabular}
 \\[2pt]
 {\scriptsize $^*$2 extraction + 2 validation passes.
 $^\dagger$0 extraction (deterministic) + 2 validation passes.
-Hybrid: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.}
+Hybrid valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
+Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
 \end{table}
 
 \noindent Explicit reference extraction requires no Layer~1 knowledge
@@ -260,9 +262,12 @@ An LLM extracts three alias categories: abbreviations
 (parenthetical definitions), synonyms (unambiguous alternative
 names), and partial references (trailing words of multi-word names
 used alone).
-A calibrated few-shot judge validates each mapping, rejecting
-generic terms (\emph{system}, \emph{process}) while auto-approving
-structurally unambiguous identifiers.
+A calibrated few-shot judge validates each mapping:
+abbreviations whose letters match the component name's initials
+are auto-approved deterministically;
+CamelCase identifiers are auto-approved as constructed names;
+remaining candidates are judged semantically, rejecting generic
+terms (\emph{system}, \emph{process}).
 The resulting alias table is consumed by contextual discovery
 (\S\ref{sec:entity}) and abbreviated matching
 (\S\ref{sec:partial}).
@@ -277,8 +282,10 @@ ambiguous trailing words require capitalized occurrences.
 
 \subsection{Link Recovery}\label{sec:recovery}
 
-With ambiguity classifications and the alias table in hand, the
-pipeline proceeds to recover candidate trace links.
+With ambiguity classifications and the enriched alias table in hand,
+the pipeline moves from knowledge acquisition to link recovery.
+Four strategies operate in parallel on this shared knowledge base,
+each targeting a distinct reference type.
 
 \emph{Challenge~(C1):}
 No single strategy handles all reference types: canonical names
@@ -359,7 +366,8 @@ Candidates undergo two-stage validation:
       For components classified as ambiguous (\S\ref{sec:names}),
       an LLM determines whether each lowercase occurrence is a
       component reference or ordinary English usage,
-      given the surrounding sentence context.
+      given the surrounding sentence context;
+      ordinary-usage occurrences are rejected.
     \item \emph{Alias-aware hybrid voting:}
       All remaining candidates are validated by two independent LLM
       passes with complementary foci---\emph{actor-role}
@@ -443,9 +451,8 @@ standalone word---not inside a dotted path, hyphenated compound,
 or qualified name.
 The resulting candidates are then validated by the same
 alias-aware hybrid voting used in contextual discovery
-(\S\ref{sec:entity}).
-Since partials are alias-confirmed, they receive union voting:
-a single approving pass suffices.
+(\S\ref{sec:entity}); since every candidate is alias-confirmed
+by construction, all receive union voting.
 
 % ---------------------------------------------------------------------------
 
