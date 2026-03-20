@@ -1,21 +1,25 @@
-"""S-Linker11: LLM-driven SAD-SAM traceability with uniform evidence-stratified validation.
+"""S-Linker11: LLM-driven SAD-SAM traceability with source-adapted verification.
 
-All link strategies (seed, entity, partial) go through the same 3-step
-validation: generic-mention pre-filter, then dual-focus LLM voting with
-evidence-stratified thresholds (intersection for exact-name, union for
-alias-backed matches).
+Three-phase pipeline with internal parallelism:
 
-5-layer pipeline:
-  Layer 1 — Knowledge Acquisition (parallel):
-      Model analysis | Document knowledge | LLM seed extraction
-  Layer 2 — Knowledge Enrichment:
-      LLM word usage classification for multiword partial references
-  Layer 3 — Link Recovery (parallel):
-      Seed validation | Entity extraction + validation | Coreference
-  Layer 4 — Partial Recovery:
-      Partial-reference injection + validation
-  Layer 5 — Merge:
+  Phase 1 — Knowledge Acquisition:
+      Parallel: Model analysis | Document knowledge | LLM seed extraction
+      Then: LLM word usage classification for multiword partial references
+
+  Phase 2 — Link Recovery:
+      Parallel: Seed validation | Entity extraction + validation | Coreference
+      Then: Partial-reference injection + validation
+
+  Phase 3 — Merge:
       Deduplication (first-seen priority: seed > entity > coref > partial)
+
+Verification strategy (empirically motivated):
+  Seed, entity, and partial candidates share the same validation
+  infrastructure: generic-mention pre-filter, then dual-focus LLM voting.
+  The voting threshold is adapted to evidence type: alias-backed matches
+  use union (either pass), exact-name matches use intersection (both passes).
+  Coreference uses its own antecedent-based verification (component mention
+  in antecedent sentence within discourse window).
 """
 
 import json
@@ -43,7 +47,7 @@ from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 class SLinker11:
-    """LLM-driven SAD-SAM TLR with uniform evidence-stratified validation."""
+    """LLM-driven SAD-SAM TLR with source-adapted verification."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -59,7 +63,7 @@ class SLinker11:
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._generic_partials: set = set()
-        print(f"SLinker11 (5-layer pipeline, evidence-stratified validation)")
+        print(f"SLinker11 (3-phase pipeline, source-adapted verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -289,7 +293,7 @@ JSON only:"""
         """Derive generic partial set from model analysis results.
 
         A partial is "generic" if it matches an ambiguous component name
-        (e.g., "management" from "MediaManagement" when "management" is ambiguous).
+        (e.g., "management" from "DataManagement" when "management" is ambiguous).
         Used to require capitalized mentions in multiword partial enrichment.
         """
         ambig = self.model_knowledge.ambiguous_names if self.model_knowledge else set()
@@ -496,13 +500,40 @@ JSON only:"""
             sent = sent_map.get(sl.sentence_number)
             if not sent:
                 continue
+            # Detect what actually matched in the sentence (component name or alias)
+            # so evidence stratification can distinguish exact vs alias-backed.
+            matched = self._find_matched_text(sl.component_name, sent.text)
             seed_candidates.append(CandidateLink(
                 sl.sentence_number, sent.text, sl.component_name, sl.component_id,
-                sl.component_name, source="seed",
+                matched, source="seed",
             ))
         seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
         return [SadSamLink(c.sentence_number, c.component_id, c.component_name, source="seed")
                 for c in seed_validated]
+
+    def _find_matched_text(self, comp_name, sentence_text):
+        """Find what actually matched in the sentence: component name or known alias.
+
+        Returns the matched text (alias string if alias-backed, component name
+        if exact). This determines evidence stratification: alias-backed matches
+        get union voting, exact-name matches get intersection.
+        """
+        # Check exact component name first
+        if self._has_standalone_mention(comp_name, sentence_text):
+            return comp_name
+        # Check known aliases (abbreviations, synonyms, partial references)
+        if self.doc_knowledge:
+            for alias, target in self.doc_knowledge.abbreviations.items():
+                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', sentence_text):
+                    return alias
+            for alias, target in self.doc_knowledge.synonyms.items():
+                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', sentence_text, re.IGNORECASE):
+                    return alias
+            for partial, target in self.doc_knowledge.partial_references.items():
+                if target == comp_name and re.search(rf'\b{re.escape(partial)}\b', sentence_text, re.IGNORECASE):
+                    return partial
+        # Fallback: component name (even if not found — validation will handle)
+        return comp_name
 
     def _run_entity_pipeline(self, sentences, components, name_to_id, sent_map):
         """Dual-pass entity extraction with consensus, then 3-step validation."""
@@ -615,18 +646,17 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_intersect(self, candidates, components, sent_map):
-        """Evidence-stratified 3-step validation.
+        """3-step LLM validation with evidence-adapted voting threshold.
 
-        All candidates go through uniform validation:
         Step 1 — Generic pre-filter: ambiguous component names appearing
-            only in lowercase are classified by an LLM as component
-            reference vs generic English word. Generic uses are removed.
+            only in lowercase are classified by LLM as component reference
+            vs generic English word. Generic uses are removed.
         Step 2 — Validation pass A (actor-role focus): LLM checks whether
             the component performs an action or is being described.
         Step 3 — Validation pass B (direct-reference focus): LLM checks
             whether the text refers to the specific architectural component.
 
-        Evidence-stratified voting combines the two passes:
+        Voting threshold adapted to evidence type (empirically motivated):
         - Alias-backed matches: union (either pass approves)
         - Exact-name matches: intersection (both passes must approve)
         """
