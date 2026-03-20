@@ -276,6 +276,7 @@ VARIANTS = {
     "s_linker9e":         dict(linker_class="s_linker9e"), # S-Linker9 + anchor auto-approval + alias-context LLM
     "s_linker10":         dict(linker_class="s_linker10"), # S-Linker10: alias-context + evidence-stratified voting + LLM enrichment
     "s_linker10a":        dict(linker_class="s_linker10a"), # Ablation: count>=3 enrichment threshold (instead of LLM)
+    "s_linker11":         dict(linker_class="s_linker11"), # S-Linker11: uniform validation (seed validated + no bypass)
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -759,6 +760,9 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "s_linker10a":
         from llm_sad_sam.linkers.experimental.s_linker10a import SLinker10a
         linker = SLinker10a(backend=BACKEND)
+    elif linker_class == "s_linker11":
+        from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
+        linker = SLinker11(backend=BACKEND)
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)

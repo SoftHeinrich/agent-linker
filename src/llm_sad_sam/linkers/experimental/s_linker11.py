@@ -1,19 +1,22 @@
-"""S-Linker10 (current ICSE): Alias-context validation with evidence-stratified voting.
+"""S-Linker11: Uniform validation — all strategies validated by evidence-stratified voting.
 
-Changes vs S-Linker9:
-- Removed auto-approval shortcut. All candidates go through LLM 2-pass
-  with alias context hints in the validation prompt.
-- Evidence-stratified voting: exact-name matches use intersection
-  (both passes must agree), alias-backed matches use union (either pass
-  suffices) because the semantic pass directly benefits from alias context.
-- LLM word usage enrichment: trailing-word partials classified by LLM
-  (replaces count>=3 frequency threshold for cleaner, principled design).
-- Clean pronoun pattern (no benchmark-suspicious terms).
-- Prompt constants from prompts_v2 (no dead code).
+Changes vs S-Linker10:
+- Seed links now go through evidence-stratified validation (same as entity/partial).
+  Previously seed bypassed all validation, causing 62% of pipeline FPs.
+  Killed TPs are recovered by entity/coref/partial via dedup (zero recall cost).
+- Removed needs_validation bypass: all entity candidates go through LLM
+  validation. Previously ~52% of exact-name matches skipped validation entirely.
+
+Unchanged from S-Linker10:
+- Evidence-stratified voting (intersection for exact, union for alias-backed).
+- LLM word usage enrichment for partial-reference refinement.
+- Generic-mention detection as separate pre-check for ambiguous names.
+- Prompts from prompts_v2 (no dead code).
 
 Pipeline:
 - Tier 1 (parallel): Model analysis | Doc knowledge | ILinker2 seed
 - Tier 1.5: LLM word usage enrichment (multiword partials)
+- Tier 1.5b: Seed validation (evidence-stratified voting)
 - Tier 2 (parallel): Entity extraction + validation | Coreference
 - Tier 2.5: Partial injection + validation
 - Tier 3: Dedup -> final
@@ -43,8 +46,8 @@ from llm_sad_sam.linkers.experimental.prompts_v2 import (
 from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
-class SLinker10:
-    """DAG-based SAD-SAM TLR with alias-context validation and evidence-stratified voting."""
+class SLinker11:
+    """DAG-based SAD-SAM TLR with uniform evidence-stratified validation for all strategies."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -61,7 +64,7 @@ class SLinker10:
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._components = []
         self._generic_partials: set = set()
-        print(f"SLinker10 (alias-context validation, evidence-stratified voting)")
+        print(f"SLinker11 (uniform validation, evidence-stratified voting)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -159,6 +162,27 @@ class SLinker10:
         self._save_phase(text_path, "tier1_5", {
             "doc_knowledge": self.doc_knowledge,
         })
+
+        # ═══ TIER 1.5b: Seed Validation ═══
+        # Route seed links through the same evidence-stratified validation
+        # as entity and partial candidates. Killed TPs are recovered by
+        # entity/coref/partial via dedup (tested: zero net recall cost).
+        print("\n[Tier 1.5b] Seed Validation")
+        seed_candidates = []
+        for sl in seed_links:
+            sent = sent_map.get(sl.sentence_number)
+            if not sent:
+                continue
+            seed_candidates.append(CandidateLink(
+                sl.sentence_number, sent.text, sl.component_name, sl.component_id,
+                sl.component_name, 1.0, "seed", "exact",
+                needs_validation=True,
+            ))
+        seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
+        seed_links = [SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, "seed")
+                      for c in seed_validated]
+        seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
+        print(f"  Seed after validation: {len(seed_links)} / {len(seed_candidates)}")
 
         # ═══ TIER 2: Link Recovery (entity pipeline ∥ coreference) ═══
         print("\n[Tier 2] Link Recovery (parallel)")
@@ -589,26 +613,24 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_intersect(self, candidates, components, sent_map):
-        """LLM generic detection + evidence-stratified 2-pass voting.
+        """LLM generic-mention detection + evidence-stratified 2-pass voting.
 
-        Exact-name matches that passed same-prompt intersection skip further
-        validation (high confidence from extraction agreement). Non-exact and
-        generic-mention candidates go through 2-pass LLM voting with alias context.
+        All candidates go through validation uniformly:
+        1. Generic-mention detection: ambiguous names with lowercase-only
+           mentions are checked for generic vs component usage.
+        2. Evidence-stratified voting: two independent LLM passes with
+           complementary foci. Alias-backed matches use union (either pass),
+           exact-name matches use intersection (both passes).
         """
         if not candidates:
             return []
 
         comp_names = self._get_comp_names(components)
-        needs = [c for c in candidates if c.needs_validation]
-        direct = [c for c in candidates if not c.needs_validation]
-
-        if not needs:
-            return candidates
 
         # Pre-check: LLM-based contextual generic mention detection
         generic_candidates = {}  # comp_name -> [candidate]
         non_generic = []
-        for c in needs:
+        for c in candidates:
             sent = sent_map.get(c.sentence_number)
             if not sent:
                 non_generic.append(c)
@@ -691,8 +713,6 @@ JSON only:"""
                 else:
                     remaining.append(c)
 
-        needs = remaining
-
         # Build alias lookup for context
         alias_map = {}
         for c in components:
@@ -711,10 +731,10 @@ JSON only:"""
 
         # ALL candidates go through 2-pass validation with alias context.
         # Alias cases use UNION (either pass approves), others use INTERSECTION.
-        print(f"    LLM 2-pass validation: {len(needs)} candidates")
+        print(f"    LLM 2-pass validation: {len(remaining)} candidates")
         twopass_approved = []
-        for batch_start in range(0, len(needs), 25):
-            batch = needs[batch_start:batch_start + 25]
+        for batch_start in range(0, len(remaining), 25):
+            batch = remaining[batch_start:batch_start + 25]
             cases = []
             has_alias = []  # track which candidates have alias hints
             for i, c in enumerate(batch):
@@ -747,7 +767,7 @@ JSON only:"""
                     c.source = "validated"
                     twopass_approved.append(c)
 
-        return direct + twopass_approved
+        return twopass_approved
 
     def _qual_validation_pass(self, comp_names, cases, focus):
         """Single validation pass for 2-pass intersection."""
@@ -978,7 +998,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     def _checkpoint_dir(self, text_path):
         cache_dir = os.environ.get("PHASE_CACHE_DIR", "./results/phase_cache")
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        d = os.path.join(cache_dir, "s_linker10", ds)
+        d = os.path.join(cache_dir, "s_linker11", ds)
         os.makedirs(d, exist_ok=True)
         return d
 
