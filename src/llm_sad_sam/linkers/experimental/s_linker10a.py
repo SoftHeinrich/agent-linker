@@ -1,22 +1,10 @@
-"""S-Linker10 (current ICSE): Alias-context validation with evidence-stratified voting.
+"""S-Linker10a: Ablation variant — count>=3 enrichment threshold.
 
-Changes vs S-Linker9:
-- Removed auto-approval shortcut. All candidates go through LLM 2-pass
-  with alias context hints in the validation prompt.
-- Evidence-stratified voting: exact-name matches use intersection
-  (both passes must agree), alias-backed matches use union (either pass
-  suffices) because the semantic pass directly benefits from alias context.
-- LLM word usage enrichment: trailing-word partials classified by LLM
-  (replaces count>=3 frequency threshold for cleaner, principled design).
-- Clean pronoun pattern (no benchmark-suspicious terms).
-- Prompt constants from prompts_v2 (no dead code).
+Same as S-Linker10 but uses a frequency threshold (count>=3) instead of
+LLM word usage classification for multiword partial enrichment.
 
-Pipeline:
-- Tier 1 (parallel): Model analysis | Doc knowledge | ILinker2 seed
-- Tier 1.5: LLM word usage enrichment (multiword partials)
-- Tier 2 (parallel): Entity extraction + validation | Coreference
-- Tier 2.5: Partial injection + validation
-- Tier 3: Dedup -> final
+The count>=3 heuristic is less precise: it accepts "Conversion" (5 FP vs 2 TP)
+that the LLM correctly rejects.
 """
 
 import json
@@ -39,12 +27,11 @@ from llm_sad_sam.linkers.experimental.prompts_v2 import (
     DOC_KNOWLEDGE_EXTRACTION_RULES,
     ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
 )
-from llm_sad_sam.linkers.experimental.prompts import WORD_USAGE_PROMPT
 from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
-class SLinker10:
-    """DAG-based SAD-SAM TLR with alias-context validation and evidence-stratified voting."""
+class SLinker10a:
+    """Ablation: S-Linker10 with count>=3 enrichment threshold (instead of LLM)."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -61,7 +48,7 @@ class SLinker10:
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._components = []
         self._generic_partials: set = set()
-        print(f"SLinker10 (alias-context validation, evidence-stratified voting)")
+        print(f"SLinker10a (ablation: count>=3 enrichment)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -390,11 +377,7 @@ JSON only:"""
     # ═══════════════════════════════════════════════════════════════════════
 
     def _enrich_multiword_partials(self, sentences, components):
-        """Auto-discover multi-word partial references via LLM word usage classification.
-
-        Instead of count>=3, asks the LLM whether the trailing word of a
-        multi-word component name is used as a standalone entity reference.
-        """
+        """Auto-discover multi-word partial references from usage patterns."""
         if not self.doc_knowledge:
             return
 
@@ -421,51 +404,24 @@ JSON only:"""
 
             is_generic_word = last_lower in self._generic_partials
             full_lower = comp.name.lower()
-
-            # Find sentences where trailing word appears without full name
-            relevant_sents = []
+            mention_count = 0
             for sent in sentences:
                 sl = sent.text.lower()
                 if last_lower in sl and full_lower not in sl:
                     if is_generic_word:
                         cap_word = last_word[0].upper() + last_word[1:]
                         if re.search(rf'\b{re.escape(cap_word)}\b', sent.text):
-                            relevant_sents.append(sent)
+                            mention_count += 1
                     else:
                         if re.search(rf'\b{re.escape(last_word)}\b', sent.text, re.IGNORECASE):
-                            relevant_sents.append(sent)
+                            mention_count += 1
 
-            if not relevant_sents:
-                continue
-
-            # LLM word usage classification
-            calibration = ""
-            if is_generic_word:
-                calibration = (f'NOTE: "{last_word}" is also an ordinary English word. '
-                               f'Be careful to distinguish entity references from generic usage.\n\n')
-
-            sent_block = "\n".join(f"  S{s.number}: {s.text}" for s in relevant_sents[:20])
-
-            prompt = WORD_USAGE_PROMPT.format(
-                partial=last_word,
-                partial_lower=last_lower,
-                comp_name=comp.name,
-                calibration=calibration,
-                sent_block=sent_block,
-            )
-
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
-            classification = data.get("classification", "ordinary") if data else "ordinary"
-            reason = data.get("reason", "") if data else ""
-
-            if classification == "name":
+            if mention_count >= 3:
                 self.doc_knowledge.partial_references[last_word] = comp.name
-                added.append(f"{last_word} -> {comp.name} (LLM: {reason})")
-            else:
-                print(f"    LLM rejected: {last_word} -> {comp.name} ({reason})")
+                added.append(f"{last_word} -> {comp.name} ({mention_count} mentions)")
 
         if added:
-            print(f"  [Enrichment] Multi-word partials (LLM):")
+            print(f"  [Enrichment] Multi-word partials:")
             for a in added:
                 print(f"    Auto-partial: {a}")
 
@@ -973,7 +929,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     def _checkpoint_dir(self, text_path):
         cache_dir = os.environ.get("PHASE_CACHE_DIR", "./results/phase_cache")
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        d = os.path.join(cache_dir, "s_linker10", ds)
+        d = os.path.join(cache_dir, "s_linker10a", ds)
         os.makedirs(d, exist_ok=True)
         return d
 
@@ -997,7 +953,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
         os.makedirs(log_dir, exist_ok=True)
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        path = os.path.join(log_dir, f"s_linker10_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        path = os.path.join(log_dir, f"s_linker10a_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
         with open(path, "w") as f:
             json.dump(self._phase_log, f, indent=2, default=str)
         print(f"  Phase log saved: {path}")

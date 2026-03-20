@@ -43,6 +43,9 @@
 % Layer 3: Link Consolidation
 \node[layer3, below=1.4cm of contextual, xshift=0.8cm] (merge) {Merge};
 
+% Dedup dependency: abbreviated matching needs prior strategies' results
+\draw[arr, dashed] (explicit.east) -- (abbreviated.west);
+
 % Layer 2 -> Layer 3
 \draw[arr] (explicit.south) -- (merge.north west);
 \draw[arr] (contextual.south) -- (merge.north);
@@ -74,6 +77,8 @@ results~(1b).
 Explicit reference extraction has no knowledge dependencies and
 starts concurrently with Layer~1 (shown here under Link Recovery
 for grouping).
-Layer~2 runs four recovery strategies; Layer~3 deduplicates their output.}
+Layer~2 runs four recovery strategies; abbreviated matching
+depends on prior strategies for deduplication (dashed arrow).
+Layer~3 deduplicates their output.}
 \label{fig:pipeline}
 \end{figure*}

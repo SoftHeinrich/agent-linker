@@ -74,7 +74,11 @@ Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=
 - **`linkers/experimental/s_linker5.py`** — S-Linker5: S-Linker4 + dead code removal + marginal filter cleanup.
 - **`linkers/experimental/s_linker6.py`** — S-Linker6: S-Linker5 simplified — no subprocess term learning, no targeted recovery, no keep-coref flag. 94.9% macro F1.
 - **`linkers/experimental/s_linker7.py`** — S-Linker7: S-Linker6 − boundary/convention filter (ICSE simplification). 92.3% macro F1.
-- **`linkers/experimental/s_linker8.py`** — **S-Linker8 (current ICSE)**: S-Linker7 + partials routed through validation + dead code removal + truncation fix. 93.1% macro F1. Cleanest pipeline: no boundary filter, no judge, partials validated by same 2-pass intersection as entity candidates.
+- **`linkers/experimental/s_linker8.py`** — **S-Linker8**: S-Linker7 + partials routed through validation + dead code removal + truncation fix. 93.1% macro F1. Cleanest pipeline: no boundary filter, no judge, partials validated by same 2-pass intersection as entity candidates.
+- **`linkers/experimental/s_linker9.py`** — S-Linker9: S-Linker8 + 3 safe removals (impl variant filtering, CamelCase synonym injection, CamelCase rescue override). 93.9% macro F1.
+- **`linkers/experimental/s_linker10.py`** — **S-Linker10 (current ICSE)**: S-Linker9 + alias-context validation + evidence-stratified voting + LLM word usage enrichment + clean pronoun pattern + prompts_v2. Fully LLM-driven: no magic thresholds, no auto-approval shortcut. Exact-name uses intersection, alias-backed uses union.
+- **`linkers/experimental/s_linker10a.py`** — Ablation: S-Linker10 with count>=3 enrichment threshold instead of LLM word usage classification.
+- **`linkers/experimental/prompts_v2.py`** — Clean prompt constants for S-Linker10+. Only constants actually used (no CONVENTION_GUIDE or WORD_USAGE_PROMPT).
 
 ### LLM Client
 

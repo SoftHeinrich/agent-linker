@@ -1,62 +1,45 @@
 # Pipeline Dependency Analysis
 
 Reference material for the approach section. Documents the actual data
-dependencies between pipeline phases, informing the paper's DAG-based
-presentation.
+dependencies between S-Linker10 pipeline phases, informing the paper's
+DAG-based presentation.
 
 ## Phase-to-Variable Dependency Matrix
 
 | Phase | Reads (instance vars) | Reads (local data) | Produces |
 |---|---|---|---|
 | Model Analysis | — | components | model_knowledge |
-| Generic Set Derivation | model_knowledge | components | GENERIC_COMPONENT_WORDS, GENERIC_PARTIALS |
+| Generic Partials Derivation | model_knowledge | components | _generic_partials |
 | Document Knowledge | — | sentences, components | doc_knowledge |
-| Doc Knowledge Enrichment | GENERIC_PARTIALS, doc_knowledge | sentences, components | mutates doc_knowledge |
-| Partial Usage Classification | doc_knowledge | sentences | _activity_partials |
-| Subprocess Term Learning | model_knowledge | sentences, components | learned_patterns (subprocess_terms only) |
-| Explicit Ref. Extraction | — | text_path, model_path | explicit_links, explicit_set |
+| Partial-Ref. Enrichment (LLM) | _generic_partials, doc_knowledge | sentences, components | mutates doc_knowledge |
+| Explicit Ref. Extraction | — | text_path, model_path | seed_links, seed_set |
 | Contextual Ref. Discovery | model_knowledge, doc_knowledge | sentences, components | candidates |
-| Targeted Recovery | doc_knowledge | sentences, explicit_links, candidates | appends to candidates |
-| Validation | model_knowledge, learned_patterns, doc_knowledge | candidates | validated |
-| Anaphoric Ref. Resolution | model_knowledge, learned_patterns, doc_knowledge | sentences, components | anaphoric_links |
-| Abbreviated Ref. Matching | doc_knowledge | sentences, explicit_set, validated, anaphoric_links | abbreviated_links |
-| Boundary Filter | model_knowledge, doc_knowledge, _activity_partials | preliminary | filtered preliminary |
-| Evidence Filter | doc_knowledge | filtered preliminary, explicit_set | final links |
+| Validation (evidence-stratified) | model_knowledge, doc_knowledge | candidates | validated |
+| Anaphoric Ref. Resolution | doc_knowledge | sentences, components | coref_links |
+| Abbreviated Ref. Matching | doc_knowledge | sentences, seed_set, validated, coref_links | partial_candidates |
+| Partial Validation | model_knowledge, doc_knowledge | partial_candidates | partial_validated |
+| Merge (dedup) | — | seed, entity, coref, partial | final links |
 
 ## Dependency DAG (edges = "must complete before")
 
 ```
-Model Analysis ──────┬──→ Subprocess Term Learning
-                     ├──→ Doc Knowledge Enrichment
+Model Analysis ──────┬──→ Generic Partials Derivation ──→ Partial-Ref. Enrichment (LLM)
                      ├──→ Contextual Ref. Discovery
                      ├──→ Validation
-                     ├──→ Anaphoric Ref. Resolution
-                     ├──→ Boundary Filter
-                     └──→ Merge (parent-overlap guard)
+                     └──→ Partial Validation
 
-Document Knowledge ──┬──→ Doc Knowledge Enrichment
+Document Knowledge ──┬──→ Partial-Ref. Enrichment (LLM)
                      ├──→ Contextual Ref. Discovery
-                     ├──→ Targeted Recovery
                      ├──→ Validation
                      ├──→ Anaphoric Ref. Resolution (alias checks)
                      ├──→ Abbreviated Ref. Matching
-                     └──→ Evidence Filter (alias lookup)
+                     └──→ Partial Validation
 
-Subprocess Term Learning ┬──→ Validation (subprocess exclusion)
-                         └──→ Anaphoric Ref. Resolution (subprocess filter)
+Partial-Ref. Enrichment ──→ All of Tier 2 (enriched doc_knowledge)
 
-Doc Knowledge Enrichment ─→ Partial Usage Classification
+Explicit Ref. Extraction ──→ Abbreviated Ref. Matching (dedup)
 
-Partial Usage Classification ────→ Boundary Filter (_activity_partials)
-
-Document Knowledge ──────────────→ Boundary Filter (alias context)
-
-Explicit Ref. Extraction ┬──→ Targeted Recovery (coverage check)
-                         ├──→ Abbreviated Ref. Matching (dedup)
-                         └──→ Evidence Filter (provenance check)
-
-Contextual Ref. Discovery ┬──→ Targeted Recovery (coverage check)
-                          └──→ Validation
+Contextual Ref. Discovery ──→ Validation
 
 Validation ──────────┬──→ Abbreviated Ref. Matching (dedup)
                      └──→ Merge
@@ -64,35 +47,29 @@ Validation ──────────┬──→ Abbreviated Ref. Matching 
 Anaphoric Ref. Resolution ┬──→ Abbreviated Ref. Matching (dedup)
                           └──→ Merge
 
-Abbreviated Ref. Matching ──→ Merge
-Merge ──────────────────────→ Boundary Filter
-Boundary Filter ────────────→ Evidence Filter
+Abbreviated Ref. Matching ──→ Partial Validation ──→ Merge
 ```
 
 ## Parallel Groups (maximum parallelism schedule)
 
 | Slot | Running | Bottleneck |
 |---|---|---|
-| L1 | Model Analysis, Document Knowledge, Explicit Ref. Extraction | Explicit (ILinker2 = multiple LLM batches) |
-| L1b | Generic Set Derivation (from model_knowledge) | Fast, deterministic |
-| L2 | Subprocess Term Learning, Doc Knowledge Enrichment | Both short |
-| L2b | Partial Usage Classification | Per-partial LLM calls |
-| L3 | Contextual Discovery Pipeline (extract→recover→validate) ∥ Anaphoric Resolution | Anaphoric (full pass) |
-| L3b | Abbreviated Ref. Matching | Needs Validation + Anaphoric Resolution |
-| L4 | Merge + Boundary Filter + Evidence Filter | Sequential (evidence filter is instant) |
+| Tier 1 | Model Analysis ∥ Document Knowledge ∥ Explicit Ref. Extraction | ILinker2 (multiple LLM batches) |
+| Tier 1 (cont.) | Generic Partials Derivation | Fast, deterministic (after Model Analysis) |
+| Tier 1.5 | Partial-Ref. Enrichment (LLM word usage) | Per-partial LLM calls (~2-4) |
+| Tier 2 | Contextual Discovery Pipeline (extract→validate) ∥ Anaphoric Resolution | Entity extraction (largest batch count) |
+| Tier 2.5 | Abbreviated Ref. Matching → Partial Validation | Sequential (needs entity+coref done) |
+| Tier 3 | Merge (dedup) | Instant, deterministic |
 
 ## Critical Path
 
 Two chains race to the merge point:
 
 **Chain A (contextual path):**
-Model Analysis → Subprocess Term Learning ─┐
-Document Knowledge → Enrichment ──→ Contextual Discovery → Targeted Recovery → Validation ──→ Merge
-Explicit Extraction ──────────────→ Targeted Recovery
+Model Analysis → Generic Partials → Enrichment → Contextual Discovery → Validation → Merge
 
 **Chain B (anaphoric path):**
-Model Analysis → Subprocess Term Learning ┬→ Anaphoric Resolution ──→ Merge
-Document Knowledge → Enrichment ──────────┘
+Document Knowledge → Enrichment → Anaphoric Resolution → Merge
 
 Anaphoric resolution and the contextual discovery pipeline are on separate
 branches that converge only at the merge point. This is why they can
@@ -101,20 +78,29 @@ figure communicates.
 
 ## Mapping: Code Methods → Paper Sections
 
-| S-Linker5 Method | Paper Section |
+| S-Linker10 Method | Paper Section |
 |---|---|
-| `_analyze_model` | §3.2.1 Model Analysis |
-| `_compute_generic_sets` | §3.2.1 Model Analysis (generic partial words) |
-| `_learn_document_knowledge_enriched` | §3.2.2 Document Analysis (alternative name discovery) |
-| `_enrich_multiword_partials` | §3.2.2 Document Analysis (statistical enrichment) |
-| `_classify_partial_usage` | §3.2.2 Document Analysis (usage classification) |
-| `_learn_subprocess_terms` | §3.2.3 Pattern Learning (subprocess debate) |
+| `_analyze_model` | §3.2.1 Name Ambiguity Classification |
+| `_compute_generic_partials` | §3.2.1 Name Ambiguity Classification (generic partial words) |
+| `_learn_document_knowledge_enriched` | §3.2.2 Alternative Name Discovery (core discovery) |
+| `_enrich_multiword_partials` | §3.2.2 Alternative Name Discovery (LLM word usage enrichment) |
 | `_run_seed` (ILinker2) | §3.3.1 Explicit Reference Extraction |
-| `_extract_entities_enriched` | §3.3.2 Contextual Reference Discovery (two-pass intersection) |
-| `_targeted_recovery` | §3.3.2 Contextual Reference Discovery (targeted recovery) |
-| `_validate_candidates` | §3.3.2 Contextual Reference Discovery (3-step validation) |
+| `_extract_entities_enriched` | §3.3.2 Contextual Reference Discovery (same-prompt intersection) |
+| `_validate_intersect` | §3.3.2 Contextual Reference Discovery (evidence-stratified voting) |
 | `_coref_cases_in_context` | §3.3.3 Anaphoric Reference Resolution |
-| `_inject_partial_references` | §3.3.4 Abbreviated Reference Matching |
-| `_combine_links` (inline) | §3.4.1 Priority-Based Merge |
-| `_apply_boundary_filters` | §3.4.2 Convention-Aware Boundary Filter |
-| keep_coref filter (inline) | §3.4.3 Evidence Filter |
+| `_inject_partial_candidates` | §3.3.4 Abbreviated Reference Matching |
+| dedup loop in `link()` | §3.4 Link Consolidation (first-seen dedup) |
+
+## Removed from S-Linker10 (present in earlier versions)
+
+| Phase | Removed in | Reason |
+|---|---|---|
+| Subprocess Term Learning | S-Linker6 | Zero F1 contribution |
+| Targeted Recovery | S-Linker6 | Zero net gain |
+| Convention-Aware Boundary Filter | S-Linker7 | ICSE simplification |
+| Evidence Filter | S-Linker7 | Subsumed by validation |
+| Implementation Variant Filtering | S-Linker9 | Zero text mentions |
+| CamelCase Synonym Injection | S-Linker9 | Zero dependents |
+| CamelCase Rescue Override | S-Linker9 | Never fires |
+| Code-first Auto-approval | S-Linker10 | Replaced by evidence-stratified voting |
+| Count>=3 Enrichment Threshold | S-Linker10 | Replaced by LLM word usage classification |

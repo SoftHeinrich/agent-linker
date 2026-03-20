@@ -39,7 +39,7 @@ and standalone LLM classifiers:
       No single extraction strategy handles all types.
     \item[C2 --- Name ambiguity.]
       Component names are often common English words (\texttt{Core},
-      \texttt{Adapter}) or technologies (\texttt{Redis}).
+      \texttt{Adapter}) or technologies (\texttt{Kafka}).
       These words appear frequently without referring to any component,
       and broadening extraction to capture diverse references increases
       false positives from such ambiguous names.
@@ -127,7 +127,7 @@ throughout the pipeline:
       \emph{same-prompt intersection} runs an identical prompt twice
       and keeps only shared results (extraction in
       \S\ref{sec:entity});
-      \emph{alias-aware hybrid voting} provides alias context to
+      \emph{evidence-stratified voting} provides alias context to
       each validation pass and accepts matches that were confirmed
       via a known alias (called \emph{alias-confirmed}) from
       either pass (union) while requiring agreement for exact-name
@@ -169,7 +169,7 @@ The pipeline is organized as a staged DAG
 \textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{C4 pattern} & \textbf{LLM} \\
 \midrule
 Explicit & Canonical name & None & Asymmetric voting & 2 passes \\
-Contextual & Alias, functional & Alias table, ambig. & $\cap$ extr.\ + hybrid valid. & 2+2\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig. & $\cap$ extr.\ + stratified valid. & 2+2\rlap{$^*$} \\
 Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
 Abbreviated & Partial name & Alias table & Union valid. & 0+2\rlap{$^\dagger$} \\
 \bottomrule
@@ -177,7 +177,7 @@ Abbreviated & Partial name & Alias table & Union valid. & 0+2\rlap{$^\dagger$} \
 \\[2pt]
 {\scriptsize $^*$2 extraction + 2 validation passes.
 $^\dagger$0 extraction (deterministic) + 2 validation passes.
-Hybrid valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
+Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
 Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
 \end{table}
 
@@ -200,7 +200,7 @@ Layer~1 addresses two knowledge gaps---name ambiguity
 Model Analysis classifies name ambiguity;
 Document Analysis discovers aliases;
 Partial-Ref.\ Refinement enriches the alias table with
-frequency-based partial mappings.
+LLM-classified partial mappings.
 All downstream stages consume the enriched alias table from
 the refinement step.
 
@@ -252,8 +252,8 @@ CamelCase identifiers can still be auto-approved since they are
 constructed names that cannot be ordinary English.
 Partial references are the hardest case: the same trailing word
 may be a component reference in one context and a generic noun
-in another, so validation must rely on frequency-based evidence
-across the document.
+in another, so validation requires LLM-based word usage
+classification on the document contexts where the word appears.
 
 \emph{Design:}
 
@@ -273,10 +273,15 @@ The resulting alias table is consumed by contextual discovery
 (\S\ref{sec:partial}).
 
 \paragraph{Partial-reference refinement.}
-A frequency-based enrichment step adds partial mappings when a
-trailing word appears in $\ge3$~sentences where the full name is
-absent and no other component shares that word;
-ambiguous trailing words require capitalized occurrences.
+An LLM-based enrichment step classifies each candidate trailing
+word as a standalone entity reference (\textsc{name}) or as an
+ordinary English word (\textsc{ordinary}) by examining the
+sentences where it appears without the full component name.
+A candidate is added to the alias table only if no other
+component shares that trailing word and the LLM classifies
+its usage as \textsc{name};
+ambiguous trailing words require capitalized occurrences
+to be considered.
 
 % ---------------------------------------------------------------------------
 
@@ -284,8 +289,10 @@ ambiguous trailing words require capitalized occurrences.
 
 With ambiguity classifications and the enriched alias table in hand,
 the pipeline moves from knowledge acquisition to link recovery.
-Four strategies operate in parallel on this shared knowledge base,
-each targeting a distinct reference type.
+Four strategies target distinct reference types on this shared
+knowledge base; the first three operate in parallel, while
+abbreviated matching runs after them to avoid re-discovering
+already-linked pairs.
 
 \emph{Challenge~(C1):}
 No single strategy handles all reference types: canonical names
@@ -368,28 +375,27 @@ Candidates undergo two-stage validation:
       component reference or ordinary English usage,
       given the surrounding sentence context;
       ordinary-usage occurrences are rejected.
-    \item \emph{Alias-aware hybrid voting:}
+    \item \emph{Evidence-stratified voting:}
       All remaining candidates are validated by two independent LLM
       passes with complementary foci---\emph{actor-role}
       (is the component the subject?) and \emph{direct-reference}
       (does the sentence reference the component at all?).
       When a candidate was matched via a known alias, the validation
-      prompt includes the alias relationship (e.g., ``Server is a
-      known partial reference for HTML5Server''), and a single
+      prompt includes the alias relationship (e.g., ``Dispatcher is a
+      known partial reference for EventDispatcher''), and a single
       approving pass suffices (union).
       Exact-name matches require agreement from both passes
       (intersection).
-      This hybrid rule reflects confidence: alias-confirmed matches
-      carry prior knowledge that justifies a lower agreement
-      threshold.
+      This evidence-stratified rule reflects that alias-confirmed
+      matches carry prior knowledge from Layer~1 that justifies
+      a lower agreement threshold.
 \end{enumerate}
 
 \subsubsection{Anaphoric Reference Resolution}\label{sec:coref}
 
 \emph{Challenge~(C1, C4):}
 Sentences containing pronouns (\emph{it}, \emph{they}, \emph{this},
-\emph{these}, \emph{that}, \emph{those}) or definite descriptions
-(\emph{the service}, \emph{this module})
+\emph{these}, \emph{that}, \emph{those}, \emph{its}, \emph{their})
 carry valid trace information but contain no component name, so
 the preceding strategies cannot find them.
 However, LLMs can fabricate antecedents---claiming a pronoun refers
@@ -433,7 +439,7 @@ Partial names are short strings with high surface-level match rates,
 making LLM extraction unreliable: it tends to either over-generate
 or miss occurrences in unfamiliar contexts.
 Deterministic scanning guarantees recall completeness for known
-partials, and the alias-aware hybrid validation from
+partials, and the evidence-stratified validation from
 \S\ref{sec:entity}---which judges concrete sentence--component
 pairs rather than performing open-ended extraction---is a simpler
 task where LLMs are more reliable.
@@ -446,11 +452,11 @@ The pipeline deterministically scans all sentences for
 word-boundary matches of each partial reference from the alias
 table, producing candidates for sentence--component pairs not
 already found by earlier strategies.
-A clean-mention check ensures the partial name appears as a
-standalone word---not inside a dotted path, hyphenated compound,
-or qualified name.
+A deterministic clean-mention check ensures the partial name
+appears as a standalone word---not inside a dotted path,
+hyphenated compound, or qualified name.
 The resulting candidates are then validated by the same
-alias-aware hybrid voting used in contextual discovery
+evidence-stratified voting used in contextual discovery
 (\S\ref{sec:entity}); since every candidate is alias-confirmed
 by construction, all receive union voting.
 
