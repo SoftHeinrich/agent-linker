@@ -1,25 +1,21 @@
-"""S-Linker11: Uniform validation — all strategies validated by evidence-stratified voting.
+"""S-Linker11: LLM-driven SAD-SAM traceability with uniform evidence-stratified validation.
 
-Changes vs S-Linker10:
-- Seed links now go through evidence-stratified validation (same as entity/partial).
-  Previously seed bypassed all validation, causing 62% of pipeline FPs.
-  Killed TPs are recovered by entity/coref/partial via dedup (zero recall cost).
-- Removed needs_validation bypass: all entity candidates go through LLM
-  validation. Previously ~52% of exact-name matches skipped validation entirely.
+All link strategies (seed, entity, partial) go through the same 3-step
+validation: generic-mention pre-filter, then dual-focus LLM voting with
+evidence-stratified thresholds (intersection for exact-name, union for
+alias-backed matches).
 
-Unchanged from S-Linker10:
-- Evidence-stratified voting (intersection for exact, union for alias-backed).
-- LLM word usage enrichment for partial-reference refinement.
-- Generic-mention detection as separate pre-check for ambiguous names.
-- Prompts from prompts_v2 (no dead code).
-
-Pipeline:
-- Tier 1 (parallel): Model analysis | Doc knowledge | ILinker2 seed
-- Tier 1.5: LLM word usage enrichment (multiword partials)
-- Tier 1.5b: Seed validation (evidence-stratified voting)
-- Tier 2 (parallel): Entity extraction + validation | Coreference
-- Tier 2.5: Partial injection + validation
-- Tier 3: Dedup -> final
+5-layer pipeline:
+  Layer 1 — Knowledge Acquisition (parallel):
+      Model analysis | Document knowledge | LLM seed extraction
+  Layer 2 — Knowledge Enrichment:
+      LLM word usage classification for multiword partial references
+  Layer 3 — Link Recovery (parallel):
+      Seed validation | Entity extraction + validation | Coreference
+  Layer 4 — Partial Recovery:
+      Partial-reference injection + validation
+  Layer 5 — Merge:
+      Deduplication (first-seen priority: seed > entity > coref > partial)
 """
 
 import json
@@ -47,7 +43,7 @@ from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 class SLinker11:
-    """DAG-based SAD-SAM TLR with uniform evidence-stratified validation for all strategies."""
+    """LLM-driven SAD-SAM TLR with uniform evidence-stratified validation."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -64,7 +60,7 @@ class SLinker11:
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._components = []
         self._generic_partials: set = set()
-        print(f"SLinker11 (uniform validation, evidence-stratified voting)")
+        print(f"SLinker11 (5-layer pipeline, evidence-stratified validation)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -98,7 +94,7 @@ class SLinker11:
     # ═══════════════════════════════════════════════════════════════════════
 
     def link(self, text_path, model_path, **kwargs):
-        """Recover trace links between SAD and SAM via 3-tier DAG pipeline.
+        """Recover trace links between SAD and SAM via 5-layer pipeline.
 
         Args:
             text_path: Path to documentation text file (one sentence per line).
@@ -119,18 +115,17 @@ class SLinker11:
 
         print(f"Loaded {len(components)} components, {len(sentences)} sentences")
 
-        # ═══ TIER 1: Knowledge Acquisition (all independent) ═══
-        print("\n[Tier 1] Knowledge Acquisition (parallel)")
-        t1 = self._run_parallel({
+        # ═══ LAYER 1: Knowledge Acquisition (all independent) ═══
+        print("\n[Layer 1] Knowledge Acquisition (parallel)")
+        l1 = self._run_parallel({
             "model": lambda: self._analyze_model(components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
             "seed": lambda: self._run_seed(text_path, model_path),
         })
 
-        self.model_knowledge = t1["model"]
-        self.doc_knowledge = t1["doc_knowledge"]
-        seed_links = t1["seed"]
-        seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
+        self.model_knowledge = l1["model"]
+        self.doc_knowledge = l1["doc_knowledge"]
+        raw_seed_links = l1["seed"]
 
         # Derive generic partial set from model analysis
         self._compute_generic_partials(components)
@@ -140,65 +135,51 @@ class SLinker11:
         print(f"  Doc knowledge: {len(self.doc_knowledge.abbreviations)} abbrev, "
               f"{len(self.doc_knowledge.synonyms)} syn, "
               f"{len(self.doc_knowledge.partial_references)} partial")
-        print(f"  Seed: {len(seed_links)} links")
+        print(f"  Seed: {len(raw_seed_links)} raw links")
         print(f"  Generic partials: {sorted(self._generic_partials)}")
 
-        self._log("tier1", {"sents": len(sentences), "comps": len(components)},
-                  {"ambig": len(ambig), "seed": len(seed_links),
+        self._log("layer1", {"sents": len(sentences), "comps": len(components)},
+                  {"ambig": len(ambig), "seed": len(raw_seed_links),
                    "abbrev": len(self.doc_knowledge.abbreviations)})
 
-        self._save_phase(text_path, "tier1", {
+        self._save_phase(text_path, "layer1", {
             "model_knowledge": self.model_knowledge,
             "doc_knowledge": self.doc_knowledge,
-            "seed_links": seed_links,
-            "seed_set": seed_set,
+            "raw_seed_links": raw_seed_links,
             "generic_partials": self._generic_partials,
         })
 
-        # ═══ TIER 1.5: Knowledge Enrichment (needs Tier 1) ═══
-        print("\n[Tier 1.5] Knowledge Enrichment")
+        # ═══ LAYER 2: Knowledge Enrichment (needs Layer 1) ═══
+        print("\n[Layer 2] Knowledge Enrichment")
         self._enrich_multiword_partials(sentences, components)
 
-        self._save_phase(text_path, "tier1_5", {
+        self._save_phase(text_path, "layer2", {
             "doc_knowledge": self.doc_knowledge,
         })
 
-        # ═══ TIER 1.5b: Seed Validation ═══
-        # Route seed links through the same evidence-stratified validation
-        # as entity and partial candidates. Killed TPs are recovered by
-        # entity/coref/partial via dedup (tested: zero net recall cost).
-        print("\n[Tier 1.5b] Seed Validation")
-        seed_candidates = []
-        for sl in seed_links:
-            sent = sent_map.get(sl.sentence_number)
-            if not sent:
-                continue
-            seed_candidates.append(CandidateLink(
-                sl.sentence_number, sent.text, sl.component_name, sl.component_id,
-                sl.component_name, 1.0, "seed", "exact",
-                needs_validation=True,
-            ))
-        seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
-        seed_links = [SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, "seed")
-                      for c in seed_validated]
-        seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
-        print(f"  Seed after validation: {len(seed_links)} / {len(seed_candidates)}")
-
-        # ═══ TIER 2: Link Recovery (entity pipeline ∥ coreference) ═══
-        print("\n[Tier 2] Link Recovery (parallel)")
-        t2 = self._run_parallel({
+        # ═══ LAYER 3: Link Recovery (all three parallel) ═══
+        # Seed validation, entity extraction+validation, and coreference
+        # all depend on Layer 1+2 knowledge but are independent of each other.
+        print("\n[Layer 3] Link Recovery (parallel)")
+        l3 = self._run_parallel({
+            "seed_val": lambda: self._run_seed_validation(
+                raw_seed_links, components, sent_map),
             "entity": lambda: self._run_entity_pipeline(
                 sentences, components, name_to_id, sent_map),
             "coref": lambda: self._run_coreference(
                 sentences, components, name_to_id, sent_map),
         })
 
-        validated = t2["entity"]
-        coref_links = t2["coref"]
+        seed_links = l3["seed_val"]
+        validated = l3["entity"]
+        coref_links = l3["coref"]
+        seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
+        print(f"  Seed validated: {len(seed_links)} / {len(raw_seed_links)}")
         print(f"  Entity pipeline: {len(validated)} validated")
         print(f"  Coreference: {len(coref_links)} links")
 
-        # Partial injection -> candidates -> validation
+        # ═══ LAYER 4: Partial Recovery (needs Layer 3 outputs) ═══
+        print("\n[Layer 4] Partial Recovery")
         partial_candidates = self._inject_partial_candidates(
             sentences, components, name_to_id, sent_map, seed_set,
             {(c.sentence_number, c.component_id) for c in validated},
@@ -211,14 +192,15 @@ class SLinker11:
         else:
             partial_validated = []
 
-        self._save_phase(text_path, "tier2", {
+        self._save_phase(text_path, "layer3_4", {
+            "seed_links": seed_links,
             "validated": validated,
             "coref_links": coref_links,
             "partial_validated": partial_validated,
         })
 
-        # ═══ TIER 3: Merge (dedup only) ═══
-        print("\n[Tier 3] Merge")
+        # ═══ LAYER 5: Merge (dedup only) ═══
+        print("\n[Layer 5] Merge")
 
         # Deduplication (first-seen wins — order: seed, entity, coref, partial)
         entity_links = [
@@ -252,7 +234,7 @@ class SLinker11:
         return final
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Tier 1: Knowledge Acquisition
+    # Layer 1: Knowledge Acquisition
     # ═══════════════════════════════════════════════════════════════════════
 
     def _analyze_model(self, components):
@@ -404,13 +386,18 @@ JSON only:"""
         return knowledge
 
     def _run_seed(self, text_path, model_path):
-        """Run ILinker2 seed extractor (independent of knowledge phases)."""
+        """LLM-based seed extraction (two-pass: broad recall + precision enrichment).
+
+        Uses a lightweight LLM extractor as the seed strategy. The seed
+        provides broad initial coverage; false positives are filtered by
+        the same evidence-stratified validation applied to all strategies.
+        """
         raw = self._ilinker2.link(text_path, model_path)
         return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
-                           l.confidence, "seed") for l in raw]
+                           1.0, "seed") for l in raw]
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Tier 1.5: Knowledge Enrichment
+    # Layer 2: Knowledge Enrichment
     # ═══════════════════════════════════════════════════════════════════════
 
     def _enrich_multiword_partials(self, sentences, components):
@@ -494,11 +481,31 @@ JSON only:"""
                 print(f"    Auto-partial: {a}")
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Tier 2: Link Recovery
+    # Layer 3: Link Recovery
     # ═══════════════════════════════════════════════════════════════════════
 
+    def _run_seed_validation(self, raw_seed_links, components, sent_map):
+        """Validate seed links through evidence-stratified 3-step validation.
+
+        Killed TPs are recovered by entity/coref/partial via dedup
+        (tested: zero net recall cost).
+        """
+        seed_candidates = []
+        for sl in raw_seed_links:
+            sent = sent_map.get(sl.sentence_number)
+            if not sent:
+                continue
+            seed_candidates.append(CandidateLink(
+                sl.sentence_number, sent.text, sl.component_name, sl.component_id,
+                sl.component_name, 1.0, "seed", "exact",
+                needs_validation=True,
+            ))
+        seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
+        return [SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, "seed")
+                for c in seed_validated]
+
     def _run_entity_pipeline(self, sentences, components, name_to_id, sent_map):
-        """Entity extraction -> validation (no targeted recovery)."""
+        """Dual-pass entity extraction with consensus, then 3-step validation."""
         candidates = self._extract_entities_enriched(sentences, components, name_to_id, sent_map)
         print(f"    Entity extraction: {len(candidates)} candidates")
 
@@ -566,24 +573,20 @@ JSON only:"""
                 if matched and matched.lower() not in sent.text.lower():
                     continue
 
-                matched_lower = matched.lower() if matched else ""
-                is_exact = matched_lower in comp_lower or cname.lower() in matched_lower
-                is_generic_here = self._is_generic_mention(cname, sent.text)
-                needs_val = not is_exact or ref.get("match_type") != "exact" or is_generic_here
-
                 key = (snum, name_to_id[cname])
                 if key not in candidates:
                     candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
-                                               matched, 0.85, "entity",
-                                               ref.get("match_type", "exact"), needs_val)
+                                               matched, 1.0, "entity",
+                                               ref.get("match_type", "exact"),
+                                               needs_validation=True)
 
         return candidates
 
     def _extract_entities_enriched(self, sentences, components, name_to_id, sent_map):
-        """Two-pass intersection for variance reduction.
+        """Dual-pass extraction consensus for variance reduction.
 
-        Runs entity extraction twice independently, keeps only candidates found
-        in BOTH passes.
+        Runs entity extraction twice independently, keeps only candidates
+        found in BOTH passes (extraction consensus).
         """
         comp_names = self._get_comp_names(components)
         comp_lower = {n.lower() for n in comp_names}
@@ -613,14 +616,20 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_intersect(self, candidates, components, sent_map):
-        """LLM generic-mention detection + evidence-stratified 2-pass voting.
+        """Evidence-stratified 3-step validation.
 
-        All candidates go through validation uniformly:
-        1. Generic-mention detection: ambiguous names with lowercase-only
-           mentions are checked for generic vs component usage.
-        2. Evidence-stratified voting: two independent LLM passes with
-           complementary foci. Alias-backed matches use union (either pass),
-           exact-name matches use intersection (both passes).
+        All candidates go through uniform validation:
+        Step 1 — Generic pre-filter: ambiguous component names appearing
+            only in lowercase are classified by an LLM as component
+            reference vs generic English word. Generic uses are removed.
+        Step 2 — Validation pass A (actor-role focus): LLM checks whether
+            the component performs an action or is being described.
+        Step 3 — Validation pass B (direct-reference focus): LLM checks
+            whether the text refers to the specific architectural component.
+
+        Evidence-stratified voting combines the two passes:
+        - Alias-backed matches: union (either pass approves)
+        - Exact-name matches: intersection (both passes must approve)
         """
         if not candidates:
             return []
@@ -763,14 +772,13 @@ JSON only:"""
                 # Union for alias cases (either pass), intersection for exact matches
                 approved = (p1 or p2) if has_alias[i] else (p1 and p2)
                 if approved:
-                    c.confidence = 1.0
                     c.source = "validated"
                     twopass_approved.append(c)
 
         return twopass_approved
 
     def _qual_validation_pass(self, comp_names, cases, focus):
-        """Single validation pass for 2-pass intersection."""
+        """Single validation pass (Step 2 or Step 3 of 3-step validation)."""
         # Check if any cases have alias hints — if so, add alias-aware rule
         has_alias = any("[KNOWN ALIAS:" in c for c in cases)
         alias_rule = ""
@@ -887,7 +895,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 if self._has_clean_mention(partial, sent.text):
                     candidates.append(CandidateLink(
                         sent.number, sent.text, comp_name, comp_id,
-                        partial, 0.8, "partial_inject", "partial",
+                        partial, 1.0, "partial_inject", "partial",
                         needs_validation=True
                     ))
                     existing.add(key)
@@ -909,19 +917,6 @@ Only include resolutions you are CERTAIN about. JSON only:"""
             return int(val)
         except (ValueError, TypeError):
             return None
-
-    def _is_generic_mention(self, comp_name, sentence_text):
-        """True if component appears only in lowercase (generic use)."""
-        if not comp_name or comp_name[0].islower():
-            return False
-        if self._is_structurally_unambiguous(comp_name):
-            return False
-        if self._has_standalone_mention(comp_name, sentence_text):
-            return False
-        word_lower = comp_name.lower()
-        if re.search(rf'\b{re.escape(word_lower)}\b', sentence_text):
-            return True
-        return False
 
     def _has_clean_mention(self, term, text):
         """Check if term appears cleanly (not in dotted path or hyphenated compound)."""
@@ -1022,7 +1017,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
         os.makedirs(log_dir, exist_ok=True)
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        path = os.path.join(log_dir, f"s_linker10_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        path = os.path.join(log_dir, f"s_linker11_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
         with open(path, "w") as f:
             json.dump(self._phase_log, f, indent=2, default=str)
         print(f"  Phase log saved: {path}")
