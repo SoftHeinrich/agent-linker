@@ -20,8 +20,8 @@ class SadSamLink:
     sentence_number: int
     component_id: str
     component_name: str
-    confidence: float
-    source: str  # Keep as string for backward compatibility
+    confidence: float = 1.0
+    source: str = ""
     reasoning: Optional[str] = None
 
     def to_tuple(self) -> tuple:
@@ -37,10 +37,10 @@ class CandidateLink:
     component_name: str
     component_id: str
     matched_text: str
-    confidence: float
-    source: str
-    match_type: str  # exact, synonym, partial, coreference
-    needs_validation: bool
+    confidence: float = 1.0
+    source: str = ""
+    match_type: str = "exact"
+    needs_validation: bool = True
     context_sentences: list[int] = field(default_factory=list)
 
 

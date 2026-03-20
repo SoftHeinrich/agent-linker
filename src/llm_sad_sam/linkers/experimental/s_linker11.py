@@ -204,11 +204,11 @@ class SLinker11:
 
         # Deduplication (first-seen wins — order: seed, entity, coref, partial)
         entity_links = [
-            SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, c.source)
+            SadSamLink(c.sentence_number, c.component_id, c.component_name, source=c.source)
             for c in validated
         ]
         partial_links = [
-            SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, "partial_inject")
+            SadSamLink(c.sentence_number, c.component_id, c.component_name, source="partial_inject")
             for c in partial_validated
         ]
         all_links = seed_links + entity_links + coref_links + partial_links
@@ -394,7 +394,7 @@ JSON only:"""
         """
         raw = self._ilinker2.link(text_path, model_path)
         return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
-                           1.0, "seed") for l in raw]
+                           source="seed") for l in raw]
 
     # ═══════════════════════════════════════════════════════════════════════
     # Layer 2: Knowledge Enrichment
@@ -497,11 +497,10 @@ JSON only:"""
                 continue
             seed_candidates.append(CandidateLink(
                 sl.sentence_number, sent.text, sl.component_name, sl.component_id,
-                sl.component_name, 1.0, "seed", "exact",
-                needs_validation=True,
+                sl.component_name, source="seed",
             ))
         seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
-        return [SadSamLink(c.sentence_number, c.component_id, c.component_name, 1.0, "seed")
+        return [SadSamLink(c.sentence_number, c.component_id, c.component_name, source="seed")
                 for c in seed_validated]
 
     def _run_entity_pipeline(self, sentences, components, name_to_id, sent_map):
@@ -576,9 +575,8 @@ JSON only:"""
                 key = (snum, name_to_id[cname])
                 if key not in candidates:
                     candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
-                                               matched, 1.0, "entity",
-                                               ref.get("match_type", "exact"),
-                                               needs_validation=True)
+                                               matched, source="entity",
+                                               match_type=ref.get("match_type", "exact"))
 
         return candidates
 
@@ -871,7 +869,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 if abs(snum - ant_snum) > 3:
                     continue
 
-                all_coref.append(SadSamLink(snum, name_to_id[comp], comp, 1.0, "coreference"))
+                all_coref.append(SadSamLink(snum, name_to_id[comp], comp, source="coreference"))
 
         return all_coref
 
@@ -895,8 +893,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 if self._has_clean_mention(partial, sent.text):
                     candidates.append(CandidateLink(
                         sent.number, sent.text, comp_name, comp_id,
-                        partial, 1.0, "partial_inject", "partial",
-                        needs_validation=True
+                        partial, source="partial_inject", match_type="partial",
                     ))
                     existing.add(key)
 
