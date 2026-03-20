@@ -1,14 +1,14 @@
-"""Prompt constants for S-Linker10+ pipeline.
+"""Prompt constants for the S-Linker pipeline.
 
 Clean version: only constants actually used by the current pipeline.
 All examples use safe SE textbook domains (compiler, OS, e-commerce, graphics).
 Zero benchmark-derived terms. See BENCHMARK_TABOO.md for rules.
 
-Constants are ordered by pipeline phase (Tier 1 -> 1.5 -> 2).
+Constants are ordered by pipeline layer (1 -> 2 -> 3).
 """
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Tier 1 — Model Analysis: Component Ambiguity Classification
+# Layer 1 — Model Analysis: Component Ambiguity Classification
 # ═══════════════════════════════════════════════════════════════════════════════
 
 AMBIGUITY_FEW_SHOT = """
@@ -65,7 +65,7 @@ AMBIGUITY_RULES = """RULES:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Tier 1 — Document Knowledge: Alias Discovery & Judging
+# Layer 1 — Document Knowledge: Alias Discovery & Judging
 # ═══════════════════════════════════════════════════════════════════════════════
 
 DOC_KNOWLEDGE_EXTRACTION_RULES = """WHAT TO FIND:
@@ -134,44 +134,7 @@ pipeline stages; false rejections cause permanent recall loss."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Tier 2 — Entity Extraction & Validation
-# ═══════════════════════════════════════════════════════════════════════════════
-
-ENTITY_EXTRACTION_RULES = """RULES — include a reference when:
-1. The component name (or known alias) appears directly in the sentence
-2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
-3. The sentence describes what a specific component does by name or role
-4. A known synonym or partial reference is used
-5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
-6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
-
-RULES — exclude when:
-1. The name appears only inside a dotted path (e.g., com.example.name)
-2. The name is used as an ordinary English word, not as a component reference
-
-Favor inclusion over exclusion — later validation will filter borderline cases."""
-
-
-VALIDATION_RULES = """DECISION RULES:
-APPROVE when:
-- The component is the grammatical actor or subject (the sentence is ABOUT the component)
-- A section heading names the component (introduces that component's topic)
-- The sentence describes what the component does, provides, or interacts with
-
-REJECT when:
-- The name is used as an ordinary English word, not as a proper name
-  (Like "proxy" in "proxy pattern" is the design pattern concept, not the Proxy component — reject the component link)
-- The name is a modifier inside a larger phrase, not a standalone reference
-  (Like "observer" in "observer pattern" modifies pattern — reject if Observer is a component)
-- The sentence is about a subprocess, algorithm, or implementation detail — not the component itself"""
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Tier 2 — Coreference Resolution
-# ═══════════════════════════════════════════════════════════════════════════════
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Tier 1.5 — Partial-Reference Refinement: Word Usage Classification
+# Layer 2 — Knowledge Enrichment: Word Usage Classification
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Uses str.format() with named placeholders: partial, partial_lower, comp_name, calibration, sent_block
@@ -205,7 +168,40 @@ JSON only:"""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Tier 2 — Coreference Resolution
+# Layer 3 — Entity Extraction & Validation
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ENTITY_EXTRACTION_RULES = """RULES — include a reference when:
+1. The component name (or known alias) appears directly in the sentence
+2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
+3. The sentence describes what a specific component does by name or role
+4. A known synonym or partial reference is used
+5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
+6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
+
+RULES — exclude when:
+1. The name appears only inside a dotted path (e.g., com.example.name)
+2. The name is used as an ordinary English word, not as a component reference
+
+Favor inclusion over exclusion — later validation will filter borderline cases."""
+
+
+VALIDATION_RULES = """DECISION RULES:
+APPROVE when:
+- The component is the grammatical actor or subject (the sentence is ABOUT the component)
+- A section heading names the component (introduces that component's topic)
+- The sentence describes what the component does, provides, or interacts with
+
+REJECT when:
+- The name is used as an ordinary English word, not as a proper name
+  (Like "proxy" in "proxy pattern" is the design pattern concept, not the Proxy component — reject the component link)
+- The name is a modifier inside a larger phrase, not a standalone reference
+  (Like "observer" in "observer pattern" modifies pattern — reject if Observer is a component)
+- The sentence is about a subprocess, algorithm, or implementation detail — not the component itself"""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Layer 3 — Coreference Resolution
 # ═══════════════════════════════════════════════════════════════════════════════
 
 COREF_RULES = """For each case, determine if any pronoun in the TARGET sentence refers to a component.

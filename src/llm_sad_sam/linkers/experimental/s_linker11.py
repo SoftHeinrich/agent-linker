@@ -58,7 +58,6 @@ class SLinker11:
         self.doc_knowledge: Optional[DocumentKnowledge] = None
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
-        self._components = []
         self._generic_partials: set = set()
         print(f"SLinker11 (5-layer pipeline, evidence-stratified validation)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
@@ -93,7 +92,7 @@ class SLinker11:
     # Main Entry Point — DAG Orchestration
     # ═══════════════════════════════════════════════════════════════════════
 
-    def link(self, text_path, model_path, **kwargs):
+    def link(self, text_path, model_path, **_kwargs):
         """Recover trace links between SAD and SAM via 5-layer pipeline.
 
         Args:
@@ -111,7 +110,6 @@ class SLinker11:
         sentences = DocumentLoader.load_sentences(text_path)
         name_to_id = {c.name: c.id for c in components}
         sent_map = DocumentLoader.build_sent_map(sentences)
-        self._components = components
 
         print(f"Loaded {len(components)} components, {len(sentences)} sentences")
 
@@ -192,10 +190,13 @@ class SLinker11:
         else:
             partial_validated = []
 
-        self._save_phase(text_path, "layer3_4", {
+        self._save_phase(text_path, "layer3", {
             "seed_links": seed_links,
             "validated": validated,
             "coref_links": coref_links,
+        })
+
+        self._save_phase(text_path, "layer4", {
             "partial_validated": partial_validated,
         })
 
@@ -208,7 +209,7 @@ class SLinker11:
             for c in validated
         ]
         partial_links = [
-            SadSamLink(c.sentence_number, c.component_id, c.component_name, source="partial_inject")
+            SadSamLink(c.sentence_number, c.component_id, c.component_name, source="partial")
             for c in partial_validated
         ]
         all_links = seed_links + entity_links + coref_links + partial_links
@@ -596,19 +597,19 @@ JSON only:"""
             mappings.extend([f"{p}={c}" for p, c in self.doc_knowledge.partial_references.items()])
 
         # Pass 1
-        print("    Phase 5 Pass 1:")
+        print("    Extraction pass A:")
         pass1 = self._run_single_extraction_pass(
             sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P1] ")
 
         # Pass 2
-        print("    Phase 5 Pass 2:")
+        print("    Extraction pass B:")
         pass2 = self._run_single_extraction_pass(
             sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P2] ")
 
         # Intersection: keep only candidates found in BOTH passes
         intersected = {key: pass1[key] for key in pass1 if key in pass2}
 
-        print(f"    Phase 5 intersection: Pass1={len(pass1)}, Pass2={len(pass2)}, "
+        print(f"    Extraction consensus: Pass1={len(pass1)}, Pass2={len(pass2)}, "
               f"Intersect={len(intersected)} (dropped {len(pass1) + len(pass2) - 2*len(intersected)} unique-to-one-pass)")
 
         return list(intersected.values())
@@ -709,13 +710,13 @@ JSON only:"""
             results_map = {}
             for r in data.get("results", []):
                 idx = r.get("case", 0) - 1
-                results_map[idx] = r.get("usage", "component")
+                results_map[idx] = r
 
-            results_list = data.get("results", [])
             for i, c in enumerate(cands):
-                usage = results_map.get(i, "component")
+                result = results_map.get(i, {})
+                usage = result.get("usage", "component")
                 if usage == "generic":
-                    reason = results_list[i].get("reason", "") if i < len(results_list) else ""
+                    reason = result.get("reason", "")
                     print(f"    LLM generic reject: S{c.sentence_number} -> {c.component_name} ({reason})")
                 else:
                     remaining.append(c)
@@ -746,7 +747,7 @@ JSON only:"""
             has_alias = []  # track which candidates have alias hints
             for i, c in enumerate(batch):
                 prev = sent_map.get(c.sentence_number - 1)
-                p = f"[prev: {prev.text[:35]}...] " if prev else ""
+                p = f"[prev: {prev.text[:60]}] " if prev else ""
                 # Add alias context when matched text is not the exact component name
                 alias_hint = ""
                 matched_lower = c.matched_text.lower() if c.matched_text else ""
@@ -770,7 +771,6 @@ JSON only:"""
                 # Union for alias cases (either pass), intersection for exact matches
                 approved = (p1 or p2) if has_alias[i] else (p1 and p2)
                 if approved:
-                    c.source = "validated"
                     twopass_approved.append(c)
 
         return twopass_approved
