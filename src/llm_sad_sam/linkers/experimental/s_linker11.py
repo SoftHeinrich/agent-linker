@@ -305,9 +305,9 @@ JSON only:"""
                 p_lower = part.lower()
                 if part.isupper():
                     continue
-                if len(p_lower) >= 3 and (p_lower in ambig or any(
+                if p_lower in ambig or any(
                     p_lower == a.lower() for a in ambig
-                )):
+                ):
                     self._generic_partials.add(p_lower)
         for name in ambig:
             if ' ' not in name and not name.isupper():
@@ -420,8 +420,6 @@ JSON only:"""
             if len(parts) < 2:
                 continue
             last_word = parts[-1]
-            if len(last_word) < 4:
-                continue
             last_lower = last_word.lower()
 
             other_match = any(
@@ -725,8 +723,10 @@ For each case, determine:
 - GENERIC: The word is used as ordinary English describing a general concept, activity, or modifier
   (e.g., "provides {comp_name.lower()} access" or "{comp_name.lower()} operations" = generic usage)
 
-Key distinction: A component reference names a specific system entity as a participant.
-A generic use describes a type of activity or quality that happens to share the word.
+Key distinction: Compare each case to the FULL-NAME REFERENCES above. In those anchor
+sentences, the component is the SUBJECT or a named participant. Does the lowercase
+usage function the same way? If the word is part of a compound phrase, a modifier,
+or describes a general concept rather than naming the specific entity, it is GENERIC.
 
 Return JSON:
 {{"results": [{{"case": 1, "usage": "component" or "generic", "reason": "brief"}}]}}
@@ -811,8 +811,10 @@ JSON only:"""
         has_alias = any("[KNOWN ALIAS:" in c for c in cases)
         alias_rule = ""
         if has_alias:
-            alias_rule = ("\n- When a KNOWN ALIAS is indicated, the word IS a reference to that component "
-                          "unless the sentence clearly uses it in an unrelated sense")
+            alias_rule = ("\n- When a KNOWN ALIAS is indicated, this confirms the word CAN refer to "
+                          "the component. Still evaluate whether THIS sentence discusses the "
+                          "component's architectural role or behavior — an alias provides context, "
+                          "not automatic approval")
 
         prompt = f"""Validate component references in a software architecture document. {focus}
 
@@ -895,8 +897,6 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                     continue
                 if not (self._has_standalone_mention(comp, ant_sent.text) or
                         self._has_alias_mention(comp, ant_sent.text)):
-                    continue
-                if abs(snum - ant_snum) > 3:
                     continue
 
                 all_coref.append(SadSamLink(snum, name_to_id[comp], comp, source="coreference"))
