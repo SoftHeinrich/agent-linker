@@ -277,6 +277,7 @@ VARIANTS = {
     "s_linker10":         dict(linker_class="s_linker10"), # S-Linker10: alias-context + evidence-stratified voting + LLM enrichment
     "s_linker10a":        dict(linker_class="s_linker10a"), # Ablation: count>=3 enrichment threshold (instead of LLM)
     "s_linker11":         dict(linker_class="s_linker11"), # S-Linker11: uniform validation (seed validated + no bypass)
+    "s_linker11a":        dict(linker_class="s_linker11a"), # S-Linker11a: S-Linker11 + V_RV role-verification validation
     "s10_vrv":            dict(linker_class="s10_vrv"),   # S-Linker10 + V_RV validation rules (role-verification reject)
     "s10_vfo":            dict(linker_class="s10_vfo"),   # S-Linker10 + V_FO focus prompts (SPECIFICITY + FUNCTION)
     "s10_p3b":            dict(linker_class="s10_p3b"),   # S-Linker10 + P3b alias rule (IS + verify role)
@@ -766,6 +767,9 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "s_linker11":
         from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
         linker = SLinker11(backend=BACKEND)
+    elif linker_class == "s_linker11a":
+        from llm_sad_sam.linkers.experimental.s_linker11a import SLinker11a
+        linker = SLinker11a(backend=BACKEND)
     elif linker_class == "s10_vrv":
         from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
         from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_RULES_V
