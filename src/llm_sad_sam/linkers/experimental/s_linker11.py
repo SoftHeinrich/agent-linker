@@ -1,23 +1,28 @@
-"""S-Linker11: LLM-driven SAD-SAM traceability with source-adapted verification.
+"""S-Linker11: LLM-driven SAD-SAM traceability with evidence-stratified verification.
 
-Five-layer pipeline with internal parallelism:
+Five execution tiers with internal parallelism:
 
-  Layer 1 — Knowledge Acquisition (parallel):
+  Tier 1 — Knowledge Acquisition (parallel):
       Model analysis | Document knowledge extraction | LLM seed extraction
 
-  Layer 2 — Knowledge Enrichment:
+  Tier 2 — Partial-Reference Refinement (sequential, needs Tier 1):
       LLM word usage classification for multiword partial references
 
-  Layer 3 — Link Recovery (parallel):
+  Tier 3 — Link Recovery (parallel):
       Seed validation | Entity extraction + validation | Coreference
 
-  Layer 4 — Partial Recovery:
+  Tier 4 — Partial Recovery (sequential, needs Tier 3):
       Partial-reference injection + validation
 
-  Layer 5 — Merge:
+  Tier 5 — Link Consolidation:
       Deduplication (first-seen priority: seed > entity > coref > partial)
 
-Verification strategy (source-adapted, empirically motivated):
+Tier → paper layer mapping:
+  Tier 1 + 2  →  Layer 1 (Knowledge Acquisition)
+  Tier 3 + 4  →  Layer 2 (Link Recovery)
+  Tier 5      →  Layer 3 (Link Consolidation)
+
+Verification strategy (evidence-stratified, empirically motivated):
   Seed, entity, and partial candidates share the same validation
   infrastructure: generic-mention pre-filter, then dual-focus LLM voting.
   The voting threshold is adapted to evidence type: alias-backed matches
@@ -51,7 +56,7 @@ from llm_sad_sam.pcm_parser import parse_pcm_repository
 from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 class SLinker11:
-    """LLM-driven SAD-SAM TLR with source-adapted verification."""
+    """LLM-driven SAD-SAM traceability with evidence-stratified verification."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -65,7 +70,7 @@ class SLinker11:
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._generic_partials: set = set()
-        print(f"SLinker11 (5-layer pipeline, source-adapted verification)")
+        print(f"SLinker11 (3-layer pipeline, evidence-stratified verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -99,7 +104,7 @@ class SLinker11:
     # ═══════════════════════════════════════════════════════════════════════
 
     def link(self, text_path, model_path, **_kwargs):
-        """Recover trace links between SAD and SAM via 5-layer pipeline.
+        """Recover trace links between SAD and SAM via 3-layer pipeline.
 
         Args:
             text_path: Path to documentation text file (one sentence per line).
@@ -119,8 +124,8 @@ class SLinker11:
 
         print(f"Loaded {len(components)} components, {len(sentences)} sentences")
 
-        # ═══ LAYER 1: Knowledge Acquisition (all independent) ═══
-        print("\n[Layer 1] Knowledge Acquisition (parallel)")
+        # ═══ TIER 1: Knowledge Acquisition ═══
+        print("\n[Tier 1] Knowledge Acquisition (parallel)")
         acq = self._run_parallel({
             "model": lambda: self._analyze_model(components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
@@ -153,18 +158,18 @@ class SLinker11:
             "generic_partials": self._generic_partials,
         })
 
-        # ═══ LAYER 2: Knowledge Enrichment (needs Layer 1) ═══
-        print("\n[Layer 2] Knowledge Enrichment")
+        # ═══ TIER 2: Partial-Reference Refinement ═══
+        print("\n[Tier 2] Partial-Reference Refinement")
         self._enrich_multiword_partials(sentences, components)
 
         self._save_phase(text_path, "layer2", {
             "doc_knowledge": self.doc_knowledge,
         })
 
-        # ═══ LAYER 3: Link Recovery (all three parallel) ═══
+        # ═══ TIER 3: Link Recovery (three strategies parallel) ═══
         # Seed validation, entity extraction+validation, and coreference
-        # all depend on Layer 1+2 knowledge but are independent of each other.
-        print("\n[Layer 3] Link Recovery (parallel)")
+        # all depend on Tier 1+2 knowledge but are independent of each other.
+        print("\n[Tier 3] Link Recovery (parallel)")
         rec = self._run_parallel({
             "seed_val": lambda: self._run_seed_validation(
                 raw_seed_links, components, sent_map),
@@ -188,8 +193,8 @@ class SLinker11:
             "coref_links": coref_links,
         })
 
-        # ═══ LAYER 4: Partial Recovery (needs Layer 3 outputs) ═══
-        print("\n[Layer 4] Partial Recovery")
+        # ═══ TIER 4: Partial Recovery ═══
+        print("\n[Tier 4] Partial Recovery")
         partial_candidates = self._inject_partial_candidates(
             sentences, components, name_to_id, sent_map, seed_set,
             {(c.sentence_number, c.component_id) for c in validated},
@@ -206,8 +211,8 @@ class SLinker11:
             "partial_validated": partial_validated,
         })
 
-        # ═══ LAYER 5: Merge (dedup only) ═══
-        print("\n[Layer 5] Merge")
+        # ═══ TIER 5: Link Consolidation (dedup) ═══
+        print("\n[Tier 5] Link Consolidation")
 
         # Deduplication (first-seen wins — order: seed, entity, coref, partial)
         entity_links = [
@@ -241,7 +246,7 @@ class SLinker11:
         return final
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Layer 1: Knowledge Acquisition
+    # Tier 1 — Knowledge Acquisition
     # ═══════════════════════════════════════════════════════════════════════
 
     def _analyze_model(self, components):
@@ -397,14 +402,14 @@ JSON only:"""
 
         Uses a lightweight LLM extractor as the seed strategy. The seed
         provides broad initial coverage; false positives are filtered by
-        the same source-adapted validation applied to all strategies.
+        the same evidence-stratified validation applied to all strategies.
         """
         raw = self._ilinker2.link(text_path, model_path)
         return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
                            source="seed") for l in raw]
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Layer 2: Knowledge Enrichment
+    # Tier 2 — Partial-Reference Refinement
     # ═══════════════════════════════════════════════════════════════════════
 
     def _enrich_multiword_partials(self, sentences, components):
@@ -486,11 +491,11 @@ JSON only:"""
                 print(f"    Auto-partial: {a}")
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Layer 3: Link Recovery
+    # Tier 3 — Link Recovery
     # ═══════════════════════════════════════════════════════════════════════
 
     def _run_seed_validation(self, raw_seed_links, components, sent_map):
-        """Validate seed links through source-adapted 3-step validation.
+        """Validate seed links through evidence-stratified validation.
 
         Killed TPs are recovered by entity/coref/partial via dedup
         (tested: zero net recall cost).
@@ -645,7 +650,7 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_intersect(self, candidates, components, sent_map):
-        """3-step LLM validation with source-adapted voting threshold.
+        """3-step LLM validation with evidence-stratified voting threshold.
 
         Step 1 — Generic pre-filter: ambiguous component names appearing
             only in lowercase are classified by LLM as component reference
