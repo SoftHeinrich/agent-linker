@@ -4,18 +4,43 @@ We propose a multi-agent workflow for recovering  trace links between architectu
 Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ and an architectural model containing components ${c_1, \ldots, c_m}$, our approach produces a set of trace links $L \subseteq S
   \times C$, where each link $(s_i, c_j)$ asserts that sentence $s_i$ discusses component $c_j$'s architectural responsibilities.
 
-The workflow is organized as a staged DAG with three layers
+Two problems make this task difficult.
+First, \emph{reference diversity}: documents refer to components by canonical name, abbreviation, functional description, trailing word, or pronoun.
+No single extraction strategy handles all of these forms.
+Second, \emph{name ambiguity}: component names like \texttt{Cache} or \texttt{Facade} are common English words that appear frequently without referring to any component, so broadening extraction to capture diverse references also increases false positives.
+
+Addressing both problems requires structured knowledge: which names are ambiguous, and what abbreviations, synonyms, and short forms map to which component.
+To the best of our knowledge, this knowledge does not exist in advance and must be discovered at runtime, using the same LLM that will consume it, with the risk of hallucinated mappings or misjudged ambiguity.
+We call this the \emph{architectural context knowledge gap}.
+
+Existing approaches address only part of this problem.
+Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string similarity and cannot resolve indirect references or discourse dependencies.
+LLM-based classifiers such as LISSA~\cite{lissa} add semantic understanding but have no mechanism to build alias mappings or classify name ambiguity before linking,
+
+Our pipeline closes the knowledge gap first, then leverage multiple link recovery agents using the acquired knowledge.
+It is organized as a DAG (Figure~\ref{fig:pipeline}) with three layers:
+
 \begin{enumerate}
-\item \textbf{Project knowledge discovery} (layer~1): Three agents analyze and extract structured knowledge from architectural documents and models. 
-And the extracted knowledge will be reused in downstream layers.
-\item \textbf{Candidate Link recovery} (layer~2): Four complementary agents recover candidate links via different mechanisms: component mentioning match, entity extraction, component coreference resolution, and deterministic partial-reference injection. 
-The strategies are largely independent: each targets a different type of implicit component reference.
-\item \textbf{Architectural judge review} (layer~3): A single stage merges all candidate links, judging recovered trace links with discovered project knowledge and traceability knowledge.
+\item \textbf{Project knowledge discovery} (layer~1): Agents analyze and extract structured knowledge from architectural documents and models. 
+Knowledge includes component alias table and identify ambiguous components. 
+\item \textbf{Candidate Link recovery} (layer~2): Four complementary agents recover candidate links via different mechanisms: component mentioning match, entity extraction, component coreference resolution, and partial-reference . 
+The strategies are largely independent: each targets a different type of component reference.
+\item \textbf{Architectural judge review} (layer~3): All recovered links merge to final set.
 \todo{benefits}
 \end{enumerate}
 
+Since our agents are LLM based, it may contain noises like hallucinated results and non-determinism.
+To handle them, our pipeline uses two cross-cutting patterns. \todo{cite source}
+\emph{Multi-pass consensus}: for open-ended tasks, we use two independent LLM passes with agreement rules to avoid single run variance.
+\emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence numbers, that code can verify.
+% To prevent data leakage, all few-shot examples use abstract placeholders or safe textbook domains; no benchmark names or gold-standard information appears in any prompt.
+
 \subsection{Project Knowledge Discovery}
 %%% provides initial seed links, could be transarc or ilinkerX
+Software architectural documents contains diverse references which often confuse in link recovery.
+In addition, component names are often common English words (\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{TBD}).
+These words appear frequently without referring to the component share the same name.
+It poses a challenge for deep understanding both doc and model in the architectural context.
 Layer~1 builds a shared knowledge base from the architectural document and model.
 It first call two sub-agent analyze the architectural model to obtaining component relationships and indentify ambiguous components
 and document to extract component alias each.
