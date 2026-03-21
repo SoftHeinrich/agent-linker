@@ -129,12 +129,8 @@ DOC_KNOWLEDGE_JUDGE_RULES = """DECISION RULES (apply in order):
 3. REJECT only if the term is clearly generic and could refer to anything,
    or clearly refers to a different component or the system as a whole.
 
-IMPORTANT: When genuinely uncertain about a proper name or technical term,
-lean toward APPROVE — false rejections cause permanent recall loss.
-But do NOT approve common single-word English nouns (server, client, service,
-store, manager, handler) as synonyms: these appear in every software document
-and approval floods later stages with noise. The doubt rule applies to
-constructed identifiers and multi-word terms, not dictionary words."""
+IMPORTANT: When in doubt, APPROVE. False approvals are filtered by later
+pipeline stages; false rejections cause permanent recall loss."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -152,21 +148,20 @@ Analyze how the word "{partial}" is used across these sentences:
 
 {sent_block}
 
-QUESTION: Is "{partial}" consistently used as a standalone entity reference in these sentences?
+QUESTION: Is "{partial}" used as a standalone entity reference in ANY of these sentences?
 
-Classify as NAME if the word regularly appears as a standalone noun phrase referring to
-a specific system entity — it should be a RECURRING pattern, not a single ambiguous case.
+Classify as NAME if the word appears as a standalone noun phrase referring to a specific
+system entity in at least SOME sentences — even if other sentences use it generically.
 Examples of entity reference: "the {partial_lower} connects to...", "sends data to the
 {partial_lower}", "the {partial_lower} handles...", "on the {partial_lower}"
 
-Classify as ORDINARY if the word is primarily used as a modifier, in compound phrases,
-or as a generic descriptor. A single borderline case among many generic uses is not enough.
+Classify as ORDINARY only if EVERY occurrence uses the word as part of a compound phrase,
+modifier, or generic descriptor — never as a standalone entity.
 Examples of purely ordinary: "{partial_lower} process", "automated {partial_lower}",
 "{partial_lower} strategy", "{partial_lower}-based"
 
-The test: look at ALL sentences together. If standalone entity uses are a clear,
-recurring pattern, classify as NAME. If the word is mostly generic with only
-occasional standalone uses, classify as ORDINARY.
+The threshold is: if even ONE sentence uses "{partial}" as a standalone entity reference,
+classify as NAME. Only classify as ORDINARY when you see ZERO standalone entity uses.
 
 Return JSON: {{"classification": "name" or "ordinary", "reason": "brief explanation"}}
 JSON only:"""
@@ -187,9 +182,6 @@ ENTITY_EXTRACTION_RULES = """RULES — include a reference when:
 RULES — exclude when:
 1. The name appears only inside a dotted path (e.g., com.example.name)
 2. The name is used as an ordinary English word, not as a component reference
-3. Only a PREFIX of a multi-word component name appears, in a phrase about
-   something else (e.g., for component "Cloud Database", the word "Cloud" alone
-   in "Cloud server" or "Cloud environment" is NOT a reference to that component)
 
 Favor inclusion over exclusion — later validation will filter borderline cases."""
 

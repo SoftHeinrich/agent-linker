@@ -414,14 +414,16 @@ entirely, given a correct citation.
 
 \emph{Design:}
 Each pronoun-bearing sentence is presented as an individual case
-with a $\pm5$-sentence bidirectional context window, processed in
-batches of~10.
-The LLM must cite an antecedent sentence with the exact quote
-containing the component name.
-The pipeline verifies this citation deterministically: the name (or
-alias) must appear verbatim in the cited sentence, and the
-antecedent must be within 3~sentences (stricter than the context
-window to prevent long-distance errors).
+with a $\pm5$-sentence bidirectional context window---a size
+consistent with the finding that over 95\% of pronominal
+antecedents lie within five sentences~\cite{lappin1994}
+and with Centering Theory's local-coherence
+model~\cite{grosz1995}---processed in batches of~10.
+The LLM must cite a specific antecedent sentence with the exact
+quote containing the component name.
+The pipeline verifies this citation deterministically: the
+component name (or a known alias) must appear verbatim in the
+cited antecedent sentence.
 Because the verification is strict and deterministic, anaphoric
 links that pass all checks are accepted without further LLM review.
 

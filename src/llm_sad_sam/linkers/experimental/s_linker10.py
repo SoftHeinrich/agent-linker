@@ -665,10 +665,8 @@ For each case, determine:
 - GENERIC: The word is used as ordinary English describing a general concept, activity, or modifier
   (e.g., "provides {comp_name.lower()} access" or "{comp_name.lower()} operations" = generic usage)
 
-Key distinction: Compare each case to the FULL-NAME REFERENCES above. In those anchor
-sentences, the component is the SUBJECT or a named participant. Does the lowercase
-usage function the same way? If the word is part of a compound phrase, a modifier,
-or describes a general concept rather than naming the specific entity, it is GENERIC.
+Key distinction: A component reference names a specific system entity as a participant.
+A generic use describes a type of activity or quality that happens to share the word.
 
 Return JSON:
 {{"results": [{{"case": 1, "usage": "component" or "generic", "reason": "brief"}}]}}
@@ -757,10 +755,8 @@ JSON only:"""
         has_alias = any("[KNOWN ALIAS:" in c for c in cases)
         alias_rule = ""
         if has_alias:
-            alias_rule = ("\n- When a KNOWN ALIAS is indicated, this confirms the word CAN refer to "
-                          "the component. Still evaluate whether THIS sentence discusses the "
-                          "component's architectural role or behavior — an alias provides context, "
-                          "not automatic approval")
+            alias_rule = ("\n- When a KNOWN ALIAS is indicated, the word IS a reference to that component "
+                          "unless the sentence clearly uses it in an unrelated sense")
 
         prompt = f"""Validate component references in a software architecture document. {focus}
 

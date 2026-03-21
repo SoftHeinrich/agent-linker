@@ -1,19 +1,23 @@
 """S-Linker11: LLM-driven SAD-SAM traceability with source-adapted verification.
 
-Three-phase pipeline with internal parallelism:
+Five-layer pipeline with internal parallelism:
 
-  Phase 1 — Knowledge Acquisition:
-      Parallel: Model analysis | Document knowledge | LLM seed extraction
-      Then: LLM word usage classification for multiword partial references
+  Layer 1 — Knowledge Acquisition (parallel):
+      Model analysis | Document knowledge extraction | LLM seed extraction
 
-  Phase 2 — Link Recovery:
-      Parallel: Seed validation | Entity extraction + validation | Coreference
-      Then: Partial-reference injection + validation
+  Layer 2 — Knowledge Enrichment:
+      LLM word usage classification for multiword partial references
 
-  Phase 3 — Merge:
+  Layer 3 — Link Recovery (parallel):
+      Seed validation | Entity extraction + validation | Coreference
+
+  Layer 4 — Partial Recovery:
+      Partial-reference injection + validation
+
+  Layer 5 — Merge:
       Deduplication (first-seen priority: seed > entity > coref > partial)
 
-Verification strategy (empirically motivated):
+Verification strategy (source-adapted, empirically motivated):
   Seed, entity, and partial candidates share the same validation
   infrastructure: generic-mention pre-filter, then dual-focus LLM voting.
   The voting threshold is adapted to evidence type: alias-backed matches
@@ -53,8 +57,6 @@ class SLinker11:
         r'\b(it|they|this|these|that|those|its|their)\b',
         re.IGNORECASE
     )
-    _FEW_SHOT = AMBIGUITY_FEW_SHOT
-
     def __init__(self, backend: Optional[LLMBackend] = None):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
         self.llm = LLMClient(backend=backend or LLMBackend.CLAUDE)
@@ -63,7 +65,7 @@ class SLinker11:
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
         self._generic_partials: set = set()
-        print(f"SLinker11 (3-phase pipeline, source-adapted verification)")
+        print(f"SLinker11 (5-layer pipeline, source-adapted verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -119,15 +121,15 @@ class SLinker11:
 
         # ═══ LAYER 1: Knowledge Acquisition (all independent) ═══
         print("\n[Layer 1] Knowledge Acquisition (parallel)")
-        l1 = self._run_parallel({
+        acq = self._run_parallel({
             "model": lambda: self._analyze_model(components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
             "seed": lambda: self._run_seed(text_path, model_path),
         })
 
-        self.model_knowledge = l1["model"]
-        self.doc_knowledge = l1["doc_knowledge"]
-        raw_seed_links = l1["seed"]
+        self.model_knowledge = acq["model"]
+        self.doc_knowledge = acq["doc_knowledge"]
+        raw_seed_links = acq["seed"]
 
         # Derive generic partial set from model analysis
         self._compute_generic_partials(components)
@@ -163,7 +165,7 @@ class SLinker11:
         # Seed validation, entity extraction+validation, and coreference
         # all depend on Layer 1+2 knowledge but are independent of each other.
         print("\n[Layer 3] Link Recovery (parallel)")
-        l3 = self._run_parallel({
+        rec = self._run_parallel({
             "seed_val": lambda: self._run_seed_validation(
                 raw_seed_links, components, sent_map),
             "entity": lambda: self._run_entity_pipeline(
@@ -172,13 +174,19 @@ class SLinker11:
                 sentences, components, name_to_id, sent_map),
         })
 
-        seed_links = l3["seed_val"]
-        validated = l3["entity"]
-        coref_links = l3["coref"]
+        seed_links = rec["seed_val"]
+        validated = rec["entity"]
+        coref_links = rec["coref"]
         seed_set = {(l.sentence_number, l.component_id) for l in seed_links}
         print(f"  Seed validated: {len(seed_links)} / {len(raw_seed_links)}")
         print(f"  Entity pipeline: {len(validated)} validated")
         print(f"  Coreference: {len(coref_links)} links")
+
+        self._save_phase(text_path, "layer3", {
+            "seed_links": seed_links,
+            "validated": validated,
+            "coref_links": coref_links,
+        })
 
         # ═══ LAYER 4: Partial Recovery (needs Layer 3 outputs) ═══
         print("\n[Layer 4] Partial Recovery")
@@ -193,12 +201,6 @@ class SLinker11:
             print(f"  Partial validated: {len(partial_validated)} / {len(partial_candidates)}")
         else:
             partial_validated = []
-
-        self._save_phase(text_path, "layer3", {
-            "seed_links": seed_links,
-            "validated": validated,
-            "coref_links": coref_links,
-        })
 
         self._save_phase(text_path, "layer4", {
             "partial_validated": partial_validated,
@@ -266,7 +268,7 @@ class SLinker11:
 
 NAMES: {', '.join(names)}
 
-{self._FEW_SHOT}
+{AMBIGUITY_FEW_SHOT}
 
 NOW CLASSIFY THE NAMES ABOVE.
 
@@ -391,11 +393,11 @@ JSON only:"""
         return knowledge
 
     def _run_seed(self, text_path, model_path):
-        """LLM-based seed extraction (two-pass: broad recall + precision enrichment).
+        """LLM-based seed extraction via ILinker2.
 
         Uses a lightweight LLM extractor as the seed strategy. The seed
         provides broad initial coverage; false positives are filtered by
-        the same evidence-stratified validation applied to all strategies.
+        the same source-adapted validation applied to all strategies.
         """
         raw = self._ilinker2.link(text_path, model_path)
         return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
@@ -469,7 +471,7 @@ JSON only:"""
             )
 
             data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
-            classification = data.get("classification", "ordinary") if data else "ordinary"
+            classification = (data.get("classification", "ordinary") or "ordinary").lower() if data else "ordinary"
             reason = data.get("reason", "") if data else ""
 
             if classification == "name":
@@ -488,7 +490,7 @@ JSON only:"""
     # ═══════════════════════════════════════════════════════════════════════
 
     def _run_seed_validation(self, raw_seed_links, components, sent_map):
-        """Validate seed links through evidence-stratified 3-step validation.
+        """Validate seed links through source-adapted 3-step validation.
 
         Killed TPs are recovered by entity/coref/partial via dedup
         (tested: zero net recall cost).
@@ -552,7 +554,7 @@ JSON only:"""
         print(f"    Coreference: cases-in-context ({pronoun_count} pronoun sents / {len(sentences)} total)")
         return self._coref_cases_in_context(sentences, components, name_to_id, sent_map)
 
-    def _run_single_extraction_pass(self, sentences, comp_names, comp_lower, mappings,
+    def _run_single_extraction_pass(self, sentences, comp_names, mappings,
                                      name_to_id, sent_map, pass_label=""):
         """Run one pass of entity extraction over all batches. Returns dict of (snum, cid) -> CandidateLink."""
         batch_size = 50
@@ -576,7 +578,7 @@ DOCUMENT:
 {chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
 
 Return JSON:
-{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial|functional"}}]}}
+{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial"}}]}}
 JSON only:"""
 
             for attempt in range(2):
@@ -617,7 +619,6 @@ JSON only:"""
         found in BOTH passes (extraction consensus).
         """
         comp_names = self._get_comp_names(components)
-        comp_lower = {n.lower() for n in comp_names}
 
         mappings = []
         if self.doc_knowledge:
@@ -628,12 +629,12 @@ JSON only:"""
         # Pass 1
         print("    Extraction pass A:")
         pass1 = self._run_single_extraction_pass(
-            sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P1] ")
+            sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P1] ")
 
         # Pass 2
         print("    Extraction pass B:")
         pass2 = self._run_single_extraction_pass(
-            sentences, comp_names, comp_lower, mappings, name_to_id, sent_map, pass_label="[P2] ")
+            sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P2] ")
 
         # Intersection: keep only candidates found in BOTH passes
         intersected = {key: pass1[key] for key in pass1 if key in pass2}
@@ -644,7 +645,7 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_intersect(self, candidates, components, sent_map):
-        """3-step LLM validation with evidence-adapted voting threshold.
+        """3-step LLM validation with source-adapted voting threshold.
 
         Step 1 — Generic pre-filter: ambiguous component names appearing
             only in lowercase are classified by LLM as component reference
@@ -723,10 +724,8 @@ For each case, determine:
 - GENERIC: The word is used as ordinary English describing a general concept, activity, or modifier
   (e.g., "provides {comp_name.lower()} access" or "{comp_name.lower()} operations" = generic usage)
 
-Key distinction: Compare each case to the FULL-NAME REFERENCES above. In those anchor
-sentences, the component is the SUBJECT or a named participant. Does the lowercase
-usage function the same way? If the word is part of a compound phrase, a modifier,
-or describes a general concept rather than naming the specific entity, it is GENERIC.
+Key distinction: A component reference names a specific system entity as a participant.
+A generic use describes a type of activity or quality that happens to share the word.
 
 Return JSON:
 {{"results": [{{"case": 1, "usage": "component" or "generic", "reason": "brief"}}]}}
@@ -744,7 +743,7 @@ JSON only:"""
 
             for i, c in enumerate(cands):
                 result = results_map.get(i, {})
-                usage = result.get("usage", "component")
+                usage = (result.get("usage", "component") or "component").lower()
                 if usage == "generic":
                     reason = result.get("reason", "")
                     print(f"    LLM generic reject: S{c.sentence_number} -> {c.component_name} ({reason})")
@@ -790,9 +789,9 @@ JSON only:"""
                 has_alias.append(bool(alias_hint))
                 cases.append(f'Case {i+1}: "{c.matched_text}" -> {c.component_name}{alias_hint}\n  {p}"{c.sentence_text}"')
 
-            r1 = self._qual_validation_pass(comp_names, cases,
+            r1 = self._run_validation_pass(comp_names, cases,
                 "Focus on ACTOR role: is the component performing an action or being described?")
-            r2 = self._qual_validation_pass(comp_names, cases,
+            r2 = self._run_validation_pass(comp_names, cases,
                 "Focus on DIRECT reference: does the text refer to the SPECIFIC architectural component, not a generic concept?")
 
             for i, c in enumerate(batch):
@@ -805,16 +804,14 @@ JSON only:"""
 
         return twopass_approved
 
-    def _qual_validation_pass(self, comp_names, cases, focus):
+    def _run_validation_pass(self, comp_names, cases, focus):
         """Single validation pass (Step 2 or Step 3 of 3-step validation)."""
         # Check if any cases have alias hints — if so, add alias-aware rule
         has_alias = any("[KNOWN ALIAS:" in c for c in cases)
         alias_rule = ""
         if has_alias:
-            alias_rule = ("\n- When a KNOWN ALIAS is indicated, this confirms the word CAN refer to "
-                          "the component. Still evaluate whether THIS sentence discusses the "
-                          "component's architectural role or behavior — an alias provides context, "
-                          "not automatic approval")
+            alias_rule = ("\n- When a KNOWN ALIAS is indicated, the word IS a reference to that component "
+                          "unless the sentence clearly uses it in an unrelated sense")
 
         prompt = f"""Validate component references in a software architecture document. {focus}
 
@@ -826,7 +823,7 @@ CASES:
 {chr(10).join(cases)}
 
 Return JSON:
-{{"validations": [{{"case": 1, "approve": true/false}}]}}
+{{"validations": [{{"case": 1, "approve": true}}]}}
 JSON only:"""
 
         data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
@@ -835,7 +832,8 @@ JSON only:"""
             for v in data.get("validations", []):
                 idx = v.get("case", 0) - 1
                 if 0 <= idx < len(cases):
-                    results[idx] = v.get("approve", False)
+                    val = v.get("approve", False)
+                    results[idx] = val is True or val == "true"
         return results
 
     def _coref_cases_in_context(self, sentences, components, name_to_id, sent_map):
@@ -935,11 +933,11 @@ Only include resolutions you are CERTAIN about. JSON only:"""
 
     @staticmethod
     def _parse_snum(val) -> Optional[int]:
-        """Parse sentence number from LLM output (handles 'S42', '42', 42)."""
+        """Parse sentence number from LLM output (handles 'S42', 's42', '42', 42)."""
         if val is None:
             return None
         if isinstance(val, str):
-            val = val.lstrip("S")
+            val = val.lstrip("Ss")
         try:
             return int(val)
         except (ValueError, TypeError):
@@ -986,9 +984,13 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         return False
 
     def _has_alias_mention(self, comp_name, sentence_text):
-        """Check if any known synonym or partial reference appears in the text."""
+        """Check if any known abbreviation, synonym, or partial reference appears in the text."""
         if not self.doc_knowledge:
             return False
+        for abbr, target in self.doc_knowledge.abbreviations.items():
+            if target == comp_name:
+                if re.search(rf'\b{re.escape(abbr)}\b', sentence_text):
+                    return True
         text_lower = sentence_text.lower()
         for syn, target in self.doc_knowledge.synonyms.items():
             if target == comp_name:
