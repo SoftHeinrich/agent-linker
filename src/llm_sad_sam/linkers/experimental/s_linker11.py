@@ -31,19 +31,22 @@ Verification strategy (evidence-stratified, empirically motivated):
   in antecedent sentence within discourse window).
 """
 
+from __future__ import annotations
+
 import json
 import os
 import pickle
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Optional
 
-from llm_sad_sam.core.data_types import (
+from llm_sad_sam.core.data_types_v2 import (
     SadSamLink, CandidateLink,
     ModelKnowledge, DocumentKnowledge,
 )
-from llm_sad_sam.core.document_loader import DocumentLoader
+from llm_sad_sam.core.document_loader_v2 import (
+    Sentence, load_sentences, build_sent_map,
+)
 from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
 from llm_sad_sam.linkers.experimental.prompts_v2 import (
     AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
@@ -52,8 +55,8 @@ from llm_sad_sam.linkers.experimental.prompts_v2 import (
     ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
     WORD_USAGE_PROMPT,
 )
-from llm_sad_sam.pcm_parser import parse_pcm_repository
-from llm_sad_sam.llm_client import LLMClient, LLMBackend
+from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
+from llm_sad_sam.llm_client import LLMClient, LLMBackend  # shared with ILinker2
 
 class SLinker11:
     """LLM-driven SAD-SAM traceability with evidence-stratified verification."""
@@ -62,15 +65,15 @@ class SLinker11:
         r'\b(it|they|this|these|that|those|its|their)\b',
         re.IGNORECASE
     )
-    def __init__(self, backend: Optional[LLMBackend] = None):
+    def __init__(self, backend: LLMBackend | None = None):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
         self.llm = LLMClient(backend=backend or LLMBackend.CLAUDE)
-        self.model_knowledge: Optional[ModelKnowledge] = None
-        self.doc_knowledge: Optional[DocumentKnowledge] = None
+        self.model_knowledge: ModelKnowledge | None = None
+        self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log = []
         self._ilinker2 = ILinker2(backend=self.llm.backend)
-        self._generic_partials: set = set()
-        print(f"SLinker11 (3-layer pipeline, evidence-stratified verification)")
+        self._generic_partials: set[str] = set()
+        print("SLinker11 (3-layer pipeline, evidence-stratified verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -118,9 +121,9 @@ class SLinker11:
 
         # Load raw data
         components = parse_pcm_repository(model_path)
-        sentences = DocumentLoader.load_sentences(text_path)
+        sentences = load_sentences(text_path)
         name_to_id = {c.name: c.id for c in components}
-        sent_map = DocumentLoader.build_sent_map(sentences)
+        sent_map = build_sent_map(sentences)
 
         print(f"Loaded {len(components)} components, {len(sentences)} sentences")
 
@@ -312,9 +315,7 @@ JSON only:"""
                 p_lower = part.lower()
                 if part.isupper():
                     continue
-                if p_lower in ambig or any(
-                    p_lower == a.lower() for a in ambig
-                ):
+                if any(p_lower == a.lower() for a in ambig):
                     self._generic_partials.add(p_lower)
         for name in ambig:
             if ' ' not in name and not name.isupper():
@@ -421,6 +422,8 @@ JSON only:"""
         if not self.doc_knowledge:
             return
 
+        existing_syn_lower = {s.lower() for s in self.doc_knowledge.synonyms}
+        existing_partial_lower = {p.lower() for p in self.doc_knowledge.partial_references}
         added = []
         for comp in components:
             parts = comp.name.split()
@@ -435,9 +438,9 @@ JSON only:"""
             )
             if other_match:
                 continue
-            if last_lower in {s.lower() for s in self.doc_knowledge.synonyms}:
+            if last_lower in existing_syn_lower:
                 continue
-            if last_lower in {p.lower() for p in self.doc_knowledge.partial_references}:
+            if last_lower in existing_partial_lower:
                 continue
 
             is_generic_word = last_lower in self._generic_partials
@@ -583,7 +586,7 @@ DOCUMENT:
 {chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
 
 Return JSON:
-{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence", "match_type": "exact|synonym|partial"}}]}}
+{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence"}}]}}
 JSON only:"""
 
             for attempt in range(2):
@@ -612,8 +615,7 @@ JSON only:"""
                 key = (snum, name_to_id[cname])
                 if key not in candidates:
                     candidates[key] = CandidateLink(snum, sent.text, cname, name_to_id[cname],
-                                               matched, source="entity",
-                                               match_type=ref.get("match_type", "exact"))
+                                               matched, source="entity")
 
         return candidates
 
@@ -838,7 +840,7 @@ JSON only:"""
                 idx = v.get("case", 0) - 1
                 if 0 <= idx < len(cases):
                     val = v.get("approve", False)
-                    results[idx] = val is True or val == "true"
+                    results[idx] = val is True or (isinstance(val, str) and val.lower() == "true")
         return results
 
     def _coref_cases_in_context(self, sentences, components, name_to_id, sent_map):
@@ -926,7 +928,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 if self._has_clean_mention(partial, sent.text):
                     candidates.append(CandidateLink(
                         sent.number, sent.text, comp_name, comp_id,
-                        partial, source="partial_inject", match_type="partial",
+                        partial, source="partial_inject",
                     ))
                     existing.add(key)
 
@@ -937,7 +939,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     # ═══════════════════════════════════════════════════════════════════════
 
     @staticmethod
-    def _parse_snum(val) -> Optional[int]:
+    def _parse_snum(val) -> int | None:
         """Parse sentence number from LLM output (handles 'S42', 's42', '42', 42)."""
         if val is None:
             return None
@@ -948,7 +950,8 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         except (ValueError, TypeError):
             return None
 
-    def _has_clean_mention(self, term, text):
+    @staticmethod
+    def _has_clean_mention(term, text):
         """Check if term appears cleanly (not in dotted path or hyphenated compound)."""
         pattern = rf'\b{re.escape(term)}\b'
         for m in re.finditer(pattern, text, re.IGNORECASE):
@@ -962,14 +965,18 @@ Only include resolutions you are CERTAIN about. JSON only:"""
             return True
         return False
 
-    def _has_standalone_mention(self, comp_name, text):
+    @staticmethod
+    def _has_standalone_mention(comp_name, text):
         """Check for non-generic, clean standalone mention of component name."""
         if not comp_name:
             return False
         is_single = ' ' not in comp_name
         if is_single:
-            cap_name = comp_name[0].upper() + comp_name[1:]
-            pattern = rf'\b{re.escape(cap_name)}\b'
+            if comp_name[0].islower():
+                pattern = rf'\b{re.escape(comp_name)}\b'
+            else:
+                cap_name = comp_name[0].upper() + comp_name[1:]
+                pattern = rf'\b{re.escape(cap_name)}\b'
             flags = 0
         else:
             pattern = rf'\b{re.escape(comp_name)}\b'
@@ -1015,7 +1022,8 @@ Only include resolutions you are CERTAIN about. JSON only:"""
             return False
         return comp_name in self.model_knowledge.ambiguous_names
 
-    def _get_comp_names(self, components) -> list[str]:
+    @staticmethod
+    def _get_comp_names(components) -> list[str]:
         """Get all component names."""
         return [c.name for c in components]
 

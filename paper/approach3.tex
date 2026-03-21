@@ -65,11 +65,11 @@ and standalone LLM classifiers:
 \end{description}
 
 \noindent Existing approaches address only part of this problem.
-Lexical NLP pipelines such as SWATTR~\cite{TODO:swattr} rely on
+Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on
 string similarity and cannot resolve indirect references~(C1),
 discourse dependencies~(C1), or false matches on generic
 words~(C2).
-LLM-based classifiers such as LISSA~\cite{TODO:lissa} add
+LLM-based classifiers such as LISSA~\cite{lissa} add
 semantic understanding but lack structured knowledge~(C3),
 treat each sentence in isolation~(C1), and have no mechanism
 to reduce their own non-determinism~(C4).
@@ -89,10 +89,10 @@ C1 Reference diversity
     & Four type-specific strategies
     & \S\ref{sec:recovery} \\
 C2 Name ambiguity
-    & Ambiguity classif., generic-mention detection
+    & Ambiguity classification, generic-mention detection
     & \S\ref{sec:names}, \S\ref{sec:entity} \\
 C3 Knowledge gap
-    & Ambiguity classif., alias discovery + judge
+    & Ambiguity classification, alias discovery + judge
     & \S\ref{sec:names}, \S\ref{sec:alias} \\
 C4 LLM non-determinism
     & Multi-pass consensus; citation verif.
@@ -168,15 +168,15 @@ The pipeline is organized as a staged DAG
 \toprule
 \textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{C4 pattern} & \textbf{LLM} \\
 \midrule
-Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2\rlap{$^*$} \\
-Contextual & Alias, functional & Alias table, ambig. & $\cap$ extr.\ + stratified valid. & 2+2\rlap{$^*$} \\
+Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2--3\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + stratified valid. & 2+2--3\rlap{$^*$} \\
 Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
-Abbreviated & Partial name & Alias table & Union valid. & 0+2\rlap{$^\dagger$} \\
+Abbreviated & Partial name & Alias table & Union valid. & 0+2--3\rlap{$^\dagger$} \\
 \bottomrule
 \end{tabular}
 \\[2pt]
-{\scriptsize $^*$2 extraction + 2 validation passes.
-$^\dagger$0 extraction (deterministic) + 2 validation passes.
+{\scriptsize $^*$2 extraction + 2--3 validation (generic-mention detection for ambiguous names, then 2 voting passes).
+$^\dagger$0 extraction (deterministic) + 2--3 validation.
 $^\ddagger$Extraction needs no knowledge (runs parallel with Layer~1);
 validation uses the alias table once Layer~1 completes.
 Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
@@ -251,7 +251,7 @@ Abbreviations carry structural evidence---their letters match
 the component name's initials---enabling deterministic validation.
 Synonyms lack such structure and need semantic judgment, but
 CamelCase identifiers can still be auto-approved since they are
-constructed names that cannot be ordinary English.
+constructed names that are unlikely to be ordinary English.
 Partial references are the hardest case: the same trailing word
 may be a component reference in one context and a generic noun
 in another, so validation requires LLM-based word usage
@@ -265,9 +265,9 @@ An LLM extracts three alias categories: abbreviations
 names), and partial references (trailing words of multi-word names
 used alone).
 A calibrated few-shot judge validates each mapping:
-abbreviations whose letters match the component name's initials
-are auto-approved deterministically;
-CamelCase identifiers are auto-approved as constructed names;
+the judge is instructed to auto-approve abbreviations whose
+letters match the component name's initials and CamelCase
+identifiers (constructed names unlikely to be ordinary English);
 remaining candidates are judged semantically, rejecting generic
 terms (\emph{system}, \emph{process}).
 The resulting alias table is consumed by contextual discovery
@@ -413,11 +413,10 @@ to a component in a sentence that does not actually mention that
 component.
 
 \emph{Insight:}
-If the LLM is required to cite a specific antecedent sentence
-with an exact quote containing the component name, hallucinated
-resolutions become detectable by deterministic string
-matching---so each resolution is either verifiably correct or
-clearly fabricated.
+If the LLM is required to cite a specific antecedent sentence,
+hallucinated resolutions become detectable by checking whether the
+component name actually appears in that sentence---so each
+resolution is either verifiably correct or clearly fabricated.
 A separate validation LLM call would itself be subject to
 hallucination; deterministic verification eliminates this risk
 entirely, given a correct citation.
@@ -428,14 +427,13 @@ Each pronoun-bearing sentence is presented as an individual case
 % with current + 4 preceding sentences) and Centering Theory's
 % local-coherence model (Grosz et al. 1995). +-5 context window is
 % broader than the 3-sentence resolution bound to aid disambiguation.
-with a $\pm5$-sentence bidirectional context window, processed in
+with a $\pm5$-sentence context window, processed in
 batches of~10.
 The broader window provides surrounding text for disambiguation,
 while the prompt instructs the LLM to resolve only within the
 previous 3~sentences---a conservative bound that reduces
 long-distance hallucinations.
-The LLM must cite a specific antecedent sentence with the exact
-quote containing the component name.
+The LLM must cite a specific antecedent sentence number.
 The pipeline verifies this citation deterministically: the
 component name (or a known alias) must appear verbatim in the
 cited antecedent sentence.

@@ -277,6 +277,9 @@ VARIANTS = {
     "s_linker10":         dict(linker_class="s_linker10"), # S-Linker10: alias-context + evidence-stratified voting + LLM enrichment
     "s_linker10a":        dict(linker_class="s_linker10a"), # Ablation: count>=3 enrichment threshold (instead of LLM)
     "s_linker11":         dict(linker_class="s_linker11"), # S-Linker11: uniform validation (seed validated + no bypass)
+    "s10_vrv":            dict(linker_class="s10_vrv"),   # S-Linker10 + V_RV validation rules (role-verification reject)
+    "s10_vfo":            dict(linker_class="s10_vfo"),   # S-Linker10 + V_FO focus prompts (SPECIFICITY + FUNCTION)
+    "s10_p3b":            dict(linker_class="s10_p3b"),   # S-Linker10 + P3b alias rule (IS + verify role)
     # --- CNR: Component Name Recovery (no-model) ---
     "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
     "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
@@ -763,6 +766,69 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
     elif linker_class == "s_linker11":
         from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
         linker = SLinker11(backend=BACKEND)
+    elif linker_class == "s10_vrv":
+        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
+        from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_RULES_V
+        import llm_sad_sam.linkers.experimental.prompts_v2 as _pmod
+        _pmod.VALIDATION_RULES = VALIDATION_RULES_V
+        linker = SLinker10(backend=BACKEND)
+    elif linker_class == "s10_vfo":
+        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
+        from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_FOCUS_1_V, VALIDATION_FOCUS_2_V
+        linker = SLinker10(backend=BACKEND)
+        # Monkey-patch the validation pass method to use variant focus prompts
+        _orig_validate = linker._validate_intersect
+        def _patched_validate(candidates, components, sent_map, _orig=_orig_validate):
+            # Swap focus strings in _qual_validation_pass calls
+            _orig_qvp = linker._qual_validation_pass
+            _call_count = [0]
+            def _patched_qvp(comp_names, cases, focus):
+                _call_count[0] += 1
+                if _call_count[0] % 2 == 1:
+                    return _orig_qvp(comp_names, cases, VALIDATION_FOCUS_1_V)
+                else:
+                    return _orig_qvp(comp_names, cases, VALIDATION_FOCUS_2_V)
+            linker._qual_validation_pass = _patched_qvp
+            result = _orig(candidates, components, sent_map)
+            linker._qual_validation_pass = _orig_qvp
+            _call_count[0] = 0
+            return result
+        linker._validate_intersect = _patched_validate
+    elif linker_class == "s10_p3b":
+        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
+        from llm_sad_sam.linkers.experimental.prompt_var import ALIAS_RULE_V3
+        linker = SLinker10(backend=BACKEND)
+        # Monkey-patch _qual_validation_pass to use P3b alias rule
+        _orig_qvp = linker._qual_validation_pass
+        def _patched_qvp_p3b(comp_names, cases, focus):
+            has_alias = any("[KNOWN ALIAS:" in c for c in cases)
+            if has_alias:
+                # Replace default alias rule injection inside _qual_validation_pass
+                # by monkey-patching the method to use ALIAS_RULE_V3
+                from llm_sad_sam.linkers.experimental.prompts_v2 import VALIDATION_RULES
+                prompt = f"""Validate component references in a software architecture document. {focus}
+
+COMPONENTS: {', '.join(comp_names)}
+
+{VALIDATION_RULES}{ALIAS_RULE_V3}
+
+CASES:
+{chr(10).join(cases)}
+
+Return JSON:
+{{"validations": [{{"case": 1, "approve": true/false}}]}}
+JSON only:"""
+                data = linker.llm.extract_json(linker.llm.query(prompt, timeout=120))
+                results = {}
+                if data:
+                    for v in data.get("validations", []):
+                        idx = v.get("case", 0) - 1
+                        if 0 <= idx < len(cases):
+                            results[idx] = v.get("approve", False)
+                return results
+            else:
+                return _orig_qvp(comp_names, cases, focus)
+        linker._qual_validation_pass = _patched_qvp_p3b
     elif linker_class == "v33":
         from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
         linker = ILinker2V33(backend=BACKEND)

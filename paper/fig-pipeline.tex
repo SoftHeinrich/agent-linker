@@ -35,6 +35,7 @@
 \node[layer2, right=0.6cm of anaphoric] (abbreviated) {Abbreviated\\Ref.\ Match};
 
 % Knowledge flow arrows (Layer 1 -> Layer 2)
+\draw[arr] (enrich.south west) -- (explicit.north east);
 \draw[arr] (model.south) -- (contextual.north west);
 \draw[arr] (enrich.south) -- (contextual.north);
 \draw[arr] (enrich.south east) -- (anaphoric.north);
@@ -74,9 +75,10 @@
 in two sub-tiers: model analysis and document analysis run
 concurrently~(1a); partial-reference refinement depends on their
 results~(1b).
-Explicit reference extraction has no knowledge dependencies and
-starts concurrently with Layer~1 (shown here under Link Recovery
-for grouping).
+Explicit reference \emph{extraction} has no knowledge dependencies
+and starts concurrently with Layer~1 (shown here under Link Recovery
+for grouping); its \emph{validation} uses the alias table once
+Layer~1 completes.
 Layer~2 runs four recovery strategies; abbreviated matching
 depends on prior strategies for deduplication (dashed arrow).
 Layer~3 deduplicates their output.}
