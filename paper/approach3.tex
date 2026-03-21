@@ -424,8 +424,10 @@ entirely, given a correct citation.
 
 \emph{Design:}
 Each pronoun-bearing sentence is presented as an individual case
-% Window size justified by Lappin & Leass 1994 (86% accuracy with
-% 5-sentence lookback) and Centering Theory (Grosz et al. 1995).
+% Resolution constraint justified by Lappin & Leass 1994 (86% accuracy
+% with current + 4 preceding sentences) and Centering Theory's
+% local-coherence model (Grosz et al. 1995). +-5 context window is
+% broader than the 3-sentence resolution bound to aid disambiguation.
 with a $\pm5$-sentence bidirectional context window, processed in
 batches of~10.
 The broader window provides surrounding text for disambiguation,
