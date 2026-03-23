@@ -1,17 +1,16 @@
 % ============================================================================
-% ICSE Paper — Approach Section (v3: Challenge-Insight-Design framework)
+% ICSE Paper — Approach Section (v3b: fused prose, succinct overview)
 % LLM-Driven Trace Link Recovery between Architecture Documents and Models
 %
-% Differences from v2b (approach2.tex):
-%   - Hybrid C-I-D + Design Patterns framework
-%   - Challenge table upfront (Table 1)
-%   - Strategy summary table (Table 2)
-%   - Each subsection opens with Challenge → Insight → Design
-%   - LLM non-determinism elevated to first-class challenge (C4)
-%   - Sub-tier scheduling removed from text body (figure suffices)
-%   - More informative section headers
-%   - "Why not the simpler thing?" micro-comparisons for non-obvious decisions
-%   - Tighter validation description in contextual discovery
+% Changes from v3:
+%   - Challenge/Insight/Design labels removed; content flows as natural prose
+%   - Challenges reorganized: knowledge gap is the parent challenge,
+%     reference diversity and name ambiguity are its two manifestations
+%   - C4 (non-determinism) and C5 (overlap) dropped as standalone challenges;
+%     non-determinism is woven into subsections, overlap into consolidation
+%   - Challenge table removed (too fine-grained for 3 challenges)
+%   - Overview shortened (~50%); subsections remain detailed
+%   - Plain English throughout for non-native speakers
 % ============================================================================
 
 \section{Approach}\label{sec:approach}
@@ -27,138 +26,55 @@ $C = \{c_1, \ldots, c_m\}$, our approach produces a set of trace links
 $L \subseteq S \times C$, where each link $(s_i, c_j)$ asserts that
 sentence~$s_i$ discusses component~$c_j$.
 
-\paragraph{Challenges.}
-Five challenges make this task difficult for both lexical matchers
-and standalone LLM classifiers:
+Two problems make this task difficult.
+First, \emph{reference diversity}: documents refer to components by
+canonical name, abbreviation, functional description, trailing word,
+or pronoun.
+No single extraction strategy handles all of these forms.
+Second, \emph{name ambiguity}: component names like \texttt{Cache} or
+\texttt{Facade} are common English words that appear frequently
+without referring to any component, so broadening extraction to
+capture diverse references also increases false positives.
 
-\begin{description}
-    \item[C1 --- Reference diversity.]
-      Documents refer to components by canonical name, abbreviation,
-      functional description, trailing word of a compound name,
-      or pronoun.
-      No single extraction strategy handles all types.
-    \item[C2 --- Name ambiguity.]
-      Component names are often common English words (\texttt{Core},
-      \texttt{Adapter}) or technologies (\texttt{Kafka}).
-      These words appear frequently without referring to any component,
-      and broadening extraction to capture diverse references increases
-      false positives from such ambiguous names.
-    \item[C3 --- Knowledge gap.]
-      Alias tables (mappings from abbreviations, synonyms, and
-      partial names to canonical component names) and ambiguity
-      classifications do not exist in advance; the system must
-      discover this knowledge from raw
-      inputs using the same LLM that will consume it---and the
-      LLM may hallucinate aliases or misjudge ambiguity.
-    \item[C4 --- LLM non-determinism.]
-      LLMs produce different outputs across independent invocations of
-      the same prompt.
-      A single-pass design turns this variance into inconsistent
-      link sets: false candidates that appear in one run but not
-      another persist as false positives.
-    \item[C5 --- Strategy overlap.]
-      Because strategies operate independently on the same document,
-      they may independently discover the same sentence--component
-      pair.
-      Without deduplication, overlapping results carry conflicting
-      source labels.
-\end{description}
+Addressing both problems requires structured knowledge---which names
+are ambiguous, and what abbreviations, synonyms, and short forms map
+to which component.
+This knowledge does not exist in advance and must be discovered at
+runtime, using the same LLM that will consume it, with the risk of
+hallucinated mappings or misjudged ambiguity.
+We call this the \emph{knowledge gap}.
 
-\noindent Existing approaches address only part of this problem.
-Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on
-string similarity and cannot resolve indirect references~(C1),
-discourse dependencies~(C1), or false matches on generic
-words~(C2).
-LLM-based classifiers such as LISSA~\cite{lissa} add
-semantic understanding but lack structured knowledge~(C3),
-treat each sentence in isolation~(C1), and have no mechanism
-to reduce their own non-determinism~(C4).
+Existing approaches address only part of this problem.
+Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string
+similarity and cannot resolve indirect references or discourse
+dependencies.
+LLM-based classifiers such as LISSA~\cite{lissa} add semantic
+understanding but have no mechanism to build alias mappings or classify
+name ambiguity before linking, treat each sentence in isolation, and
+do not address LLM non-determinism.
 
-Table~\ref{tab:challenges} maps each challenge to the pipeline
-stages that address it.
-
-\begin{table}[t]
-\caption{Challenge map: where each challenge is addressed.}
-\label{tab:challenges}
-\centering\footnotesize
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Challenge} & \textbf{Mechanism} & \textbf{Section} \\
-\midrule
-C1 Reference diversity
-    & Four type-specific strategies
-    & \S\ref{sec:recovery} \\
-C2 Name ambiguity
-    & Ambiguity classification, generic-mention detection
-    & \S\ref{sec:names}, \S\ref{sec:entity} \\
-C3 Knowledge gap
-    & Ambiguity classification, alias discovery + judge
-    & \S\ref{sec:names}, \S\ref{sec:alias} \\
-C4 LLM non-determinism
-    & Multi-pass consensus; citation verif.
-    & \S\ref{sec:seed}, \S\ref{sec:entity}; \S\ref{sec:coref} \\
-C5 Strategy overlap
-    & First-seen deduplication
-    & \S\ref{sec:merge} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Key insight.}
-Reliable recovery requires combining LLM reasoning with
-structured architectural knowledge acquired before linking begins.
-Different reference types need different resolution strategies,
-but these strategies can operate independently on a shared
-knowledge base, and multi-pass validation within each strategy
-catches false positives that a single LLM pass would miss.
-
-\paragraph{Design patterns.}
-Two cross-cutting patterns address C4 (LLM non-determinism)
-throughout the pipeline:
-
-\begin{itemize}
-    \item \emph{Multi-pass consensus:}
-      Decisions where precision matters use two independent LLM
-      passes with task-specific agreement rules.
-      The variant depends on the required confidence level:
-      \emph{asymmetric voting} accepts high-confidence matches from
-      either pass but requires agreement for uncertain ones
-      (\S\ref{sec:seed});
-      \emph{same-prompt intersection} runs an identical prompt twice
-      and keeps only shared results (extraction in
-      \S\ref{sec:entity});
-      \emph{evidence-stratified voting} provides alias context to
-      each validation pass and accepts matches that were confirmed
-      via a known alias (called \emph{alias-confirmed}) from
-      either pass (union) while requiring agreement for exact-name
-      matches (intersection) (\S\ref{sec:entity},
-      \S\ref{sec:partial}).
-    \item \emph{Citation-grounded verification:}
-      Instead of trusting unverifiable LLM judgments, we require the
-      LLM to produce checkable evidence---antecedent sentence
-      citations, exact substrings---that code can verify
-      deterministically.
-      This makes hallucinated claims detectable
-      (\S\ref{sec:coref}).
-\end{itemize}
-
-\noindent Additionally, all few-shot examples use abstract
+Our pipeline closes the knowledge gap first, then recovers links
+using the acquired knowledge.
+It is organized as a DAG (Figure~\ref{fig:pipeline}) with three
+layers:
+\textbf{Knowledge acquisition} (Layer~1) extracts component name
+properties and an alias table from raw inputs
+(\S\ref{sec:knowledge});
+\textbf{Link recovery} (Layer~2) runs four complementary strategies
+targeting different reference types
+(Table~\ref{tab:strategies}, \S\ref{sec:recovery});
+\textbf{Link consolidation} (Layer~3) deduplicates overlapping
+candidates by first-seen priority (\S\ref{sec:merge}).
+To handle LLM non-determinism, the pipeline uses two cross-cutting
+patterns.
+\emph{Multi-pass consensus}: precision-sensitive decisions use two
+independent LLM passes with task-specific agreement rules.
+\emph{Citation-grounded verification}: the LLM must produce
+checkable evidence---such as antecedent sentence numbers---that
+deterministic code can verify.
+To prevent data leakage, all few-shot examples use abstract
 placeholders or safe textbook domains; no benchmark names or
 gold-standard information appears in any prompt.
-
-\paragraph{Architecture.}
-The pipeline is organized as a staged DAG
-(Figure~\ref{fig:pipeline}) with three layers:
-
-\begin{enumerate}
-    \item \textbf{Knowledge acquisition} (Layer~1): Extracts
-      component name properties and an alias table from raw inputs.
-    \item \textbf{Link recovery} (Layer~2): Four complementary
-      strategies produce candidate links, each targeting a distinct
-      reference type (Table~\ref{tab:strategies}).
-    \item \textbf{Link consolidation} (Layer~3): Deduplicates
-      overlapping candidates from all strategies.
-\end{enumerate}
 
 \begin{table}[t]
 \caption{Link recovery strategies and their properties.}
@@ -166,7 +82,7 @@ The pipeline is organized as a staged DAG
 \centering\footnotesize
 \begin{tabular}{@{}lllll@{}}
 \toprule
-\textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{C4 pattern} & \textbf{LLM} \\
+\textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{Consensus pattern} & \textbf{LLM} \\
 \midrule
 Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2--3\rlap{$^*$} \\
 Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + stratified valid. & 2+2--3\rlap{$^*$} \\
@@ -183,50 +99,36 @@ Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
 Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
 \end{table}
 
-\noindent Explicit reference \emph{extraction} requires no Layer~1
-knowledge and runs in parallel with knowledge acquisition;
-its \emph{validation} uses the alias table once Layer~1 completes.
-
 % ---------------------------------------------------------------------------
 \input{fig-pipeline}
 % ---------------------------------------------------------------------------
 
 \subsection{Knowledge Acquisition}\label{sec:knowledge}
 
-Before linking can begin, the pipeline must build structured
-knowledge that later stages use.
-Layer~1 addresses two knowledge gaps---name ambiguity
-(\S\ref{sec:names}) and alternative names
-(\S\ref{sec:alias})---through three analyses shown in the DAG
+Layer~1 builds the structured knowledge that all recovery strategies
+consume.
+Three analyses produce this knowledge
 (Figure~\ref{fig:pipeline}):
-Model Analysis classifies name ambiguity;
-Document Analysis discovers aliases;
-Partial-Ref.\ Refinement enriches the alias table with
-LLM-classified partial mappings.
-All downstream stages consume the enriched alias table from
-the refinement step.
+Model Analysis classifies component name ambiguity
+(\S\ref{sec:names}) and Document Analysis discovers aliases
+(\S\ref{sec:alias}), both running in parallel;
+Partial-Reference Refinement then enriches the alias table with
+LLM-classified partial mappings once both complete.
 
 \subsubsection{Name Ambiguity Classification}\label{sec:names}
 
-\emph{Challenge~(C2):}
 Component names vary widely in how specific they are.
-Multi-word identifiers like \texttt{TaskScheduler} clearly
-name architectural roles, but single common English words like
-\texttt{Core} or \texttt{Adapter} often appear in text without
+Multi-word identifiers like \texttt{ImageProvider} clearly name
+architectural roles, but single common English words like
+\texttt{Cache} or \texttt{Facade} often appear in text without
 referring to any component.
-The pipeline must know \emph{which} names need special care
-before it encounters them in the document.
+The pipeline must identify which names need special care before
+encountering them in the document.
 
-\emph{Insight:}
-Structural cues (CamelCase, multi-word, all-uppercase) resolve
-most ambiguity deterministically; LLM judgment is needed only for
-the minority of names where structural cues are absent.
-
-\emph{Design:}
-Names containing CamelCase boundaries, multiple words, or
-all-uppercase letters are classified as \emph{architectural}
-without LLM involvement.
-Remaining single-word names are submitted to the LLM with
+Structural cues---CamelCase boundaries, multiple words, all-uppercase
+letters---resolve most cases without LLM involvement: names with these
+cues are classified as \emph{architectural}.
+The pipeline submits remaining single-word names to the LLM with
 few-shot examples for \emph{ambiguous} classification.
 The result feeds downstream decisions:
 which candidates require generic-mention detection
@@ -236,43 +138,36 @@ which trailing words need capitalized matching
 
 \subsubsection{Alternative Name Discovery}\label{sec:alias}
 
-\emph{Challenge~(C1, C3):}
-Documents refer to components by abbreviation (\emph{AST} for
-\texttt{AbstractSyntaxTree}), trailing word (\emph{Dispatcher}
-for \texttt{EventDispatcher}), or synonym.
-Without an \emph{alias table} mapping these to canonical names,
-any matching strategy will systematically miss such references,
-limiting recall.
-But building the table is itself error-prone~(C3): the LLM may
-hallucinate mappings or accept generic words as aliases.
+Documents refer to components by trailing word (\emph{Server} for
+\texttt{HTML5~Server}), abbreviation, or synonym.
+Without an \emph{alias table} mapping these alternative names to
+canonical component names, any matching strategy will
+systematically miss such references, limiting recall.
+However, LLM-generated alias tables are unreliable: the model
+may hallucinate mappings or accept generic words as aliases.
 
-\emph{Insight:}
-Abbreviations carry structural evidence---their letters match
-the component name's initials---enabling deterministic validation.
+Different alias types offer different validation opportunities.
+Abbreviations carry structural evidence---their letters match the
+component name's initials---enabling rule-based auto-approval.
 Synonyms lack such structure and need semantic judgment, but
 CamelCase identifiers can still be auto-approved since they are
-constructed names that are unlikely to be ordinary English.
-Partial references are the hardest case: the same trailing word
-may be a component reference in one context and a generic noun
-in another, so validation requires LLM-based word usage
-classification on the document contexts where the word appears.
-
-\emph{Design:}
+constructed names unlikely to be ordinary English.
+Partial references are the hardest case: the same trailing word may be
+a component reference in one context and a generic noun in another,
+so validation requires examining the document contexts where the word
+appears.
 
 \paragraph{Core discovery.}
 An LLM extracts three alias categories: abbreviations
 (parenthetical definitions), synonyms (unambiguous alternative
 names), and partial references (trailing words of multi-word names
 used alone).
-A calibrated few-shot judge validates each mapping:
-the judge is instructed to auto-approve abbreviations whose
-letters match the component name's initials and CamelCase
-identifiers (constructed names unlikely to be ordinary English);
+A calibrated few-shot judge validates the discovered mappings:
+the judge is instructed to auto-approve abbreviations whose letters
+match the component name's initials and CamelCase identifiers;
 remaining candidates are judged semantically, rejecting generic
 terms (\emph{system}, \emph{process}).
-The resulting alias table is consumed by contextual discovery
-(\S\ref{sec:entity}) and abbreviated matching
-(\S\ref{sec:partial}).
+The resulting alias table is consumed by all four recovery strategies.
 
 \paragraph{Partial-reference refinement.}
 An LLM-based enrichment step classifies each candidate trailing
@@ -290,43 +185,23 @@ to be considered.
 \subsection{Link Recovery}\label{sec:recovery}
 
 With ambiguity classifications and the enriched alias table in hand,
-the pipeline moves from knowledge acquisition to link recovery.
-Four strategies target distinct reference types on this shared
-knowledge base; the first three operate in parallel, while
-abbreviated matching runs after them to avoid re-discovering
-already-linked pairs.
-
-\emph{Challenge~(C1):}
-No single strategy handles all reference types: canonical names
-can be matched lexically, aliases require knowledge, pronouns
-need discourse context, and abbreviated names require
-project-specific awareness.
-
-\emph{Insight:}
-Type-specific strategies can run independently on the shared
-knowledge base from Layer~1, each using the C4 mitigation
-pattern that best fits its confidence level
-(Table~\ref{tab:strategies}).
-Their outputs are combined only at the Layer~3 merge point.
+four strategies target distinct reference types on this shared
+knowledge base.
+The first three run in parallel; abbreviated matching runs after
+them to avoid re-discovering already-linked pairs.
 
 \subsubsection{Explicit Reference Extraction}\label{sec:seed}
 
-\emph{Challenge~(C2, C4):}
-Even canonical-name matching risks false positives from ambiguous
-names and hierarchical namespace paths.
-A single LLM pass produces inconsistent results across
-runs---accepting a borderline candidate in one invocation and
-rejecting it in the next.
-
-\emph{Insight:}
-Exact-name matches are high-confidence and reliably identified by
-a single pass; non-exact matches risk hallucination and benefit
+Canonical-name matching still risks false positives from ambiguous
+names and namespace paths, and a single LLM pass produces
+inconsistent results across runs.
+Exact-name matches are high-confidence and reliably found by a
+single pass, while non-exact matches risk hallucination and benefit
 from independent agreement.
-This difference motivates \emph{asymmetric voting} rather than
-uniform intersection (which would lose reliable matches) or
-uniform union (which would keep hallucinations).
+This motivates \emph{asymmetric voting} rather than uniform
+intersection (which would lose reliable matches) or uniform union
+(which would keep hallucinations).
 
-\emph{Design:}
 A self-contained extractor (which we call \textbf{ILinker2}) uses two
 complementary LLM passes over batched document segments:
 Pass~A (mention-framed) asks which components are explicitly
@@ -350,22 +225,17 @@ strategies.
 
 \subsubsection{Contextual Reference Discovery}\label{sec:entity}
 
-\emph{Challenge~(C1, C4):}
 Alias-based and functional references require knowledge that the
-explicit extractor lacks, but broadening the extraction scope
-also increases the risk of hallucinated links.
-
-\emph{Insight:}
+explicit extractor lacks, but broadening the extraction scope also
+increases the risk of hallucinated links.
 Running the \emph{same} broad-scope prompt twice independently
 and keeping only shared results filters out hallucinations while
 preserving the recall benefit of broader scope.
-Using two different prompts would introduce prompt-specific
-biases; using the same prompt ensures that disagreements between
-the two runs come only from LLM non-determinism, which is
-exactly what we want to filter.
+Using two different prompts would introduce prompt-specific biases;
+using the same prompt ensures that disagreements between the two
+runs reflect only LLM non-determinism.
 
-\emph{Design:}
-Knowledge-enriched prompts receive all known aliases from the
+Knowledge-enriched prompts receive the known aliases from the
 alias table, enabling recognition of abbreviations, synonyms, and
 partial names that the explicit extractor cannot match.
 The extraction scope includes space-separated compound forms,
@@ -373,119 +243,98 @@ functional descriptions by name or role, interaction participants
 (``X sends data to Y'' covers both X and Y),
 passive and prepositional mentions (``handled by X'', ``via X'',
 ``through X''), and known alias occurrences.
-The same prompt runs twice independently, and only candidates
-found in both passes are kept.
+The same prompt runs twice independently, and the pipeline keeps
+only candidates found in both passes.
 
 \paragraph{Validation.}
 Candidates undergo two-stage validation:
 \begin{enumerate}
     \item \emph{Generic-mention detection:}
-      For components classified as ambiguous (\S\ref{sec:names}),
-      an LLM determines whether each lowercase occurrence is a
-      component reference or ordinary English usage,
-      given the surrounding sentence context;
-      ordinary-usage occurrences are rejected.
+      For components whose names were classified as ambiguous by
+      Model Analysis (\S\ref{sec:names}), an LLM determines
+      whether each lowercase occurrence is a component reference or
+      ordinary English usage, given the surrounding sentence context;
+      the pipeline rejects ordinary-usage occurrences.
     \item \emph{Evidence-stratified voting:}
-      All remaining candidates are validated by two independent LLM
-      passes with complementary foci---\emph{actor-role}
-      (is the component the subject?) and \emph{direct-reference}
-      (does the sentence reference the component at all?).
+      Two independent LLM passes with complementary
+      foci---\emph{actor-role} (is the component the subject?)
+      and \emph{direct-reference} (does the sentence reference the
+      component at all?)---validate remaining candidates.
       When a candidate was matched via a known alias, the validation
-      prompt includes the alias relationship (e.g., ``Dispatcher is a
-      known partial reference for EventDispatcher''), and a single
+      prompt includes the alias relationship (e.g., ``Server is a
+      known partial reference for HTML5~Server''), and a single
       approving pass suffices (union).
       Exact-name matches require agreement from both passes
       (intersection).
-      This evidence-stratified rule reflects that alias-confirmed
+      This stratified rule reflects that alias-confirmed
       matches carry prior knowledge from Layer~1 that justifies
       a lower agreement threshold.
 \end{enumerate}
 
 \subsubsection{Anaphoric Reference Resolution}\label{sec:coref}
 
-\emph{Challenge~(C1, C4):}
 Sentences containing pronouns (\emph{it}, \emph{they}, \emph{this},
 \emph{these}, \emph{that}, \emph{those}, \emph{its}, \emph{their})
 carry valid trace information but contain no component name, so
 the preceding strategies cannot find them.
 However, LLMs can fabricate antecedents---claiming a pronoun refers
-to a component in a sentence that does not actually mention that
-component.
-
-\emph{Insight:}
+to a component that was never mentioned in nearby sentences.
 If the LLM is required to cite a specific antecedent sentence,
-hallucinated resolutions become detectable by checking whether the
-component name actually appears in that sentence---so each
-resolution is either verifiably correct or clearly fabricated.
+such fabrications become detectable: the cited sentence either
+contains the component name (or a known alias) or it does not.
 A separate validation LLM call would itself be subject to
-hallucination; deterministic verification eliminates this risk
-entirely, given a correct citation.
+fabrication; deterministic string verification eliminates this risk.
 
-\emph{Design:}
-Each pronoun-bearing sentence is presented as an individual case
+Each pronoun-bearing sentence is presented with a $\pm5$-sentence
+context window.
 % Resolution constraint justified by Lappin & Leass 1994 (86% accuracy
 % with current + 4 preceding sentences) and Centering Theory's
 % local-coherence model (Grosz et al. 1995). +-5 context window is
 % broader than the 3-sentence resolution bound to aid disambiguation.
-with a $\pm5$-sentence context window, processed in
-batches of~10.
 The broader window provides surrounding text for disambiguation,
 while the prompt instructs the LLM to resolve only within the
 previous 3~sentences---a conservative bound that reduces
-long-distance hallucinations.
+long-distance fabrications.
 The LLM must cite a specific antecedent sentence number.
-The pipeline verifies this citation deterministically: the
-component name (or a known alias) must appear verbatim in the
+The pipeline verifies this citation by checking that the
+component name (or a known alias) appears verbatim in the
 cited antecedent sentence.
-Because the verification is strict and deterministic, anaphoric
-links that pass all checks are accepted without further LLM review.
+Because this check is strict and deterministic, anaphoric
+links that pass are accepted without further LLM review.
 
 \subsubsection{Abbreviated Reference Matching}\label{sec:partial}
 
-\emph{Challenge~(C1):}
 Contextual discovery may miss sentences where a partial name
 appears without other clues in the surrounding text.
-Deciding whether ``Server'' refers to the component or is used
-as a generic word requires project-specific context that a single
-LLM prompt cannot reliably capture.
-
-\emph{Insight:}
 Partial names are short strings with high surface-level match rates,
 making LLM extraction unreliable: it tends to either over-generate
-or miss occurrences in unfamiliar contexts.
-Deterministic scanning guarantees recall completeness for known
-partials, and the evidence-stratified validation from
+or miss occurrences.
+Deterministic scanning guarantees complete recall for known
+partials, and evidence-stratified validation from
 \S\ref{sec:entity}---which judges concrete sentence--component
 pairs rather than performing open-ended extraction---is a simpler
 task where LLMs are more reliable.
-Since every partial candidate is alias-confirmed by construction,
-all receive union voting, giving them a lower rejection threshold
-than exact-name matches.
 
-\emph{Design:}
-The pipeline deterministically scans all sentences for
-word-boundary matches of each partial reference from the alias
-table, producing candidates for sentence--component pairs not
-already found by earlier strategies.
-A deterministic clean-mention check ensures the partial name
-appears as a standalone word---not inside a dotted path,
-hyphenated compound, or qualified name.
-The resulting candidates are then validated by the same
-evidence-stratified voting used in contextual discovery
-(\S\ref{sec:entity}); since every candidate is alias-confirmed
-by construction, all receive union voting.
+The pipeline scans all sentences for word-boundary matches of each
+partial reference from the alias table, producing candidates for
+sentence--component pairs not already found by earlier strategies.
+A clean-mention check ensures the partial name appears as a
+standalone word---not inside a dotted path, hyphenated compound, or
+qualified name.
+Since every partial candidate is alias-confirmed by construction,
+all receive union voting through the same evidence-stratified
+validation used in contextual discovery (\S\ref{sec:entity}).
 
 % ---------------------------------------------------------------------------
 
 \subsection{Link Consolidation}\label{sec:merge}
 
 The four recovery strategies produce independent candidate
-sets, each already validated by its own C4 mitigation pattern
+sets, each already validated by its own consensus pattern
 (Table~\ref{tab:strategies}).
-Because strategies operate independently, they may discover the
-same $(s_i, c_j)$ pair via different evidence.
-Overlaps are deduplicated by first-seen priority:
+Because strategies run independently, they may discover the
+same $(s_i, c_j)$ pair through different evidence.
+Overlaps are removed by first-seen priority:
 candidates are processed in strategy order
 (explicit, contextual, anaphoric, abbreviated),
-and the first source to discover a pair is retained.
-
+and the first source to discover a pair is kept.
