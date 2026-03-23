@@ -35,8 +35,30 @@ To handle them, our pipeline uses two cross-cutting patterns. \todo{cite source}
 \emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence numbers, that code can verify.
 % To prevent data leakage, all few-shot examples use abstract placeholders or safe textbook domains; no benchmark names or gold-standard information appears in any prompt.
 
+\begin{table}[t]
+\caption{Link recovery strategies and their properties.}
+\label{tab:strategies}
+\centering\footnotesize
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{Consensus pattern} & \textbf{LLM} \\
+\midrule
+Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2--3\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + stratified valid. & 2+2--3\rlap{$^*$} \\
+Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
+Abbreviated & Partial name & Alias table & Union valid. & 0+2--3\rlap{$^\dagger$} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\scriptsize $^*$2 extraction + 2--3 validation (generic-mention detection for ambiguous names, then 2 voting passes).
+$^\dagger$0 extraction (deterministic) + 2--3 validation.
+$^\ddagger$Extraction needs no knowledge (runs parallel with Layer~1);
+validation uses the alias table once Layer~1 completes.
+Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
+Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
+\end{table}
+
 \subsection{Project Knowledge Discovery}
-%%% provides initial seed links, could be transarc or ilinkerX
 Software architectural documents contains diverse references which often confuse in link recovery.
 In addition, component names are often common English words (\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{TBD}).
 These words appear frequently without referring to the component share the same name.
@@ -108,21 +130,6 @@ Finally, this output a mapping table, which later linkers can use to XX.
 % For each partial references to ambiguous terms,
 %  we use only  capitalized occurences as they refer to specific usage. 
 %TODO: check how partial refernces added 
-
-Further 
-
-\subsection{Coarse link recovery: Lissa style}
-This sub-agent serves as provide initial seed links by looking at explicit mentions only.
-It use two LLM pass each focus on different. 
-
-
-\subsection{Context aware/ knowledge enhanced link recovery}\label{sec:recovery}
-Layer~2 comprises four complementary strategies that recover candidate links.
-Each targets a different type of reference---exact mentions, explicit entity mentions, pronominal references, and abbreviated names
-
-
-
-\subsection{Trace Link knowledge based Judge}
 
 
 
