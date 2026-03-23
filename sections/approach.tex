@@ -84,24 +84,27 @@ The resulting knowledge base: a list of ambiguous components and an alias mappin
 This serves as a handbook for layer~2 agents to analyze the architectural doc and model.
 
 \subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
-Architectural components operates on high level, so containing ambiguous as real world concepts.
-Component names vary widely in specificity.
+Architectural components operate at a high level of abstraction, so their names vary widely.
 Constructed identifiers like \texttt{TaskScheduler} unambiguously name architectural roles, 
 but single common-English words like \texttt{Core} or \texttt{Adapter} appear frequently in both refering specific component and general concepts.
 \todo{source}
-This pose challenges to those trace link recovery. may intro false positive. 
-And confuse LLM about the trace link is not guided with reasoning paths. 
-Therefore, we build a knowledge base at this step to help downstream trace link recovery\emph{architectural}
-or \emph{ambiguous} using a two-step hybrid:
+This poses challenges for trace link recovery: blindly matching mentions of such names would produce false positives, 
+and an LLM lacking explicit reasoning about name ambiguity may confuse general usage with component references.
+Therefore, we analyze component names from the input architecture model to identify \emph{ambiguous} components: those whose names can also be used as general concepts (e.g., \emph{logic}, \emph{storage}).
+This classification serves as knowledge to guide downstream agents when evaluating candidate links.
+% Therefore, we build a knowledge base at this step to help downstream trace link recovery\emph{architectural}
+% or \emph{ambiguous} using a two-step hybrid:
 
-Therefore, blindly matching mentions of generic usage would cause false positive links.
-motivating by xx paper, todo, cite ref, we extract knowledge from it.
-Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
-This can serve as knowledge and provide context for to guide futher LLM trace linker when evaluating the link. 
+% % Therefore, blindly matching mentions of generic usage would cause false positive links.
+% motivating by xx paper, todo, cite ref, we extract knowledge from it.
+% Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
+% This can serve as knowledge and provide context for to guide futher LLM trace linker when evaluating the link. 
 
-Motivated by previously work on camelcase identifiers, acronyms, \todo{cite}
-We combine these rules with a few-shot LLM prompt to mark ambiguous components.
-We marked coumpound names like CamelCase, acronyms as non-ambiguous, and use LLM to find others.\todo{cite for retionale}
+% Motivated by previously work on camelcase identifiers, acronyms, \todo{cite}
+% We combine these rules with a few-shot LLM prompt to mark ambiguous components.
+% We marked coumpound names like CamelCase, acronyms as non-ambiguous, and use LLM to find others.\todo{cite for retionale}
+
+Motivated by prior work on CamelCase identifiers and acronyms,~\todo{cite} we combine structural rules with a few-shot LLM prompt to mark ambiguous components.
 
 Additionally, we also check component names with each other, to build a hiearchy.
 Because XXX. arch model are hiearchical.
