@@ -22,6 +22,7 @@ class LLMBackend(Enum):
     CODEX = "codex"
     CLAUDE = "claude"
     OPENAI = "openai"
+    CHECKPOINT = "checkpoint"
 
 
 @dataclass
@@ -91,6 +92,8 @@ class LLMClient:
                 self.backend = LLMBackend.CODEX
             elif env_backend == "openai":
                 self.backend = LLMBackend.OPENAI
+            elif env_backend == "checkpoint":
+                self.backend = LLMBackend.CHECKPOINT
             else:
                 self.backend = self._default_backend
 
@@ -99,6 +102,21 @@ class LLMClient:
         self.claude_model = model or os.environ.get("CLAUDE_MODEL", "sonnet")
         self.temperature = temperature if temperature is not None else 0.1
         self._openai_client = None
+
+        # Checkpoint backend configuration
+        self._checkpoint_dir: Optional[Path] = None
+        self._checkpoint_fallback: Optional[LLMBackend] = None
+        if self.backend == LLMBackend.CHECKPOINT:
+            self._checkpoint_dir = Path(
+                os.environ.get("CHECKPOINT_DIR", "./results/llm_checkpoint")
+            )
+            self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
+            fallback = os.environ.get("CHECKPOINT_FALLBACK", "claude").lower()
+            self._checkpoint_fallback = {
+                "claude": LLMBackend.CLAUDE,
+                "openai": LLMBackend.OPENAI,
+                "codex": LLMBackend.CODEX,
+            }.get(fallback, LLMBackend.CLAUDE)
 
         # Logging configuration
         self.enable_logging = enable_logging
@@ -463,6 +481,24 @@ class LLMClient:
         """Set the default backend for all new instances."""
         cls._default_backend = backend
 
+    def enable_checkpoint(self, checkpoint_dir: str,
+                          fallback: Optional[LLMBackend] = None) -> None:
+        """Switch this client to checkpoint mode.
+
+        Existing responses in checkpoint_dir are loaded on cache hit;
+        cache misses delegate to the fallback backend and save the result.
+
+        Args:
+            checkpoint_dir: Directory to store/load cached LLM responses.
+            fallback: Backend for cache misses. Defaults to current backend.
+        """
+        if fallback is None:
+            fallback = self.backend
+        self._checkpoint_fallback = fallback
+        self._checkpoint_dir = Path(checkpoint_dir)
+        self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.backend = LLMBackend.CHECKPOINT
+
     def save_usage_summary(self, output_path: Optional[str] = None):
         """Save usage summary to a JSON file."""
         if output_path is None:
@@ -490,6 +526,10 @@ class LLMClient:
         Retries on transient failures (timeout, connection errors) with
         exponential backoff. Raises RuntimeError after all retries exhausted.
 
+        For the checkpoint backend, responses are cached by prompt hash:
+        cache hit returns instantly; cache miss delegates to the fallback
+        backend (with retries), then saves the response.
+
         Args:
             prompt: The prompt to send
             timeout: Timeout in seconds
@@ -502,6 +542,10 @@ class LLMClient:
             RuntimeError: If all retries exhausted on transient errors
         """
         import time
+
+        # Checkpoint backend: check cache first, delegate on miss
+        if self.backend == LLMBackend.CHECKPOINT:
+            return self._query_checkpoint(prompt, timeout, max_retries)
 
         last_response = None
         for attempt in range(max_retries):
@@ -550,6 +594,97 @@ class LLMClient:
         raise RuntimeError(
             f"LLM query failed after {max_retries} retries: {last_response.error}"
         )
+
+    # ==================== Checkpoint Backend ====================
+
+    @staticmethod
+    def _prompt_hash(prompt: str) -> str:
+        """Deterministic SHA-256 hash of a prompt string, used as cache key."""
+        import hashlib
+        return hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+
+    def _checkpoint_path(self, prompt: str) -> Path:
+        """Return the cache file path for a given prompt."""
+        return self._checkpoint_dir / f"{self._prompt_hash(prompt)}.json"
+
+    def _load_cached_response(self, path: Path) -> Optional[LLMResponse]:
+        """Load an LLMResponse from a checkpoint JSON file.
+
+        Returns None if the file doesn't exist or is corrupt.
+        """
+        if not path.exists():
+            return None
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            token_usage = None
+            if data.get("token_usage"):
+                tu = data["token_usage"]
+                token_usage = TokenUsage(
+                    prompt_tokens=tu.get("prompt_tokens", 0),
+                    completion_tokens=tu.get("completion_tokens", 0),
+                    total_tokens=tu.get("total_tokens", 0),
+                )
+            return LLMResponse(
+                text=data["text"],
+                success=data["success"],
+                error=data.get("error"),
+                token_usage=token_usage,
+                model=data.get("model"),
+                latency_ms=data.get("latency_ms"),
+            )
+        except (json.JSONDecodeError, KeyError, TypeError):
+            return None
+
+    def _save_cached_response(self, path: Path, response: LLMResponse) -> None:
+        """Save an LLMResponse to a checkpoint JSON file."""
+        data = {
+            "text": response.text,
+            "success": response.success,
+            "error": response.error,
+            "model": response.model,
+            "latency_ms": response.latency_ms,
+            "token_usage": {
+                "prompt_tokens": response.token_usage.prompt_tokens,
+                "completion_tokens": response.token_usage.completion_tokens,
+                "total_tokens": response.token_usage.total_tokens,
+            } if response.token_usage else None,
+        }
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+
+    def _query_checkpoint(self, prompt: str, timeout: int, max_retries: int) -> LLMResponse:
+        """Checkpoint backend: load cached response or call fallback and save.
+
+        Cache key is SHA-256 of the prompt text. On hit, returns instantly
+        with latency_ms=0. On miss, delegates to the fallback backend
+        (with full retry logic), saves the successful response, and returns it.
+        """
+        import time as _time
+
+        cache_path = self._checkpoint_path(prompt)
+
+        # Cache hit
+        cached = self._load_cached_response(cache_path)
+        if cached is not None:
+            cached.latency_ms = 0
+            if self.enable_logging:
+                self._log_request(prompt, cached, 0)
+            return cached
+
+        # Cache miss — delegate to fallback backend
+        original_backend = self.backend
+        self.backend = self._checkpoint_fallback
+        try:
+            response = self.query(prompt, timeout=timeout, max_retries=max_retries)
+        finally:
+            self.backend = original_backend
+
+        # Save successful responses
+        if response.success:
+            self._save_cached_response(cache_path, response)
+
+        return response
 
     def _query_codex(self, prompt: str, timeout: int) -> LLMResponse:
         """Query using Codex CLI."""
