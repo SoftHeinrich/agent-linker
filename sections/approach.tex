@@ -4,36 +4,44 @@ We propose a multi-agent workflow for recovering  trace links between architectu
 Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ and an architectural model containing components ${c_1, \ldots, c_m}$, our approach produces a set of trace links $L \subseteq S
   \times C$, where each link $(s_i, c_j)$ asserts that sentence $s_i$ discusses component $c_j$'s architectural responsibilities.
 
+Architectural doc has XX charistics, brings 2 problems, then its difficult.
 Two problems make this task difficult.
-First, \emph{reference diversity}: documents refer to components by canonical name, abbreviation, functional description, trailing word, or pronoun.
-No single extraction strategy handles all of these forms.
-Second, \emph{name ambiguity}: component names like \texttt{Cache} or \texttt{Facade} are common English words that appear frequently without referring to any component, so broadening extraction to capture diverse references also increases false positives.
+First, \emph{reference diversity}: documents refer to components by exact name, abbreviation, synonym, trailing word, or pronoun.
+No single entity extraction strategy handles all of these forms.
+Second, \emph{name ambiguity}: component names like \texttt{Cache} or \texttt{Facade} are common English words that appear frequently without referring to any component, 
+so broadening extraction to capture diverse references also increases false positives.
 
 Addressing both problems requires structured knowledge: which names are ambiguous, and what abbreviations, synonyms, and short forms map to which component.
-To the best of our knowledge, this knowledge does not exist in advance and must be discovered at runtime, using the same LLM that will consume it, with the risk of hallucinated mappings or misjudged ambiguity.
+To the best of our knowledge, this knowledge does not exist in advance and must be discovered at runtime.\todo{define runtime} 
+Using the same LLM that will consume it, with the risk of hallucinated mappings or misjudged ambiguity. 
+\todo{refactor to difficult to extract, needs much work, but can be reuse}
 We call this the \emph{architectural context knowledge gap}.
 
 Existing approaches address only part of this problem.
 Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string similarity and cannot resolve indirect references or discourse dependencies.
-LLM-based classifiers such as LISSA~\cite{lissa} add semantic understanding but have no mechanism to build alias mappings or classify name ambiguity before linking,
+LLM-based classifiers such as LISSA~\cite{lissa} add semantic understanding via LLM 
+but have no mechanism to build alias mappings or classify name ambiguity before linking,
 
 Our pipeline closes the knowledge gap first, then leverage multiple link recovery agents using the acquired knowledge.
 It is organized as a DAG (Figure~\ref{fig:pipeline}) with three layers:
 
 \begin{enumerate}
-\item \textbf{Project knowledge discovery} (layer~1): Agents analyze and extract structured knowledge from architectural documents and models. 
+\item \textbf{Project knowledge discovery} (layer~1): 
+Agents analyze the architectural document and model to extract structured knowledge. 
 Knowledge includes component alias table and identify ambiguous components. 
-\item \textbf{Candidate Link recovery} (layer~2): Four complementary agents recover candidate links via different mechanisms: component mentioning match, entity extraction, component coreference resolution, and partial-reference . 
+\item \textbf{Candidate Link recovery} (layer~2): 
+Four complementary agents recover candidate links via different mechanisms: explicit mentioning match, entity extraction, coreference resolution, and abbreviated reference matching. 
 The strategies are largely independent: each targets a different type of component reference.
-\item \textbf{Architectural judge review} (layer~3): All recovered links merge to final set.
+The agents are largely independent: each targets a different type of component reference
+\item \textbf{Link consolidation} (layer~3): All recovered links merge to final link set.
 \todo{benefits}
 \end{enumerate}
 
-Since our agents are LLM based, it may contain noises like hallucinated results and non-determinism.
-To handle them, our pipeline uses two cross-cutting patterns. \todo{cite source}
+\acp{LLM} bring the benefits of rich semantic understanding, however, they are non-deterministic and may output noises like hallucinated results.
+To this challenge, our pipeline uses two cross-cutting patterns. \todo{cite source}
 \emph{Multi-pass consensus}: for open-ended tasks, we use two independent LLM passes with agreement rules to avoid single run variance.
-\emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence numbers, that code can verify.
-% To prevent data leakage, all few-shot examples use abstract placeholders or safe textbook domains; no benchmark names or gold-standard information appears in any prompt.
+\emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence for resolved coreference.
+
 
 \begin{table}[t]
 \caption{Link recovery strategies and their properties.}
@@ -59,14 +67,21 @@ Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
 \end{table}
 
 \subsection{Project Knowledge Discovery}
-Software architectural documents contains diverse references which often confuse in link recovery.
+Software architectural documents contains diverse references that often confuse link-recovery agents.
 In addition, component names are often common English words (\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{TBD}).
-These words appear frequently without referring to the component share the same name.
-It poses a challenge for deep understanding both doc and model in the architectural context.
-Layer~1 builds a shared knowledge base from the architectural document and model.
-It first call two sub-agent analyze the architectural model to obtaining component relationships and indentify ambiguous components
-and document to extract component alias each.
-Then merge them to obtain: list of ambiguous components, alias mapping table, component relationships. 
+These words appear frequently, sometimes referring to the component share the same name, sometimes used as a generic concepts.
+It poses a need for deep understanding both doc and model in the architectural context.
+Although \acp{LLM} have shown improved ability to understand,\todo{cite } still gaps. \todo{cite }
+And techniques for improving understanding ability are often more costy token.\cite{cite }
+
+
+To help \acp{LLM} understand and make knowledge reusable,  Layer~1 builds a shared knowledge base for downstream linkers.
+Two sub-agents run in parallel: a \emph{model understanding agent} analyzes the architectural model to identify ambiguous components
+(\S\ref{sec:model-understanding}), and a \emph{document understanding agent} extracts component aliases from the document
+(\S\ref{sec:doc-understanding}).
+Once both complete, a partial-reference refinement step merges their outputs and enriches the alias table with LLM-classified trailing-word mappings.
+The resulting knowledge base: a list of ambiguous components and an alias mapping table.
+This serves as a handbook for layer~2 agents to analyze the architectural doc and model.
 
 \subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
 Architectural components operates on high level, so containing ambiguous as real world concepts.
