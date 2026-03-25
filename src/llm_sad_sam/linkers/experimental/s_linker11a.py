@@ -1,8 +1,22 @@
-"""S-Linker11a: S-Linker11 + role-verification validation rules (V_RV).
+"""S-Linker11a: S-Linker11 + knowledge-aware seed reference disambiguation.
 
-Same 5-tier pipeline as S-Linker11. Only change: VALIDATION_RULES includes
-an additional reject clause for alias mismatches where the sentence discusses
-a different aspect of the system that merely shares the alias word.
+Replaces S-Linker11's seed validation (_validate_intersect on seeds) with a
+lighter, knowledge-aware reference disambiguation step:
+
+  - Per-component LLM pass with component dossier (ambiguity, aliases, anchors)
+  - Single pass with approve-biased framing (confirm, not decide)
+  - Match context tells LLM how name was found (proper case, lowercase, alias, path)
+
+Motivation: seeds carry prior evidence from baseline extraction, so they need
+confirmation (is there reason to doubt this?) rather than full validation
+(prove this is a valid link). S-Linker11's dual-pass intersection killed
+37 TPs to catch 8 FPs (4.6:1 kill ratio). Disambiguation catches 5 FPs
+with zero TP kills.
+
+Graduated validation hierarchy:
+  Entity candidates (no prior evidence)  → dual-pass consensus
+  Seed links (baseline extraction)       → single-pass disambiguation
+  Coreference links (antecedent-verified) → no additional validation
 """
 
 from __future__ import annotations
@@ -21,34 +35,54 @@ from llm_sad_sam.core.data_types_v2 import (
 from llm_sad_sam.core.document_loader_v2 import (
     Sentence, load_sentences, build_sent_map,
 )
-from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
+from llm_sad_sam.linkers.experimental.ilinker3 import ILinker3
 from llm_sad_sam.linkers.experimental.prompts_v2 import (
     AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
     DOC_KNOWLEDGE_JUDGE_EXAMPLES, DOC_KNOWLEDGE_JUDGE_RULES,
     DOC_KNOWLEDGE_EXTRACTION_RULES,
-    ENTITY_EXTRACTION_RULES, COREF_RULES,
+    ENTITY_EXTRACTION_RULES, VALIDATION_RULES, COREF_RULES,
     WORD_USAGE_PROMPT,
 )
-from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_RULES_V as VALIDATION_RULES
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
-from llm_sad_sam.llm_client import LLMClient, LLMBackend  # shared with ILinker2
+from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 class SLinker11a:
-    """S-Linker11 + role-verification validation rules (V_RV)."""
+    """S-Linker11 + knowledge-aware seed reference disambiguation."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
         re.IGNORECASE
     )
+
+    SEED_DISAMBIGUATION_RULES = """REFERENCE DISAMBIGUATION — determine what the name means in each sentence.
+
+COMPONENT (approve): The sentence discusses this architectural component —
+it performs actions, provides services, is described, configured, listed,
+or referenced by name in any grammatical role.
+
+OTHER (reject): The name clearly carries a different meaning:
+- Code-level notation: the name appears inside a package path, qualified
+  identifier, or a sentence that enumerates code-level identifiers
+- Technique or methodology: the sentence describes an algorithm, pattern,
+  or approach that shares the component's name — not what the component
+  does as an architectural participant
+- Embedded sub-entity: the name appears only as part of a longer proper
+  name that denotes a different, more specific entity
+- Different entity: the sentence refers to a similarly-named but distinct
+  thing (the name partially overlaps but the full reference is different)
+- Generic English: the word is used with its ordinary dictionary meaning
+
+When uncertain, choose COMPONENT — these candidates passed independent extraction."""
+
     def __init__(self, backend: LLMBackend | None = None):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
         self.llm = LLMClient(backend=backend or LLMBackend.CLAUDE)
         self.model_knowledge: ModelKnowledge | None = None
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log = []
-        self._ilinker2 = ILinker2(backend=self.llm.backend)
+        self._ilinker3 = ILinker3(llm=self.llm)
         self._generic_partials: set[str] = set()
-        print("SLinker11a (S-Linker11 + V_RV role-verification validation)")
+        print("SLinker11a (3-layer pipeline, seed disambiguation + evidence-stratified verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -107,7 +141,7 @@ class SLinker11a:
         acq = self._run_parallel({
             "model": lambda: self._analyze_model(components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
-            "seed": lambda: self._run_seed(text_path, model_path),
+            "seed": lambda: self._run_seed(sentences, components),
         })
 
         self.model_knowledge = acq["model"]
@@ -373,16 +407,13 @@ JSON only:"""
 
         return knowledge
 
-    def _run_seed(self, text_path, model_path):
-        """LLM-based seed extraction via ILinker2.
+    def _run_seed(self, sentences, components):
+        """LLM-based seed extraction via ILinker3 (v2 stack, no file I/O).
 
-        Uses a lightweight LLM extractor as the seed strategy. The seed
-        provides broad initial coverage; false positives are filtered by
-        the same evidence-stratified validation applied to all strategies.
+        Uses pre-loaded sentences and components — no redundant file reads
+        or dual data-stack loading.
         """
-        raw = self._ilinker2.link(text_path, model_path)
-        return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
-                           source="seed") for l in raw]
+        return self._ilinker3.extract(sentences, components)
 
     # ═══════════════════════════════════════════════════════════════════════
     # Tier 2 — Partial-Reference Refinement
@@ -473,50 +504,184 @@ JSON only:"""
     # ═══════════════════════════════════════════════════════════════════════
 
     def _run_seed_validation(self, raw_seed_links, components, sent_map):
-        """Validate seed links through evidence-stratified validation.
+        """Knowledge-aware seed reference disambiguation.
 
-        Killed TPs are recovered by entity/coref/partial via dedup
-        (tested: zero net recall cost).
+        Per-component LLM pass with component dossier (ambiguity classification,
+        known aliases, anchor sentences) and match context.  Single pass with
+        approve-biased framing: seeds carry prior baseline evidence, so we ask
+        "is there reason to doubt?" rather than "prove this is valid."
         """
-        seed_candidates = []
+        if not raw_seed_links:
+            return []
+
+        # Group seeds by component
+        by_comp: dict[str, list[SadSamLink]] = {}
         for sl in raw_seed_links:
-            sent = sent_map.get(sl.sentence_number)
-            if not sent:
+            by_comp.setdefault(sl.component_name, []).append(sl)
+
+        comp_names = self._get_comp_names(components)
+        verified = []
+
+        for comp_name, seeds in sorted(by_comp.items()):
+            seed_snums = {sl.sentence_number for sl in seeds}
+
+            # ── Component profile ──
+            profile = self._build_component_profile(comp_name)
+
+            # ── Anchor sentences (proper-case mentions NOT in seed set) ──
+            anchor_lines = []
+            for s in sorted(sent_map.values(), key=lambda x: x.number):
+                if s.number in seed_snums:
+                    continue
+                if self._has_standalone_mention(comp_name, s.text):
+                    anchor_lines.append(f'  S{s.number}: "{s.text}"')
+                    if len(anchor_lines) >= 5:
+                        break
+
+            if anchor_lines:
+                anchor_section = (
+                    f'KNOWN REFERENCES (these definitely refer to "{comp_name}"):\n'
+                    + "\n".join(anchor_lines) + "\n\n"
+                )
+            else:
+                anchor_section = (
+                    f'NOTE: No standalone proper-case references to "{comp_name}" found '
+                    f"elsewhere in the document. This component may not be discussed "
+                    f"architecturally — be extra careful to verify each case.\n\n"
+                )
+
+            # ── Build cases with match context ──
+            case_lines = []
+            valid_seeds = []
+            for sl in seeds:
+                sent = sent_map.get(sl.sentence_number)
+                if not sent:
+                    continue
+                valid_seeds.append(sl)
+                prev = sent_map.get(sl.sentence_number - 1)
+                prev_text = f' [prev: "{prev.text[:80]}"]' if prev else ""
+                match_ctx = self._classify_mention(comp_name, sent.text)
+                case_lines.append(
+                    f'  Case {len(valid_seeds)} (S{sl.sentence_number}): '
+                    f'"{sent.text}"{prev_text}\n    Mention: {match_ctx}'
+                )
+
+            if not valid_seeds:
                 continue
-            # Detect what actually matched in the sentence (component name or alias)
-            # so evidence stratification can distinguish exact vs alias-backed.
-            matched = self._find_matched_text(sl.component_name, sent.text)
-            seed_candidates.append(CandidateLink(
-                sl.sentence_number, sent.text, sl.component_name, sl.component_id,
-                matched, source="seed",
-            ))
-        seed_validated = self._validate_intersect(seed_candidates, components, sent_map)
-        return [SadSamLink(c.sentence_number, c.component_id, c.component_name, source="seed")
-                for c in seed_validated]
 
-    def _find_matched_text(self, comp_name, sentence_text):
-        """Find what actually matched in the sentence: component name or known alias.
+            # ── LLM call ──
+            prompt = f"""REFERENCE DISAMBIGUATION for component "{comp_name}"
 
-        Returns the matched text (alias string if alias-backed, component name
-        if exact). This determines evidence stratification: alias-backed matches
-        get union voting, exact-name matches get intersection.
+COMPONENT PROFILE:
+{profile}
+
+{anchor_section}CASES TO VERIFY:
+{chr(10).join(case_lines)}
+
+{self.SEED_DISAMBIGUATION_RULES}
+
+Return JSON:
+{{"disambiguations": [{{"case": 1, "meaning": "component", "reason": "brief"}}]}}
+JSON only:"""
+
+            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+            if not data:
+                verified.extend(valid_seeds)  # Keep all on failure (approve-biased)
+                continue
+
+            results = {}
+            for d in data.get("disambiguations", []):
+                idx = d.get("case", 0) - 1
+                results[idx] = d
+
+            approved = 0
+            for i, sl in enumerate(valid_seeds):
+                r = results.get(i, {})
+                meaning = (r.get("meaning", "component") or "component").lower().strip()
+                if meaning == "other":
+                    reason = r.get("reason", "")
+                    print(f"    Seed disambig reject: S{sl.sentence_number} -> "
+                          f"{comp_name} ({reason})")
+                else:
+                    verified.append(sl)
+                    approved += 1
+
+            print(f"    [{comp_name}] {approved}/{len(valid_seeds)} seeds kept")
+
+        return [SadSamLink(s.sentence_number, s.component_id,
+                           s.component_name, source="seed")
+                for s in verified]
+
+    def _build_component_profile(self, comp_name: str) -> str:
+        """Build textual component profile for disambiguation prompt."""
+        lines = [f"- Name: {comp_name}"]
+
+        is_ambig = (self.model_knowledge
+                    and comp_name in self.model_knowledge.ambiguous_names)
+        if is_ambig:
+            lines.append(f'- Classification: AMBIGUOUS — "{comp_name}" is a common English word')
+        else:
+            lines.append("- Classification: DISTINCTIVE — architecturally specific name")
+
+        aliases = []
+        if self.doc_knowledge:
+            for a, target in self.doc_knowledge.abbreviations.items():
+                if target == comp_name:
+                    aliases.append(f'"{a}" (abbreviation)')
+            for s, target in self.doc_knowledge.synonyms.items():
+                if target == comp_name:
+                    aliases.append(f'"{s}" (synonym)')
+            for p, target in self.doc_knowledge.partial_references.items():
+                if target == comp_name:
+                    aliases.append(f'"{p}" (partial reference)')
+
+        if aliases:
+            lines.append(f"- Known aliases: {', '.join(aliases)}")
+        else:
+            lines.append("- Known aliases: none")
+        return "\n".join(lines)
+
+    def _classify_mention(self, comp_name: str, text: str) -> str:
+        """Classify how the component name appears in the sentence.
+
+        Returns a human-readable match description for the LLM prompt.
         """
-        # Check exact component name first
-        if self._has_standalone_mention(comp_name, sentence_text):
-            return comp_name
-        # Check known aliases (abbreviations, synonyms, partial references)
+        # Check exact proper-case standalone mention
+        if self._has_standalone_mention(comp_name, text):
+            return "proper case, standalone"
+
+        # Check lowercase mention
+        comp_lower = comp_name.lower()
+        if re.search(rf'\b{re.escape(comp_lower)}\b', text):
+            # In dotted path?
+            for m in re.finditer(rf'\b{re.escape(comp_lower)}\b', text):
+                s, e = m.start(), m.end()
+                in_dotted = (
+                    (s > 0 and text[s - 1] == ".") or
+                    (e < len(text) and text[e] == "." and e + 1 < len(text)
+                     and text[e + 1].isalpha())
+                )
+                if in_dotted:
+                    return "lowercase, inside dotted path"
+            return "lowercase mention"
+
+        # Check alias match
         if self.doc_knowledge:
             for alias, target in self.doc_knowledge.abbreviations.items():
-                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', sentence_text):
-                    return alias
-            for alias, target in self.doc_knowledge.synonyms.items():
-                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', sentence_text, re.IGNORECASE):
-                    return alias
+                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', text):
+                    return f'via known abbreviation "{alias}"'
+            for syn, target in self.doc_knowledge.synonyms.items():
+                if target == comp_name and re.search(
+                    rf'\b{re.escape(syn)}\b', text, re.IGNORECASE
+                ):
+                    return f'via known synonym "{syn}"'
             for partial, target in self.doc_knowledge.partial_references.items():
-                if target == comp_name and re.search(rf'\b{re.escape(partial)}\b', sentence_text, re.IGNORECASE):
-                    return partial
-        # Fallback: component name (even if not found — validation will handle)
-        return comp_name
+                if target == comp_name and re.search(
+                    rf'\b{re.escape(partial)}\b', text, re.IGNORECASE
+                ):
+                    return f'via known partial reference "{partial}"'
+
+        return "indirect/unclear match"
 
     def _run_entity_pipeline(self, sentences, components, name_to_id, sent_map):
         """Dual-pass entity extraction with consensus, then 3-step validation."""
@@ -1010,7 +1175,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     def _checkpoint_dir(self, text_path):
         cache_dir = os.environ.get("PHASE_CACHE_DIR", "./results/phase_cache")
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        d = os.path.join(cache_dir, "s_linker11", ds)
+        d = os.path.join(cache_dir, "s_linker11a", ds)
         os.makedirs(d, exist_ok=True)
         return d
 
@@ -1034,7 +1199,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
         os.makedirs(log_dir, exist_ok=True)
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        path = os.path.join(log_dir, f"s_linker11_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        path = os.path.join(log_dir, f"s_linker11a_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
         with open(path, "w") as f:
             json.dump(self._phase_log, f, indent=2, default=str)
         print(f"  Phase log saved: {path}")
