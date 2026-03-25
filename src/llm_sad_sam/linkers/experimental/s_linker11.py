@@ -270,6 +270,16 @@ class SLinker11:
             return True
         return False
 
+    @staticmethod
+    def _split_component_name_parts(name):
+        """Split a component name into whitespace, hyphen, and CamelCase parts."""
+        parts = []
+        for chunk in re.split(r'[\s-]+', name.strip()):
+            if not chunk:
+                continue
+            parts.extend(re.findall(r'[A-Z]+(?=[A-Z][a-z]|$)|[A-Z]?[a-z]+|\d+', chunk) or [chunk])
+        return parts or [name]
+
     def _classify_components(self, names, knowledge):
         """Classify components using few-shot prompt + structural code guard."""
         prompt = f"""Classify these software architecture component names.
@@ -310,7 +320,7 @@ JSON only:"""
 
         self._generic_partials = set()
         for comp in components:
-            parts = re.findall(r'[A-Z][a-z]+|[a-z]+|[A-Z]+(?=[A-Z]|$)', comp.name)
+            parts = self._split_component_name_parts(comp.name)
             for part in parts:
                 p_lower = part.lower()
                 if part.isupper():
@@ -423,7 +433,7 @@ JSON only:"""
         existing_partial_lower = {p.lower() for p in self.doc_knowledge.partial_references}
         added = []
         for comp in components:
-            parts = comp.name.split()
+            parts = self._split_component_name_parts(comp.name)
             if len(parts) < 2:
                 continue
             last_word = parts[-1]

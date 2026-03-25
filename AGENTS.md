@@ -1,0 +1,142 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+**llm-sad-sam-v45** is a Python tool that uses LLMs to recover trace links between Software Architecture Documents (SAD) and Software Architecture Models (SAM). It refines baseline TransArc links through a 10-phase LLM-driven pipeline with discourse-aware coreference resolution and implicit reference detection.
+
+Part of the ARDoCo research ecosystem. See the parent directory's `CLAUDE.md` for broader project context.
+
+## Build & Run Commands
+
+```bash
+# Install in development mode
+pip install -e ".[dev,openai]"
+
+# Run tests
+pytest
+
+# Run a single test
+pytest tests/test_foo.py::test_bar
+
+# Run the CLI (entry point defined but not yet implemented)
+llm-sad-sam [options]
+```
+
+Python 3.11+ required. Dependencies: click, lxml, rapidfuzz. Optional: openai SDK.
+
+## Architecture
+
+### 10-Phase Pipeline
+
+The linker (`TransArcRefinedLinkerV45`) processes documents through sequential phases, each building on prior results:
+
+| Phase | Purpose | Output |
+|-------|---------|--------|
+| 0 | Document profiling (complexity, pronoun ratio) | `DocumentProfile` |
+| 1 | Model structure analysis | `ModelKnowledge` |
+| 2 | Pattern learning with LLM debate | `LearnedPatterns` |
+| 3 | Document knowledge with judge validation | `DocumentKnowledge` |
+| 4 | TransArc baseline link processing | Initial links |
+| 5 | LLM entity extraction | Candidate links |
+| 6 | Self-consistency validation (two-pass voting) | Validated links |
+| 7 | Discourse-aware coreference resolution | Coref links |
+| 8 | Implicit reference detection | Implicit links |
+| 9 | Agent-as-Judge review | Approved links |
+| 10 | Adaptive false-negative recovery | Final links |
+
+Entry point: `TransArcRefinedLinkerV45.link(text_path, model_path, transarc_csv=None) → list[SadSamLink]`
+
+### Module Layout
+
+- **`core/data_types.py`** — All shared dataclasses (`SadSamLink`, `CandidateLink`, `DocumentProfile`, `ModelKnowledge`, `DocumentKnowledge`, `LearnedPatterns`, `DiscourseContext`, etc.) and enums (`LinkSource`)
+- **`core/document_loader.py`** — Loads documentation sentences (one per line), TransArc baseline CSVs, paragraph detection, context windowing
+- **`core/model_analyzer.py`** — Parses PCM models via `pcm_parser`, classifies components (architectural vs ambiguous) using LLM, extracts implementation patterns and shared vocabulary
+- **`pcm_parser.py`** — XML parsing of Palladio Component Model `.repository` files using lxml
+- **`llm_client.py`** — LLM abstraction with three backends and two modes (see below)
+- **`linkers/experimental/transarc_refined_linker_v45.py`** — The V45 linker implementation (~1073 lines)
+- **`linkers/experimental/agent_linker_v26a.py`** — V26a pipeline (current best with TransArc seed, 95.4% macro F1)
+- **`linkers/experimental/ilinker2_v30a.py`** — V30a: ILinker2 seed + V26a pipeline + fully prompt-driven Phase 3 (zero code overrides)
+- **`linkers/experimental/ilinker2_v30b.py`** — V30b: few-shot calibrated Phase 3 judge, zero code overrides (94.1% macro F1)
+- **`linkers/experimental/ilinker2_v30c.py`** — V30c: V30b + no dotted-path regex + pickle checkpoints for ablation
+- **`linkers/experimental/ilinker2_v30d.py`** — V30d: V30c + resume support + CamelCase rescue + heuristic toggle flags for ablation
+- **`linkers/experimental/ilinker2_v31.py`** — V31 standalone: clean V30c + CamelCase rescue + convention filter (partial_inject immune) + reframed judge rules. 94.5% macro F1.
+- **`linkers/experimental/ilinker2_v32.py`** — V32 standalone: V31 + convention filter covers partial_inject (no immunity) + zero prompt leakage + GPT-5.2 compatibility. Claude Sonnet: 94.5% macro F1 | GPT-5.2: ~90.6% macro F1.
+- **`linkers/experimental/ilinker2_v33.py`** — V33 standalone: V32 + Pareto-safe cross-model fixes (pure-LLM generic mention handling, judge Rule 4 exception for named components).
+- **`linkers/experimental/ilinker2_v33f.py`** — V33f standalone: V33 + forward coref ×2 union for variance stabilization.
+- **`linkers/experimental/ilinker2_v33g.py`** — V33g standalone: V33f + Java TransArc CSV seed option (deterministic Phase 4, falls back to ILinker2 if no CSV).
+  - **Note**: V31-V33g are all standalone files (no inheritance). Each inlines ~49 methods from the former AgentLinkerV26a/AgentLinker base classes for independent evolution.
+- **`linkers/experimental/s_linker.py`** — S-Linker: DAG-based standalone (V39 + dead code removal + DAG tiers).
+- **`linkers/experimental/s_linker2.py`** — S-Linker2: S-Linker + V40c (LLM generic detection + coref exempt + bug fixes).
+- **`linkers/experimental/s_linker3.py`** — S-Linker3: S-Linker2 + unified coref (Variant E) + keep_coref (no judge). 94.0% macro F1.
+- **`linkers/experimental/s_linker4.py`** — S-Linker4: S-Linker3 + seed links go through convention filter (no immunity). 94.0% macro F1. Catches 3 additional seed FPs (dotted-path, compound names) with 0 TPs killed.
+- **`linkers/experimental/s_linker5.py`** — S-Linker5: S-Linker4 + dead code removal + marginal filter cleanup.
+- **`linkers/experimental/s_linker6.py`** — S-Linker6: S-Linker5 simplified — no subprocess term learning, no targeted recovery, no keep-coref flag. 94.9% macro F1.
+- **`linkers/experimental/s_linker7.py`** — S-Linker7: S-Linker6 − boundary/convention filter (ICSE simplification). 92.3% macro F1.
+- **`linkers/experimental/s_linker8.py`** — **S-Linker8**: S-Linker7 + partials routed through validation + dead code removal + truncation fix. 93.1% macro F1. Cleanest pipeline: no boundary filter, no judge, partials validated by same 2-pass intersection as entity candidates.
+- **`linkers/experimental/s_linker9.py`** — S-Linker9: S-Linker8 + 3 safe removals (impl variant filtering, CamelCase synonym injection, CamelCase rescue override). 93.9% macro F1.
+- **`linkers/experimental/s_linker10.py`** — **S-Linker10 (current ICSE)**: S-Linker9 + alias-context validation + evidence-stratified voting + LLM word usage enrichment + clean pronoun pattern + prompts_v2. Fully LLM-driven: no magic thresholds, no auto-approval shortcut. Exact-name uses intersection, alias-backed uses union.
+- **`linkers/experimental/s_linker10a.py`** — Ablation: S-Linker10 with count>=3 enrichment threshold instead of LLM word usage classification.
+- **`linkers/experimental/prompts_v2.py`** — Clean prompt constants for S-Linker10+. Only constants actually used (no CONVENTION_GUIDE or WORD_USAGE_PROMPT).
+
+### LLM Client
+
+Supports three backends selected via `LLM_BACKEND` env var:
+- **`claude`** (default) — Calls `claude -p --output-format json --dangerously-skip-permissions` as subprocess
+- **`openai`** — Uses OpenAI SDK (temperature 0.1, seed=42, max 4096 tokens, exponential backoff retry, httpx connection pool limits)
+- **`codex`** — Calls `codex exec` as subprocess
+
+Two operation modes:
+1. **Stateless**: `query(prompt)` — independent calls
+2. **Conversation**: `start_conversation()` → `query_conversation()` → `end_conversation()` — maintains message history, trims at 50K tokens
+
+All queries are logged to JSONL files with token usage tracking.
+
+### Key Design Patterns
+
+- **Adaptive thresholds**: Document profile (learned in Phase 0) determines strictness level and per-category confidence thresholds for coref, validation, FN recovery, and disambiguation
+- **Multi-pass voting**: Phases 6 and 10 use two independent LLM passes that vote on uncertain candidates
+- **Debate + Judge**: Phase 2 uses debate (two LLM passes cross-validate patterns); Phase 3 uses a judge to validate document knowledge
+- **Discourse tracking**: `DiscourseContext` maintains recent mentions, paragraph topic, and active entity per sentence for Phases 7-8
+- **Batch processing**: Coreference (12/batch), implicit refs (10/batch), entity extraction (100 sentences/batch), validation (25/batch)
+
+## Environment Variables
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `LLM_BACKEND` | Backend: "claude", "openai", "codex" | "claude" |
+| `OPENAI_API_KEY` | Required for OpenAI backend | — |
+| `OPENAI_MODEL_NAME` | OpenAI model | "gpt-5.2" |
+| `CLAUDE_MODEL` | Claude CLI model override | — |
+| `LLM_LOG_DIR` | Query log directory | "./results/llm_logs" |
+| `LLM_SESSION_DIR` | Working directory for CLI subprocesses | — |
+
+## LLM Model
+
+Always use **Claude Sonnet** as the LLM model unless explicitly told otherwise. Never use Opus — it is too expensive for the pipeline's many LLM calls. Ensure `CLAUDE_MODEL` is set to `"sonnet"` (via `os.environ` or env var) before any linker runs.
+
+## Phase Checkpointing
+
+When creating new linker versions, **always save intermediate phase outputs** as JSON checkpoints so that later phases (especially Phase 9 Judge) can be re-run without repeating expensive earlier LLM calls.
+
+- Save checkpoints after each major phase boundary using `_save_checkpoint(text_path, phase_label, state_dict)`
+- At minimum, save a `pre9` checkpoint before Phase 9 (the judge) containing: preliminary links, transarc_set, model_knowledge, doc_knowledge, is_complex, generic_component_words, generic_partials
+- Support `resume_from_phase=N` parameter in `link()` to reload from checkpoint and skip phases 0..N-1
+- Checkpoint directory: `results/phase_cache/{dataset}/phase_{label}.json` (configurable via `PHASE_CACHE_DIR` env var)
+- Use `_links_to_json()` / `_links_from_json()` for serializing link lists
+- See `agent_linker_v26d.py` for reference implementation
+
+This enables rapid iteration on judge prompts without re-running the full 50-minute pipeline.
+
+```bash
+# Full run (saves checkpoints automatically)
+python run_ablation.py --variants v26d --datasets mediastore
+
+# Resume from Phase 9 checkpoint (only re-runs judge)
+python run_ablation.py --variants v26d --datasets mediastore --resume-from-phase 9
+```
+
+## Evaluation
+
+This project is evaluated against ARDoCo's gold standards. See the parent `CLAUDE.md` for evaluation details (the `metrics_output/evaluate.py` script, gold standard enrollment for code links, expected values from TLR test files).
