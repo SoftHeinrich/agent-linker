@@ -358,7 +358,7 @@ JSON only:"""
                     all_mappings[partial] = ("partial", full)
 
         if all_mappings:
-            mapping_list = [f"'{k}' -> {v[1]} ({v[0]})" for k, v in list(all_mappings.items())[:25]]
+            mapping_list = [f"'{k}' -> {v[1]} ({v[0]})" for k, v in list(all_mappings.items())]
 
             prompt2 = f"""JUDGE: Review these component name mappings for correctness.
 
