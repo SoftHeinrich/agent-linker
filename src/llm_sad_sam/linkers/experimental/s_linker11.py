@@ -47,7 +47,7 @@ from llm_sad_sam.core.data_types_v2 import (
 from llm_sad_sam.core.document_loader_v2 import (
     Sentence, load_sentences, build_sent_map,
 )
-from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
+from llm_sad_sam.linkers.experimental.ilinker3 import ILinker3
 from llm_sad_sam.linkers.experimental.prompts_v2 import (
     AMBIGUITY_FEW_SHOT, AMBIGUITY_RULES,
     DOC_KNOWLEDGE_JUDGE_EXAMPLES, DOC_KNOWLEDGE_JUDGE_RULES,
@@ -56,7 +56,7 @@ from llm_sad_sam.linkers.experimental.prompts_v2 import (
     WORD_USAGE_PROMPT,
 )
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
-from llm_sad_sam.llm_client import LLMClient, LLMBackend  # shared with ILinker2
+from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 class SLinker11:
     """LLM-driven SAD-SAM traceability with evidence-stratified verification."""
@@ -71,7 +71,7 @@ class SLinker11:
         self.model_knowledge: ModelKnowledge | None = None
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log = []
-        self._ilinker2 = ILinker2(backend=self.llm.backend)
+        self._ilinker3 = ILinker3(llm=self.llm)
         self._generic_partials: set[str] = set()
         print("SLinker11 (3-layer pipeline, evidence-stratified verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
@@ -132,7 +132,7 @@ class SLinker11:
         acq = self._run_parallel({
             "model": lambda: self._analyze_model(components),
             "doc_knowledge": lambda: self._learn_document_knowledge_enriched(sentences, components),
-            "seed": lambda: self._run_seed(text_path, model_path),
+            "seed": lambda: self._run_seed(sentences, components),
         })
 
         self.model_knowledge = acq["model"]
@@ -398,16 +398,13 @@ JSON only:"""
 
         return knowledge
 
-    def _run_seed(self, text_path, model_path):
-        """LLM-based seed extraction via ILinker2.
+    def _run_seed(self, sentences, components):
+        """LLM-based seed extraction via ILinker3 (v2 stack, no file I/O).
 
-        Uses a lightweight LLM extractor as the seed strategy. The seed
-        provides broad initial coverage; false positives are filtered by
-        the same evidence-stratified validation applied to all strategies.
+        Uses pre-loaded sentences and components — no redundant file reads
+        or dual data-stack loading.
         """
-        raw = self._ilinker2.link(text_path, model_path)
-        return [SadSamLink(l.sentence_number, l.component_id, l.component_name,
-                           source="seed") for l in raw]
+        return self._ilinker3.extract(sentences, components)
 
     # ═══════════════════════════════════════════════════════════════════════
     # Tier 2 — Partial-Reference Refinement

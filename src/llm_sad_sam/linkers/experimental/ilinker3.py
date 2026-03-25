@@ -1,27 +1,23 @@
-"""ILinker3 — ILinker2 with simplified prompts (26% fewer prompt tokens).
+"""ILinker3 — ILinker2 rebuilt on the v2 stack.
 
-Same architecture as ILinker2: two LLM passes + merge.
-Prompts condensed from test_prompt_simplify_wide.py testing — verified equivalent
-or better on all 5 benchmark datasets.
+Same two-pass extraction + merge logic as ILinker2/ILinker3 (simplified prompts),
+but uses data_types_v2, document_loader_v2, and pcm_parser_v2.
+Accepts pre-loaded components and sentences so callers (e.g. S-Linker11) avoid
+re-loading files and loading two separate data stacks.
 
-  Pass A: Extraction-framed (simplified — 13 lines vs 25)
-  Pass B: Actor/subject-framed (simplified — 18 lines vs 35)
+  Pass A: Extraction-framed (find all mentions)
+  Pass B: Actor/subject-framed (what is each sentence about?)
   Merge: exact from either → accept; synonym/partial → intersection only
-
-Output: list[SadSamLink] with source="ilinker2" — same shape as ILinker2 links.
 """
 
-import json
-import logging
-import re
+from __future__ import annotations
+
 from dataclasses import dataclass
 
-from llm_sad_sam.core.data_types import SadSamLink
-from llm_sad_sam.core.document_loader import DocumentLoader, Sentence
-from llm_sad_sam.llm_client import LLMClient, LLMBackend
-from llm_sad_sam.pcm_parser import parse_pcm_repository
-
-logger = logging.getLogger(__name__)
+from llm_sad_sam.core.data_types_v2 import SadSamLink
+from llm_sad_sam.core.document_loader_v2 import Sentence
+from llm_sad_sam.pcm_parser_v2 import ArchitectureComponent
+from llm_sad_sam.llm_client import LLMClient
 
 BATCH_SIZE = 50
 BATCH_OVERLAP = 5
@@ -37,21 +33,22 @@ class ExtractedLink:
 
 
 class ILinker3:
-    """High-precision explicit extractor — simplified prompts, same merge logic."""
+    """High-precision explicit extractor — 2 LLM passes, v2 stack, no file I/O."""
 
-    def __init__(self, backend: LLMBackend = LLMBackend.CLAUDE):
-        self.llm = LLMClient(backend=backend)
+    def __init__(self, llm: LLMClient):
+        self.llm = llm
 
-    def link(self, text_path: str, model_path: str, transarc_csv: str = None) -> list[SadSamLink]:
-        """Extract explicit trace links. transarc_csv is accepted but ignored."""
-        sentences = DocumentLoader.load_sentences(text_path)
-        components = parse_pcm_repository(model_path)
+    def extract(
+        self,
+        sentences: list[Sentence],
+        components: list[ArchitectureComponent],
+    ) -> list[SadSamLink]:
+        """Extract explicit trace links from pre-loaded sentences and components."""
         name_to_id = {c.name: c.id for c in components}
-
-        print(f"  ILinker3: {len(sentences)} sentences, {len(components)} components")
-
         comp_block = self._build_comp_block(components)
         batches = self._make_batches(sentences)
+
+        print(f"  ILinker3: {len(sentences)} sentences, {len(components)} components")
         print(f"    Batches: {len(batches)}")
 
         pass_a = self._run_pass_batched(batches, comp_block, name_to_id, self._prompt_extract)
@@ -68,8 +65,7 @@ class ILinker3:
                 sentence_number=l.sentence_number,
                 component_id=l.component_id,
                 component_name=l.component_name,
-                confidence=0.92,
-                source="ilinker2",
+                source="seed",
             )
             for l in merged
         ]
@@ -77,7 +73,7 @@ class ILinker3:
     # ── helpers ──────────────────────────────────────────────────────────
 
     @staticmethod
-    def _build_comp_block(components) -> str:
+    def _build_comp_block(components: list[ArchitectureComponent]) -> str:
         return "\n".join(f"  {i+1}. {c.name}" for i, c in enumerate(components))
 
     @staticmethod
@@ -107,7 +103,7 @@ class ILinker3:
                 print(f"      batch {i+1}/{len(batches)}: +{len(links)} (total {len(seen)})")
         return list(seen.values())
 
-    # ── prompts (simplified) ─────────────────────────────────────────────
+    # ── prompts ──────────────────────────────────────────────────────────
 
     def _prompt_extract(self, doc_block: str, comp_block: str) -> str:
         return f"""ARCHITECTURE COMPONENTS:
@@ -202,7 +198,6 @@ Return JSON:
 
         a_keys = {(l.sentence_number, l.component_id) for l in pass_a if l.match_type != "exact"}
         b_keys = {(l.sentence_number, l.component_id) for l in pass_b if l.match_type != "exact"}
-        agreed = a_keys & b_keys
 
         lookup = {}
         for link in pass_b + pass_a:
@@ -210,7 +205,7 @@ Return JSON:
             if link.match_type != "exact":
                 lookup[key] = link
 
-        for key in agreed:
+        for key in a_keys & b_keys:
             if key not in result:
                 result[key] = lookup[key]
 
