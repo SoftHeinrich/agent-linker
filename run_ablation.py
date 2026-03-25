@@ -203,7 +203,7 @@ VARIANTS = {
     "s8":                 dict(linker_class="s8"),   # Design B: trust-the-judge
     "s9":                 dict(linker_class="s9"),   # Design C: doc-frequency gating
     "s10":                dict(linker_class="s10"),  # Design A+B combined
-    "s11":                dict(linker_class="s11"),  # s7 cleaned: Fix B/V24 removed
+    "s11":                dict(linker_class="s11"),  # → SLinker11 (v2 stack)
     # --- V30/V30a: ILinker2 + V26a with hardened Phase 3 ---
     "v30":                dict(linker_class="v30"),   # ILinker2 + V26a + hardened prompts + Fix A/C
     "v30a":               dict(linker_class="v30a"),  # ILinker2 + V26a + prompt-only Phase 3
@@ -634,8 +634,8 @@ def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
         from llm_sad_sam.linkers.experimental.ilinker2_v26a_s10 import ILinker2V26aS10
         linker = ILinker2V26aS10(backend=BACKEND)
     elif linker_class == "s11":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s11 import ILinker2V26aS11
-        linker = ILinker2V26aS11(backend=BACKEND)
+        from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
+        linker = SLinker11(backend=BACKEND)
     elif linker_class == "v30":
         from llm_sad_sam.linkers.experimental.ilinker2_v30 import ILinker2V30
         linker = ILinker2V30(backend=BACKEND)
