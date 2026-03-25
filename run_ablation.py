@@ -290,9 +290,7 @@ VARIANTS = {
     "cnr_dk_v26a":        dict(linker_class="cnr_dk_v26a"),  # CNR-DK + full V26a + Phase 3 warm-start
 }
 
-BENCHMARK_BASE = Path(
-    "/mnt/hostshare/ardoco-home/ardoco/core/tests-base/src/main/resources/benchmark"
-)
+BENCHMARK_BASE = Path(__file__).parent / "../ardoco/core/tests-base/src/main/resources/benchmark"
 CLI_RESULTS = Path("/mnt/hostshare/ardoco-home/cli-results")
 
 DATASETS = {
@@ -329,7 +327,11 @@ DATASETS = {
 }
 
 _backend_env = os.environ.get("LLM_BACKEND", "claude")
-BACKEND = LLMBackend.OPENAI if _backend_env == "openai" else LLMBackend.CLAUDE
+BACKEND = (
+    LLMBackend.OPENAI if _backend_env == "openai"
+    else LLMBackend.CHECKPOINT if _backend_env == "checkpoint"
+    else LLMBackend.CLAUDE
+)
 os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.2")
 os.environ.setdefault("CLAUDE_MODEL", "sonnet")
 
@@ -1137,13 +1139,20 @@ def main():
         sentences = DocumentLoader.load_sentences(str(paths["text"]))
         sent_map = {s.number: s for s in sentences}
         gold_pairs = load_gold_sam(str(paths["gold_sam"]))
-        transarc_pairs = load_transarc_pairs(str(paths["transarc_sam"]))
+        transarc_csv_path = str(paths["transarc_sam"])
+        if os.path.exists(transarc_csv_path):
+            transarc_pairs = load_transarc_pairs(transarc_csv_path)
+        else:
+            transarc_pairs = set()
 
         print(f"  Components: {len(components)}, Sentences: {len(sentences)}")
         print(f"  Gold links: {len(gold_pairs)}, TransArc baseline: {len(transarc_pairs)}")
 
-        ta_m = eval_metrics(transarc_pairs, gold_pairs)
-        print(f"  TransArc baseline: P={ta_m['P']:.1%} R={ta_m['R']:.1%} F1={ta_m['F1']:.1%}")
+        if transarc_pairs:
+            ta_m = eval_metrics(transarc_pairs, gold_pairs)
+            print(f"  TransArc baseline: P={ta_m['P']:.1%} R={ta_m['R']:.1%} F1={ta_m['F1']:.1%}")
+        else:
+            print("  TransArc baseline: (CSV not available)")
 
         all_results[ds_name] = {}
 

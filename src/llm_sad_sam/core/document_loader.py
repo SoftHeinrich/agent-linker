@@ -1,7 +1,6 @@
 """Document and TransArc loading utilities."""
 
 import csv
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,7 +29,7 @@ class DocumentLoader:
     """Load and parse documentation and TransArc results."""
 
     @staticmethod
-    def load_sentences(doc_path: str) -> list[Sentence]:
+    def load_sentences(doc_path: str | Path) -> list[Sentence]:
         """Load sentences from documentation file.
 
         Args:
@@ -56,7 +55,7 @@ class DocumentLoader:
 
     @staticmethod
     def load_transarc(
-        transarc_csv: str,
+        transarc_csv: str | Path,
         id_to_name: dict[str, str],
         name_to_id: dict[str, str],
         sent_map: dict[int, Sentence],
@@ -76,10 +75,10 @@ class DocumentLoader:
         """
         links = []
 
-        if not transarc_csv or not os.path.exists(transarc_csv):
+        if not transarc_csv or not Path(transarc_csv).exists():
             return links
 
-        with open(transarc_csv) as f:
+        with open(Path(transarc_csv)) as f:
             for row in csv.DictReader(f):
                 cid = row.get('modelElementID', '')
                 snum = int(row.get('sentence', 0))

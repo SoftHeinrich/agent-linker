@@ -1,6 +1,7 @@
 """Architecture model analysis utilities."""
 
 import re
+from pathlib import Path
 from typing import Optional
 
 from .data_types import ModelKnowledge
@@ -56,7 +57,7 @@ class ModelAnalyzer:
         """
         self.llm_client = llm_client
 
-    def load_components(self, model_path: str) -> list[ArchitectureComponent]:
+    def load_components(self, model_path: str | Path) -> list[ArchitectureComponent]:
         """Load components from PCM model file."""
         return parse_pcm_repository(model_path)
 
