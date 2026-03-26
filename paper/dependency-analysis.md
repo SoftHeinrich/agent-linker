@@ -9,9 +9,8 @@ DAG-based presentation.
 | Phase | Reads (instance vars) | Reads (local data) | Produces |
 |---|---|---|---|
 | Model Analysis | — | components | model_knowledge |
-| Generic Partials Derivation | model_knowledge | components | _generic_partials |
 | Document Knowledge | — | sentences, components | doc_knowledge |
-| Partial-Ref. Enrichment (LLM) | _generic_partials, doc_knowledge | sentences, components | mutates doc_knowledge |
+| Partial-Ref. Enrichment (LLM) | doc_knowledge | sentences, components | mutates doc_knowledge |
 | Explicit Ref. Extraction | — | text_path, model_path | seed_links, seed_set |
 | Contextual Ref. Discovery | model_knowledge, doc_knowledge | sentences, components | candidates |
 | Validation (evidence-stratified) | model_knowledge, doc_knowledge | candidates | validated |
@@ -23,8 +22,7 @@ DAG-based presentation.
 ## Dependency DAG (edges = "must complete before")
 
 ```
-Model Analysis ──────┬──→ Generic Partials Derivation ──→ Partial-Ref. Enrichment (LLM)
-                     ├──→ Contextual Ref. Discovery
+Model Analysis ──────┬──→ Contextual Ref. Discovery
                      ├──→ Validation
                      └──→ Partial Validation
 
@@ -81,7 +79,6 @@ figure communicates.
 | S-Linker10 Method | Paper Section |
 |---|---|
 | `_analyze_model` | §3.2.1 Name Ambiguity Classification |
-| `_compute_generic_partials` | §3.2.1 Name Ambiguity Classification (generic partial words) |
 | `_learn_document_knowledge_enriched` | §3.2.2 Alternative Name Discovery (core discovery) |
 | `_enrich_multiword_partials` | §3.2.2 Alternative Name Discovery (LLM word usage enrichment) |
 | `_run_seed` (ILinker2) | §3.3.1 Explicit Reference Extraction |
