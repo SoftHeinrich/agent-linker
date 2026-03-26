@@ -81,7 +81,6 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log = []
         self._ilinker3 = ILinker3(llm=self.llm)
-        self._generic_partials: set[str] = set()
         print("SLinker11a (3-layer pipeline, seed disambiguation + evidence-stratified verification)")
         print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
 
@@ -148,16 +147,12 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
         self.doc_knowledge = acq["doc_knowledge"]
         raw_seed_links = acq["seed"]
 
-        # Derive generic partial set from model analysis
-        self._compute_generic_partials(components)
-
         ambig = self.model_knowledge.ambiguous_names
         print(f"  Model: {len(ambig)} ambiguous (of {len(components)} components)")
         print(f"  Doc knowledge: {len(self.doc_knowledge.abbreviations)} abbrev, "
               f"{len(self.doc_knowledge.synonyms)} syn, "
               f"{len(self.doc_knowledge.partial_references)} partial")
         print(f"  Seed: {len(raw_seed_links)} raw links")
-        print(f"  Generic partials: {sorted(self._generic_partials)}")
 
         self._log("layer1", {"sents": len(sentences), "comps": len(components)},
                   {"ambig": len(ambig), "seed": len(raw_seed_links),
@@ -167,7 +162,6 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
             "model_knowledge": self.model_knowledge,
             "doc_knowledge": self.doc_knowledge,
             "raw_seed_links": raw_seed_links,
-            "generic_partials": self._generic_partials,
         })
 
         # ═══ TIER 2: Partial-Reference Refinement ═══
@@ -318,28 +312,6 @@ JSON only:"""
                 if len(n.split()) == 1 and not self._is_structurally_unambiguous(n)
             }
 
-    def _compute_generic_partials(self, components):
-        """Derive generic partial set from model analysis results.
-
-        A partial is "generic" if it matches an ambiguous component name
-        (e.g., "management" from "DataManagement" when "management" is ambiguous).
-        Used to require capitalized mentions in multiword partial enrichment.
-        """
-        ambig = self.model_knowledge.ambiguous_names if self.model_knowledge else set()
-
-        self._generic_partials = set()
-        for comp in components:
-            parts = self._split_component_name_parts(comp.name)
-            for part in parts:
-                p_lower = part.lower()
-                if part.isupper():
-                    continue
-                if any(p_lower == a.lower() for a in ambig):
-                    self._generic_partials.add(p_lower)
-        for name in ambig:
-            if ' ' not in name and not name.isupper():
-                self._generic_partials.add(name.lower())
-
     def _learn_document_knowledge_enriched(self, sentences, components):
         """Extract abbreviations, synonyms, partial references via few-shot calibrated judge."""
         comp_names = [c.name for c in components]
@@ -430,11 +402,7 @@ JSON only:"""
     # ═══════════════════════════════════════════════════════════════════════
 
     def _enrich_multiword_partials(self, sentences, components):
-        """Auto-discover multi-word partial references via LLM word usage classification.
-
-        Instead of count>=3, asks the LLM whether the trailing word of a
-        multi-word component name is used as a standalone entity reference.
-        """
+        """Auto-discover unique trailing-word partial references via LLM classification."""
         if not self.doc_knowledge:
             return
 
@@ -459,7 +427,6 @@ JSON only:"""
             if last_lower in existing_partial_lower:
                 continue
 
-            is_generic_word = last_lower in self._generic_partials
             full_lower = comp.name.lower()
 
             # Find sentences where trailing word appears without full name
@@ -467,22 +434,11 @@ JSON only:"""
             for sent in sentences:
                 sl = sent.text.lower()
                 if last_lower in sl and full_lower not in sl:
-                    if is_generic_word:
-                        cap_word = last_word[0].upper() + last_word[1:]
-                        if re.search(rf'\b{re.escape(cap_word)}\b', sent.text):
-                            relevant_sents.append(sent)
-                    else:
-                        if re.search(rf'\b{re.escape(last_word)}\b', sent.text, re.IGNORECASE):
-                            relevant_sents.append(sent)
+                    if re.search(rf'\b{re.escape(last_word)}\b', sent.text, re.IGNORECASE):
+                        relevant_sents.append(sent)
 
             if not relevant_sents:
                 continue
-
-            # LLM word usage classification
-            calibration = ""
-            if is_generic_word:
-                calibration = (f'NOTE: "{last_word}" is also an ordinary English word. '
-                               f'Be careful to distinguish entity references from generic usage.\n\n')
 
             sent_block = "\n".join(f"  S{s.number}: {s.text}" for s in relevant_sents[:20])
 
@@ -490,7 +446,7 @@ JSON only:"""
                 partial=last_word,
                 partial_lower=last_lower,
                 comp_name=comp.name,
-                calibration=calibration,
+                calibration="",
                 sent_block=sent_block,
             )
 
