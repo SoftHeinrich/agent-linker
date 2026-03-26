@@ -70,7 +70,9 @@ class LLMClient:
 
     def __init__(self, backend: Optional[LLMBackend] = None, model: Optional[str] = None,
                  log_dir: Optional[str] = None, enable_logging: bool = True,
-                 temperature: Optional[float] = None):
+                 temperature: Optional[float] = None,
+                 checkpoint_fallback: Optional[LLMBackend | str] = None,
+                 checkpoint_fallback_model: Optional[str] = None):
         """Initialize LLM client.
 
         Args:
@@ -81,6 +83,10 @@ class LLMClient:
             enable_logging: Whether to enable file logging. Defaults to True.
             temperature: Temperature for generation (0.0-1.0). Only works with OpenAI backend.
                         Lower = more deterministic. Default 0.1 for OpenAI.
+            checkpoint_fallback: Backend used for checkpoint cache misses.
+                                 Defaults to CHECKPOINT_FALLBACK env var or "claude".
+            checkpoint_fallback_model: Model used on checkpoint cache misses.
+                                       Examples: "sonnet", "gpt", "gpt-5.2".
         """
         if backend is not None:
             self.backend = backend
@@ -97,26 +103,43 @@ class LLMClient:
             else:
                 self.backend = self._default_backend
 
+        # Initialize these early so partially constructed instances can close cleanly.
+        self._logger = None
+        self._log_file_handle = None
+
         # Model configuration
-        self.openai_model = model or os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
-        self.claude_model = model or os.environ.get("CLAUDE_MODEL", "sonnet")
+        self.openai_model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+        self.claude_model = os.environ.get("CLAUDE_MODEL", "sonnet")
+        if model is not None:
+            if self.backend == LLMBackend.OPENAI:
+                self.openai_model = model
+            elif self.backend == LLMBackend.CLAUDE:
+                self.claude_model = model
+            elif self.backend == LLMBackend.CHECKPOINT and checkpoint_fallback_model is None:
+                checkpoint_fallback_model = model
         self.temperature = temperature if temperature is not None else 0.1
         self._openai_client = None
 
         # Checkpoint backend configuration
         self._checkpoint_dir: Optional[Path] = None
         self._checkpoint_fallback: Optional[LLMBackend] = None
+        self._checkpoint_fallback_model: Optional[str] = None
         if self.backend == LLMBackend.CHECKPOINT:
             self._checkpoint_dir = Path(
                 os.environ.get("CHECKPOINT_DIR", "./results/llm_checkpoint")
             )
             self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
-            fallback = os.environ.get("CHECKPOINT_FALLBACK", "claude").lower()
-            self._checkpoint_fallback = {
-                "claude": LLMBackend.CLAUDE,
-                "openai": LLMBackend.OPENAI,
-                "codex": LLMBackend.CODEX,
-            }.get(fallback, LLMBackend.CLAUDE)
+            fallback = checkpoint_fallback
+            if fallback is None:
+                fallback = os.environ.get("CHECKPOINT_FALLBACK")
+            fallback_model = checkpoint_fallback_model or os.environ.get("CHECKPOINT_FALLBACK_MODEL")
+            self._checkpoint_fallback, self._checkpoint_fallback_model = (
+                self._resolve_checkpoint_target(fallback, fallback_model)
+            )
+            if self._checkpoint_fallback == LLMBackend.OPENAI and self._checkpoint_fallback_model:
+                self.openai_model = self._checkpoint_fallback_model
+            elif self._checkpoint_fallback == LLMBackend.CLAUDE and self._checkpoint_fallback_model:
+                self.claude_model = self._checkpoint_fallback_model
 
         # Logging configuration
         self.enable_logging = enable_logging
@@ -124,7 +147,6 @@ class LLMClient:
         self._session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self._request_count = 0
         self._session_usage = TokenUsage()
-        self._logger = None
         self._log_file_handle = None  # Keep open to avoid fd churn
 
         # Dedicated working directory for CLI subprocesses (avoids cwd side-effects)
@@ -143,6 +165,91 @@ class LLMClient:
 
         if self.enable_logging:
             self._setup_logging()
+
+    @staticmethod
+    def _parse_backend(value: Optional[LLMBackend | str]) -> Optional[LLMBackend]:
+        """Parse a backend enum or name."""
+        if value is None:
+            return None
+        if isinstance(value, LLMBackend):
+            return value
+
+        normalized = value.strip().lower()
+        mapping = {
+            "codex": LLMBackend.CODEX,
+            "claude": LLMBackend.CLAUDE,
+            "openai": LLMBackend.OPENAI,
+            "checkpoint": LLMBackend.CHECKPOINT,
+        }
+        if normalized not in mapping:
+            raise ValueError(f"Unknown LLM backend: {value}")
+        return mapping[normalized]
+
+    @staticmethod
+    def _infer_backend_from_model(model_name: Optional[str]) -> tuple[Optional[LLMBackend], Optional[str]]:
+        """Infer fallback backend from a human-friendly model selector."""
+        if not model_name:
+            return None, None
+
+        normalized = model_name.strip()
+        lowered = normalized.lower()
+        if lowered == "gpt":
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+        if lowered == "openai":
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+        if lowered.startswith("gpt"):
+            return LLMBackend.OPENAI, normalized
+
+        if lowered == "sonnet":
+            return LLMBackend.CLAUDE, "sonnet"
+        if lowered == "claude":
+            return LLMBackend.CLAUDE, os.environ.get("CLAUDE_MODEL", "sonnet")
+        if lowered.startswith("claude"):
+            return LLMBackend.CLAUDE, normalized
+
+        return None, normalized
+
+    def _resolve_checkpoint_target(
+        self,
+        fallback: Optional[LLMBackend | str],
+        fallback_model: Optional[str],
+    ) -> tuple[LLMBackend, Optional[str]]:
+        """Resolve checkpoint cache-miss backend + model."""
+        requested_fallback = self._parse_backend(fallback)
+        inferred_backend, normalized_model = self._infer_backend_from_model(fallback_model)
+
+        if inferred_backend is not None and requested_fallback is not None and requested_fallback != inferred_backend:
+            raise ValueError(
+                f"Checkpoint fallback backend/model conflict: backend={requested_fallback.value}, "
+                f"model={fallback_model}"
+            )
+        resolved_fallback = inferred_backend or requested_fallback or LLMBackend.CLAUDE
+
+        if resolved_fallback == LLMBackend.OPENAI:
+            return resolved_fallback, normalized_model or self.openai_model
+        if resolved_fallback == LLMBackend.CLAUDE:
+            return resolved_fallback, normalized_model or self.claude_model
+        return resolved_fallback, None
+
+    def get_active_model(self, backend: Optional[LLMBackend] = None) -> Optional[str]:
+        """Return the model configured for a backend."""
+        backend = backend or self.backend
+        if backend == LLMBackend.OPENAI:
+            return self.openai_model
+        if backend == LLMBackend.CLAUDE:
+            return self.claude_model
+        if backend == LLMBackend.CHECKPOINT:
+            return self.get_active_model(self._checkpoint_fallback)
+        return None
+
+    def describe_backend(self) -> str:
+        """Human-readable backend/model summary."""
+        if self.backend == LLMBackend.CHECKPOINT:
+            fallback = self._checkpoint_fallback.value if self._checkpoint_fallback else "unknown"
+            model = self.get_active_model(self._checkpoint_fallback) or "default"
+            return f"checkpoint -> {fallback} ({model})"
+        model = self.get_active_model() or "default"
+        return f"{self.backend.value} ({model})"
 
     def close(self):
         """Close open file handles."""
@@ -395,7 +502,7 @@ class LLMClient:
             handler.setFormatter(formatter)
             self._logger.addHandler(handler)
 
-        self._logger.info(f"Session started | backend={self.backend.value} | model={self.openai_model}")
+        self._logger.info(f"Session started | target={self.describe_backend()}")
 
     def _log_request(self, prompt: str, response: LLMResponse, latency_ms: int):
         """Log a request/response pair."""
@@ -428,7 +535,7 @@ class LLMClient:
             "request_id": self._request_count,
             "timestamp": datetime.now().isoformat(),
             "backend": self.backend.value,
-            "model": response.model or self.openai_model,
+            "model": response.model or self.get_active_model(),
             "prompt_length": len(prompt),
             "prompt_preview": prompt[:200] + "..." if len(prompt) > 200 else prompt,
             "response_length": len(response.text) if response.text else 0,
@@ -482,7 +589,8 @@ class LLMClient:
         cls._default_backend = backend
 
     def enable_checkpoint(self, checkpoint_dir: str,
-                          fallback: Optional[LLMBackend] = None) -> None:
+                          fallback: Optional[LLMBackend | str] = None,
+                          fallback_model: Optional[str] = None) -> None:
         """Switch this client to checkpoint mode.
 
         Existing responses in checkpoint_dir are loaded on cache hit;
@@ -491,10 +599,20 @@ class LLMClient:
         Args:
             checkpoint_dir: Directory to store/load cached LLM responses.
             fallback: Backend for cache misses. Defaults to current backend.
+            fallback_model: Model used on cache misses.
         """
         if fallback is None:
-            fallback = self.backend
-        self._checkpoint_fallback = fallback
+            if self.backend == LLMBackend.CHECKPOINT:
+                fallback = self._checkpoint_fallback or LLMBackend.CLAUDE
+            else:
+                fallback = self.backend
+        self._checkpoint_fallback, self._checkpoint_fallback_model = (
+            self._resolve_checkpoint_target(fallback, fallback_model)
+        )
+        if self._checkpoint_fallback == LLMBackend.OPENAI and self._checkpoint_fallback_model:
+            self.openai_model = self._checkpoint_fallback_model
+        elif self._checkpoint_fallback == LLMBackend.CLAUDE and self._checkpoint_fallback_model:
+            self.claude_model = self._checkpoint_fallback_model
         self._checkpoint_dir = Path(checkpoint_dir)
         self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.backend = LLMBackend.CHECKPOINT
@@ -508,7 +626,7 @@ class LLMClient:
             "session": self.get_session_usage(),
             "cumulative": self.get_cumulative_usage(),
             "backend": self.backend.value,
-            "model": self.openai_model,
+            "model": self.get_active_model(),
             "timestamp": datetime.now().isoformat(),
         }
 

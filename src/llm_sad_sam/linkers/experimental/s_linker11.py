@@ -65,15 +65,27 @@ class SLinker11:
         r'\b(it|they|this|these|that|those|its|their)\b',
         re.IGNORECASE
     )
-    def __init__(self, backend: LLMBackend | None = None):
+    def __init__(
+        self,
+        backend: LLMBackend | None = None,
+        model: str | None = None,
+        checkpoint_fallback: LLMBackend | str | None = None,
+        checkpoint_fallback_model: str | None = None,
+    ):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
-        self.llm = LLMClient(backend=backend or LLMBackend.CLAUDE)
+        os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.2")
+        self.llm = LLMClient(
+            backend=backend or LLMBackend.CLAUDE,
+            model=model,
+            checkpoint_fallback=checkpoint_fallback,
+            checkpoint_fallback_model=checkpoint_fallback_model,
+        )
         self.model_knowledge: ModelKnowledge | None = None
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log = []
         self._ilinker3 = ILinker3(llm=self.llm)
         print("SLinker11 (3-layer pipeline, evidence-stratified verification)")
-        print(f"  Backend: {self.llm.backend.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
+        print(f"  Backend: {self.llm.describe_backend()}")
 
     # ═══════════════════════════════════════════════════════════════════════
     # DAG Infrastructure

@@ -1,120 +1,94 @@
 # agent-linker
 
-LLM-driven SAD–SAM trace link recovery for the ARDoCo benchmark suite.
+LLM-driven SAD-SAM trace link recovery for the ARDoCo benchmark suite.
+
+The active repo now keeps:
+
+- `ILinker1`, `ILinker2`, `ILinker3`
+- `SLinker` through `SLinker11a`
+- the prompt files and v2-stack modules those retained linkers need
+
+Archived families such as `agent_linker*`, `cnr*`, `alinker`, and the older `ilinker2_v*` line live under [archive/README.md](/home/yu/project/adc/agent-linker/archive/README.md).
 
 ## Prerequisites
 
 - Python 3.11+
-- [Claude CLI](https://github.com/anthropics/claude-code) installed and authenticated (`claude` on PATH)
+- [Claude CLI](https://github.com/anthropics/claude-code) installed and authenticated if you use the default backend
 - The [ardoco](https://github.com/ArDoCo/Core) repo cloned as a sibling directory:
 
-```
+```text
 adc/
-  agent-linker/   ← this repo
-  ardoco/         ← ARDoCo Core (provides benchmark data)
+  agent-linker/
+  ardoco/
 ```
 
-Clone ARDoCo if you don't have it:
+Install dependencies:
 
 ```bash
-git clone https://github.com/ArDoCo/Core.git ../ardoco
+pip install -e ".[dev,openai]"
 ```
 
-Install Python dependencies (lxml, rapidfuzz):
+## Running
+
+[run_ablation.py](/home/yu/project/adc/agent-linker/run_ablation.py) is lightweight now and only supports the retained variants.
 
 ```bash
-pip install lxml rapidfuzz
+# Default retained variant
+python run_ablation.py
+
+# Single dataset
+python run_ablation.py --datasets mediastore
+
+# Explicit retained variants
+python run_ablation.py --variants i1 i2 i3
+python run_ablation.py --variants s_linker s_linker7 s_linker11a --datasets teastore
+
+# Show supported variants
+python run_ablation.py --list-variants
 ```
 
-## Running S-Linkers
+Supported dataset names: `mediastore`, `teastore`, `teammates`, `bigbluebutton`, `jabref`
 
-All runs go through `run_ablation.py`, which adds `src/` to the path automatically — no install step needed.
+Variant naming notes:
 
-### Basic run (all 5 datasets)
-
-```bash
-python run_ablation.py --variants s_linker11
-```
-
-### Single dataset
-
-```bash
-python run_ablation.py --variants s_linker11 --datasets mediastore
-```
-
-### Multiple variants side-by-side
-
-```bash
-python run_ablation.py --variants s_linker10 s_linker11 --datasets mediastore teastore
-```
-
-### Available datasets
-
-`mediastore`, `teastore`, `teammates`, `bigbluebutton`, `jabref`
-
-### Current linkers
-
-| Variant | Description | Macro F1 |
-|---------|-------------|----------|
-| `s_linker10` | ICSE submission — fully LLM-driven, no magic thresholds | ~93.7% |
-| `s_linker11` | Uniform validation — seed links go through same 2-pass check as entity candidates | ~93.7% |
-| `s_linker11a` | S-Linker11 + role-verification validation | — |
+- `s_linker1` is accepted as an alias for `s_linker`
+- `ilinker1`, `ilinker2`, and `ilinker3` are accepted as aliases for `i1`, `i2`, and `i3`
 
 ## LLM Backend
 
-The default backend calls `claude` as a subprocess. Select a backend via `LLM_BACKEND`:
+The default backend calls `claude` as a subprocess.
 
 ```bash
-# Default — calls claude CLI
-python run_ablation.py --variants s_linker11 --datasets mediastore
+# Default
+python run_ablation.py --datasets mediastore
 
-# Cache-through — serves cached responses, falls back to claude on miss
-LLM_BACKEND=checkpoint python run_ablation.py --variants s_linker11 --datasets mediastore
+# Checkpoint cache with fallback
+LLM_BACKEND=checkpoint python run_ablation.py --datasets mediastore
 
 # OpenAI
-LLM_BACKEND=openai OPENAI_API_KEY=sk-... python run_ablation.py --variants s_linker11
+LLM_BACKEND=openai OPENAI_API_KEY=sk-... python run_ablation.py --datasets mediastore
 ```
 
-Always uses **Claude Sonnet** (set automatically). To override:
+The retained workflow defaults to `CLAUDE_MODEL=sonnet` and `OPENAI_MODEL_NAME=gpt-5.2`.
 
-```bash
-CLAUDE_MODEL=sonnet python run_ablation.py --variants s_linker11
-```
-
-### Checkpoint backend
-
-The checkpoint backend (`LLM_BACKEND=checkpoint`) caches every LLM response by prompt hash under `results/llm_checkpoint/`. Cache misses fall back to claude and are saved for future runs — subsequent runs on the same dataset are fully cached and near-instant.
-
-```bash
-CHECKPOINT_DIR=./results/llm_checkpoint   # default cache location
-CHECKPOINT_FALLBACK=claude                # fallback backend on miss (default: claude)
-```
-
-## Output
+## Outputs
 
 Results are written to:
 
-```
+```text
 results/
-  ablation_results/   — per-dataset link CSVs + summary JSON
-  phase_cache/        — per-phase pkl checkpoints (enables fast re-runs)
-  llm_logs/           — per-run JSONL query logs with token counts
-  llm_checkpoint/     — prompt-keyed JSON cache (checkpoint backend)
+  ablation_results/   per-dataset link CSVs and summary JSON
+  phase_cache/        linker checkpoints
+  llm_logs/           per-run JSONL query logs
+  llm_checkpoint/     prompt cache for checkpoint backend
 ```
 
-Phase checkpoints in `results/phase_cache/` persist across runs, so re-running the same variant/dataset skips already-completed phases automatically.
+## Tests
 
-## Benchmark data layout
+The active test suite is intentionally small and lives under `tests/`.
 
-Benchmark files are resolved relative to this repo:
-
-```
-../ardoco/core/tests-base/src/main/resources/benchmark/
-  mediastore/
-    text_2016/mediastore.txt
-    model_2016/pcm/ms.repository
-    goldstandards/goldstandard_sad_2016-sam_2016.csv
-  teastore/  teammates/  bigbluebutton/  jabref/  ...
+```bash
+pytest
 ```
 
-TransArc baseline CSVs (`sadSamTlr_*.csv`) are optional. If absent, the TransArc baseline row is skipped — linker results are still fully evaluated against the gold standard.
+Historical experiment scripts remain archived under [archive/test_scripts](/home/yu/project/adc/agent-linker/archive/test_scripts).

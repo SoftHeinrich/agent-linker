@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
-"""Ablation Study: Quantify AgentLinker improvements independently.
+"""Lightweight ablation runner for the retained ILinker and S-Linker families."""
 
-Runs 6 ablation variants on 5 benchmark datasets to isolate the impact of:
-- Debate-validated coreference (V44-style propose+judge)
-- Implicit reference detection (Phase 8)
-- Sliding-batch entity extraction (overlapping 100-sentence windows)
+from __future__ import annotations
 
-Usage:
-    python run_ablation.py
-    python run_ablation.py --datasets jabref --variants baseline debate_coref
-    python run_ablation.py --datasets teammates --variants baseline debate_no_implicit all_fixes
-"""
-
+import argparse
 import csv
+import importlib
 import json
 import os
 import sys
@@ -21,276 +14,204 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.stdout.reconfigure(line_buffering=True)
-sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-# Load .env file for API keys
-_env_file = Path(__file__).parent / ".env"
-if _env_file.exists():
-    for line in _env_file.read_text().splitlines():
+ROOT = Path(__file__).parent
+sys.path.insert(0, str(ROOT / "src"))
+
+
+def load_dotenv() -> None:
+    env_file = ROOT / ".env"
+    if not env_file.exists():
+        return
+    for line in env_file.read_text().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip())
 
-from llm_sad_sam.pcm_parser import parse_pcm_repository
-from llm_sad_sam.llm_client import LLMBackend
+
+load_dotenv()
+
 from llm_sad_sam.core import DocumentLoader, SadSamLink
+from llm_sad_sam.llm_client import LLMBackend, LLMClient
+from llm_sad_sam.pcm_parser import parse_pcm_repository
 
-VARIANTS = {
-    "baseline":           dict(use_debate_coref=False, enable_implicit=True,  use_sliding_batch=False),
-    "debate_coref":       dict(use_debate_coref=True,  enable_implicit=True,  use_sliding_batch=False),
-    "no_implicit":        dict(use_debate_coref=False, enable_implicit=False, use_sliding_batch=False),
-    "debate_no_implicit": dict(use_debate_coref=True,  enable_implicit=False, use_sliding_batch=False),
-    "sliding_batch":      dict(use_debate_coref=False, enable_implicit=True,  use_sliding_batch=True),
-    "all_fixes":          dict(use_debate_coref=True,  enable_implicit=False, use_sliding_batch=True),
-    # --- Hybrid variants ---
-    "discourse_judge":    dict(coref_mode="discourse_judge", implicit_mode="on"),
-    "adaptive":           dict(coref_mode="adaptive", implicit_mode="adaptive"),
-    "dj_no_implicit":     dict(coref_mode="discourse_judge", implicit_mode="off"),
-    # --- CoT variants ---
-    "cot_implicit":       dict(coref_mode="adaptive", implicit_mode="cot"),
-    "cot_judge":          dict(coref_mode="adaptive", implicit_mode="adaptive", judge_mode="cot"),
-    "cot_both":           dict(coref_mode="adaptive", implicit_mode="adaptive_cot", judge_mode="cot"),
-    "cot_transarc":       dict(coref_mode="adaptive", implicit_mode="adaptive", judge_mode="cot_transarc"),
-    # --- V2: qualitative (no numeric thresholds) ---
-    "v2":                 dict(linker_class="v2"),
-    "v2_adaptive":        dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive"),
-    # --- V2 recovery ablation ---
-    "v2_skip_ambig":      dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive", recovery_mode="skip_ambiguous"),
-    "v2_no_recovery":     dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive", recovery_mode="off"),
-    # --- V2 semantic filter ablation ---
-    "v2_f_embed":         dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive", post_filter="embedding"),
-    "v2_f_tfidf":         dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive", post_filter="tfidf"),
-    "v2_f_lexical":       dict(linker_class="v2", coref_mode="adaptive", implicit_mode="adaptive", post_filter="lexical"),
-    # --- V3: self-contained qualitative + semantic filters ---
-    "v3":                 dict(linker_class="v3"),
-    "v3_embed":           dict(linker_class="v3", post_filter="embedding"),
-    "v3_tfidf":           dict(linker_class="v3", post_filter="tfidf"),
-    "v3_lexical":         dict(linker_class="v3", post_filter="lexical"),
-    "v3_selective":       dict(linker_class="v3", post_filter="selective"),
-    "v3_selective_all":   dict(linker_class="v3", post_filter="selective_all"),
-    # --- V4: no data leakage, all thresholds derived from input ---
-    "v4":                 dict(linker_class="v4"),
-    "v4_multi_vote":      dict(linker_class="v4", judge_mode="multi_vote"),
-    "v4_source_lenient":  dict(linker_class="v4", judge_mode="source_lenient"),
-    "v4_mv_selective":    dict(linker_class="v4", judge_mode="multi_vote", post_filter="selective_all"),
-    "v4_sl_selective":    dict(linker_class="v4", judge_mode="source_lenient", post_filter="selective_all"),
-    # V4 complexity fixes
-    "v4_structural":      dict(linker_class="v4", complexity_mode="structural"),
-    "v4_llm_v2":          dict(linker_class="v4", complexity_mode="llm_v2"),
-    # V4 direction experiments
-    "v4_str_high":        dict(linker_class="v4", complexity_mode="structural_high"),
-    "v4_str_norec":       dict(linker_class="v4", complexity_mode="structural", recovery_mode="off_complex"),
-    "v4_str_jrec":        dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge"),
-    # --- V5: consolidated best approach ---
-    "v5":                 dict(linker_class="v5"),
-    # --- V6: dot-filter fix + generic judge examples ---
-    "v6":                 dict(linker_class="v6"),
-    "v6b":                dict(linker_class="v6b"),  # V6 + abbreviation guard
-    "v6c":                dict(linker_class="v6c"),  # V6 + deterministic boundary filters
-    # --- V6 voting strategies ---
-    "v6_vote":            dict(linker_class="v6_vote", n_runs=3),
-    "v6_phase_vote":      dict(linker_class="v6_phase_vote", n_runs=3),
-    # --- V7: learned confusion patterns ---
-    "v7":                 dict(linker_class="v7"),
-    # --- V8: refined approaches ---
-    "v8a":                dict(linker_class="v8a", n_runs=3),
-    "v8b":                dict(linker_class="v8b"),
-    # --- V9: consolidated majority voting ---
-    "v9":                 dict(linker_class="v9", n_runs=3),
-    # V4 isolation: individual fixes toggled off (old behavior) to find regression source
-    # Base = v4_str_jrec with all fixes (embed=name_only, unjudged=rejudge)
-    "v4_iso_old_embed":   dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="context", unjudged_mode="rejudge"),
-    "v4_iso_old_judge":   dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="name_only", unjudged_mode="approve"),
-    "v4_iso_old_both":    dict(linker_class="v4", complexity_mode="structural", recovery_mode="judge", embed_mode="context", unjudged_mode="approve"),
-    # --- V9T: error-driven features on V5 ---
-    "v9t":      dict(linker_class="v9t"),  # all features on
-    "v9t_A":    dict(linker_class="v9t", only_feature="A"),
-    "v9t_B":    dict(linker_class="v9t", only_feature="B"),
-    "v9t_C":    dict(linker_class="v9t", only_feature="C"),
-    "v9t_D":    dict(linker_class="v9t", only_feature="D"),
-    "v9t_E":    dict(linker_class="v9t", only_feature="E"),
-    "v9t_F":    dict(linker_class="v9t", only_feature="F"),
-    "v9t_noE":  dict(linker_class="v9t", ambiguous_recovery=False),  # all except riskiest
-    "v9t_ABD":  dict(linker_class="v9t", fix_dot_filter=True, abbreviation_guard=True,
-                     coref_distance_filter=False, generic_word_filter=True,
-                     ambiguous_recovery=False, section_heading_safe=False),  # best safe combo
-    "v9t_AB":   dict(linker_class="v9t", fix_dot_filter=True, abbreviation_guard=True,
-                     coref_distance_filter=False, generic_word_filter=False,
-                     ambiguous_recovery=False, section_heading_safe=False),  # A+B only
-    # --- V11: generic-name-aware pipeline ---
-    "v11":                dict(linker_class="v11"),
-    # --- V12: V11 + contextual stoplist + test-infra filter ---
-    "v12":                dict(linker_class="v12"),
-    # --- V13: targeted generic filtering + TransArc protection ---
-    "v13":                dict(linker_class="v13"),
-    # --- V14: deterministic Phase 1 + structured judge + enriched prompts ---
-    "v14":                dict(linker_class="v14"),
-    # --- V15: V14 + TransArc immunity + split validation + targeted recovery ---
-    "v15":                dict(linker_class="v15"),
-    # --- V16: V15 + trimmed ambiguous list + no data leakage ---
-    "v16":                dict(linker_class="v16"),
-    # --- W16: V16 + 3 targeted fixes (parent overlap, link-aware antecedent, generic overrides) ---
-    "w16":                dict(linker_class="w16"),
-    # --- V17: V16 + togglable V6 features ---
-    "v17_A":              dict(linker_class="v17", intersect_validation=True),
-    "v17_BC":             dict(linker_class="v17", enable_implicit=True, enable_fn_recovery=True),
-    "v17_D":              dict(linker_class="v17", nuanced_transarc=True),
-    "v17_ABCD":           dict(linker_class="v17", intersect_validation=True, enable_implicit=True, enable_fn_recovery=True, nuanced_transarc=True),
-    # --- V17 Judge prompt fixes (all include A:intersect as base) ---
-    "v17_A_J1":           dict(linker_class="v17", intersect_validation=True, judge_doc_knowledge=True),
-    "v17_A_J2":           dict(linker_class="v17", intersect_validation=True, judge_full_context=True),
-    "v17_A_J3":           dict(linker_class="v17", intersect_validation=True, judge_validated_bias=True),
-    # --- V17 Judge prompt v2 fixes ---
-    "v17_A_J4":           dict(linker_class="v17", intersect_validation=True, judge_strict_def=True),
-    "v17_A_J5":           dict(linker_class="v17", intersect_validation=True, judge_adaptive_ctx=True),
-    "v17_A_J6":           dict(linker_class="v17", intersect_validation=True, judge_show_match=True),
-    "v17_A_J456":         dict(linker_class="v17", intersect_validation=True, judge_strict_def=True, judge_adaptive_ctx=True, judge_show_match=True),
-    "v17_A_J56":          dict(linker_class="v17", intersect_validation=True, judge_adaptive_ctx=True, judge_show_match=True),
-    "v18":                dict(linker_class="v18"),
-    "v19":                dict(linker_class="v19"),
-    "v20a":               dict(linker_class="v20a"),
-    "v20b":               dict(linker_class="v20b"),
-    "v20c":               dict(linker_class="v20c"),
-    "v20":                dict(linker_class="v20"),
-    # --- V21-V23: prompt optimization series ---
-    "v21":                dict(linker_class="v21"),
-    "v22":                dict(linker_class="v22"),
-    "v23":                dict(linker_class="v23"),
-    "v23a":               dict(linker_class="v23a"),
-    "v23b":               dict(linker_class="v23b"),
-    "v23c":               dict(linker_class="v23c"),
-    "v23d":               dict(linker_class="v23d"),
-    "v23e":               dict(linker_class="v23e"),
-    # --- V24: hardcoded lists removed ---
-    "v24":                dict(linker_class="v24"),
-    # --- V25: benchmark-clean SE textbook prompts ---
-    "v25":                dict(linker_class="v25"),
-    # --- V25a/b: V25 + deliberation TransArc judge ---
-    "v25a":               dict(linker_class="v25a"),
-    "v25b":               dict(linker_class="v25b"),
-    "v26":                dict(linker_class="v26"),
-    "v26a":               dict(linker_class="v26a"),
-    "v26b":               dict(linker_class="v26b"),
-    "v26c":               dict(linker_class="v26c"),
-    "v26d":               dict(linker_class="v26d"),
-    # --- V27 family: GoT / Deliberation experiments ---
-    "v27g":               dict(linker_class="v27g"),  # GoT sub-judges + source-aware weighting
-    "v27b":               dict(linker_class="v27b"),  # Deliberation Phase 3B generic judge
-    "v27f":               dict(linker_class="v27f"),  # Parallel branch pipeline + GoT aggregation
-    "v28":                dict(linker_class="v28"),    # V26d + package-path TransArc filter
-    "v29":                dict(linker_class="v29"),    # V26a + decomposed contrastive TransArc judge
-    # --- W24: V24 + deliberation TransArc judge ---
-    "w24":                dict(linker_class="w24"),
-    "w24-scratchpad":     dict(linker_class="w24", transarc_judge_strategy="scratchpad"),
-    "w24-batna":          dict(linker_class="w24", transarc_judge_strategy="batna"),
-    # --- ILinker: pure LLM (no TransArc) ---
-    "i1":                 dict(linker_class="i1"),
-    "i2":                 dict(linker_class="i2"),       # precision-focused, no contextual
-    "v26a_i2":            dict(linker_class="v26a_i2"),  # V26a with ILinker2 replacing TransArc
-    "v26a_i2_dk":         dict(linker_class="v26a_i2_dk"),  # V26a+I2 + DA warm-start
-    "i2_pure":            dict(linker_class="i2_pure"),      # Zero-heuristic: I2 + LLM synonym/coref/validation
-    "v26a_i2_ndf":        dict(linker_class="v26a_i2_ndf"),  # V26a+I2 without dot filter
-    # --- Phase 3 stabilization variants ---
-    "s1":                 dict(linker_class="s1"),   # Fix B restricted to abbrevs only
-    "s2":                 dict(linker_class="s2"),   # Phase 6 min alias len >= 3
-    "s3":                 dict(linker_class="s3"),   # s1 + s2 combined
-    "s4":                 dict(linker_class="s4"),   # 3x extraction voting
-    "s5":                 dict(linker_class="s5"),   # All-reject guard
-    "s6":                 dict(linker_class="s6"),   # Full stack (s1+s2+s4+s5)
-    # --- S7-S10: General-rule stabilization (no hardcoded length thresholds) ---
-    "s7":                 dict(linker_class="s7"),   # Design A: prompt-hardened
-    "s8":                 dict(linker_class="s8"),   # Design B: trust-the-judge
-    "s9":                 dict(linker_class="s9"),   # Design C: doc-frequency gating
-    "s10":                dict(linker_class="s10"),  # Design A+B combined
-    "s11":                dict(linker_class="s11"),  # → SLinker11 (v2 stack)
-    # --- V30/V30a: ILinker2 + V26a with hardened Phase 3 ---
-    "v30":                dict(linker_class="v30"),   # ILinker2 + V26a + hardened prompts + Fix A/C
-    "v30a":               dict(linker_class="v30a"),  # ILinker2 + V26a + prompt-only Phase 3
-    "v30b":               dict(linker_class="v30b"),  # ILinker2 + V26a + few-shot calibrated judge
-    "v30c":               dict(linker_class="v30c"),  # V30b + NDF: few-shot judge + no dot filter
-    "v30d":               dict(linker_class="v30d"),  # V30c + resume + CamelCase Phase 3 override
-    "v30d_r3":            dict(linker_class="v30d", resume_from=3),  # Resume from phase 3
-    "v30d_r9":            dict(linker_class="v30d", resume_from=9),  # Resume from pre-judge
-    "v30d_p3":            dict(linker_class="v30d", run_only=3),  # Phase 3: CamelCase only
-    "v30d_p3_v24":        dict(linker_class="v30d", run_only=3, v30d_v24=True),  # Phase 3: CC + V24 overrides
-    "v30d_p3_all":        dict(linker_class="v30d", run_only=3, v30d_v24=True, v30d_uc=True),  # Phase 3: CC + V24 + uppercase
-    "v30d_p3_pt5":        dict(linker_class="v30d", run_only=3, v30d_pt=5),  # Phase 3: partial threshold 5
-    "v30d_p3_pt7":        dict(linker_class="v30d", run_only=3, v30d_pt=7),  # Phase 3: partial threshold 7
-    "v30d_p6":            dict(linker_class="v30d", run_only=6),  # Single: Phase 6 only
-    "v30d_p7":            dict(linker_class="v30d", run_only=7),  # Single: Phase 7 only
-    "v30d_p9":            dict(linker_class="v30d", run_only=9),  # Single: Phase 9 only
-    # --- V30d heuristic ablation (resume from affected phase) ---
-    "v30d_no_genm":       dict(linker_class="v30d", resume_from=6, no_genm=True),      # Phase 6: no _is_generic_mention
-    "v30d_no_gencf":      dict(linker_class="v30d", resume_from=7, no_gencf=True),     # Phase 7: no _filter_generic_coref
-    "v30d_no_pron":       dict(linker_class="v30d", resume_from=7, no_pron=True),      # Phase 7: no _deterministic_pronoun_coref
-    "v30d_no_bf":         dict(linker_class="v30d", resume_from=8, no_bf=True),        # Phase 8c: no boundary filters
-    "v30d_no_pi":         dict(linker_class="v30d", resume_from=8, no_pi=True),        # Phase 8b: no partial injection
-    "v30d_no_synsafe":    dict(linker_class="v30d", resume_from=9, no_synsafe=True),   # Phase 9: no synonym-safe bypass
-    "v30d_no_po":         dict(linker_class="v30d", resume_from=8, no_po=True),        # Phase 8: no parent-overlap guard
-    "v30d_no_ag":         dict(linker_class="v30d", resume_from=5, no_ag=True),        # Phase 5: no abbreviation guard
-    # Single-phase tests for LLM-dependent heuristics
-    "v30d_p9_no_synsafe": dict(linker_class="v30d", run_only=9, no_synsafe=True),     # P9 only: judge sees all links
-    "v30d_p9_no_pi":      dict(linker_class="v30d", run_only=9, no_pi=True),          # P9 only: no partial injection (uses pre_judge from v30c)
-    # --- V31: V30c + CamelCase rescue only ---
-    "v31":                dict(linker_class="v31"),
-    # --- V32: V31 + convention filter covers partial_inject + zero prompt leakage ---
-    "v32":                dict(linker_class="v32"),
-    # --- ALinker: Adaptive Agent Linker with orchestrator, monitor, review agents ---
-    "alinker":            dict(linker_class="alinker"),
-    # --- V33: V32 + GPT-5.2 prompt fixes (generic mention, judge, validation, coref) ---
-    "v33":                dict(linker_class="v33"),
-    # --- V34: V33 + simplified prompts (26% fewer tokens) ---
-    "v34":                dict(linker_class="v34"),
-    # --- V35: V32 + 6 prompt proposals (example guide, compact P3, GPT self-consistency) ---
-    "v35":                dict(linker_class="v35"),
-    "v35a":               dict(linker_class="v35a"),  # P2 only: example-driven CONVENTION_GUIDE
-    "v35b":               dict(linker_class="v35b"),  # P6 only: compact Phase 3 judge
-    "v35c":               dict(linker_class="v35c"),  # P4 only: concrete JSON output examples
 
-    "v36a":               dict(linker_class="v36a"),  # V32 + ILinker2 few-shot examples (Phase 4)
-    "v36b":               dict(linker_class="v36b"),  # V32 + Phase 9 judge few-shot examples
+CANONICAL_VARIANTS = [
+    "i1",
+    "i2",
+    "i3",
+    "s_linker",
+    "s_linker2",
+    "s_linker3",
+    "s_linker4",
+    "s_linker5",
+    "s_linker6",
+    "s_linker7",
+    "s_linker7a",
+    "s_linker7b",
+    "s_linker8",
+    "s_linker9",
+    "s_linker9a",
+    "s_linker9b",
+    "s_linker9c",
+    "s_linker9d",
+    "s_linker9e",
+    "s_linker10",
+    "s_linker10a",
+    "s_linker11",
+    "s_linker11a",
+]
 
-    "v37":                dict(linker_class="v37"),    # V32 + structural syn-safe restriction
-    "v38":                dict(linker_class="v38"),    # V32 + context-aware judge replacing syn-safe bypass
-    "v39":                dict(linker_class="v39"),    # V38 + LLM partial usage classification for targeted syn-safe
-    "v39a":               dict(linker_class="v39a"),   # V39 + Phase 5 two-pass intersection for variance reduction
-    "v40a":               dict(linker_class="v40a"),   # V39a + exempt coref from Phase 9 judge
-    "v40b":               dict(linker_class="v40b"),   # V39a + Phase 7 two-pass union coref + coref exempt
-    "v40c":               dict(linker_class="v40c"),   # V39a + LLM generic mention detection + coref exempt
-    "s_linker":           dict(linker_class="s_linker"), # DAG-based standalone (V39 + dead code removal + DAG tiers)
-    "s_linker2":          dict(linker_class="s_linker2"), # S-Linker + V40c (LLM generic detection + coref exempt + bug fixes)
-    "s_linker3":          dict(linker_class="s_linker3"), # S-Linker2 + unified coref (Variant E) + keep_coref (no judge)
-    "s_linker4":          dict(linker_class="s_linker4"), # S-Linker3 + seed links go through convention filter (no immunity)
-    "s_linker5":          dict(linker_class="s_linker5"), # S-Linker4 + dead code removal + marginal filter cleanup
-    "s_linker6":          dict(linker_class="s_linker6"), # S-Linker5 simplified: no subprocess, no targeted, no keep-coref
-    "s_linker7":          dict(linker_class="s_linker7"), # S-Linker6 - boundary filter (ICSE paper version)
-    "s_linker7a":         dict(linker_class="s_linker7a"), # S-Linker7 + partials through validation
-    "s_linker7b":         dict(linker_class="s_linker7b"), # S-Linker7a + clean-mention auto-approval
-    "s_linker8":          dict(linker_class="s_linker8"), # S-Linker7a promoted: partials through validation (93.0%)
-    "s_linker9":          dict(linker_class="s_linker9"), # S-Linker8 + remove impl variant filtering
-    "s_linker9a":         dict(linker_class="s_linker9a"), # S-Linker9 + remove auto-approval (U1+U2)
-    "s_linker9b":         dict(linker_class="s_linker9b"), # S-Linker9 + remove enrichment (U4+U5 Option C)
-    "s_linker9c":         dict(linker_class="s_linker9c"), # S-Linker9 + LLM partial discovery (U4+U5 Option A)
-    "s_linker9d":         dict(linker_class="s_linker9d"), # S-Linker9 + no auto-approval + alias-context LLM
-    "s_linker9e":         dict(linker_class="s_linker9e"), # S-Linker9 + anchor auto-approval + alias-context LLM
-    "s_linker10":         dict(linker_class="s_linker10"), # S-Linker10: alias-context + evidence-stratified voting + LLM enrichment
-    "s_linker10a":        dict(linker_class="s_linker10a"), # Ablation: count>=3 enrichment threshold (instead of LLM)
-    "s_linker11":         dict(linker_class="s_linker11"), # S-Linker11: uniform validation (seed validated + no bypass)
-    "s_linker11a":        dict(linker_class="s_linker11a"), # S-Linker11a: S-Linker11 + V_RV role-verification validation
-    "s10_vrv":            dict(linker_class="s10_vrv"),   # S-Linker10 + V_RV validation rules (role-verification reject)
-    "s10_vfo":            dict(linker_class="s10_vfo"),   # S-Linker10 + V_FO focus prompts (SPECIFICITY + FUNCTION)
-    "s10_p3b":            dict(linker_class="s10_p3b"),   # S-Linker10 + P3b alias rule (IS + verify role)
-    # --- CNR: Component Name Recovery (no-model) ---
-    "cnr":                dict(linker_class="cnr"),        # Discovery + simple extraction
-    "cnr_i2":             dict(linker_class="cnr_i2"),     # Discovery + I2 two-pass
-    "cnr_v26a":           dict(linker_class="cnr_v26a"),   # Discovery + full V26a pipeline
-    # --- CNR-DK: Document Knowledge-Informed CNR ---
-    "cnr_dk":             dict(linker_class="cnr_dk"),     # CNR + Document Analysis
-    "cnr_dk_v26a":        dict(linker_class="cnr_dk_v26a"),  # CNR-DK + full V26a + Phase 3 warm-start
+VARIANT_SPECS = {
+    "i1": dict(
+        aliases=("ilinker1",),
+        module="llm_sad_sam.linkers.experimental.ilinker1",
+        class_name="ILinker1",
+        description="ILinker1 three-pass precision cascade",
+    ),
+    "i2": dict(
+        aliases=("ilinker2",),
+        module="llm_sad_sam.linkers.experimental.ilinker2",
+        class_name="ILinker2",
+        description="ILinker2 two-pass explicit extractor",
+    ),
+    "i3": dict(
+        aliases=("ilinker3",),
+        adapter="ilinker3",
+        description="ILinker3 v2-stack extractor adapter",
+    ),
+    "s_linker": dict(
+        aliases=("s_linker1",),
+        module="llm_sad_sam.linkers.experimental.s_linker",
+        class_name="SLinker",
+        description="S-Linker base DAG pipeline",
+    ),
+    "s_linker2": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker2",
+        class_name="SLinker2",
+        description="S-Linker2",
+    ),
+    "s_linker3": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker3",
+        class_name="SLinker3",
+        description="S-Linker3",
+    ),
+    "s_linker4": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker4",
+        class_name="SLinker4",
+        description="S-Linker4",
+    ),
+    "s_linker5": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker5",
+        class_name="SLinker5",
+        description="S-Linker5",
+    ),
+    "s_linker6": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker6",
+        class_name="SLinker6",
+        description="S-Linker6",
+    ),
+    "s_linker7": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker7",
+        class_name="SLinker7",
+        description="S-Linker7",
+    ),
+    "s_linker7a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker7a",
+        class_name="SLinker7a",
+        description="S-Linker7a",
+    ),
+    "s_linker7b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker7b",
+        class_name="SLinker7b",
+        description="S-Linker7b",
+    ),
+    "s_linker8": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker8",
+        class_name="SLinker8",
+        description="S-Linker8",
+    ),
+    "s_linker9": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9",
+        class_name="SLinker9",
+        description="S-Linker9",
+    ),
+    "s_linker9a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9a",
+        class_name="SLinker9a",
+        description="S-Linker9a",
+    ),
+    "s_linker9b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9b",
+        class_name="SLinker9b",
+        description="S-Linker9b",
+    ),
+    "s_linker9c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9c",
+        class_name="SLinker9c",
+        description="S-Linker9c",
+    ),
+    "s_linker9d": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9d",
+        class_name="SLinker9d",
+        description="S-Linker9d",
+    ),
+    "s_linker9e": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker9e",
+        class_name="SLinker9e",
+        description="S-Linker9e",
+    ),
+    "s_linker10": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker10",
+        class_name="SLinker10",
+        description="S-Linker10",
+    ),
+    "s_linker10a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker10a",
+        class_name="SLinker10a",
+        description="S-Linker10a",
+    ),
+    "s_linker11": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11",
+        class_name="SLinker11",
+        description="S-Linker11",
+    ),
+    "s_linker11a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11a",
+        class_name="SLinker11a",
+        description="S-Linker11a",
+    ),
 }
 
-BENCHMARK_BASE = Path(__file__).parent / "../ardoco/core/tests-base/src/main/resources/benchmark"
+VARIANTS = {
+    canonical: {"canonical": canonical, "description": VARIANT_SPECS[canonical]["description"]}
+    for canonical in CANONICAL_VARIANTS
+}
+for canonical, spec in VARIANT_SPECS.items():
+    for alias in spec["aliases"]:
+        VARIANTS[alias] = {"canonical": canonical, "description": f"Alias for {canonical}"}
+
+BENCHMARK_BASE = ROOT / "../ardoco/core/tests-base/src/main/resources/benchmark"
 CLI_RESULTS = Path("/mnt/hostshare/ardoco-home/cli-results")
 
 DATASETS = {
@@ -326,626 +247,232 @@ DATASETS = {
     },
 }
 
-_backend_env = os.environ.get("LLM_BACKEND", "claude")
-BACKEND = (
-    LLMBackend.OPENAI if _backend_env == "openai"
-    else LLMBackend.CHECKPOINT if _backend_env == "checkpoint"
-    else LLMBackend.CLAUDE
-)
+
+class ILinker3Adapter:
+    """Expose ILinker3's extract API via the runner's link interface."""
+
+    def __init__(self, backend: LLMBackend | None = None):
+        from llm_sad_sam.linkers.experimental.ilinker3 import ILinker3
+
+        self.llm = LLMClient(backend=backend or get_backend())
+        self._extractor = ILinker3(llm=self.llm)
+
+    def link(self, text_path: str, model_path: str, transarc_csv: str | None = None):
+        del transarc_csv
+        from llm_sad_sam.core.document_loader_v2 import load_sentences
+        from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository as parse_pcm_repository_v2
+
+        sentences = load_sentences(text_path)
+        components = parse_pcm_repository_v2(model_path)
+        return self._extractor.extract(sentences, components)
+
+
+def get_backend() -> LLMBackend:
+    backend_name = os.environ.get("LLM_BACKEND", "claude").strip().lower()
+    if backend_name == "openai":
+        return LLMBackend.OPENAI
+    if backend_name == "checkpoint":
+        return LLMBackend.CHECKPOINT
+    if backend_name == "codex":
+        return LLMBackend.CODEX
+    return LLMBackend.CLAUDE
+
+
 os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.2")
 os.environ.setdefault("CLAUDE_MODEL", "sonnet")
 
 
+def describe_backend_target(backend: LLMBackend | None = None) -> str:
+    backend = backend or get_backend()
+    if backend == LLMBackend.CLAUDE:
+        return f"claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"
+    if backend == LLMBackend.OPENAI:
+        return f"openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.2')})"
+    if backend == LLMBackend.CHECKPOINT:
+        fallback_model = os.environ.get("CHECKPOINT_FALLBACK_MODEL", "").strip().lower()
+        if fallback_model in {"gpt", "openai"} or fallback_model.startswith("gpt"):
+            model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+            if fallback_model.startswith("gpt"):
+                model = fallback_model
+            return f"checkpoint -> openai ({model})"
+        if fallback_model in {"claude", "sonnet"} or fallback_model.startswith("claude"):
+            model = os.environ.get("CLAUDE_MODEL", "sonnet")
+            if fallback_model not in {"claude", "sonnet"}:
+                model = fallback_model
+            return f"checkpoint -> claude ({model})"
+        fallback_backend = os.environ.get("CHECKPOINT_FALLBACK", "claude").strip().lower() or "claude"
+        if fallback_backend == "openai":
+            return f"checkpoint -> openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.2')})"
+        if fallback_backend == "codex":
+            return "checkpoint -> codex"
+        return f"checkpoint -> claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"
+    return backend.value
+
+
+def available_variants() -> list[str]:
+    return list(CANONICAL_VARIANTS)
+
+
+def canonical_variant(name: str) -> str:
+    if name not in VARIANTS:
+        raise KeyError(name)
+    return VARIANTS[name]["canonical"]
+
+
+def normalize_variants(names: list[str]) -> list[str]:
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for name in names:
+        canonical = canonical_variant(name)
+        if canonical not in seen:
+            normalized.append(canonical)
+            seen.add(canonical)
+    return normalized
+
+
+def build_linker(variant_name: str, backend: LLMBackend | None = None):
+    canonical = canonical_variant(variant_name)
+    if canonical == "i3":
+        return ILinker3Adapter(backend=backend or get_backend())
+
+    spec = VARIANT_SPECS[canonical]
+    module = importlib.import_module(spec["module"])
+    cls = getattr(module, spec["class_name"])
+    return cls(backend=backend or get_backend())
+
+
 def load_gold_sam(gold_path: str) -> set[tuple[int, str]]:
-    links = set()
-    with open(gold_path) as f:
-        for row in csv.DictReader(f):
-            cid = row.get("modelElementID", "").strip()
-            snum = row.get("sentence", "").strip()
-            if cid and snum:
-                links.add((int(snum), cid))
+    links: set[tuple[int, str]] = set()
+    with open(gold_path) as handle:
+        for row in csv.DictReader(handle):
+            component_id = row.get("modelElementID", "").strip()
+            sentence_number = row.get("sentence", "").strip()
+            if component_id and sentence_number:
+                links.add((int(sentence_number), component_id))
     return links
 
 
 def load_transarc_pairs(transarc_path: str) -> set[tuple[int, str]]:
-    pairs = set()
-    with open(transarc_path) as f:
-        for row in csv.DictReader(f):
-            cid = row.get("modelElementID", "").strip()
-            snum = row.get("sentence", "").strip()
-            if cid and snum:
-                pairs.add((int(snum), cid))
+    pairs: set[tuple[int, str]] = set()
+    with open(transarc_path) as handle:
+        for row in csv.DictReader(handle):
+            component_id = row.get("modelElementID", "").strip()
+            sentence_number = row.get("sentence", "").strip()
+            if component_id and sentence_number:
+                pairs.add((int(sentence_number), component_id))
     return pairs
 
 
-def eval_metrics(predicted, gold):
+def export_links_csv(links: list[SadSamLink], output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["sentence", "component_id", "component_name", "confidence", "source"])
+        for link in sorted(links, key=lambda item: (item.sentence_number, item.component_id)):
+            writer.writerow(
+                [
+                    link.sentence_number,
+                    link.component_id,
+                    link.component_name,
+                    f"{link.confidence:.2f}",
+                    link.source,
+                ]
+            )
+
+
+def eval_metrics(predicted: set[tuple[int, str]], gold: set[tuple[int, str]]) -> dict[str, float]:
     tp = len(predicted & gold)
     fp = len(predicted - gold)
     fn = len(gold - predicted)
-    p = tp / (tp + fp) if (tp + fp) > 0 else 0
-    r = tp / (tp + fn) if (tp + fn) > 0 else 0
-    f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0
-    return {"tp": tp, "fp": fp, "fn": fn, "P": p, "R": r, "F1": f1}
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    return {"tp": tp, "fp": fp, "fn": fn, "P": precision, "R": recall, "F1": f1}
 
 
-def run_variant(variant_name: str, flags: dict, ds_name: str, paths: dict,
-                gold_pairs: set, transarc_pairs: set, id_to_name: dict, sent_map: dict,
-                resume_from_phase=None):
-    """Run a single ablation variant on a single dataset."""
-    from llm_sad_sam.linkers.experimental.agent_linker import export_links_csv
+def require_existing(path: Path, label: str) -> None:
+    if not path.exists():
+        raise FileNotFoundError(f"{label} not found: {path}")
 
+
+def run_variant(
+    variant_name: str,
+    dataset_name: str,
+    paths: dict[str, Path],
+    gold_pairs: set[tuple[int, str]],
+    transarc_pairs: set[tuple[int, str]],
+    id_to_name: dict[str, str],
+    sent_map: dict[int, object],
+    results_dir: Path,
+) -> dict[str, object]:
     print(f"\n  --- Variant: {variant_name} ---")
-    print(f"  Flags: {flags}")
+    linker = build_linker(variant_name)
 
     t0 = time.time()
-    flags = dict(flags)  # copy to avoid mutating VARIANTS
-    linker_class = flags.pop("linker_class", None)
-    if linker_class == "v9":
-        from llm_sad_sam.linkers.experimental.agent_linker_v9 import AgentLinkerV9
-        pf = flags.pop("post_filter", "none")
-        n_runs = flags.pop("n_runs", 3)
-        linker = AgentLinkerV9(backend=BACKEND, post_filter=pf, n_runs=n_runs)
-    elif linker_class == "v8a":
-        from llm_sad_sam.linkers.experimental.agent_linker_v8a import AgentLinkerV8a
-        pf = flags.pop("post_filter", "none")
-        n_runs = flags.pop("n_runs", 3)
-        linker = AgentLinkerV8a(backend=BACKEND, post_filter=pf, n_runs=n_runs)
-    elif linker_class == "v8b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v8b import AgentLinkerV8b
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV8b(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v7":
-        from llm_sad_sam.linkers.experimental.agent_linker_v7 import AgentLinkerV7
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV7(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v6_vote":
-        from llm_sad_sam.linkers.experimental.agent_linker_v6_vote import AgentLinkerV6Vote
-        pf = flags.pop("post_filter", "none")
-        n_runs = flags.pop("n_runs", 3)
-        linker = AgentLinkerV6Vote(backend=BACKEND, post_filter=pf, n_runs=n_runs)
-    elif linker_class == "v6_phase_vote":
-        from llm_sad_sam.linkers.experimental.agent_linker_v6_phase_vote import AgentLinkerV6PhaseVote
-        pf = flags.pop("post_filter", "none")
-        n_runs = flags.pop("n_runs", 3)
-        linker = AgentLinkerV6PhaseVote(backend=BACKEND, post_filter=pf, n_runs=n_runs)
-    elif linker_class == "v23":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23 import AgentLinkerV23
-        linker = AgentLinkerV23(backend=BACKEND)
-    elif linker_class == "v23a":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23a import AgentLinkerV23a
-        linker = AgentLinkerV23a(backend=BACKEND)
-    elif linker_class == "v23b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23b import AgentLinkerV23b
-        linker = AgentLinkerV23b(backend=BACKEND)
-    elif linker_class == "v23c":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23c import AgentLinkerV23c
-        linker = AgentLinkerV23c(backend=BACKEND)
-    elif linker_class == "v23d":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23d import AgentLinkerV23d
-        linker = AgentLinkerV23d(backend=BACKEND)
-    elif linker_class == "v23e":
-        from llm_sad_sam.linkers.experimental.agent_linker_v23e import AgentLinkerV23e
-        linker = AgentLinkerV23e(backend=BACKEND)
-    elif linker_class == "v24":
-        from llm_sad_sam.linkers.experimental.agent_linker_v24 import AgentLinkerV24
-        linker = AgentLinkerV24(backend=BACKEND)
-    elif linker_class == "w24":
-        from llm_sad_sam.linkers.experimental.agent_linker_w24 import AgentLinkerW24
-        strategy = cfg.get("transarc_judge_strategy", "advocate")
-        linker = AgentLinkerW24(backend=BACKEND, transarc_judge_strategy=strategy)
-    elif linker_class == "v25":
-        from llm_sad_sam.linkers.experimental.agent_linker_v25 import AgentLinkerV25
-        linker = AgentLinkerV25(backend=BACKEND)
-    elif linker_class == "v25a":
-        from llm_sad_sam.linkers.experimental.agent_linker_v25a import AgentLinkerV25a
-        linker = AgentLinkerV25a(backend=BACKEND)
-    elif linker_class == "v25b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v25b import AgentLinkerV25b
-        linker = AgentLinkerV25b(backend=BACKEND)
-    elif linker_class == "v26":
-        from llm_sad_sam.linkers.experimental.agent_linker_v26 import AgentLinkerV26
-        linker = AgentLinkerV26(backend=BACKEND)
-    elif linker_class == "v26a":
-        from llm_sad_sam.linkers.experimental.agent_linker_v26a import AgentLinkerV26a
-        linker = AgentLinkerV26a(backend=BACKEND)
-    elif linker_class == "v26b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v26b import AgentLinkerV26b
-        linker = AgentLinkerV26b(backend=BACKEND)
-    elif linker_class == "v26c":
-        from llm_sad_sam.linkers.experimental.agent_linker_v26c import AgentLinkerV26c
-        linker = AgentLinkerV26c(backend=BACKEND)
-    elif linker_class == "v26d":
-        from llm_sad_sam.linkers.experimental.agent_linker_v26d import AgentLinkerV26d
-        linker = AgentLinkerV26d(backend=BACKEND)
-    elif linker_class == "v29":
-        from llm_sad_sam.linkers.experimental.agent_linker_v29 import AgentLinkerV29
-        linker = AgentLinkerV29(backend=BACKEND)
-    elif linker_class == "v28":
-        from llm_sad_sam.linkers.experimental.agent_linker_v28 import AgentLinkerV28
-        linker = AgentLinkerV28(backend=BACKEND)
-    elif linker_class == "v27g":
-        from llm_sad_sam.linkers.experimental.agent_linker_v27g import AgentLinkerV27g
-        linker = AgentLinkerV27g(backend=BACKEND)
-    elif linker_class == "v27b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v27b import AgentLinkerV27b
-        linker = AgentLinkerV27b(backend=BACKEND)
-    elif linker_class == "v27f":
-        from llm_sad_sam.linkers.experimental.agent_linker_v27f import AgentLinkerV27f
-        linker = AgentLinkerV27f(backend=BACKEND)
-    elif linker_class == "v22":
-        from llm_sad_sam.linkers.experimental.agent_linker_v22 import AgentLinkerV22
-        linker = AgentLinkerV22(backend=BACKEND)
-    elif linker_class == "v21":
-        from llm_sad_sam.linkers.experimental.agent_linker_v21 import AgentLinkerV21
-        linker = AgentLinkerV21(backend=BACKEND)
-    elif linker_class == "v18":
-        from llm_sad_sam.linkers.experimental.agent_linker_v18 import AgentLinkerV18
-        linker = AgentLinkerV18(backend=BACKEND)
-    elif linker_class == "v19":
-        from llm_sad_sam.linkers.experimental.agent_linker_v19 import AgentLinkerV19
-        linker = AgentLinkerV19(backend=BACKEND)
-    elif linker_class == "v20a":
-        from llm_sad_sam.linkers.experimental.agent_linker_v20a import AgentLinkerV20a
-        linker = AgentLinkerV20a(backend=BACKEND)
-    elif linker_class == "v20b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v20b import AgentLinkerV20b
-        linker = AgentLinkerV20b(backend=BACKEND)
-    elif linker_class == "v20c":
-        from llm_sad_sam.linkers.experimental.agent_linker_v20c import AgentLinkerV20c
-        linker = AgentLinkerV20c(backend=BACKEND)
-    elif linker_class == "v20":
-        from llm_sad_sam.linkers.experimental.agent_linker_v20 import AgentLinkerV20
-        linker = AgentLinkerV20(backend=BACKEND)
-    elif linker_class == "v17":
-        from llm_sad_sam.linkers.experimental.agent_linker_v17 import AgentLinkerV17
-        linker = AgentLinkerV17(
-            backend=BACKEND,
-            intersect_validation=flags.pop("intersect_validation", False),
-            enable_implicit=flags.pop("enable_implicit", False),
-            enable_fn_recovery=flags.pop("enable_fn_recovery", False),
-            nuanced_transarc=flags.pop("nuanced_transarc", False),
-            judge_doc_knowledge=flags.pop("judge_doc_knowledge", False),
-            judge_full_context=flags.pop("judge_full_context", False),
-            judge_validated_bias=flags.pop("judge_validated_bias", False),
-            judge_strict_def=flags.pop("judge_strict_def", False),
-            judge_adaptive_ctx=flags.pop("judge_adaptive_ctx", False),
-            judge_show_match=flags.pop("judge_show_match", False),
-        )
-    elif linker_class == "w16":
-        from llm_sad_sam.linkers.experimental.agent_linker_w16 import AgentLinkerW16
-        linker = AgentLinkerW16(backend=BACKEND)
-    elif linker_class == "v16":
-        from llm_sad_sam.linkers.experimental.agent_linker_v16 import AgentLinkerV16
-        linker = AgentLinkerV16(backend=BACKEND)
-    elif linker_class == "v15":
-        from llm_sad_sam.linkers.experimental.agent_linker_v15 import AgentLinkerV15
-        linker = AgentLinkerV15(backend=BACKEND)
-    elif linker_class == "v14":
-        from llm_sad_sam.linkers.experimental.agent_linker_v14 import AgentLinkerV14
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV14(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v13":
-        from llm_sad_sam.linkers.experimental.agent_linker_v13 import AgentLinkerV13
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV13(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v12":
-        from llm_sad_sam.linkers.experimental.agent_linker_v12 import AgentLinkerV12
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV12(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v11":
-        from llm_sad_sam.linkers.experimental.agent_linker_v11 import AgentLinkerV11
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV11(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v6":
-        from llm_sad_sam.linkers.experimental.agent_linker_v6 import AgentLinkerV6
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV6(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v6b":
-        from llm_sad_sam.linkers.experimental.agent_linker_v6b import AgentLinkerV6B
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV6B(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v6c":
-        from llm_sad_sam.linkers.experimental.agent_linker_v6c import AgentLinkerV6C
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV6C(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v9t":
-        from llm_sad_sam.linkers.experimental.agent_linker_v9t import AgentLinkerV9T
-        pf = flags.pop("post_filter", "none")
-        only_feature = flags.pop("only_feature", None)
-        # Feature flags: default all True unless only_feature is set
-        feature_map = {"A": "fix_dot_filter", "B": "abbreviation_guard",
-                       "C": "coref_distance_filter", "D": "generic_word_filter",
-                       "E": "ambiguous_recovery", "F": "section_heading_safe"}
-        if only_feature:
-            feature_kwargs = {v: (k == only_feature) for k, v in feature_map.items()}
-        else:
-            feature_kwargs = {v: flags.pop(v, True) for v in feature_map.values()}
-        linker = AgentLinkerV9T(backend=BACKEND, post_filter=pf, **feature_kwargs)
-    elif linker_class == "v5":
-        from llm_sad_sam.linkers.experimental.agent_linker_v5 import AgentLinkerV5
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV5(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v4":
-        from llm_sad_sam.linkers.experimental.agent_linker_v4 import AgentLinkerV4
-        pf = flags.pop("post_filter", "none")
-        jm = flags.pop("judge_mode", "default")
-        cm = flags.pop("complexity_mode", "llm")
-        rm = flags.pop("recovery_mode", "default")
-        em = flags.pop("embed_mode", "name_only")
-        um = flags.pop("unjudged_mode", "rejudge")
-        linker = AgentLinkerV4(backend=BACKEND, post_filter=pf, judge_mode=jm, complexity_mode=cm, recovery_mode=rm, embed_mode=em, unjudged_mode=um)
-    elif linker_class == "v3":
-        from llm_sad_sam.linkers.experimental.agent_linker_v3 import AgentLinkerV3
-        pf = flags.pop("post_filter", "none")
-        linker = AgentLinkerV3(backend=BACKEND, post_filter=pf)
-    elif linker_class == "v2":
-        from llm_sad_sam.linkers.experimental.agent_linker_v2 import AgentLinkerV2
-        if any(k in flags for k in ("coref_mode", "implicit_mode", "judge_mode", "recovery_mode", "post_filter")):
-            from llm_sad_sam.linkers.experimental.agent_linker_v2_ablation import AgentLinkerV2Ablation
-            linker = AgentLinkerV2Ablation(backend=BACKEND, **flags)
-        else:
-            linker = AgentLinkerV2(backend=BACKEND)
-    elif linker_class == "i1":
-        from llm_sad_sam.linkers.experimental.ilinker1 import ILinker1
-        linker = ILinker1(backend=BACKEND)
-    elif linker_class == "i2":
-        from llm_sad_sam.linkers.experimental.ilinker2 import ILinker2
-        linker = ILinker2(backend=BACKEND)
-    elif linker_class == "v26a_i2":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a import ILinker2V26a
-        linker = ILinker2V26a(backend=BACKEND)
-    elif linker_class == "v26a_i2_dk":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a import ILinker2V26a
-        linker = ILinker2V26a(backend=BACKEND, enable_da=True)
-    elif linker_class == "i2_pure":
-        from llm_sad_sam.linkers.experimental.ilinker2_pure import ILinker2Pure
-        linker = ILinker2Pure(backend=BACKEND)
-    elif linker_class == "v26a_i2_ndf":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_ndf import ILinker2V26aNDF
-        linker = ILinker2V26aNDF(backend=BACKEND)
-    elif linker_class == "s1":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s1 import ILinker2V26aS1
-        linker = ILinker2V26aS1(backend=BACKEND)
-    elif linker_class == "s2":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s2 import ILinker2V26aS2
-        linker = ILinker2V26aS2(backend=BACKEND)
-    elif linker_class == "s3":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s3 import ILinker2V26aS3
-        linker = ILinker2V26aS3(backend=BACKEND)
-    elif linker_class == "s4":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s4 import ILinker2V26aS4
-        linker = ILinker2V26aS4(backend=BACKEND)
-    elif linker_class == "s5":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s5 import ILinker2V26aS5
-        linker = ILinker2V26aS5(backend=BACKEND)
-    elif linker_class == "s6":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s6 import ILinker2V26aS6
-        linker = ILinker2V26aS6(backend=BACKEND)
-    elif linker_class == "s7":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s7 import ILinker2V26aS7
-        linker = ILinker2V26aS7(backend=BACKEND)
-    elif linker_class == "s8":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s8 import ILinker2V26aS8
-        linker = ILinker2V26aS8(backend=BACKEND)
-    elif linker_class == "s9":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s9 import ILinker2V26aS9
-        linker = ILinker2V26aS9(backend=BACKEND)
-    elif linker_class == "s10":
-        from llm_sad_sam.linkers.experimental.ilinker2_v26a_s10 import ILinker2V26aS10
-        linker = ILinker2V26aS10(backend=BACKEND)
-    elif linker_class == "s11":
-        from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
-        linker = SLinker11(backend=BACKEND)
-    elif linker_class == "v30":
-        from llm_sad_sam.linkers.experimental.ilinker2_v30 import ILinker2V30
-        linker = ILinker2V30(backend=BACKEND)
-    elif linker_class == "v30a":
-        from llm_sad_sam.linkers.experimental.ilinker2_v30a import ILinker2V30a
-        linker = ILinker2V30a(backend=BACKEND)
-    elif linker_class == "v30b":
-        from llm_sad_sam.linkers.experimental.ilinker2_v30b import ILinker2V30b
-        linker = ILinker2V30b(backend=BACKEND)
-    elif linker_class == "v30c":
-        from llm_sad_sam.linkers.experimental.ilinker2_v30c import ILinker2V30c
-        linker = ILinker2V30c(backend=BACKEND)
-    elif linker_class == "v30d":
-        from llm_sad_sam.linkers.experimental.ilinker2_v30d import ILinker2V30d
-        linker = ILinker2V30d(
-            backend=BACKEND,
-            enable_v24=flags.get("v30d_v24", False),
-            enable_uppercase=flags.get("v30d_uc", False),
-            partial_min_count=flags.get("v30d_pt", 3),
-            disable_generic_mention=flags.get("no_genm", False),
-            disable_generic_coref=flags.get("no_gencf", False),
-            disable_pronoun_coref=flags.get("no_pron", False),
-            disable_boundary_filters=flags.get("no_bf", False),
-            disable_partial_injection=flags.get("no_pi", False),
-            disable_syn_safe=flags.get("no_synsafe", False),
-            disable_parent_overlap=flags.get("no_po", False),
-            disable_abbrev_guard=flags.get("no_ag", False),
-        )
-    elif linker_class == "v31":
-        from llm_sad_sam.linkers.experimental.ilinker2_v31 import ILinker2V31
-        linker = ILinker2V31(backend=BACKEND)
-    elif linker_class == "v32":
-        from llm_sad_sam.linkers.experimental.ilinker2_v32 import ILinker2V32
-        linker = ILinker2V32(backend=BACKEND)
-    elif linker_class == "alinker":
-        from llm_sad_sam.linkers.experimental.alinker import ALinker
-        linker = ALinker(backend=BACKEND)
-    elif linker_class == "v35":
-        from llm_sad_sam.linkers.experimental.ilinker2_v35 import ILinker2V35
-        linker = ILinker2V35(backend=BACKEND)
-    elif linker_class == "v35a":
-        from llm_sad_sam.linkers.experimental.ilinker2_v35a import ILinker2V35a
-        linker = ILinker2V35a(backend=BACKEND)
-    elif linker_class == "v35b":
-        from llm_sad_sam.linkers.experimental.ilinker2_v35b import ILinker2V35b
-        linker = ILinker2V35b(backend=BACKEND)
-    elif linker_class == "v35c":
-        from llm_sad_sam.linkers.experimental.ilinker2_v35c import ILinker2V35c
-        linker = ILinker2V35c(backend=BACKEND)
-    elif linker_class == "v36a":
-        from llm_sad_sam.linkers.experimental.ilinker2_v36a import ILinker2V36a
-        linker = ILinker2V36a(backend=BACKEND)
-    elif linker_class == "v36b":
-        from llm_sad_sam.linkers.experimental.ilinker2_v36b import ILinker2V36b
-        linker = ILinker2V36b(backend=BACKEND)
-    elif linker_class == "v37":
-        from llm_sad_sam.linkers.experimental.ilinker2_v37 import ILinker2V37
-        linker = ILinker2V37(backend=BACKEND)
-    elif linker_class == "v38":
-        from llm_sad_sam.linkers.experimental.ilinker2_v38 import ILinker2V38
-        linker = ILinker2V38(backend=BACKEND)
-    elif linker_class == "v39":
-        from llm_sad_sam.linkers.experimental.ilinker2_v39 import ILinker2V39
-        linker = ILinker2V39(backend=BACKEND)
-    elif linker_class == "v39a":
-        from llm_sad_sam.linkers.experimental.ilinker2_v39a import ILinker2V39a
-        linker = ILinker2V39a(backend=BACKEND)
-    elif linker_class == "v40a":
-        from llm_sad_sam.linkers.experimental.ilinker2_v40a import ILinker2V40a
-        linker = ILinker2V40a(backend=BACKEND)
-    elif linker_class == "v40b":
-        from llm_sad_sam.linkers.experimental.ilinker2_v40b import ILinker2V40b
-        linker = ILinker2V40b(backend=BACKEND)
-    elif linker_class == "v40c":
-        from llm_sad_sam.linkers.experimental.ilinker2_v40c import ILinker2V40c
-        linker = ILinker2V40c(backend=BACKEND)
-    elif linker_class == "s_linker":
-        from llm_sad_sam.linkers.experimental.s_linker import SLinker
-        linker = SLinker(backend=BACKEND)
-    elif linker_class == "s_linker2":
-        from llm_sad_sam.linkers.experimental.s_linker2 import SLinker2
-        linker = SLinker2(backend=BACKEND)
-    elif linker_class == "s_linker3":
-        from llm_sad_sam.linkers.experimental.s_linker3 import SLinker3
-        linker = SLinker3(backend=BACKEND)
-    elif linker_class == "s_linker4":
-        from llm_sad_sam.linkers.experimental.s_linker4 import SLinker4
-        linker = SLinker4(backend=BACKEND)
-    elif linker_class == "s_linker5":
-        from llm_sad_sam.linkers.experimental.s_linker5 import SLinker5
-        linker = SLinker5(backend=BACKEND)
-    elif linker_class == "s_linker6":
-        from llm_sad_sam.linkers.experimental.s_linker6 import SLinker6
-        linker = SLinker6(backend=BACKEND)
-    elif linker_class == "s_linker7":
-        from llm_sad_sam.linkers.experimental.s_linker7 import SLinker7
-        linker = SLinker7(backend=BACKEND)
-    elif linker_class == "s_linker7a":
-        from llm_sad_sam.linkers.experimental.s_linker7a import SLinker7a
-        linker = SLinker7a(backend=BACKEND)
-    elif linker_class == "s_linker7b":
-        from llm_sad_sam.linkers.experimental.s_linker7b import SLinker7b
-        linker = SLinker7b(backend=BACKEND)
-    elif linker_class == "s_linker8":
-        from llm_sad_sam.linkers.experimental.s_linker8 import SLinker8
-        linker = SLinker8(backend=BACKEND)
-    elif linker_class == "s_linker9":
-        from llm_sad_sam.linkers.experimental.s_linker9 import SLinker9
-        linker = SLinker9(backend=BACKEND)
-    elif linker_class == "s_linker9a":
-        from llm_sad_sam.linkers.experimental.s_linker9a import SLinker9a
-        linker = SLinker9a(backend=BACKEND)
-    elif linker_class == "s_linker9b":
-        from llm_sad_sam.linkers.experimental.s_linker9b import SLinker9b
-        linker = SLinker9b(backend=BACKEND)
-    elif linker_class == "s_linker9c":
-        from llm_sad_sam.linkers.experimental.s_linker9c import SLinker9c
-        linker = SLinker9c(backend=BACKEND)
-    elif linker_class == "s_linker9d":
-        from llm_sad_sam.linkers.experimental.s_linker9d import SLinker9d
-        linker = SLinker9d(backend=BACKEND)
-    elif linker_class == "s_linker9e":
-        from llm_sad_sam.linkers.experimental.s_linker9e import SLinker9e
-        linker = SLinker9e(backend=BACKEND)
-    elif linker_class == "s_linker10":
-        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
-        linker = SLinker10(backend=BACKEND)
-    elif linker_class == "s_linker10a":
-        from llm_sad_sam.linkers.experimental.s_linker10a import SLinker10a
-        linker = SLinker10a(backend=BACKEND)
-    elif linker_class == "s_linker11":
-        from llm_sad_sam.linkers.experimental.s_linker11 import SLinker11
-        linker = SLinker11(backend=BACKEND)
-    elif linker_class == "s_linker11a":
-        from llm_sad_sam.linkers.experimental.s_linker11a import SLinker11a
-        linker = SLinker11a(backend=BACKEND)
-    elif linker_class == "s10_vrv":
-        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
-        from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_RULES_V
-        import llm_sad_sam.linkers.experimental.prompts_v2 as _pmod
-        _pmod.VALIDATION_RULES = VALIDATION_RULES_V
-        linker = SLinker10(backend=BACKEND)
-    elif linker_class == "s10_vfo":
-        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
-        from llm_sad_sam.linkers.experimental.prompt_var import VALIDATION_FOCUS_1_V, VALIDATION_FOCUS_2_V
-        linker = SLinker10(backend=BACKEND)
-        # Monkey-patch the validation pass method to use variant focus prompts
-        _orig_validate = linker._validate_intersect
-        def _patched_validate(candidates, components, sent_map, _orig=_orig_validate):
-            # Swap focus strings in _qual_validation_pass calls
-            _orig_qvp = linker._qual_validation_pass
-            _call_count = [0]
-            def _patched_qvp(comp_names, cases, focus):
-                _call_count[0] += 1
-                if _call_count[0] % 2 == 1:
-                    return _orig_qvp(comp_names, cases, VALIDATION_FOCUS_1_V)
-                else:
-                    return _orig_qvp(comp_names, cases, VALIDATION_FOCUS_2_V)
-            linker._qual_validation_pass = _patched_qvp
-            result = _orig(candidates, components, sent_map)
-            linker._qual_validation_pass = _orig_qvp
-            _call_count[0] = 0
-            return result
-        linker._validate_intersect = _patched_validate
-    elif linker_class == "s10_p3b":
-        from llm_sad_sam.linkers.experimental.s_linker10 import SLinker10
-        from llm_sad_sam.linkers.experimental.prompt_var import ALIAS_RULE_V3
-        linker = SLinker10(backend=BACKEND)
-        # Monkey-patch _qual_validation_pass to use P3b alias rule
-        _orig_qvp = linker._qual_validation_pass
-        def _patched_qvp_p3b(comp_names, cases, focus):
-            has_alias = any("[KNOWN ALIAS:" in c for c in cases)
-            if has_alias:
-                # Replace default alias rule injection inside _qual_validation_pass
-                # by monkey-patching the method to use ALIAS_RULE_V3
-                from llm_sad_sam.linkers.experimental.prompts_v2 import VALIDATION_RULES
-                prompt = f"""Validate component references in a software architecture document. {focus}
-
-COMPONENTS: {', '.join(comp_names)}
-
-{VALIDATION_RULES}{ALIAS_RULE_V3}
-
-CASES:
-{chr(10).join(cases)}
-
-Return JSON:
-{{"validations": [{{"case": 1, "approve": true/false}}]}}
-JSON only:"""
-                data = linker.llm.extract_json(linker.llm.query(prompt, timeout=120))
-                results = {}
-                if data:
-                    for v in data.get("validations", []):
-                        idx = v.get("case", 0) - 1
-                        if 0 <= idx < len(cases):
-                            results[idx] = v.get("approve", False)
-                return results
-            else:
-                return _orig_qvp(comp_names, cases, focus)
-        linker._qual_validation_pass = _patched_qvp_p3b
-    elif linker_class == "v33":
-        from llm_sad_sam.linkers.experimental.ilinker2_v33 import ILinker2V33
-        linker = ILinker2V33(backend=BACKEND)
-    elif linker_class == "v34":
-        from llm_sad_sam.linkers.experimental.ilinker2_v34 import ILinker2V34
-        linker = ILinker2V34(backend=BACKEND)
-    elif linker_class == "v33f":
-        from llm_sad_sam.linkers.experimental.ilinker2_v33f import ILinker2V33f
-        linker = ILinker2V33f(backend=BACKEND)
-    elif linker_class == "v33g":
-        from llm_sad_sam.linkers.experimental.ilinker2_v33g import ILinker2V33g
-        linker = ILinker2V33g(backend=BACKEND)
-    elif linker_class == "cnr":
-        from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
-        linker = CNRLinker(backend=BACKEND)
-    elif linker_class == "cnr_i2":
-        from llm_sad_sam.linkers.experimental.cnr_i2_linker import CNRI2Linker
-        linker = CNRI2Linker(backend=BACKEND)
-    elif linker_class == "cnr_v26a":
-        from llm_sad_sam.linkers.experimental.cnr_v26a_linker import CNRV26aLinker
-        linker = CNRV26aLinker(backend=BACKEND)
-    elif linker_class == "cnr_dk":
-        from llm_sad_sam.linkers.experimental.cnr_linker import CNRLinker
-        linker = CNRLinker(backend=BACKEND, enable_da=True)
-    elif linker_class == "cnr_dk_v26a":
-        from llm_sad_sam.linkers.experimental.cnr_v26a_linker import CNRV26aLinker
-        linker = CNRV26aLinker(backend=BACKEND, enable_da=True)
-    else:
-        from llm_sad_sam.linkers.experimental.agent_linker_ablation import AgentLinkerAblation
-        linker = AgentLinkerAblation(backend=BACKEND, **flags)
-    link_kwargs = dict(
+    predictions = linker.link(
         text_path=str(paths["text"]),
         model_path=str(paths["model"]),
         transarc_csv=str(paths["transarc_sam"]),
     )
-    # Support run_only (single-phase) mode
-    run_only = flags.get("run_only")
-    if run_only is not None and hasattr(linker, 'run_single_phase'):
-        result = linker.run_single_phase(str(paths["text"]), str(paths["model"]), int(run_only))
-        elapsed = time.time() - t0
-        print(f"\n  Single-phase {run_only} completed in {elapsed:.0f}s")
-        print(f"  Output keys: {list(result.keys())}")
-        # For single-phase, return empty results (no F1 scoring)
-        return {"P": 0, "R": 0, "F1": 0, "tp": 0, "fp": 0, "fn": 0,
-                "time": elapsed, "sources": {}, "fp_by_source": {},
-                "phase_output": result}
-
-    # Support resume_from_phase from CLI arg or variant dict
-    rfp = flags.get("resume_from") or resume_from_phase
-    if rfp is not None and "resume_from_phase" in linker.link.__code__.co_varnames:
-        link_kwargs["resume_from_phase"] = int(rfp)
-    preds = linker.link(**link_kwargs)
     elapsed = time.time() - t0
 
-    pred_pairs = {(l.sentence_number, l.component_id) for l in preds}
-    pred_by_key = {(l.sentence_number, l.component_id): l for l in preds}
-    m = eval_metrics(pred_pairs, gold_pairs)
+    predicted_pairs = {(link.sentence_number, link.component_id) for link in predictions}
+    prediction_by_key = {(link.sentence_number, link.component_id): link for link in predictions}
+    metrics = eval_metrics(predicted_pairs, gold_pairs)
 
-    # Source breakdown
-    source_counts = defaultdict(int)
-    for l in preds:
-        source_counts[l.source] += 1
+    source_counts: defaultdict[str, int] = defaultdict(int)
+    for link in predictions:
+        source_counts[link.source] += 1
 
-    # FP analysis by source
-    fp_pairs = pred_pairs - gold_pairs
-    fp_by_source = defaultdict(int)
+    fp_pairs = predicted_pairs - gold_pairs
+    fp_by_source: defaultdict[str, int] = defaultdict(int)
     fp_details = []
-    for sn, cid in sorted(fp_pairs):
-        link = pred_by_key.get((sn, cid))
-        source = link.source if link else "???"
-        fp_by_source[source] += 1
-        cname = id_to_name.get(cid, cid[:20])
-        sent = sent_map.get(sn)
-        fp_details.append({
-            "sentence": sn,
-            "component": cname,
-            "source": source,
-            "confidence": link.confidence if link else 0,
-            "text": sent.text[:120] if sent else "???",
-        })
+    for sentence_number, component_id in sorted(fp_pairs):
+        link = prediction_by_key[(sentence_number, component_id)]
+        fp_by_source[link.source] += 1
+        sentence = sent_map.get(sentence_number)
+        fp_details.append(
+            {
+                "sentence": sentence_number,
+                "component": id_to_name.get(component_id, component_id),
+                "source": link.source,
+                "confidence": link.confidence,
+                "text": sentence.text[:120] if sentence else "",
+            }
+        )
 
-    # FN analysis
-    fn_pairs = gold_pairs - pred_pairs
+    fn_pairs = gold_pairs - predicted_pairs
     fn_details = []
-    for sn, cid in sorted(fn_pairs):
-        cname = id_to_name.get(cid, cid[:20])
-        sent = sent_map.get(sn)
-        name_in_text = cname.lower() in sent.text.lower() if sent else False
-        transarc_had = (sn, cid) in transarc_pairs
-        fn_details.append({
-            "sentence": sn,
-            "component": cname,
-            "name_in_text": name_in_text,
-            "transarc_had": transarc_had,
-        })
+    for sentence_number, component_id in sorted(fn_pairs):
+        sentence = sent_map.get(sentence_number)
+        component_name = id_to_name.get(component_id, component_id)
+        fn_details.append(
+            {
+                "sentence": sentence_number,
+                "component": component_name,
+                "name_in_text": component_name.lower() in sentence.text.lower() if sentence else False,
+                "transarc_had": (sentence_number, component_id) in transarc_pairs,
+            }
+        )
 
-    # Save CSV
-    out_dir = Path("results/ablation_results")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    export_links_csv(preds, str(out_dir / f"{variant_name}_{ds_name}_links.csv"))
+    export_links_csv(predictions, results_dir / f"{variant_name}_{dataset_name}_links.csv")
 
-    print(f"  {variant_name}: P={m['P']:.1%} R={m['R']:.1%} F1={m['F1']:.1%} "
-          f"TP={m['tp']} FP={m['fp']} FN={m['fn']} ({elapsed:.0f}s)")
+    print(
+        f"  {variant_name}: P={metrics['P']:.1%} R={metrics['R']:.1%} F1={metrics['F1']:.1%} "
+        f"TP={metrics['tp']} FP={metrics['fp']} FN={metrics['fn']} ({elapsed:.0f}s)"
+    )
     print(f"    Sources: {dict(source_counts)}")
     print(f"    FP by source: {dict(fp_by_source)}")
 
     return {
         "variant": variant_name,
-        "P": m["P"], "R": m["R"], "F1": m["F1"],
-        "tp": m["tp"], "fp": m["fp"], "fn": m["fn"],
-        "n_links": len(preds),
+        "P": metrics["P"],
+        "R": metrics["R"],
+        "F1": metrics["F1"],
+        "tp": metrics["tp"],
+        "fp": metrics["fp"],
+        "fn": metrics["fn"],
+        "n_links": len(predictions),
         "time": elapsed,
         "sources": dict(source_counts),
         "fp_by_source": dict(fp_by_source),
@@ -954,252 +481,143 @@ JSON only:"""
     }
 
 
-def print_comparison_table(all_results: dict, selected_variants: list[str]):
-    """Print side-by-side comparison table."""
-    print(f"\n{'='*160}")
-    print("ABLATION STUDY: SIDE-BY-SIDE COMPARISON")
-    print(f"{'='*160}")
-
-    # Sub-header with variant names
-    sub_header = f"  {'Dataset':<16}"
-    for v in selected_variants:
-        sub_header += f" | {v:^30}"
-    print(sub_header)
-
-    # Column labels
-    header = f"  {'':<16}"
-    for v in selected_variants:
-        header += f" | {'P':>6} {'R':>6} {'F1':>6} {'FP':>4} {'FN':>4}"
+def print_summary(all_results: dict[str, dict[str, dict[str, object]]], selected_variants: list[str]) -> None:
+    print(f"\n{'=' * 120}")
+    print("SUMMARY")
+    print(f"{'=' * 120}")
+    header = f"{'Dataset':<16}"
+    for variant in selected_variants:
+        header += f" | {variant:^18}"
     print(header)
-    print(f"  {'-'*16}" + (" | " + "-"*30) * len(selected_variants))
+    print(f"{'-' * 16}" + ("-+-" + "-" * 18) * len(selected_variants))
 
-    ds_names = list(all_results.keys())
-    for ds_name in ds_names:
-        row = f"  {ds_name:<16}"
-        for v in selected_variants:
-            res = all_results[ds_name].get(v)
-            if res:
-                row += f" | {res['P']:>5.1%} {res['R']:>5.1%} {res['F1']:>5.1%} {res['fp']:>4} {res['fn']:>4}"
+    for dataset_name, dataset_results in all_results.items():
+        row = f"{dataset_name:<16}"
+        for variant in selected_variants:
+            result = dataset_results.get(variant)
+            if result is None:
+                row += " | " + f"{'--':^18}"
             else:
-                row += f" | {'--':>6} {'--':>6} {'--':>6} {'--':>4} {'--':>4}"
+                row += " | " + f"F1 {result['F1']:.1%} FP {result['fp']:>3}"
         print(row)
 
-    # Macro averages
-    print(f"  {'-'*16}" + (" | " + "-"*30) * len(selected_variants))
-    row = f"  {'MACRO AVG':<16}"
-    for v in selected_variants:
-        vals = [all_results[ds].get(v) for ds in ds_names if v in all_results[ds]]
-        if vals:
-            avg_p = sum(x["P"] for x in vals) / len(vals)
-            avg_r = sum(x["R"] for x in vals) / len(vals)
-            avg_f1 = sum(x["F1"] for x in vals) / len(vals)
-            total_fp = sum(x["fp"] for x in vals)
-            total_fn = sum(x["fn"] for x in vals)
-            row += f" | {avg_p:>5.1%} {avg_r:>5.1%} {avg_f1:>5.1%} {total_fp:>4} {total_fn:>4}"
-        else:
-            row += f" | {'--':>6} {'--':>6} {'--':>6} {'--':>4} {'--':>4}"
+    print(f"{'-' * 16}" + ("-+-" + "-" * 18) * len(selected_variants))
+    row = f"{'Macro avg':<16}"
+    for variant in selected_variants:
+        values = [all_results[dataset][variant] for dataset in all_results if variant in all_results[dataset]]
+        avg_f1 = sum(value["F1"] for value in values) / len(values)
+        total_fp = sum(value["fp"] for value in values)
+        row += " | " + f"F1 {avg_f1:.1%} FP {total_fp:>3}"
     print(row)
 
 
-def print_delta_table(all_results: dict, selected_variants: list[str]):
-    """Print F1 delta from baseline for each variant."""
-    if "baseline" not in selected_variants:
-        return
-
-    print(f"\n{'='*120}")
-    print("DELTA FROM BASELINE (F1 percentage points)")
-    print(f"{'='*120}")
-
-    non_baseline = [v for v in selected_variants if v != "baseline"]
-    header = f"  {'Dataset':<16} {'baseline':>10}"
-    for v in non_baseline:
-        header += f" {v:>18}"
-    print(header)
-    print(f"  {'-'*16} {'-'*10}" + f" {'-'*18}" * len(non_baseline))
-
-    ds_names = list(all_results.keys())
-    for ds_name in ds_names:
-        base_res = all_results[ds_name].get("baseline")
-        if not base_res:
-            continue
-        row = f"  {ds_name:<16} {base_res['F1']:>9.1%}"
-        for v in non_baseline:
-            res = all_results[ds_name].get(v)
-            if res:
-                delta = (res["F1"] - base_res["F1"]) * 100
-                sign = "+" if delta >= 0 else ""
-                row += f" {res['F1']:>7.1%} ({sign}{delta:>+5.1f}pp)"
-            else:
-                row += f" {'--':>18}"
-        print(row)
-
-    # Macro average deltas
-    print(f"  {'-'*16} {'-'*10}" + f" {'-'*18}" * len(non_baseline))
-    base_vals = [all_results[ds].get("baseline") for ds in ds_names if "baseline" in all_results[ds]]
-    if base_vals:
-        base_avg = sum(x["F1"] for x in base_vals) / len(base_vals)
-        row = f"  {'MACRO AVG':<16} {base_avg:>9.1%}"
-        for v in non_baseline:
-            vals = [all_results[ds].get(v) for ds in ds_names if v in all_results[ds]]
-            if vals:
-                avg_f1 = sum(x["F1"] for x in vals) / len(vals)
-                delta = (avg_f1 - base_avg) * 100
-                sign = "+" if delta >= 0 else ""
-                row += f" {avg_f1:>7.1%} ({sign}{delta:>+5.1f}pp)"
-            else:
-                row += f" {'--':>18}"
-        print(row)
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--datasets",
+        nargs="+",
+        default=list(DATASETS.keys()),
+        help="Datasets to evaluate",
+    )
+    parser.add_argument(
+        "--variants",
+        nargs="+",
+        default=["s_linker11a"],
+        help="Retained variants to evaluate",
+    )
+    parser.add_argument(
+        "--results-dir",
+        default="results/ablation_results",
+        help="Directory for CSV and JSON output",
+    )
+    parser.add_argument("--list-datasets", action="store_true", help="Print supported datasets and exit")
+    parser.add_argument("--list-variants", action="store_true", help="Print supported variants and exit")
+    return parser.parse_args(argv)
 
 
-def print_fp_source_comparison(all_results: dict, selected_variants: list[str]):
-    """Print FP breakdown by source across variants."""
-    print(f"\n{'='*140}")
-    print("FP BY SOURCE COMPARISON")
-    print(f"{'='*140}")
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
 
-    all_sources = set()
-    for ds_results in all_results.values():
-        for v_result in ds_results.values():
-            all_sources.update(v_result.get("fp_by_source", {}).keys())
-    all_sources = sorted(all_sources)
+    if args.list_datasets:
+        print("\n".join(DATASETS.keys()))
+        return 0
+    if args.list_variants:
+        print("\n".join(available_variants()))
+        return 0
 
-    for ds_name, ds_results in all_results.items():
-        print(f"\n  {ds_name}:")
-        header = f"    {'Source':<16}"
-        for v in selected_variants:
-            header += f" {v:>16}"
-        print(header)
-        print(f"    {'-'*16}" + f" {'-'*16}" * len(selected_variants))
+    unknown_datasets = [name for name in args.datasets if name not in DATASETS]
+    if unknown_datasets:
+        raise SystemExit(f"Unknown datasets: {', '.join(unknown_datasets)}")
 
-        for src in all_sources:
-            row = f"    {src:<16}"
-            for v in selected_variants:
-                res = ds_results.get(v, {})
-                count = res.get("fp_by_source", {}).get(src, 0)
-                row += f" {count:>16}"
-            print(row)
+    try:
+        selected_variants = normalize_variants(args.variants)
+    except KeyError as exc:
+        raise SystemExit(f"Unknown variant: {exc.args[0]}") from exc
 
-        row = f"    {'TOTAL':<16}"
-        for v in selected_variants:
-            res = ds_results.get(v, {})
-            total = res.get("fp", 0)
-            row += f" {total:>16}"
-        print(row)
+    datasets = {name: DATASETS[name] for name in args.datasets}
+    backend = get_backend()
+    results_dir = Path(args.results_dir)
+    results_dir.mkdir(parents=True, exist_ok=True)
 
-
-def main():
-    selected_datasets = list(DATASETS.keys())
-    selected_variants = list(VARIANTS.keys())
-    resume_from_phase = None
-
-    args = sys.argv[1:]
-    i = 0
-    while i < len(args):
-        if args[i] == "--datasets":
-            selected_datasets = []
-            i += 1
-            while i < len(args) and not args[i].startswith("--"):
-                selected_datasets.append(args[i])
-                i += 1
-        elif args[i] == "--variants":
-            selected_variants = []
-            i += 1
-            while i < len(args) and not args[i].startswith("--"):
-                selected_variants.append(args[i])
-                i += 1
-        elif args[i] == "--resume-from-phase":
-            i += 1
-            resume_from_phase = int(args[i])
-            i += 1
-        else:
-            i += 1
-
-    datasets = {k: v for k, v in DATASETS.items() if k in selected_datasets}
-
-    print(f"{'='*160}")
-    print("ABLATION STUDY: AgentLinker Improvements")
-    print(f"Backend: {BACKEND.value}, Model: {os.environ.get('CLAUDE_MODEL', 'default')}")
+    print(f"{'=' * 120}")
+    print("ABLATION STUDY: Retained ILinker and S-Linker Variants")
+    print(f"Backend: {describe_backend_target(backend)}")
     print(f"Datasets: {', '.join(datasets.keys())}")
     print(f"Variants: {', '.join(selected_variants)}")
-    print()
-    for v in selected_variants:
-        flags = VARIANTS[v]
-        print(f"  {v:>20}: {flags}")
-    print(f"{'='*160}")
+    print(f"{'=' * 120}")
 
-    all_results = {}
+    all_results: dict[str, dict[str, dict[str, object]]] = {}
 
-    for ds_name, paths in datasets.items():
-        print(f"\n{'='*160}")
-        print(f"DATASET: {ds_name}")
-        print(f"{'='*160}")
+    for dataset_name, paths in datasets.items():
+        require_existing(paths["text"], f"{dataset_name} text")
+        require_existing(paths["model"], f"{dataset_name} model")
+        require_existing(paths["gold_sam"], f"{dataset_name} gold standard")
+
+        print(f"\n{'=' * 120}")
+        print(f"DATASET: {dataset_name}")
+        print(f"{'=' * 120}")
 
         components = parse_pcm_repository(str(paths["model"]))
-        id_to_name = {c.id: c.name for c in components}
+        id_to_name = {component.id: component.name for component in components}
         sentences = DocumentLoader.load_sentences(str(paths["text"]))
-        sent_map = {s.number: s for s in sentences}
+        sent_map = {sentence.number: sentence for sentence in sentences}
         gold_pairs = load_gold_sam(str(paths["gold_sam"]))
-        transarc_csv_path = str(paths["transarc_sam"])
-        if os.path.exists(transarc_csv_path):
-            transarc_pairs = load_transarc_pairs(transarc_csv_path)
-        else:
-            transarc_pairs = set()
+        transarc_pairs = (
+            load_transarc_pairs(str(paths["transarc_sam"]))
+            if paths["transarc_sam"].exists()
+            else set()
+        )
 
         print(f"  Components: {len(components)}, Sentences: {len(sentences)}")
         print(f"  Gold links: {len(gold_pairs)}, TransArc baseline: {len(transarc_pairs)}")
-
         if transarc_pairs:
-            ta_m = eval_metrics(transarc_pairs, gold_pairs)
-            print(f"  TransArc baseline: P={ta_m['P']:.1%} R={ta_m['R']:.1%} F1={ta_m['F1']:.1%}")
+            metrics = eval_metrics(transarc_pairs, gold_pairs)
+            print(f"  TransArc baseline: P={metrics['P']:.1%} R={metrics['R']:.1%} F1={metrics['F1']:.1%}")
         else:
             print("  TransArc baseline: (CSV not available)")
 
-        all_results[ds_name] = {}
-
+        all_results[dataset_name] = {}
         for variant_name in selected_variants:
-            if variant_name not in VARIANTS:
-                print(f"  WARNING: Unknown variant '{variant_name}', skipping")
-                continue
-
             result = run_variant(
-                variant_name, VARIANTS[variant_name],
-                ds_name, paths, gold_pairs,
-                transarc_pairs, id_to_name, sent_map,
-                resume_from_phase=resume_from_phase,
+                variant_name=variant_name,
+                dataset_name=dataset_name,
+                paths=paths,
+                gold_pairs=gold_pairs,
+                transarc_pairs=transarc_pairs,
+                id_to_name=id_to_name,
+                sent_map=sent_map,
+                results_dir=results_dir,
             )
-            all_results[ds_name][variant_name] = result
+            all_results[dataset_name][variant_name] = result
 
-    # ======= SUMMARY TABLES =======
-    print_comparison_table(all_results, selected_variants)
-    print_delta_table(all_results, selected_variants)
-    print_fp_source_comparison(all_results, selected_variants)
+    print_summary(all_results, selected_variants)
 
-    # ======= TIMING =======
-    print(f"\n{'='*120}")
-    print("TIMING COMPARISON")
-    print(f"{'='*120}")
-    header = f"  {'Dataset':<16}"
-    for v in selected_variants:
-        header += f" {v:>16}"
-    print(header)
-    print(f"  {'-'*16}" + f" {'-'*16}" * len(selected_variants))
-    for ds_name in all_results:
-        row = f"  {ds_name:<16}"
-        for v in selected_variants:
-            res = all_results[ds_name].get(v, {})
-            t = res.get("time", 0)
-            row += f" {t:>15.0f}s"
-        print(row)
-
-    # Save JSON
-    results_dir = Path("results/ablation_results")
-    results_dir.mkdir(parents=True, exist_ok=True)
-    ts = time.strftime("%Y%m%d_%H%M%S")
-    json_path = results_dir / f"ablation_{ts}.json"
-    with open(json_path, "w") as f:
-        json.dump(all_results, f, indent=2, default=str)
+    json_path = results_dir / f"ablation_{time.strftime('%Y%m%d_%H%M%S')}.json"
+    with json_path.open("w") as handle:
+        json.dump(all_results, handle, indent=2, default=str)
     print(f"\nResults saved to {json_path}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
