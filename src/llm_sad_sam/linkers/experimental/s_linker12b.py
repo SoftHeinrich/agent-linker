@@ -892,7 +892,8 @@ JSON only:"""
 
         return list(intersected.values())
 
-    def _validate_with_evidence(self, candidates, bundles, components, sent_map):
+    def _validate_with_evidence(self, candidates, bundles, components, sent_map,
+                                voting_mode: str = "adaptive"):
         """3-step LLM validation with evidence bundles and adaptive consensus.
 
         A candidate link (sentence S, component C) is valid when two conditions hold:
@@ -1064,32 +1065,52 @@ JSON only:"""
 
             case_strings = [ct for ct, _ in cases]
 
+            # In adaptive mode the alias_rule adds a strong presumption for alias
+            # cases; in symmetric modes the evidence bundle carries that context.
+            alias_rule_enabled = (voting_mode == "adaptive")
             r1 = self._run_validation_pass(comp_names, case_strings,
-                "Check architectural participation: does the sentence name this component as an architectural participant — performing operations, providing services, or taking part in the described system behavior?")
+                "Check architectural participation: does the sentence name this component as an architectural participant — performing operations, providing services, or taking part in the described system behavior?",
+                use_alias_rule=alias_rule_enabled)
             r2 = self._run_validation_pass(comp_names, case_strings,
-                "Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?")
+                "Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?",
+                use_alias_rule=alias_rule_enabled)
 
             for i, (case_text, c) in enumerate(cases):
                 p1 = r1.get(i, False)
                 p2 = r2.get(i, False)
-                # Adaptive consensus: alias-backed candidates have corroborating extraction
-                # evidence (a known alias was matched), so single confirmation suffices (union).
-                # Exact-name candidates are susceptible to name homonymy with generic vocabulary,
-                # so both participation and specificity conditions must hold (intersection).
-                approved = (p1 or p2) if has_alias[i] else (p1 and p2)
+                if voting_mode == "intersection":
+                    approved = p1 and p2
+                elif voting_mode == "union":
+                    approved = p1 or p2
+                else:  # "adaptive" (default)
+                    # Adaptive consensus: alias-backed candidates have corroborating
+                    # extraction evidence (a known alias was matched), so single
+                    # confirmation suffices (union). Exact-name candidates are
+                    # susceptible to name homonymy with generic vocabulary, so both
+                    # participation and specificity conditions must hold (intersection).
+                    approved = (p1 or p2) if has_alias[i] else (p1 and p2)
                 key = (c.sentence_number, c.component_id)
+                decisions[key] = {
+                    "approved": approved,
+                    "p1": p1,
+                    "p2": p2,
+                    "is_alias": has_alias[i],
+                    "path": "twopass" if approved else "twopass_reject",
+                }
                 if approved:
                     twopass_approved.append(c)
-                    decisions[key] = {"approved": True, "path": "twopass"}
-                else:
-                    decisions[key] = {"approved": False, "path": "twopass_reject"}
 
         return twopass_approved, decisions
 
-    def _run_validation_pass(self, comp_names, cases, focus):
-        """Single validation pass (Step 2 or Step 3 of 3-step validation)."""
-        # Check if any cases have alias hints — if so, add alias-aware rule
-        has_alias = any("[KNOWN ALIAS:" in c for c in cases)
+    def _run_validation_pass(self, comp_names, cases, focus, use_alias_rule: bool = True):
+        """Single validation pass (Step 2 or Step 3 of 3-step validation).
+
+        use_alias_rule: when True (adaptive mode), adds a strong-approval rule
+            for cases containing a [KNOWN ALIAS] hint. Set to False in symmetric
+            voting modes (intersection/union) where the evidence bundle carries
+            alias context without the extra presumption.
+        """
+        has_alias = use_alias_rule and any("[KNOWN ALIAS:" in c for c in cases)
         alias_rule = ""
         if has_alias:
             alias_rule = ("\n- When a KNOWN ALIAS is indicated, the word IS a reference to that component "
