@@ -28,21 +28,21 @@ English words regularly used generically ("monitor performance", "thread pool").
 Helper is an organizational label.
 
 EXAMPLE 3:
-NAMES: RenderEngine, SceneGraph, Pipeline, Layer, Proxy, Socket, Router
-→ architectural: ["RenderEngine", "SceneGraph", "Socket", "Router"]
-→ ambiguous: ["Pipeline", "Layer", "Proxy"]
+NAMES: RenderEngine, SceneGraph, Pipeline, Broker, Proxy, Multiplexer, Router
+→ architectural: ["RenderEngine", "SceneGraph", "Multiplexer", "Router"]
+→ ambiguous: ["Pipeline", "Broker", "Proxy"]
 Reasoning: RenderEngine/SceneGraph are CamelCase compounds — always architectural.
-Socket/Router name specific networking roles. Pipeline/Layer/Proxy are ordinary words
-used generically in documentation ("processing pipeline", "network layer", "behind a proxy").
+Multiplexer/Router name specific networking roles. Pipeline/Broker/Proxy are ordinary words
+used generically in documentation ("processing pipeline", "message broker", "behind a proxy").
 
 EXAMPLE 4:
-NAMES: PaymentGateway, OrderProcessor, Connector, Controller, Adapter, Worker, Agent
-→ architectural: ["PaymentGateway", "OrderProcessor", "Worker"]
-→ ambiguous: ["Connector", "Controller", "Adapter", "Agent"]
-Reasoning: PaymentGateway/OrderProcessor are CamelCase compounds naming specific roles.
-Worker names a specific concurrency mechanism. But Connector/Controller/Adapter/Agent
+NAMES: PaymentGateway, InvoiceHandler, Connector, Controller, Wrapper, Worker, Agent
+→ architectural: ["PaymentGateway", "InvoiceHandler", "Worker"]
+→ ambiguous: ["Connector", "Controller", "Wrapper", "Agent"]
+Reasoning: PaymentGateway/InvoiceHandler are CamelCase compounds naming specific roles.
+Worker names a specific concurrency mechanism. But Connector/Controller/Wrapper/Agent
 seem functional yet are GENERIC categories writers use without referring to any specific
-component: "a database connector", "the main controller", "a protocol adapter", "a
+component: "a network connector", "the main controller", "a data wrapper", "a
 background agent". They describe WHAT KIND of thing it is, not WHICH specific mechanism
 — so they are ambiguous.""".strip()
 
@@ -56,12 +56,12 @@ AMBIGUITY_RULES = """RULES:
 2. AMBIGUOUS: Single words that writers regularly use generically in software documentation.
    This includes TWO categories:
    Category A — Organizational labels: core, util, base, helper (tell you nothing about function)
-   Category B — Generic functional categories: connector, controller, adapter, agent
+   Category B — Generic functional categories: connector, controller, wrapper, agent
    (describe WHAT KIND of thing, not WHICH specific mechanism)
    The test: "Could a technical writer naturally write this word in a sentence about ANY system
    without referring to a specific component?" If yes → ambiguous.
    Key: Scheduler/Router describe HOW (specific mechanism) → ARCHITECTURAL.
-         Connector/Controller/Adapter describe WHAT KIND (generic category) → AMBIGUOUS."""
+         Connector/Controller/Wrapper describe WHAT KIND (generic category) → AMBIGUOUS."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -92,8 +92,8 @@ Example 1 — APPROVE (abbreviation from component name):
   formed from the component name's words are always valid.
 
 Example 2 — APPROVE (trailing word of multi-word name):
-  'Dispatcher' -> EventDispatcher (partial)
-  Verdict: APPROVE. "Dispatcher" is the last word of "EventDispatcher".
+  'Dispatcher' -> TaskDispatcher (partial)
+  Verdict: APPROVE. "Dispatcher" is the last word of "TaskDispatcher".
   If no other component ends in "Dispatcher", this partial is unambiguous.
 
 Example 3 — APPROVE (CamelCase identifier):
@@ -105,12 +105,18 @@ Example 4 — APPROVE (trailing word of multi-word name):
   Verdict: APPROVE. "Table" is the trailing word of "SymbolTable" and
   likely refers to this specific component when no other component uses "Table".
 
-Example 5 — REJECT (ordinary English verb/noun):
-  'process' -> OrderProcessor (partial)
-  Verdict: REJECT. "process" is an ordinary English verb/noun used generically
-  in many contexts ("process requests", "the process").
+Example 5 — APPROVE (multi-word descriptive phrase):
+  'query execution layer' -> IndexManager (synonym)
+  Verdict: APPROVE. A multi-word descriptive phrase that consistently refers
+  to a specific component is a valid synonym, even when the phrase words
+  differ from the component name.
 
-Example 6 — REJECT (refers to whole system):
+Example 6 — REJECT (ordinary English verb/noun):
+  'handle' -> InvoiceHandler (partial)
+  Verdict: REJECT. "handle" is an ordinary English verb used generically
+  in many contexts ("handle requests", "the handler").
+
+Example 7 — REJECT (refers to whole system):
   'system' -> PaymentSystem (partial)
   Verdict: REJECT. "system" is too generic — it could refer to the overall system."""
 
@@ -124,7 +130,7 @@ DOC_KNOWLEDGE_JUDGE_RULES = """DECISION RULES (apply in order):
    - Multi-word phrases that contain the component name
 
 2. APPROVE if the term plausibly refers to exactly one component and is NOT
-   a generic word like "system", "process", "service", "component", "module".
+   a generic word like "system", "process", "utility", "component", "module".
 
 3. REJECT only if the term is clearly generic and could refer to anything,
    or clearly refers to a different component or the system as a whole.
@@ -183,7 +189,7 @@ RULES — exclude when:
 1. The name appears only inside a dotted path (e.g., com.example.name)
 2. The name is used as an ordinary English word, not as a component reference
 
-Favor inclusion over exclusion — later validation will filter borderline cases."""
+Favor inclusion over exclusion — later verification will filter borderline cases."""
 
 
 VALIDATION_RULES = """DECISION RULES:

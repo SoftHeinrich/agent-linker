@@ -6,12 +6,12 @@ Any example, analogy, or illustration in prompts must avoid these terms entirely
 ## MediaStore
 Components: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking
 Aliases: Database, DataStorage, ReEncoder, AudioAccess
-Keywords: watermark, watermarking, reencoding, media, audio, facade, cache, packaging
+Keywords: watermark, watermarking, reencoding, media, audio, facade, cache, packaging, adapter
 
 ## TeaStore
 Components: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender
 Aliases: PersistenceProvider, Image Provider, Web UI, UI (as TeaStore frontend)
-Keywords: recommender, persistence, registry, auth, slope one, image provider
+Keywords: recommender, persistence, registry, auth, slope one, image provider, order (as in OrderBasedRecommender)
 
 ## Teammates
 Components: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore
@@ -20,8 +20,8 @@ Keywords: logic, storage, common, client, datastore, GAE
 
 ## BigBlueButton
 Components: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH
-Aliases: KMS, Kurento Media Server, bbb-html5, bbb-web, Apps Akka, BigBlueButton Apps, fsels
-Keywords: recording, kurento, freeswitch, redis, pubsub, conversion, bbb, html5
+Aliases: KMS, Kurento Media Server, bbb-html5, bbb-web, Apps Akka, BigBlueButton Apps, fsels, Recording Processor, FreeSWITCH Event Socket Layer
+Keywords: recording, kurento, freeswitch, redis, pubsub, conversion, bbb, html5, event (FSESL expansion), socket (FSESL expansion), layer (FSESL expansion), processor (Recording Processor alias)
 
 ## JabRef
 Components: gui, cli, logic, globals, model, preferences
@@ -50,12 +50,19 @@ Keywords: gui, cli, preferences, globals, bibdatabase, bibentry
 - preferences (JabRef component)
 - config (BBB — bbb config files)
 - internal (BBB/Teammates — "X.internal module")
+- adapter (MediaStore — UserDBAdapter component word)
+- order (TeaStore — OrderBasedRecommender component word)
+- processor (BBB — Recording Processor alias word)
+- event (BBB — FreeSWITCH Event Socket Layer alias word)
+- socket (BBB — FreeSWITCH Event Socket Layer alias word)
+- layer (BBB — FreeSWITCH Event Socket Layer alias word)
 
 ## Safe SE Textbook Examples (confirmed not in benchmark)
 Use these domains for prompt examples:
 - Compiler design: Lexer, Parser, AST, CodeGenerator, Optimizer, SymbolTable
 - Operating systems: Scheduler, MemoryManager, FileSystem, ProcessTable, Dispatcher
-- Networking: Router, LoadBalancer (careful - MediaStore has this), Socket, PacketHandler
-- E-commerce (generic): ShoppingCart, PaymentGateway, OrderProcessor, InventoryTracker
+- Networking: Router, Multiplexer, PacketHandler
+- E-commerce (generic): ShoppingCart, PaymentGateway, InvoiceHandler, InventoryTracker
 - Version control: Repository, CommitLog, BranchManager, MergeResolver
 - Game engine: RenderEngine, PhysicsSimulator, InputHandler, SceneGraph
+- Middleware: Broker, Wrapper, Connector (ambiguous examples)

@@ -61,6 +61,12 @@ CANONICAL_VARIANTS = [
     "s_linker10a",
     "s_linker11",
     "s_linker11a",
+    "s_linker11b",
+    "s_linker11c",
+    "s_linker11d",
+    "s_linker11e",
+    "s_linker12a",
+    "s_linker12b",
 ]
 
 VARIANT_SPECS = {
@@ -200,6 +206,42 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker11a",
         class_name="SLinker11a",
         description="S-Linker11a",
+    ),
+    "s_linker11b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11b",
+        class_name="SLinker11b",
+        description="S-Linker11b: alias stratification (strong global / weak local)",
+    ),
+    "s_linker11c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11c",
+        class_name="SLinker11c",
+        description="S-Linker11c: evidence bundles + structured debate on rejects",
+    ),
+    "s_linker11d": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11d",
+        class_name="SLinker11d",
+        description="S-Linker11d: no partial injection (ablation)",
+    ),
+    "s_linker11e": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker11e",
+        class_name="SLinker11e",
+        description="S-Linker11e: evidence bundles in validation, no debate",
+    ),
+    "s_linker12a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker12a",
+        class_name="SLinker12a",
+        description="S-Linker12a: alias stratification + no partial injection",
+    ),
+    "s_linker12b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker12b",
+        class_name="SLinker12b",
+        description="S-Linker12b: alias stratification + evidence bundles (ICSE)",
     ),
 }
 
