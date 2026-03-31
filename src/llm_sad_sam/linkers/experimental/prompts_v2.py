@@ -194,16 +194,16 @@ Favor inclusion over exclusion — later verification will filter borderline cas
 
 VALIDATION_RULES = """DECISION RULES:
 APPROVE when:
-- The component is the grammatical actor or subject (the sentence is ABOUT the component)
-- A section heading names the component (introduces that component's topic)
-- The sentence describes what the component does, provides, or interacts with
+- The component is named as an architectural participant: it performs an operation, provides or receives a service, is being configured, or is explicitly introduced as part of the system
+- A section heading names the component as its subject
+- The sentence describes the component's responsibilities, behavior, or interactions with other parts of the system
 
 REJECT when:
-- The name is used as an ordinary English word, not as a proper name
-  (Like "proxy" in "proxy pattern" is the design pattern concept, not the Proxy component — reject the component link)
-- The name is a modifier inside a larger phrase, not a standalone reference
-  (Like "observer" in "observer pattern" modifies pattern — reject if Observer is a component)
-- The sentence is about a subprocess, algorithm, or implementation detail — not the component itself"""
+- The name is used as an ordinary technical or English word, not as a reference to this specific component
+  (e.g., "proxy" in "proxy pattern" refers to a design pattern concept, not a Proxy component)
+- The name modifies a noun phrase without being a standalone architectural reference
+  (e.g., "observer pattern", "pipeline stage" — the word describes a type, not the component)
+- The sentence describes an algorithm, subprocess, or implementation technique that shares the component's name but is not the component itself"""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -214,7 +214,7 @@ COREF_RULES = """For each case, determine if any pronoun in the TARGET sentence 
 
 RULES (all must hold):
 1. The component name (or known alias) MUST appear verbatim in the antecedent sentence
-2. The antecedent MUST be within the previous 3 sentences
+2. The antecedent MUST be within the provided context window; prefer the nearest matching reference
 3. The pronoun MUST grammatically refer back to that component as its subject
 4. If the pronoun could refer to multiple things, DO NOT resolve it
 5. Do NOT resolve pronouns about subprocesses or implementation details

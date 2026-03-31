@@ -893,22 +893,30 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_with_evidence(self, candidates, bundles, components, sent_map):
-        """3-step LLM validation with evidence bundles and stratified voting.
+        """3-step LLM validation with evidence bundles and adaptive consensus.
 
-        Step 1 — Generic pre-filter: ambiguous component names appearing
-            only in lowercase are classified by LLM as component reference
-            vs generic English word. Generic uses are removed.
-        Step 2 — Validation pass A (actor-role focus): LLM checks whether
-            the component performs an action or is being described.
-        Step 3 — Validation pass B (direct-reference focus): LLM checks
-            whether the text refers to the specific architectural component.
+        A candidate link (sentence S, component C) is valid when two conditions hold:
+          (1) Architectural participation: S names C as a participant in the described
+              system behavior — C performs an operation, provides a service, or is
+              introduced in the context of the architecture.
+          (2) Referential specificity: the name in S identifies the specific component C,
+              not a homonymous generic term that happens to share C's name.
 
-        Each case in steps 2+3 includes the evidence bundle so the validator
-        sees the full proposer evidence trail.
+        These map to the two validation passes:
+          Step 2 — Participation pass: checks condition (1).
+          Step 3 — Specificity pass: checks condition (2).
+          Each pass receives the evidence bundle so it can weigh the full
+          proposer trail (matched span, mention type, anchor sentences).
 
-        Voting threshold adapted to evidence type:
-        - Alias-backed matches: union (either pass approves)
-        - Exact-name matches: intersection (both passes must approve)
+        Pre-pass (Step 1): ambiguous-named components that appear only in lowercase
+        are first sent through a word-usage classifier, which removes generic uses
+        before the two-pass validation runs.
+
+        Adaptive consensus — voting threshold is calibrated to extraction evidence:
+          Alias-backed candidates: a known semantic alias was matched, providing
+            corroborating evidence of intent → single-pass confirmation (union).
+          Exact-name candidates: the component name may be shared with generic
+            vocabulary → both conditions must hold (intersection).
 
         Returns (validated_list, decisions_dict).
         """
@@ -1057,14 +1065,17 @@ JSON only:"""
             case_strings = [ct for ct, _ in cases]
 
             r1 = self._run_validation_pass(comp_names, case_strings,
-                "Focus on ACTOR role: is the component performing an action or being described?")
+                "Check architectural participation: does the sentence name this component as an architectural participant — performing operations, providing services, or taking part in the described system behavior?")
             r2 = self._run_validation_pass(comp_names, case_strings,
-                "Focus on DIRECT reference: does the text refer to the SPECIFIC architectural component, not a generic concept?")
+                "Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?")
 
             for i, (case_text, c) in enumerate(cases):
                 p1 = r1.get(i, False)
                 p2 = r2.get(i, False)
-                # Union for alias cases (either pass), intersection for exact matches
+                # Adaptive consensus: alias-backed candidates have corroborating extraction
+                # evidence (a known alias was matched), so single confirmation suffices (union).
+                # Exact-name candidates are susceptible to name homonymy with generic vocabulary,
+                # so both participation and specificity conditions must hold (intersection).
                 approved = (p1 or p2) if has_alias[i] else (p1 and p2)
                 key = (c.sentence_number, c.component_id)
                 if approved:
