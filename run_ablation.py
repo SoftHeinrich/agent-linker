@@ -67,6 +67,7 @@ CANONICAL_VARIANTS = [
     "s_linker11e",
     "s_linker12a",
     "s_linker12b",
+    "s_linker12c",
 ]
 
 VARIANT_SPECS = {
@@ -242,6 +243,12 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker12b",
         class_name="SLinker12b",
         description="S-Linker12b: alias stratification + evidence bundles (ICSE)",
+    ),
+    "s_linker12c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker12c",
+        class_name="SLinker12c",
+        description="S-Linker12c: 12b - dead Tier 2, intersection voting",
     ),
 }
 
