@@ -34,14 +34,23 @@ class ModelKnowledge:
     """Knowledge extracted from architecture model.
 
     ambiguous_names: component names the LLM classifies as generic
-    (used for generic-mention detection and partial-reference filtering).
+    (used for generic-mention detection).
     """
     ambiguous_names: set[str] = field(default_factory=set)
 
 
 @dataclass
 class DocumentKnowledge:
-    """Knowledge extracted from document analysis."""
+    """Knowledge extracted from document analysis.
+
+    aliases: unified map of alternative name -> component name.  Includes
+        abbreviations (AST -> AbstractSyntaxTree), synonyms, and trailing-word
+        forms (Dispatcher -> TaskDispatcher).  Used by 12c+.
+    abbreviations/synonyms/partial_references: legacy fields, kept for
+        backward compat with pre-12c linkers.
+    """
+    aliases: dict[str, str] = field(default_factory=dict)
+    # Legacy (pre-12c) — do not use in new code
     abbreviations: dict[str, str] = field(default_factory=dict)
     synonyms: dict[str, str] = field(default_factory=dict)
     partial_references: dict[str, str] = field(default_factory=dict)

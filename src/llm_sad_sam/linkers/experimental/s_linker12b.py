@@ -893,7 +893,7 @@ JSON only:"""
         return list(intersected.values())
 
     def _validate_with_evidence(self, candidates, bundles, components, sent_map,
-                                voting_mode: str = "adaptive"):
+                                voting_mode: str = "intersection"):
         """3-step LLM validation with evidence bundles and adaptive consensus.
 
         A candidate link (sentence S, component C) is valid when two conditions hold:

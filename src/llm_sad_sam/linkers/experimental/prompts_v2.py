@@ -4,11 +4,11 @@ Clean version: only constants actually used by the current pipeline.
 All examples use safe SE textbook domains (compiler, OS, e-commerce, graphics).
 Zero benchmark-derived terms. See BENCHMARK_TABOO.md for rules.
 
-Constants are ordered by pipeline layer (1 -> 2 -> 3).
+Constants are ordered by pipeline tier (1 -> 2 -> 3).
 """
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Layer 1 — Model Analysis: Component Ambiguity Classification
+# Tier 1 — Model Analysis: Component Ambiguity Classification
 # ═══════════════════════════════════════════════════════════════════════════════
 
 AMBIGUITY_FEW_SHOT = """
@@ -65,7 +65,7 @@ AMBIGUITY_RULES = """RULES:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Layer 1 — Document Knowledge: Alias Discovery & Judging
+# Tier 1 — Document Knowledge: Alias Discovery & Judging
 # ═══════════════════════════════════════════════════════════════════════════════
 
 DOC_KNOWLEDGE_EXTRACTION_RULES = """WHAT TO FIND:
@@ -75,13 +75,13 @@ DOC_KNOWLEDGE_EXTRACTION_RULES = """WHAT TO FIND:
 
 2. SYNONYMS: Alternative names that SPECIFICALLY refer to one component.
    Rule: The alternative name must unambiguously identify exactly ONE component.
-   APPROVE: A proper name, role title, or technical alias used interchangeably with the component
-   REJECT: A generic description that could apply to anything (like "the system" or "the process")
-
-3. PARTIAL REFERENCES: A shorter form of a multi-word component name used alone.
-   Rule: A trailing word from a multi-word name that, in this document, consistently means the full name.
-   APPROVE: Only if the short form is unambiguous — no other component shares this word
-   REJECT: Ordinary words that have plain English meanings beyond the component"""
+   This includes:
+   - Proper names, role titles, or technical aliases used interchangeably with the component
+   - Trailing words of multi-word component names when used alone to mean the full name
+     (e.g., "Dispatcher" used alone to mean "TaskDispatcher")
+   APPROVE: Only if the alternative name is unambiguous — it clearly means one component
+   REJECT: Generic descriptions that could apply to anything (like "the system" or "the process"),
+   or ordinary words with plain English meanings beyond the component"""
 
 
 DOC_KNOWLEDGE_JUDGE_EXAMPLES = """EXAMPLES — study these to calibrate your judgment:
@@ -92,16 +92,16 @@ Example 1 — APPROVE (abbreviation from component name):
   formed from the component name's words are always valid.
 
 Example 2 — APPROVE (trailing word of multi-word name):
-  'Dispatcher' -> TaskDispatcher (partial)
+  'Dispatcher' -> TaskDispatcher (synonym)
   Verdict: APPROVE. "Dispatcher" is the last word of "TaskDispatcher".
-  If no other component ends in "Dispatcher", this partial is unambiguous.
+  If no other component ends in "Dispatcher", this synonym is unambiguous.
 
 Example 3 — APPROVE (CamelCase identifier):
   'RenderEngine' -> GameRenderEngine (synonym)
   Verdict: APPROVE. CamelCase is a constructed identifier — always a proper name.
 
 Example 4 — APPROVE (trailing word of multi-word name):
-  'Table' -> SymbolTable (partial)
+  'Table' -> SymbolTable (synonym)
   Verdict: APPROVE. "Table" is the trailing word of "SymbolTable" and
   likely refers to this specific component when no other component uses "Table".
 
@@ -112,12 +112,12 @@ Example 5 — APPROVE (multi-word descriptive phrase):
   differ from the component name.
 
 Example 6 — REJECT (ordinary English verb/noun):
-  'handle' -> InvoiceHandler (partial)
+  'handle' -> InvoiceHandler (synonym)
   Verdict: REJECT. "handle" is an ordinary English verb used generically
   in many contexts ("handle requests", "the handler").
 
 Example 7 — REJECT (refers to whole system):
-  'system' -> PaymentSystem (partial)
+  'system' -> PaymentSystem (synonym)
   Verdict: REJECT. "system" is too generic — it could refer to the overall system."""
 
 
@@ -140,10 +140,9 @@ pipeline stages; false rejections cause permanent recall loss."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Layer 2 — Knowledge Enrichment: Word Usage Classification
+# Legacy — Word Usage Classification (kept for pre-12c linkers)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Uses str.format() with named placeholders: partial, partial_lower, comp_name, calibration, sent_block
 WORD_USAGE_PROMPT = """WORD USAGE CLASSIFICATION
 
 In this document, the word "{partial}" could be a short name for an architecture
@@ -174,14 +173,14 @@ JSON only:"""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Layer 3 — Entity Extraction & Validation
+# Tier 2 — Entity Extraction & Validation
 # ═══════════════════════════════════════════════════════════════════════════════
 
 ENTITY_EXTRACTION_RULES = """RULES — include a reference when:
 1. The component name (or known alias) appears directly in the sentence
 2. A space-separated form matches a compound name (e.g., "Memory Manager" → MemoryManager)
 3. The sentence describes what a specific component does by name or role
-4. A known synonym or partial reference is used
+4. A known synonym is used
 5. The component participates in an interaction described in the sentence (as sender, receiver, or target) — e.g., "X sends data to Y" references BOTH X and Y
 6. The component is mentioned in a passive or prepositional phrase — e.g., "data is stored in X", "handled by X", "via X", "through X"
 
@@ -207,7 +206,7 @@ REJECT when:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Layer 3 — Coreference Resolution
+# Tier 2 — Coreference Resolution
 # ═══════════════════════════════════════════════════════════════════════════════
 
 COREF_RULES = """For each case, determine if any pronoun in the TARGET sentence refers to a component.

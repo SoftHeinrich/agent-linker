@@ -1,29 +1,25 @@
-"""S-Linker12c: 12b minus dead Tier 2, validation simplified to pure intersection.
+"""S-Linker12c: LLM-driven SAD-SAM traceability with structural guardrails.
 
-Changes from S-Linker12b:
+3-tier DAG pipeline for recovering trace links between software architecture
+documentation (SAD) and architecture models (SAM).
 
-1. Remove Tier 2 (multiword partial enrichment)
-   Empirically dead: 0 TPs gained across all 5 benchmarks.  The only causal
-   effect was +1 FP (BBB S16 "client-side").  Layer 1 doc-knowledge already
-   discovers the same partials or the LLM extracts them from component names.
+Tier 1 — Knowledge Acquisition (parallel):
+  Model analysis     : classify component names as architectural vs ambiguous
+  Document knowledge : discover aliases (abbreviations, synonyms) via LLM + judge
+  Seed extraction    : baseline LLM extraction via ILinker3
 
-2. Validation voting simplified to pure intersection
-   Adaptive alias→union voting only fired 3 times across all 5 datasets,
-   all 3 were FPs.  Pure intersection is strictly better: -2 FP, 0 TP lost
-   (the third FP disappears with Tier 2 removal).  Removes alias_rule
-   logic from validation prompts.
+Tier 2 — Link Recovery (parallel):
+  Seed validation    : per-component disambiguation (single-pass LLM)
+  Entity pipeline    : dual-pass extraction consensus + evidence-aware validation
+  Coreference        : pronoun resolution with ±5-sentence context window
 
-Retained from 12b:
-- Alias stratification (strong/weak) in extraction and coref
-- Evidence bundles in validation
-- No partial injection
-- 3-tier DAG (knowledge acquisition → link recovery → consolidation)
+Tier 3 — Consolidation:
+  Priority-ordered deduplication (seed > entity > coref)
 
-Graduated validation hierarchy:
-  Entity candidates (dual-pass consensus)  → generic pre-filter + 2-pass LLM
-                                             (evidence bundles, intersection voting)
-  Seed links (ILinker3 baseline)           → single-pass disambiguation
-  Coreference links (antecedent-verified)  → no additional validation
+Design: LLM-driven decisions with lightweight structural guardrails (CamelCase
+detection, dotted-path exclusion, pronoun pattern, alias strength classification).
+Alias stratification prevents weak single-word forms from polluting extraction
+and coreference globally.  Intersection voting ensures conservative approval.
 """
 
 from __future__ import annotations
@@ -61,7 +57,7 @@ class EvidenceBundle:
     Attached to each entity candidate before validation so the reviewer
     sees the full evidence trail rather than the bare sentence + matched_text.
     """
-    source: str                     # "entity", "seed", "partial_inject"
+    source: str                     # "entity" or "seed"
     matched_span: str               # matched text in the sentence
     mention_type: str               # "proper case, standalone" / "lowercase mention" / "via known alias X" / ...
     preceding_text: str             # text of sentence N-1 (or "")
@@ -71,7 +67,7 @@ class EvidenceBundle:
 
 
 class SLinker12c:
-    """S-Linker12c: 12b minus dead Tier 2, validation simplified to pure intersection."""
+    """LLM-driven SAD-SAM traceability with structural guardrails."""
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -187,14 +183,12 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
 
         ambig = self.model_knowledge.ambiguous_names
         print(f"  Model: {len(ambig)} ambiguous (of {len(components)} components)")
-        print(f"  Doc knowledge: {len(self.doc_knowledge.abbreviations)} abbrev, "
-              f"{len(self.doc_knowledge.synonyms)} syn, "
-              f"{len(self.doc_knowledge.partial_references)} partial")
+        print(f"  Doc knowledge: {len(self.doc_knowledge.aliases)} aliases")
         print(f"  Seed: {len(raw_seed_links)} raw links")
 
         self._log("layer1", {"sents": len(sentences), "comps": len(components)},
                   {"ambig": len(ambig), "seed": len(raw_seed_links),
-                   "abbrev": len(self.doc_knowledge.abbreviations)})
+                   "aliases": len(self.doc_knowledge.aliases)})
 
         self._save_phase(text_path, "layer1", {
             "model_knowledge": self.model_knowledge,
@@ -284,10 +278,9 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
     def _is_strong_alias(term: str) -> bool:
         """True for aliases that are safe to use globally in extraction and coref.
 
-        Strong: explicit abbreviations (handled by caller since type is known),
-        multi-word forms, CamelCase, all-caps, or starts with capital letter.
-        Weak: single all-lowercase word — these collide with ordinary English
-        vocabulary and cause cross-sentence leakage when broadcast globally.
+        Strong: multi-word forms, CamelCase, all-caps, or starts with capital.
+        Weak: single all-lowercase word — collides with ordinary English
+        vocabulary and causes cross-sentence leakage when broadcast globally.
         """
         # Multi-word or hyphenated
         if ' ' in term or '-' in term:
@@ -305,24 +298,11 @@ When uncertain, choose COMPONENT — these candidates passed independent extract
         return False
 
     def _get_strong_alias_mappings(self) -> list[str]:
-        """Return alias mappings restricted to strong aliases only.
-
-        All abbreviations are always strong (explicit, distinctive).
-        Synonyms and partial_references are filtered by _is_strong_alias.
-        """
+        """Return alias mappings restricted to structurally strong aliases only."""
         if not self.doc_knowledge:
             return []
-        mappings = []
-        # Abbreviations are always strong
-        mappings.extend([f"{a}={c}" for a, c in self.doc_knowledge.abbreviations.items()])
-        # Synonyms and partials: only if structurally strong
-        for s, c in self.doc_knowledge.synonyms.items():
-            if self._is_strong_alias(s):
-                mappings.extend([f"{s}={c}"])
-        for p, c in self.doc_knowledge.partial_references.items():
-            if self._is_strong_alias(p):
-                mappings.extend([f"{p}={c}"])
-        return mappings
+        return [f"{a}={c}" for a, c in self.doc_knowledge.aliases.items()
+                if self._is_strong_alias(a)]
 
     def _classify_components(self, names, knowledge):
         """Classify components using few-shot prompt + structural code guard."""
@@ -344,7 +324,12 @@ Return JSON:
 
 JSON only:"""
 
-        data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
+        for attempt in range(2):
+            data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
+            if data:
+                break
+            if attempt == 0:
+                print("    Ambiguity classification: empty response, retrying...")
         if data:
             valid = set(names)
             raw_ambiguous = set(data.get("ambiguous", [])) & valid
@@ -354,7 +339,7 @@ JSON only:"""
             }
 
     def _learn_document_knowledge_enriched(self, sentences, components):
-        """Extract abbreviations, synonyms, partial references via few-shot calibrated judge."""
+        """Discover aliases (abbreviations and synonyms) via LLM + judge."""
         comp_names = [c.name for c in components]
         doc_lines = [s.text for s in sentences]
 
@@ -370,27 +355,28 @@ DOCUMENT:
 Return JSON:
 {{
   "abbreviations": {{"short_form": "FullComponent"}},
-  "synonyms": {{"specific_alternative_name": "FullComponent"}},
-  "partial_references": {{"partial_name": "FullComponent"}}
+  "synonyms": {{"specific_alternative_name": "FullComponent"}}
 }}
 JSON only:"""
 
-        data1 = self.llm.extract_json(self.llm.query(prompt1, timeout=300))
+        for attempt in range(2):
+            data1 = self.llm.extract_json(self.llm.query(prompt1, timeout=300))
+            if data1:
+                break
+            if attempt == 0:
+                print("    Doc knowledge: empty response, retrying...")
 
         all_mappings = {}
         if data1:
             for short, full in data1.get("abbreviations", {}).items():
                 if full in comp_names:
-                    all_mappings[short] = ("abbrev", full)
+                    all_mappings[short] = full
             for syn, full in data1.get("synonyms", {}).items():
                 if full in comp_names:
-                    all_mappings[syn] = ("synonym", full)
-            for partial, full in data1.get("partial_references", {}).items():
-                if full in comp_names:
-                    all_mappings[partial] = ("partial", full)
+                    all_mappings[syn] = full
 
         if all_mappings:
-            mapping_list = [f"'{k}' -> {v[1]} ({v[0]})" for k, v in list(all_mappings.items())[:25]]
+            mapping_list = [f"'{k}' -> {v}" for k, v in list(all_mappings.items())[:25]]
 
             prompt2 = f"""JUDGE: Review these component name mappings for correctness.
 
@@ -409,24 +395,22 @@ Return JSON:
 }}
 JSON only:"""
 
-            data2 = self.llm.extract_json(self.llm.query(prompt2, timeout=120))
+            for attempt in range(2):
+                data2 = self.llm.extract_json(self.llm.query(prompt2, timeout=120))
+                if data2 and data2.get("approved"):
+                    break
+                if attempt == 0:
+                    print("    Doc knowledge judge: empty response, retrying...")
             approved = set(data2.get("approved", [])) if data2 else set(all_mappings.keys())
         else:
             approved = set()
 
         knowledge = DocumentKnowledge()
 
-        for term, (typ, comp) in all_mappings.items():
+        for term, comp in all_mappings.items():
             if term in approved:
-                if typ == "abbrev":
-                    knowledge.abbreviations[term] = comp
-                    print(f"    Abbrev: {term} -> {comp}")
-                elif typ == "synonym":
-                    knowledge.synonyms[term] = comp
-                    print(f"    Syn: {term} -> {comp}")
-                else:
-                    knowledge.partial_references[term] = comp
-                    print(f"    Partial: {term} -> {comp}")
+                knowledge.aliases[term] = comp
+                print(f"    Alias: {term} -> {comp}")
 
         return knowledge
 
@@ -523,7 +507,12 @@ Return JSON:
 {{"disambiguations": [{{"case": 1, "meaning": "component", "reason": "brief"}}]}}
 JSON only:"""
 
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+            for attempt in range(2):
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+                if data and data.get("disambiguations"):
+                    break
+                if attempt == 0:
+                    print(f"    [{comp_name}] Empty response, retrying...")
             if not data:
                 verified.extend(valid_seeds)  # Keep all on failure (approve-biased)
                 continue
@@ -564,15 +553,9 @@ JSON only:"""
 
         aliases = []
         if self.doc_knowledge:
-            for a, target in self.doc_knowledge.abbreviations.items():
+            for a, target in self.doc_knowledge.aliases.items():
                 if target == comp_name:
-                    aliases.append(f'"{a}" (abbreviation)')
-            for s, target in self.doc_knowledge.synonyms.items():
-                if target == comp_name:
-                    aliases.append(f'"{s}" (synonym)')
-            for p, target in self.doc_knowledge.partial_references.items():
-                if target == comp_name:
-                    aliases.append(f'"{p}" (partial reference)')
+                    aliases.append(f'"{a}"')
 
         if aliases:
             lines.append(f"- Known aliases: {', '.join(aliases)}")
@@ -606,19 +589,11 @@ JSON only:"""
 
         # Check alias match
         if self.doc_knowledge:
-            for alias, target in self.doc_knowledge.abbreviations.items():
-                if target == comp_name and re.search(rf'\b{re.escape(alias)}\b', text):
-                    return f'via known abbreviation "{alias}"'
-            for syn, target in self.doc_knowledge.synonyms.items():
+            for alias, target in self.doc_knowledge.aliases.items():
                 if target == comp_name and re.search(
-                    rf'\b{re.escape(syn)}\b', text, re.IGNORECASE
+                    rf'\b{re.escape(alias)}\b', text, re.IGNORECASE
                 ):
-                    return f'via known synonym "{syn}"'
-            for partial, target in self.doc_knowledge.partial_references.items():
-                if target == comp_name and re.search(
-                    rf'\b{re.escape(partial)}\b', text, re.IGNORECASE
-                ):
-                    return f'via known partial reference "{partial}"'
+                    return f'via known alias "{alias}"'
 
         return "indirect/unclear match"
 
@@ -784,15 +759,16 @@ JSON only:"""
         # from weak single-word forms (e.g., "server"→HTML5Server matching everywhere)
         mappings = self._get_strong_alias_mappings()
 
-        # Pass 1
-        print("    Extraction pass A:")
-        pass1 = self._run_single_extraction_pass(
-            sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P1] ")
-
-        # Pass 2
-        print("    Extraction pass B:")
-        pass2 = self._run_single_extraction_pass(
-            sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P2] ")
+        # Two independent extraction passes in parallel for variance reduction
+        print("    Extraction pass A + B (parallel):")
+        results = self._run_parallel({
+            "pass1": lambda: self._run_single_extraction_pass(
+                sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P1] "),
+            "pass2": lambda: self._run_single_extraction_pass(
+                sentences, comp_names, mappings, name_to_id, sent_map, pass_label="[P2] "),
+        })
+        pass1 = results["pass1"]
+        pass2 = results["pass2"]
 
         # Intersection: keep only candidates found in BOTH passes
         intersected = {key: pass1[key] for key in pass1 if key in pass2}
@@ -844,14 +820,6 @@ JSON only:"""
             has_exact_case = self._has_standalone_mention(c.component_name, sent.text)
             has_lowercase = (not has_exact_case and
                              re.search(rf'\b{re.escape(comp_lower)}\b', sent.text))
-            if not has_lowercase and self.doc_knowledge:
-                for partial, target in self.doc_knowledge.partial_references.items():
-                    if target == c.component_name:
-                        partial_lower = partial.lower()
-                        if (re.search(rf'\b{re.escape(partial_lower)}\b', sent.text.lower())
-                                and not re.search(rf'\b{re.escape(partial)}\b', sent.text)):
-                            has_lowercase = True
-                            break
             if has_lowercase and self._is_ambiguous_name_component(c.component_name):
                 generic_candidates.setdefault(c.component_name, []).append(c)
             else:
@@ -899,7 +867,12 @@ Return JSON:
 {{"results": [{{"case": 1, "usage": "component" or "generic", "reason": "brief"}}]}}
 JSON only:"""
 
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+            for attempt in range(2):
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+                if data and data.get("results"):
+                    break
+                if attempt == 0:
+                    print(f"    Generic filter [{comp_name}]: empty response, retrying...")
             if not data:
                 remaining.extend(cands)  # On failure, keep all (safe default)
                 continue
@@ -978,7 +951,12 @@ Return JSON:
 {{"validations": [{{"case": 1, "approve": true}}]}}
 JSON only:"""
 
-        data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+        for attempt in range(2):
+            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
+            if data and data.get("validations"):
+                break
+            if attempt == 0:
+                print(f"    Validation pass: empty response, retrying...")
         results = {}
         if data:
             for v in data.get("validations", []):
@@ -1027,7 +1005,12 @@ Return JSON:
 
 Only include resolutions you are CERTAIN about. JSON only:"""
 
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=300))
+            for attempt in range(2):
+                data = self.llm.extract_json(self.llm.query(prompt, timeout=300))
+                if data and data.get("resolutions"):
+                    break
+                if attempt == 0:
+                    print(f"    Coref batch: empty response, retrying...")
             if not data:
                 continue
 
@@ -1046,7 +1029,7 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 if not ant_sent:
                     continue
                 if not (self._has_standalone_mention(comp, ant_sent.text) or
-                        self._has_alias_mention(comp, ant_sent.text)):
+                        self._has_strong_alias_mention(comp, ant_sent.text)):
                     continue
 
                 all_coref.append(SadSamLink(snum, name_to_id[comp], comp, source="coreference"))
@@ -1099,36 +1082,18 @@ Only include resolutions you are CERTAIN about. JSON only:"""
             return True
         return False
 
-    def _has_alias_mention(self, comp_name, sentence_text):
-        """Check if any known abbreviation, synonym, or partial reference appears in the text.
-
-        Used in coref antecedent verification — only STRONG aliases are checked
-        to avoid accepting ordinary-word matches as antecedent evidence.
-        """
-        return self._has_strong_alias_mention(comp_name, sentence_text)
-
     def _has_strong_alias_mention(self, comp_name, sentence_text):
         """Check if any STRONG alias for comp_name appears in sentence_text.
 
-        All abbreviations are strong. Synonyms and partial_references are strong
-        only if they are structurally distinctive (CamelCase, multi-word, capital,
-        or all-caps) — see _is_strong_alias.
+        Used in coref antecedent verification to avoid accepting ordinary-word
+        matches as antecedent evidence.
         """
         if not self.doc_knowledge:
             return False
-        # Abbreviations are always strong
-        for abbr, target in self.doc_knowledge.abbreviations.items():
-            if target == comp_name:
-                if re.search(rf'\b{re.escape(abbr)}\b', sentence_text):
-                    return True
         text_lower = sentence_text.lower()
-        for syn, target in self.doc_knowledge.synonyms.items():
-            if target == comp_name and self._is_strong_alias(syn):
-                if re.search(rf'\b{re.escape(syn.lower())}\b', text_lower):
-                    return True
-        for partial, target in self.doc_knowledge.partial_references.items():
-            if target == comp_name and self._is_strong_alias(partial):
-                if re.search(rf'\b{re.escape(partial.lower())}\b', text_lower):
+        for alias, target in self.doc_knowledge.aliases.items():
+            if target == comp_name and self._is_strong_alias(alias):
+                if re.search(rf'\b{re.escape(alias.lower())}\b', text_lower):
                     return True
         return False
 
