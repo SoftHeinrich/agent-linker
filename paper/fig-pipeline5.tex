@@ -1,0 +1,82 @@
+% ============================================================================
+% TikZ figure for the pipeline DAG (v5: matches S-Linker12e)
+% Requires: \usepackage{tikz}, \usetikzlibrary{positioning,arrows.meta,fit,backgrounds}
+%
+% Changes from v4:
+%   - Layer 1: 3 nodes in parallel (model, doc, seed) — no 1a/1b split
+%   - Layer 2: 3 nodes (seed disambig, contextual, anaphoric) — no abbreviated
+%   - Seed extraction in L1 feeds seed disambiguation in L2
+%   - Knowledge arrows from model+doc to all L2 nodes
+% ============================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm and 0.6cm,
+    phase/.style={draw, rounded corners, minimum width=2.2cm, minimum height=0.7cm,
+                  font=\footnotesize, align=center},
+    layer1/.style={phase, fill=blue!8},
+    layer2/.style={phase, fill=orange!10},
+    layer3/.style={phase, fill=green!8},
+    arr/.style={-{Stealth[length=2mm]}, thick, gray!70},
+    layerbox/.style={draw=gray!40, dashed, rounded corners=3pt, inner sep=6pt},
+    layerlabel/.style={font=\scriptsize\sffamily, gray!60},
+]
+
+% Layer 1: Three parallel analyses
+\node[layer1] (model)   {Model\\Analysis};
+\node[layer1, right=0.8cm of model] (doc) {Document\\Analysis};
+\node[layer1, right=0.8cm of doc] (seed) {Seed\\Extraction};
+
+% Layer 2: Three parallel agents
+\node[layer2, below=1.4cm of model] (disambig) {Seed Ref.\\Disambig.};
+\node[layer2, right=0.6cm of disambig] (contextual) {Contextual\\Ref.\ Disc.};
+\node[layer2, right=0.6cm of contextual] (anaphoric) {Anaphoric\\Ref.\ Res.};
+
+% Knowledge flow arrows (Layer 1 -> Layer 2)
+% Model knowledge feeds disambiguation and contextual
+\draw[arr] (model.south) -- (disambig.north west);
+\draw[arr] (model.south east) -- (contextual.north west);
+% Doc knowledge feeds all three L2 agents
+\draw[arr] (doc.south west) -- (disambig.north);
+\draw[arr] (doc.south) -- (contextual.north);
+\draw[arr] (doc.south east) -- (anaphoric.north west);
+% Seed links feed disambiguation
+\draw[arr] (seed.south west) -- (disambig.north east);
+
+% Layer 3: Link Consolidation
+\node[layer3, below=1.4cm of contextual] (merge) {Merge};
+
+% Layer 2 -> Layer 3
+\draw[arr] (disambig.south) -- (merge.north west);
+\draw[arr] (contextual.south) -- (merge.north);
+\draw[arr] (anaphoric.south) -- (merge.north east);
+
+% Output
+\node[below=0.4cm of merge, font=\footnotesize\itshape] (out) {Trace Links $L$};
+\draw[arr] (merge) -- (out);
+
+% Layer labels
+\node[layerlabel, left=0.3cm of model] {Layer 1};
+\node[layerlabel, left=0.3cm of disambig] {Layer 2};
+\node[layerlabel, left=0.8cm of merge] {Layer 3};
+
+% Layer boxes
+\begin{scope}[on background layer]
+    \node[layerbox, fit=(model)(seed), label={[layerlabel]above:Knowledge Acquisition \& Seed Extraction}] {};
+    \node[layerbox, fit=(disambig)(anaphoric), label={[layerlabel]above left:Link Recovery}] {};
+    \node[layerbox, fit=(merge), label={[layerlabel]above left:Link Consolidation}] {};
+\end{scope}
+
+\end{tikzpicture}
+\caption{Pipeline architecture as a staged DAG. Layer~1 runs three analyses
+in parallel: model analysis classifies name ambiguity, document analysis
+discovers aliases (including trailing-word references), and seed extraction
+recovers initial explicit-reference links without knowledge dependencies.
+Layer~2 runs three recovery agents in parallel once Layer~1 completes:
+seed disambiguation filters seed links using the acquired knowledge,
+contextual discovery recovers alias-based and functional references, and
+anaphoric resolution resolves pronominal references.
+Layer~3 deduplicates their output by first-seen priority.}
+\label{fig:pipeline}
+\end{figure*}
