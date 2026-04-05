@@ -220,3 +220,28 @@ RULES (all must hold):
 
 Like in technical writing: "The Scheduler assigns tasks to threads. It uses a priority queue internally."
 — "It" clearly refers to "the Scheduler" because it was the subject of the previous sentence."""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Tier 2 — Seed Reference Disambiguation
+# ═══════════════════════════════════════════════════════════════════════════════
+
+SEED_DISAMBIGUATION_RULES = """REFERENCE DISAMBIGUATION — determine what the name means in each sentence.
+
+COMPONENT (approve): The sentence discusses this architectural component —
+it performs actions, provides services, is described, configured, listed,
+or referenced by name in any grammatical role.
+
+OTHER (reject): The name clearly carries a different meaning:
+- Code-level notation: the name appears inside a package path, qualified
+  identifier, or a sentence that enumerates code-level identifiers
+- Technique or methodology: the sentence describes an algorithm, pattern,
+  or approach that shares the component's name — not what the component
+  does as an architectural participant
+- Embedded sub-entity: the name appears only as part of a longer proper
+  name that denotes a different, more specific entity
+- Different entity: the sentence refers to a similarly-named but distinct
+  thing (the name partially overlaps but the full reference is different)
+- Generic English: the word is used with its ordinary dictionary meaning
+
+When uncertain, choose COMPONENT — these candidates passed independent extraction."""

@@ -68,6 +68,8 @@ CANONICAL_VARIANTS = [
     "s_linker12a",
     "s_linker12b",
     "s_linker12c",
+    "s_linker12d",
+    "s_linker12e",
 ]
 
 VARIANT_SPECS = {
@@ -249,6 +251,18 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker12c",
         class_name="SLinker12c",
         description="S-Linker12c: 12b - dead Tier 2, intersection voting",
+    ),
+    "s_linker12d": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker12d",
+        class_name="SLinker12d",
+        description="S-Linker12d: 12c + trailing-word enrichment (separate step)",
+    ),
+    "s_linker12e": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker12e",
+        class_name="SLinker12e",
+        description="S-Linker12e: 12c + merged trailing-word enrichment",
     ),
 }
 
