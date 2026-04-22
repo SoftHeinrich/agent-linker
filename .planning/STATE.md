@@ -1,0 +1,71 @@
+# Project State
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-04-21)
+
+**Core value:** Every rule removed from `s_linker12c` and replaced by an LLM primitive must hold macro F1 ≥ 93% (no dataset >2pp below 12c baseline) — or be rejected. Deliverable: defensible claim that traceability linking works without hand-crafted structural rules.
+**Current focus:** Phase 1 — Baseline and Infrastructure
+
+## Current Position
+
+Phase: 1 of 5 (Baseline and Infrastructure)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-04-21 — Roadmap created; REQUIREMENTS.md and ROADMAP.md written
+
+Progress: [░░░░░░░░░░] 0%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0
+- Average duration: -
+- Total execution time: 0.0 hours
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+**Recent Trend:**
+- Last 5 plans: (none)
+- Trend: -
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- Pre-roadmap: Base = `s_linker12c` (not 12e); 12d/12e are enrichment side-experiments
+- Pre-roadmap: Ablation unit = linker variant (not individual rule); full pipeline F1 is the signal
+- Pre-roadmap: Keep `_has_standalone_mention` tentatively (RISKY per Spike 002 O(N×M)); formalize in Phase 5
+- Pre-roadmap: VAR-02 + VAR-03 grouped into Phase 2 (tightly coupled: 13c depends on 13b)
+- Pre-roadmap: VAR-05 run twice on hard tier before full sweep (widest blast radius in chain)
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- SUMMARY.md does not exist in `.planning/research/` — research phase may not have run a SUMMARY step; ARCHITECTURE.md and PITFALLS.md were used directly.
+
+## Deferred Items
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| v2 | EXT-01: Spike on replacing `_has_standalone_mention` | Deferred | Roadmap creation |
+| v2 | EXT-02: Drop dotted-path guard in `_has_standalone_mention` | Deferred | Roadmap creation |
+| v2 | EXT-03: GPT-5.2 cross-model re-evaluation of s_linker13 | Deferred | Roadmap creation |
+
+## Session Continuity
+
+Last session: 2026-04-21
+Stopped at: Roadmap created; ready to run `/gsd-plan-phase 1`
+Resume file: None

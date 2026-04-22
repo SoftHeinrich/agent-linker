@@ -68,7 +68,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Which phases cover which requirements. Filled during roadmap creation.
+Which phases cover which requirements. Updated after roadmap creation (2026-04-21).
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
@@ -77,28 +77,30 @@ Which phases cover which requirements. Filled during roadmap creation.
 | INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | Phase 1 | Pending |
 | INFRA-05 | Phase 1 | Pending |
-| VAR-01 | Phase 2 | Pending |
-| VAR-02 | Phase 3 | Pending |
-| VAR-03 | Phase 3 | Pending |
-| VAR-04 | Phase 4 | Pending |
-| VAR-05 | Phase 5 | Pending |
-| VAR-06 | Phase 6 | Pending |
-| PROMO-01 | Phase 7 | Pending |
-| PROMO-02 | Phase 7 | Pending |
-| PROMO-03 | Phase 7 | Pending |
-| PROMO-04 | Phase 7 | Pending |
-| GATE-01 | All phases | Pending |
-| GATE-02 | All phases | Pending |
-| GATE-03 | All phases | Pending |
-| GATE-04 | All phases | Pending |
-| GATE-05 | All phases | Pending |
-| GATE-06 | All phases | Pending |
+| VAR-01 | Phase 1 | Pending |
+| VAR-02 | Phase 2 | Pending |
+| VAR-03 | Phase 2 | Pending |
+| VAR-04 | Phase 3 | Pending |
+| VAR-05 | Phase 4 | Pending |
+| VAR-06 | Phase 4 | Pending |
+| PROMO-01 | Phase 5 | Pending |
+| PROMO-02 | Phase 5 | Pending |
+| PROMO-03 | Phase 5 | Pending |
+| PROMO-04 | Phase 5 | Pending |
+| GATE-01 | Phases 2-5 | Pending |
+| GATE-02 | Phases 2-5 | Pending |
+| GATE-03 | Phases 2-5 | Pending |
+| GATE-04 | Phases 2-5 | Pending |
+| GATE-05 | Phases 2-5 | Pending |
+| GATE-06 | Phases 2-5 | Pending |
 
 **Coverage:**
-- v1 requirements: 22 total
-- Mapped to phases: 22
+- v1 requirements: 21 total (5 INFRA + 6 VAR + 4 PROMO + 6 GATE)
+- Mapped to phases: 21
 - Unmapped: 0 ✓
+
+Note: The pre-filled traceability section counted 22 requirements; actual count from requirements list is 21. No orphaned requirements.
 
 ---
 *Requirements defined: 2026-04-22*
-*Last updated: 2026-04-22 after initial definition*
+*Last updated: 2026-04-21 after roadmap creation (phase mapping corrected to 5-phase coarse structure)*
