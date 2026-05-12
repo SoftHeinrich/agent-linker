@@ -23,7 +23,7 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Baseline and Infrastructure** - SDK migration, baseline capture, and first rule removal (13a)
+- [ ] **Phase 1: Baseline and Infrastructure** - Baseline capture, per-variant checkpoint namespacing, diskcache migration, and first rule removal (13a)
 - [ ] **Phase 2: Ambiguity Cleanup** - Remove structural unambiguity post-filter and its wrapper (13b + 13c)
 - [ ] **Phase 3: Mention Classifier Migration** - Replace 4-regex `_classify_mention` with LLM enum (13d)
 - [ ] **Phase 4: Alias Scope and Coref Fold** - Retire `_is_strong_alias` via scope field; fold alias signal into coref (13e + 13f)
@@ -41,7 +41,12 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
   3. `diskcache>=5.6.1` and `tabulate>=0.9.0` are in `pyproject.toml`; `anthropic>=0.40.0` is in `pyproject.toml`
   4. `s_linker13a` registered in `run_ablation.py`; hard-tier run (teammates + BBB) completes with no regression >1pp vs 12c; full 5-project sweep confirms macro F1 ≥ 93% and no dataset >2pp below 12c baseline
   5. Each variant's `_checkpoint_dir` uses its own `_VARIANT_NAME` constant (no hardcoded `"s_linker12c"` string in 13a)
-**Plans**: TBD
+**Plans**: 5 plans
+  - [ ] 01-01-PLAN.md — Doc strike (D-01a): mark INFRA-02/04 STRUCK in REQUIREMENTS.md and ROADMAP.md
+  - [ ] 01-02-PLAN.md — Add diskcache/tabulate deps + migrate llm_client.py LLM-response cache to diskcache (INFRA-03)
+  - [ ] 01-03-PLAN.md — Add `_VARIANT_NAME` constant + D-07 assertion in s_linker12c.py (INFRA-05)
+  - [ ] 01-04-PLAN.md — Capture s_linker12c baseline on 5-project sweep (INFRA-01)
+  - [ ] 01-05-PLAN.md — Create s_linker13a.py (Spike 001 trailing-word LLM); hard-tier gate + full sweep (VAR-01)
 
 ### Phase 2: Ambiguity Cleanup
 **Goal**: The structural post-filter `_is_structurally_unambiguous` is retired (13b), and its now-trivial wrapper `_is_ambiguous_name_component` is inlined and removed (13c) — both passing the dual floor, confirming the LLM ambiguity classification from `_classify_components` can be trusted on its own.
