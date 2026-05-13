@@ -32,15 +32,14 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
 ## Phase Details
 
 ### Phase 1: Baseline and Infrastructure
-**Goal**: A reproducible `s_linker12c` baseline is captured, the LLM SDK is migrated to direct API calls, and `s_linker13a` (Spike 001 trailing-word LLM enrichment) passes the dual floor — giving a clean starting point for the entire ablation chain.
+**Goal**: A reproducible `s_linker12c` baseline is captured, per-variant checkpoint namespacing is in place, and `s_linker13a` (Spike 001 trailing-word LLM enrichment) passes the dual floor — giving a clean starting point for the entire ablation chain.
 **Depends on**: Nothing (first phase)
-**Requirements**: INFRA-01, INFRA-02, INFRA-03, INFRA-04, INFRA-05, VAR-01
+**Requirements**: INFRA-01, INFRA-03, INFRA-05, VAR-01 (INFRA-02 and INFRA-04 struck per D-01 — see Phase 1 CONTEXT)
 **Success Criteria** (what must be TRUE):
   1. `results/ablation_results/` contains a 12c baseline run with per-dataset F1, FP/FN counts, and a JSON result file
-  2. `run_ablation.py` invokes the Anthropic SDK directly (no `claude -p` subprocess); `temperature=0.0` confirmed in logs; prompt-caching headers present
-  3. `diskcache>=5.6.1` and `tabulate>=0.9.0` are in `pyproject.toml`; `anthropic>=0.40.0` is in `pyproject.toml`
-  4. `s_linker13a` registered in `run_ablation.py`; hard-tier run (teammates + BBB) completes with no regression >1pp vs 12c; full 5-project sweep confirms macro F1 ≥ 93% and no dataset >2pp below 12c baseline
-  5. Each variant's `_checkpoint_dir` uses its own `_VARIANT_NAME` constant (no hardcoded `"s_linker12c"` string in 13a)
+  2. `diskcache>=5.6.1` and `tabulate>=0.9.0` are in `pyproject.toml`
+  3. `s_linker13a` registered in `run_ablation.py`; hard-tier run (teammates + BBB) completes with no regression >1pp vs 12c; full 5-project sweep confirms macro F1 ≥ 93% and no dataset >2pp below 12c baseline
+  4. Each variant's `_checkpoint_dir` uses its own `_VARIANT_NAME` constant (no hardcoded `"s_linker12c"` string in 13a)
 **Plans**: 5 plans
   - [ ] 01-01-PLAN.md — Doc strike (D-01a): mark INFRA-02/04 STRUCK in REQUIREMENTS.md and ROADMAP.md
   - [ ] 01-02-PLAN.md — Add diskcache/tabulate deps + migrate llm_client.py LLM-response cache to diskcache (INFRA-03)
