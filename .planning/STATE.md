@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
+status: executing
 stopped_at: Phase 1 context gathered
-last_updated: "2026-05-08T16:02:52.879Z"
-last_activity: 2026-04-21 — Roadmap created; REQUIREMENTS.md and ROADMAP.md written
+last_updated: "2026-05-13T16:30:00.000Z"
+last_activity: 2026-05-13 -- Phase 01 Wave 1 complete (plans 01-01, 01-02)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Every rule removed from `s_linker12c` and replaced by an LLM primitive must hold macro F1 ≥ 93% (no dataset >2pp below 12c baseline) — or be rejected. Deliverable: defensible claim that traceability linking works without hand-crafted structural rules.
-**Current focus:** Phase 1 — Baseline and Infrastructure
+**Current focus:** Phase 01 — baseline-and-infrastructure
 
 ## Current Position
 
-Phase: 1 of 5 (Baseline and Infrastructure)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-21 — Roadmap created; REQUIREMENTS.md and ROADMAP.md written
+Phase: 01 (baseline-and-infrastructure) — EXECUTING
+Plan: 2 of 5 complete (Wave 1 done)
+Status: Executing Phase 01
+Last activity: 2026-05-13 -- Phase 01 Wave 1 complete (plans 01-01, 01-02)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 

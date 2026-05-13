@@ -41,8 +41,8 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
   3. `s_linker13a` registered in `run_ablation.py`; hard-tier run (teammates + BBB) completes with no regression >1pp vs 12c; full 5-project sweep confirms macro F1 ≥ 93% and no dataset >2pp below 12c baseline
   4. Each variant's `_checkpoint_dir` uses its own `_VARIANT_NAME` constant (no hardcoded `"s_linker12c"` string in 13a)
 **Plans**: 5 plans
-  - [ ] 01-01-PLAN.md — Doc strike (D-01a): mark INFRA-02/04 STRUCK in REQUIREMENTS.md and ROADMAP.md
-  - [ ] 01-02-PLAN.md — Add diskcache/tabulate deps + migrate llm_client.py LLM-response cache to diskcache (INFRA-03)
+  - [x] 01-01-PLAN.md — Doc strike (D-01a): mark INFRA-02/04 STRUCK in REQUIREMENTS.md and ROADMAP.md
+  - [x] 01-02-PLAN.md — Add diskcache/tabulate deps + migrate llm_client.py LLM-response cache to diskcache (INFRA-03)
   - [ ] 01-03-PLAN.md — Add `_VARIANT_NAME` constant + D-07 assertion in s_linker12c.py (INFRA-05)
   - [ ] 01-04-PLAN.md — Capture s_linker12c baseline on 5-project sweep (INFRA-01)
   - [ ] 01-05-PLAN.md — Create s_linker13a.py (Spike 001 trailing-word LLM); hard-tier gate + full sweep (VAR-01)
