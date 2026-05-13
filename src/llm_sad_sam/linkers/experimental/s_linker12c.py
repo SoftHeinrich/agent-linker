@@ -69,6 +69,8 @@ class EvidenceBundle:
 class SLinker12c:
     """LLM-driven SAD-SAM traceability with structural guardrails."""
 
+    _VARIANT_NAME = "s_linker12c"
+
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
         re.IGNORECASE
@@ -1118,7 +1120,13 @@ Only include resolutions you are CERTAIN about. JSON only:"""
     def _checkpoint_dir(self, text_path):
         cache_dir = os.environ.get("PHASE_CACHE_DIR", "./results/phase_cache")
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        d = os.path.join(cache_dir, "s_linker12c", ds)
+        d = os.path.join(cache_dir, self._VARIANT_NAME, ds)
+        # D-07: fail-fast if the directory does not embed the variant name.
+        # Guards against subclasses or accidental edits that drop the namespace.
+        assert self._VARIANT_NAME in d, (
+            f"_checkpoint_dir must contain _VARIANT_NAME "
+            f"('{self._VARIANT_NAME}' not in '{d}')"
+        )
         os.makedirs(d, exist_ok=True)
         return d
 
@@ -1142,7 +1150,10 @@ Only include resolutions you are CERTAIN about. JSON only:"""
         log_dir = os.environ.get("LLM_LOG_DIR", "./results/llm_logs")
         os.makedirs(log_dir, exist_ok=True)
         ds = os.path.splitext(os.path.basename(text_path))[0]
-        path = os.path.join(log_dir, f"s_linker12c_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json")
+        path = os.path.join(
+            log_dir,
+            f"{self._VARIANT_NAME}_{ds}_{time.strftime('%Y%m%d_%H%M%S')}.json",
+        )
         with open(path, "w") as f:
             json.dump(self._phase_log, f, indent=2, default=str)
         print(f"  Phase log saved: {path}")
