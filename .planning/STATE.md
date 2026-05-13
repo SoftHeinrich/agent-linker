@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-05-13T17:06:00Z"
-last_activity: 2026-05-13 -- Plan 01-03 complete (INFRA-05 _VARIANT_NAME namespacing)
+stopped_at: Plan 01-04 complete (INFRA-01 baseline captured, macro F1 = 0.935)
+last_updated: "2026-05-13T19:30:00Z"
+last_activity: 2026-05-13 -- Plan 01-04 complete (INFRA-01 s_linker12c baseline; ablation_20260513_192513.json)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 ## Current Position
 
 Phase: 01 (baseline-and-infrastructure) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Executing Phase 01
-Last activity: 2026-05-13 -- Plan 01-03 complete (INFRA-05 _VARIANT_NAME namespacing)
+Last activity: 2026-05-13 -- Plan 01-04 complete (INFRA-01 s_linker12c baseline; macro F1 = 0.935)
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
