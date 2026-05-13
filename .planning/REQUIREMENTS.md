@@ -10,9 +10,9 @@ Requirements for the 13-series promotion chain. Each maps to roadmap phases.
 ### Baseline & Infrastructure
 
 - [ ] **INFRA-01**: Reproducible `s_linker12c` baseline captured (per-dataset + macro F1, FP/FN table, JSON result file in `results/ablation_results/`)
-- [ ] **INFRA-02**: `anthropic>=0.40.0` SDK added to `pyproject.toml`; `llm_client.py` migrated from `claude -p` subprocess to direct SDK call with `temperature=0.0` and prompt caching
+- [ ] ~~**INFRA-02**: `anthropic>=0.40.0` SDK added to `pyproject.toml`; `llm_client.py` migrated from `claude -p` subprocess to direct SDK call with `temperature=0.0` and prompt caching~~ — **STRUCK per D-01** (Phase 1 CONTEXT, 2026-04-24): backend stays on `claude -p` subprocess; Claude CLI exposes no temperature flag and no caller-controlled cache headers, so this requirement cannot be met via CLI. Not deferred — dropped.
 - [ ] **INFRA-03**: `diskcache>=5.6.1` and `tabulate>=0.9.0` added to `pyproject.toml`
-- [ ] **INFRA-04**: Baseline F1 unchanged (within run-to-run variance) after SDK migration, confirmed on hard tier first, then full 5-project sweep
+- [ ] ~~**INFRA-04**: Baseline F1 unchanged (within run-to-run variance) after SDK migration, confirmed on hard tier first, then full 5-project sweep~~ — **STRUCK per D-01**: depends on INFRA-02 which is struck.
 - [ ] **INFRA-05**: Each variant's `_checkpoint_dir` namespaced per variant (no `"s_linker12c"` hardcoded string leaking across variants)
 
 ### Variant Promotion Chain (13a → 13f)
@@ -73,9 +73,9 @@ Which phases cover which requirements. Updated after roadmap creation (2026-04-2
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | STRUCK (D-01) |
 | INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | STRUCK (D-01) |
 | INFRA-05 | Phase 1 | Pending |
 | VAR-01 | Phase 1 | Pending |
 | VAR-02 | Phase 2 | Pending |
@@ -95,11 +95,13 @@ Which phases cover which requirements. Updated after roadmap creation (2026-04-2
 | GATE-06 | Phases 2-5 | Pending |
 
 **Coverage:**
-- v1 requirements: 21 total (5 INFRA + 6 VAR + 4 PROMO + 6 GATE)
-- Mapped to phases: 21
+- v1 requirements: 21 total (5 INFRA — 2 struck per D-01 + 6 VAR + 4 PROMO + 6 GATE) → 19 active
+- Mapped to phases: 19 active (+ 2 struck)
 - Unmapped: 0 ✓
 
 Note: The pre-filled traceability section counted 22 requirements; actual count from requirements list is 21. No orphaned requirements.
+
+*2026-04-25: INFRA-02 and INFRA-04 struck per Phase 1 CONTEXT decision D-01 — SDK migration removed from scope; backend stays on `claude -p` subprocess.*
 
 ---
 *Requirements defined: 2026-04-22*
