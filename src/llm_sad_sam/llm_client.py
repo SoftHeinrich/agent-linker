@@ -11,6 +11,7 @@ import json
 import re
 import os
 import logging
+import diskcache
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -124,11 +125,13 @@ class LLMClient:
         self._checkpoint_dir: Optional[Path] = None
         self._checkpoint_fallback: Optional[LLMBackend] = None
         self._checkpoint_fallback_model: Optional[str] = None
+        self._cache: Optional[diskcache.Cache] = None
         if self.backend == LLMBackend.CHECKPOINT:
             self._checkpoint_dir = Path(
                 os.environ.get("CHECKPOINT_DIR", "./results/llm_checkpoint")
             )
             self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
+            self._cache = diskcache.Cache(str(self._checkpoint_dir))
             fallback = checkpoint_fallback
             if fallback is None:
                 fallback = os.environ.get("CHECKPOINT_FALLBACK")
@@ -615,6 +618,9 @@ class LLMClient:
             self.claude_model = self._checkpoint_fallback_model
         self._checkpoint_dir = Path(checkpoint_dir)
         self._checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        if self._cache is not None:
+            self._cache.close()
+        self._cache = diskcache.Cache(str(self._checkpoint_dir))
         self.backend = LLMBackend.CHECKPOINT
 
     def save_usage_summary(self, output_path: Optional[str] = None):
@@ -721,42 +727,10 @@ class LLMClient:
         import hashlib
         return hashlib.sha256(prompt.encode("utf-8")).hexdigest()
 
-    def _checkpoint_path(self, prompt: str) -> Path:
-        """Return the cache file path for a given prompt."""
-        return self._checkpoint_dir / f"{self._prompt_hash(prompt)}.json"
-
-    def _load_cached_response(self, path: Path) -> Optional[LLMResponse]:
-        """Load an LLMResponse from a checkpoint JSON file.
-
-        Returns None if the file doesn't exist or is corrupt.
-        """
-        if not path.exists():
-            return None
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            token_usage = None
-            if data.get("token_usage"):
-                tu = data["token_usage"]
-                token_usage = TokenUsage(
-                    prompt_tokens=tu.get("prompt_tokens", 0),
-                    completion_tokens=tu.get("completion_tokens", 0),
-                    total_tokens=tu.get("total_tokens", 0),
-                )
-            return LLMResponse(
-                text=data["text"],
-                success=data["success"],
-                error=data.get("error"),
-                token_usage=token_usage,
-                model=data.get("model"),
-                latency_ms=data.get("latency_ms"),
-            )
-        except (json.JSONDecodeError, KeyError, TypeError):
-            return None
-
-    def _save_cached_response(self, path: Path, response: LLMResponse) -> None:
-        """Save an LLMResponse to a checkpoint JSON file."""
-        data = {
+    @staticmethod
+    def _llm_response_to_dict(response: LLMResponse) -> dict:
+        """Serialize an LLMResponse to a plain dict for cache storage."""
+        return {
             "text": response.text,
             "success": response.success,
             "error": response.error,
@@ -768,8 +742,26 @@ class LLMClient:
                 "total_tokens": response.token_usage.total_tokens,
             } if response.token_usage else None,
         }
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False)
+
+    @staticmethod
+    def _llm_response_from_dict(data: dict) -> LLMResponse:
+        """Reconstruct an LLMResponse from a cached dict."""
+        token_usage = None
+        if data.get("token_usage"):
+            tu = data["token_usage"]
+            token_usage = TokenUsage(
+                prompt_tokens=tu.get("prompt_tokens", 0),
+                completion_tokens=tu.get("completion_tokens", 0),
+                total_tokens=tu.get("total_tokens", 0),
+            )
+        return LLMResponse(
+            text=data["text"],
+            success=data["success"],
+            error=data.get("error"),
+            token_usage=token_usage,
+            model=data.get("model"),
+            latency_ms=data.get("latency_ms"),
+        )
 
     def _query_checkpoint(self, prompt: str, timeout: int, max_retries: int) -> LLMResponse:
         """Checkpoint backend: load cached response or call fallback and save.
@@ -778,13 +770,12 @@ class LLMClient:
         with latency_ms=0. On miss, delegates to the fallback backend
         (with full retry logic), saves the successful response, and returns it.
         """
-        import time as _time
-
-        cache_path = self._checkpoint_path(prompt)
+        key = self._prompt_hash(prompt)
 
         # Cache hit
-        cached = self._load_cached_response(cache_path)
-        if cached is not None:
+        cached_dict = self._cache.get(key) if self._cache is not None else None
+        if cached_dict is not None:
+            cached = self._llm_response_from_dict(cached_dict)
             cached.latency_ms = 0
             if self.enable_logging:
                 self._log_request(prompt, cached, 0)
@@ -799,8 +790,8 @@ class LLMClient:
             self.backend = original_backend
 
         # Save successful responses
-        if response.success:
-            self._save_cached_response(cache_path, response)
+        if response.success and self._cache is not None:
+            self._cache[key] = self._llm_response_to_dict(response)
 
         return response
 
