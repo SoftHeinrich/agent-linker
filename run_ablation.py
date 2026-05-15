@@ -70,6 +70,7 @@ CANONICAL_VARIANTS = [
     "s_linker12c",
     "s_linker12d",
     "s_linker12e",
+    "s_linker13a",
 ]
 
 VARIANT_SPECS = {
@@ -263,6 +264,12 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker12e",
         class_name="SLinker12e",
         description="S-Linker12e: 12c + merged trailing-word enrichment",
+    ),
+    "s_linker13a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13a",
+        class_name="SLinker13a",
+        description="S-Linker13a: 12c - _split_component_name (Spike 001 LLM trailing-word)",
     ),
 }
 
