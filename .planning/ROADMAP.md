@@ -45,7 +45,7 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
   - [x] 01-02-PLAN.md — Add diskcache/tabulate deps + migrate llm_client.py LLM-response cache to diskcache (INFRA-03)
   - [x] 01-03-PLAN.md — Add `_VARIANT_NAME` constant + D-07 assertion in s_linker12c.py (INFRA-05)
   - [x] 01-04-PLAN.md — Capture s_linker12c baseline on 5-project sweep (INFRA-01)
-  - [ ] 01-05-PLAN.md — Create s_linker13a.py (Spike 001 trailing-word LLM); hard-tier gate + full sweep (VAR-01)
+  - [!] 01-05-PLAN.md — Create s_linker13a.py (Spike 001 trailing-word LLM); hard-tier gate + full sweep (VAR-01) — **BLOCKED: GATE-05 hard reject 2026-05-15** (s_linker13a built and committed; hard-tier BBB F1=0.796 vs 12c 0.844, delta=-0.048pp << -0.02 rejection threshold; full sweep NOT executed). See 01-05-SUMMARY.md.
 
 ### Phase 2: Ambiguity Cleanup
 **Goal**: The structural post-filter `_is_structurally_unambiguous` is retired (13b), and its now-trivial wrapper `_is_ambiguous_name_component` is inlined and removed (13c) — both passing the dual floor, confirming the LLM ambiguity classification from `_classify_components` can be trusted on its own.
