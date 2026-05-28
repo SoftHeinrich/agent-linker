@@ -23,7 +23,7 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Baseline and Infrastructure** - Baseline capture, per-variant checkpoint namespacing, diskcache migration, and first rule removal (13a)
+- [x] **Phase 1: Baseline and Infrastructure** - Baseline capture, per-variant checkpoint namespacing, diskcache migration, and first rule removal (13a) — completed 2026-05-28 (macro F1 0.9364; user-loosened BBB tolerance)
 - [ ] **Phase 2: Ambiguity Cleanup** - Remove structural unambiguity post-filter and its wrapper (13b + 13c)
 - [ ] **Phase 3: Mention Classifier Migration** - Replace 4-regex `_classify_mention` with LLM enum (13d)
 - [ ] **Phase 4: Alias Scope and Coref Fold** - Retire `_is_strong_alias` via scope field; fold alias signal into coref (13e + 13f)

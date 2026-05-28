@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: blocked
-stopped_at: Plan 01-05 GATE-05 hard reject (s_linker13a BBB F1 = 0.796 vs 12c 0.844; delta -0.048pp)
-last_updated: "2026-05-15T18:55:00Z"
-last_activity: 2026-05-15 -- Plan 01-05 GATE-05 hard reject (s_linker13a; ablation_20260515_184127.json)
+status: executing
+stopped_at: Phase 1 complete; Phase 2 ready to start
+last_updated: "2026-05-28T17:35:00Z"
+last_activity: 2026-05-28 -- Plan 01-05 complete under user-loosened BBB gate (macro 0.9364, ablation_20260528_173020.json); Phase 1 done
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 20
 ---
 
 # Project State
@@ -21,26 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Every rule removed from `s_linker12c` and replaced by an LLM primitive must hold macro F1 ≥ 93% (no dataset >2pp below 12c baseline) — or be rejected. Deliverable: defensible claim that traceability linking works without hand-crafted structural rules.
-**Current focus:** Phase 01 — baseline-and-infrastructure
+**Current focus:** Phase 02 — ambiguity-cleanup
 
 ## Current Position
 
-Phase: 01 (baseline-and-infrastructure) — BLOCKED at Plan 05 GATE-05
-Plan: 5 of 5 (executed Tasks 1–2; Task 3 checkpoint hard-rejected; Task 4 not executed)
-Status: Blocked — GATE-05 hard reject on s_linker13a BBB delta = -0.048pp (< -0.02 threshold)
-Last activity: 2026-05-15 -- Plan 01-05 SUMMARY written; phase 1 cannot close without re-route
+Phase: 02 (ambiguity-cleanup) — ready to discuss
+Plan: Phase 1 complete (5/5 plans). Phase 2 not yet started.
+Status: Executing — Phase 1 closed 2026-05-28 under user-loosened BBB gate
+Last activity: 2026-05-28 -- Plan 01-05 full sweep PASS (macro 0.9364); Phase 1 marked complete
 
-Progress: [████████░░] 80% (Plan 05 not counted as complete — gate rejected)
+Progress: [██░░░░░░░░] 20% (1 of 5 phases complete)
 
-### Plan 05 Blocker Detail
+### Phase 1 Closure Notes
 
-- s_linker13a hard-tier results: teammates F1=0.931 (delta -0.007, marginal-ok), bigbluebutton F1=0.796 (delta -0.048, hard-reject)
-- Spike 001 LLM trailing-word enrichment produced ZERO new aliases on either hard-tier dataset; regression is from Tier-2 run-to-run drift after adding a new LLM call
-- Caller routes (see 01-05-SUMMARY §Phase 1 Status):
-  1. Re-run hard-tier for variance (cheapest, ~24 min)
-  2. Per-document gate the trailing-word step
-  3. Strengthen Spike 001 prompt rule 2
-  4. Re-scope Phase 1: drop VAR-01 or pull a different first-removal variant
+- s_linker13a full sweep (ablation_20260528_173020.json): MS 1.000 / TS 0.982 / TM 0.923 / BBB 0.804 / JAB 0.973 → macro 0.9364
+- GATE-01: PASS under user-loosened BBB tolerance (4pp on BBB only, 2pp elsewhere, macro ≥ 0.93)
+- BBB lands exactly at the 4pp floor; documented as known timing-perturbation limitation of Spike 001 (LLM call adds 0 aliases on BBB but shifts Claude prompt-cache stream → 2-3 extra HTML5 Client/Server partial FNs)
+- VAR-01 satisfied with caveat documented in 01-05-SUMMARY.md
 
 ## Performance Metrics
 
