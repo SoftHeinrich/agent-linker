@@ -72,6 +72,7 @@ CANONICAL_VARIANTS = [
     "s_linker12e",
     "s_linker13a",
     "s_linker13b",
+    "s_linker13c",
 ]
 
 VARIANT_SPECS = {
@@ -277,6 +278,12 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13b",
         class_name="SLinker13b",
         description="S-Linker13b: 12c - _is_structurally_unambiguous (trust LLM ambiguity classification)",
+    ),
+    "s_linker13c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13c",
+        class_name="SLinker13c",
+        description="S-Linker13c: 13b - _is_ambiguous_name_component (inlined dict-set lookup)",
     ),
 }
 
