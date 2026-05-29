@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 4 complete (VAR-05 + VAR-06 satisfied); Phase 5 ready to start
-last_updated: "2026-05-29T22:00:00Z"
-last_activity: 2026-05-29 -- Phase 4 closed; 13f macro 0.9509 (best in chain, +0.0104 over 12c)
+status: complete
+stopped_at: Phase 5 complete (PROMO-01..PROMO-04 satisfied); milestone complete
+last_updated: "2026-05-29T22:30:00Z"
+last_activity: 2026-05-29 -- Phase 5 closed; s_linker13 promoted; ablation table + methodology shipped
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 10
-  completed_plans: 10
-  percent: 80
+  completed_phases: 5
+  total_plans: 13
+  completed_plans: 13
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,19 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 05 (promote-and-ablation-artifact) — ready to discuss
-Plan: Phases 1-4 closed (10 plans completed; Phase 3 empty).
-Status: Executing — Phase 4 closed 2026-05-29 with 13f as new best variant (macro 0.9509)
-Last activity: 2026-05-29 -- Phase 4 close (13e VAR-05; 13f VAR-06 — best in chain)
+Phase: 05 (promote-and-ablation-artifact) — COMPLETE
+Plan: All 5 phases closed (13 plans completed; Phase 3 closed empty).
+Status: Milestone complete — s_linker13 promoted as canonical (macro 0.9509, +1.04pp vs 12c)
+Last activity: 2026-05-29 -- Phase 5 close (PROMO-01..04: promotion, KEEP-decision, ablation table, methodology)
 
-Progress: [████████░░] 80% (4 of 5 phases complete)
+Progress: [██████████] 100% (5 of 5 phases complete)
+
+### Phase 5 Closure Notes
+
+- Plan 05-01 (PROMO-01 + PROMO-02): s_linker13.py created as canonical promotion of s_linker13f.py (byte-equivalent modulo class/constant/docstring/banner per D-44a); registered in run_ablation.py with canonical=True; KEEP-decision row for _has_standalone_mention appended to PROJECT.md Key Decisions.
+- Plan 05-02 (PROMO-03): ABLATION-TABLE.md + ABLATION-TABLE.tex rendered by render_ablation.py from 7 canonical JSONs; 8 rows (12c BASELINE → 13a/b/c/e/f PASS → 13d RETIRED → s_linker13 PROMOTED).
+- Plan 05-03 (PROMO-04): METHODOLOGY.md (1834 words, 7 sections) covers project thesis, 13-series chain, BBB tolerance history, 13d failure mode, dual-hard-tier protocol, final result, deferred items.
+- D-54 success criteria SC-1 / SC-2 / SC-3 / SC-4 all PASS.
 
 ### Phase 4 Closure Notes
 
