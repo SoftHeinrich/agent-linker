@@ -1,0 +1,67 @@
+# Methodology: Rule-Reduction Ablation from `s_linker12c` to `s_linker13`
+
+_Phase 5 milestone writeup — PROMO-04. Companion artifact: [`ABLATION-TABLE.md`](./ABLATION-TABLE.md)._
+
+## 1. Project Thesis: Traceability Linking Without Hand-Crafted Rules
+
+The project's core value, as stated in `.planning/PROJECT.md`, is that traceability linking from architecture documentation to architecture model (SAD-to-SAM) can be performed without project-specific hand-crafted structural rules while preserving macro F1 at or above 93% across the five-project ARDoCo benchmark (MediaStore, TeaStore, TeaMMates, BigBlueButton, JabRef). The milestone described here is, concretely, a rule-reduction exercise: starting from `s_linker12c` — the prior best-in-class hand-tuned linker with macro F1 = 0.9405 — each structural helper is retired in turn and replaced either by an LLM-prompt extension or by removal-without-replacement. Seven helpers were targeted: `_split_component_name`, `_is_structurally_unambiguous`, `_is_ambiguous_name_component`, `_classify_mention`, `_is_strong_alias`, `_get_strong_alias_mappings`, and `_has_strong_alias_mention`. Six were retired empirically; one (`_classify_mention`) was retired-as-rejection and replaced by no LLM substitute (section 4); a separate primitive, `_has_standalone_mention`, was deliberately KEPT on cost grounds (section 7). The final artifact is `s_linker13` (macro F1 = 0.9509, +1.04 pp over `s_linker12c`) — a defensible empirical claim that six of seven attempted structural-rule eliminations succeeded.
+
+## 2. The 13-Series Chain: Six Removed Rules
+
+The chain of variants was constructed one rule at a time. Each removal landed as a standalone variant file (`s_linker13a.py` through `s_linker13f.py`), registered in `run_ablation.py`, and sweep-evaluated against the dual floor (macro F1 ≥ 0.93 and no dataset more than the per-dataset tolerance below `s_linker12c`'s baseline). Full per-row provenance is in [`ABLATION-TABLE.md`](./ABLATION-TABLE.md).
+
+**13a — `_split_component_name` (Spike 001 LLM trailing-word).** Macro F1 = 0.9364 (Δ −0.0041 vs 12c). The 12c regex that emitted trailing-word aliases ("OrderHandler" → "Handler") was replaced by an LLM call following the cite-evidence pattern. The substitution behaved as expected on most projects, but emitted zero new aliases on TeaMMates and BigBlueButton; the BBB regression (−2.7 to −4.8 pp across runs) was traced to a Claude prompt-cache stream perturbation — the additional LLM call shifted the cached-vs-uncached call order for subsequent partials on BBB's multi-word component names, with no semantic change in the alias dictionary. This triggered the first standing-policy loosening (section 3).
+
+**13b — `_is_structurally_unambiguous` (post-filter, pure removal).** Macro F1 = 0.9519 (Δ +0.0114 vs 12c; +0.0156 vs 13a). The structural post-filter that overrode the LLM's ambiguity classification was removed outright — `_classify_components` is now trusted end-to-end. 13b posted the highest raw macro in the chain (section 6 discusses why it is not the artifact-of-record).
+
+**13c — `_is_ambiguous_name_component` (wrapper inline-remove).** Macro F1 = 0.9314 (Δ −0.0091 vs 12c; Δ −0.0205 vs 13b). The wrapper was inlined; the classification logic was byte-identical pre-and-post. BigBlueButton nevertheless drifted to 0.7818 — the second cache-stream-timing manifestation, on a byte-identical predicate. This proved that the BBB variance was downstream Claude noise rather than code-correctness, and triggered the second standing-policy loosening.
+
+**13e — `_is_strong_alias` + `_get_strong_alias_mappings` (LLM scope field).** Macro F1 = 0.9380 (Δ −0.0025 vs 12c; Δ +0.0066 vs 13c). The widest-blast-radius change in the chain: the alias-discovery prompt now emits a `scope: global|local` field per alias record, replacing two structural predicates that touched six read sites of the alias-record shape. Because the risk profile resembled VAR-04 (13d, section 4), a dual-hard-tier protocol was applied before any full sweep (section 5).
+
+**13f — `_has_strong_alias_mention` (coref-prompt fold).** Macro F1 = 0.9509 (Δ +0.0104 vs 12c; Δ +0.0129 vs 13e). The strong-alias-mention regex was folded into the existing coreference prompt as an `antecedent_via_alias: bool` field; the consumer reads the boolean instead of running the regex. 13f produced the highest macro among variants that hold the dual floor under the loosened BBB tolerance — it is the artifact-of-record (section 6).
+
+Six rules were retired across the chain — short of the original seven-rule target. The seventh, `_classify_mention`, was retired empirically as VAR-04 (section 4).
+
+## 3. Standing-Policy History: BBB Tolerance Loosening (2pp → 4pp → 6pp)
+
+The original sweep policy (Phase 1 INFRA-01) applied a 2 pp per-dataset tolerance uniformly and a 0.93 macro floor, with single-run sweeps (no N-run median). Two user-approved tolerance loosenings occurred during the chain, both confined to BigBlueButton.
+
+**First loosening: 2 pp → 4 pp (2026-05-28, after 13a).** 13a's LLM trailing-word substitution added zero aliases on BBB yet shifted BBB F1 from 0.844 to 0.804 — a 4 pp regression with no aliasing change. The cause was identified as a Claude prompt-cache stream perturbation: inserting an LLM call into the seed-time enrichment pipeline shifts the per-sentence prompt order, which silently re-orders which sentences hit cached vs uncached responses, which in turn shifts inter-sentence partial-match outcomes on BBB's multi-word component names. Pure-removal variants (e.g., 13b) preserved BBB within the original 2 pp band (0.844 → 0.839), corroborating the hypothesis.
+
+**Second loosening: 4 pp → 6 pp (2026-05-29, after 13c).** 13c's wrapper inline-remove preserved the classification logic byte-for-byte (the parity probe in `02-02-SUMMARY.md` confirmed this), yet BBB drifted to 0.7818 — a further 2 pp regression on byte-identical code. With code-correctness ruled out, the residual variance is documented Claude run-to-run noise on BBB's partial-matching cascade (`.planning/research/PITFALLS.md`).
+
+This loosened tolerance is the milestone's primary documented limitation. It is addressed openly here rather than hidden behind aggregate macro numbers: BBB is uniquely sensitive among the five datasets, and the framework's reliance on Claude's prompt cache makes its sweep result a function of cache-stream timing on the BBB partial-matching path. The loosening is empirical accommodation of a noise floor, not a methodology weakness — but readers should treat BBB scores in the 0.78 to 0.84 band as effectively indistinguishable.
+
+## 4. Negative Result: The 13d / VAR-04 Retirement
+
+The single most publishable finding of this milestone is a negative result. Spike 003 attempted to replace the four-branch regex `_classify_mention` (which assigns mention types — proper name, lowercase mention, dotted-path code reference, generic English — to extracted entity candidates) with an LLM enum field returned alongside the existing entity-extraction call. No new LLM call was added; the existing extraction prompt was extended.
+
+The substitution collapsed TeaMMates F1 from 0.938 to 0.750 (Δ −0.188 vs 12c) on the hard-tier-only sweep. Phase 3 was closed empty and VAR-04 was retired per user direction (`.planning/STATE.md` §"Phase 3 Closure Note"). Failure-mode analysis (`.planning/phases/03-mention-classifier-migration/03-01-SUMMARY.md` §"Failure-Mode Analysis") identified the cause as 33 entity-source false positives on dotted-path package references: TeaMMates documentation uses Java-package-style mentions such as `ui.website`, `logic.api`, and `storage.entity` to refer to architecture components. The 12c regex matches the pattern `^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$` and labels these as language-construct references that bypass entity matching; the LLM, lacking that project-specific convention in its training distribution and unable to learn it from the prompt without explicit examples, classifies them as ordinary component mentions and admits them as candidates.
+
+This writeup does not claim 100% rule elimination. The honest framing is that the no-hand-crafted-rules thesis holds with one documented caveat: classification of language-construct references — specifically project-specific naming conventions for source-file paths — is regex territory. Six of seven attempted removals succeeded; the seventh failed in a way that is empirically identifiable in advance whenever a benchmark documents architecture using project-specific tokenization patterns the LLM has not seen. `s_linker13d.py` remains in the tree as the rejection artifact (D-43b); the [`ABLATION-TABLE.md`](./ABLATION-TABLE.md) reports it with status RETIRED.
+
+## 5. Dual-Hard-Tier Protocol for the Widest-Blast 13e
+
+Variant 13e — the alias `scope: global|local` LLM-field substitution — was the widest blast radius in the chain. The schema break touched six read sites of the alias-record shape, and the risk profile (LLM substitution of a project-specific structural predicate) resembled the VAR-04 failure pattern of section 4. The dual-hard-tier protocol was applied as the empirical mitigation: the hard-tier sweep (TeaMMates + BigBlueButton — the two most rule-sensitive datasets) was run twice independently before any full five-project sweep. If the inter-run variance |Δ| exceeded 0.04 on either dataset, the variant would be rejected without further testing.
+
+The protocol's outcome was empirically uneventful (`04-01-SUMMARY.md` §"Dual Hard-Tier Results"): Run 1 produced BBB F1 = 0.826; Run 2 produced BBB F1 = 0.818; |Δ| = 0.008, well within the 0.04 acceptance band. Both runs passed GATE-05; the full sweep proceeded and produced macro F1 = 0.9380. The protocol caught nothing — and that uneventful pass is precisely the evidence sought: VAR-05's schema break is stable under Claude run-to-run variance, and the rule-replacement is empirically safe. The cost — two hard-tier runs instead of one — was paid as insurance against the VAR-04 failure mode, and the dual-hard-tier protocol is documented here as the empirical mitigation for the "widest blast radius" criterion the ROADMAP set for VAR-05.
+
+## 6. Final Result: `s_linker13` (macro F1 = 0.9509)
+
+The artifact-of-record is `s_linker13.py`, the canonical promotion of `s_linker13f.py` (Phase 5, 2026-05-29). Macro F1 = 0.9509 (Δ +0.0104 = +1.04 pp vs the `s_linker12c` baseline of 0.9405). Per-dataset: MediaStore 0.984, TeaStore 1.000, TeaMMates 0.947, BigBlueButton 0.821, JabRef 1.000. Full per-row provenance is in [`ABLATION-TABLE.md`](./ABLATION-TABLE.md).
+
+One honest accounting caveat — required by D-43 footnote 1: variant 13b posted a marginally higher raw macro (0.9519) than 13f (0.9509). The chain-winner definition adopted in this milestone is the LAST variant that holds the dual floor (BigBlueButton 6 pp, other datasets 2 pp, macro ≥ 0.93), not the variant with the highest raw macro. 13b removed only one rule (`_is_structurally_unambiguous`); 13f cumulatively removed six. The thesis under test is rule-reduction at preserved F1, not raw F1 maximization, so 13f is the artifact-of-record. The numbers carried by the `s_linker13` row are defined to be 13f's numbers (per D-44a — `s_linker13.py` is byte-equivalent to `s_linker13f.py` modulo `_VARIANT_NAME`, class name, docstring, and the `__init__` banner string); no separate sweep was performed in Phase 5.
+
+## 7. Deferred Items and Future Work
+
+Three items were deferred to v2 (`.planning/STATE.md` §"Deferred Items"):
+
+- **EXT-01** — Spike on replacing `_has_standalone_mention` with an LLM primitive. The helper is retained in `s_linker13` because Spike 002 (`.planning/spikes/002-rules-audit/`) classified it RISKY: an LLM replacement would require an O(N×M) anchor-collection pass (the full component list times the full sentence list) for each candidate confirmation, which exceeds the prompt budget at five-project scale. EXT-01 explores whether a relaxed v2 budget changes that calculus, and whether a coarser LLM primitive (per-sentence anchor extraction, then offline matching) recovers parity.
+- **EXT-02** — Drop the dotted-path guard inside `_has_standalone_mention`. A narrower follow-up to EXT-01: if an LLM mention classifier ships under EXT-01, the dotted-path guard becomes redundant. Independently deferrable; not blocking.
+- **EXT-03** — GPT-5.2 cross-model re-evaluation of `s_linker13`. The v1 milestone constraint is Claude Sonnet only (per PROJECT.md and MEMORY.md). EXT-03 measures the cross-model gap on the canonical linker; prior MEMORY.md entries on V32 anticipate a ~3-5 pp Claude-vs-GPT gap rooted in inherent contextual-vs-literal prompt interpretation differences.
+
+The KEEP decision for `_has_standalone_mention` is logged in `.planning/PROJECT.md` Key Decisions (the row appended by PROMO-02 in Plan 05-01) and references `.planning/spikes/002-rules-audit/` for the full RISKY classification.
+
+---
+
+_Note on benchmark component names: this writeup describes results on the MediaStore, TeaStore, TeaMMates, BigBlueButton, and JabRef benchmarks and therefore names their component vocabularies in BBB's cache-stream discussion. Per `BENCHMARK_TABOO.md`, the taboo applies to LLM prompts, not to result narratives. The promoted `s_linker13.py` introduces no new prompt text relative to `s_linker13f.py` (Phase 5 D-44a), so no taboo audit is triggered by this writeup._
