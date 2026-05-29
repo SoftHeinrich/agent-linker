@@ -75,6 +75,7 @@ CANONICAL_VARIANTS = [
     "s_linker13c",
     "s_linker13d",
     "s_linker13e",
+    "s_linker13f",
 ]
 
 VARIANT_SPECS = {
@@ -298,6 +299,12 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13e",
         class_name="SLinker13e",
         description="S-Linker13e: 13c - _is_strong_alias - _get_strong_alias_mappings (LLM emits alias scope per record)",
+    ),
+    "s_linker13f": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13f",
+        class_name="SLinker13f",
+        description="S-Linker13f: 13e - _has_strong_alias_mention (coref antecedent_via_alias in prompt schema)",
     ),
 }
 
