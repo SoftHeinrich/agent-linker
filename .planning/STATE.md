@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 closed empty (VAR-04 retired); Phase 4 ready to start
-last_updated: "2026-05-29T11:30:00Z"
-last_activity: 2026-05-29 -- Phase 3 closed empty per user direction; VAR-04 (LLM mention classifier) retired after 13d TM -19pp regression on dotted-path FPs
+stopped_at: Phase 4 complete (VAR-05 + VAR-06 satisfied); Phase 5 ready to start
+last_updated: "2026-05-29T22:00:00Z"
+last_activity: 2026-05-29 -- Phase 4 closed; 13f macro 0.9509 (best in chain, +0.0104 over 12c)
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
-  percent: 60
+  completed_phases: 4
+  total_plans: 10
+  completed_plans: 10
+  percent: 80
 ---
 
 # Project State
@@ -21,16 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Every rule removed from `s_linker12c` and replaced by an LLM primitive must hold macro F1 ≥ 93% (no dataset >2pp below 12c baseline) — or be rejected. Deliverable: defensible claim that traceability linking works without hand-crafted structural rules.
-**Current focus:** Phase 04 — alias-scope-and-coref-fold
+**Current focus:** Phase 05 — promote-and-ablation-artifact
 
 ## Current Position
 
-Phase: 04 (alias-scope-and-coref-fold) — ready to discuss
-Plan: Phases 1-3 closed (8 plans completed; Phase 3 closed empty per user 2026-05-29).
-Status: Executing — Phase 3 closed empty after VAR-04 empirically rejected
-Last activity: 2026-05-29 -- Phase 3 close (13d TM -19pp from dotted-path FPs; VAR-04 retired)
+Phase: 05 (promote-and-ablation-artifact) — ready to discuss
+Plan: Phases 1-4 closed (10 plans completed; Phase 3 empty).
+Status: Executing — Phase 4 closed 2026-05-29 with 13f as new best variant (macro 0.9509)
+Last activity: 2026-05-29 -- Phase 4 close (13e VAR-05; 13f VAR-06 — best in chain)
 
-Progress: [██████░░░░] 60% (3 of 5 phases complete)
+Progress: [████████░░] 80% (4 of 5 phases complete)
+
+### Phase 4 Closure Notes
+
+- 13e (Plan 04-01, VAR-05): dual hard-tier PASS (both runs within band), full-sweep macro 0.9380. Removes `_is_strong_alias` + `_get_strong_alias_mappings`; `scope: global|local` LLM field is more stable than the structural predicates.
+- 13f (Plan 04-02, VAR-06): hard-tier TM marginal (-0.016) but recovered in full sweep. Full-sweep macro **0.9509 — best in chain** (+0.0104 vs 12c). Folds `_has_strong_alias_mention` into coref prompt.
+- Phase 4 completes the six rule-removal chain modulo VAR-04 (retired in Phase 3).
+- The full 13-series chain: 12c → 13a (Spike 001 trailing-word, partial) → 13b (no `_is_structurally_unambiguous`) → 13c (no `_is_ambiguous_name_component`) → [13d retired] → 13e (alias scope field) → 13f (alias-coref fold). **Winner candidate: 13f.**
 
 ### Phase 3 Closure Note (empty)
 

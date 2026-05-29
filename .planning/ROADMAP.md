@@ -26,7 +26,7 @@ The following gates apply in Phases 2, 3, 4, and 5. They are not a separate phas
 - [x] **Phase 1: Baseline and Infrastructure** - Baseline capture, per-variant checkpoint namespacing, diskcache migration, and first rule removal (13a) — completed 2026-05-28 (macro F1 0.9364; user-loosened BBB tolerance)
 - [x] **Phase 2: Ambiguity Cleanup** - Remove structural unambiguity post-filter and its wrapper (13b + 13c) — completed 2026-05-29 (13b macro +0.0114; 13c macro 0.9314 under user-loosened BBB 6pp)
 - [~] **Phase 3: Mention Classifier Migration** - Replace 4-regex `_classify_mention` with LLM enum (13d) — CLOSED EMPTY 2026-05-29; VAR-04 retired after 13d TM regression (-19pp from dotted-path FPs); milestone-level finding
-- [ ] **Phase 4: Alias Scope and Coref Fold** - Retire `_is_strong_alias` via scope field; fold alias signal into coref (13e + 13f)
+- [x] **Phase 4: Alias Scope and Coref Fold** - Retire `_is_strong_alias` via scope field; fold alias signal into coref (13e + 13f) — completed 2026-05-29 (13e macro 0.9380; 13f macro 0.9509 — best in chain)
 - [ ] **Phase 5: Promote and Ablation Artifact** - Promote winning variant as s_linker13; generate ablation table and writeup
 
 ## Phase Details
