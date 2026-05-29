@@ -121,7 +121,19 @@ PASS. Inline prompt uses safe SE-textbook examples.
 
 - `results/phase_cache/s_linker13d/{teammates,bigbluebutton}/` exist. No leakage into other variant namespaces.
 
+## User Resolution (2026-05-29)
+
+User selected **path 3: drop VAR-04, close Phase 3 empty, move to Phase 4.**
+
+Conclusion logged as a milestone finding: `_classify_mention` is load-bearing structural code that does not survive LLM substitution on dotted-path Java-package conventions. This is empirical evidence for the writeup — supports the "defensible no-hand-crafted-rules" thesis with the caveat that classification of language-construct references (package paths, dotted identifiers) remains regex territory.
+
+**Phase 3 outcome:**
+- VAR-04: **RETIRED** (empirically rejected). Recorded as a milestone-level deferred item.
+- `s_linker13d.py` and `LLM_CLASSIFY_MENTION_PROMPT` left in place as the rejection artifact (do not delete — the file documents what was tried and why it failed).
+- Phase 3 closes with **zero requirements satisfied** but a meaningful negative result captured in this SUMMARY.
+- Promotion phase (Phase 5) will note this in the ablation table as "13d — TM regression, retired."
+
 ---
 *Phase: 03-mention-classifier-migration*
 *Plan: 01*
-*Completed: 2026-05-29 (with GATE-05 HARD REJECT — VAR-04 unmet)*
+*Completed: 2026-05-29 (closed empty — VAR-04 retired after empirical GATE-05 reject)*

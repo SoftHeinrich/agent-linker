@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 complete; Phase 3 ready to start
-last_updated: "2026-05-29T00:00:00Z"
-last_activity: 2026-05-29 -- Phase 2 closed under user-loosened BBB 6pp gate (13b macro +0.0114; 13c macro 0.9314)
+stopped_at: Phase 3 closed empty (VAR-04 retired); Phase 4 ready to start
+last_updated: "2026-05-29T11:30:00Z"
+last_activity: 2026-05-29 -- Phase 3 closed empty per user direction; VAR-04 (LLM mention classifier) retired after 13d TM -19pp regression on dotted-path FPs
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 40
+  completed_phases: 3
+  total_plans: 8
+  completed_plans: 8
+  percent: 60
 ---
 
 # Project State
@@ -21,16 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Every rule removed from `s_linker12c` and replaced by an LLM primitive must hold macro F1 ≥ 93% (no dataset >2pp below 12c baseline) — or be rejected. Deliverable: defensible claim that traceability linking works without hand-crafted structural rules.
-**Current focus:** Phase 03 — mention-classifier-migration
+**Current focus:** Phase 04 — alias-scope-and-coref-fold
 
 ## Current Position
 
-Phase: 03 (mention-classifier-migration) — ready to discuss
-Plan: Phases 1+2 complete (7/7 plans). Phase 3 not yet started.
-Status: Executing — Phase 2 closed 2026-05-29 under user-loosened BBB 6pp gate
-Last activity: 2026-05-29 -- Phase 2 close (13b macro +0.0114; 13c macro 0.9314 under 6pp BBB)
+Phase: 04 (alias-scope-and-coref-fold) — ready to discuss
+Plan: Phases 1-3 closed (8 plans completed; Phase 3 closed empty per user 2026-05-29).
+Status: Executing — Phase 3 closed empty after VAR-04 empirically rejected
+Last activity: 2026-05-29 -- Phase 3 close (13d TM -19pp from dotted-path FPs; VAR-04 retired)
 
-Progress: [████░░░░░░] 40% (2 of 5 phases complete)
+Progress: [██████░░░░] 60% (3 of 5 phases complete)
+
+### Phase 3 Closure Note (empty)
+
+- 13d (Plan 03-01): hard-rejected at GATE-05. TM F1=0.750 (-0.188 vs 12c) due to 33 entity-source FPs on dotted-path package references (`ui.website`, `logic.api`, `storage.entity`). LLM enum classifier cannot reproduce the project-specific Java-package convention encoded in 12c's regex `_classify_mention`.
+- VAR-04 retired per user direction. `s_linker13d.py` left in tree as the rejection artifact.
+- Milestone finding for the writeup: classification of language-construct references is regex territory; the no-hand-crafted-rules thesis holds with this caveat.
 
 ### Standing Policy (Phases 3+)
 
