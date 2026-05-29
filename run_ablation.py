@@ -74,6 +74,7 @@ CANONICAL_VARIANTS = [
     "s_linker13b",
     "s_linker13c",
     "s_linker13d",
+    "s_linker13e",
 ]
 
 VARIANT_SPECS = {
@@ -291,6 +292,12 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13d",
         class_name="SLinker13d",
         description="S-Linker13d: 13b + Spike 003 LLM mention-type enum (no new LLM call)",
+    ),
+    "s_linker13e": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13e",
+        class_name="SLinker13e",
+        description="S-Linker13e: 13c - _is_strong_alias - _get_strong_alias_mappings (LLM emits alias scope per record)",
     ),
 }
 
