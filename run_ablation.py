@@ -76,6 +76,7 @@ CANONICAL_VARIANTS = [
     "s_linker13d",
     "s_linker13e",
     "s_linker13f",
+    "s_linker13",   # canonical promotion of 13f (Phase 5)
 ]
 
 VARIANT_SPECS = {
@@ -305,6 +306,13 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13f",
         class_name="SLinker13f",
         description="S-Linker13f: 13e - _has_strong_alias_mention (coref antecedent_via_alias in prompt schema)",
+    ),
+    "s_linker13": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13",
+        class_name="SLinker13",
+        description="S-Linker13: canonical promotion of s_linker13f (Phase 5) — 6 rules removed cumulatively from 12c",
+        canonical=True,
     ),
 }
 
