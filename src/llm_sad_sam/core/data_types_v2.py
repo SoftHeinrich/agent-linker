@@ -27,6 +27,11 @@ class CandidateLink:
     component_id: str
     matched_text: str
     source: str = ""
+    # Added by S-Linker13d (VAR-04, Spike 003): LLM-emitted mention-type enum
+    # and the alias used when mention_type == "via_alias". Defaults keep
+    # pre-13d linkers byte-identical - only s_linker13d writes non-defaults.
+    mention_type: str = "indirect"
+    alias_used: str | None = None
 
 
 @dataclass
