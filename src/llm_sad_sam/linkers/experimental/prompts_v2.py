@@ -256,6 +256,116 @@ JSON only:"""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Tier 1 — Standalone-Mention Detection (EXT-01) — Alias-Aware (Plan 06-05)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# These four constants extend the Plan 06-01 STANDALONE_MENTION_RULES_PRE_FILTERED
+# and STANDALONE_MENTION_RULES_LLM_ONLY constants with knowledge blocks injected
+# at call time by the linker (Plan 06-06). The blocks are substituted via
+# `prompt.replace("{KNOWN_ALIASES_BLOCK}", ...)` — NOT `.format(...)` — because
+# the JSON template at the end uses literal braces. Knowledge is whatever the
+# upstream doc_knowledge / seed stages discovered: possibly EMPTY on projects
+# without aliases or with no prior links yet, per D-11 (CONTEXT.md).
+
+
+STANDALONE_MENTION_RULES_PRE_FILTERED_ALIAS_AWARE = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence contains a standalone reference to the named component (the name appears as a subject, object, or named participant — not only as an ordinary English word).
+
+You also have a list of KNOWN ALIASES discovered earlier in this document. An alias surface form referring to the named component counts as a standalone mention of that component.
+
+KNOWN ALIASES (term -> Component):
+{KNOWN_ALIASES_BLOCK}
+
+RULES:
+1. YES when the component name appears as a standalone token — as the subject of an architectural action, in a list of components, or named as a participant.
+2. YES when a KNOWN ALIAS for the component appears as a standalone token in the sentence (e.g., the abbreviation, alternate form, or short name listed above).
+3. NO when the name is used only as an ordinary English word with its dictionary meaning, with no architectural intent.
+4. YES when the name (or one of its aliases) is configured, queried, or named as the target of an interaction (e.g., "data is stored in X", "via X", "through X").
+5. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+STANDALONE_MENTION_RULES_LLM_ONLY_ALIAS_AWARE = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence makes a standalone reference to the named component; NO if the name appears only as part of a longer code identifier or as an ordinary English word.
+
+You also have a list of KNOWN ALIASES discovered earlier in this document. An alias surface form referring to the named component counts as a standalone mention of that component.
+
+KNOWN ALIASES (term -> Component):
+{KNOWN_ALIASES_BLOCK}
+
+RULES:
+1. YES when the component name appears as a standalone token, including as a subject, object, or in a list of components.
+   Example: "The Parser consumes tokens emitted by the lexer." -> YES for Parser.
+2. YES when a KNOWN ALIAS for the component appears as a standalone token.
+   Example: alias list contains `SymTbl -> SymbolTable`; sentence "SymTbl is consulted before scope resolution." -> YES for SymbolTable.
+3. NO when the name appears only inside a qualified or dotted identifier.
+   Example: "The class compiler.parser.ASTBuilder extends the base class." -> NO for Parser; Parser is a path segment, not a standalone reference.
+4. NO when the name participates only in a hyphenated compound that denotes a different entity.
+   Example: "Parser-style grammar" -> NO for Parser.
+5. YES when the name (or an alias) is the subject of an architectural action — performs work, provides a service, is configured, receives input.
+   Example: "Disk I/O is handled by the FileSystem." -> YES for FileSystem.
+6. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+STANDALONE_MENTION_RULES_PRE_FILTERED_FULL_KNOWLEDGE = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence contains a standalone reference to the named component (the name appears as a subject, object, or named participant — not only as an ordinary English word).
+
+You have access to two pieces of context discovered earlier in this document:
+1. KNOWN ALIASES — alternative surface forms for the named component.
+2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion (using a pronoun like "it" / "the component" / "the service") counts as a standalone reference to that component.
+
+KNOWN ALIASES (term -> Component):
+{KNOWN_ALIASES_BLOCK}
+
+RUNNING LINK MAP (already-attributed pairs):
+{RUNNING_LINK_MAP_BLOCK}
+
+RULES:
+1. YES when the component name appears as a standalone token — as the subject of an architectural action, in a list of components, or named as a participant.
+2. YES when a KNOWN ALIAS for the component appears as a standalone token.
+3. YES when the sentence uses a pronoun or definite reference ("it", "the component", "the service") AND the RUNNING LINK MAP shows the named component was just attributed to an adjacent earlier sentence (within +-3 sentences).
+4. NO when the name is used only as an ordinary English word with its dictionary meaning, with no architectural intent.
+5. YES when the name (or an alias) is configured, queried, or named as the target of an interaction (e.g., "data is stored in X", "via X", "through X").
+6. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+STANDALONE_MENTION_RULES_LLM_ONLY_FULL_KNOWLEDGE = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence makes a standalone reference to the named component; NO if the name appears only as part of a longer code identifier or as an ordinary English word.
+
+You have access to two pieces of context discovered earlier in this document:
+1. KNOWN ALIASES — alternative surface forms for the named component.
+2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion (using a pronoun like "it" / "the component" / "the service") counts as a standalone reference to that component.
+
+KNOWN ALIASES (term -> Component):
+{KNOWN_ALIASES_BLOCK}
+
+RUNNING LINK MAP (already-attributed pairs):
+{RUNNING_LINK_MAP_BLOCK}
+
+RULES:
+1. YES when the component name appears as a standalone token, including as a subject, object, or in a list of components.
+   Example: "The Parser consumes tokens emitted by the lexer." -> YES for Parser.
+2. YES when a KNOWN ALIAS for the component appears as a standalone token.
+   Example: alias list contains `SymTbl -> SymbolTable`; sentence "SymTbl is consulted before scope resolution." -> YES for SymbolTable.
+3. YES when the sentence uses a pronoun or definite reference ("it", "the component", "the service") AND the RUNNING LINK MAP shows the named component was attributed to an adjacent earlier sentence (within +-3 sentences).
+   Example: linkmap shows `S12: Scheduler`; sentence "S13: It then assigns the task to an idle worker." -> YES for Scheduler.
+4. NO when the name appears only inside a qualified or dotted identifier.
+   Example: "The class compiler.parser.ASTBuilder extends the base class." -> NO for Parser; Parser is a path segment.
+5. NO when the name participates only in a hyphenated compound that denotes a different entity.
+   Example: "Parser-style grammar" -> NO for Parser.
+6. YES when the name (or an alias) is the subject of an architectural action — performs work, provides a service, is configured, receives input.
+   Example: "Disk I/O is handled by the FileSystem." -> YES for FileSystem.
+7. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Tier 2 — Seed Reference Disambiguation
 # ═══════════════════════════════════════════════════════════════════════════════
 
