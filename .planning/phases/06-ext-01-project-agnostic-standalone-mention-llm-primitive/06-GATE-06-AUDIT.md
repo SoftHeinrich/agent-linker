@@ -38,6 +38,20 @@ NO HITS
 
 Expected match count in the two NEW constants: 0. Recorded match count: 0. **PASS.**
 
+### Substring-match artefact (documented for Plan 04)
+
+The PLAN's `<verification>` block uses a non-word-bounded regex, which produces one false-positive substring match: `ui` matches inside `ASTBuilder` (`AST**Bui**lder`). This is NOT a benchmark term — `ASTBuilder` is on BENCHMARK_TABOO.md's confirmed-safe whitelist (line 62, Compiler design). The semantically correct check uses word boundaries:
+
+    awk '/STANDALONE_MENTION_RULES_PRE_FILTERED|STANDALONE_MENTION_RULES_LLM_ONLY/,/^"""$/' src/llm_sad_sam/linkers/experimental/prompts_v2.py | grep -iwE "(logic|UI|client|storage|common|cache|registry|persistence|facade|recording|cascade|conversion|dedicated|adapter|processor|kurento|freeswitch|redis|bbb|html5|preferences|globals|watermark|reencoding|recommender|datastore)"
+
+Stdout:
+
+```
+NO HITS (word-bounded)
+```
+
+Plan 04 should use `-iwE` (word-bounded) when re-running the canonical sweep to avoid false positives from substring overlaps.
+
 ### Words used in the new prompts (whitelist)
 
 Cross-check against BENCHMARK_TABOO.md §"Safe SE Textbook Examples" (lines 60-68):
