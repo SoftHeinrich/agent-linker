@@ -53,14 +53,14 @@ Deferred to v2.1+ or later milestones:
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| EXT-01 | TBD | pending |
-| EXT-02 | TBD | pending |
-| COMBINE-01 | TBD | pending |
-| COMBINE-02 | TBD | pending |
-| COMBINE-03 | TBD | pending |
-| CROSS-01 | TBD | pending |
-| CROSS-02 | TBD | pending |
-| CROSS-03 | TBD | pending |
+| EXT-01 | Phase 6 | pending |
+| EXT-02 | Phase 7 | pending |
+| COMBINE-01 | Phase 8 | pending |
+| COMBINE-02 | Phase 8 | pending |
+| COMBINE-03 | Phase 8 | pending |
+| CROSS-01 | Phase 9 | pending |
+| CROSS-02 | Phase 9 | pending |
+| CROSS-03 | Phase 9 | pending |
 | GATE-01 | all | standing |
 | GATE-05 | all | standing |
 | GATE-06 | all | standing (NEW) |
