@@ -88,3 +88,58 @@ PASS for Plan 01 scope. The two prompts encode no project structure and use only
 - Re-run the taboo scan after Plan 02 introduces `_in_dotted_or_hyphen_context_only` (helper code, not prompt — but GATE-06 also covers helpers).
 - Append the canonical sweep's macro F1 and per-dataset F1 into a final "Generality vs Performance" section.
 - TBD — written by Plan 04: final canonical audit (post-sweep).
+
+---
+
+## Plan 06-05 — Alias-aware prompt pre-clearance
+
+**Status:** PRE-CLEARANCE (Plan 06-05 prompts — alias-aware quartet)
+**Date:** 2026-05-30
+
+### Scope
+
+Four NEW prompt constants newly added to `src/llm_sad_sam/linkers/experimental/prompts_v2.py`:
+- `STANDALONE_MENTION_RULES_PRE_FILTERED_ALIAS_AWARE` — sub-variant `pre_alias`: regex pre-filter + LLM judge with KNOWN ALIASES block injected.
+- `STANDALONE_MENTION_RULES_LLM_ONLY_ALIAS_AWARE` — sub-variant `sem_alias`: LLM-only + KNOWN ALIASES block injected.
+- `STANDALONE_MENTION_RULES_PRE_FILTERED_FULL_KNOWLEDGE` — sub-variant `pre_full`: regex pre-filter + LLM judge with KNOWN ALIASES + RUNNING LINK MAP blocks injected.
+- `STANDALONE_MENTION_RULES_LLM_ONLY_FULL_KNOWLEDGE` — sub-variant `sem_full`: LLM-only + KNOWN ALIASES + RUNNING LINK MAP blocks injected.
+
+All four live under the new section header `# Tier 1 — Standalone-Mention Detection (EXT-01) — Alias-Aware (Plan 06-05)`, appended AFTER the Plan 06-01 section and BEFORE `# Tier 2 — Seed Reference Disambiguation`.
+
+### (a) BENCHMARK_TABOO.md mechanical scan (word-bounded, operative check)
+
+Command:
+
+    awk '/STANDALONE_MENTION_RULES_PRE_FILTERED_ALIAS_AWARE|STANDALONE_MENTION_RULES_LLM_ONLY_ALIAS_AWARE|STANDALONE_MENTION_RULES_PRE_FILTERED_FULL_KNOWLEDGE|STANDALONE_MENTION_RULES_LLM_ONLY_FULL_KNOWLEDGE/,/^"""$/' src/llm_sad_sam/linkers/experimental/prompts_v2.py | grep -iwE "(UserDBAdapter|AudioWatermarking|Reencoding|MediaManagement|Facade|MediaAccess|Packaging|FileStorage|TagWatermarking|UserManagement|DownloadLoadBalancer|ParallelWatermarking|WebUI|Registry|Persistence|Recommender|SlopeOneRecommender|OrderBasedRecommender|DummyRecommender|PopularityBasedRecommender|ImageProvider|PreprocessedSlopeOneRecommender|Logic|Storage|Common|Test Driver|GAE Datastore|Recording Service|kurento|WebRTC-SFU|HTML5 Server|HTML5 Client|Presentation Conversion|BBB web|Redis PubSub|FSESL|Redis DB|FreeSWITCH|globals|bibdatabase|bibentry|watermark|reencoding|datastore|recording|pubsub|html5|preferences|cascade|conversion|dedicated|adapter|processor|cache|registry|persistence|facade|server|database|recommender|event|socket|layer|UI|client|storage|common)" || echo "NO HITS"
+
+Recorded stdout:
+
+    NO HITS
+
+**PASS.** Zero benchmark surface forms appear under word-bounded grep across the four new constants.
+
+### (b) Reviewer-defensibility check
+
+| Example sentence | Project-agnostic? | Why |
+|---|---|---|
+| "The Parser consumes tokens emitted by the lexer." (rule 1, YES) | Yes | Compiler-design textbook (Dragon Book); no overlap with any benchmark term. |
+| alias-aware example: `SymTbl -> SymbolTable`, "SymTbl is consulted before scope resolution." (rule 2, YES) | Yes | Compiler design (SymbolTable); abbreviation `SymTbl` is generic and does not match any benchmark abbreviation (no overlap with `bbb-html5`, `FSESL`, `WebRTC-SFU`, etc.). |
+| "The class compiler.parser.ASTBuilder extends the base class." (NO case for dotted identifier) | Yes | Qualified-identifier pattern universal in OO languages; ASTBuilder is on the BENCHMARK_TABOO safe whitelist (line 62). |
+| "Parser-style grammar" (NO case for hyphenated compound) | Yes | Hyphenated-modifier pattern is generic English. |
+| "Disk I/O is handled by the FileSystem." (YES, subject of architectural action) | Yes | OS-textbook example. |
+| `S12: Scheduler` + "S13: It then assigns the task to an idle worker." (pronoun resolution in `*_FULL_KNOWLEDGE`) | Yes | Operating-systems textbook (Scheduler); generic English pronoun "It"; +-3 sentence locality window is a language-universal heuristic, not a project-specific value. |
+
+For the two `*_FULL_KNOWLEDGE` constants: the additional RUNNING LINK MAP block uses only Scheduler (OS) as an example component name. The pronoun list ("it", "the component", "the service") is generic English.
+
+### (c) Integration-shape generality (D-11)
+
+The four prompts use TWO literal placeholder tokens (`{KNOWN_ALIASES_BLOCK}` and `{RUNNING_LINK_MAP_BLOCK}`) that the linker code in Plan 06-06 substitutes at call time with whatever upstream stages discovered. On a project with zero discovered aliases the alias block becomes the literal line `(none discovered)`; on a project with zero prior links the linkmap block becomes `(none yet)`. No project-specific term or pattern is baked into the prompt text — the prompts are project-agnostic data sinks for project-agnostic upstream outputs.
+
+### Decision
+
+PASS for Plan 06-05 scope. The four new alias-aware prompts encode no project structure and use only confirmed-safe example domains. Plan 06-06 will pre-clear the linker bodies (helper code) and Plan 06-08 records the final post-sweep canonical audit.
+
+### Open items handed to Plan 06-06
+
+- Re-run the mechanical scan on the four new `s_linker13g_{pre,sem}_{alias,full}.py` linker bodies after they are introduced (helper code is in GATE-06 scope).
+- Verify no benchmark surface forms enter via the alias/linkmap injection helpers (the substitution code must echo upstream-discovered terms verbatim — it must not normalize, rewrite, or inject any hand-coded values).
