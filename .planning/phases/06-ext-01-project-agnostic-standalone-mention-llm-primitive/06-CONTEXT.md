@@ -61,6 +61,31 @@ Areas not discussed — Claude (researcher + planner) decides:
   - Notes on whether the call topology is naturally stackable with other LLM primitives or whether it suggests unifying into a single prompt
   - Tagged section header (e.g. `## EXT-01 cost/quality signal (Phase 8 input)`) so Phase 8 can grep for it deterministically
 
+### Design Pivot — Alias-Aware Variants (added 2026-05-30 after GATE-05 negative result)
+
+The pure-LLM pair (`s_linker13g_pre`, `s_linker13g_sem`) **failed GATE-05** on BBB by -8.8pp (TM also failed for sem by -2.6pp). 17 identical FNs across both independent variants concentrate on HTML5 Client / HTML5 Server abbreviation references — pure-LLM cannot recognize "the client" or "HTML5 Client" as a standalone mention of the BBB `HTML5 Client` component when the mapping lives in the alias/coref tier. Full evidence in `06-04-SUMMARY.md`.
+
+User direction: "design more variants, maybe pure llm not work, but llm + some already gathered knowledge/ data like alias, links, corefs"
+
+- **D-07 — Knowledge sources fed to the standalone-mention LLM call:** *All* of the following, computed by upstream Tier-1 stages:
+  - **Alias map** from `doc_knowledge` phase (e.g. `bbb-html5 → HTML5 Server`) — required to bridge abbreviation-to-component references.
+  - **Coref antecedents** from the coref tier — so `it / the component / the service` references inherit the verdict of their resolved antecedent.
+  - **Running link map** — already-discovered `(component, sentence)` link candidates from prior passes, so the judge knows what's already attributed.
+  - **Spike-003 piggyback channel** — fold the standalone-mention field into `_extract_entities_enriched` where it already sees aliases (zero-net-LLM-cost integration point).
+
+- **D-08 — Variant matrix:** Build **4 new sub-variants** = {pre, sem} × {alias-only context, full-knowledge context (alias + coref + linkmap)}.
+  - `s_linker13g_pre_alias` — regex pre-filter + LLM judge with alias context only
+  - `s_linker13g_sem_alias` — LLM-only + alias context only
+  - `s_linker13g_pre_full` — regex pre-filter + LLM judge with alias + coref + linkmap context
+  - `s_linker13g_sem_full` — LLM-only + alias + coref + linkmap context
+  - Plus Spike-003 piggyback variant if a single-call shape is cheaper to test (planner judgment).
+
+- **D-09 — Empirical floor:** The pure-LLM pair becomes the rejected-baseline floor for the ablation table. New variants MUST clear GATE-05 on BBB (≥ 0.8890) where pure-LLM failed. Pure-LLM numbers (`pre`: BBB 0.8108; `sem`: TM 0.9217, BBB 0.8108) recorded as the rejected-baseline row.
+
+- **D-10 — Phase 6 replan posture:** Plans 06-01 / 06-02 / 06-03 artifacts retained as input data. Plan 06-04 closed partial (Task 1 only, GATE-05 fail recorded). New plans 06-05+ authored to execute D-07/08/09. D-01..D-06 decision structure **carries over** (3-semantic-scope × 2-dotted-path matrix, offline anchor-diff, winner by macro F1, byte-copy promotion, tagged Phase-8 signal) — the only change is the knowledge-input axis (D-07) and the variant count (D-08).
+
+- **D-11 — Generality guardrail:** D-07 knowledge sources are project-agnostic data structures *computed by general code*, NOT hardcoded benchmark terms. The alias map is whatever `doc_knowledge` discovered (could be empty on a project without aliases); coref antecedents are whatever the coref tier resolved. The new variants MUST pass GATE-06 — feeding LLM-discovered project data into an LLM judge is not benchmark leakage, but the planner must explicitly audit that no benchmark-specific surface forms are baked into the integration shape.
+
 </decisions>
 
 <canonical_refs>
