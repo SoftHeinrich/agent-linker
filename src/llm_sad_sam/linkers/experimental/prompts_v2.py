@@ -223,6 +223,39 @@ Like in technical writing: "The Scheduler assigns tasks to threads. It uses a pr
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Tier 1 — Standalone-Mention Detection (EXT-01)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+STANDALONE_MENTION_RULES_PRE_FILTERED = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence contains a standalone reference to the named component (the name appears as a subject, object, or named participant — not only as an ordinary English word).
+
+RULES:
+1. YES when the component name appears as a standalone token — as the subject of an architectural action, in a list of components, or named as a participant.
+2. NO when the name is used only as an ordinary English word with its dictionary meaning, with no architectural intent.
+3. YES when the name is configured, queried, or named as the target of an interaction (e.g., "data is stored in X", "via X", "through X").
+4. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+STANDALONE_MENTION_RULES_LLM_ONLY = """STANDALONE-MENTION DETECTION — for each sentence, answer YES if the sentence makes a standalone reference to the named component; NO if the name appears only as part of a longer code identifier or as an ordinary English word.
+
+RULES:
+1. YES when the component name appears as a standalone token, including as a subject, object, or in a list of components.
+   Example: "The Parser consumes tokens emitted by the lexer." -> YES for Parser.
+2. NO when the name appears only inside a qualified or dotted identifier.
+   Example: "The class compiler.parser.ASTBuilder extends the base class." -> NO for Parser; Parser is a path segment, not a standalone reference.
+3. NO when the name participates only in a hyphenated compound that denotes a different entity.
+   Example: "Parser-style grammar" -> NO for Parser.
+4. YES when the name is the subject of an architectural action — performs work, provides a service, is configured, receives input.
+   Example: "Disk I/O is handled by the FileSystem." -> YES for FileSystem.
+5. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
+
+Return JSON: {"results": [{"component": "Name", "sentence": N_INTEGER, "standalone": true}]}
+JSON only:"""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Tier 2 — Seed Reference Disambiguation
 # ═══════════════════════════════════════════════════════════════════════════════
 
