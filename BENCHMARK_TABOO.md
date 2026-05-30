@@ -66,3 +66,36 @@ Use these domains for prompt examples:
 - Version control: Repository, CommitLog, BranchManager, MergeResolver
 - Game engine: RenderEngine, PhysicsSimulator, InputHandler, SceneGraph
 - Middleware: Broker, Wrapper, Connector (ambiguous examples)
+
+## Tailored Code Anti-Patterns (NEVER do this)
+
+Tailoring code paths to benchmark-specific casing, naming, or surface forms is the same
+class of leakage as putting benchmark terms in prompts. Two illustrative anti-patterns
+surfaced during EXT-01 — both are banned.
+
+### Anti-pattern: Case-mismatch regex baselines
+Building `re.compile(r"\b{name}\b", flags=0)` from a component string that happens to be
+lowercase in one project (`kurento`) but appears Capitalized in its documentation
+(`Kurento`) silently encodes a project-specific casing convention. The regex returns ∅
+for the documented form. Any downstream "is `X` mentioned standalone?" check inherits the
+blind spot.
+
+- Symptom: per-(component, dataset) anchor-set is empty for a component that *is*
+  mentioned in the docs, producing Jaccard = 0 artefacts in diff stages.
+- Fix path: **do not** patch the regex with per-component `flags=re.IGNORECASE` or
+  per-component casing tables — that bakes the benchmark casing convention into code.
+  Replace the structural check with a project-agnostic LLM primitive (EXT-01 pattern)
+  that handles casing variation as a natural-language detail, not a regex flag.
+- Detection: any per-component regex pattern, per-component flag override, or
+  per-component synonym map. Audit by grepping for `re.IGNORECASE` near component
+  iteration and for hard-coded casing variants.
+
+### Anti-pattern: Tailoring diff/comparison rules to specific (component, dataset) cells
+Adjusting a Jaccard or symmetric-difference threshold to "rescue" one failing cell
+(e.g., relaxing `min_jaccard_per_comp` only when the offending component is `kurento`)
+shifts the leak from prompt to threshold logic. Same class of leakage, different layer.
+
+- Fix path: if a rule fires on what is provably a baseline blind spot (not a real
+  divergence in the variant under test), drop the baseline-as-ground-truth assumption
+  for that cell and document the inspection. Do not retune the rule per benchmark term.
+
