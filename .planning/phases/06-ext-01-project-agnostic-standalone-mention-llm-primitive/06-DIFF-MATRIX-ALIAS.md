@@ -251,20 +251,18 @@ Mechanical drop verdicts computed via `apply_drop_rule` against the **regex** ba
 
 **Substantive finding (MS / JAB):** Near-identical anchors. Low-mention-density datasets where the regex baseline and all LLM variants converge — these will be the "easy passes" in Plan 06-08.
 
-## Proposed finalist set for Plan 06-08
+## Final finalist set for Plan 06-08
 
-Based on the regex-baseline drop verdicts (mechanical, none drop) AND the D-09 vs-pure-LLM evidence (`*_full` shows more alias-recovery on TM; BBB is identical across all 4):
-
-**Default proposal: all 4 new variants enter Plan 06-08's GATE-05 dev loop.**
+Per the user adjudication recorded below, **all 4 new variants enter Plan 06-08's GATE-05 dev loop and full sweep**:
 
 - `s_linker13g_pre_alias` — alias-only context + regex pre-filter
 - `s_linker13g_sem_alias` — alias-only context + LLM-only
 - `s_linker13g_pre_full` — alias + linkmap context + regex pre-filter
 - `s_linker13g_sem_full` — alias + linkmap context + LLM-only
 
-Rationale: all four mechanically pass; the diff stage cannot empirically rank them on F1 alone (that is Plan 06-08's job). The dotted-path axis (`pre` vs `sem`) and the knowledge-richness axis (`alias` vs `full`) are both still open per CONTEXT.md D-04 / D-08.
+Rationale: all four mechanically pass the regex-baseline drop rule (Plan 06-03 protocol). The diff stage cannot empirically rank them on F1 alone — that is Plan 06-08's job. Both the dotted-path axis (`pre` vs `sem`) and the knowledge-richness axis (`alias` vs `full`) remain open per CONTEXT.md D-04 / D-08; Plan 06-08 resolves both axes in one sweep. The D-09 BBB-identity finding (alias context does not change the Tier-1b standalone-map output on BBB) is a hypothesis to be tested downstream in the full pipeline, not grounds to drop `*_full` at the diff-stage gate.
 
-**Alternative narrower proposal (lower LLM cost):** drop the two `*_full` variants — they show no BBB divergence from pure-LLM (per D-09) and they have the most TM divergence (suggesting they may also produce the most FPs in the full pipeline). Retain only `*_alias` for Plan 06-08. This halves Plan 06-08's full-sweep cost.
+**(Historical narrower proposal — REJECTED by user adjudication):** drop the two `*_full` variants for lower LLM cost. This was considered but rejected on the grounds that the D-09 BBB-identity finding is a downstream hypothesis, not a diff-stage drop signal.
 
 ## Pitfall 5 escalation handling
 
@@ -288,6 +286,17 @@ Total ~687 pairs (vs Plan 06-03's 333 — ~2x as expected for 4 variants vs 2). 
 
 ## User adjudication
 
-<!-- Task 3 will append a `## User adjudication` section here recording the option selected, UTC timestamp, and the user's verdict (verbatim). The "Proposed finalist set for Plan 06-08" section above will be renamed/extended into a "Final finalist set for Plan 06-08" section. -->
+**Timestamp (UTC):** 2026-05-30T16:56:44Z
+**Option selected:** `proceed-all-4`
+**Finalist set (4 variants):**
 
-*Pending Task 3 — `checkpoint:decision` paused for user.*
+- `s_linker13g_pre_alias`
+- `s_linker13g_sem_alias`
+- `s_linker13g_pre_full`
+- `s_linker13g_sem_full`
+
+**User reasoning (verbatim):**
+
+> Maximum empirical signal. Plan 06-08 resolves both axes (alias-only vs full-knowledge AND pre vs sem) in one sweep. The D-09 BBB-identity finding (alias context doesn't change Tier-1b standalone-map output on BBB) is a hypothesis to be tested downstream in the full pipeline, not grounds to drop *_full at the diff-stage gate.
+
+**Downstream consequence:** Plan 06-08 GATE-05 dev loop + full sweep operate on all 4 alias-aware variants. Cached pickles under `results/phase_cache/s_linker13g_{pre_alias,sem_alias,pre_full,sem_full}/<ds>/standalone_map.pkl` (populated by Plan 06-07 Task 2) are available for zero-recompute reuse on the hard-tier GATE-05 leg.
