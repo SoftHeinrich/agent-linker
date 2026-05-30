@@ -77,6 +77,8 @@ CANONICAL_VARIANTS = [
     "s_linker13e",
     "s_linker13f",
     "s_linker13",   # canonical promotion of 13f (Phase 5)
+    "s_linker13g_pre",   # EXT-01 sub-variant (a): regex pre-filter + LLM judge
+    "s_linker13g_sem",   # EXT-01 sub-variant (b): LLM-only, dotted-path encoded in prompt
 ]
 
 VARIANT_SPECS = {
@@ -313,6 +315,18 @@ VARIANT_SPECS = {
         class_name="SLinker13",
         description="S-Linker13: canonical promotion of s_linker13f (Phase 5) — 6 rules removed cumulatively from 12c",
         canonical=True,
+    ),
+    "s_linker13g_pre": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_pre",
+        class_name="SLinker13gPre",
+        description="S-Linker13g-pre: 13 - _has_standalone_mention via LLM with regex pre-filter for dotted-path (EXT-01 sub-variant a)",
+    ),
+    "s_linker13g_sem": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_sem",
+        class_name="SLinker13gSem",
+        description="S-Linker13g-sem: 13 - _has_standalone_mention via LLM-only (dotted-path encoded in prompt) (EXT-01 sub-variant b)",
     ),
 }
 
