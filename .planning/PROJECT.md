@@ -25,7 +25,25 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 
 ### Active
 
-(None — v2.0 scope to be defined via `/gsd-new-milestone`. Candidate items: EXT-01 LLM replacement of `_has_standalone_mention`, EXT-02 dotted-path guard drop, EXT-03 GPT-5.2 cross-model re-evaluation, EXT-04 emit-biased boundary prompting for alias-discovery.)
+v2.0 scope (Complete Rule Removal + Cross-Model — Generality First):
+- [ ] **EXT-01** — Replace `_has_standalone_mention` with a project-agnostic LLM primitive (relaxed cost budget; no encoded project structure)
+- [ ] **EXT-02** — Drop dotted-path guard in `_has_standalone_mention` (gated on EXT-01 passing GATE-01 + GATE-06)
+- [ ] **LLM-COMBINE** — Stack all retired-rule LLM primitives into `s_linker14` (or unified-prompt variant) — stack-vs-unify decision driven by EXT-01 cost/quality signal
+- [ ] **EXT-03** — GPT-5.2 cross-model re-evaluation of `s_linker13` and new `s_linker14` (generality across model providers)
+
+(Deferred to later milestone: EXT-04 emit-biased boundary prompting — variance work, not rule removal.)
+
+## Current Milestone: v2.0 Complete Rule Removal + Cross-Model
+
+**Goal:** Finish the no-hand-crafted-rules thesis by replacing the last structural rule with a project-agnostic LLM primitive, validate the combined result on GPT-5.2, and explore stacking/unifying LLM primitives into `s_linker14` — all under a hard generality constraint.
+
+**Target features:**
+- Project-agnostic LLM replacement of `_has_standalone_mention` (EXT-01)
+- Dotted-path guard removal (EXT-02, gated)
+- Combined-primitive linker `s_linker14` (stack or unified prompt — decided by EXT-01 signal)
+- Cross-model validation on GPT-5.2 (EXT-03)
+
+**Hard generality constraint (GATE-06):** Zero hardcoded benchmark-derived values or project-tailored rules in either prompts OR code logic. Only stopword-level English wordlists and language-universal patterns (CamelCase) permitted. Every prompt example from safe SE/textbook domains. Approach must read as sound, clean, general to any project a reviewer might apply it to.
 
 ### Out of Scope
 
@@ -67,6 +85,8 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 | Dataset schedule = hard-tier-first, then all 5 | Teammates/BBB are most rule-sensitive; cheap signal before full sweep | ⚠ Revisit — VAR-06 (13f) was hard-tier marginal but full-sweep best-in-chain; standing policy retained "full sweep is decisive" |
 | Keep `_has_standalone_mention` tentatively | Spike 002 classified it RISKY (O(N·M) anchor collection); decide after other removals land | ✓ Good — formalized as KEEP in Phase 5; EXT-01 spike deferred to v2 |
 | KEEP `_has_standalone_mention` in `s_linker13` | Spike 002 classified it RISKY (O(N×M) anchor-collection; replacing it with an LLM call would require a full-component-list × full-sentence-list scan). Phase 5 confirms KEEP — replacement deferred to v2 (EXT-01 spike) under a relaxed budget. EXT-02 (drop dotted-path guard) is a narrower follow-up also deferred to v2. See `.planning/spikes/002-rules-audit/` for the full classification. | KEPT (Phase 5, 2026-05-29) |
+| GATE-06 generality audit (v2.0) | User flagged at v2.0 kickoff: every new prompt + helper must read as sound/clean/general to any project; no tailored rules in prompt OR logic. Reviewer-defensibility, not just BENCHMARK_TABOO scan. | Standing policy from v2.0 onward (2026-05-30) |
+| LLM-COMBINE stack-vs-unify decision deferred | EXT-01 cost/quality signal will choose between (1) stacked separate LLM primitives in `s_linker14` and (3) unified single-prompt variant. Premature lock would bias the comparison. | Decide after EXT-01 lands |
 
 ## Evolution
 
@@ -86,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-30 after v1.0 milestone close*
+*Last updated: 2026-05-30 — v2.0 kickoff (Complete Rule Removal + Cross-Model — Generality First)*
