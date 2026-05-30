@@ -29,7 +29,11 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
   2. `_has_standalone_mention` (and its in-helper callees specific to this rule) is no longer reachable from the variant's call graph; only parsers/formatters and other v1.0-retained helpers remain on the structural side.
   3. The variant passes the dual floor on the full 5-project sweep: macro F1 ≥ 0.93 AND BBB ≤ 6pp below `s_linker12c` BBB AND each other dataset ≤ 2pp below the corresponding `s_linker12c` per-dataset baseline (GATE-01); per-dataset and macro F1 logged as JSON.
   4. **GATE-06 generality audit recorded in SUMMARY.md**: new prompt(s) and any new helper pass (a) `BENCHMARK_TABOO.md` scan AND (b) reviewer-defensibility check — no encoded project structure in prompt examples or code logic. Cost/quality signal (LLM-call count, latency vs `s_linker13`) captured and tagged for the Phase 8 stack-vs-unify decision.
-**Plans**: TBD (estimated 3 — prompt + helper design; integration into variant; full sweep + GATE-06 audit)
+**Plans**: 4 plans
+- [ ] 06-01-PLAN.md — Prompt design (STANDALONE_MENTION_RULES_PRE_FILTERED + LLM_ONLY in prompts_v2.py) + GATE-06 pre-clearance audit
+- [ ] 06-02-PLAN.md — Sub-variant scaffolding: s_linker13g_pre.py (regex pre-filter + LLM judge) and s_linker13g_sem.py (LLM-only, dotted-path in prompt) + run_ablation.py GATE-07 dual-registration
+- [ ] 06-03-PLAN.md — D-02 offline anchor-set diff stage + catastrophic-diff drop rule + 06-DIFF-MATRIX.md + user-approved finalist set
+- [ ] 06-04-PLAN.md — GATE-05 hard-tier dev loop + full 5-project sweep + D-03 winner pick + byte-copy promotion to canonical s_linker13g.py + GATE-06 final audit + 06-SUMMARY.md with tagged Phase-8 cost/quality block
 
 ### Phase 7: EXT-02 — Drop Dotted-Path Guard
 **Goal**: Inside the EXT-01 variant, drop the dotted-path regex guard (the one that currently protects `ui.website`-style references) and confirm the variant still meets the dual floor.
@@ -95,7 +99,7 @@ GATE-01, GATE-05, GATE-06, GATE-07 are standing (apply to all phases — recorde
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 6. EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive | v2.0 | 0/3 (est.) | Not started | — |
+| 6. EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive | v2.0 | 0/4 | Not started | — |
 | 7. EXT-02 — Drop Dotted-Path Guard | v2.0 | 0/2 (est.) | Not started (gated on Phase 6) | — |
 | 8. COMBINE — `s_linker14` Stack-or-Unify | v2.0 | 0/3 (est.) | Not started (depends on Phase 6) | — |
 | 9. CROSS — GPT-5.2 Cross-Model Validation | v2.0 | 0/2 (est.) | Not started (depends on Phase 8) | — |
