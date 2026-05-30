@@ -1,10 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: Complete Rule Removal + Cross-Model
-status: active
-last_updated: "2026-05-30T00:00:00Z"
-last_activity: 2026-05-30 -- v2.0 roadmap created (Phases 6-9); ready for /gsd-plan-phase 6
+milestone_name: — Complete Rule Removal + Cross-Model — Generality First
+status: completed
+stopped_at: Phase 6 context gathered
+last_updated: "2026-05-30T07:25:06.733Z"
+last_activity: 2026-05-30 — v2.0 roadmap created with 4 phases (6-9), 100% coverage of 8 active REQs
 progress:
   total_phases: 4
   completed_phases: 0
@@ -75,6 +76,6 @@ None.
 
 ## Session Continuity
 
-Last session: v2.0 roadmap creation
-Stopped at: Roadmap shipped with Phases 6-9; STATE updated; REQUIREMENTS traceability populated
-Resume file: .planning/ROADMAP.md (Phase 6 next)
+Last session: --stopped-at
+Stopped at: Phase 6 context gathered
+Resume file: --resume-file
