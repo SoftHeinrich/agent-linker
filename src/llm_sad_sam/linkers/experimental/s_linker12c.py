@@ -453,6 +453,7 @@ JSON only:"""
             # ── Component profile ──
             profile = self._build_component_profile(comp_name)
 
+            #TODO maybe it never fires, how can a mention exist without being in the seed links?
             # ── Anchor sentences (proper-case mentions NOT in seed set) ──
             anchor_lines = []
             for s in sorted(sent_map.values(), key=lambda x: x.number):
@@ -618,7 +619,7 @@ JSON only:"""
 
         prev_sent = sent_map.get(snum - 1)
         preceding_text = prev_sent.text if prev_sent else ""
-
+        #TODO the anchor might not be useful
         anchors = []
         for s in sorted(sent_map.values(), key=lambda x: x.number):
             if s.number == snum:
@@ -843,7 +844,7 @@ JSON only:"""
                 prev = sent_map.get(c.sentence_number - 1)
                 prev_text = f" [prev: {prev.text[:60]}]" if prev else ""
                 case_lines.append(f"  Case {i+1} (S{c.sentence_number}): {s.text}{prev_text}")
-
+            #TODO the anchor may not be useful
             anchor_section = ""
             if anchor_lines:
                 anchor_section = (
