@@ -1,11 +1,12 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: Phase 5 complete (PROMO-01..PROMO-04 satisfied); milestone complete
-last_updated: "2026-05-29T22:30:00Z"
-last_activity: 2026-05-29 -- Phase 5 closed; s_linker13 promoted; ablation table + methodology shipped
+milestone_name: Rule-to-LLM Ablation
+status: shipped
+shipped_at: "2026-05-30T00:00:00Z"
+stopped_at: v1.0 shipped (re-audit passed 2026-05-30); ready for v2.0 kickoff
+last_updated: "2026-05-30T00:00:00Z"
+last_activity: 2026-05-30 -- v1.0 milestone closed; archive files written; ready for /gsd-new-milestone
 progress:
   total_phases: 5
   completed_phases: 5
@@ -25,12 +26,13 @@ See: .planning/PROJECT.md (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 05 (promote-and-ablation-artifact) — COMPLETE
-Plan: All 5 phases closed (13 plans completed; Phase 3 closed empty).
-Status: Milestone complete — s_linker13 promoted as canonical (macro 0.9509, +1.04pp vs 12c)
-Last activity: 2026-05-29 -- Phase 5 close (PROMO-01..04: promotion, KEEP-decision, ablation table, methodology)
+Milestone: v1.0 (Rule-to-LLM Ablation) — SHIPPED 2026-05-30
+Audit verdict: `passed` (re-audit 2026-05-30; superseded prior `tech_debt` of 2026-05-29)
+Final artifact: `s_linker13.py` (macro F1 0.9509, +1.04 pp vs `s_linker12c` baseline)
+Archive: `.planning/milestones/v1.0-*` + `.planning/MILESTONES.md`
+Next focus: v2.0 (planning) — candidate scope = EXT-01..EXT-04
 
-Progress: [██████████] 100% (5 of 5 phases complete)
+Progress: [██████████] 100% (5 of 5 phases complete; v1.0 archived)
 
 ### Phase 5 Closure Notes
 
@@ -122,6 +124,7 @@ None yet.
 | v2 | EXT-01: Spike on replacing `_has_standalone_mention` | Deferred | Roadmap creation |
 | v2 | EXT-02: Drop dotted-path guard in `_has_standalone_mention` | Deferred | Roadmap creation |
 | v2 | EXT-03: GPT-5.2 cross-model re-evaluation of s_linker13 | Deferred | Roadmap creation |
+| v2 | EXT-04: Emit-biased boundary prompting on alias-discovery (shrink BBB borderline-4 variance band ~3pp → ~1pp) | Deferred | v1.0 close (2026-05-30; from BBB-ROOT-CAUSE.md / BBB-DEEP-SEMANTIC-ANALYSIS.md) |
 
 ## Session Continuity
 

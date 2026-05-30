@@ -12,20 +12,20 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Reproducible `s_linker12c` baseline (per-dataset F1 + macro F1 + FP/FN table) — v1.0 (INFRA-01)
+- ✓ Spike 001 LLM trailing-word enrichment integrated; `_split_component_name` retired (`s_linker13a`) — v1.0 (VAR-01)
+- ✓ `_is_structurally_unambiguous` post-filter removed; LLM ambiguity classification trusted end-to-end (`s_linker13b`) — v1.0 (VAR-02)
+- ✓ `_is_ambiguous_name_component` wrapper inlined and removed (`s_linker13c`) — v1.0 (VAR-03)
+- ✓ Alias-discovery prompt extended with `scope: global|local`; `_is_strong_alias` + `_get_strong_alias_mappings` retired (`s_linker13e`) — v1.0 (VAR-05)
+- ✓ Strong-alias-mention signal folded into coref prompt; `_has_strong_alias_mention` retired (`s_linker13f`) — v1.0 (VAR-06)
+- ✓ `_has_standalone_mention` KEEP decision logged (RISKY per Spike 002; replacement deferred to v2 EXT-01) — v1.0 (PROMO-02)
+- ✓ Ablation table generated (markdown + LaTeX, 8 rows) — v1.0 (PROMO-03)
+- ✓ Winning variant promoted as `s_linker13.py` with zero non-trivial rules (macro F1 0.9509, +1.04 pp vs 12c) — v1.0 (PROMO-01)
+- ⚠ Spike 003 LLM mention classifier integration attempted — REJECTED (VAR-04 retired). LLM cannot reproduce dotted-path Java-package convention; 33 entity-source FPs on TeaMMates → −18.8 pp regression. Documented as publishable negative result in METHODOLOGY.md §4 — v1.0
 
 ### Active
 
-- [ ] Establish reproducible `s_linker12c` baseline (per-dataset F1 + macro F1 + FP/FN table)
-- [ ] Integrate Spike 001 (LLM trailing-word enrichment) in pipeline; retire `_split_component_name`
-- [ ] Integrate Spike 003 (LLM mention classifier) in pipeline; retire `_classify_mention` and its 4 regex branches
-- [ ] Remove `_is_structurally_unambiguous` post-filter; trust LLM ambiguity classification from `_classify_components`
-- [ ] Inline-remove `_is_ambiguous_name_component` wrapper
-- [ ] Add `scope: global|local` field to alias discovery prompt; retire `_is_strong_alias` + `_get_strong_alias_mappings`
-- [ ] Fold strong-alias-mention signal into coref prompt (Variant E); retire `_has_strong_alias_mention`
-- [ ] Decide fate of `_has_standalone_mention` (RISKY): either keep as boundary primitive or prove LLM parity on anchor collection
-- [ ] Produce ablation table: one row per promoted variant (12c → 13a → 13b → …) with per-dataset + macro F1, rules-removed, and regressions
-- [ ] Promote winning variant as `s_linker13` (or successor) with zero non-trivial rules
+(None — v2.0 scope to be defined via `/gsd-new-milestone`. Candidate items: EXT-01 LLM replacement of `_has_standalone_mention`, EXT-02 dotted-path guard drop, EXT-03 GPT-5.2 cross-model re-evaluation, EXT-04 emit-biased boundary prompting for alias-discovery.)
 
 ### Out of Scope
 
@@ -59,13 +59,13 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Base = `s_linker12c` (not 12e) | Spikes 001/002/003 target 12c; 12d/12e are enrichment side-experiments | — Pending |
-| Success = zero non-trivial rules | User explicitly picked "zero non-trivial rules" over F1-parity goal | — Pending |
-| Re-validate spikes in-pipeline | Spike validation was isolated; pipeline integration can surface new failure modes | — Pending |
-| F1 floor = 93% macro | Baseline is ~94%; allow ≤1pp regression per milestone | — Pending |
-| Ablation unit = linker variant, not individual rule | User wants "F1 contribution per linker", not per-rule | — Pending |
-| Dataset schedule = hard-tier-first, then all 5 | Teammates/BBB are most rule-sensitive; cheap signal before full sweep | — Pending |
-| Keep `_has_standalone_mention` tentatively | Spike 002 classified it RISKY (O(N·M) anchor collection); decide after other removals land | — Pending |
+| Base = `s_linker12c` (not 12e) | Spikes 001/002/003 target 12c; 12d/12e are enrichment side-experiments | ✓ Good — chain landed on 12c; 13f beat 12c by +1.04 pp macro F1 |
+| Success = zero non-trivial rules | User explicitly picked "zero non-trivial rules" over F1-parity goal | ✓ Good — `s_linker13` retains only `_has_standalone_mention` + parsers/formatters |
+| Re-validate spikes in-pipeline | Spike validation was isolated; pipeline integration can surface new failure modes | ✓ Good — Spike 003 in-pipeline integration surfaced TM regression that isolated validation missed (VAR-04 retired) |
+| F1 floor = 93% macro | Baseline is ~94%; allow ≤1pp regression per milestone | ✓ Good — floor held across all 6 successful removals; final macro 0.9509 (+1.04 pp) |
+| Ablation unit = linker variant, not individual rule | User wants "F1 contribution per linker", not per-rule | ✓ Good — 7 standalone variant files enabled clean per-step ΔF1 attribution |
+| Dataset schedule = hard-tier-first, then all 5 | Teammates/BBB are most rule-sensitive; cheap signal before full sweep | ⚠ Revisit — VAR-06 (13f) was hard-tier marginal but full-sweep best-in-chain; standing policy retained "full sweep is decisive" |
+| Keep `_has_standalone_mention` tentatively | Spike 002 classified it RISKY (O(N·M) anchor collection); decide after other removals land | ✓ Good — formalized as KEEP in Phase 5; EXT-01 spike deferred to v2 |
 | KEEP `_has_standalone_mention` in `s_linker13` | Spike 002 classified it RISKY (O(N×M) anchor-collection; replacing it with an LLM call would require a full-component-list × full-sentence-list scan). Phase 5 confirms KEEP — replacement deferred to v2 (EXT-01 spike) under a relaxed budget. EXT-02 (drop dotted-path guard) is a narrower follow-up also deferred to v2. See `.planning/spikes/002-rules-audit/` for the full classification. | KEPT (Phase 5, 2026-05-29) |
 
 ## Evolution
@@ -86,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after initialization*
+*Last updated: 2026-05-30 after v1.0 milestone close*
