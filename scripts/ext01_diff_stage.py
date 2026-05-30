@@ -38,6 +38,25 @@ Usage:
   python scripts/ext01_diff_stage.py --variants s_linker13g_pre --datasets mediastore
 """
 
+# ---------------------------------------------------------------------------
+# Plan 06-07 extensions (in place; original two-variant behavior preserved):
+# 1. Denominator-aware Jaccard skip — when |S_baseline[comp]| == 0 for a
+#    (comp, ds) cell, J collapses to 0 mechanically. Per Plan 06-03 user
+#    adjudication on BBB/`kurento` and BENCHMARK_TABOO.md §"Tailored Code
+#    Anti-Patterns", we do NOT patch the baseline per component — we skip
+#    the J check on that cell and rely on the symmetric-difference (D)
+#    check alone. Encoded as a single module constant
+#    DENOMINATOR_AWARE_J_SKIP (no per-call override surface).
+# 2. Dual-baseline mode — the comparison anchor can be re-anchored against
+#    the rejected pure-LLM baselines (s_linker13g_pre, s_linker13g_sem)
+#    from Plan 06-04 via cached pickles, at zero LLM cost. This is the
+#    empirical test for CONTEXT.md D-09 (do the alias-aware variants
+#    actually deviate from the rejected baselines?). The regex baseline
+#    remains the operative drop-decision-gating comparison.
+# 3. Four new alias-aware variants from Plan 06-06 wired into
+#    --variants choices and the variant_classes dict.
+# ---------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import argparse
@@ -56,6 +75,10 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from llm_sad_sam.linkers.experimental.s_linker13 import SLinker13
 from llm_sad_sam.linkers.experimental.s_linker13g_pre import SLinker13gPre
 from llm_sad_sam.linkers.experimental.s_linker13g_sem import SLinker13gSem
+from llm_sad_sam.linkers.experimental.s_linker13g_pre_alias import SLinker13gPreAlias
+from llm_sad_sam.linkers.experimental.s_linker13g_sem_alias import SLinker13gSemAlias
+from llm_sad_sam.linkers.experimental.s_linker13g_pre_full import SLinker13gPreFull
+from llm_sad_sam.linkers.experimental.s_linker13g_sem_full import SLinker13gSemFull
 from llm_sad_sam.core.document_loader_v2 import load_sentences
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 
@@ -63,6 +86,10 @@ from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 assert SLinker13._VARIANT_NAME == "s_linker13", f"unexpected {SLinker13._VARIANT_NAME!r}"
 assert SLinker13gPre._VARIANT_NAME == "s_linker13g_pre", f"unexpected {SLinker13gPre._VARIANT_NAME!r}"
 assert SLinker13gSem._VARIANT_NAME == "s_linker13g_sem", f"unexpected {SLinker13gSem._VARIANT_NAME!r}"
+assert SLinker13gPreAlias._VARIANT_NAME == "s_linker13g_pre_alias", f"unexpected {SLinker13gPreAlias._VARIANT_NAME!r}"
+assert SLinker13gSemAlias._VARIANT_NAME == "s_linker13g_sem_alias", f"unexpected {SLinker13gSemAlias._VARIANT_NAME!r}"
+assert SLinker13gPreFull._VARIANT_NAME == "s_linker13g_pre_full", f"unexpected {SLinker13gPreFull._VARIANT_NAME!r}"
+assert SLinker13gSemFull._VARIANT_NAME == "s_linker13g_sem_full", f"unexpected {SLinker13gSemFull._VARIANT_NAME!r}"
 
 
 # Dataset registry — mirrors run_ablation.py:341-374.
@@ -98,6 +125,16 @@ HARD_TIER = {"teammates", "bigbluebutton"}
 HARD_TIER_MIN_J = 0.3
 MAX_SYM_DIFF = 10
 HARD_TIER_PCT_LOW_J = 0.25
+
+# Denominator-aware Jaccard skip (Plan 06-07).
+# When |S_baseline[comp]| == 0 for a (comp, ds) cell, Jaccard collapses to 0 mechanically.
+# Per Plan 06-03 user adjudication + BENCHMARK_TABOO Tailored Code Anti-Patterns, we
+# do NOT patch baselines per-component — we skip the J check on the cell and rely on
+# the symmetric-difference (D) check alone (D is well-defined when |S_baseline|=0).
+DENOMINATOR_AWARE_J_SKIP = True
+
+# Pure-LLM baseline mode — re-anchor against rejected-baseline variants (Plan 06-04).
+PURE_LLM_BASELINE_VARIANTS = ("s_linker13g_pre", "s_linker13g_sem")
 
 
 def compute_anchor_set(
@@ -178,6 +215,37 @@ def variant_anchor_set(
     return out, from_cache, len(smap)
 
 
+def load_pure_llm_baseline_anchor_set(
+    baseline_variant: str,
+    text_path: Path,
+    comp_names: list[str],
+) -> tuple[dict[str, set[int]], bool]:
+    """Load a rejected-baseline (pure-LLM) anchor set from the cached pickle.
+
+    Pickles live at PHASE_CACHE_DIR/<baseline_variant>/<ds>/standalone_map.pkl —
+    populated by Plan 06-03 / 06-04. Loader is cache-only (no LLM cost). Errors
+    fast if the pickle is missing (T-06-07-02 / T-06-07-05 mitigation).
+    """
+    if baseline_variant not in PURE_LLM_BASELINE_VARIANTS:
+        raise ValueError(
+            f"Pure-LLM baseline must be one of {PURE_LLM_BASELINE_VARIANTS}, got {baseline_variant!r}"
+        )
+    cache_path = _variant_cache_path(baseline_variant, text_path)
+    if not cache_path.exists():
+        raise FileNotFoundError(
+            f"Pure-LLM baseline cache missing: {cache_path}. "
+            f"Run Plan 06-03 / 06-04 first OR pass --baseline regex."
+        )
+    with open(cache_path, "rb") as f:
+        blob = pickle.load(f)
+    smap = blob["standalone_map"]
+    out: dict[str, set[int]] = {c: set() for c in comp_names}
+    for (cname, snum), is_standalone in smap.items():
+        if is_standalone and cname in out:
+            out[cname].add(snum)
+    return out, True
+
+
 def jaccard(s_v: set, s_r: set) -> float:
     """Standard Jaccard with vacuous-agreement convention (J=1.0 when both empty)."""
     union = s_v | s_r
@@ -194,24 +262,45 @@ def rollup_dataset(
     per_comp_J: dict[str, float],
     per_comp_D: dict[str, int],
     per_comp_regex_size: dict[str, int],
+    n_components_J_skipped: int = 0,
 ) -> dict[str, Any]:
-    comps = list(per_comp_J.keys())
-    if not comps:
+    """Roll up per-component J/D into dataset-level stats.
+
+    `per_comp_J` may exclude denominator-aware-skipped cells (Plan 06-07); their
+    count is surfaced as `n_components_J_skipped` for the report. `per_comp_D`
+    retains ALL components (D is never skipped — D is well-defined when
+    |S_baseline|=0). `n_components` counts components present in per_comp_D so
+    rollups across baselines remain comparable.
+    """
+    d_comps = list(per_comp_D.keys())
+    j_comps = list(per_comp_J.keys())
+    if not d_comps:
         return {
             "min_jaccard_per_comp": 1.0,
             "mean_jaccard_weighted": 1.0,
             "count_components_with_J<0.5": 0,
             "max_symmetric_diff": 0,
             "n_components": 0,
+            "n_components_J_skipped": n_components_J_skipped,
         }
-    weights = [max(1, per_comp_regex_size[c]) for c in comps]
-    weight_sum = sum(weights)
+    if j_comps:
+        weights = [max(1, per_comp_regex_size[c]) for c in j_comps]
+        weight_sum = sum(weights)
+        min_j = min(per_comp_J.values())
+        mean_j = sum(per_comp_J[c] * w for c, w in zip(j_comps, weights)) / weight_sum
+        count_low_j = sum(1 for j in per_comp_J.values() if j < 0.5)
+    else:
+        # All components had their J skipped — report vacuous-agreement values.
+        min_j = 1.0
+        mean_j = 1.0
+        count_low_j = 0
     return {
-        "min_jaccard_per_comp": min(per_comp_J.values()),
-        "mean_jaccard_weighted": sum(per_comp_J[c] * w for c, w in zip(comps, weights)) / weight_sum,
-        "count_components_with_J<0.5": sum(1 for j in per_comp_J.values() if j < 0.5),
+        "min_jaccard_per_comp": min_j,
+        "mean_jaccard_weighted": mean_j,
+        "count_components_with_J<0.5": count_low_j,
         "max_symmetric_diff": max(per_comp_D.values()),
-        "n_components": len(comps),
+        "n_components": len(d_comps),
+        "n_components_J_skipped": n_components_J_skipped,
     }
 
 
@@ -265,13 +354,54 @@ def instantiate_variant(cls):
     return cls()
 
 
+variant_classes = {
+    "s_linker13g_pre": SLinker13gPre,
+    "s_linker13g_sem": SLinker13gSem,
+    "s_linker13g_pre_alias": SLinker13gPreAlias,
+    "s_linker13g_sem_alias": SLinker13gSemAlias,
+    "s_linker13g_pre_full": SLinker13gPreFull,
+    "s_linker13g_sem_full": SLinker13gSemFull,
+}
+
+
+# Sentinel used to detect whether the user explicitly passed --output. When the
+# user did NOT pass --output AND --baseline != "regex", we route the default
+# output to the Plan 06-07 alias-aware path.
+_OUTPUT_DEFAULT_SENTINEL = object()
+
+
+def _resolve_baseline_anchor(
+    baseline: str,
+    sentences: list,
+    comp_names: list[str],
+    text_path: Path,
+) -> tuple[dict[str, set[int]], str]:
+    """Returns (S_baseline_by_comp, baseline_label).
+
+    `baseline` is one of: "regex", "pure-llm-pre", "pure-llm-sem".
+    """
+    if baseline == "regex":
+        return compute_anchor_set(regex_predicate, sentences, comp_names), "regex"
+    if baseline == "pure-llm-pre":
+        S, _ = load_pure_llm_baseline_anchor_set(
+            "s_linker13g_pre", text_path, comp_names
+        )
+        return S, "pure-llm:s_linker13g_pre"
+    if baseline == "pure-llm-sem":
+        S, _ = load_pure_llm_baseline_anchor_set(
+            "s_linker13g_sem", text_path, comp_names
+        )
+        return S, "pure-llm:s_linker13g_sem"
+    raise ValueError(f"Unknown baseline: {baseline!r}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument(
         "--variants",
         nargs="+",
         default=["s_linker13g_pre", "s_linker13g_sem"],
-        choices=["s_linker13g_pre", "s_linker13g_sem"],
+        choices=list(variant_classes.keys()),
     )
     ap.add_argument(
         "--datasets",
@@ -281,7 +411,16 @@ def main():
     )
     ap.add_argument(
         "--output",
-        default=str(REPO_ROOT / "results/ablation_results/ablation_ext01_diff.json"),
+        default=_OUTPUT_DEFAULT_SENTINEL,
+        help="Output JSON path. Defaults to ablation_ext01_diff.json for --baseline regex, "
+             "ablation_ext01_diff_alias.json for pure-LLM baselines.",
+    )
+    ap.add_argument(
+        "--baseline",
+        choices=["regex", "pure-llm-pre", "pure-llm-sem"],
+        default="regex",
+        help="Comparison anchor. 'regex' is the Plan 06-03 protocol (drop-decision-gating). "
+             "'pure-llm-*' re-anchors against the rejected-baseline cached pickles (Plan 06-04, D-09).",
     )
     ap.add_argument(
         "--force-recompute",
@@ -290,13 +429,23 @@ def main():
     )
     args = ap.parse_args()
 
-    variant_classes = {
-        "s_linker13g_pre": SLinker13gPre,
-        "s_linker13g_sem": SLinker13gSem,
-    }
+    # Resolve --output default based on --baseline mode (Plan 06-07).
+    if args.output is _OUTPUT_DEFAULT_SENTINEL:
+        if args.baseline == "regex":
+            args.output = str(REPO_ROOT / "results/ablation_results/ablation_ext01_diff.json")
+        else:
+            args.output = str(REPO_ROOT / "results/ablation_results/ablation_ext01_diff_alias.json")
+
+    # Pure-LLM-baseline self-vs-self pairs are skipped (would always give J=1.0).
+    baseline_self_variant = {
+        "pure-llm-pre": "s_linker13g_pre",
+        "pure-llm-sem": "s_linker13g_sem",
+    }.get(args.baseline)
 
     matrix: dict[str, Any] = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "baseline": args.baseline,
+        "denominator_aware_skip": DENOMINATOR_AWARE_J_SKIP,
         "thresholds": {
             "hard_tier_min_jaccard": HARD_TIER_MIN_J,
             "max_symmetric_diff": MAX_SYM_DIFF,
@@ -307,6 +456,9 @@ def main():
     }
 
     for vname in args.variants:
+        if vname == baseline_self_variant:
+            print(f"  [skip self-vs-self] {vname} vs {args.baseline}")
+            continue
         cls = variant_classes[vname]
         per_ds: dict[str, Any] = {}
         for ds in args.datasets:
@@ -322,13 +474,15 @@ def main():
             components = parse_pcm_repository(str(repo_path))
             comp_names = [c.name for c in components]
 
-            print(f"\n=== [{vname}] {ds} ===")
+            print(f"\n=== [{vname}] {ds} (baseline={args.baseline}) ===")
             print(f"    {len(components)} components, {len(sentences)} sentences")
 
-            # Regex baseline (free)
-            S_r_by_comp = compute_anchor_set(regex_predicate, sentences, comp_names)
-            r_total = sum(len(v) for v in S_r_by_comp.values())
-            print(f"    regex baseline anchor pairs: {r_total}")
+            # Baseline (regex = free; pure-llm-* = cached pickle, also free)
+            S_b_by_comp, baseline_label = _resolve_baseline_anchor(
+                args.baseline, sentences, comp_names, text_path
+            )
+            b_total = sum(len(v) for v in S_b_by_comp.values())
+            print(f"    baseline ({baseline_label}) anchor pairs: {b_total}")
 
             # Variant (LLM, cached)
             inst = instantiate_variant(cls)
@@ -340,30 +494,60 @@ def main():
             print(f"    variant anchor pairs (true=standalone): {v_total} "
                   f"(map size {llm_map_size}, from_cache={from_cache})")
 
-            per_comp_J = {
-                c: jaccard(S_v_by_comp.get(c, set()), S_r_by_comp.get(c, set()))
+            # Denominator-aware skip set: components with |S_baseline[comp]| == 0.
+            skipped_comps: set[str] = {
+                c for c in comp_names if len(S_b_by_comp.get(c, set())) == 0
+            }
+
+            per_comp_J_full = {
+                c: jaccard(S_v_by_comp.get(c, set()), S_b_by_comp.get(c, set()))
                 for c in comp_names
             }
             per_comp_D = {
-                c: symdiff(S_v_by_comp.get(c, set()), S_r_by_comp.get(c, set()))
+                c: symdiff(S_v_by_comp.get(c, set()), S_b_by_comp.get(c, set()))
                 for c in comp_names
             }
-            per_comp_regex_size = {c: len(S_r_by_comp.get(c, set())) for c in comp_names}
+            per_comp_baseline_size = {c: len(S_b_by_comp.get(c, set())) for c in comp_names}
             per_comp_variant_size = {c: len(S_v_by_comp.get(c, set())) for c in comp_names}
+
+            # Build the J-dict used for rollup — excluding skipped cells when
+            # DENOMINATOR_AWARE_J_SKIP=True. D is NEVER skipped.
+            if DENOMINATOR_AWARE_J_SKIP:
+                per_comp_J_for_rollup = {
+                    c: per_comp_J_full[c] for c in comp_names if c not in skipped_comps
+                }
+                weights_for_rollup = {
+                    c: per_comp_baseline_size[c]
+                    for c in comp_names
+                    if c not in skipped_comps
+                }
+                n_skipped = len(skipped_comps)
+            else:
+                per_comp_J_for_rollup = dict(per_comp_J_full)
+                weights_for_rollup = dict(per_comp_baseline_size)
+                n_skipped = 0
 
             per_ds[ds] = {
                 "per_component": {
                     c: {
-                        "J": per_comp_J[c],
+                        "J": per_comp_J_full[c],
                         "D": per_comp_D[c],
-                        "regex_size": per_comp_regex_size[c],
+                        "baseline_size": per_comp_baseline_size[c],
                         "variant_size": per_comp_variant_size[c],
+                        "J_skipped": (c in skipped_comps and DENOMINATOR_AWARE_J_SKIP),
                     }
                     for c in comp_names
                 },
-                "rollup": rollup_dataset(per_comp_J, per_comp_D, per_comp_regex_size),
+                "rollup": rollup_dataset(
+                    per_comp_J_for_rollup,
+                    per_comp_D,
+                    weights_for_rollup,
+                    n_components_J_skipped=n_skipped,
+                ),
                 "llm_pair_count": llm_map_size,
                 "from_cache": from_cache,
+                "baseline_label": baseline_label,
+                "skipped_components": sorted(skipped_comps),
             }
 
         drop, reasons = apply_drop_rule({ds: per_ds[ds]["rollup"] for ds in per_ds})
