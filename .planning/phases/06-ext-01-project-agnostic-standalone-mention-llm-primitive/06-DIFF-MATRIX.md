@@ -78,7 +78,9 @@ Both variants are mechanically flagged for drop by the same single-cell signatur
 
 ## Finalists for Plan 04 full sweep
 
-> **NO MECHANICAL SURVIVORS.** Both candidate variants are flagged by the catastrophic-diff drop rule on the same single cell (BBB/`kurento`, `min_J=0.000`). The Pitfall 5 escalation path is triggered (next section). The user adjudication recorded below names the actual finalist set Plan 04 will consume.
+> **Mechanically no survivors; user override applied.** Both candidate variants were flagged by the catastrophic-diff drop rule on the same single cell (BBB/`kurento`, `min_J=0.000`). Per the user adjudication recorded below (`proceed-with-override: include both`), the regex-baseline blind spot is documented as a banned tailoring anti-pattern (see `BENCHMARK_TABOO.md` §"Tailored Code Anti-Patterns"), and the drop verdict is overridden because the rule fired on a baseline artefact, not on a variant defect.
+>
+> **Finalists for Plan 04 full sweep:** `s_linker13g_pre`, `s_linker13g_sem`.
 
 ## Pitfall 5 escalation
 
@@ -92,16 +94,35 @@ The checkpoint task in this plan pauses for the user to pick.
 
 ## User adjudication
 
-**Decision required.** See checkpoint context below for the offered options. Once the user resumes with a chosen option id, this section will be filled with:
+**Selected option:** `proceed-with-override: include both s_linker13g_pre and s_linker13g_sem`.
 
-- The selected option id.
-- Any user-supplied parameters (e.g., relaxed threshold value).
-- The final finalist set Plan 04 will sweep.
-- A timestamp.
+**Timestamp (UTC):** 2026-05-30T10:42:00Z
+
+**Justification (user verdict, verbatim summary):**
+
+> "that regex is too tailored, drop that, and add tailored examples to taboo list, never do that"
+
+The sole offending cell — BBB/`kurento`, `min_J=0.000`, `D=2` — was driven by a regex-baseline blind spot, not by a variant defect. The baseline (`s_linker13._has_standalone_mention`) constructs `re.compile(r"\bkurento\b", flags=0)` for the lowercase component string, so any capitalized `Kurento` mention in the BBB documentation is silently missed. Both EXT-01 variants correctly detect the 2 mentions in both casings.
+
+Per the user's verdict, this is exactly the class of "tailored to the benchmark" pattern that must be banned, not patched into the regex. The anti-pattern has been recorded in `BENCHMARK_TABOO.md` §"Tailored Code Anti-Patterns" under two headings:
+
+- *Case-mismatch regex baselines* — covers the `kurento`-style blind spot directly.
+- *Tailoring diff/comparison rules to specific (component, dataset) cells* — covers the alternative "rescue this one cell" path the user implicitly forbade.
+
+See commit `71f65b0` (`docs(06-03): add tailored-code anti-patterns to benchmark taboo`).
+
+**Drop verdict overridden:** Both `s_linker13g_pre` and `s_linker13g_sem` proceed to Plan 04 full sweep. The override is narrow — it applies only to the single regex-blind-spot cell; all other cells in the matrix passed the catastrophic-diff thresholds (`max_D ≤ 7` everywhere, `mean_J_wtd ≥ 0.726` on TM and `≥ 0.933` on BBB across both variants). No threshold relaxation was applied; the rule logic in `apply_drop_rule` is unchanged.
+
+**Final finalist set for Plan 04 (D-03 winner pick):**
+
+- `s_linker13g_pre`
+- `s_linker13g_sem`
+
+**GATE-05 dev-loop reminder:** Plan 04 still applies the hard-tier-first dev loop (TM, BBB) before the full 5-project sweep, providing a second-pass safety net on top of this user override.
 
 ---
 
-### Checkpoint context for the user
+### Checkpoint context for the user (preserved for traceability)
 
 **Both variants flag drop on the same single cell**: BBB/`kurento`, where the regex baseline returns `∅` (because `kurento` is lowercase and the doc capitalizes it — `_has_standalone_mention`'s case-sensitive branch). The variants find 2 mentions. Symmetric difference is 2 (far below the catastrophic threshold of 10). This is the canonical "regex-blind-spot → Jaccard denominator artefact" signature, not a dotted-path leak.
 
