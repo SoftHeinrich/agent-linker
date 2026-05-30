@@ -79,6 +79,10 @@ CANONICAL_VARIANTS = [
     "s_linker13",   # canonical promotion of 13f (Phase 5)
     "s_linker13g_pre",   # EXT-01 sub-variant (a): regex pre-filter + LLM judge
     "s_linker13g_sem",   # EXT-01 sub-variant (b): LLM-only, dotted-path encoded in prompt
+    "s_linker13g_pre_alias",   # EXT-01 alias-aware (a): regex pre-filter + LLM judge + alias map (Plan 06-06 / D-07)
+    "s_linker13g_sem_alias",   # EXT-01 alias-aware (b): LLM-only + alias map
+    "s_linker13g_pre_full",    # EXT-01 full-knowledge (a): regex pre-filter + LLM judge + alias + linkmap
+    "s_linker13g_sem_full",    # EXT-01 full-knowledge (b): LLM-only + alias + linkmap
 ]
 
 VARIANT_SPECS = {
@@ -327,6 +331,30 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13g_sem",
         class_name="SLinker13gSem",
         description="S-Linker13g-sem: 13 - _has_standalone_mention via LLM-only (dotted-path encoded in prompt) (EXT-01 sub-variant b)",
+    ),
+    "s_linker13g_pre_alias": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_pre_alias",
+        class_name="SLinker13gPreAlias",
+        description="S-Linker13g-pre-alias: EXT-01 alias-aware (a): regex pre-filter + LLM judge + alias map injection",
+    ),
+    "s_linker13g_sem_alias": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_sem_alias",
+        class_name="SLinker13gSemAlias",
+        description="S-Linker13g-sem-alias: EXT-01 alias-aware (b): LLM-only + alias map injection",
+    ),
+    "s_linker13g_pre_full": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_pre_full",
+        class_name="SLinker13gPreFull",
+        description="S-Linker13g-pre-full: EXT-01 full-knowledge (a): regex pre-filter + LLM judge + alias + linkmap",
+    ),
+    "s_linker13g_sem_full": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13g_sem_full",
+        class_name="SLinker13gSemFull",
+        description="S-Linker13g-sem-full: EXT-01 full-knowledge (b): LLM-only + alias + linkmap",
     ),
 }
 
