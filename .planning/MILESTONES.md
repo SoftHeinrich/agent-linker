@@ -4,6 +4,58 @@ Historical record of shipped milestones. See `milestones/v[X.Y]-ROADMAP.md`, `mi
 
 ---
 
+## v2.0 — Complete Rule Removal + Cross-Model — Generality First
+
+**Shipped:** 2026-05-31
+**Audit verdict:** `passed` (mixed-result — see Findings)
+**Production artifact unchanged:** `src/llm_sad_sam/linkers/experimental/s_linker13.py` (v1.0 final; v2.0 ships no new canonical variant)
+
+### Delivered
+
+A published thesis-boundary finding: the "rule replaced by LLM primitive" approach has a clean structural limit. Rules whose correct answer depends on a project-specific surface convention (Java dotted-path, casing convention, abbreviation/coref bridging across upstream tiers) cannot be replaced without project-specific calibration — the same failure class hit v1.0 13d/VAR-04 and v2.0 EXT-01 close-empty AND v2.0 Phase 9 TM cross-model regression. Cross-model evidence for the v1.0 artifact on a non-Claude backend (gpt-5.4) published as a model-provider-property finding.
+
+### Stats
+
+| Item | Count |
+|------|-------|
+| Phases | 4 (6 closed-empty, 7 auto-skipped, 8 closed no-op, 9 done) |
+| Plans | 14 (9 in Phase 6, 0 in Phase 7, 0 in Phase 8, 4 in Phase 9, 1 in Phase 8 documentation) |
+| Variant files (rejected baselines, retained for ablation) | 6 (`s_linker13g_pre/sem` + 4 alias-aware) |
+| Probe scripts | 3 (P1 document-level, P2 hybrid, P3 pure-removal) |
+| Rule replacements attempted | 1 (`_has_standalone_mention` — EXT-01, NEGATIVE) |
+| Rule replacements shipped | 0 |
+| Cross-model evaluations | 1 (gpt-5.4, 5-dataset) |
+| Timeline | 2026-05-30 (kickoff) → 2026-05-31 (shipped) |
+
+### Per-dataset cross-model (gpt-5.4 vs Claude Sonnet)
+
+| Dataset | Claude | gpt-5.4 | Δ |
+|---|---:|---:|---:|
+| MediaStore | 0.984 | 0.9677 | -1.6pp |
+| TeaStore | 1.000 | 1.0000 | 0.0 |
+| TeaMMates | 0.947 | 0.7939 | **-15.3pp** |
+| BigBlueButton | 0.821 | 0.8037 | -1.7pp |
+| JabRef | 1.000 | 0.9730 | -2.7pp |
+| **Macro** | **0.9506** | **0.9077** | **-4.3pp** |
+
+GATE-01 cross-model: **does NOT hold** (macro < 0.93). TeaMMates drives the gap via dotted-path + generic-English component naming + GAE-platform conflation (same failure class as v1.0 13d/VAR-04). Per v2.0 thesis: model-provider-property finding, not a defect.
+
+### Key v2.0 lessons
+
+1. **Probe-first methodology pays.** Three lightweight feasibility probes (BBB-only, ~250 LLM calls total) cleanly ruled out the entire EXT-01 design space — saving a fourth sub-variant cycle. Pattern: when two sub-variant generations fail the same gate, probe before iterating again.
+2. **Knowledge injection has bounded value.** Alias context lifted BBB by +0.7-2.1pp on the LLM judge layer over pure-LLM, but couldn't close a structural-rule recall gap. Worth preserving as a design pattern but not as a load-bearing fix.
+3. **The thesis boundary is clean.** Rules whose answer requires project-specific surface conventions resist LLM replacement. Both v1.0 (13d/VAR-04) and v2.0 (EXT-01) hit the same wall. Future rule-removal candidates should pass a "is this a surface-convention rule?" check upfront.
+4. **Dataset shape matters more than model quality.** gpt-5.4 holds within tolerance on 4 of 5 datasets. The cross-model regression concentrates on the one dataset (TM) where component names overlap with generic English AND dotted-path identifiers AND the platform name.
+
+### Files
+
+- Archive: [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md), [`milestones/v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md), [`milestones/v2.0-MILESTONE-AUDIT.md`](milestones/v2.0-MILESTONE-AUDIT.md)
+- Phase artifacts: [`milestones/v2.0-phases/`](milestones/v2.0-phases/)
+- CROSS report: `milestones/v2.0-phases/09-cross-gpt-5-2-cross-model-validation/09-CROSS-REPORT.md`
+- ABLATION-TABLE addendum: `milestones/v1.0-phases/05-promote-and-ablation-artifact/ABLATION-TABLE.md` (v2.0 rows + 2 explanatory paragraphs)
+
+---
+
 ## v1.0 — Rule-to-LLM Ablation (`s_linker12c` → `s_linker13`)
 
 **Shipped:** 2026-05-29 (re-audit `passed`: 2026-05-30)

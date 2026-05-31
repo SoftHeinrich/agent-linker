@@ -25,27 +25,49 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 
 ### Active
 
-v2.0 scope (Complete Rule Removal + Cross-Model — Generality First):
-- [ ] **EXT-01** — Replace `_has_standalone_mention` with a project-agnostic LLM primitive (relaxed cost budget; no encoded project structure)
-- [ ] **EXT-02** — Drop dotted-path guard in `_has_standalone_mention` (gated on EXT-01 passing GATE-01 + GATE-06)
-- [ ] **LLM-COMBINE** — Stack all retired-rule LLM primitives into `s_linker14` (or unified-prompt variant) — stack-vs-unify decision driven by EXT-01 cost/quality signal
-- [ ] **EXT-03** — GPT-5.2 cross-model re-evaluation of `s_linker13` and new `s_linker14` (generality across model providers)
+v2.0 scope (Complete Rule Removal + Cross-Model — Generality First) — **shipped 2026-05-31, see [milestone archive](milestones/v2.0-ROADMAP.md):**
+- ⚠ **EXT-01** — Replace `_has_standalone_mention` — CLOSED EMPTY (negative). 2 design generations + 3-direction feasibility probe converged on "BBB recall gap is upstream of the gate". Published as thesis-boundary finding.
+- — **EXT-02** — Drop dotted-path guard — AUTO-SKIPPED per gating (EXT-01 did not pass dual floor).
+- ✓ **COMBINE** — Retro-satisfied: research found the 3 in-scope rule-removal primitives (Spike-001 trailing-words + scope-field + alias-coref-fold) were already unified inside `_learn_document_knowledge_enriched` during the v1.0 chain. s_linker13 retro-designated as the COMBINE artifact. No s_linker14.py built.
+- ✓ **CROSS** — gpt-5.4 5-dataset sweep: macro F1 0.9077 (Δ -4.3pp vs Claude 0.9506). GATE-01 cross-model does NOT hold; TM dominates the gap via dotted-path/generic-English/GAE-platform conflation. Framed as model-provider-property finding per v2.0 thesis.
 
 (Deferred to later milestone: EXT-04 emit-biased boundary prompting — variance work, not rule removal.)
 
-## Current Milestone: v2.0 Complete Rule Removal + Cross-Model
+## Current State
 
-**Goal:** Finish the no-hand-crafted-rules thesis by replacing the last structural rule with a project-agnostic LLM primitive, validate the combined result on GPT-5.2, and explore stacking/unifying LLM primitives into `s_linker14` — all under a hard generality constraint.
+**Shipped:** v2.0 — Complete Rule Removal + Cross-Model (2026-05-31). All 8 active requirements traced to closing artifacts. All 4 standing gates held. Audit verdict: PASSED (mixed-result). Production artifact remains **`s_linker13.py`** (macro F1 0.9506 Claude Sonnet, 0.9077 gpt-5.4).
 
-**Target features:**
-- Project-agnostic LLM replacement of `_has_standalone_mention` (EXT-01)
-- Dotted-path guard removal (EXT-02, gated)
-- Combined-primitive linker `s_linker14` (stack or unified prompt — decided by EXT-01 signal)
-- Cross-model validation on GPT-5.2 (EXT-03)
+**Key v2.0 findings:**
+1. The "rule replaced by LLM primitive" thesis has a clean boundary: rules with project-specific surface conventions (dotted-path, casing) cannot be replaced without project-specific calibration. Same failure class hit v1.0 13d and v2.0 EXT-01.
+2. Knowledge injection (alias context) yields measurable but bounded lift (+0.7-2.1pp on BBB) — pattern worth preserving for future LLM judge layers.
+3. Probe-first methodology validated: cheap feasibility study cut Phase 6 short before a 4th sub-variant cycle.
 
-**Hard generality constraint (GATE-06):** Zero hardcoded benchmark-derived values or project-tailored rules in either prompts OR code logic. Only stopword-level English wordlists and language-universal patterns (CamelCase) permitted. Every prompt example from safe SE/textbook domains. Approach must read as sound, clean, general to any project a reviewer might apply it to.
+## Past Milestones
 
-### Out of Scope
+- **v1.0** (2026-05-29) — Rule-to-LLM Ablation (`s_linker12c` → `s_linker13`). 6 rules removed, 1 rejected (VAR-04 dotted-path). Final macro 0.9509. See `milestones/v1.0-ROADMAP.md`.
+- **v2.0** (2026-05-31) — Complete Rule Removal + Cross-Model. EXT-01 closed empty, CROSS evidence published. See `milestones/v2.0-ROADMAP.md`.
+
+## Next Milestone Candidates
+
+None active. Possible v2.1+ topics retained from prior planning:
+- **EXT-04** — Emit-biased boundary prompting on alias-discovery (BBB variance band tightening 3pp → 1pp). Variance work, not rule removal.
+- **Upstream-tier rule removal** — v2.0 EXT-01 evidence suggests the BBB recall gap lives in the extraction/coref tier. A v2.1+ phase could target a rule there instead.
+- **Multi-model adapter exploration** — v2.0 CROSS evidence isolated dataset-shape-dependent model gaps. v2.1+ could investigate whether a project-agnostic backend-adaptive harness layer is reviewer-defensible (would need fresh GATE-06 thinking).
+
+<details>
+<summary>Past milestone scope (archived v2.0 active section)</summary>
+
+## v2.0 Active (archived — milestone shipped 2026-05-31)
+
+**Original goal:** Finish the no-hand-crafted-rules thesis by replacing the last structural rule with a project-agnostic LLM primitive, validate on GPT-5.2, and explore stacking/unifying LLM primitives into `s_linker14`.
+
+**Actual outcome:** EXT-01 closed empty (negative); EXT-02 auto-skipped; COMBINE retro-satisfied via existing v1.0 unification; CROSS done on gpt-5.4 with mixed-result published as model-provider-property finding. See `milestones/v2.0-ROADMAP.md` and `milestones/v2.0-MILESTONE-AUDIT.md`.
+
+**Hard generality constraint (GATE-06):** Held throughout v2.0. Zero benchmark-derived values shipped.
+
+</details>
+
+### Out of Scope (general — applies across milestones)
 
 - New seed/linker approaches (ILinker3+, cross-model ensembles) — this project is rule-reduction on 12c, not exploration
 - Non-SAD-SAM tasks (SAM-Code, SAD-Code) — out of dataset scope
