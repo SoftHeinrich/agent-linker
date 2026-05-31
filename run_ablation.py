@@ -82,6 +82,13 @@ CANONICAL_VARIANTS = [
     "s_linker13_trim1_judge_clean",   # Phase 12 Step 1: alias-judge trim (Technique 3 + 8) on s_linker13_clean (PROMPT-01, PROMPT-02)
     "s_linker13_trim2_entval_clean",   # Phase 12 Step 2: ENTITY_EXTRACTION_RULES + VALIDATION_RULES merged via Technique 3 (PROMPT-02)
     "s_linker13_trim3_runtime_rubric_clean",   # Phase 12 Step 3: inference-time rubric replaces DOC_KNOWLEDGE_JUDGE_RULES (PROMPT-01, PROMPT-02)
+    "s_linker13_trim4_ambiguity_runtime_clean",   # Phase 12 EXTENSION (Plan 12-07): runtime rubric replaces AMBIGUITY_FEW_SHOT + AMBIGUITY_RULES
+    "s_linker13_trim5_extraction_runtime_clean",   # Phase 12 EXTENSION (Plan 12-08): runtime rubric replaces DOC_KNOWLEDGE_EXTRACTION_RULES
+    "s_linker13_trim6_judge_examples_runtime_clean",   # Phase 12 EXTENSION (Plan 12-09): runtime examples replace DOC_KNOWLEDGE_JUDGE_EXAMPLES (uses trim1 distilled rules)
+    "s_linker13_trim7_entity_runtime_clean",   # Phase 12 EXTENSION (Plan 12-10): runtime rubric replaces ENTITY_EXTRACTION_RULES
+    "s_linker13_trim8_validation_runtime_clean",   # Phase 12 EXTENSION (Plan 12-11): runtime rubric replaces VALIDATION_RULES
+    "s_linker13_trim9_seed_runtime_clean",   # Phase 12 EXTENSION (Plan 12-12): runtime rubric replaces SEED_DISAMBIGUATION_RULES
+    "s_linker13_skill_learned_clean",   # Phase 12 EXTENSION (Voyager Pilot): axiom prompts + learned skill bank
     "s_linker13g_pre",   # EXT-01 sub-variant (a): regex pre-filter + LLM judge
     "s_linker13g_sem",   # EXT-01 sub-variant (b): LLM-only, dotted-path encoded in prompt
     "s_linker13g_pre_alias",   # EXT-01 alias-aware (a): regex pre-filter + LLM judge + alias map (Plan 06-06 / D-07)
@@ -358,6 +365,55 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13_trim3_runtime_rubric_clean",
         class_name="SLinker13Trim3RuntimeRubricClean",
         description="S-Linker13 Trim3 — Phase 12 Step 3: DOC_KNOWLEDGE_JUDGE_RULES replaced by inference-time rubric builder (AHE + Agentic Rubrics mechanism — supplement Techniques 2+3); 7 worked examples preserved verbatim",
+        canonical=False,
+    ),
+    "s_linker13_trim4_ambiguity_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim4_ambiguity_runtime_clean",
+        class_name="SLinker13Trim4AmbiguityRuntimeClean",
+        description="S-Linker13 Trim4 — Phase 12 EXTENSION (Plan 12-07): runtime rubric replaces AMBIGUITY_FEW_SHOT + AMBIGUITY_RULES; no static fallback (RuntimeError on empty rubric)",
+        canonical=False,
+    ),
+    "s_linker13_trim5_extraction_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim5_extraction_runtime_clean",
+        class_name="SLinker13Trim5ExtractionRuntimeClean",
+        description="S-Linker13 Trim5 — Phase 12 EXTENSION (Plan 12-08): runtime rubric replaces DOC_KNOWLEDGE_EXTRACTION_RULES; no static fallback",
+        canonical=False,
+    ),
+    "s_linker13_trim6_judge_examples_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim6_judge_examples_runtime_clean",
+        class_name="SLinker13Trim6JudgeExamplesRuntimeClean",
+        description="S-Linker13 Trim6 — Phase 12 EXTENSION (Plan 12-09): runtime worked-examples replace DOC_KNOWLEDGE_JUDGE_EXAMPLES; uses trim1's distilled rubric (orthogonal composition); no static fallback",
+        canonical=False,
+    ),
+    "s_linker13_trim7_entity_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim7_entity_runtime_clean",
+        class_name="SLinker13Trim7EntityRuntimeClean",
+        description="S-Linker13 Trim7 — Phase 12 EXTENSION (Plan 12-10): runtime rubric replaces ENTITY_EXTRACTION_RULES; built once per document, reused across batches + passes",
+        canonical=False,
+    ),
+    "s_linker13_trim8_validation_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim8_validation_runtime_clean",
+        class_name="SLinker13Trim8ValidationRuntimeClean",
+        description="S-Linker13 Trim8 — Phase 12 EXTENSION (Plan 12-11): runtime rubric replaces VALIDATION_RULES; no static fallback (RuntimeError if rubric builder empty after 2 attempts)",
+        canonical=False,
+    ),
+    "s_linker13_trim9_seed_runtime_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_trim9_seed_runtime_clean",
+        class_name="SLinker13Trim9SeedRuntimeClean",
+        description="S-Linker13 Trim9 — Phase 12 EXTENSION (Plan 12-12): runtime rubric replaces SEED_DISAMBIGUATION_RULES; built once per document, reused across components; no static fallback",
+        canonical=False,
+    ),
+    "s_linker13_skill_learned_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_skill_learned_clean",
+        class_name="SLinker13SkillLearned",
+        description="S-Linker13 Skill-Learned — Phase 12 EXTENSION (Voyager Pilot): axiom prompts (prompts_v3_axiom) wrapped at inference time with a JSON skill bank of learned abstract patterns. Skill path is constructor kwarg `skill_path` (defaults to results/voyager_pilot/skill_bank.json).",
         canonical=False,
     ),
     "s_linker13g_pre": dict(
