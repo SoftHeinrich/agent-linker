@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Complete Rule Removal + Cross-Model — Generality First
-status: completed
-stopped_at: Phase 6 context gathered
-last_updated: "2026-05-30T07:25:06.733Z"
-last_activity: 2026-05-30 — v2.0 roadmap created with 4 phases (6-9), 100% coverage of 8 active REQs
+status: executing
+stopped_at: Phase 6 closed empty (negative); Phase 7 auto-skipped; advancing to Phase 8
+last_updated: "2026-05-31T03:30:00.000Z"
+last_activity: 2026-05-31 -- Phase 06 closed empty (negative result), Phase 07 auto-skipped per gating
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 2
+  total_plans: 9
+  completed_plans: 9
+  percent: 50
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-30 for v2.0 kickoff)
 
 **Core value:** Every rule removed from `s_linker12c`/`s_linker13` and replaced by an LLM primitive must hold macro F1 ≥ 93% AND read as project-agnostic to a reviewer — or be rejected.
-**Current focus:** v2.0 Phase 6 — EXT-01 (project-agnostic LLM replacement of `_has_standalone_mention`)
+**Current focus:** Phase 08 — COMBINE `s_linker14` Stack-or-Unify (Phase 06 closed empty; Phase 07 auto-skipped per gating)
 
 ## Current Position
 
 Milestone: v2.0 (Complete Rule Removal + Cross-Model — Generality First)
-Phase: 6 (not started) — EXT-01 Project-Agnostic Standalone-Mention LLM Primitive
-Plan: —
-Status: Roadmap complete, awaiting `/gsd-plan-phase 6`
-Last activity: 2026-05-30 — v2.0 roadmap created with 4 phases (6-9), 100% coverage of 8 active REQs
+Phase: 08 (COMBINE — s_linker14 Stack-or-Unify Combined LLM Primitives) — STARTING
+Plan: 0 of TBD
+Status: Phase 6 negative-closed, Phase 7 skipped, advancing to Phase 8
+Last activity: 2026-05-31 -- Phase 06 closed empty (EXT-01 not viable, recall gap upstream); Phase 07 auto-skipped
 
-Progress: [          ] 0% (0/4 phases complete)
+Progress: [█████     ] 50% (2/4 phases complete — Phase 6 negative-close, Phase 7 auto-skip)
 
 ## v2.0 Scope (active)
 

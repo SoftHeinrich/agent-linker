@@ -13,8 +13,8 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
 
 ## Phases
 
-- [ ] **Phase 6: EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive** — replace `_has_standalone_mention` with an LLM primitive that encodes no project-specific structure
-- [ ] **Phase 7: EXT-02 — Drop Dotted-Path Guard** — remove the dotted-path regex inside the EXT-01 variant (gated on Phase 6 dual-floor pass + GATE-06 audit clean)
+- [x] **Phase 6: EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive** — CLOSED EMPTY (negative result). Two design generations + 3-direction feasibility probe converged on: BBB recall gap is upstream of `_has_standalone_mention` (extraction/coref tier). No standalone-mention rewrite (pure-LLM, alias-aware, doc-level, hybrid, pure-removal) recovers any of 14 baseline FNs. EXT-01 unshipped; methodology validated.
+- [~] **Phase 7: EXT-02 — Drop Dotted-Path Guard** — AUTO-SKIPPED per ROADMAP gating (Phase 6 did not pass dual floor). Milestone proceeds without EXT-02.
 - [ ] **Phase 8: COMBINE — `s_linker14` Stack-or-Unify Combined LLM Primitives** — integrate Spike 001 trailing-words + scope-field + alias-coref-fold + EXT-01 into a single linker variant; stack-vs-unify decided at phase start from EXT-01 cost/quality signal
 - [ ] **Phase 9: CROSS — GPT-5.2 Cross-Model Validation** — produce cross-model JSON results and comparison report for `s_linker13` and `s_linker14` on GPT-5.2 across all 5 datasets
 
@@ -29,11 +29,16 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
   2. `_has_standalone_mention` (and its in-helper callees specific to this rule) is no longer reachable from the variant's call graph; only parsers/formatters and other v1.0-retained helpers remain on the structural side.
   3. The variant passes the dual floor on the full 5-project sweep: macro F1 ≥ 0.93 AND BBB ≤ 6pp below `s_linker12c` BBB AND each other dataset ≤ 2pp below the corresponding `s_linker12c` per-dataset baseline (GATE-01); per-dataset and macro F1 logged as JSON.
   4. **GATE-06 generality audit recorded in SUMMARY.md**: new prompt(s) and any new helper pass (a) `BENCHMARK_TABOO.md` scan AND (b) reviewer-defensibility check — no encoded project structure in prompt examples or code logic. Cost/quality signal (LLM-call count, latency vs `s_linker13`) captured and tagged for the Phase 8 stack-vs-unify decision.
-**Plans**: 4 plans
-- [ ] 06-01-PLAN.md — Prompt design (STANDALONE_MENTION_RULES_PRE_FILTERED + LLM_ONLY in prompts_v2.py) + GATE-06 pre-clearance audit
-- [ ] 06-02-PLAN.md — Sub-variant scaffolding: s_linker13g_pre.py (regex pre-filter + LLM judge) and s_linker13g_sem.py (LLM-only, dotted-path in prompt) + run_ablation.py GATE-07 dual-registration
-- [ ] 06-03-PLAN.md — D-02 offline anchor-set diff stage + catastrophic-diff drop rule + 06-DIFF-MATRIX.md + user-approved finalist set
-- [ ] 06-04-PLAN.md — GATE-05 hard-tier dev loop + full 5-project sweep + D-03 winner pick + byte-copy promotion to canonical s_linker13g.py + GATE-06 final audit + 06-SUMMARY.md with tagged Phase-8 cost/quality block
+**Plans**: 9 plans (4 original + 4 alias-aware after GATE-05 pivot + 1 feasibility-probe study after second GATE-05 pivot)
+- [x] 06-01-PLAN.md — Prompt design (STANDALONE_MENTION_RULES_PRE_FILTERED + LLM_ONLY in prompts_v2.py) + GATE-06 pre-clearance audit
+- [x] 06-02-PLAN.md — Sub-variant scaffolding: s_linker13g_pre.py (regex pre-filter + LLM judge) and s_linker13g_sem.py (LLM-only, dotted-path in prompt) + run_ablation.py GATE-07 dual-registration
+- [x] 06-03-PLAN.md — D-02 offline anchor-set diff stage + catastrophic-diff drop rule + 06-DIFF-MATRIX.md + user-approved finalist set
+- [~] 06-04-PLAN.md — GATE-05 hard-tier dev loop (FAILED on BBB by -8.8pp); Tasks 2-7 voided, design pivot to alias-aware variants recorded in 06-04-SUMMARY.md and CONTEXT D-07..D-11
+- [ ] 06-05-PLAN.md — Alias-aware prompt extensions in prompts_v2.py (4 new constants: `STANDALONE_MENTION_RULES_{PRE_FILTERED,LLM_ONLY}_{ALIAS_AWARE,FULL_KNOWLEDGE}`) + appended GATE-06 pre-clearance audit
+- [ ] 06-06-PLAN.md — Build 4 new sub-variants (`s_linker13g_{pre,sem}_{alias,full}.py`) via copy-fork from 06-02 templates, with Tier-1b sequential standalone_map consuming `doc_knowledge.aliases` (+ raw_seed_links for *_full) + run_ablation.py GATE-07 four-way registration
+- [ ] 06-07-PLAN.md — D-02-style anchor-diff over the 4 new variants vs BOTH regex baseline AND pure-LLM rejected baseline (D-09) + denominator-aware Jaccard skip + 06-DIFF-MATRIX-ALIAS.md + user-approved finalist set
+- [~] 06-08-PLAN.md — GATE-05 hard-tier dev loop on alias-aware finalists (FAILED: best BBB 0.8319 = -5.7pp under parent; Tasks 2-5 voided, design pivot to feasibility-first probes recorded in 06-08-SUMMARY.md and CONTEXT D-12..D-15)
+- [ ] 06-09-PLAN.md — Feasibility-first probe study: P1 (document-level full-context judge), P2 (hybrid regex + LLM rejection), P3 (pure removal); BBB-only probes, no new linker files; 06-FEASIBILITY.md table + user decision checkpoint per D-13..D-15
 
 ### Phase 7: EXT-02 — Drop Dotted-Path Guard
 **Goal**: Inside the EXT-01 variant, drop the dotted-path regex guard (the one that currently protects `ui.website`-style references) and confirm the variant still meets the dual floor.
@@ -43,7 +48,7 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
   1. Dotted-path regex guard is removed from the variant's `_has_standalone_mention`-replacement path; diff shows the deletion and its callers no longer reference it.
   2. Variant (with guard dropped) passes the dual floor on the full 5-project sweep (GATE-01); per-dataset and macro F1 logged as JSON, with explicit before/after comparison vs the Phase 6 variant on TeaMMates (the dotted-path-sensitive dataset, per v1.0 VAR-04 finding).
   3. **GATE-06 generality audit recorded in SUMMARY.md**: confirmation that no replacement project-specific logic was added to compensate for the dropped guard. If the LLM primitive cannot generalize without the guard, the phase closes empty with a documented negative result (parallel to v1.0 Phase 3 / VAR-04).
-**Plans**: TBD (estimated 1–2 — guard removal + targeted TM/BBB probe; full sweep + audit)
+**Plans**: SKIPPED — Phase 6 closed empty (negative result); Phase 7's premise (the EXT-01 variant) does not exist. Per gating language above, milestone proceeds without EXT-02. Recorded 2026-05-31.
 
 ### Phase 8: COMBINE — `s_linker14` Stack-or-Unify Combined LLM Primitives
 **Goal**: Build `s_linker14.py` integrating all LLM rule-removal primitives accumulated through v1.0 + v2.0 (Spike 001 trailing-words, `scope: global|local` alias field, alias-coref fold, and EXT-01's standalone-mention replacement); decide stack-vs-unify at phase start using the EXT-01 cost/quality signal from Phase 6.
@@ -99,7 +104,7 @@ GATE-01, GATE-05, GATE-06, GATE-07 are standing (apply to all phases — recorde
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 6. EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive | v2.0 | 0/4 | Not started | — |
-| 7. EXT-02 — Drop Dotted-Path Guard | v2.0 | 0/2 (est.) | Not started (gated on Phase 6) | — |
-| 8. COMBINE — `s_linker14` Stack-or-Unify | v2.0 | 0/3 (est.) | Not started (depends on Phase 6) | — |
+| 6. EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive | v2.0 | 9/9 (closed-empty negative — 06-04/06-08 partial after GATE-05 fails; 06-09 feasibility probe + close-empty adjudication) | Complete (negative) | 2026-05-31 |
+| 7. EXT-02 — Drop Dotted-Path Guard | v2.0 | 0/2 (est.) | AUTO-SKIPPED (Phase 6 gating failed) | 2026-05-31 |
+| 8. COMBINE — `s_linker14` Stack-or-Unify | v2.0 | 0/3 (est.) | Not started (parent = s_linker13, no EXT-01 primitive to stack) | — |
 | 9. CROSS — GPT-5.2 Cross-Model Validation | v2.0 | 0/2 (est.) | Not started (depends on Phase 8) | — |
