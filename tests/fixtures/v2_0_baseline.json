@@ -1221,6 +1221,42 @@
       ],
       "present_datasets": {},
       "note": "Phase 12 Step 0 prompts_v3 sibling of s_linker13_clean (PROMPT-01). Byte-equal kept prompts to prompts_v2; only delta is import path + variant name. No v2.0 baseline by definition; equivalence to s_linker13_clean proven by byte-equality at the import surface (Plan 12-01 Task 3)."
+    },
+    {
+      "variant": "s_linker13_trim1_judge_clean",
+      "missing_datasets": [
+        "mediastore",
+        "teastore",
+        "teammates",
+        "bigbluebutton",
+        "jabref"
+      ],
+      "present_datasets": {},
+      "note": "Phase 12 Step 1 trim variant of s_linker13_clean (PROMPT-01, PROMPT-02). Subclass overriding DOC_KNOWLEDGE_JUDGE_RULES + DOC_KNOWLEDGE_JUDGE_EXAMPLES via Technique 3 (lossless rubric distillation) + Technique 8 (reasoning-before-conclusion directive order). No v2.0 baseline by definition; Phase 12 Plan 12-03 ablates against the s_linker13_clean cached anchor."
+    },
+    {
+      "variant": "s_linker13_trim2_entval_clean",
+      "missing_datasets": [
+        "mediastore",
+        "teastore",
+        "teammates",
+        "bigbluebutton",
+        "jabref"
+      ],
+      "present_datasets": {},
+      "note": "Phase 12 Step 2 trim variant of s_linker13_clean (PROMPT-02). Subclass override merging ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3 lossless rubric distillation. No v2.0 baseline by definition; Phase 12 Plan 12-04 ablates against the s_linker13_clean cached anchor."
+    },
+    {
+      "variant": "s_linker13_trim3_runtime_rubric_clean",
+      "missing_datasets": [
+        "mediastore",
+        "teastore",
+        "teammates",
+        "bigbluebutton",
+        "jabref"
+      ],
+      "present_datasets": {},
+      "note": "Phase 12 Step 3 trim variant of s_linker13_clean (PROMPT-01, PROMPT-02). Subclass replacing the static DOC_KNOWLEDGE_JUDGE_RULES with an inference-time rubric builder (AHE + Agentic Rubrics — supplement Techniques 2+3). No v2.0 baseline by definition; Phase 12 Plan 12-05 ablates against the s_linker13_clean cached anchor."
     }
   ],
   "notes": [
