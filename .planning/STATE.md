@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-last_updated: "2026-05-31T05:09:33.613Z"
+last_updated: "2026-05-31"
 last_activity: 2026-05-31
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,48 +17,54 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-30 for v2.0 kickoff)
+See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
-**Core value:** Every rule removed from `s_linker12c`/`s_linker13` and replaced by an LLM primitive must hold macro F1 ≥ 93% AND read as project-agnostic to a reviewer — or be rejected.
-**Current focus:** Milestone lifecycle — audit → complete → cleanup. All 4 v2.0 phases done.
+**Core value:** Every rule removed from `s_linker13`/its prompts must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within ≤ 1pp of 0.9077 — or be rejected. Every retained prompt + helper must read as project-agnostic to a reviewer (GATE-06). Nothing currently runnable breaks.
+**Current focus:** Phase 10 — Scaffolding (ready to plan)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-31 — Milestone v2.1 started
+Phase: 10 of 4 (Scaffolding)
+Plan: — of TBD
+Status: Ready to plan
+Last activity: 2026-05-31 — v2.1 roadmap created (Phases 10–13)
 
-## v2.0 Scope (active)
+Progress: [░░░░░░░░░░] 0%
 
-- **Phase 6 — EXT-01** — Project-agnostic LLM replacement of `_has_standalone_mention` (relaxed budget)
-- **Phase 7 — EXT-02** — Drop dotted-path guard in `_has_standalone_mention` (gated on Phase 6 pass)
-- **Phase 8 — COMBINE-01/02/03** — `s_linker14`: stack-or-unify combined LLM primitives (decision at phase start using EXT-01 signal)
-- **Phase 9 — CROSS-01/02/03** — GPT-5.2 cross-model evaluation harness + report for `s_linker13` and `s_linker14`
+## Performance Metrics
 
-## Standing Gates (carried from v1.0 + new for v2.0)
+**Velocity:**
+- Total plans completed: 0
+- Average duration: —
+- Total execution time: —
 
-- GATE-01: macro F1 ≥ 0.93; BBB tolerance 6pp; other-dataset 2pp
-- GATE-05: hard-tier auto-approve thresholds (TM ≥ -0.01, BBB ≥ -0.06)
-- **GATE-06 (NEW for v2.0):** generality audit — every new prompt + helper passes BENCHMARK_TABOO scan AND reviewer-defensibility check; zero hardcoded project-tailored values in prompts or logic. **Recorded per phase in SUMMARY.md.**
-- GATE-07: every promoted variant registered in `CANONICAL_VARIANTS` + `VARIANT_SPECS`; standalone file; structured docstring with `REMOVED_FROM` / `RULES_REMOVED`.
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+*Updated after each plan completion*
+
+## Standing Gates (v2.1)
+
+- GATE-01: macro F1 ≥ 0.93; BBB tolerance 6pp; other-dataset 2pp (Claude Sonnet)
+- GATE-01 cross-model (v2.1 NEW): gpt-5.4 macro ≥ 0.9077 within ≤ 1pp tolerance (T to be committed in Phase 10)
+- GATE-02 (v2.1 NEW): frozen-compat regression test; all CANONICAL_VARIANTS produce F1 matching v2.0 baseline JSON
+- GATE-06: generality audit — every new prompt + helper passes BENCHMARK_TABOO scan AND reviewer-defensibility check
+- GATE-07: every promoted variant registered in CANONICAL_VARIANTS + VARIANT_SPECS; standalone file; structured docstring
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- v2.0 kickoff: hard generality constraint applies to every phase (GATE-06)
-- v2.0 kickoff: LLM-COMBINE stack-vs-unify decision deferred to Phase 8 start, using EXT-01 cost/quality signal from Phase 6
-- v2.0 kickoff: EXT-04 (variance band) explicitly out of scope — defer to robustness milestone
-- v2.0 roadmap: Phase 7 (EXT-02) is gated — only attempted if Phase 6 passes dual floor + GATE-06; otherwise skipped with documented negative result
-- Carry from v1.0: Claude Sonnet only; standalone linker files; no benchmark-derived words in prompts
+- v2.1 kickoff: `s_linker13.py`, `prompts_v2.py`, and existing helper modules are frozen; cleanup lands in `_clean` / `v3+` / `_min` siblings
+- v2.1 kickoff: cross-model gate uses gpt-5.4 (v2.0 CROSS baseline 0.9077) with tolerance ≤ 1pp
+- v2.1 kickoff: coarse granularity → 4 phases (10–13); sequential dependency chain
 
 ### Pending Todos
 
-None yet. Next action: `/gsd-plan-phase 6`.
+None yet. Next action: `/gsd-plan-phase 10`.
 
 ### Blockers/Concerns
 
@@ -68,10 +74,12 @@ None.
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| v2.1+    | EXT-04: Emit-biased boundary prompting on alias-discovery (BBB variance ~3pp → ~1pp) | Deferred | v2.0 kickoff (2026-05-30) |
+| v2.2+ | EXT-04: Emit-biased boundary prompting on alias-discovery (BBB variance ~3pp → ~1pp) | Deferred | v2.0 kickoff |
+| v2.2+ | EXT-upstream: Upstream-tier rule removal (extraction/coref tier) | Deferred | v2.0 close |
+| v2.2+ | ADAPTER-01: Multi-model backend-adaptive harness layer | Deferred | v2.0 close |
 
 ## Session Continuity
 
-Last session: --stopped-at
-Stopped at: Phase 6 context gathered
-Resume file: --resume-file
+Last session: 2026-05-31
+Stopped at: Roadmap created — Phases 10–13 defined; requirements mapped
+Resume file: None

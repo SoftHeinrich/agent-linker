@@ -57,26 +57,24 @@ Explicitly excluded from v2.1.
 
 ## Traceability
 
-Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLEAN-01 | TBD | Pending |
-| CLEAN-02 | TBD | Pending |
-| PROMPT-01 | TBD | Pending |
-| PROMPT-02 | TBD | Pending |
-| PROMPT-03 | TBD | Pending |
-| PROMPT-04 | TBD | Pending |
-| PROMPT-05 | TBD | Pending |
-| GATE-01 | TBD | Pending |
-| GATE-02 | TBD | Pending |
-| GATE-03 | TBD | Pending |
+| CLEAN-01 | Phase 10 | Pending |
+| CLEAN-02 | Phase 10 | Pending |
+| GATE-01 | Phase 10 | Pending |
+| GATE-02 | Phase 10 | Pending |
+| PROMPT-05 | Phase 11 | Pending |
+| PROMPT-01 | Phase 12 | Pending |
+| PROMPT-02 | Phase 12 | Pending |
+| PROMPT-04 | Phase 12 | Pending |
+| PROMPT-03 | Phase 13 | Pending |
+| GATE-03 | Phase 13 | Pending |
 
 **Coverage:**
 - v2.1 requirements: 10 total
-- Mapped to phases: 0 (roadmapper pending)
-- Unmapped: 10 ⚠ (to be resolved by roadmap step)
+- Mapped to phases: 10 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-31*
-*Last updated: 2026-05-31 — v2.1 kickoff*
+*Last updated: 2026-05-31 — v2.1 roadmap created*
