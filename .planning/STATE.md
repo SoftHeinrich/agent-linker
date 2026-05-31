@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-stopped_at: "Phase 10 complete (4/4 plans, verification passed, code review clean). Next action: Phase 11 — Research (PROMPT-05 prompt-minimization survey)."
-last_updated: "2026-05-31T09:00:00.000Z"
+stopped_at: "Phase 11 (Research) complete — survey + supplement shipped, PROMPT-05 closed. Next action: Phase 12 — Trim Ablation."
+last_updated: "2026-05-31T10:15:00.000Z"
 last_activity: 2026-05-31
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 25
+  completed_phases: 2
+  total_plans: 5
+  completed_plans: 5
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
 **Core value:** Every rule removed from `s_linker13`/its prompts must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within ≤ 1pp of 0.9077 — or be rejected. Every retained prompt + helper must read as project-agnostic to a reviewer (GATE-06). Nothing currently runnable breaks.
-**Current focus:** Phase 11 — Research (PROMPT-05 survey) — Phase 10 COMPLETE
+**Current focus:** Phase 12 — Trim Ablation — Phases 10+11 COMPLETE
 
 ## Current Position
 
-Phase: 11 of 4 — Phase 10 (Scaffolding) COMPLETE
-Plan: — of TBD (Phase 11 not yet planned)
+Phase: 12 of 4 — Phases 10 (Scaffolding) + 11 (Research) COMPLETE
+Plan: — of TBD (Phase 12 not yet planned)
 Status: Ready to plan
-Last activity: 2026-05-31 — Phase 10 verification passed, code review clean
+Last activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
 
-Progress: [██░░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 

@@ -157,6 +157,17 @@ Two recent papers directly relevant; one large survey for background; one negati
 
 No "breaking" recent paper invalidates the V35 findings. The recent literature CONFIRMS V35: prompt complexity matters; per-prompt adaptive strategies are right; restructuring beats deletion.
 
+### 4.1 Supplement — OpenAI Erdős + Additional April–May 2026 Papers
+
+See companion file **[`PROMPT-HARNESS-SURVEY-SUPPLEMENT-ERDOS.md`](PROMPT-HARNESS-SURVEY-SUPPLEMENT-ERDOS.md)** for a focused supplement. Summary of supplement findings that feed Phase 12:
+
+- **OpenAI's Erdős-conjecture proof system (May 2026)**: architecture not disclosed by OpenAI; corroborated as Best-of-N + minimal-prompt + human verifier on a *one-shot verifiable* problem. **Structural mismatch for s_linker13** (TLR is many-decision-unverifiable). Listed as a **negative control / template not to imitate** — fit 2/5.
+- **Agentic Harness Engineering (AHE, arXiv 2604.25850)** and **Agentic Rubrics as Contextual Verifiers (arXiv 2601.04171)** — both score 4/5 transferability. Both *restructure* rules at inference time (rubric regeneration / verifier delegation) rather than statically remove — directly addresses the V35 ceiling.
+- **Mechanism for breaking V35** (cross-confirmed with main §1): inference-time rubric regeneration preserves information density via regeneration, where V35's static removal lost coverage.
+- **Three additional Phase 12 actions** prioritized in the supplement §4 against `DOC_KNOWLEDGE_JUDGE_RULES`, `STANDALONE_MENTION_RULES_*` collapse, and `JUDGE_RULES` split.
+
+The supplement's recommendations are not duplicative of §5 below — they target different prompts and add the inference-time rubric pattern that main §2 only touches via Technique 3 (lossless distillation).
+
 ---
 
 ## 5. Recommended Trim Order for Phase 12
