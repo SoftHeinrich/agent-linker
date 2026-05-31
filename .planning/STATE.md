@@ -1,11 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: none-active (v2.0 shipped 2026-05-31)
-milestone_name: awaiting /gsd-new-milestone
-status: idle
-stopped_at: v2.0 archived + tagged; ready for next milestone definition
-last_updated: "2026-05-31T08:00:00.000Z"
-last_activity: 2026-05-31 -- v2.0 milestone archived to .planning/milestones/, tagged v2.0
+milestone: v2.1
+milestone_name: Cleanup + Prompt Simplification
+status: planning
+last_updated: "2026-05-31T05:09:33.613Z"
+last_activity: 2026-05-31
 progress:
   total_phases: 0
   completed_phases: 0
@@ -25,13 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-30 for v2.0 kickoff)
 
 ## Current Position
 
-Milestone: v2.0 (Complete Rule Removal + Cross-Model — Generality First)
-Phase: ALL PHASES COMPLETE — ready for milestone lifecycle
-Plan: 14/14 done across Phases 6, 8, 9 (Phase 7 auto-skipped per gating)
-Status: Ready for /gsd-audit-milestone → /gsd-complete-milestone → /gsd-cleanup
-Last activity: 2026-05-31 -- Phase 09 CROSS complete (gpt-5.4 macro 0.9077, GATE-01 does NOT hold cross-model)
-
-Progress: [██████████] 100% (4/4 phases complete)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-31 — Milestone v2.1 started
 
 ## v2.0 Scope (active)
 

@@ -33,7 +33,20 @@ v2.0 scope (Complete Rule Removal + Cross-Model — Generality First) — **ship
 
 (Deferred to later milestone: EXT-04 emit-biased boundary prompting — variance work, not rule removal.)
 
-## Current State
+## Current Milestone: v2.1 Cleanup + Prompt Simplification
+
+**Goal:** Slim `s_linker13` + its dependency surface and trim prompt-rule scaffolding to the minimum that holds GATE-01 on Claude Sonnet AND a cross-model gate on gpt-5.4 — without breaking any currently-runnable variant.
+
+**Target features:**
+- Standalone cleaned `s_linker13` with its own (possibly duplicated) helper copies; new dependencies on `prompts_v3` allowed
+- `prompts_v3.py` side-by-side with `prompts_v2.py`; only prompts actually used by the new `s_linker13` carried forward
+- Per-prompt rule trimming as ablation variants, each gated by GATE-01 (Claude) + cross-model floor (gpt-5.4 macro ≥ 0.9077 within tolerance)
+- Dead-code sweep across `s_linker13`'s actual dependency tree (`data_types_v2`, `document_loader_v2`, `pcm_parser_v2`, used `ilinker*`) — unreferenced helpers/imports/constants removed
+- Frozen-compat guarantee: every variant in `CANONICAL_VARIANTS` / `run_ablation.py` continues to produce identical F1 by importing `prompts_v2` (untouched)
+
+**Standing constraints carried forward:** GATE-01, GATE-06 (generality / zero benchmark-derived values), GATE-07 (canonical registration), Claude Sonnet default, BENCHMARK_TABOO compliance.
+
+## Past State
 
 **Shipped:** v2.0 — Complete Rule Removal + Cross-Model (2026-05-31). All 8 active requirements traced to closing artifacts. All 4 standing gates held. Audit verdict: PASSED (mixed-result). Production artifact remains **`s_linker13.py`** (macro F1 0.9506 Claude Sonnet, 0.9077 gpt-5.4).
 
@@ -49,10 +62,10 @@ v2.0 scope (Complete Rule Removal + Cross-Model — Generality First) — **ship
 
 ## Next Milestone Candidates
 
-None active. Possible v2.1+ topics retained from prior planning:
+Active milestone is v2.1 (above). Topics retained for later milestones (v2.2+):
 - **EXT-04** — Emit-biased boundary prompting on alias-discovery (BBB variance band tightening 3pp → 1pp). Variance work, not rule removal.
-- **Upstream-tier rule removal** — v2.0 EXT-01 evidence suggests the BBB recall gap lives in the extraction/coref tier. A v2.1+ phase could target a rule there instead.
-- **Multi-model adapter exploration** — v2.0 CROSS evidence isolated dataset-shape-dependent model gaps. v2.1+ could investigate whether a project-agnostic backend-adaptive harness layer is reviewer-defensible (would need fresh GATE-06 thinking).
+- **Upstream-tier rule removal** — v2.0 EXT-01 evidence suggests the BBB recall gap lives in the extraction/coref tier. A future milestone could target a rule there instead.
+- **Multi-model adapter exploration** — v2.0 CROSS evidence isolated dataset-shape-dependent model gaps. Investigate whether a project-agnostic backend-adaptive harness layer is reviewer-defensible (would need fresh GATE-06 thinking).
 
 <details>
 <summary>Past milestone scope (archived v2.0 active section)</summary>
@@ -128,4 +141,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-30 — v2.0 kickoff (Complete Rule Removal + Cross-Model — Generality First)*
+*Last updated: 2026-05-31 — v2.1 kickoff (Cleanup + Prompt Simplification)*
