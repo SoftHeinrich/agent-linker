@@ -136,3 +136,14 @@ results/phase_cache_gpt54/s_linker13/bigbluebutton/
 ```
 
 `./results/phase_cache/` (Claude's default) was NOT touched by this run — namespacing held.
+
+---
+
+## User Adjudication
+
+- **Option selected:** `go`
+- **Timestamp (UTC):** 2026-05-31T04:29:30Z
+- **BBB result summary:** F1 = 0.8037 (P 0.9556, R 0.6935; TP 43, FP 2, FN 19; runtime 48.4 s; cache namespacing under `results/phase_cache_gpt54/` verified, no collision with Claude's `results/phase_cache/`).
+- **Gating-rule citation:** D-03 Step 2 sanity floor (BBB F1 ≥ 0.6) cleared; D-10 cancellation rule cleared on both legs (F1 floor met AND no persistent harness errors — only one transient empty-response retry on a coreference batch, handled by the existing retry path; no auth, rate-limit, model-id, or 4xx/5xx failures).
+- **Decision effect:** Proceed to Plan 09-03 full 5-dataset sweep on gpt-5.4. BBB probe JSON (`results/ablation_results/ablation_20260531_055235.json`) is reused as the bigbluebutton row in the sweep — no BBB re-run (D-03 Step 3 path).
+
