@@ -70,7 +70,11 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
   2. Cross-model evaluation harness produces JSON results for `s_linker14` on GPT-5.2 across all 5 datasets, under the same no-tailoring rule (CROSS-02).
   3. Cross-model markdown report compares Claude Sonnet vs GPT-5.2 per dataset for both variants, explicitly states whether macro F1 ≥ 0.93 holds cross-model for each, and frames any gap as a model-provider-property finding (CROSS-03).
   4. **GATE-06 generality audit recorded in SUMMARY.md**: harness, adapter shim, and any new code path added for the cross-model run contain no benchmark-derived values or per-project branching; the cross-model run is the strongest empirical evidence for the generality claim and must itself be clean.
-**Plans**: TBD (estimated 2 — harness + `s_linker13` GPT-5.2 run; `s_linker14` GPT-5.2 run + comparison report + GATE-06 audit)
+**Plans:** 4 plans
+- [ ] 09-01-PLAN.md — GATE-06 harness audit (llm_client.py + run_ablation.py + s_linker13.py env defaults); blocking pre-flight for gpt-5.4 sweep
+- [ ] 09-02-PLAN.md — BBB probe on gpt-5.4 via env-override (OPENAI_MODEL_NAME=gpt-5.4, PHASE_CACHE_DIR=./results/phase_cache_gpt54); reasonableness gate + go/halt checkpoint per D-03/D-10
+- [ ] 09-03-PLAN.md — Full 5-dataset sweep on gpt-5.4 (skip BBB if probe JSON is reusable); CROSS-01 + CROSS-02 jointly satisfied via single arm (Phase 8 retro-designation)
+- [ ] 09-04-PLAN.md — Author 09-CROSS-REPORT.md (CROSS-03): per-dataset Claude vs gpt-5.4 table, GATE-01 cross-model verdict, variance disclosure, model-provider-property framing per D-05
 
 ## Standing Gates (apply to every phase)
 
