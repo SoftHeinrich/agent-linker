@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-stopped_at: "Completed Plan 12-03 (Step 1 judge trim — ACCEPT). Next action: Plan 12-06 (GATE-06 defensibility audit on trim1)."
-last_updated: "2026-05-31T15:00:00.000Z"
+stopped_at: "Completed Plan 12-05 REVISIT (overturned prior GATE-06 leakage REJECT; new REJECT on cross-model gpt-5.4 by 1.22pp). Next action: Plan 12-06 (GATE-06 defensibility audit; trim1 ACCEPTED, trim3 case study for correct GATE-06 operationalization)."
+last_updated: "2026-05-31T15:30:00.000Z"
 last_activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
 progress:
   total_phases: 4
@@ -52,6 +52,7 @@ Progress: [███████░░░] 73%
 | Phase 12 P02 | ~45min | 3 tasks | 6 files |
 | Phase 12 P04 | ~25min | 4 tasks | 4 files (REJECT verdict) |
 | Phase 12 P03 | ~2h    | 4 tasks | 13 files (ACCEPT verdict) |
+| Phase 12 P05 REVISIT | ~50min | 4 tasks | 2 files (REJECT on cross-model; GATE-06 leakage REJECT OVERTURNED) |
 
 ## Standing Gates (v2.1)
 
@@ -74,10 +75,11 @@ Progress: [███████░░░] 73%
 - [Phase 12]: Plan 12-02: Harness coupling debt tracked — calls into s_linker13_clean by method name (_run_seed_validation, _run_entity_pipeline, _validate_with_evidence, _extract_entities_enriched, _run_coreference). Phase 13 promotion must preserve these names or update harness in lock-step.
 - [Phase 12]: Plan 12-04: Step 2 trim variant `s_linker13_trim2_entval_clean` REJECTED on Claude GATE-01. Merging ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3 (14 → 10 rules) regresses BBB by 6.6pp (F1 0.8036 → 0.7377) and macro to 0.9235 < 0.93. Round 3 (gpt-5.4) skipped per strategic plan. Variant NOT carried to Plan 12-06 or Plan 13-01. Failure consistent with V35a lesson: prompt-merge that erases extraction-vs-validation boundary regresses Claude on highest-variance dataset.
 - [Phase 12]: Plan 12-03: Step 1 trim variant `s_linker13_trim1_judge_clean` ACCEPTED. DOC_KNOWLEDGE_JUDGE_RULES distilled via Technique 3 (lossless rubric distillation, prose form, 773 → 888 bytes) + Technique 8 (reasoning-before-conclusion: "When in doubt, APPROVE" emitted before decision wording). 7 worked examples preserved verbatim (V35a guard). Claude macro 0.9553 (BBB +2.54pp, no other-dataset regression > 2pp); gpt-5.4 macro 0.9173 (TM +10.08pp, MS -3.44pp, TS -1.82pp, BBB/JAB flat). Verdict ACCEPT on relaxed GATE-01 Claude + cross-model gpt-5.4 + GATE-06 (zero benchmark-name hits). Variant CARRIED to Plan 12-06 audit and (subject to that) to Plan 13-01's s_linker13_min union.
+- [Phase 12]: Plan 12-05 REVISIT: Methodological correction — prior REJECT applied strict-reading of GATE-06 ("project terms in LLM output = leakage") which, applied consistently, would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge from input data; the runtime-generated rubric IS that mechanism. Operationalized cross-dataset isolation as the correct empirical test (term t in dataset A's rubric is a leak iff (a) t is a PCM component of dataset B != A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc). Findings: GATE-06 static surface PASS; cross-dataset isolation PASS on both backends (0 violations across 10 rubrics); Claude relaxed GATE-01 PASS (macro 0.9396, BBB 0.8108); gpt-5.4 cross-model FAIL by 1.22pp (macro 0.8855 < 0.8977 floor). Final verdict: REJECT but on cross-model capability gap (consistent with documented Claude-vs-GPT ~5.7pp gap), NOT on leakage. Prior leakage REJECT OVERTURNED. Variant NOT carried to 13-01. Prior 12-05-SUMMARY.md preserved unchanged; 12-05-SUMMARY-REVISIT.md supersedes.
 
 ### Pending Todos
 
-Next action: execute Plan 12-06 (GATE-06 defensibility audit) on accepted trims — at present only trim1 is ACCEPTED. Then Phase 13 (s_linker13_min promotion of trim1 union; trim2 + trim3 are REJECTED and excluded).
+Next action: execute Plan 12-06 (GATE-06 defensibility audit) on accepted trims — at present only trim1 is ACCEPTED. trim3 (runtime rubric) REJECTED on cross-model gap but is GATE-06-COMPLIANT under the methodologically-correct cross-dataset isolation test (case study for 12-06's defensibility narrative). Then Phase 13 (s_linker13_min promotion of trim1 union; trim2 + trim3 are REJECTED and excluded).
 
 ### Blockers/Concerns
 
