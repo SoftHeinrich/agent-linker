@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-stopped_at: "Completed Plan 12-04 (Step 2 ent+val merge — REJECT). Next action: continue with remaining Phase 12 plans (12-06 audit, 13-01 promotion)."
-last_updated: "2026-05-31T14:30:00.000Z"
+stopped_at: "Completed Plan 12-03 (Step 1 judge trim — ACCEPT). Next action: Plan 12-06 (GATE-06 defensibility audit on trim1)."
+last_updated: "2026-05-31T15:00:00.000Z"
 last_activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
 progress:
   total_phases: 4
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
 ## Current Position
 
-Phase: 12 of 4 — Phase 12 Trim Ablation in progress (12-00, 12-01, 12-02, 12-04 complete; 12-05 REJECT; 12-03 + 12-06 remaining)
-Plan: 04 of 07 (Phase 12 has 7 plans: 12-00…12-06)
+Phase: 12 of 4 — Phase 12 Trim Ablation in progress (12-00, 12-01, 12-02, 12-03, 12-04 complete; 12-05 REJECT; 12-06 remaining)
+Plan: 03 of 07 (Phase 12 has 7 plans: 12-00…12-06)
 Status: Executing
-Last activity: 2026-05-31 — Plan 12-04 complete (Step 2 ent+val merge ablated; REJECT on Claude GATE-01)
+Last activity: 2026-05-31 — Plan 12-03 complete (Step 1 judge trim ablated; ACCEPT on Claude relaxed GATE-01 + cross-model gpt-5.4 GATE-01)
 
 Progress: [███████░░░] 73%
 
@@ -51,6 +51,7 @@ Progress: [███████░░░] 73%
 | Phase 10 P04 | ~5min | 2 tasks | 2 files |
 | Phase 12 P02 | ~45min | 3 tasks | 6 files |
 | Phase 12 P04 | ~25min | 4 tasks | 4 files (REJECT verdict) |
+| Phase 12 P03 | ~2h    | 4 tasks | 13 files (ACCEPT verdict) |
 
 ## Standing Gates (v2.1)
 
@@ -72,10 +73,11 @@ Progress: [███████░░░] 73%
 - [Phase 12]: Plan 12-02: Single-step ablation harness ships at llm_sad_sam.ablation.single_step with CLI subcommand; phase=entity_candidates/entity_decisions enforces CRITICAL CONTRACT (zero live LLM on seed_val/coref via monkey-patch). Equivalence sweep PASS (max_abs_delta=0.0).
 - [Phase 12]: Plan 12-02: Harness coupling debt tracked — calls into s_linker13_clean by method name (_run_seed_validation, _run_entity_pipeline, _validate_with_evidence, _extract_entities_enriched, _run_coreference). Phase 13 promotion must preserve these names or update harness in lock-step.
 - [Phase 12]: Plan 12-04: Step 2 trim variant `s_linker13_trim2_entval_clean` REJECTED on Claude GATE-01. Merging ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3 (14 → 10 rules) regresses BBB by 6.6pp (F1 0.8036 → 0.7377) and macro to 0.9235 < 0.93. Round 3 (gpt-5.4) skipped per strategic plan. Variant NOT carried to Plan 12-06 or Plan 13-01. Failure consistent with V35a lesson: prompt-merge that erases extraction-vs-validation boundary regresses Claude on highest-variance dataset.
+- [Phase 12]: Plan 12-03: Step 1 trim variant `s_linker13_trim1_judge_clean` ACCEPTED. DOC_KNOWLEDGE_JUDGE_RULES distilled via Technique 3 (lossless rubric distillation, prose form, 773 → 888 bytes) + Technique 8 (reasoning-before-conclusion: "When in doubt, APPROVE" emitted before decision wording). 7 worked examples preserved verbatim (V35a guard). Claude macro 0.9553 (BBB +2.54pp, no other-dataset regression > 2pp); gpt-5.4 macro 0.9173 (TM +10.08pp, MS -3.44pp, TS -1.82pp, BBB/JAB flat). Verdict ACCEPT on relaxed GATE-01 Claude + cross-model gpt-5.4 + GATE-06 (zero benchmark-name hits). Variant CARRIED to Plan 12-06 audit and (subject to that) to Plan 13-01's s_linker13_min union.
 
 ### Pending Todos
 
-Next action: continue Phase 12 — execute Plan 12-03 (Step 1 judge trim ablation; variant + tests exist but no ablation run yet) and Plan 12-06 (GATE-06 defensibility audit), then proceed to Phase 13 (s_linker13_min promotion). Trim2 (ent+val merge) and Trim3 (runtime rubric) are REJECTED; only accepted trims (if any) carry to Plan 13-01.
+Next action: execute Plan 12-06 (GATE-06 defensibility audit) on accepted trims — at present only trim1 is ACCEPTED. Then Phase 13 (s_linker13_min promotion of trim1 union; trim2 + trim3 are REJECTED and excluded).
 
 ### Blockers/Concerns
 
