@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Complete Rule Removal + Cross-Model — Generality First
 status: executing
-stopped_at: Phase 8 closed no-op (s_linker13 retro-designated); advancing to Phase 9
-last_updated: "2026-05-31T05:30:00.000Z"
-last_activity: 2026-05-31 -- Phase 08 closed no-op (research found primitives already unified in v1.0 chain)
+stopped_at: All v2.0 phases complete; ready for milestone lifecycle (audit → complete → cleanup)
+last_updated: "2026-05-31T07:00:00.000Z"
+last_activity: 2026-05-31 -- Phase 09 CROSS complete; gpt-5.4 macro 0.9077 (GATE-01 does NOT hold cross-model, model-provider-property finding per v2.0 thesis)
 progress:
   total_phases: 4
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 75
+  completed_phases: 4
+  total_plans: 14
+  completed_plans: 14
+  percent: 100
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-30 for v2.0 kickoff)
 
 **Core value:** Every rule removed from `s_linker12c`/`s_linker13` and replaced by an LLM primitive must hold macro F1 ≥ 93% AND read as project-agnostic to a reviewer — or be rejected.
-**Current focus:** Phase 09 — CROSS GPT-5.2 Cross-Model Validation (Phase 06 closed empty, Phase 07 skipped, Phase 08 closed no-op)
+**Current focus:** Milestone lifecycle — audit → complete → cleanup. All 4 v2.0 phases done.
 
 ## Current Position
 
 Milestone: v2.0 (Complete Rule Removal + Cross-Model — Generality First)
-Phase: 09 (CROSS — GPT-5.2 Cross-Model Validation) — STARTING
-Plan: 0 of TBD
-Status: Phase 8 closed no-op, advancing to Phase 9
-Last activity: 2026-05-31 -- Phase 08 closed no-op (s_linker13 retro-designated as COMBINE; primitives already unified in v1.0 chain)
+Phase: ALL PHASES COMPLETE — ready for milestone lifecycle
+Plan: 14/14 done across Phases 6, 8, 9 (Phase 7 auto-skipped per gating)
+Status: Ready for /gsd-audit-milestone → /gsd-complete-milestone → /gsd-cleanup
+Last activity: 2026-05-31 -- Phase 09 CROSS complete (gpt-5.4 macro 0.9077, GATE-01 does NOT hold cross-model)
 
-Progress: [███████   ] 75% (3/4 phases complete)
+Progress: [██████████] 100% (4/4 phases complete)
 
 ## v2.0 Scope (active)
 

@@ -16,7 +16,7 @@ Finish the no-hand-crafted-rules thesis by replacing the last structural rule (`
 - [x] **Phase 6: EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive** — CLOSED EMPTY (negative result). Two design generations + 3-direction feasibility probe converged on: BBB recall gap is upstream of `_has_standalone_mention` (extraction/coref tier). No standalone-mention rewrite (pure-LLM, alias-aware, doc-level, hybrid, pure-removal) recovers any of 14 baseline FNs. EXT-01 unshipped; methodology validated.
 - [~] **Phase 7: EXT-02 — Drop Dotted-Path Guard** — AUTO-SKIPPED per ROADMAP gating (Phase 6 did not pass dual floor). Milestone proceeds without EXT-02.
 - [x] **Phase 8: COMBINE — `s_linker14` Stack-or-Unify Combined LLM Primitives** — CLOSED NO-OP. Research found the 3 in-scope rule-removal primitives (Spike-001 trailing-words + scope-field + alias-coref-fold) were already unified inside `_learn_document_knowledge_enriched` during the v1.0 chain. EXT-01 dropped (Phase 6 negative). No `s_linker14.py` built; `s_linker13` retro-designated as the COMBINE artifact. COMBINE-01/02/03 satisfied via ablation-table addendum + provenance string.
-- [ ] **Phase 9: CROSS — GPT-5.2 Cross-Model Validation** — produce cross-model JSON results and comparison report for `s_linker13` and `s_linker14` on GPT-5.2 across all 5 datasets
+- [x] **Phase 9: CROSS — Cross-Model Validation (gpt-5.4)** — DONE. Single arm (CROSS-02 collapsed into CROSS-01 per Phase 8 retro-designation). 5-dataset sweep on gpt-5.4: macro F1 = 0.9077 (Δ -4.3pp vs Claude 0.9506). **GATE-01 cross-model verdict: does NOT hold** (macro < 0.93). Teammates dominates the gap (-15.3pp) via dotted-path + generic-English + GAE-platform conflation (same failure class as v1.0 13d/VAR-04). Framed as model-provider-property finding per v2.0 thesis. CROSS-01, CROSS-02, CROSS-03 satisfied.
 
 ## Phase Details
 
@@ -111,4 +111,4 @@ GATE-01, GATE-05, GATE-06, GATE-07 are standing (apply to all phases — recorde
 | 6. EXT-01 — Project-Agnostic Standalone-Mention LLM Primitive | v2.0 | 9/9 (closed-empty negative — 06-04/06-08 partial after GATE-05 fails; 06-09 feasibility probe + close-empty adjudication) | Complete (negative) | 2026-05-31 |
 | 7. EXT-02 — Drop Dotted-Path Guard | v2.0 | 0/2 (est.) | AUTO-SKIPPED (Phase 6 gating failed) | 2026-05-31 |
 | 8. COMBINE — `s_linker14` Stack-or-Unify | v2.0 | 1/1 (no-op closure — s_linker13 retro-designated as COMBINE artifact; primitives already unified in v1.0 chain) | Complete (no-op) | 2026-05-31 |
-| 9. CROSS — GPT-5.2 Cross-Model Validation | v2.0 | 0/2 (est.) | Not started (depends on Phase 8) | — |
+| 9. CROSS — Cross-Model Validation (gpt-5.4) | v2.0 | 4/4 (GATE-06 audit + BBB probe + full sweep + report) | Complete | 2026-05-31 |
