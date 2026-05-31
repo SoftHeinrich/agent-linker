@@ -196,3 +196,25 @@ GATE-06 audit verdict: **CLEAN** for all three probe scripts.
   shared FP reference, written by P3)
 - `logs/ext01_probe_p1.log`, `logs/ext01_probe_p2.log`,
   `logs/ext01_probe_p3.log` (gitignored)
+
+## User adjudication
+
+- **Option chosen:** `close-empty`
+- **Decision timestamp (UTC):** 2026-05-31T02:58:23Z
+- **User reasoning (verbatim):**
+
+> After two GATE-05 negatives (pure-LLM + alias-aware) and a 3-direction
+> feasibility probe showing all probes recover 0/14 baseline FNs, the recall
+> gap is upstream of `_has_standalone_mention` (extraction/coref tier), not
+> at the standalone-mention rule. EXT-01 as scoped is not viable; the
+> probe-first methodology proved this cheaply. Phase 7 (EXT-02)
+> auto-skipped per ROADMAP gating. Milestone proceeds to Phase 8 (COMBINE
+> on s_linker13 parent) + Phase 9 (CROSS).
+
+- **Consequence:** Phase 6 closes as a publishable negative result. No
+  canonical `s_linker13g.py` is created. Phase 7 (EXT-02) auto-skipped per
+  ROADMAP gating ("Phase 7 is only attempted if Phase 6 passes the dual
+  floor AND its GATE-06 audit is clean"). v2.0 milestone proceeds to
+  Phase 8 (COMBINE) with `s_linker13` as the parent (no EXT-01 primitive
+  to stack with) and Phase 9 (CROSS). See `06-09-SUMMARY.md` and
+  `06-SUMMARY.md` for the full phase-level disposition.
