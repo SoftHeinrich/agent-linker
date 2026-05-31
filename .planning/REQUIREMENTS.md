@@ -23,7 +23,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### GATE — Validation Infra
 
-- [ ] **GATE-01**: Cross-model gate codified — `gpt-5.4 macro ≥ 0.9077 within tolerance T` (T defined in milestone, e.g. ≤ 1pp regression) formalized as a standing v2.1 gate. Logged in `PROJECT.md` Key Decisions table and `STATE.md` Standing Gates section.
+- [x] **GATE-01**: Cross-model gate codified — `gpt-5.4 macro ≥ 0.9077 within tolerance T` (T defined in milestone, e.g. ≤ 1pp regression) formalized as a standing v2.1 gate. Logged in `PROJECT.md` Key Decisions table and `STATE.md` Standing Gates section.
 - [ ] **GATE-02**: Frozen-compat regression test that asserts every variant in `CANONICAL_VARIANTS` produces F1 identical to the v2.0 baseline JSON. Runs before any promotion. Test lives next to existing test infra and is wired into `run_ablation.py` or a dedicated entry point.
 - [ ] **GATE-03**: `ABLATION-TABLE.md` addendum + `.tex` artifact regenerated to include v2.1 rows (`s_linker13_clean`, per-trim variants kept after PROMPT-02, and `s_linker13_min` if shipped). Existing v1.0/v2.0 rows unchanged.
 
@@ -61,7 +61,7 @@ Explicitly excluded from v2.1.
 |-------------|-------|--------|
 | CLEAN-01 | Phase 10 | Pending |
 | CLEAN-02 | Phase 10 | Pending |
-| GATE-01 | Phase 10 | Pending |
+| GATE-01 | Phase 10 | Complete |
 | GATE-02 | Phase 10 | Pending |
 | PROMPT-05 | Phase 11 | Pending |
 | PROMPT-01 | Phase 12 | Pending |

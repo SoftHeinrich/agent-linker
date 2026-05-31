@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: executing
-stopped_at: Completed Plan 10-02 (helper_v3 extraction). Next action — Plan 10-03 (s_linker13_clean).
-last_updated: "2026-05-31"
-last_activity: 2026-05-31 — Plan 10-02 helper_v3 extraction complete
+stopped_at: "Completed Plan 10-02 (helper_v3 extraction). Next action: execute Plan 10-03 (s_linker13_clean) — depends on 10-02."
+last_updated: "2026-05-31T06:13:39.387Z"
+last_activity: 2026-05-31
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 0
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 ## Current Position
 
 Phase: 10 of 4 (Scaffolding)
-Plan: 02 of 04 (helper_v3 extraction — COMPLETE)
-Status: Phase 10 executing — 2 of 4 plans complete (10-01, 10-02). Next: 10-03 (s_linker13_clean) and 10-04 (cross-model gate codify).
-Last activity: 2026-05-31 — Plan 10-02 helper_v3 extraction complete
+Plan: 3 of 04 (helper_v3 extraction — COMPLETE)
+Status: Ready to execute
+Last activity: 2026-05-31
 
-Progress: [█████░░░░░] 50%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: [█████░░░░░] 50%
 | 10    | 02   | ~12min   | 1     | 1     | eae3028 |
 
 *Updated after each plan completion*
+| Phase 10 P04 | ~5min | 2 tasks | 2 files |
 
 ## Standing Gates (v2.1)
 
@@ -65,6 +66,7 @@ Progress: [█████░░░░░] 50%
 - v2.1 kickoff: cross-model gate uses gpt-5.4 (v2.0 CROSS baseline 0.9077) with tolerance ≤ 1pp
 - v2.1 kickoff: coarse granularity → 4 phases (10–13); sequential dependency chain
 - Plan 10-02 (CLEAN-02): helper_v3.py is a single file (not per-concern split); `build_component_profile` lifts `self.model_knowledge` / `self.doc_knowledge` to explicit parameters; `MENTION_TYPES` is duplicated rather than re-imported from frozen `SLinker13d` to keep helper_v3 free of variant-class coupling.
+- [Phase 10]: Plan 10-04 (GATE-01): cross-model tolerance pinned to T = 1.0pp; absolute F1 floor 0.8977 = 0.9077 − 0.01; recorded in PROJECT.md Key Decisions and STATE.md Standing Gates.
 
 ### Pending Todos
 
@@ -84,6 +86,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-31
+Last session: 2026-05-31T06:12:47.539Z
 Stopped at: Completed Plan 10-02 (helper_v3 extraction). Next action: execute Plan 10-03 (s_linker13_clean) — depends on 10-02.
 Resume file: None
