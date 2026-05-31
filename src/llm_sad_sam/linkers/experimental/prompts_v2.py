@@ -314,7 +314,7 @@ STANDALONE_MENTION_RULES_PRE_FILTERED_FULL_KNOWLEDGE = """STANDALONE-MENTION DET
 
 You have access to two pieces of context discovered earlier in this document:
 1. KNOWN ALIASES — alternative surface forms for the named component.
-2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion (using a pronoun like "it" / "the component" / "the service") counts as a standalone reference to that component.
+2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion via a pronoun (such as "it") counts as a standalone reference to that component.
 
 KNOWN ALIASES (term -> Component):
 {KNOWN_ALIASES_BLOCK}
@@ -325,7 +325,7 @@ RUNNING LINK MAP (already-attributed pairs):
 RULES:
 1. YES when the component name appears as a standalone token — as the subject of an architectural action, in a list of components, or named as a participant.
 2. YES when a KNOWN ALIAS for the component appears as a standalone token.
-3. YES when the sentence uses a pronoun or definite reference ("it", "the component", "the service") AND the RUNNING LINK MAP shows the named component was just attributed to an adjacent earlier sentence (within +-3 sentences).
+3. YES when the sentence uses a pronoun referring back to a named component AND the RUNNING LINK MAP shows the named component was just attributed to an adjacent earlier sentence (within +-3 sentences).
 4. NO when the name is used only as an ordinary English word with its dictionary meaning, with no architectural intent.
 5. YES when the name (or an alias) is configured, queried, or named as the target of an interaction (e.g., "data is stored in X", "via X", "through X").
 6. When uncertain between a surface mention and a generic English use, favor YES — downstream validators filter generic uses.
@@ -338,7 +338,7 @@ STANDALONE_MENTION_RULES_LLM_ONLY_FULL_KNOWLEDGE = """STANDALONE-MENTION DETECTI
 
 You have access to two pieces of context discovered earlier in this document:
 1. KNOWN ALIASES — alternative surface forms for the named component.
-2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion (using a pronoun like "it" / "the component" / "the service") counts as a standalone reference to that component.
+2. RUNNING LINK MAP — sentences already attributed to a component by earlier passes. A new sentence that anaphorically continues an already-linked component's discussion via a pronoun (such as "it") counts as a standalone reference to that component.
 
 KNOWN ALIASES (term -> Component):
 {KNOWN_ALIASES_BLOCK}
@@ -351,7 +351,7 @@ RULES:
    Example: "The Parser consumes tokens emitted by the lexer." -> YES for Parser.
 2. YES when a KNOWN ALIAS for the component appears as a standalone token.
    Example: alias list contains `SymTbl -> SymbolTable`; sentence "SymTbl is consulted before scope resolution." -> YES for SymbolTable.
-3. YES when the sentence uses a pronoun or definite reference ("it", "the component", "the service") AND the RUNNING LINK MAP shows the named component was attributed to an adjacent earlier sentence (within +-3 sentences).
+3. YES when the sentence uses a pronoun referring back to a named component AND the RUNNING LINK MAP shows the named component was attributed to an adjacent earlier sentence (within +-3 sentences).
    Example: linkmap shows `S12: Scheduler`; sentence "S13: It then assigns the task to an idle worker." -> YES for Scheduler.
 4. NO when the name appears only inside a qualified or dotted identifier.
    Example: "The class compiler.parser.ASTBuilder extends the base class." -> NO for Parser; Parser is a path segment.
