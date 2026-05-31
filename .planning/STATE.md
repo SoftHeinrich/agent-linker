@@ -2,15 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
-status: planning
+status: executing
+stopped_at: Completed Plan 10-02 (helper_v3 extraction). Next action — Plan 10-03 (s_linker13_clean).
 last_updated: "2026-05-31"
-last_activity: 2026-05-31
+last_activity: 2026-05-31 — Plan 10-02 helper_v3 extraction complete
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -20,29 +21,31 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
 **Core value:** Every rule removed from `s_linker13`/its prompts must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within ≤ 1pp of 0.9077 — or be rejected. Every retained prompt + helper must read as project-agnostic to a reviewer (GATE-06). Nothing currently runnable breaks.
-**Current focus:** Phase 10 — Scaffolding (ready to plan)
+**Current focus:** Phase 10 — Scaffolding (executing: 2/4 plans complete)
 
 ## Current Position
 
 Phase: 10 of 4 (Scaffolding)
-Plan: — of TBD
-Status: Ready to plan
-Last activity: 2026-05-31 — v2.1 roadmap created (Phases 10–13)
+Plan: 02 of 04 (helper_v3 extraction — COMPLETE)
+Status: Phase 10 executing — 2 of 4 plans complete (10-01, 10-02). Next: 10-03 (s_linker13_clean) and 10-04 (cross-model gate codify).
+Last activity: 2026-05-31 — Plan 10-02 helper_v3 extraction complete
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+
+- Total plans completed: 2
+- Average duration: ~15min
+- Total execution time: ~27min
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| - | - | - | - |
+| Phase | Plan | Duration | Tasks | Files | Commit |
+|-------|------|----------|-------|-------|--------|
+| 10    | 01   | ~15min   | 2     | 2     | 98cdca2 |
+| 10    | 02   | ~12min   | 1     | 1     | eae3028 |
 
 *Updated after each plan completion*
 
@@ -61,10 +64,11 @@ Progress: [░░░░░░░░░░] 0%
 - v2.1 kickoff: `s_linker13.py`, `prompts_v2.py`, and existing helper modules are frozen; cleanup lands in `_clean` / `v3+` / `_min` siblings
 - v2.1 kickoff: cross-model gate uses gpt-5.4 (v2.0 CROSS baseline 0.9077) with tolerance ≤ 1pp
 - v2.1 kickoff: coarse granularity → 4 phases (10–13); sequential dependency chain
+- Plan 10-02 (CLEAN-02): helper_v3.py is a single file (not per-concern split); `build_component_profile` lifts `self.model_knowledge` / `self.doc_knowledge` to explicit parameters; `MENTION_TYPES` is duplicated rather than re-imported from frozen `SLinker13d` to keep helper_v3 free of variant-class coupling.
 
 ### Pending Todos
 
-None yet. Next action: `/gsd-plan-phase 10`.
+Next action: execute Plan 10-03 (s_linker13_clean — depends on 10-02) and Plan 10-04 (cross-model gate codify).
 
 ### Blockers/Concerns
 
@@ -81,5 +85,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-05-31
-Stopped at: Roadmap created — Phases 10–13 defined; requirements mapped
+Stopped at: Completed Plan 10-02 (helper_v3 extraction). Next action: execute Plan 10-03 (s_linker13_clean) — depends on 10-02.
 Resume file: None

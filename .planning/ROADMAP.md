@@ -44,7 +44,7 @@ Phases 6–9 complete. See `milestones/v2.0-ROADMAP.md` for full detail.
   4. The v2.1 cross-model gate (gpt-5.4 macro ≥ 0.9077 within ≤ 1pp tolerance, tolerance value committed) is formally defined and logged in `PROJECT.md` Key Decisions and `STATE.md` Standing Gates.
 **Plans**: 4 plans
 - [ ] 10-01-baseline-regression-test-PLAN.md — snapshot v2.0 baseline JSON fixture + GATE-02 regression test (Wave 1)
-- [ ] 10-02-helper-v3-extraction-PLAN.md — extract pure helpers from s_linker13 into helper_v3.py versioned sibling (Wave 1)
+- [x] 10-02-helper-v3-extraction-PLAN.md — extract pure helpers from s_linker13 into helper_v3.py versioned sibling (Wave 1) ✅ 2026-05-31
 - [ ] 10-03-s-linker13-clean-PLAN.md — standalone s_linker13_clean.py + CANONICAL_VARIANTS/VARIANT_SPECS registration + 5-dataset parity sweep vs s_linker13 (Wave 2, depends on 10-02)
 - [ ] 10-04-cross-model-gate-codify-PLAN.md — codify GATE-01 cross-model T=1.0pp in PROJECT.md Key Decisions + STATE.md Standing Gates (Wave 1)
 
