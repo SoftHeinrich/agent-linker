@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: — Complete Rule Removal + Cross-Model — Generality First
-status: executing
-stopped_at: All v2.0 phases complete; ready for milestone lifecycle (audit → complete → cleanup)
-last_updated: "2026-05-31T07:00:00.000Z"
-last_activity: 2026-05-31 -- Phase 09 CROSS complete; gpt-5.4 macro 0.9077 (GATE-01 does NOT hold cross-model, model-provider-property finding per v2.0 thesis)
+milestone: none-active (v2.0 shipped 2026-05-31)
+milestone_name: awaiting /gsd-new-milestone
+status: idle
+stopped_at: v2.0 archived + tagged; ready for next milestone definition
+last_updated: "2026-05-31T08:00:00.000Z"
+last_activity: 2026-05-31 -- v2.0 milestone archived to .planning/milestones/, tagged v2.0
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
