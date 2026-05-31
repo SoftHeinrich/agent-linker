@@ -1,0 +1,30 @@
+\section{Introduction}
+\label{sec:intro}
+
+\todo{Para 1 -- problem framing: trace links between architecture doc and code matter for understanding, maintenance, compliance; manual recovery is expensive; automated approaches are needed. Keep to 4--5 sentences.}
+
+\todo{Para 2 -- prior work limitations: lexical pipelines (SWATTR) handle canonical names but miss aliases and pronouns; single-pass \ac{LLM} classifiers (LiSSA) lack runtime architectural knowledge and cannot tell ambiguous names from generic English. 4--5 sentences.}
+
+\todo{Para 3 -- AALinker glimpse: we propose AALinker, a multi-agent pipeline that first builds an alias table and ambiguity classification for the architecture, then runs four focused linker agents (explicit, contextual, anaphoric, abbreviated) wrapped in two validation patterns. 3--4 sentences ending with one headline number (file-level \fone $=$ 0.931 vs.\ 0.803 for TransArc).}
+
+% ---------------------------------------------------------------
+% Metric-suite glimpse -- CrystalBLEU-shaped, six sentences.
+% Order: flaw + quantified anchor -> concrete failure -> diagnosis
+% -> proposal (named) -> forward-reference -> stance.
+% ---------------------------------------------------------------
+The standard evaluation reports a single corpus-level \fone, computed over file-level (sentence, file) pairs obtained by enrolling each directory-granularity human decision into all of its files --- turning 525 human decisions into 18{,}660 file-level data points, with project-specific factors of 1.0$\times$ to 217.6$\times$~\cite{transarc,replication}.
+On JabRef, this expansion concentrates 98.6\% of the gold standard on three components, so a system that gets those three right scores \fone\,$>$\,0.94 regardless of its behaviour on the rest of the architecture~\cite{replication}.
+We call this the \emph{structural inequality} of the benchmark: enrolment inflation, block correlation between files of the same directory, and component-size concentration together cause \fone to summarise three components rather than five projects.
+We therefore propose a six-metric evaluation suite --- per-component \fone, per-sentence \fone, sentence coverage, noise rate, coverage-and-purity, and a skill score normalised against random and oracle baselines --- each chosen to correct one source of inequality or to surface a property of trace-link quality that \fone is structurally unable to expose.
+On the same benchmark, AALinker improves the standard file-level \fone over TransArc by $+12.9$ percentage points, but on the metric matched to a single human annotator decision the improvement is $+22.7$ percentage points: the standard ruler underreports the gain.
+We treat the metric suite as a co-equal contribution and motivate it from the structure of the benchmark, not from AALinker's results; we evaluate AALinker and all baselines under both the old and the new rulers.
+
+\subsection*{Contributions}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{AALinker}, a multi-agent pipeline for trace-link recovery between architecture documentation and code, that closes the runtime knowledge gap before linking and uses four agents specialised by reference type (\autoref{sec:approach}).
+    \item An \textbf{architecture-driven evaluation suite} of six metrics that corrects three structural biases in the established benchmark and reorders the size of reported improvements without changing the ranking (\autoref{sec:metric}).
+    \item An empirical study on the five projects of the established benchmark, comparing AALinker against TransArc, SWATTR, and LiSSA under both the standard and the new evaluation, with per-agent and per-validator ablations (\autoref{sec:experiment}, \autoref{sec:results}).
+    \item A replication package containing prompts, agent code, raw \ac{LLM} responses, per-project results, and the metric implementations~\cite{replication}.
+\end{itemize}
+
+\todo{Para after contributions -- one paragraph roadmap: \autoref{sec:approach} describes AALinker, \autoref{sec:metric} the metric suite, \autoref{sec:experiment} the experiment design, \autoref{sec:results} the results, \autoref{sec:discussion} threats and discussion, \autoref{sec:rw} related work.}

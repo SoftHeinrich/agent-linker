@@ -1,0 +1,90 @@
+\section{Architecture-Driven Evaluation of Trace-Link Recovery}
+\label{sec:metric}
+
+\subsection{Background and Motivation}
+\label{sec:metric:bias}
+
+\subsubsection*{Background}
+The standard evaluation for doc-to-code trace-link recovery uses the benchmark released with TransArc~\cite{transarc,replication}.
+Five Java systems come with a doc, an architecture model, and a hand-curated gold standard.
+Each gold entry is a decision by a human annotator: a sentence in the doc is linked to either a single code file or, more often, to a directory.
+At evaluation time, each directory entry is \emph{enrolled}: it is expanded to all individual code files inside that directory.
+After enrollment, precision, recall, and \fone are computed over (sentence, file) pairs.
+
+\autoref{tab:enrollment} shows how strongly enrollment changes the data on which \fone is computed.
+The 525 raw human decisions become 18,660 file-level data points, with project-specific factors ranging from 1.0$\times$ to 217.6$\times$.
+
+\input{table/enrollment}
+% \begin{table}[h]
+% \caption{Enrollment expansion in the benchmark: raw human decisions vs.\ file-level data points after directory expansion.}
+% \label{tab:enrollment}
+% \centering\small
+% \begin{tabular}{lrrr}
+% \toprule
+% \textbf{Project} & \textbf{Raw decisions} & \textbf{File-level points} & \textbf{Factor} \\
+% \midrule
+% MediaStore   & 57  & 59     & 1.0$\times$ \\
+% TeaStore     & 70  & 707    & 10.1$\times$ \\
+% Teammates    & 228 & 8{,}097 & 35.5$\times$ \\
+% BBB          & 132 & 1{,}529 & 11.6$\times$ \\
+% JabRef       & 38  & 8{,}268 & 217.6$\times$ \\
+% \midrule
+% \textbf{Total} & \textbf{525} & \textbf{18{,}660} & \textbf{35.5$\times$} \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+\subsubsection*{The benchmark is structurally unequal}
+The standard \fone treats each (sentence, file) pair as one equally weighted data point.
+The benchmark's structure breaks this assumption in three ways at once.
+
+\emph{Enrollment inflation.}
+One human decision becomes between 1 and 972 file-level data points.
+On JabRef, 38 decisions become 8,268 points (217.6$\times$), so a single directory decision can swing \fone by up to four percentage points.
+The metric appears to be computed on thousands of data points, but it really reflects a few dozen human decisions.
+
+\emph{Block correlation.}
+Files enrolled from the same directory share the same outcome: a system either identifies that component or it does not.
+We measured block homogeneity (whether all files in a block are correct or all wrong) and found it ranges from 96\% to 100\% across the five projects.
+File-level pairs are therefore not independent data points; they are redundant copies of one decision.
+
+\emph{Gold concentration.}
+In every project, a small number of components dominates the gold standard.
+The top three components hold between 38\% and 99\% of all file-level gold links, and the single top component accounts for 45\%–48\% of the gold in four out of five projects.
+On JabRef, three components alone produce 98.6\% of the file-level gold.
+
+\subsubsection*{What this means for the metric}
+Under heavy structural inequality, \fone is dominated by the few largest items.
+Getting JabRef's three big components right yields \fone\,$>$\,0.95 regardless of how the system performs on the remaining components.
+Two consequences follow.
+
+First, the same \fone number means different things on different projects.
+A file-level \fone of 0.94 on JabRef summarises performance on essentially three components; the same \fone on MediaStore summarises performance on roughly 50 mostly file-level decisions.
+Cross-project comparison under one \fone is therefore not meaningful, even though the literature routinely averages it.
+
+Second, a system that improves on the harder, smaller decisions is rewarded only weakly.
+Improvements that change one large-component outcome are amplified into hundreds of file-level true positives, while improvements that change many small-component outcomes count for only a few points each.
+The standard ruler is most sensitive to the part of the benchmark with the least information, and least sensitive to the part where systems differ most.
+
+\subsubsection*{Stance}
+This paper makes two co-equal contributions: AALinker (\autoref{sec:approach}) and the metric suite defined below.
+We motivate the metric suite from the structure of the benchmark, not from AALinker's results.
+Each metric is chosen to correct one of the three biases above, or to expose a property of trace-link quality that \fone is structurally unable to surface (sentence coverage, per-sentence noise, per-component fairness, cross-project comparability).
+We then evaluate AALinker and all baselines under both the standard ruler and the new rulers, so future work can be compared honestly under either.
+
+The metric story is not "we win bigger under the new metrics".
+As we will show in \autoref{sec:exp:rq2}, AALinker leads under every metric we report, but the standard \fone underreports the gain: the gap over TransArc is $+12.9$ percentage points on file-level \fone and $+22.7$ percentage points on the metric matched to a single human annotator decision.
+The standard ruler is the one that hides the improvement, because the same structural inequality that inflates good performance on a few large components also dilutes per-decision gains into the average.
+
+The picture also varies by project, and we report this honestly rather than averaging it away.
+Per-component \fone shows the smallest aggregate gap ($+10.3$pp) of any metric, but this average hides one Teammates regression at component level ($-9$pp) against four projects where AALinker improves by $+4$pp (JabRef) to $+35$pp (MediaStore).
+We discuss this Teammates pattern in \autoref{sec:exp:rq2} and \autoref{sec:discussion}; it does not change the overall ranking, but it confirms that the new metrics resolve effects that the corpus-level \fone smooths over.
+\todo{Confirm exact per-project component-\fone deltas against the final results table before camera-ready; numbers above come from \texttt{evaluation/reports/SADCODE\_S11\_S13F\_VS\_TRANSARC.csv}.}
+
+
+\subsection{Metric Suite}
+\label{sec:metric:suite}
+
+We organise the metric suite into four groups, each addressing one weakness of standard file-level \fone.
+
+\todo{Continue with the metric definitions: \fone variants (per-sentence, decision-level, per-component, weighted), classification quality (MCC, exact match, Jaccard), sentence coverage and noise, coverage--purity score, and the skill score (random$\to$oracle rescale). Pull definitions from \texttt{evaluation/writing/eval.tex}, restate in plain English consistent with the naming used in \autoref{sec:exp:rq2}.}

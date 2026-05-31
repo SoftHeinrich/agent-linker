@@ -1,0 +1,133 @@
+\section{Experiment}
+\label{sec:experiment}
+
+We evaluate AALinker on the public benchmark for trace links between architecture documentation and code.
+The evaluation has four goals: see how AALinker compares to existing tools, look at what new metrics tell us beyond the standard \fone, measure how much the validators help, and check what each linker agent contributes.
+
+\subsection{Research Questions}
+\label{sec:rqs}
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions]
+    \item \label{RQ1 SOTA comparison} \emph{Does AALinker recover better trace links than existing approaches, both from doc to architecture model and from doc to code?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+Trace links between an architecture document and code can be recovered directly, or in two steps through the architecture model.
+Existing approaches use lexical similarity~\cite{swattr} or a single \ac{LLM} classification pass~\cite{lissa}.
+AALinker first builds runtime knowledge about the architecture (alias table, ambiguous names) and then runs several focused linker agents.
+We want to know whether this extra structure pays off in both link tasks: doc-to-model and doc-to-code.
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{RQ2 metrics} \emph{What do architecture-driven metrics tell us about the recovered links that the standard \fone does not?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+The standard evaluation reports one micro \fone over all file-level links.
+On this benchmark, one human decision about a directory can expand into hundreds of file-level data points, so a few large components decide the score~\cite{replication}.
+A single number can therefore hide whether a system covers all sentences, whether errors fall on small components, or whether developers would see noisy results.
+We check if the metrics from \autoref{sec:metric} reveal these properties and reorder the systems.
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{RQ3 validators} \emph{How much do the validators inside AALinker contribute to the final result?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+\acp{LLM} are not deterministic and can produce links that look plausible but do not refer to any component in the doc.
+AALinker wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
+We measure how much these validators help, in \fone and in the new metrics.
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{RQ4 ablation} \emph{What does each linker agent contribute on its own?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+AALinker uses four linker agents, one for each kind of reference: canonical name, alias, pronoun, and partial name.
+A leave-one-out ablation shows whether all four are needed, where they overlap, and which agents drive the gains over the best single-strategy baseline.
+
+\subsection{Experiment Design}
+\label{sec:exp-design}
+
+To answer the four research questions we run four families of experiments on the same dataset (\autoref{sec:dataset}).
+All AALinker runs use a fixed model configuration (\autoref{sec:hyperparameters}) so results stay reproducible despite \ac{LLM} non-determinism.
+
+\subsubsection{Experiments for \ref{RQ1 SOTA comparison} -- Comparison to Existing Approaches}
+\label{sec:exp:rq1}
+
+We compare AALinker with two existing approaches:
+\begin{enumerate*}[label=(\roman*)]
+    \item \emph{TransArc}~\cite{transarc}, the strongest published pipeline on this benchmark, which routes doc-to-code links through the architecture model; and
+    \item \emph{SWATTR}~\cite{swattr}, the lexical NLP pipeline that TransArc uses for the doc-to-model step.
+\end{enumerate*}
+We also include \emph{LiSSA}~\cite{lissa}, a recent \ac{LLM}-based classifier, as an \ac{LLM} baseline.
+We take all baseline results from the original papers to avoid re-tuning bias.
+
+We run two evaluations on the same five projects (\autoref{sec:dataset}):
+\begin{enumerate}[leftmargin=*]
+    \item \emph{Doc-to-model.} For every sentence in the architecture document we recover the components it talks about and compare them with the doc-to-model gold standard. This is the link task where AALinker can directly show what its knowledge layer is worth.
+    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the file-level gold standard. AALinker reaches code files by combining its doc-to-model links with the architecture model's component-to-file mapping, the same composition used by TransArc.
+\end{enumerate}
+For each task we report precision, recall, and \fone per project and averaged across projects (both macro and micro), following the protocol of the benchmark.
+The outcome of \ref{RQ1 SOTA comparison} tells us whether AALinker improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
+
+\subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\label{sec:exp:rq2}
+
+We re-evaluate the four systems from \ref{RQ1 SOTA comparison} with the metric set from \autoref{sec:metric}.
+For each (system, project) pair we compute:
+\begin{enumerate}[leftmargin=*]
+    \item \emph{Per-component \fone}, which gives every component the same weight, so errors on small components are not hidden by very large ones.
+    \item \emph{Per-sentence \fone}, which averages \fone over gold sentences and shows when quality is concentrated on a few sentences.
+    \item \emph{Skill score}, which rescales \fone between a random guesser and a perfect oracle, so projects with very different difficulty can be compared.
+    \item \emph{Sentence coverage}, the fraction of gold sentences that get at least one correct link, together with \emph{noise rate}, the average share of wrong links per sentence.
+    \item \emph{Coverage and purity}, a single number that combines how many sentences are served with how many are served without any wrong link.
+\end{enumerate}
+For each metric we report the per-project value and the mean gap from the standard \fone.
+A metric with a large gap rewards or penalises a system in a way that \fone alone does not.
+We expect this to show that two systems with similar \fone can still differ a lot in coverage, in the worst sentences, and in how errors affect small components.
+
+\subsubsection{Experiments for \ref{RQ3 validators} -- Validator Contribution}
+\label{sec:exp:rq3}
+
+We build three variants of AALinker that remove validators while keeping the linker agents in place:
+\begin{enumerate}[leftmargin=*]
+    \item \emph{NoConsensus}: each extraction agent runs a single \ac{LLM} pass instead of two voting passes; the vote in \autoref{tab:strategies} is replaced by simply keeping every proposed link.
+    \item \emph{NoCitation}: the pronoun agent no longer has to provide a quoted antecedent sentence; resolved candidates are accepted directly.
+    \item \emph{NoValidator}: both above combined, i.e.\ no validators anywhere.
+\end{enumerate}
+We compare these to \emph{Full}, the full AALinker pipeline.
+For each variant we measure \fone, per-component \fone, sentence coverage, and noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls (mean tokens per project), since the validators roughly double the number of calls for the affected agents.
+The outcome of \ref{RQ3 validators} shows how much the validators contribute beyond the raw retrieval power of the agents, and at what cost.
+
+\subsubsection{Experiments for \ref{RQ4 ablation} -- Per-Agent Ablation}
+\label{sec:exp:rq4}
+
+We measure each linker agent by leave-one-out ablation:
+\emph{$-$Explicit}, \emph{$-$Contextual}, \emph{$-$Anaphoric}, \emph{$-$Abbreviated}.
+The knowledge layer (\autoref{sec:approach}) stays in place in every run, because all four agents read from it.
+For each variant we report:
+\begin{enumerate*}[label=(\roman*)]
+    \item the change in macro \fone over the five projects,
+    \item the change in sentence coverage and noise rate, which tells us whether the removed agent added recall or only filtered false positives, and
+    \item how many true positives are lost that no other agent recovers.
+\end{enumerate*}
+We also report \emph{Explicit-only}, a single-agent baseline that the other agents extend on top of.
+This experiment shows whether the four reference categories really need separate agents, or whether one agent already covers the others on this benchmark.
+
+\subsection{Dataset}
+\label{sec:dataset}
+
+We use the public benchmark released with TransArc~\cite{transarc,replication}.
+It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at both the component and file level:
+\emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
+We use this benchmark because it is the standard evaluation set for this task~\cite{transarc,lissa} and because it gives us gold links at both granularities, which we need for both \ref{RQ1 SOTA comparison} (doc-to-model and doc-to-code) and \ref{RQ2 metrics}.
+
+\input{table/dataset-stat}
+
+\autoref{tab:dataset} lists, per project, the number of sentences in the architecture document, the number of components in the architecture model, the number of code files, the number of human gold decisions, and the number of file-level links after each directory decision is expanded to its files.
+The expansion factor differs by two orders of magnitude across projects (1.0$\times$ for MediaStore, 217.6$\times$ for JabRef).
+This is one of the reasons we report the extra metrics in \ref{RQ2 metrics}.
+
+For each project we use the architecture document as input~$D$, the architecture model as the component set~$C$, and the gold standard as the ground-truth links between sentences of~$D$ and components of~$C$ (or files belonging to components of~$C$, for the doc-to-code task).
+We use the official benchmark loaders for $D$ and $C$ to stay aligned with prior work.
+
+\subsection{Replication}
+\label{sec:replication}
+
+All prompts, agent code, ablation configurations, raw \ac{LLM} responses, and per-project result CSVs are in our replication package~\cite{replication}.
+The package also contains the implementations of the metrics used in \ref{RQ2 metrics} so that anyone can reproduce the evaluation and apply the same metrics to other approaches on the same benchmark.
