@@ -42,7 +42,11 @@ Phases 6–9 complete. See `milestones/v2.0-ROADMAP.md` for full detail.
   2. Factored helper modules (`helper_v3.py` or equivalent versioned siblings) exist; `s_linker13_clean` imports them rather than inlining; old helper modules remain untouched.
   3. A regression test asserts that every variant in `CANONICAL_VARIANTS` produces F1 matching the v2.0 baseline JSON; the test passes before any further promotion.
   4. The v2.1 cross-model gate (gpt-5.4 macro ≥ 0.9077 within ≤ 1pp tolerance, tolerance value committed) is formally defined and logged in `PROJECT.md` Key Decisions and `STATE.md` Standing Gates.
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 10-01-baseline-regression-test-PLAN.md — snapshot v2.0 baseline JSON fixture + GATE-02 regression test (Wave 1)
+- [ ] 10-02-helper-v3-extraction-PLAN.md — extract pure helpers from s_linker13 into helper_v3.py versioned sibling (Wave 1)
+- [ ] 10-03-s-linker13-clean-PLAN.md — standalone s_linker13_clean.py + CANONICAL_VARIANTS/VARIANT_SPECS registration + 5-dataset parity sweep vs s_linker13 (Wave 2, depends on 10-02)
+- [ ] 10-04-cross-model-gate-codify-PLAN.md — codify GATE-01 cross-model T=1.0pp in PROJECT.md Key Decisions + STATE.md Standing Gates (Wave 1)
 
 ### Phase 11: Research
 **Goal**: A short, concrete survey of prompt-minimization harness techniques is available to directly inform which rules to trim first and how to redesign prompts in `prompts_v3.py`.
@@ -82,7 +86,7 @@ Phases 6–9 complete. See `milestones/v2.0-ROADMAP.md` for full detail.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Scaffolding | v2.1 | 0/TBD | Not started | - |
+| 10. Scaffolding | v2.1 | 0/4 | Not started | - |
 | 11. Research | v2.1 | 0/TBD | Not started | - |
 | 12. Trim Ablation | v2.1 | 0/TBD | Not started | - |
 | 13. Promotion & Wrap | v2.1 | 0/TBD | Not started | - |
