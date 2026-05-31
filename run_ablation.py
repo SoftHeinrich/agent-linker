@@ -78,6 +78,7 @@ CANONICAL_VARIANTS = [
     "s_linker13f",
     "s_linker13",   # canonical promotion of 13f (Phase 5)
     "s_linker13_clean",   # v2.1 scaffolding sibling of s_linker13 (Phase 10, CLEAN-01)
+    "s_linker13_clean_v3",   # Phase 12 Step 0: prompts_v3 sibling of s_linker13_clean (PROMPT-01)
     "s_linker13g_pre",   # EXT-01 sub-variant (a): regex pre-filter + LLM judge
     "s_linker13g_sem",   # EXT-01 sub-variant (b): LLM-only, dotted-path encoded in prompt
     "s_linker13g_pre_alias",   # EXT-01 alias-aware (a): regex pre-filter + LLM judge + alias map (Plan 06-06 / D-07)
@@ -326,6 +327,13 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13_clean",
         class_name="SLinker13Clean",
         description="S-Linker13 Clean: v2.1 scaffolding sibling — helpers in helper_v3, prompts_v2 unchanged, zero rules removed (CLEAN-01).",
+        canonical=False,
+    ),
+    "s_linker13_clean_v3": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_clean_v3",
+        class_name="SLinker13CleanV3",
+        description="S-Linker13 Clean V3: prompts_v3 sibling — Phase 12 Step 0 acceptance variant (byte-equal kept prompts; 7 dead constants dropped).",
         canonical=False,
     ),
     "s_linker13g_pre": dict(
