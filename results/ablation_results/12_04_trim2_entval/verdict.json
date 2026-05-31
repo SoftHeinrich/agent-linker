@@ -1,0 +1,71 @@
+{
+  "trim_id": "trim2_entval",
+  "variant": "s_linker13_trim2_entval_clean",
+  "claude": {
+    "macro_F1": 0.9235,
+    "per_dataset": {
+      "mediastore": {
+        "F1": 0.9677,
+        "P": 0.9677,
+        "R": 0.9677,
+        "fp": 1,
+        "fn": 1,
+        "baseline_F1": 0.9836,
+        "delta_F1": -0.0159
+      },
+      "teastore": {
+        "F1": 1.0,
+        "P": 1.0,
+        "R": 1.0,
+        "fp": 0,
+        "fn": 0,
+        "baseline_F1": 1.0,
+        "delta_F1": 0.0
+      },
+      "teammates": {
+        "F1": 0.9391,
+        "P": 0.931,
+        "R": 0.9474,
+        "fp": 4,
+        "fn": 3,
+        "baseline_F1": 0.9381,
+        "delta_F1": 0.0011
+      },
+      "bigbluebutton": {
+        "F1": 0.7377,
+        "P": 0.75,
+        "R": 0.7258,
+        "fp": 15,
+        "fn": 17,
+        "baseline_F1": 0.8036,
+        "delta_F1": -0.0659
+      },
+      "jabref": {
+        "F1": 0.973,
+        "P": 0.9474,
+        "R": 1.0,
+        "fp": 1,
+        "fn": 0,
+        "baseline_F1": 0.973,
+        "delta_F1": 0.0
+      }
+    },
+    "gate_pass": false,
+    "gate_failures": [
+      "macro_F1 0.9235 < 0.93",
+      "bigbluebutton delta -0.0659 < -0.06 tolerance"
+    ]
+  },
+  "gpt54": {
+    "status": "SKIPPED",
+    "reason": "Round 3 skipped per strategic execution plan: Claude arm failed, both arms must pass for accept"
+  },
+  "gate06_probe": {
+    "pass": true,
+    "note": "enforced by tests/test_s_linker13_trim2_entval_registration.py::test_no_benchmark_component_leakage"
+  },
+  "overall_verdict": "REJECT",
+  "gate_reason": "GATE-01 Claude arm fails: macro_F1 0.9235 < 0.93 AND bigbluebutton delta -0.0659 < -0.06 tolerance",
+  "rule_count_reduction": "14 -> 10 (4 rules collapsed across ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3)",
+  "phase": "entity_candidates (which cascades into entity_decisions + final per DOWNSTREAM_DEPS)"
+}
