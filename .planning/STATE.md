@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-stopped_at: "Completed Phase 12 EXTENSION (Plans 12-07 through 12-12, runtime-rubric per-prompt variants). Verdict: trim9 ACCEPTED on both Claude + gpt-5.4 (macro 0.9474 Claude / 0.9007 gpt-5.4; BBB +4.04pp); trim6 REJECTED on cross-model (Claude PASS, gpt-5.4 0.8938 < 0.8977 by 0.39pp); trim4/5/7/8 REJECTED on Claude per-dataset drop tolerance. Next action: Plan 12-06 (GATE-06 defensibility audit) then Plan 13-01 (s_linker13_min) composing trim1 + trim9."
-last_updated: "2026-05-31T16:45:00.000Z"
+stopped_at: "Completed Phase 12 FRONTIER MAP: extended cross-model gpt-5.4 coverage to trim4/5/7/8 (4 variants x 5 datasets = 20 sweeps). Under Scenario E relaxed gates (Claude macro >= 0.90, BBB >= 0.79, other-drop <= 4pp, gpt-5.4 >= 0.89), 6/6 runtime variants ACCEPT. Under original v2.1 gates, only trim1 + trim9 still PASS. Frontier map (12-FRONTIER-MAP-SUMMARY.md) documents v2.1 standing-gate REJECTs are at the cliff (0.39-3.6pp from floor), not over it. gpt-5.4 macros: trim4=0.9005, trim5=0.9056, trim7=0.9007, trim8=0.9070. Next action: Plan 12-06 (GATE-06 defensibility audit) then Plan 13-01 (s_linker13_min) composing trim1 + trim9 — UNCHANGED."
+last_updated: "2026-05-31T17:05:00.000Z"
 last_activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
 progress:
   total_phases: 4
