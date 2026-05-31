@@ -36,7 +36,18 @@ Enumeration of every prompt template in `prompts_v2.py`, with rule counts derive
 
 ---
 
+## 0.5. Lineage Clarification (added post-survey, 2026-05-31)
+
+This survey originally framed V30/V35 prior failures as a "ceiling" on s_linker13 trim work. That framing is wrong. **V30/V35 are V-series / S-Linker family variants** (V26a → V30/V31/V32 / S1-S11) — a separate pipeline lineage from `s_linker13`. V35 ablated V-series prompts (CONVENTION_GUIDE, P8c filter, judge advocate/prosecutor patterns); it did NOT ablate s_linker13's prompts (`DOC_KNOWLEDGE_JUDGE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `SEED_DISAMBIGUATION_RULES`, `COREF_RULES`, etc.).
+
+**What IS transferable from V35:**
+- Claude Sonnet model-level behaviors — concrete output examples bias sentence-number distribution; static deletion that drops information density tends to regress on this model.
+
+**What is NOT transferable:**
+- Any claim that trimming s_linker13's specific prompts will regress. The V35 evidence is at most a *soft model-behavior prior*; it is not a per-prompt prediction. **§1 below ("V35 Ceiling") and §4's discussion of V35 should be read as model-behavior context, not as evidence that s_linker13 trims will fail.** Phase 12 should design and ablate aggressively, let single-step checkpoint measurements decide.
+
 ## 1. The V35 Ceiling — Setup
+*(Read this section as model-behavior context only. The "ceiling" claim does NOT apply to s_linker13's specific prompts — see §0.5 above. Phase 12 treats s_linker13 prompts as unablated territory.)*
 
 Six prompt-simplification proposals (V35, V35a–c, V35-combined) were tested on `s_linker13` ancestors in March 2026. All regressed Claude Sonnet macro F1 by 2.4–7.1 pp. The lessons logged in MEMORY were sharp: (a) example-driven rubrics that replace explicit rule lists lose edge-case coverage; (b) concrete JSON output examples bias the sentence-number distribution; (c) Claude exploits the **information density** of verbose rule lists in a way that aggressive shortening destroys.
 
