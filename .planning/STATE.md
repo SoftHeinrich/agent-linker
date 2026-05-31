@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
 status: planning
-stopped_at: "Phase 11 (Research) complete — survey + supplement shipped, PROMPT-05 closed. Next action: Phase 12 — Trim Ablation."
-last_updated: "2026-05-31T10:15:00.000Z"
-last_activity: 2026-05-31
+stopped_at: "Completed Plan 12-02 (Single-Step Ablation Harness). Next action: execute Plan 12-03 (Step 1 — judge trim)."
+last_updated: "2026-05-31T10:26:56.386Z"
+last_activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
-  percent: 50
+  completed_phases: 1
+  total_plans: 11
+  completed_plans: 8
+  percent: 25
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
 ## Current Position
 
-Phase: 12 of 4 — Phases 10 (Scaffolding) + 11 (Research) COMPLETE
-Plan: — of TBD (Phase 12 not yet planned)
-Status: Ready to plan
-Last activity: 2026-05-31 — Phase 11 verification passed; survey + supplement shipped (PROMPT-05 closed)
+Phase: 12 of 4 — Phase 12 Trim Ablation in progress (12-00, 12-01, 12-02 complete; next: 12-03)
+Plan: 03 of 07 (Phase 12 has 7 plans: 12-00…12-06)
+Status: Executing
+Last activity: 2026-05-31 — Plan 12-02 complete (single-step ablation harness shipped; equivalence sweep PASS)
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 73%
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [█████░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 10 P04 | ~5min | 2 tasks | 2 files |
+| Phase 12 P02 | ~45min | 3 tasks | 6 files |
 
 ## Standing Gates (v2.1)
 
@@ -67,10 +68,12 @@ Progress: [█████░░░░░] 50%
 - v2.1 kickoff: coarse granularity → 4 phases (10–13); sequential dependency chain
 - Plan 10-02 (CLEAN-02): helper_v3.py is a single file (not per-concern split); `build_component_profile` lifts `self.model_knowledge` / `self.doc_knowledge` to explicit parameters; `MENTION_TYPES` is duplicated rather than re-imported from frozen `SLinker13d` to keep helper_v3 free of variant-class coupling.
 - [Phase 10]: Plan 10-04 (GATE-01): cross-model tolerance pinned to T = 1.0pp; absolute F1 floor 0.8977 = 0.9077 − 0.01; recorded in PROJECT.md Key Decisions and STATE.md Standing Gates.
+- [Phase 12]: Plan 12-02: Single-step ablation harness ships at llm_sad_sam.ablation.single_step with CLI subcommand; phase=entity_candidates/entity_decisions enforces CRITICAL CONTRACT (zero live LLM on seed_val/coref via monkey-patch). Equivalence sweep PASS (max_abs_delta=0.0).
+- [Phase 12]: Plan 12-02: Harness coupling debt tracked — calls into s_linker13_clean by method name (_run_seed_validation, _run_entity_pipeline, _validate_with_evidence, _extract_entities_enriched, _run_coreference). Phase 13 promotion must preserve these names or update harness in lock-step.
 
 ### Pending Todos
 
-Next action: execute Plan 10-03 (s_linker13_clean — depends on 10-02) and Plan 10-04 (cross-model gate codify).
+Next action: execute Plan 12-03 (Step 1 — judge trim) using the harness shipped in 12-02 (`python -m llm_sad_sam.ablation single_step --variant <trim-variant> --dataset <ds> --phase layer1`).
 
 ### Blockers/Concerns
 
@@ -86,6 +89,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-31T06:12:47.539Z
-Stopped at: Completed Plan 10-02 (helper_v3 extraction). Next action: execute Plan 10-03 (s_linker13_clean) — depends on 10-02.
+Last session: 2026-05-31T10:25:55.680Z
+Stopped at: Completed Plan 12-02 (Single-Step Ablation Harness). Next action: execute Plan 12-03 (Step 1 — judge trim).
 Resume file: None

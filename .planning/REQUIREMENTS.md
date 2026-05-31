@@ -16,7 +16,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 ### PROMPT — Prompt Simplification
 
 - [ ] **PROMPT-01**: `prompts_v3.py` ships side-by-side with `prompts_v2.py`. Only prompts actually invoked by `s_linker13_clean` carry over. `prompts_v2.py` left untouched. A v2→v3 mapping table is committed (prompt name → kept / dropped / renamed + rationale).
-- [ ] **PROMPT-02**: Per-prompt rule-trim ablation — every prompt's rule set trimmed as a separate variant under GATE-01 (Claude) AND the v2.1 cross-model gate (gpt-5.4 macro ≥ 0.9077 within tolerance). Trims accepted only if BOTH gates hold. Rejected trims documented in the milestone summary with the failing dataset(s).
+- [x] **PROMPT-02**: Per-prompt rule-trim ablation — every prompt's rule set trimmed as a separate variant under GATE-01 (Claude) AND the v2.1 cross-model gate (gpt-5.4 macro ≥ 0.9077 within tolerance). Trims accepted only if BOTH gates hold. Rejected trims documented in the milestone summary with the failing dataset(s).
 - [ ] **PROMPT-03**: Final minimal-prompt variant `s_linker13_min.py` ships only after a full 5-dataset sweep on Claude Sonnet AND gpt-5.4 passes both gates. If neither configuration holds, the milestone publishes a negative result instead of promoting.
 - [ ] **PROMPT-04**: Generality re-audit (GATE-06 + `BENCHMARK_TABOO.md` scan + reviewer-defensibility check) on every retained trim. Any trim that introduces benchmark-derived phrasing is rejected regardless of F1.
 - [ ] **PROMPT-05**: Literature + web survey on "reduce rules, let LLM reason more" prompt-minimization harness techniques (Chain-of-Thought, ReAct, deliberation/self-consistency, rubric distillation, plan-then-execute, etc.). Output: short report under `.planning/research/PROMPT-HARNESS-SURVEY.md` with ≥ 3 concrete techniques scored for fit-to-`s_linker13`. Findings inform PROMPT-02 trim strategy and prompt redesigns in `prompts_v3`.
@@ -65,7 +65,7 @@ Explicitly excluded from v2.1.
 | GATE-02 | Phase 10 | Pending |
 | PROMPT-05 | Phase 11 | Pending |
 | PROMPT-01 | Phase 12 | Pending |
-| PROMPT-02 | Phase 12 | Pending |
+| PROMPT-02 | Phase 12 | Complete |
 | PROMPT-04 | Phase 12 | Pending |
 | PROMPT-03 | Phase 13 | Pending |
 | GATE-03 | Phase 13 | Pending |

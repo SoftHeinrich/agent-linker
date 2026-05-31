@@ -69,9 +69,9 @@ Phases 6–9 complete. See `milestones/v2.0-ROADMAP.md` for full detail.
   4. Every retained trim passes GATE-06: a BENCHMARK_TABOO.md scan returns clean AND a reviewer-defensibility note confirms no project-tailored phrasing.
 **Plans**: 7 plans
 Plans:
-- [ ] 12-00-gpt54-baseline-sweep-PLAN.md — one-time gpt-5.4 baseline sweep on s_linker13_clean to establish cross-model anchor (Wave 1)
-- [ ] 12-01-prompts-v3-scaffold-PLAN.md — create prompts_v3.py with 9 active constants + s_linker13_clean_v3 thin sibling + v2→v3 mapping table (Wave 1)
-- [ ] 12-02-single-step-ablation-harness-PLAN.md — checkpoint-loaded single-step ablation engine + CLI + dependency contract (Wave 1)
+- [x] 12-00-gpt54-baseline-sweep-PLAN.md — one-time gpt-5.4 baseline sweep on s_linker13_clean to establish cross-model anchor (Wave 1)
+- [x] 12-01-prompts-v3-scaffold-PLAN.md — create prompts_v3.py with 9 active constants + s_linker13_clean_v3 thin sibling + v2→v3 mapping table (Wave 1)
+- [x] 12-02-single-step-ablation-harness-PLAN.md — checkpoint-loaded single-step ablation engine + CLI + dependency contract (Wave 1)
 - [ ] 12-03-step1-judge-trim-PLAN.md — Step 1 trim: distill DOC_KNOWLEDGE_JUDGE_RULES via Technique 3 + 8; ablate 5 datasets × 2 backends (Wave 2)
 - [ ] 12-04-step2-entval-merge-PLAN.md — Step 2 trim: merge ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3; ablate 5 datasets × 2 backends (Wave 2)
 - [ ] 12-05-step3-runtime-rubric-PLAN.md — Step 3 trim: replace DOC_KNOWLEDGE_JUDGE_RULES with inference-time rubric builder (supplement Techniques 2+3); ablate 5 datasets × 2 backends (Wave 2)
@@ -96,5 +96,5 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 10. Scaffolding | v2.1 | 3/4 | In Progress|  |
 | 11. Research | v2.1 | 0/TBD | Not started | - |
-| 12. Trim Ablation | v2.1 | 0/7 | Ready | - |
+| 12. Trim Ablation | v2.1 | 3/7 | In Progress|  |
 | 13. Promotion & Wrap | v2.1 | 0/TBD | Not started | - |
