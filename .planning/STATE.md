@@ -52,7 +52,7 @@ Progress: [█████░░░░░] 50%
 ## Standing Gates (v2.1)
 
 - GATE-01: macro F1 ≥ 0.93; BBB tolerance 6pp; other-dataset 2pp (Claude Sonnet)
-- GATE-01 cross-model (v2.1 NEW): gpt-5.4 macro ≥ 0.9077 within ≤ 1pp tolerance (T to be committed in Phase 10)
+- GATE-01 cross-model (v2.1): gpt-5.4 macro ≥ 0.9077 within ≤ 1.0pp tolerance — i.e. variant passes iff gpt-5.4 macro F1 ≥ 0.8977 on full 5-dataset sweep (T = 1.0pp committed Phase 10 Plan 10-04; baseline 0.9077 from v2.0 CROSS evidence; see PROJECT.md Key Decisions row "GATE-01 cross-model tolerance T = 1.0pp (v2.1)")
 - GATE-02 (v2.1 NEW): frozen-compat regression test; all CANONICAL_VARIANTS produce F1 matching v2.0 baseline JSON
 - GATE-06: generality audit — every new prompt + helper passes BENCHMARK_TABOO scan AND reviewer-defensibility check
 - GATE-07: every promoted variant registered in CANONICAL_VARIANTS + VARIANT_SPECS; standalone file; structured docstring
