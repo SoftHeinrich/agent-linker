@@ -86,6 +86,23 @@ User direction: "design more variants, maybe pure llm not work, but llm + some a
 
 - **D-11 — Generality guardrail:** D-07 knowledge sources are project-agnostic data structures *computed by general code*, NOT hardcoded benchmark terms. The alias map is whatever `doc_knowledge` discovered (could be empty on a project without aliases); coref antecedents are whatever the coref tier resolved. The new variants MUST pass GATE-06 — feeding LLM-discovered project data into an LLM judge is not benchmark leakage, but the planner must explicitly audit that no benchmark-specific surface forms are baked into the integration shape.
 
+### Design Pivot #2 — Feasibility-First (added 2026-05-31 after second GATE-05 negative)
+
+After alias-aware sub-variants also failed GATE-05 on BBB (lift +0.7-2.1pp over pure-LLM but still -5.7pp under parent floor; full evidence in `06-08-SUMMARY.md`), the user directed a feasibility-first methodology before any further sub-variant build cycle:
+
+> "before design, conduct empirical study on the 4 directions you proposed to test feasibility"
+
+- **D-12 — Probe-first policy:** Build NO new sub-variant linker files until lightweight feasibility probes demonstrate at least one design direction can plausibly clear GATE-05 BBB (≥ 0.8890). Probes must be cheap (1-3 hours each, not multi-day sweeps) and must produce a comparable "projected BBB F1" or "BBB FN recovery count" for each candidate direction.
+
+- **D-13 — Three active directions to probe** (option 4 "close-empty" is the no-op fallback if all probes negative):
+  - **(P1) Document-level full-context judge:** ONE LLM call per (component, doc) with full component table + entire doc + alias map → returns sentence-set verdict. Probe = run only on BBB (12 components × 1 call ≈ 12 LLM calls). Plug result into a temporary s_linker13 sweep on BBB. Measure F1.
+  - **(P2) Hybrid — LLM rejection-overrides on regex matches:** Keep `_has_standalone_mention` as default. Take its BBB output, send each regex match through an LLM rejection prompt (sentence + component → keep/drop). Cost ~50-100 calls. Measure F1 (must keep or improve s_linker13 BBB baseline).
+  - **(P3) Pure removal:** Modify s_linker13 to `_has_standalone_mention → return True`. Run BBB sweep. Measure F1 (gives the worst-case ceiling when downstream tiers handle everything alone).
+
+- **D-14 — Probe outputs:** A feasibility table with columns: direction, BBB F1, Δ vs s_linker13 parent (0.8990), Δ vs pure-LLM baseline (0.8108), LLM cost (probe + projected full sweep), generality cost (does it keep any structural rule? what scope?), implementation cost estimate. Output file: `06-FEASIBILITY.md`.
+
+- **D-15 — Decision rule:** After probes complete, the user picks the next plan-cycle direction from the empirical table. If no probe clears BBB ≥ 0.8890 by a plausible margin AND no probe shows a credible path to closing the gap, Phase 6 closes empty (Plan 06-08 partial → Phase verdict FAIL).
+
 </decisions>
 
 <canonical_refs>
