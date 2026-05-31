@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Complete Rule Removal + Cross-Model — Generality First
 status: executing
-stopped_at: Phase 6 closed empty (negative); Phase 7 auto-skipped; advancing to Phase 8
-last_updated: "2026-05-31T03:30:00.000Z"
-last_activity: 2026-05-31 -- Phase 06 closed empty (negative result), Phase 07 auto-skipped per gating
+stopped_at: Phase 8 closed no-op (s_linker13 retro-designated); advancing to Phase 9
+last_updated: "2026-05-31T05:30:00.000Z"
+last_activity: 2026-05-31 -- Phase 08 closed no-op (research found primitives already unified in v1.0 chain)
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
-  percent: 50
+  completed_phases: 3
+  total_plans: 10
+  completed_plans: 10
+  percent: 75
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-30 for v2.0 kickoff)
 
 **Core value:** Every rule removed from `s_linker12c`/`s_linker13` and replaced by an LLM primitive must hold macro F1 ≥ 93% AND read as project-agnostic to a reviewer — or be rejected.
-**Current focus:** Phase 08 — COMBINE `s_linker14` Stack-or-Unify (Phase 06 closed empty; Phase 07 auto-skipped per gating)
+**Current focus:** Phase 09 — CROSS GPT-5.2 Cross-Model Validation (Phase 06 closed empty, Phase 07 skipped, Phase 08 closed no-op)
 
 ## Current Position
 
 Milestone: v2.0 (Complete Rule Removal + Cross-Model — Generality First)
-Phase: 08 (COMBINE — s_linker14 Stack-or-Unify Combined LLM Primitives) — STARTING
+Phase: 09 (CROSS — GPT-5.2 Cross-Model Validation) — STARTING
 Plan: 0 of TBD
-Status: Phase 6 negative-closed, Phase 7 skipped, advancing to Phase 8
-Last activity: 2026-05-31 -- Phase 06 closed empty (EXT-01 not viable, recall gap upstream); Phase 07 auto-skipped
+Status: Phase 8 closed no-op, advancing to Phase 9
+Last activity: 2026-05-31 -- Phase 08 closed no-op (s_linker13 retro-designated as COMBINE; primitives already unified in v1.0 chain)
 
-Progress: [█████     ] 50% (2/4 phases complete — Phase 6 negative-close, Phase 7 auto-skip)
+Progress: [███████   ] 75% (3/4 phases complete)
 
 ## v2.0 Scope (active)
 
