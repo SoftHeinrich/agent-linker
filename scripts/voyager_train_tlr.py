@@ -65,9 +65,11 @@ import run_ablation as _ra
 
 TRAIN_PROJECTS = ["mediastore", "teastore", "teammates"]
 TEST_PROJECTS = ["bigbluebutton", "jabref"]
-MAX_OUTER_PASSES = 2
-MAX_INNER_ITERS = 2
-CONVERGENCE_THRESHOLD = 0.93   # macro F1 across training projects
+MAX_OUTER_PASSES = int(os.environ.get("VOYAGER_MAX_OUTER", "3"))
+MAX_INNER_ITERS = int(os.environ.get("VOYAGER_MAX_INNER", "3"))
+# Convergence threshold default 0.93 historically (Claude). gpt-5.4 baseline
+# is ~0.91 so we relax to 0.90 under Scenario E. Overridable via env.
+CONVERGENCE_THRESHOLD = float(os.environ.get("VOYAGER_CONV_THRESH", "0.93"))
 PER_PROJECT_EARLY_STOP = 0.95  # if a project hits this, skip further inner iters
 MAX_PATTERNS_PER_CALL = 3
 DEDUP_SIM_FLOOR = 0.6           # crude jaccard token similarity
@@ -177,6 +179,7 @@ def _run_linker(
     project: str,
     backend: LLMBackend,
     skill_path: str,
+    model: str | None = None,
 ) -> dict:
     """Run the skill-learned variant on one project; return F1 + FP/FN."""
     paths = _ra.DATASETS[project]
@@ -184,7 +187,7 @@ def _run_linker(
     model_path = str(paths["model"])
     gold_path = str(paths["gold_sam"])
 
-    linker = SLinker13SkillLearned(backend=backend, skill_path=skill_path)
+    linker = SLinker13SkillLearned(backend=backend, model=model, skill_path=skill_path)
     t0 = time.time()
     links = linker.link(text_path=text_path, model_path=model_path)
     elapsed = time.time() - t0
@@ -296,8 +299,8 @@ def _build_feedback_prompt(
     sent_block_lines = []
     for s in sorted(referenced_sents):
         # sentence object indexed 1..N; load_sentences returns list
-        # find by sentence_number
-        match = [x for x in sents if x.sentence_number == s]
+        # Sentence.number is 1-indexed (document_loader_v2)
+        match = [x for x in sents if x.number == s]
         if match:
             txt = match[0].text
             # Truncate very long sentences
@@ -370,15 +373,16 @@ def _extract_patterns(
 # Training loop
 # ───────────────────────────────────────────────────────────────────────────
 
-def train(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
+def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> dict:
     print("=" * 78)
     print("PHASE 1 — TRAINING")
     print(f"Train projects: {TRAIN_PROJECTS}")
+    print(f"Backend: {backend.value} model: {model or '<default>'}")
     print(f"Max outer passes: {MAX_OUTER_PASSES}, max inner iters: {MAX_INNER_ITERS}")
     print(f"Convergence threshold (macro): {CONVERGENCE_THRESHOLD}")
     print("=" * 78)
 
-    llm = LLMClient(backend=backend)
+    llm = LLMClient(backend=backend, model=model)
     skill_bank = _load_skill_bank()
     trajectory: list[dict] = []
     rejected_log: list[dict] = []
@@ -402,7 +406,7 @@ def train(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
                     break
                 print(f"\n--- outer={outer} inner={inner} project={project} skills={len(skill_bank)} ---")
                 _save_skill_bank(skill_bank)  # ensure linker reads latest
-                run = _run_linker(project, backend, str(SKILL_BANK_PATH))
+                run = _run_linker(project, backend, str(SKILL_BANK_PATH), model=model)
                 f1_history.append(run["F1"])
                 # Log run
                 (RUN_LOG_DIR / f"train_outer{outer}_{project}_iter{inner}.json").write_text(
@@ -496,9 +500,10 @@ Output JSON:
 JSON only:"""
 
 
-def distill(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
+def distill(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> dict:
     print("\n" + "=" * 78)
     print("PHASE 2 — DISTILLATION")
+    print(f"Backend: {backend.value} model: {model or '<default>'}")
     print("=" * 78)
 
     skill_bank = _load_skill_bank()
@@ -517,7 +522,7 @@ def distill(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
         prompt_names=PROMPT_CONSTANT_NAMES,
     )
 
-    llm = LLMClient(backend=backend)
+    llm = LLMClient(backend=backend, model=model)
     resp = llm.query(prompt, timeout=300)
     _bump_call("DISTILL")
     data = llm.extract_json(resp)
@@ -592,9 +597,10 @@ def distill(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
 # Test phase
 # ───────────────────────────────────────────────────────────────────────────
 
-def test(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
+def test(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> dict:
     print("\n" + "=" * 78)
     print("PHASE 3 — TEST ON HELD-OUT")
+    print(f"Backend: {backend.value} model: {model or '<default>'}")
     print(f"Test projects: {TEST_PROJECTS}")
     print("=" * 78)
 
@@ -615,7 +621,7 @@ def test(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
         # Run 1 — axiom-only floor: point skill_path at a guaranteed-empty file
         empty_skill = OUT_DIR / "_empty_skills.json"
         empty_skill.write_text('{"abstract_patterns": []}')
-        axiom_run = _run_linker(project, backend, str(empty_skill))
+        axiom_run = _run_linker(project, backend, str(empty_skill), model=model)
         (RUN_LOG_DIR / f"test_axiom_{project}.json").write_text(
             json.dumps({k: v for k, v in axiom_run.items()
                         if k not in ("fps", "fns")}, indent=2)
@@ -623,7 +629,7 @@ def test(backend: LLMBackend = LLMBackend.CLAUDE) -> dict:
 
         # Run 2 — distilled skills
         if DISTILLED_PATH.exists():
-            distilled_run = _run_linker(project, backend, str(DISTILLED_PATH))
+            distilled_run = _run_linker(project, backend, str(DISTILLED_PATH), model=model)
         else:
             distilled_run = None
         if distilled_run:
@@ -695,6 +701,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("phase", choices=["train", "distill", "test", "all"])
     ap.add_argument("--backend", default="claude")
+    ap.add_argument("--model", default=None,
+                    help="Optional model override (e.g. 'gpt-5.4', 'sonnet').")
     args = ap.parse_args(argv)
     backend = {
         "claude": LLMBackend.CLAUDE,
@@ -703,11 +711,11 @@ def main(argv=None):
     }[args.backend]
 
     if args.phase in ("train", "all"):
-        train(backend)
+        train(backend, model=args.model)
     if args.phase in ("distill", "all"):
-        distill(backend)
+        distill(backend, model=args.model)
     if args.phase in ("test", "all"):
-        test(backend)
+        test(backend, model=args.model)
     print(f"\n[done] total calls={_call_count} elapsed={time.time()-_start_time:.0f}s")
     return 0
 
