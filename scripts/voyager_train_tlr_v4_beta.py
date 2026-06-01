@@ -878,13 +878,15 @@ def run_outer_pass(
         "probation_delta": prob_delta,
         "committed": prob_delta >= 0,
         "committed_macro_f1": committed_macro,
-        "converged": committed_macro >= CONVERGENCE_THRESHOLD,
+        # Gate: no new patterns proposed (D has nothing left to learn), not F1 threshold.
+        # F1 says "good enough to stop" but misses residual clean errors worth learning.
+        "converged": len(accepted) == 0 and len(removals) == 0,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
     summary_path = split_dir / f"pass{pass_num}_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2))
-    print(f"\n[Pass {pass_num}] committed_macro={committed_macro:.4f} converged={summary['converged']}")
+    print(f"\n[Pass {pass_num}] committed_macro={committed_macro:.4f} converged={summary['converged']} (accepted={len(accepted)}, removals={len(removals)})")
     return summary
 
 
