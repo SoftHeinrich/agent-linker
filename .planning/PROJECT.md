@@ -42,36 +42,42 @@ Every rule removed from `s_linker12c` (and every prompt-rule trimmed from its su
 
 ### Active
 
-**v2.3 (Trained Multi-Role Prompt Replacement, β architecture):**
-- **REQ-V23-01** — v2.3 v4 β training harness produces a trained per-slot JSON bank from gpt-5.4 outer-loop training
-- **REQ-V23-02** — `s_linker14_voyager` consumes trained bank via Voyager-mode runtime injection (extends `s_linker13_skill_learned_clean` pattern)
-- **REQ-V23-03** — Training loop = L (linker) + O (text-aware Oracle, failure-mode analysis) + D (text-blind Distillator with CoT-A inline) + P (mechanical probation gate)
-- **REQ-V23-04** — Oracle output schema = failure-mode-centric (FMs with affected_slot + symptom + apparent_cause + suggested_direction + evidence_count + abstract_example_pair + newly_introduced_errors with bank-pattern attribution)
-- **REQ-V23-05** — Promotion verdict computed against 3-tier bar (STRONG ≥0.9173 / WEAK [0.87, 0.9173) / FAIL <0.87) on gpt-5.4 macro F1, 5-dataset
-- **REQ-V23-06** — Dual-artifact registration: `s_linker13_min` retains `canonical=True` (GATE-01 bound); `s_linker14_voyager` ships `experimental=True` (bound only to 0.87 floor)
-- **REQ-V23-07** — Mainline train/test split = train MS+TS+TM, test BBB+JAB (Voyager v2 split 1). 3-split Confirmation sweep conditional on mainline ≥ 0.87.
-- **REQ-V23-08** — Compact-B fallback (R345 single CoT role) auto-triggers as v2.3 mainline replacement on v4 FAIL (<0.87)
-- **REQ-V23-09** — GATE-06 BENCHMARK_TABOO grep + reviewer critic LLM at bank-entry boundary (not O/D handoff)
-- **REQ-V23-10** — Per-(text_stem, comp_hash, backend, model) cache infrastructure applied uniformly across L, O, D, reviewer-critic
-- **REQ-V23-11** — D's pattern proposals constrained to discourse-syntactic-functional vocabulary (Probe A' R3 vocab anchor carry-forward); forbidden: role nouns + architectural-style names
-- **REQ-V23-12** — Slot-uniform bank coverage: all 9 axiom slots (`AMBIGUITY_RULES`, `AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`, `SEED_DISAMBIGUATION_RULES`) receive trained patterns
-- **REQ-V23-13** — Convergence = macro ≥ 0.90 on training projects, max 5 outer passes
-- **REQ-V23-14** — Budget cap ~$100 gpt-5.4 total (Probe $5-10 → Range $15-25 → Confirmation $40-60)
-- **REQ-V23-15** — Comparison reference: primary `s_linker14_voyager` vs `s_linker13_min` (hand-authored `prompts_v3.py`) gpt-5.4 macro F1; secondary vs `prompts_v3_axiom.py` (axiom-only floor)
+**v2.5 (Oracle Cache Fix + 15-Slot Expansion + Re-run):**
+
+See `.planning/milestones/v2.5-REQUIREMENTS.md` for full REQ-V25-xx list.
+
+Key requirements:
+- **REQ-V25-01** — Oracle cache contamination fixed: `bank_content_hash` added to oracle key (`voyager_train_tlr_v4_beta.py` line 455)
+- **REQ-V25-02** — Probation variance fix: multi-run averaging or threshold hardening for BBB-containing splits
+- **REQ-V25-03** — D slot steering: underfilled-slot list in D prompt (ENTITY_EXTRACTION_RULES, AMBIGUITY_FEW_SHOT, DOC_KNOWLEDGE_JUDGE_EXAMPLES)
+- **REQ-V25-04** — 6 new bank slots in `prompts_v3_axiom.py`: SEED_EXTRACTION_RULES, SEED_ACTOR_RULES, GENERIC_WORD_USAGE_RULES, ALIAS_SCOPE_RULES, ANTECEDENT_ALIAS_RULES, COREF_TERMINAL_SPECIFICITY_RULES
+- **REQ-V25-05** — `ilinker3.py` `_prompt_extract()` + `_prompt_actor()` wired for bank injection (empty string = current behavior)
+- **REQ-V25-06** — `s_linker14_voyager.py` inline static prompts replaced by slot injection (ALIAS_SCOPE_SCHEMA, ANTECEDENT_ALIAS_GUIDE, generic filter, `_classify_specific_terminals`)
+- **REQ-V25-07** — Training harness Oracle + Distillator updated to recognize and propose for all 15 slots
+- **REQ-V25-08** — Full 3-split Confirmation re-run with clean infrastructure; promotion verdict vs STRONG threshold ≥ 0.9173
+
+## Current Milestone: v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run
+
+**Goal:** Fix oracle cache contamination + probation variance, expand Voyager training from 9→15 axiom slots by wiring `ilinker3.py` and `s_linker14_voyager.py` static prompts as bank-injectable slots, then re-run the full 3-split Confirmation sweep to measure the true approach ceiling with clean infrastructure.
+
+**Target features:**
+- Oracle cache fix (A-1): `bank_content_hash` in oracle key (line 455)
+- Probation variance fix (A-3): multi-run averaging for BBB-containing splits
+- D slot steering (A-4): underfilled-slot list in D prompt
+- 15-slot expansion (B-1): 6 new slots + injection wiring in `ilinker3.py` + `s_linker14_voyager.py`
+- Re-run: Probe → Range → Confirmation with clean infrastructure
 
 ## Current State
 
-**Status:** v2.3 kickoff — Trained Multi-Role Prompt Replacement (β architecture) IN PROGRESS. v2.2 archived 2026-06-01. See `.planning/v2.3-prep/v2.3-ARCHITECTURE.md` for locked architecture spec; `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md` for resolved sub-question decisions; `.planning/notes/v23-architectural-endpoint-reasoning.md` for endpoint-choice reasoning.
+**Status:** v2.5 kickoff — Oracle Cache Fix + 15-Slot Expansion + Re-run IN PROGRESS. v2.4 archived 2026-06-01.
 
-**Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`). Composes trim1 (distilled Tier-1 judge rubric) + trim9 (runtime Tier-2 seed disambiguation rubric) over `prompts_v3` + `helper_v3` + `s_linker13_clean_v3`. Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
+**Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`, unchanged). Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
-**Opt-in carve-out (v2.2 shipped 2026-06-01):** `src/llm_sad_sam/linkers/experimental/s_linker14_probe_d_upstream_clean.py` — runtime coref rubric replacing static `COREF_RULES`, enable ONLY when `LLM_BACKEND == openai`. Mediastore gpt-5.4 +1.59pp; BBB gpt-5.4 mean +2.2pp over 2 obs. Claude not promoted (FAIL was confounded — per-backend cache fix unblocks re-test). NOT canonical. See `.planning/v2.2-prep/probe-D-upstream-SUMMARY.md`.
+**Experimental artifact:** `src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py` (`experimental=True`, `canonical=False`). 2-pattern cross-split bank from v2.4. Will be retrained in v2.5.
 
-**Frozen artifacts (preserved byte-equal):** `s_linker13.py`, `prompts_v2.py`, `data_types_v2.py`, `document_loader_v2.py`, `pcm_parser_v2.py`, `ilinker*.py`.
+**Frozen artifacts (preserved byte-equal):** `s_linker13.py`, `prompts_v2.py`, `data_types_v2.py`, `document_loader_v2.py`, `pcm_parser_v2.py`, `ilinker*.py`, `s_linker13_min.py`.
 
-**Frontier evidence:** 7 rejected trim variants (`s_linker13_trim2..8_*_runtime_clean.py`) shipped as published exploration evidence under Scenario E. Voyager-TLR pilot infrastructure (`s_linker13_skill_learned_clean.py` + `prompts_v3_axiom.py`) parked as v2.2 anchor.
-
-**Standing constraints carried forward:** GATE-01 (Claude floor + cross-model floor), GATE-02 (frozen-compat regression), GATE-06 (generality / zero benchmark-derived values), GATE-07 (canonical registration), Claude Sonnet default, BENCHMARK_TABOO compliance.
+**Standing constraints carried forward:** GATE-01 (Claude floor + cross-model floor), GATE-06 (generality / zero benchmark-derived values), GATE-07 (canonical registration), gpt-5.4 default backend, BENCHMARK_TABOO compliance.
 
 ## Past Milestones
 
@@ -79,6 +85,7 @@ Every rule removed from `s_linker12c` (and every prompt-rule trimmed from its su
 - **v2.0** (2026-05-31) — Complete Rule Removal + Cross-Model. EXT-01 closed empty (negative); EXT-02 auto-skipped; COMBINE retro-satisfied; CROSS evidence published on gpt-5.4 (mixed-result, model-provider-property framing). See [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) and [`milestones/v2.0-MILESTONE-AUDIT.md`](milestones/v2.0-MILESTONE-AUDIT.md).
 - **v2.1** (2026-06-01) — Cleanup + Prompt Simplification. 3 trims shipped (Step 0 dead-code + trim1 distilled judge + trim9 runtime seed rubric); 7 frontier variants documented; Voyager-TLR methodology validated for v2.2. `s_linker13_min` promoted (Claude 0.9506, gpt-5.4 0.9069). All 10 requirements + 4 standing gates held. See [`milestones/v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md), [`milestones/v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md), and [`milestones/v2.1-MILESTONE-AUDIT.md`](milestones/v2.1-MILESTONE-AUDIT.md).
 - **v2.2** (2026-06-01) — Probe-Wave Trimmed Close. 4 probes; 1 STRONG survivor (Probe D upstream coref rubric) ships as opt-in gpt-5.4-only carve-out; canonical unchanged (`s_linker13_min`); Voyager v4 multi-role + per-backend cache infra + Probe A' vocab fix deferred to v2.3 as proven prereqs. See [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md), [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md), and [`milestones/v2.2-MILESTONE-AUDIT.md`](milestones/v2.2-MILESTONE-AUDIT.md).
+- **v2.4** (2026-06-01) — Probation Gate Fix + Axiom Improvements + v4 Re-run. Verdict: **WEAK** (cross-split 90.5% gpt-5.4, −0.2pp vs canonical 90.7%). Gate fix (Gate A+B) operational; split-2 still 0/5 commits — post-hoc investigation found D cache collision invalidated cross-split diversity (all splits got identical distillator proposals). Axiom improvements (D-2/D-3) zero net effect. Two new infrastructure bugs catalogued for v2.5: oracle cache contamination (line 455, not yet fixed) + slot steering gap (ENTITY_EXTRACTION_RULES never proposed). Additionally: full prompt audit found 6 static complex prompts outside axiom scope; v2.5 expands bank 9→15 slots. See [`milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md) and [`milestones/v2.4-MILESTONE-AUDIT.md`](milestones/v2.4-MILESTONE-AUDIT.md).
 - **v2.3** (2026-06-01) — Trained Multi-Role Prompt Replacement (β architecture). Verdict: **WEAK** (cross-split macro 90.5% gpt-5.4, +1.6pp over axiom-only floor 88.9%, −0.19pp vs canonical 90.7%). Total cost ~$111. What shipped: `s_linker14_voyager` (`experimental=True`, `canonical=False`) with cross-split bank of 2 patterns in 2 slots (`results/voyager_v4_beta/confirmation/cross_split_final_bank.json`); `s_linker13_min` canonical unchanged. Key finding: **split-fragility** — BBB as training dataset causes all-rollback (0 of 14 patterns committed across 5 passes) due to 6 compounding bugs in the probation gate; without fix, any re-run on BBB-containing splits produces an empty bank. Secondary finding: sentence-local axiom vocabulary ceiling reached for BBB/TM (14 FNs from section-context naming, 7 FPs from responsibility-list gerunds). Phase 18 (Compact-B) not triggered. Next (v2.4): fix probation gate (traceability gate replacing F1-delta gate) + address axiom gaps. See [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) and [`milestones/v2.3-MILESTONE-AUDIT.md`](milestones/v2.3-MILESTONE-AUDIT.md).
 
 **Key v2.0 findings:**
@@ -177,4 +184,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-01 — v2.3 milestone kickoff (Trained Multi-Role Prompt Replacement, β architecture)*
+*Last updated: 2026-06-01 — v2.5 milestone kickoff (Oracle Cache Fix + 15-Slot Expansion + Re-run)*

@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: Phase Summary
-status: Phase 23 confirmation complete — verdict WEAK (90.5% macro). Phase 24 Milestone Close next.
-stopped_at: context limit (2026-06-01)
-last_updated: "2026-06-01T20:00:00.000Z"
-last_activity: 2026-06-01 -- Phase 23 confirmation done; 3 splits (5 passes each, cap hit); cross-split bank 2 patterns; 5-dataset eval=90.5%; verdict=WEAK; REQ-V24-01 FAIL (split-2 0/5 committed, gate works but BBB patterns don't generalize)
+milestone: v2.5
+milestone_name: Oracle Cache Fix + 15-Slot Expansion + Re-run
+status: planning
+last_updated: "2026-06-01T17:39:20.519Z"
+last_activity: 2026-06-01
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 6
-  completed_plans: 6
-  percent: 80
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,20 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.3 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 20 — Infrastructure Prep (gate redesign + axiom improvements)
+**Current focus:** v2.4 complete. Next: v2.5 (oracle cache fix + axiom scope expansion 9→15 slots + re-run).
 
 ## Current Position
 
-Phase: 23 — COMPLETE. Phase 24 Milestone Close next (unconditional).
-Status: Phase 23 confirmation ran 2026-06-01 (gpt-5.4, 3 splits × 5 passes each). Cross-split bank: 2 patterns (DOC_KNOWLEDGE_EXTRACTION_RULES + COREF_RULES). 5-dataset eval: 90.5% macro. Verdict: WEAK. REQ-V24-01 FAILED (split-2 0/5 committed — gate correct, BBB patterns don't generalize). Verdict doc at `.planning/phases/23-confirmation-tier/23-CONFIRMATION-VERDICT.md`.
-Last activity: 2026-06-01 -- Phase 23 confirmation complete, verdict WEAK (90.5%), REQ-V24-01 FAIL documented
-
-```
-[Phase 20 ✅]──▶[Phase 21 ✅]──▶[Phase 22 ✅]──▶[Phase 23 ✅]──▶[Phase 24 ⬜]
-  (infra)         (probe)         (range)        (confirm)       (close)
-```
-
-**Next action**: Phase 24 Milestone Close — audit, requirements close-out, archive, PROJECT.md update.
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-01 — Milestone v2.5 started
 
 ## v2.4 Design Decisions (Locked)
 
