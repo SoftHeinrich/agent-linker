@@ -811,36 +811,45 @@ def run_outer_pass(
         o_path.parent.mkdir(parents=True, exist_ok=True)
         o_path.write_text(json.dumps(o_json, indent=2))
 
-    # Step 3: D — Distillator (text-blind, CoT-A inline)
-    # D runs once per outer pass across all O outputs
-    print("\n[D] Running Distillator (text-blind, CoT-A)...")
-    # Use a representative bank for D (merge slot_patterns from all projects)
-    merged_bank = {"version": "v4b", "slot_patterns": {s: [] for s in SLOT_NAMES}}
-    seen_ids: set[str] = set()
-    for p in projects:
-        for slot, pats in project_banks[p].get("slot_patterns", {}).items():
-            for pat in pats:
-                pid = pat.get("pattern_id", "")
-                if pid not in seen_ids:
-                    seen_ids.add(pid)
-                    merged_bank["slot_patterns"][slot].append(pat)
+    # Step 3: D — Distillator (text-blind, CoT-A inline), run per-project.
+    # Per-project D prevents high-evidence projects from monopolising pattern proposals.
+    # Ablation (probe pass 1): combined D → 3 slots; per-project D → 5 unique slots.
+    print("\n[D] Running Distillator per-project (text-blind, CoT-A)...")
+    proposals_raw: list[dict] = []
+    removals: list[dict] = []
+    seen_proposal_titles: set[str] = set()
+    d_results: list[dict] = []
+    for proj_idx, project in enumerate(projects):
+        print(f"\n  [D] project={project}")
+        proj_bank = project_banks[project]
+        d_result = _run_distillator_d(
+            llm=llm,
+            o_jsons=[o_jsons[proj_idx]],
+            bank=proj_bank,
+            iter_num=pass_num,
+            backend_str=backend_str,
+            model_str=model_str,
+            dry_run=dry_run,
+        )
+        d_results.append(d_result)
+        for pat in d_result.get("patterns_proposed", []):
+            key = pat.get("title", str(pat))[:40].lower()
+            if key not in seen_proposal_titles:
+                seen_proposal_titles.add(key)
+                proposals_raw.append(pat)
+        for rem in d_result.get("patterns_to_remove", []):
+            rid = rem.get("pattern_id", str(rem))
+            if all(r.get("pattern_id") != rid for r in removals):
+                removals.append(rem)
+        n_proposed = len(d_result.get("patterns_proposed", []))
+        n_removals = len(d_result.get("patterns_to_remove", []))
+        print(f"  [D] {project}: proposed {n_proposed}, removals {n_removals}")
 
-    d_result = _run_distillator_d(
-        llm=llm,
-        o_jsons=o_jsons,
-        bank=merged_bank,
-        iter_num=pass_num,
-        backend_str=backend_str,
-        model_str=model_str,
-        dry_run=dry_run,
-    )
-    proposals_raw = d_result.get("patterns_proposed", [])
-    removals = d_result.get("patterns_to_remove", [])
-    print(f"  [D] proposed {len(proposals_raw)} patterns, {len(removals)} removals")
+    print(f"  [D] total unique proposals: {len(proposals_raw)}, total removals: {len(removals)}")
 
-    # Save D output
+    # Save merged D output (all per-project results)
     d_path = split_dir / f"pass{pass_num}_distillator.json"
-    d_path.write_text(json.dumps(d_result, indent=2))
+    d_path.write_text(json.dumps({"per_project": d_results, "merged_proposals": proposals_raw, "merged_removals": removals}, indent=2))
 
     # Step 4: GATE-06 + reviewer_critic filter
     print("\n[GATE-06] Filtering D proposals...")
