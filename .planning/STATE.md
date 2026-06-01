@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Phase Summary
 status: active
-stopped_at: Phase 17 planned (2 plans). Ready for Phase 17-P1 execution.
-last_updated: "2026-06-01T15:00:00.000Z"
-last_activity: 2026-06-01 -- Phase 17 planned, 2 plans written (3-split confirmation runs + cross-split aggregation/verdict)
+stopped_at: Phase 17-P1 complete. 17-P2 BLOCKED — probation gate redesign required before re-run.
+last_updated: "2026-06-01T19:30:00.000Z"
+last_activity: 2026-06-01 -- Phase 17-P1 done; probation gate failure diagnosed; P2 deferred pending traceability gate redesign
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 ## Current Position
 
-Phase: 17 — IN PROGRESS (2/2 plans written; awaiting execution)
-Plan: 0 of 2 executed
-Status: Phase 17 planned; execute 17-P1 (3-split runs) then 17-P2 (cross-split aggregation + verdict)
+Phase: 17 — IN PROGRESS (1/2 plans executed)
+Plan: 1 of 2 executed (17-P1 complete, 17-P2 running)
+Status: 17-P2 executing — cross-split aggregation + final eval + verdict
 Last activity: 2026-06-01 -- Phase 17 plans written
 
 ```
