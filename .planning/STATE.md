@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Phase Summary
-status: completed
-stopped_at: Phase 14 complete. All 32 tests pass.
+status: active
+stopped_at: Phase 16 planned. Ready to execute range tier.
 last_updated: "2026-06-01T09:38:53.840Z"
-last_activity: 2026-06-01 -- Phase 15 marked complete
+last_activity: 2026-06-01 -- Phase 16 plans created (P1: range run + eval, P2: verdict)
 progress:
-  total_phases: 1
+  total_phases: 2
   completed_phases: 1
-  total_plans: 2
+  total_plans: 4
   completed_plans: 2
-  percent: 100
+  percent: 50
 ---
 
 # Project State
@@ -21,19 +21,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 15 — probe-tier
+**Current focus:** Phase 16 — range-tier
 
 ## Current Position
 
-Phase: 15 — COMPLETE
-Plan: 1 of 2
-Status: Phase 15 complete
-Last activity: 2026-06-01 -- Phase 15 marked complete
+Phase: 16 — IN PROGRESS (planned, not yet executed)
+Plan: 0 of 2
+Status: Phase 16 plans created; ready to execute
+Last activity: 2026-06-01 -- Phase 16 plans created
 
 ```
-[Phase 14 ✅]──▶[Phase 15]──▶[Phase 16]──▶[Phase 17 (cond.)]──▶[Phase 19]
-                    │               │
-                    └──KILL──▶[Phase 18 (Compact-B)]──────────────────────▶[Phase 19]
+[Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ▶]──▶[Phase 17 (cond.)]──▶[Phase 19]
+                                      │
+                               FAIL──▶[Phase 18 (Compact-B)]──────────────────▶[Phase 19]
 ```
 
 ## Phase 14 Deliverables (SHIPPED 2026-06-01)
@@ -70,11 +70,18 @@ Last activity: 2026-06-01 -- Phase 15 marked complete
 - **`src/llm_sad_sam/linkers/experimental/s_linker13_min.py`** (v2.1 PROMOTED, `canonical=True`, unchanged)
 - Claude Sonnet macro F1: 0.9506 | gpt-5.4 macro F1: 0.9069
 
-## Phase 15 Plan
+## Phase 15 Result (COMPLETE — CONTINUE)
 
-**Goal:** Run β training on mainline split (gpt-5.4, $5–10). Cheap-kill gate: macro < 0.87 after pass 2 → KILL v4.
-**Action:** `/gsd-plan-phase 15` then `/gsd-execute-phase 15`
-**Budget:** $5–10 gpt-5.4
+**Verdict:** CONTINUE — training-project macro F1 = 0.9152 after pass 1 (> 0.87 cheap-kill floor; > 0.90 convergence threshold). 
+**Probe banks:** `results/voyager_v4_beta/mainline/{mediastore,teastore,teammates}_bank.json` (3 real patterns each).
+**See:** `.planning/phases/15-probe-tier/15-PROBE-VERDICT.md`
+
+## Phase 16 Plan (CURRENT)
+
+**Goal:** Run Range tier to convergence on mainline split (gpt-5.4, $15–25). Aggregate final_bank.json. Evaluate all 5 datasets. Compute 3-tier verdict (STRONG/WEAK/FAIL).
+**Action:** `/gsd-execute-phase 16`
+**Budget:** $15–25 gpt-5.4
+**Plans:** 16-P1 (range run + eval), 16-P2 (verdict doc + state update)
 
 ## Accumulated Context
 
@@ -97,7 +104,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-06-01T08:36:26.000Z
-Stopped at: Phase 14 complete. All 32 tests pass. 
+Last session: 2026-06-01T09:38:53.000Z
+Stopped at: Phase 16 planned. Range tier ready to execute.
 Resume file: .planning/milestones/v2.3-ROADMAP.md
-Next action: `/gsd-plan-phase 15` (Probe Tier — real LLM training run, $5–10 gpt-5.4)
+Next action: `/gsd-execute-phase 16` (Range Tier — train to convergence, 5-dataset eval, $15-25 gpt-5.4)
