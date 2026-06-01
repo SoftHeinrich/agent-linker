@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: Probation Gate Fix + Axiom Improvements + v4 Re-run
 status: active
-stopped_at: v2.3 complete — starting v2.4 Phase 20
+stopped_at: Phase 20 code complete — 20-P3 eval pending (gpt-5.4 budget)
 last_updated: "2026-06-01"
-last_activity: 2026-06-01 -- v2.3 milestone closed (WEAK verdict, 90.5%); v2.4 kickoff — 3 infra plans queued (Phase 20)
+last_activity: 2026-06-01 -- Phase 20 code complete (Gate A/B + axioms + coref code); 20-P3 eval pending
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 13
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-06-01 for v2.3 close)
 
 ## Current Position
 
-Phase: 20 — IN PROGRESS (not started; queued).
-Status: v2.3 complete — WEAK verdict (cross-split macro 90.5%). v2.4 starting. Phase 20 is the first phase: three independent plans (20-P1 gate, 20-P2 axioms, 20-P3 eval). No LLM training budget consumed in Phase 20.
-Last activity: 2026-06-01 -- v2.3 closed; v2.4 kickoff docs written; v2.4-KICKOFF-SEED.md captures all locked decisions
+Phase: 20 — IN PROGRESS (20-P1 + 20-P2 code complete; 20-P3 eval pending).
+Status: 20-P1 (Gate A/B + 4 bug fixes) and 20-P2 (axiom diffs + coref code) committed. 20-P3 eval (5-dataset gpt-5.4 baseline) pending budget authorization.
+Last activity: 2026-06-01 -- Phase 20 code complete (commit 72bab9e); dry-run passes; GATE-02 32/32; GATE-06 clean on axioms
 
 ```
 [Phase 20 ⬜]──▶[Phase 21 ⬜]──▶[Phase 22 ⬜]──▶[Phase 23 ⬜]──▶[Phase 24]
