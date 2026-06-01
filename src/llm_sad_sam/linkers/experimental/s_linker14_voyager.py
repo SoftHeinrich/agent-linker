@@ -729,8 +729,8 @@ JSON only:"""
         return validated
 
     def _run_coreference(self, sentences, components, name_to_id, sent_map):
-        pronoun_count = sum(1 for s in sentences if self.PRONOUN_PATTERN.search(s.text))
-        print(f"    Coreference: cases-in-context ({pronoun_count} pronoun sents / {len(sentences)} total)")
+        anaphoric_count = sum(1 for s in sentences if self.PRONOUN_PATTERN.search(s.text))
+        print(f"    Coreference: cases-in-context ({anaphoric_count} anaphoric sents / {len(sentences)} total)")
         return self._coref_cases_in_context(sentences, components, name_to_id, sent_map)
 
     def _run_single_extraction_pass(self, sentences, comp_names, mappings,
@@ -959,10 +959,23 @@ JSON only:"""
     def _coref_cases_in_context(self, sentences, components, name_to_id, sent_map):
         comp_names = get_comp_names(components)
         all_coref = []
-        pronoun_sents = [s for s in sentences if self.PRONOUN_PATTERN.search(s.text)]
 
-        for batch_start in range(0, len(pronoun_sents), 10):
-            batch = pronoun_sents[batch_start:batch_start + 10]
+        # Build role_ref_pat: matches "the <terminal_word>" for multi-word component names.
+        # Catches SCN sentences ("The server handles X") that contain no pronoun.
+        comp_terminals = {c.name.split()[-1].lower() for c in components if len(c.name.split()) > 1}
+        role_ref_pat = re.compile(
+            r'\bthe (' + '|'.join(re.escape(w) for w in sorted(comp_terminals)) + r')\b',
+            re.IGNORECASE
+        ) if comp_terminals else None
+
+        anaphoric_sents = [
+            s for s in sentences
+            if self.PRONOUN_PATTERN.search(s.text)
+            or (role_ref_pat and role_ref_pat.search(s.text))
+        ]
+
+        for batch_start in range(0, len(anaphoric_sents), 10):
+            batch = anaphoric_sents[batch_start:batch_start + 10]
             cases = []
             for sent in batch:
                 context = []
@@ -973,7 +986,7 @@ JSON only:"""
                         context.append(f"{marker} S{s.number}: {s.text}")
                 cases.append({"sent": sent, "context": context})
 
-            prompt = f"""Resolve pronoun references to architecture components.
+            prompt = f"""Resolve anaphoric references (pronouns and role-referential noun phrases) to architecture components.
 
 COMPONENTS: {', '.join(comp_names)}
 
@@ -988,7 +1001,7 @@ COMPONENTS: {', '.join(comp_names)}
 {ANTECEDENT_ALIAS_GUIDE}
 
 Return JSON:
-{{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "pronoun": "it", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name", "antecedent_via_alias": false}}]}}
+{{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "reference": "the server", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name", "antecedent_via_alias": false}}]}}
 
 Only include resolutions you are CERTAIN about. JSON only:"""
 

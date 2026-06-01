@@ -80,7 +80,7 @@ VALIDATION_RULES = """Approve when the sentence treats the component as an archi
 
 # v3 size: COREF_RULES 770 chars. Target ≤ 231.
 
-COREF_RULES = """For each case, decide whether a pronoun in the target sentence grammatically refers back to a component named verbatim earlier in the context. Resolve only when one component is the unambiguous antecedent."""
+COREF_RULES = """For each case, decide whether a pronoun or role-referential noun phrase in the target sentence refers back to a component named or aliased earlier in the context. Resolve only when one component is the unambiguous antecedent. When the antecedent sentence contains a known alias of the component, set antecedent_via_alias=true."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -89,4 +89,4 @@ COREF_RULES = """For each case, decide whether a pronoun in the target sentence 
 
 # v3 size: SEED_DISAMBIGUATION_RULES 870 chars. Target ≤ 261.
 
-SEED_DISAMBIGUATION_RULES = """For each sentence, decide whether the matched name refers to the architectural component (COMPONENT) or carries a different meaning (OTHER: code identifier, technique sharing the name, sub-entity of a larger name, or ordinary English). When uncertain, choose COMPONENT."""
+SEED_DISAMBIGUATION_RULES = """For each sentence, decide whether the matched name refers to the architectural component (COMPONENT) or carries a different meaning (OTHER: code identifier, technique sharing the name, sub-entity of a larger name, ordinary English, or description of the component's own capabilities without referencing an external participant). When uncertain, choose COMPONENT."""

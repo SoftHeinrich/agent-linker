@@ -12,16 +12,18 @@ O  — Oracle: text-aware error analysis → rich failure-mode JSON.
 D  — Distillator: text-blind, CoT-A inline → per-slot pattern proposals.
      Sees O's failure-mode JSON + current bank. Never sees raw text.
      Abstraction check (CoT-A) required before each proposed pattern.
-P  — Probation gate: mechanical F1 delta check after each outer iter.
-     Batch rollback if probation delta < 0.
+Gate A — FM citation check: deterministic, $0. Rejects D proposals that do not
+     cite at least one valid failure-mode ID from O's output for this pass.
+Gate B — LLM dual-direction judge: ~$0.01/pass. Accepts only proposals where
+     fixes_cited_fm=true AND causes_new_error=false AND confidence in {high, medium}.
 
 ITERATION LOOP (per outer pass)
 --------------------------------
   for project in training_set:
-    L_run → O_json → D_proposals → GATE-06 filter → candidate_bank
-  probation_test(candidate_bank)
-  if delta >= 0: commit; else: rollback
-  convergence_check (macro_F1 >= 0.90 on train OR pass 5 cap)
+    L_run → O_json → D_proposals → GATE-06 filter → Gate A (FM citation)
+                                                   → Gate B (LLM judge)
+  commit if any accepted; else no-op
+  convergence_check (committed_macro_F1 >= 0.90 on train OR pass 5 cap)
 
 DRY-RUN MODE
 ------------
@@ -160,6 +162,15 @@ def _comp_hash(project: str) -> str:
         return hashlib.sha256(model_path.encode()).hexdigest()[:16]
 
 
+def _bank_content_hash(bank: dict) -> str:
+    """Hash of bank slot_patterns content — used as L cache key component.
+
+    Ensures L cache invalidates when the bank changes between passes.
+    """
+    content = json.dumps(bank.get("slot_patterns", {}), sort_keys=True)
+    return hashlib.md5(content.encode()).hexdigest()[:12]
+
+
 def _cache_key(text_path: str, project: str, backend: str, model: str, role: str) -> str:
     text_stem = Path(text_path).stem
     ch = _comp_hash(project)
@@ -241,14 +252,17 @@ def _next_pattern_id(bank: dict) -> str:
 
 def _run_linker_l(project: str, backend: LLMBackend, model: str | None,
                   bank: dict, dry_run: bool = False) -> dict:
-    """Run L on project with current bank state. Returns metrics dict."""
+    """Run L on project with current bank state. Returns metrics dict.
+
+    Cached per (project, bank_content_hash, backend, model) to avoid
+    re-running L with identical bank state across passes or attempts.
+    """
     from llm_sad_sam.linkers.experimental.s_linker14_voyager import SLinker14Voyager
 
     paths = _ra.DATASETS[project]
     import tempfile, json as _json
 
     if dry_run:
-        # In dry-run: return mock metrics without any LLM calls
         gold = _ra.load_gold_sam(str(paths["gold_sam"]))
         return {
             "project": project, "F1": 0.50, "P": 0.60, "R": 0.45,
@@ -258,7 +272,19 @@ def _run_linker_l(project: str, backend: LLMBackend, model: str | None,
             "elapsed_s": 0.0, "dry_run": True,
         }
 
-    # Write bank to a temp file for the linker constructor
+    backend_str_l = "openai" if backend == LLMBackend.OPENAI else "claude"
+    model_str_l = model or "default"
+    bch = _bank_content_hash(bank)
+    ck_l = f"l_{project}_{bch}_{backend_str_l}_{model_str_l}"
+    cached = _cache_read(ck_l)
+    if cached:
+        cached["fps"] = [tuple(x) for x in cached.get("fps", [])]
+        cached["fns"] = [tuple(x) for x in cached.get("fns", [])]
+        cached.setdefault("predicted", set())
+        cached.setdefault("gold", set())
+        print(f"  [L cache hit] {project} (bank={bch[:6]})")
+        return cached
+
     with tempfile.NamedTemporaryFile(suffix=".json", mode="w", delete=False) as tf:
         _json.dump(bank, tf)
         tmp_bank_path = tf.name
@@ -275,7 +301,7 @@ def _run_linker_l(project: str, backend: LLMBackend, model: str | None,
 
         fps = sorted(predicted - gold)
         fns = sorted(gold - predicted)
-        return {
+        result = {
             "project": project,
             "F1": metrics["F1"], "P": metrics["P"], "R": metrics["R"],
             "fp_count": metrics["fp"], "fn_count": metrics["fn"],
@@ -283,6 +309,15 @@ def _run_linker_l(project: str, backend: LLMBackend, model: str | None,
             "fps": fps, "fns": fns,
             "elapsed_s": elapsed,
         }
+        _cache_write(ck_l, {
+            "project": result["project"],
+            "F1": result["F1"], "P": result["P"], "R": result["R"],
+            "fp_count": result["fp_count"], "fn_count": result["fn_count"],
+            "fps": [list(x) for x in fps],
+            "fns": [list(x) for x in fns],
+            "elapsed_s": result["elapsed_s"],
+        })
+        return result
     finally:
         try:
             Path(tmp_bank_path).unlink(missing_ok=True)
@@ -544,6 +579,10 @@ For each failure mode, decide:
 3. Only propose patterns that PASS CoT-A (style-invariant = passes all 5 styles).
 4. Synthesize example pairs (TP + FP), never paraphrase from Oracle context.
 5. Also propose removals if existing patterns are causing new errors.
+6. REQUIRED: Each proposed pattern MUST include `addresses_failure_modes` — a
+   non-empty list of FM IDs (e.g. ["FM-1", "FM-2"]) from the Oracle output above
+   that this pattern addresses. Proposals with empty or absent addresses_failure_modes
+   are REJECTED by Gate A without review.
 
 Return JSON (exact schema):
 {{
@@ -554,7 +593,8 @@ Return JSON (exact schema):
       "rule_text": "<2-4 sentence abstract rule, discourse vocabulary>",
       "example_block": "TP: <synthesized correct example>\\nFP: <synthesized incorrect example>",
       "why_it_transfers": "<reasoning about style-invariance>",
-      "abstraction_check_cot": "Tested against microservice/event-sourced/layered/pipe-filter/hexagonal: <verdict + reasoning>. Passes/Fails."
+      "abstraction_check_cot": "Tested against microservice/event-sourced/layered/pipe-filter/hexagonal: <verdict + reasoning>. Passes/Fails.",
+      "addresses_failure_modes": ["FM-1"]
     }}
   ],
   "patterns_to_remove": [
@@ -582,6 +622,7 @@ def _run_distillator_d(llm: LLMClient, o_jsons: list[dict], bank: dict,
                     "example_block": "TP: mock TP example.\nFP: mock FP example.",
                     "why_it_transfers": "dry-run placeholder",
                     "abstraction_check_cot": "dry-run: PASSES all styles (placeholder).",
+                    "addresses_failure_modes": ["FM-1"],
                 }
             ],
             "patterns_to_remove": [],
@@ -676,30 +717,155 @@ def _filter_proposals(proposals: list[dict]) -> tuple[list[dict], list[dict]]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# P role — Probation gate (mechanical, no LLM)
+# Gate A — FM citation check (deterministic, $0)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _probation_check(projects: list[str], candidate_bank: dict,
-                      prior_f1s: dict[str, float], backend: LLMBackend,
-                      model: str | None, dry_run: bool = False) -> tuple[float, dict[str, float]]:
-    """Run L with candidate_bank on probation projects, compute macro F1 delta.
+def _gate_a_check(
+    proposals: list[dict], o_jsons: list[dict]
+) -> tuple[list[dict], list[dict]]:
+    """Gate A: FM citation check (deterministic, $0).
 
-    Returns (delta, new_f1s). Uses cached L runs where available.
+    Each proposal must include addresses_failure_modes (non-empty list of FM IDs
+    that all exist in O's failure_modes output). Rejects immediately on empty list
+    or unknown FM IDs. Replaces the stochastic F1-delta probation gate.
     """
-    if dry_run:
-        return 0.0, {p: prior_f1s.get(p, 0.5) for p in projects}
+    valid_fm_ids: set[str] = set()
+    for o in o_jsons:
+        for fm in o.get("failure_modes", []):
+            fm_id = fm.get("id", "")
+            if fm_id:
+                valid_fm_ids.add(fm_id)
 
-    new_f1s = {}
-    for project in projects:
-        run = _run_linker_l(project, backend, model, candidate_bank, dry_run=False)
-        new_f1s[project] = run["F1"]
+    accepted = []
+    rejected = []
+    for p in proposals:
+        slot = p.get("slot", "?")
+        cited = p.get("addresses_failure_modes", [])
+        if not isinstance(cited, list) or len(cited) == 0:
+            print(f"  [Gate A REJECT] slot={slot}: addresses_failure_modes empty or missing")
+            rejected.append({**p, "gate_a_rejection": "addresses_failure_modes empty"})
+            continue
+        unknown = [fid for fid in cited if fid not in valid_fm_ids]
+        if unknown:
+            print(f"  [Gate A REJECT] slot={slot}: unknown FM IDs {unknown!r}")
+            rejected.append({**p, "gate_a_rejection": f"unknown FM IDs: {unknown!r}"})
+            continue
+        accepted.append(p)
 
-    prior_macro = sum(prior_f1s.values()) / max(1, len(prior_f1s))
-    new_macro = sum(new_f1s.values()) / max(1, len(new_f1s))
-    delta = new_macro - prior_macro
+    return accepted, rejected
 
-    print(f"  [P] probation macro: {new_macro:.4f} (prior: {prior_macro:.4f}, delta: {delta:+.4f})")
-    return delta, new_f1s
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Gate B — LLM dual-direction judge (~$0.01/pass)
+# ─────────────────────────────────────────────────────────────────────────────
+
+GATE_B_PROMPT = """You are a quality judge for a software architecture trace-link pattern proposal.
+
+PROPOSED PATTERN:
+  Slot: {slot}
+  Rule: {rule_text}
+  Example: {example_block}
+  Addresses failure modes: {cited_fm_ids}
+
+CITED FAILURE MODES (from Oracle analysis):
+{fm_details}
+
+NEWLY INTRODUCED ERRORS (flagged by Oracle this pass):
+{new_errors}
+
+JUDGE TASK
+──────────
+1. Does this pattern genuinely address the cited failure mode(s)?
+   Consider: does the rule_text target the symptom described in the FM?
+2. Does this pattern risk introducing new errors?
+   Consider: would applying this rule approve links that should not be approved,
+   or reject links that should be approved?
+
+Return JSON:
+{{
+  "fixes_cited_fm": true,
+  "causes_new_error": false,
+  "confidence": "high",
+  "rationale": "<one sentence>"
+}}
+JSON only:"""
+
+
+def _gate_b_judge(
+    llm, proposals: list[dict], o_jsons: list[dict], dry_run: bool = False
+) -> tuple[list[dict], list[dict]]:
+    """Gate B: LLM dual-direction semantic judge (~$0.01/pass).
+
+    Accept condition: fixes_cited_fm=true AND causes_new_error=false AND confidence in {high, medium}.
+    In dry_run or with no LLM: accepts all proposals (structural test only).
+    """
+    if dry_run or llm is None:
+        return proposals, []
+
+    fm_lookup: dict[str, dict] = {}
+    new_errors_all: list[str] = []
+    for o in o_jsons:
+        for fm in o.get("failure_modes", []):
+            fm_id = fm.get("id", "")
+            if fm_id:
+                fm_lookup[fm_id] = fm
+        for err in o.get("newly_introduced_errors", []):
+            if isinstance(err, str):
+                new_errors_all.append(err)
+            elif isinstance(err, dict):
+                new_errors_all.append(err.get("description", str(err)))
+
+    new_errors_text = (
+        "\n".join(f"  - {e}" for e in new_errors_all[:5]) if new_errors_all else "  (none)"
+    )
+
+    accepted = []
+    rejected = []
+    for prop in proposals:
+        slot = prop.get("slot", "?")
+        rule_text = prop.get("rule_text", "")
+        example_block = prop.get("example_block", "")
+        cited_ids = prop.get("addresses_failure_modes", [])
+
+        fm_details_lines = []
+        for fid in cited_ids:
+            fm = fm_lookup.get(fid)
+            if fm:
+                fm_details_lines.append(
+                    f"  {fid}: {fm.get('title', '?')}\n"
+                    f"    Symptom: {fm.get('symptom', '?')[:120]}\n"
+                    f"    Direction: {fm.get('suggested_direction', '?')[:120]}"
+                )
+        fm_details = "\n".join(fm_details_lines) if fm_details_lines else "  (FM details not found)"
+
+        prompt = GATE_B_PROMPT.format(
+            slot=slot,
+            rule_text=rule_text[:300],
+            example_block=example_block[:200],
+            cited_fm_ids=", ".join(cited_ids),
+            fm_details=fm_details,
+            new_errors=new_errors_text,
+        )
+
+        verdict = llm.extract_json(llm.query(prompt, timeout=60)) or {}
+        fixes = verdict.get("fixes_cited_fm", False)
+        causes = verdict.get("causes_new_error", True)
+        confidence = verdict.get("confidence", "low")
+        rationale = verdict.get("rationale", "")
+
+        accept = fixes is True and causes is False and confidence in ("high", "medium")
+        if accept:
+            print(f"  [Gate B ACCEPT] slot={slot}: {rationale[:80]}")
+            accepted.append(prop)
+        else:
+            reason = (
+                f"fixes_cited_fm={fixes}, causes_new_error={causes}, "
+                f"confidence={confidence}: {rationale[:80]}"
+            )
+            print(f"  [Gate B REJECT] slot={slot}: {reason}")
+            rejected.append({**prop, "gate_b_rejection": reason})
+
+    return accepted, rejected
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -856,39 +1022,35 @@ def run_outer_pass(
     accepted, rejected = _filter_proposals(proposals_raw)
     print(f"  [GATE-06] accepted={len(accepted)} rejected={len(rejected)}")
 
-    # Step 5: Build candidate bank by applying proposals to each project bank
-    candidate_banks = {}
-    for project in projects:
-        cb = _apply_proposals(project_banks[project], accepted)
-        cb = _apply_removals(cb, removals)
-        candidate_banks[project] = cb
+    # Step 5b: Gate A — FM citation check (deterministic, $0)
+    print("\n[Gate A] FM citation check...")
+    a_accepted, a_rejected = _gate_a_check(accepted, o_jsons)
+    print(f"  [Gate A] accepted={len(a_accepted)} rejected={len(a_rejected)}")
 
-    # Step 6: P — Probation gate
-    print("\n[P] Probation gate...")
-    prob_delta, new_f1s = _probation_check(
-        projects=projects,
-        candidate_bank=candidate_banks[projects[0]],  # representative
-        prior_f1s=train_f1s,
-        backend=backend,
-        model=model,
-        dry_run=dry_run,
-    )
+    # Step 5c: Gate B — LLM dual-direction judge (~$0.01/pass)
+    print("\n[Gate B] Semantic validity judge...")
+    b_accepted, b_rejected = _gate_b_judge(llm, a_accepted, o_jsons, dry_run=dry_run)
+    print(f"  [Gate B] accepted={len(b_accepted)} rejected={len(b_rejected)}")
 
-    if prob_delta >= 0:
-        print(f"  [P] COMMIT (delta={prob_delta:+.4f} >= 0)")
+    final_accepted = b_accepted
+
+    # Step 6: Commit or no-op (no probation re-run)
+    print(f"\n[Commit] {len(final_accepted)} patterns pass Gate A+B, {len(removals)} removals")
+    if final_accepted or removals:
+        committed_banks = {}
         for project in projects:
-            _save_bank(split_dir, project, candidate_banks[project])
-            print(f"  [P] bank saved: {project} ({_total_patterns(candidate_banks[project])} patterns)")
-        committed_banks = candidate_banks
-        committed_f1s = new_f1s
-    else:
-        print(f"  [P] ROLLBACK (delta={prob_delta:+.4f} < 0) — discarding all {len(accepted)} patterns")
-        for project in projects:
-            _save_bank(split_dir, project, project_banks[project])
-        committed_banks = project_banks
+            cb = _apply_proposals(project_banks[project], final_accepted)
+            cb = _apply_removals(cb, removals)
+            _save_bank(split_dir, project, cb)
+            print(f"  [Commit] bank saved: {project} ({_total_patterns(cb)} patterns)")
+            committed_banks[project] = cb
         committed_f1s = train_f1s
+        print(f"  [Commit] COMMITTED {len(final_accepted)} patterns + {len(removals)} removals")
+    else:
+        print(f"  [Commit] no-op — no patterns passed Gate A+B and no removals")
+        committed_banks = project_banks
+        committed_f1s = prior_f1s if prior_f1s else train_f1s
 
-    # Recompute macro for committed state
     committed_macro = sum(committed_f1s.values()) / max(1, len(committed_f1s))
 
     summary = {
@@ -901,21 +1063,24 @@ def run_outer_pass(
         "macro_f1_l": macro_f1,
         "delta_from_prior": delta,
         "proposals_raw": len(proposals_raw),
-        "proposals_accepted": len(accepted),
-        "proposals_rejected": len(rejected),
+        "proposals_gate06_accepted": len(accepted),
+        "proposals_gate06_rejected": len(rejected),
+        "proposals_gate_a_accepted": len(a_accepted),
+        "proposals_gate_a_rejected": len(a_rejected),
+        "proposals_gate_b_accepted": len(b_accepted),
+        "proposals_gate_b_rejected": len(b_rejected),
         "removals": len(removals),
-        "probation_delta": prob_delta,
-        "committed": prob_delta >= 0,
+        "committed": bool(final_accepted or removals),
+        "committed_f1s": committed_f1s,
         "committed_macro_f1": committed_macro,
-        # Gate: no new patterns proposed (D has nothing left to learn), not F1 threshold.
-        # F1 says "good enough to stop" but misses residual clean errors worth learning.
-        "converged": len(accepted) == 0 and len(removals) == 0,
+        "converged": committed_macro >= CONVERGENCE_THRESHOLD,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
     summary_path = split_dir / f"pass{pass_num}_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2))
-    print(f"\n[Pass {pass_num}] committed_macro={committed_macro:.4f} converged={summary['converged']} (accepted={len(accepted)}, removals={len(removals)})")
+    print(f"\n[Pass {pass_num}] committed_macro={committed_macro:.4f} converged={summary['converged']} "
+          f"(gate_a={len(a_accepted)}, gate_b={len(b_accepted)}, removals={len(removals)})")
     return summary
 
 
@@ -950,7 +1115,7 @@ def run_probe(projects: list[str], backend: LLMBackend, model: str | None,
             split_name=split_name,
         )
         pass_summaries.append(summary)
-        prior_f1s = {p: summary["train_f1s_after_l"].get(p, 0.0) for p in projects}
+        prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in projects}
 
         # Cheap-kill gate after pass 2
         if pass_num == 2:
@@ -1010,7 +1175,7 @@ def run_range(projects: list[str], backend: LLMBackend, model: str | None,
             split_name=split_name,
         )
         pass_summaries.append(summary)
-        prior_f1s = {p: summary["train_f1s_after_l"].get(p, 0.0) for p in projects}
+        prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in projects}
 
         if summary.get("converged"):
             print(f"\n[RANGE] Converged at pass {pass_num} (macro={summary['committed_macro_f1']:.4f})")
