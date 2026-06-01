@@ -2,16 +2,17 @@
 
 ## What This Is
 
-Empirical evolution of `s_linker12c` into a fully LLM-driven SAD-SAM traceability linker. Each milestone swaps one (or a small group of) structural rule/heuristic for an LLM-based replacement using the cite-evidence pattern validated in Spike 001, producing a ranked ablation of which rules can be retired without regressing macro F1.
+Empirical evolution of `s_linker12c` into a fully LLM-driven SAD-SAM traceability linker. Each milestone swaps one (or a small group of) structural rule/heuristic for an LLM-based replacement using the cite-evidence pattern validated in Spike 001, producing a ranked ablation of which rules can be retired without regressing macro F1. v2.1 extended this to prompt-rule trimming (lossless distillation + runtime rubric mechanisms) under a cross-model gate.
 
 ## Core Value
 
-Every rule removed from `s_linker12c` and replaced by an LLM primitive must either hold the pipeline at macro F1 ≥ 93% or be rejected — the deliverable is a defensible claim that traceability linking can be done without hand-crafted structural rules.
+Every rule removed from `s_linker12c` (and every prompt-rule trimmed from its successor's prompts) must either hold the pipeline at macro F1 ≥ 93% on Claude Sonnet AND macro within tolerance of the v2.0 cross-model baseline (0.9077) on gpt-5.4 — or be rejected. The deliverable is a defensible claim that traceability linking can be done without hand-crafted structural rules, validated across model providers, with prompt scaffolding minimized to what each backend can actually use.
 
 ## Requirements
 
 ### Validated
 
+**v1.0 (Rule-to-LLM Ablation):**
 - ✓ Reproducible `s_linker12c` baseline (per-dataset F1 + macro F1 + FP/FN table) — v1.0 (INFRA-01)
 - ✓ Spike 001 LLM trailing-word enrichment integrated; `_split_component_name` retired (`s_linker13a`) — v1.0 (VAR-01)
 - ✓ `_is_structurally_unambiguous` post-filter removed; LLM ambiguity classification trusted end-to-end (`s_linker13b`) — v1.0 (VAR-02)
@@ -23,90 +24,95 @@ Every rule removed from `s_linker12c` and replaced by an LLM primitive must eith
 - ✓ Winning variant promoted as `s_linker13.py` with zero non-trivial rules (macro F1 0.9509, +1.04 pp vs 12c) — v1.0 (PROMO-01)
 - ⚠ Spike 003 LLM mention classifier integration attempted — REJECTED (VAR-04 retired). LLM cannot reproduce dotted-path Java-package convention; 33 entity-source FPs on TeaMMates → −18.8 pp regression. Documented as publishable negative result in METHODOLOGY.md §4 — v1.0
 
-### Active
-
-v2.0 scope (Complete Rule Removal + Cross-Model — Generality First) — **shipped 2026-05-31, see [milestone archive](milestones/v2.0-ROADMAP.md):**
+**v2.0 (Complete Rule Removal + Cross-Model — Generality First):**
 - ⚠ **EXT-01** — Replace `_has_standalone_mention` — CLOSED EMPTY (negative). 2 design generations + 3-direction feasibility probe converged on "BBB recall gap is upstream of the gate". Published as thesis-boundary finding.
 - — **EXT-02** — Drop dotted-path guard — AUTO-SKIPPED per gating (EXT-01 did not pass dual floor).
 - ✓ **COMBINE** — Retro-satisfied: research found the 3 in-scope rule-removal primitives (Spike-001 trailing-words + scope-field + alias-coref-fold) were already unified inside `_learn_document_knowledge_enriched` during the v1.0 chain. s_linker13 retro-designated as the COMBINE artifact. No s_linker14.py built.
 - ✓ **CROSS** — gpt-5.4 5-dataset sweep: macro F1 0.9077 (Δ -4.3pp vs Claude 0.9506). GATE-01 cross-model does NOT hold; TM dominates the gap via dotted-path/generic-English/GAE-platform conflation. Framed as model-provider-property finding per v2.0 thesis.
 
-(Deferred to later milestone: EXT-04 emit-biased boundary prompting — variance work, not rule removal.)
+**v2.1 (Cleanup + Prompt Simplification):**
+- ✓ **CLEAN-01/02** — Standalone `s_linker13_clean.py` + `helper_v3.py` extracted; `s_linker13.py` and `prompts_v2.py` frozen byte-equal. Phase 10.
+- ✓ **GATE-01/02** — Cross-model T=1.0pp codified (floor 0.8977 absolute, later Scenario-E loosened for runtime variants); frozen-compat regression test green (35 passed, 28 xfailed). Phase 10.
+- ✓ **PROMPT-05** — Prompt-minimization survey shipped with 8 techniques scored; drove Phase 12 trim strategy. Phase 11.
+- ✓ **PROMPT-01** — `prompts_v3.py` with 9 active constants + final v2→v3 mapping. Phase 12.
+- ✓ **PROMPT-02** — 9 trim mechanisms ablated; 2 ACCEPT (trim1 Tier-1 judge distillation, trim9 Tier-2 seed runtime rubric); 7 REJECT documented as frontier map. Phase 12.
+- ✓ **PROMPT-04** — Full GATE-06 + BENCHMARK_TABOO + reviewer-defensibility audit on all 12 retained files PASSES. Phase 12.
+- ✓ **PROMPT-03** — `s_linker13_min` PROMOTED (composed canonical of trim1 + trim9). Claude macro 0.9506, gpt-5.4 macro 0.9069. Both gates clear with safety margin (+2.06pp / +0.92pp). Phase 13.
+- ✓ **GATE-03** — ABLATION-TABLE.md + .tex v2.1 addendum (11 new rows); v1.0/v2.0 rows preserved byte-equal. Phase 13.
 
-## Current Milestone: v2.1 Cleanup + Prompt Simplification
+### Active
 
-**Goal:** Slim `s_linker13` + its dependency surface and trim prompt-rule scaffolding to the minimum that holds GATE-01 on Claude Sonnet AND a cross-model gate on gpt-5.4 — without breaking any currently-runnable variant.
+None — currently between milestones. v2.1 shipped 2026-06-01.
 
-**Target features:**
-- Standalone cleaned `s_linker13` with its own (possibly duplicated) helper copies; new dependencies on `prompts_v3` allowed
-- `prompts_v3.py` side-by-side with `prompts_v2.py`; only prompts actually used by the new `s_linker13` carried forward
-- Per-prompt rule trimming as ablation variants, each gated by GATE-01 (Claude) + cross-model floor (gpt-5.4 macro ≥ 0.9077 within tolerance)
-- Dead-code sweep across `s_linker13`'s actual dependency tree (`data_types_v2`, `document_loader_v2`, `pcm_parser_v2`, used `ilinker*`) — unreferenced helpers/imports/constants removed
-- Frozen-compat guarantee: every variant in `CANONICAL_VARIANTS` / `run_ablation.py` continues to produce identical F1 by importing `prompts_v2` (untouched)
+## Current State
 
-**Standing constraints carried forward:** GATE-01, GATE-06 (generality / zero benchmark-derived values), GATE-07 (canonical registration), Claude Sonnet default, BENCHMARK_TABOO compliance.
+**Status:** Between milestones — v2.1 SHIPPED. Awaiting v2.2 kickoff.
 
-## Past State
+**Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`). Composes trim1 (distilled Tier-1 judge rubric) + trim9 (runtime Tier-2 seed disambiguation rubric) over `prompts_v3` + `helper_v3` + `s_linker13_clean_v3`. Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
-**Shipped:** v2.0 — Complete Rule Removal + Cross-Model (2026-05-31). All 8 active requirements traced to closing artifacts. All 4 standing gates held. Audit verdict: PASSED (mixed-result). Production artifact remains **`s_linker13.py`** (macro F1 0.9506 Claude Sonnet, 0.9077 gpt-5.4).
+**Frozen artifacts (preserved byte-equal):** `s_linker13.py`, `prompts_v2.py`, `data_types_v2.py`, `document_loader_v2.py`, `pcm_parser_v2.py`, `ilinker*.py`.
+
+**Frontier evidence:** 7 rejected trim variants (`s_linker13_trim2..8_*_runtime_clean.py`) shipped as published exploration evidence under Scenario E. Voyager-TLR pilot infrastructure (`s_linker13_skill_learned_clean.py` + `prompts_v3_axiom.py`) parked as v2.2 anchor.
+
+**Standing constraints carried forward:** GATE-01 (Claude floor + cross-model floor), GATE-02 (frozen-compat regression), GATE-06 (generality / zero benchmark-derived values), GATE-07 (canonical registration), Claude Sonnet default, BENCHMARK_TABOO compliance.
+
+## Past Milestones
+
+- **v1.0** (2026-05-29) — Rule-to-LLM Ablation (`s_linker12c` → `s_linker13`). 6 rules removed, 1 rejected (VAR-04 dotted-path). Final macro 0.9509. See [`milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.md).
+- **v2.0** (2026-05-31) — Complete Rule Removal + Cross-Model. EXT-01 closed empty (negative); EXT-02 auto-skipped; COMBINE retro-satisfied; CROSS evidence published on gpt-5.4 (mixed-result, model-provider-property framing). See [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) and [`milestones/v2.0-MILESTONE-AUDIT.md`](milestones/v2.0-MILESTONE-AUDIT.md).
+- **v2.1** (2026-06-01) — Cleanup + Prompt Simplification. 3 trims shipped (Step 0 dead-code + trim1 distilled judge + trim9 runtime seed rubric); 7 frontier variants documented; Voyager-TLR methodology validated for v2.2. `s_linker13_min` promoted (Claude 0.9506, gpt-5.4 0.9069). All 10 requirements + 4 standing gates held. See [`milestones/v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md), [`milestones/v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md), and [`milestones/v2.1-MILESTONE-AUDIT.md`](milestones/v2.1-MILESTONE-AUDIT.md).
 
 **Key v2.0 findings:**
 1. The "rule replaced by LLM primitive" thesis has a clean boundary: rules with project-specific surface conventions (dotted-path, casing) cannot be replaced without project-specific calibration. Same failure class hit v1.0 13d and v2.0 EXT-01.
 2. Knowledge injection (alias context) yields measurable but bounded lift (+0.7-2.1pp on BBB) — pattern worth preserving for future LLM judge layers.
 3. Probe-first methodology validated: cheap feasibility study cut Phase 6 short before a 4th sub-variant cycle.
 
-## Past Milestones
+**Key v2.1 findings:**
+1. Lossless rule distillation + reasoning-before-conclusion ordering (trim1) improves macro F1 on BOTH backends (+0.5pp Claude, +0.96pp gpt-5.4). Cross-model Pareto-positive.
+2. Runtime rubric generation works for narrow Tier-2 judges (trim9 seed disambiguation) — ships across both backends. Generalizes from alias-judge baseline.
+3. Textually-lossless prompt merges can be semantically lossy — role-divergent routing in proposer/judge boundaries is load-bearing.
+4. Cross-model penalty is consistent ~3–4pp for runtime-mechanism variants regardless of target prompt — model-capability finding, not mechanism failure.
+5. 6/6 runtime variants ACCEPT under Scenario E but only 1/6 ACCEPT under strict gate: the prompt-reduction × accuracy frontier is mappable.
+6. GATE-06 cross-dataset isolation methodology operationalized — testable empirical criterion for runtime LLM discovery, replacing strict-grep on outputs.
 
-- **v1.0** (2026-05-29) — Rule-to-LLM Ablation (`s_linker12c` → `s_linker13`). 6 rules removed, 1 rejected (VAR-04 dotted-path). Final macro 0.9509. See `milestones/v1.0-ROADMAP.md`.
-- **v2.0** (2026-05-31) — Complete Rule Removal + Cross-Model. EXT-01 closed empty, CROSS evidence published. See `milestones/v2.0-ROADMAP.md`.
+## Next Milestone Candidates (v2.2+)
 
-## Next Milestone Candidates
+Active milestone: none. Topics retained from v2.1 deferred items for the next milestone:
 
-Active milestone is v2.1 (above). Topics retained for later milestones (v2.2+):
+- **Voyager-TLR pilot result** — gpt-5.4 train/test methodology validated; outcome anchors v2.2 first plan. See `milestones/v2.1-phases/12-trim-ablation/12-VOYAGER-PILOT-GPT-SUMMARY.md`.
+- **ADAPTER-01** — Multi-model backend-adaptive prompts (re-opened by v2.1 trim4/5/6/7 single-FP rejections). Requires fresh GATE-06 thinking.
+- **Self-Refine on accepted variants** — Tier-2 proposer-side widening regressed TS in v2.1; Self-Refine on the proposer might recover.
+- **Extended Thinking on judge stages** — Tier-1 ambiguity classifier shows gpt-5.4 calibration errors extended-thinking could recover.
+- **Upstream-tier rule removal** (extraction/coref tier) — v2.0 EXT-01 evidence located BBB recall gap upstream of `_has_standalone_mention`.
+- **Link provenance data structure** — Phase 12 deferred; v2.2 candidate for evidence-trail audit infrastructure.
 - **EXT-04** — Emit-biased boundary prompting on alias-discovery (BBB variance band tightening 3pp → 1pp). Variance work, not rule removal.
-- **Upstream-tier rule removal** — v2.0 EXT-01 evidence suggests the BBB recall gap lives in the extraction/coref tier. A future milestone could target a rule there instead.
-- **Multi-model adapter exploration** — v2.0 CROSS evidence isolated dataset-shape-dependent model gaps. Investigate whether a project-agnostic backend-adaptive harness layer is reviewer-defensible (would need fresh GATE-06 thinking).
-
-<details>
-<summary>Past milestone scope (archived v2.0 active section)</summary>
-
-## v2.0 Active (archived — milestone shipped 2026-05-31)
-
-**Original goal:** Finish the no-hand-crafted-rules thesis by replacing the last structural rule with a project-agnostic LLM primitive, validate on GPT-5.2, and explore stacking/unifying LLM primitives into `s_linker14`.
-
-**Actual outcome:** EXT-01 closed empty (negative); EXT-02 auto-skipped; COMBINE retro-satisfied via existing v1.0 unification; CROSS done on gpt-5.4 with mixed-result published as model-provider-property finding. See `milestones/v2.0-ROADMAP.md` and `milestones/v2.0-MILESTONE-AUDIT.md`.
-
-**Hard generality constraint (GATE-06):** Held throughout v2.0. Zero benchmark-derived values shipped.
-
-</details>
 
 ### Out of Scope (general — applies across milestones)
 
 - New seed/linker approaches (ILinker3+, cross-model ensembles) — this project is rule-reduction on 12c, not exploration
 - Non-SAD-SAM tasks (SAM-Code, SAD-Code) — out of dataset scope
 - Cost optimization — user has set "no LLM budget limit"; rule-replaceability is the only constraint
-- Changes to retained upstream components (`ilinker*`, `prompts_v2`, `data_types_v2`) unless required by a rule removal
+- Changes to frozen artifacts (`s_linker13.py`, `prompts_v2.py`, `ilinker*`, `data_types_v2`, `document_loader_v2`, `pcm_parser_v2`) unless required by a rule removal
 - Bench leakage: no benchmark-derived words may enter prompt examples (enforced via BENCHMARK_TABOO.md)
 
 ## Context
 
-- **Codebase**: retained `s_linker` family through `s_linker12e` plus `ilinker1-3`. Runner is `run_ablation.py`. Default model: Claude Sonnet.
-- **Baseline memory**: `s_linker12c` (ICSE clean) reports ~94% macro F1; `S-Linker10` memory entry shows 95.9% macro F1 with prompts_v2 and LLM word-usage enrichment.
+- **Codebase**: retained `s_linker` family through `s_linker12e` plus `ilinker1-3`, v2.0 production artifact `s_linker13`, v2.1 canonical `s_linker13_min` (composed of trim1 + trim9 over `prompts_v3` + `helper_v3`). Runner is `run_ablation.py`. Default model: Claude Sonnet.
+- **Baseline memory**: `s_linker12c` (ICSE clean) ~94% macro F1; `s_linker13` (v2.0) macro 0.9509 Claude / 0.9077 gpt-5.4; `s_linker13_min` (v2.1) macro 0.9506 Claude / 0.9069 gpt-5.4.
 - **Validated spikes** (re-validate once integrated):
   - 001 `llm-trailing-words` — single LLM call with evidence guardrail replaces structural gate + LLM verify for trailing-word alias enrichment.
   - 002 `rules-audit` — classified all 12 `s_linker12c` helpers: 9 REPLACEABLE, 1 RISKY (`_has_standalone_mention`), 4 ESSENTIAL (parsers/formatters). Ranked removal order defined.
   - 003 `llm-mention-classifier` — LLM enum emission matches regex `_classify_mention` byte-identically, piggybacked on existing entity-extraction prompt.
-- **GPT/Claude gap known**: Claude Sonnet is the target backend; GPT-5.2 compatibility is a side concern, not a gate (per prior memory: inherent model capability gap, not fixable).
+- **GPT/Claude gap known**: Claude Sonnet is the target backend; gpt-5.4 is the v2.0 CROSS arm and the v2.1 cross-model gate target. v2.1 frontier-map data: cross-model gap ranges 1.81–5.41pp across trim mechanisms; composition does not widen the gap.
 - **Dataset strategy**: hard-tier-first (teammates, bigbluebutton — most rule-sensitive) during development, full 5-project macro F1 for every promoted variant.
 
 ## Constraints
 
-- **Quality**: Every promoted variant must hold macro F1 ≥ 93% on the 5-project benchmark. Variants below the floor are reported but not promoted.
+- **Quality**: Every promoted variant must hold macro F1 ≥ 93% on the 5-project benchmark (relaxed gates and Scenario-E framing per milestone — see Key Decisions for current numeric tolerances).
 - **LLM budget**: No upper bound on calls; replaceability trumps cost.
-- **Model**: Claude Sonnet only (per user preference; do not switch to Opus or GPT).
-- **Data leakage**: Zero benchmark-derived words in prompts (cascade/throttle rule, per `BENCHMARK_TABOO.md`). Spike findings must be re-audited before integration.
-- **Codebase hygiene**: Each rule-removal lands as its own standalone linker variant (e.g., `s_linker13a.py`) — user prefers duplicated standalone files over inheritance chains.
-- **Naming**: Promoted successor is `s_linker13` (12e is the last current sibling).
+- **Model**: Claude Sonnet only (per user preference; do not switch to Opus or GPT). gpt-5.4 used for cross-model validation only.
+- **Data leakage**: Zero benchmark-derived words in prompts OR logic (enforced via GATE-06 + BENCHMARK_TABOO.md). v2.1 GATE-06 cross-dataset isolation methodology operationalizes the test for runtime LLM discovery.
+- **Codebase hygiene**: Each rule-removal/trim lands as its own standalone linker variant — user prefers duplicated standalone files over inheritance chains. Frozen artifacts preserved byte-equal across milestones.
 
 ## Key Decisions
 
@@ -119,12 +125,14 @@ Active milestone is v2.1 (above). Topics retained for later milestones (v2.2+):
 | Ablation unit = linker variant, not individual rule | User wants "F1 contribution per linker", not per-rule | ✓ Good — 7 standalone variant files enabled clean per-step ΔF1 attribution |
 | Dataset schedule = hard-tier-first, then all 5 | Teammates/BBB are most rule-sensitive; cheap signal before full sweep | ⚠ Revisit — VAR-06 (13f) was hard-tier marginal but full-sweep best-in-chain; standing policy retained "full sweep is decisive" |
 | Keep `_has_standalone_mention` tentatively | Spike 002 classified it RISKY (O(N·M) anchor collection); decide after other removals land | ✓ Good — formalized as KEEP in Phase 5; EXT-01 spike deferred to v2 |
-| KEEP `_has_standalone_mention` in `s_linker13` | Spike 002 classified it RISKY (O(N×M) anchor-collection; replacing it with an LLM call would require a full-component-list × full-sentence-list scan). Phase 5 confirms KEEP — replacement deferred to v2 (EXT-01 spike) under a relaxed budget. EXT-02 (drop dotted-path guard) is a narrower follow-up also deferred to v2. See `.planning/spikes/002-rules-audit/` for the full classification. | KEPT (Phase 5, 2026-05-29) |
-| GATE-06 generality audit (v2.0) | User flagged at v2.0 kickoff: every new prompt + helper must read as sound/clean/general to any project; no tailored rules in prompt OR logic. Reviewer-defensibility, not just BENCHMARK_TABOO scan. | Standing policy from v2.0 onward (2026-05-30) |
-| LLM-COMBINE stack-vs-unify decision deferred | EXT-01 cost/quality signal will choose between (1) stacked separate LLM primitives in `s_linker14` and (3) unified single-prompt variant. Premature lock would bias the comparison. | Decide after EXT-01 lands |
-| GATE-01 cross-model tolerance T = 1.0pp (v2.1) | Pins the loose REQUIREMENTS GATE-01 phrasing "≤ 1pp regression" to a concrete numeric tolerance so Phase 12 trim acceptance and Phase 13 promotion sweeps can be evaluated deterministically. Baseline 0.9077 is the v2.0 CROSS evidence on gpt-5.4 (see v2.0-MILESTONE-AUDIT.md "09-CROSS-REPORT.md §GATE-01"). T = 1.0pp means a variant passes iff gpt-5.4 macro F1 ≥ 0.9077 − 0.01 = 0.8977 absolute on the full 5-dataset sweep. | Codified 2026-05-31 (Phase 10, Plan 10-04) |
-| GATE-01 relaxation (v2.1 Phase 12) | The original GATE-01 Claude floor (macro ≥ 0.93 + BBB drop ≤ 6pp) is the s_linker13 v2.0 promotion bar. It is too tight to test aggressive "super-simple-prompt" trim mechanisms — any trim that loses 1-2pp on BBB is rejected, including trims whose simplification value justifies the modest regression. v2.1 Phase 12 explicitly relaxes the Claude floor to macro F1 ≥ 0.90 and BBB absolute F1 ≥ 0.79 (the swattr SwattrEvaluationProject SAD-SAM expected value from `tlr/tests-tlr/.../approach/SwattrEvaluationProject.java`). Other-dataset drop tolerance (-2pp) unchanged. Cross-model gpt-5.4 floor 0.8977 unchanged (the cross-model gate is the v2.1 thesis claim and cannot be relaxed). Rationale: align the v2.1 cleanup acceptance with the project's own externally-validated integration-test bar, not the v2.0 promotion peak. Trim rejections under the relaxed gate are stronger evidence of mechanism failure than rejections under the v2.0 peak. | Codified 2026-05-31 (Phase 12, user directive mid-Wave-2) |
-| GATE-01 Scenario E (v2.1 Phase 12 runtime-variant exploration) | After the 6-variant runtime extension landed (Plans 12-07 through 12-12), 5/6 variants missed the prior relaxation by 0.5–1.5pp on a single dataset or by 0.4pp on cross-model. User reframed Phase 12 as a **frontier map of prompt-reduction × accuracy**, not strict pass/fail. Scenario E loosens per-dataset drop tolerance to -4pp and cross-model floor to 0.89 macro F1 (~1.8pp off 0.9077 baseline). Rationale: prompt-reduction depth grows with technique aggression; relaxation tolerance grows proportionally. Static-prompt-distillation variants (12-01 Step 0 dead-code, 12-03 trim1 distill) keep the prior 0.93/0.8977 tighter gates — they pay less reduction. Runtime-mechanism variants (12-05 + 12-07..12-12) get Scenario E — they pay heavy reduction. Honest framing: not all Scenario-E-passing variants are promotion candidates; the frontier map enables informed selection per use case. | Codified 2026-05-31 (Phase 12 close, user directive) |
+| KEEP `_has_standalone_mention` in `s_linker13` | Spike 002 classified it RISKY; replacement deferred to v2 (EXT-01 spike) | KEPT (Phase 5, 2026-05-29) |
+| GATE-06 generality audit (v2.0) | User flagged at v2.0 kickoff: every new prompt + helper must read as sound/clean/general to any project; no tailored rules in prompt OR logic | Standing policy from v2.0 onward (2026-05-30) |
+| LLM-COMBINE stack-vs-unify decision deferred | EXT-01 cost/quality signal will choose between (1) stacked separate LLM primitives in `s_linker14` and (3) unified single-prompt variant. Premature lock would bias the comparison. | Decided post-EXT-01: COMBINE retro-satisfied via existing v1.0 unification; no s_linker14.py |
+| GATE-01 cross-model tolerance T = 1.0pp (v2.1) | Pins the loose REQUIREMENTS GATE-01 phrasing "≤ 1pp regression" to a concrete numeric tolerance so Phase 12 trim acceptance and Phase 13 promotion sweeps can be evaluated deterministically. Baseline 0.9077 is the v2.0 CROSS evidence on gpt-5.4. T = 1.0pp means absolute floor 0.8977. | Codified 2026-05-31 (v2.1 Phase 10, Plan 10-04) |
+| GATE-01 relaxation (v2.1 Phase 12) | The original GATE-01 Claude floor was too tight to test aggressive "super-simple-prompt" trim mechanisms. v2.1 Phase 12 relaxed the Claude floor to macro F1 ≥ 0.90 and BBB absolute F1 ≥ 0.79 (swattr SAD-SAM expected). Other-dataset drop tolerance (-2pp) unchanged. Cross-model gpt-5.4 floor 0.8977 unchanged. | Codified 2026-05-31 (v2.1 Phase 12, user directive mid-Wave-2) |
+| GATE-01 Scenario E (v2.1 Phase 12 runtime-variant exploration) | After the 6-variant runtime extension landed (Plans 12-07 through 12-12), 5/6 variants missed prior relaxation by 0.5–1.5pp on a single dataset or 0.4pp on cross-model. Reframed Phase 12 as a frontier map of prompt-reduction × accuracy, not strict pass/fail. Scenario E: per-dataset drop tolerance -4pp; cross-model floor 0.89 macro F1 (~1.8pp off 0.9077 baseline). Static-distillation variants kept tighter 0.93/0.8977 gates. | Codified 2026-05-31 (v2.1 Phase 12 close, user directive) |
+| GATE-06 cross-dataset isolation methodology (v2.1) | Strict-reading of GATE-06 ("project terms in LLM output = leakage") would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge. Operationalized as: term t in dataset A's runtime artifact is a leak iff (a) t is a PCM component of dataset B ≠ A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc. PASSES on both backends across all 10 trim9 rubrics. | Codified 2026-05-31 (v2.1 Phase 12 Plan 12-05 revisit) |
+| Frontier-map vs strict-pass (v2.1) | Phase 12 exploration crossed 9 trim mechanisms; 2 ACCEPT + 7 REJECT under strict gate. Frontier map captures the full design space WITHOUT moving the promotion bar. Future milestones can revisit Scenario-E-feasible variants under a different gate regime. | Codified 2026-06-01 (v2.1 close) |
 
 ## Evolution
 
@@ -144,4 +152,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-31 — v2.1 kickoff (Cleanup + Prompt Simplification)*
+*Last updated: 2026-06-01 — v2.1 milestone close (Cleanup + Prompt Simplification SHIPPED)*

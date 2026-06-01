@@ -1,108 +1,82 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.1
-milestone_name: Cleanup + Prompt Simplification
-status: shipped
-stopped_at: "Completed Phase 13 close: s_linker13_min PROMOTED (composed canonical of trim1 + trim9; Claude macro 0.9506, gpt-5.4 macro 0.9069 — both gates clear). ABLATION-TABLE.md / .tex v2.1 addendum committed (11 new rows: 4 promoted/baseline block + 7 rejected block). Phase 13 VERIFICATION asserted: 2/2 requirements (PROMPT-03, GATE-03) complete. Milestone v2.1 SHIPS. Voyager-TLR pilot remains parallel frontier extension; outcome anchors v2.2 first plan. All 4 standing gates (GATE-01/02/06/07) held throughout."
-last_updated: "2026-06-01T03:50:00.000Z"
-last_activity: 2026-06-01 — Phase 13 closed; milestone v2.1 SHIPPED (s_linker13_min promoted, GATE-03 satisfied, all 4 standing gates held)
+milestone: null
+milestone_name: between milestones — v2.1 archived
+status: idle
+stopped_at: "v2.1 SHIPPED 2026-06-01 and archived 2026-06-01. s_linker13_min PROMOTED as canonical (Claude macro 0.9506, gpt-5.4 macro 0.9069). Awaiting v2.2 kickoff."
+last_updated: "2026-06-01T04:30:00.000Z"
+last_activity: 2026-06-01 — v2.1 milestone archived; ROADMAP collapsed; REQUIREMENTS reset for next milestone
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
+See: .planning/PROJECT.md (updated 2026-06-01 for v2.1 archive)
 
-**Core value:** Every rule removed from `s_linker13`/its prompts must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within ≤ 1pp of 0.9077 — or be rejected. Every retained prompt + helper must read as project-agnostic to a reviewer (GATE-06). Nothing currently runnable breaks.
-**Current focus:** v2.1 SHIPPED — milestone close complete. Awaiting v2.2 kickoff (Voyager-TLR pilot result anchors).
+**Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
+**Current focus:** Between milestones. v2.1 archived. Awaiting v2.2 kickoff anchored by Voyager-TLR pilot result or other v2.1-deferred candidate.
 
 ## Current Position
 
-Phase: 13 of 4 — ALL phases COMPLETE; milestone v2.1 SHIPPED
-Plan: 13-03 complete (milestone summary + verification + state update)
-Status: v2.1 SHIPPED; s_linker13_min promoted; ABLATION-TABLE v2.1 addendum committed
-Last activity: 2026-06-01 — Phase 13 VERIFICATION asserted PASSED (PROMPT-03 + GATE-03 complete); milestone v2.1 ships
+Phase: none active
+Plan: none active
+Status: idle — v2.1 archived; no live milestone
 
-Progress: [██████████] 100%
+Progress: [          ] 0%
 
-## Performance Metrics
+## Standing Gates (carried forward to next milestone)
 
-**Velocity:**
+- **GATE-01** (carried from v2.1): macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro F1 ≥ 0.8977 absolute (T = 1.0pp off v2.0 0.9077 anchor). v2.1 Scenario-E relaxation framework (cross-model floor 0.89, per-dataset drop ≤ −4pp for runtime-mechanism variants) available if v2.2 needs aggressive trim mechanism exploration.
+- **GATE-02** (carried from v2.1): frozen-compat regression test — all CANONICAL_VARIANTS produce F1 matching v2.0 baseline JSON. `tests/test_v20_baseline_regression.py` covers `s_linker13`, `s_linker13_clean`, `s_linker13_min`, plus 7 EXTENSION variants.
+- **GATE-06**: generality audit — every new prompt + helper passes BENCHMARK_TABOO scan AND reviewer-defensibility check. v2.1 cross-dataset isolation methodology (`12-05-SUMMARY-REVISIT.md`) is the operational test for runtime LLM discovery.
+- **GATE-07**: every promoted variant registered in CANONICAL_VARIANTS + VARIANT_SPECS; standalone file; structured docstring.
 
-- Total plans completed: 2
-- Average duration: ~15min
-- Total execution time: ~27min
+## Canonical Artifact (current)
 
-**By Phase:**
-
-| Phase | Plan | Duration | Tasks | Files | Commit |
-|-------|------|----------|-------|-------|--------|
-| 10    | 01   | ~15min   | 2     | 2     | 98cdca2 |
-| 10    | 02   | ~12min   | 1     | 1     | eae3028 |
-
-*Updated after each plan completion*
-| Phase 10 P04 | ~5min | 2 tasks | 2 files |
-| Phase 12 P02 | ~45min | 3 tasks | 6 files |
-| Phase 12 P04 | ~25min | 4 tasks | 4 files (REJECT verdict) |
-| Phase 12 P03 | ~2h    | 4 tasks | 13 files (ACCEPT verdict) |
-| Phase 12 P05 REVISIT | ~50min | 4 tasks | 2 files (REJECT on cross-model; GATE-06 leakage REJECT OVERTURNED) |
-| Phase 12 EXTENSION (12-07..12-12) | ~75min | 6 variants × probe + sweep | 6 variants + 7 SUMMARYs + 40 result JSONs (1 ACCEPT trim9, 1 cross-model REJECT trim6, 4 Claude REJECT) |
-| Phase 12 P06 (GATE-06 close) | ~25min | 4 artifacts (audit + final mapping + SUMMARY + VERIFICATION) | 4 docs (zero LLM); Phase 12 verdict PASSED |
-| Phase 13 P01 (s_linker13_min promotion) | ~75min | 4 tasks | 1 new variant + 2 sweep result dirs + run_ablation.py canonical=True; both gates PASS |
-| Phase 13 P02 (ABLATION-TABLE v2.1 addendum) | ~10min | 3 tasks | ABLATION-TABLE.md + .tex updated (11 new rows); GATE-03 closed |
-| Phase 13 P03 (milestone summary + verification + state) | ~10min | 3 docs | 13-03-MILESTONE-SUMMARY.md + 13-VERIFICATION.md + STATE.md update; milestone v2.1 SHIPS |
-
-## Standing Gates (v2.1)
-
-- GATE-01 (v2.1 SCENARIO E 2026-05-31, runtime-mechanism variants): macro F1 ≥ 0.90; BBB absolute F1 ≥ 0.79 (swattr SAD-SAM expected); **other-dataset drop ≤ 4pp** (was 2pp under earlier relaxation; further loosened proportionally to prompt-reduction depth — runtime variants delete more static prompt content, accept proportionally larger accuracy tolerance) — Claude Sonnet. **Cross-model gpt-5.4 macro F1 ≥ 0.89** (was 0.8977; ~1.8pp tolerance off 0.9077 baseline). Framing: Phase 12 is a **frontier map of prompt-reduction × accuracy**, not strict pass/fail; trim variants ship with explicit reduction + accuracy disclosure. Static-prompt-distillation variants (e.g. 12-03 trim1) remain evaluated against the prior 0.93/0.8977 tighter gates since they don't pay the heavy reduction the runtime mechanism does.
-- (Prior history: 2026-05-31 first relaxation was macro ≥ 0.90, BBB ≥ 0.79, other -2pp, cross-model 0.8977 — see PROJECT.md "GATE-01 relaxation (v2.1 Phase 12)" + "Scenario E" rows.)
-- GATE-02 (v2.1 NEW): frozen-compat regression test; all CANONICAL_VARIANTS produce F1 matching v2.0 baseline JSON
-- GATE-06: generality audit — every new prompt + helper passes BENCHMARK_TABOO scan AND reviewer-defensibility check
-- GATE-07: every promoted variant registered in CANONICAL_VARIANTS + VARIANT_SPECS; standalone file; structured docstring
+- **`src/llm_sad_sam/linkers/experimental/s_linker13_min.py`** (v2.1 PROMOTED, `canonical=True`)
+- Claude Sonnet macro F1: 0.9506
+- gpt-5.4 macro F1: 0.9069
+- Composition: trim1 (distilled Tier-1 judge rubric) + trim9 (runtime Tier-2 seed disambiguation rubric)
+- Dependencies: `prompts_v3` + `helper_v3` + `s_linker13_clean_v3`
 
 ## Accumulated Context
 
 ### Decisions
 
-- v2.1 kickoff: `s_linker13.py`, `prompts_v2.py`, and existing helper modules are frozen; cleanup lands in `_clean` / `v3+` / `_min` siblings
-- v2.1 kickoff: cross-model gate uses gpt-5.4 (v2.0 CROSS baseline 0.9077) with tolerance ≤ 1pp
-- v2.1 kickoff: coarse granularity → 4 phases (10–13); sequential dependency chain
-- Plan 10-02 (CLEAN-02): helper_v3.py is a single file (not per-concern split); `build_component_profile` lifts `self.model_knowledge` / `self.doc_knowledge` to explicit parameters; `MENTION_TYPES` is duplicated rather than re-imported from frozen `SLinker13d` to keep helper_v3 free of variant-class coupling.
-- [Phase 10]: Plan 10-04 (GATE-01): cross-model tolerance pinned to T = 1.0pp; absolute F1 floor 0.8977 = 0.9077 − 0.01; recorded in PROJECT.md Key Decisions and STATE.md Standing Gates.
-- [Phase 12]: Plan 12-02: Single-step ablation harness ships at llm_sad_sam.ablation.single_step with CLI subcommand; phase=entity_candidates/entity_decisions enforces CRITICAL CONTRACT (zero live LLM on seed_val/coref via monkey-patch). Equivalence sweep PASS (max_abs_delta=0.0).
-- [Phase 12]: Plan 12-02: Harness coupling debt tracked — calls into s_linker13_clean by method name (_run_seed_validation, _run_entity_pipeline, _validate_with_evidence, _extract_entities_enriched, _run_coreference). Phase 13 promotion must preserve these names or update harness in lock-step.
-- [Phase 12]: Plan 12-04: Step 2 trim variant `s_linker13_trim2_entval_clean` REJECTED on Claude GATE-01. Merging ENTITY_EXTRACTION_RULES + VALIDATION_RULES via Technique 3 (14 → 10 rules) regresses BBB by 6.6pp (F1 0.8036 → 0.7377) and macro to 0.9235 < 0.93. Round 3 (gpt-5.4) skipped per strategic plan. Variant NOT carried to Plan 12-06 or Plan 13-01. Failure consistent with V35a lesson: prompt-merge that erases extraction-vs-validation boundary regresses Claude on highest-variance dataset.
-- [Phase 12]: Plan 12-03: Step 1 trim variant `s_linker13_trim1_judge_clean` ACCEPTED. DOC_KNOWLEDGE_JUDGE_RULES distilled via Technique 3 (lossless rubric distillation, prose form, 773 → 888 bytes) + Technique 8 (reasoning-before-conclusion: "When in doubt, APPROVE" emitted before decision wording). 7 worked examples preserved verbatim (V35a guard). Claude macro 0.9553 (BBB +2.54pp, no other-dataset regression > 2pp); gpt-5.4 macro 0.9173 (TM +10.08pp, MS -3.44pp, TS -1.82pp, BBB/JAB flat). Verdict ACCEPT on relaxed GATE-01 Claude + cross-model gpt-5.4 + GATE-06 (zero benchmark-name hits). Variant CARRIED to Plan 12-06 audit and (subject to that) to Plan 13-01's s_linker13_min union.
-- [Phase 12]: Plan 12-05 REVISIT: Methodological correction — prior REJECT applied strict-reading of GATE-06 ("project terms in LLM output = leakage") which, applied consistently, would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge from input data; the runtime-generated rubric IS that mechanism. Operationalized cross-dataset isolation as the correct empirical test (term t in dataset A's rubric is a leak iff (a) t is a PCM component of dataset B != A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc). Findings: GATE-06 static surface PASS; cross-dataset isolation PASS on both backends (0 violations across 10 rubrics); Claude relaxed GATE-01 PASS (macro 0.9396, BBB 0.8108); gpt-5.4 cross-model FAIL by 1.22pp (macro 0.8855 < 0.8977 floor). Final verdict: REJECT but on cross-model capability gap (consistent with documented Claude-vs-GPT ~5.7pp gap), NOT on leakage. Prior leakage REJECT OVERTURNED. Variant NOT carried to 13-01. Prior 12-05-SUMMARY.md preserved unchanged; 12-05-SUMMARY-REVISIT.md supersedes.
-- [Phase 12 EXTENSION]: Applied the 12-05 runtime-rubric mechanism PER PROMPT to 6 prompts (not merged). Built 6 standalone variants subclassing SLinker13Clean (consistent with the trim3 template the user directive nominated; strict standalone-class reading documented as interpretive deviation). NO STATIC FALLBACK per user directive — every variant raises RuntimeError on empty rubric. Strategic probe gating saved 20 gpt-5.4 sweep runs by skipping cross-model evaluation for Claude-arm failures. Outcomes: trim9 (SEED_DISAMBIGUATION_RULES) ACCEPTED on both arms (Claude 0.9474 / gpt-5.4 0.9007, BBB +4.04pp on Claude); trim6 (DOC_KNOWLEDGE_JUDGE_EXAMPLES + trim1 distilled rules) Claude-PASS but cross-model FAIL by 0.39pp (consistent with trim3 model-capability gap); trim4/5/7/8 (ambiguity / extraction / entity / validation) Claude per-dataset drop tolerance violations (jabref -2.56pp single-FP for small-dataset variants; teastore -3.57pp for proposer/judge-tier substitutions). trim9 CARRIED to Plan 13-01 for composition with trim1.
-- [Phase 12 CLOSE 2026-06-01]: Plan 12-06 completed. Full BENCHMARK_TABOO (100 terms) + reviewer-defensibility re-audit on every retained surface — 12 files, 17 module-level prompt-body constants — PASSES. 4 lexical hits surfaced (`layer`, `order`, `common`, `validation`), all dispositioned safe (English vocabulary in textbook-SE contexts). Zero leaked, zero borderline. PROMPT-04 closed. PROMPT-01 finalized with `12-06-V2_TO_V3_MAPPING-FINAL.md` (supersedes 12-01). Mapping conflict on DOC_KNOWLEDGE_JUDGE_RULES (trim1 vs trim3) resolved by GATE-01 outcomes — trim1 wins. Rejected-trims register: {trim2, trim3, trim4, trim5, trim6, trim7, trim8} — all GATE-06 compliant; rejection on GATE-01 alone. Phase 12 VERIFICATION asserted PASSED at `.planning/phases/12-trim-ablation/12-VERIFICATION.md`. Voyager-TLR pilot kept as parallel frontier extension; does NOT block Phase 12 close. Hand-off to Plan 13-01 is unambiguous: compose trim1 + trim9 over prompts_v3 + s_linker13_clean_v3 + helper_v3.
-- [Phase 13 CLOSE 2026-06-01]: Plan 13-01 PROMOTED s_linker13_min as composed canonical of trim1 (distilled DOC_KNOWLEDGE_JUDGE_RULES via Technique 3 + 8) + trim9 (runtime SEED_DISAMBIGUATION_RULES rubric builder). 5-dataset Claude Sonnet sweep: macro F1 0.9506 (+1.09pp vs s_linker13_clean baseline 0.9397; BBB +4.60pp; worst non-BBB drop TS −1.82pp within original −2pp tol). 5-dataset gpt-5.4 sweep: macro F1 0.9069 (+0.92pp above 0.8977 cross-model floor). Cross-model gap 4.37pp — within Phase 12 frontier envelope, composition does NOT widen vs trim9-alone (4.67pp). canonical=True flipped in run_ablation.py VARIANT_SPECS. GATE-02 regression test passes (35 passed, 28 xfailed). Plan 13-02 closed GATE-03 with additive ABLATION-TABLE.md + .tex addendum (11 new rows: 4 promoted/baseline block + 7 rejected block; v1.0 + v2.0 chain rows preserved byte-equal). Plan 13-03 wrote milestone summary + Phase 13 VERIFICATION (PASSED — PROMPT-03 + GATE-03 complete). Milestone v2.1 SHIPS with all 4 standing gates held + 10/10 requirements complete.
+Carried forward from v1.0 + v2.0 + v2.1 (see PROJECT.md Key Decisions for the consolidated table). Per-milestone decision log archived at the respective `milestones/v{X}-ROADMAP.md`.
 
 ### Pending Todos
 
-v2.1 SHIPPED — no v2.1 pending todos. Next action: v2.2 milestone kickoff anchored by Voyager-TLR pilot result (when gpt-5.4 train/test completes) + v2.1-deferred candidates (ADAPTER-01 per-model adaptive prompts, Self-Refine, Extended-thinking, upstream-tier rule removal, link provenance data structure).
+No active milestone todos. v2.2 anchor candidates listed in PROJECT.md "Next Milestone Candidates" section.
 
 ### Blockers/Concerns
 
 None.
 
-## Deferred Items
+## Deferred Items (v2.2 candidates)
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| v2.2+ | EXT-04: Emit-biased boundary prompting on alias-discovery (BBB variance ~3pp → ~1pp) | Deferred | v2.0 kickoff |
-| v2.2+ | EXT-upstream: Upstream-tier rule removal (extraction/coref tier) | Deferred | v2.0 close |
-| v2.2+ | ADAPTER-01: Multi-model backend-adaptive harness layer | Deferred | v2.0 close |
+| v2.2+ | Voyager-TLR train-test methodology (gpt-5.4 pilot result) | Deferred — v2.2 first plan candidate | v2.1 close (2026-06-01) |
+| v2.2+ | ADAPTER-01: Multi-model backend-adaptive prompts (re-opened by v2.1 trim4/5/6/7 single-FP rejections) | Deferred | v2.0 close + v2.1 re-flagged |
+| v2.2+ | Self-Refine layered on accepted variants (proposer-side recovery for TS regression) | Deferred | v2.1 close |
+| v2.2+ | Extended Thinking on judge stages (Tier-1 ambiguity calibration recovery on gpt-5.4) | Deferred | v2.1 close |
+| v2.2+ | Upstream-tier rule removal (extraction/coref tier — v2.0 EXT-01 evidence) | Deferred | v2.0 close |
+| v2.2+ | Link provenance data structure | Deferred | v2.1 Phase 12 |
+| v2.2+ | EXT-04: Emit-biased boundary prompting on alias-discovery (BBB variance band 3pp → 1pp) | Deferred | v2.0 kickoff |
+| v2.2+ | Problem-statement system message preamble (Erdős-comparison discussion) | Deferred | v2.1 close |
+| v2.2+ | Verifier-driven iteration (Erdős-comparison Pilot A) | Deferred | v2.1 close |
+| v2.2+ | Cached problem-grounded rubric (Erdős-comparison Pilot B) | Deferred | v2.1 close |
 
 ## Session Continuity
 
-Last session: 2026-06-01T03:50:00.000Z
-Stopped at: Completed all of Phase 13. Milestone v2.1 SHIPPED. s_linker13_min promoted; ABLATION-TABLE v2.1 addendum committed; milestone summary + verification written. Next action: v2.2 milestone kickoff (Voyager pilot result is the anchor).
+Last session: 2026-06-01T04:30:00.000Z
+Stopped at: v2.1 milestone archived. ROADMAP collapsed to one-line summary; REQUIREMENTS.md deleted (live file); v2.1-ROADMAP.md + v2.1-REQUIREMENTS.md + v2.1-MILESTONE-AUDIT.md committed to `.planning/milestones/`. v2.1 phase content archived at `.planning/milestones/v2.1-phases/`. Awaiting v2.2 kickoff.
 Resume file: None
