@@ -493,7 +493,7 @@ VARIANT_SPECS = {
             "S-Linker14 Voyager — v2.3 β architecture consumer (experimental=True, NOT canonical). "
             "Standalone pipeline (no inheritance from s_linker13_clean/v3). "
             "Prompt source: prompts_v3_axiom (9 axiom skeletons). "
-            "Slot-uniform trained bank (results/voyager_v4_beta/mainline/final_bank.json) injected at init. "
+            "Slot-uniform trained bank (results/voyager_v4_beta/confirmation/cross_split_final_bank.json — Phase 17 Confirmation cross-split bank) injected at init. "
             "Empty bank = axiom-only floor mode (valid for Phase 14 infra testing + Phase 15 iter-0). "
             "Training harness: scripts/voyager_train_tlr_v4_beta.py (L+O+D-with-CoT-A+P). "
             "Backend: gpt-5.4 (per backend policy). "
