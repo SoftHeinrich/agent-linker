@@ -1,0 +1,442 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker13_min
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 18
+  TransArc baseline: P=94.4% R=54.8% F1=69.4%
+
+  --- Variant: s_linker13_min ---
+SLinker13Clean (structural cleanup sibling of s_linker13, Phase 10, v2.1)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 37 sentences, 14 components
+    Batches: 1
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: AudioAccess -> MediaAccess [global]
+    Pass A (extract): 24 links
+    Pass B (actor):   26 links
+    Merged: 26 links
+  Model: 3 ambiguous (of 14 components)
+  Doc knowledge: 4 aliases
+  Seed: 26 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 pronoun sents / 37 total)
+    Coref batch: empty response, retrying...
+    Extraction consensus: Pass1=30, Pass2=29, Intersect=29 (dropped 1 unique-to-one-pass)
+    Entity extraction: 29 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 29 candidates
+[min rubric, call 1]
+DECISION RUBRIC (generated for this document):
+- COMPONENT when the name is explicitly introduced as a component or tier element, e.g., appears with cues such as "component," "called," "provides," "contains components," or "one of the main components."
+- COMPONENT when the name is the grammatical subject or object of an architectural responsibility, interaction, or data flow, such as delivering pages, coordinating communication, querying/executing database requests, fetching/storing files, forwarding audio files, hashing passwords, reencoding, watermarking, or packaging.
+- COMPONENT when the name appears as a participant in inter-component relations or user/system workflow steps, especially in patterns like "X component answers/queries/creates/stores/fetches/forwards" or "from X to Y."
+- OTHER when the term refers only to a function, process, capability, or generic noun phrase rather than the named module itself, e.g., registration, authentication, session management, download requests, watermarking/re-encoding as activities, database access, business logic, or data storage in the abstract.
+- OTHER when the text uses a different surface form than the project component list and the mention is merely a technology/example/resource name or generic storage/database label rather than the modeled component, e.g., "MySQL," "local disk," "file server," "database," or "specific location."
+- When uncertain, prefer COMPONENT if the mention aligns with a project component name and is embedded in an architectural sentence about responsibilities, coordination, storage, or communication, because the document predominantly names components in that style.
+    [DB] 5/5 seeds kept
+    [Facade] 3/3 seeds kept
+    Validation: 27 / 29
+  Checkpoint: entity_decisions saved
+    [MediaAccess] 5/5 seeds kept
+    [MediaManagement] 4/4 seeds kept
+    [Packaging] 1/1 seeds kept
+    [Reencoding] 1/1 seeds kept
+    [TagWatermarking] 2/2 seeds kept
+    [UserDBAdapter] 3/3 seeds kept
+    [UserManagement] 2/2 seeds kept
+  Seed validated: 26 / 26
+  Entity pipeline: 27 validated
+  Coreference: 5 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 31 (from 58 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_min_mediastore_20260601_154635.json
+  Checkpoint: final saved
+
+Final: 31 links (38s)
+  s_linker13_min: P=96.8% R=96.8% F1=96.8% TP=30 FP=1 FN=1 (38s)
+    Sources: {'seed': 26, 'entity': 3, 'coreference': 2}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 20
+  TransArc baseline: P=100.0% R=74.1% F1=85.1%
+
+  --- Variant: s_linker13_min ---
+SLinker13Clean (structural cleanup sibling of s_linker13, Phase 10, v2.1)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 43 sentences, 11 components
+    Batches: 1
+    Pass A (extract): 21 links
+    Alias: WebUI service -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: UI -> WebUI [global]
+    Alias: Registry instance -> Registry [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Recommender service -> Recommender [global]
+    Alias: Auth service -> Auth [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    Pass B (actor):   24 links
+    Merged: 21 links
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 12 aliases
+  Seed: 21 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 pronoun sents / 43 total)
+    Extraction consensus: Pass1=23, Pass2=23, Intersect=23 (dropped 0 unique-to-one-pass)
+    Entity extraction: 23 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+[min rubric, call 1]
+DECISION RUBRIC (generated for this document):
+- COMPONENT when the name appears as a service/component participant in an architectural statement: it performs or receives system actions, exposes/provides functionality, or interacts with other services (e.g., retrieves, delivers, authenticates, provides access, registers, uses one single registry).
+- COMPONENT when the name is used in component inventory or deployment/instance context, such as lists of services/components, references to service instances, replication, startup, heartbeat, online/offline state, or host/location information.
+- COMPONENT when a variant name denotes a named recommender implementation from the project component set (e.g., algorithm versions or fallback/nearest-neighbor variants) and the text refers to it as an available/implemented recommender rather than merely describing the underlying method.
+- OTHER when the term refers only to an algorithm, technique, data structure, protocol, framework, or implementation detail rather than the deployable component itself, such as LFU, BCrypt, SHA512, JPA/EclipseLink, Servlets/JSP, collaborative filtering, nearest-neighbor, or Slope One as a method.
+- OTHER when the term appears only as a generic English noun/adjective or inside non-component identifiers/data names, rather than naming the architecture element—for example 'registry' meaning a general register function/store, 'persistence' meaning persisted data or caching behavior, 'auth' meaning authentication in general, or names embedded in cookies, blobs, product/UI names, paths, or similar qualified identifiers.
+    [Auth] 2/2 seeds kept
+    Validation: 21 / 23
+  Checkpoint: entity_decisions saved
+    [ImageProvider] 4/4 seeds kept
+    [OrderBasedRecommender] 1/1 seeds kept
+    [Persistence] 2/2 seeds kept
+    [Recommender] 2/2 seeds kept
+    [Registry] 5/5 seeds kept
+    Seed disambig reject: S32 -> SlopeOneRecommender (Refers to the Slope One recommendation algorithm/method ('item-based collaborative filtering'), not explicitly to the named SlopeOneRecommender component as an architectural participant.)
+    [SlopeOneRecommender] 0/1 seeds kept
+    [WebUI] 4/4 seeds kept
+  Seed validated: 20 / 21
+  Entity pipeline: 21 validated
+  Coreference: 8 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 28 (from 49 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_min_teastore_20260601_154711.json
+  Checkpoint: final saved
+
+Final: 28 links (37s)
+  s_linker13_min: P=96.4% R=100.0% F1=98.2% TP=27 FP=1 FN=0 (37s)
+    Sources: {'seed': 20, 'entity': 2, 'coreference': 6}
+    FP by source: {'seed': 1}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 81
+  TransArc baseline: P=60.5% R=86.0% F1=71.0%
+
+  --- Variant: s_linker13_min ---
+SLinker13Clean (structural cleanup sibling of s_linker13, Phase 10, v2.1)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 198 sentences, 8 components
+    Batches: 5
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [local]
+    Alias: back end -> Logic [local]
+    Alias: logic -> Logic [local]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: database -> GAE Datastore [local]
+    Alias: Db classes -> Storage [global]
+      batch 1/5: +25 (total 25)
+      batch 2/5: +17 (total 41)
+      batch 3/5: +20 (total 59)
+      batch 4/5: +15 (total 71)
+      batch 5/5: +5 (total 75)
+    Pass A (extract): 75 links
+      batch 1/5: +25 (total 25)
+      batch 2/5: +19 (total 43)
+      batch 3/5: +21 (total 63)
+      batch 4/5: +11 (total 73)
+      batch 5/5: +4 (total 76)
+    Pass B (actor):   76 links
+    Merged: 69 links
+  Model: 4 ambiguous (of 8 components)
+  Doc knowledge: 10 aliases
+  Seed: 69 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 pronoun sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    Coref batch: empty response, retrying...
+[min rubric, call 1]
+DECISION RUBRIC (generated for this document):
+- COMPONENT when the name appears as one of the named architectural units or in explicit cross-component relations, e.g. in component overviews, package overviews, dependency descriptions, or statements that one component accesses/interacts with another component.
+- COMPONENT when the name is the subject or object of an architectural responsibility, capability, or workflow step, such as handling requests, performing CRUD, checking access rights, sending tasks/emails, containing utility code, or being used for testing/administrative purposes.
+- OTHER when the term is used only as a package, namespace, file, class, servlet, action, or API identifier rather than the architectural unit itself, including forms like ui.website, ui.controller, logic.api, storage.entity, common.datatransfer, client.remoteapi, WebApiServlet, or GateKeeper.
+- OTHER when the word refers to a technology, protocol, pattern, data format, or generic function that happens near the component but is not the component itself, such as Angular, REST, MVC, AJAX, JSON, cron jobs, task queues, CRUD, or access control as a general concept.
+- When context is mixed or abbreviated, prefer COMPONENT if the mention denotes a top-level subsystem boundary with responsibilities or dependencies; prefer OTHER if it denotes an implementation detail inside that subsystem (specific package/class/test category/conceptual package like ui.website rather than the component as a whole).
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    [Client] 3/3 seeds kept
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    Seed disambig reject: S91 -> Common (No mention of 'Common'; sentence describes EmailSender behavior, not the Common component.)
+    Seed disambig reject: S93 -> Common (No mention of 'Common'; sentence describes TaskQueuer behavior, not the Common component.)
+    Seed disambig reject: S159 -> Common (Lowercase 'common' appears as part of the package path 'common.datatransfer', which the rubric treats as a package/namespace, not the architectural component.)
+    Seed disambig reject: S92 -> Common (No mention of 'Common'; sentence describes connecting to an email provider, not the Common component.)
+    Seed disambig reject: S127 -> Common (Refers to the package 'common.datatransfer', an implementation/package identifier rather than the top-level Common component.)
+    [Common] 4/9 seeds kept
+    Extraction consensus: Pass1=65, Pass2=64, Intersect=63 (dropped 3 unique-to-one-pass)
+    Entity extraction: 63 candidates
+  Checkpoint: entity_candidates saved
+    LLM generic reject: S86 -> Logic (In 'core logic of the system', 'logic' describes business/core functionality in a general sense, not the Logic component as a participant.)
+    LLM 2-pass validation (+evidence bundles): 62 candidates
+    [E2E] 5/5 seeds kept
+    Validation: 44 / 63
+  Checkpoint: entity_decisions saved
+    Seed disambig reject: S31 -> GAE Datastore ('GAE server' refers to the Google App Engine runtime/server environment handling requests, not the GAE Datastore component.)
+    Seed disambig reject: S2 -> GAE Datastore (GAE here abbreviates Google App Engine, the hosting platform the application runs on, not the datastore component.)
+    Seed disambig reject: S35 -> GAE Datastore ('GAE server-invoked' describes requests triggered by the App Engine server environment, not the datastore.)
+    Seed disambig reject: S94 -> GAE Datastore (Refers to GAE's task queue API, a platform API/service, not the datastore component.)
+    Seed disambig reject: S83 -> GAE Datastore ('GAE-provided ... APIs' denotes platform APIs in general, not specifically GAE Datastore as an architectural unit.)
+    Seed disambig reject: S74 -> GAE Datastore (Mentions a request processing limit imposed by GAE, i.e. the App Engine environment, not the datastore.)
+    Seed disambig reject: S144 -> GAE Datastore ('GAE environment' refers to platform limitations affecting transaction control, not a direct mention of the datastore component.)
+    Seed disambig reject: S58 -> GAE Datastore ('GAE server' again denotes the App Engine server sending automated requests, not GAE Datastore.)
+    Seed disambig reject: S69 -> GAE Datastore (Describes automated requests sent by the GAE server/runtime, not the datastore component.)
+    Seed disambig reject: S62 -> GAE Datastore (Requests generated by the GAE server concern server-side privilege handling in the platform, not the datastore.)
+    Seed disambig reject: S139 -> GAE Datastore ('GAE production environment' refers to deployment/runtime consistency behavior across servers, not specifically the datastore component.)
+    [GAE Datastore] 2/13 seeds kept
+    Seed disambig reject: S88 -> Logic (Here 'Logic' names a facade class/API class, not the architectural component, despite mentioning the component later in the sentence.)
+    Seed disambig reject: S87 -> Logic (Refers to 'Logic API' and the class named Logic, so this is about classes/API identifiers rather than the component itself.)
+    Seed disambig reject: S8 -> Logic (Uses 'logic' generically to mean application/business logic, not the named architectural component.)
+    Seed disambig reject: S22 -> Logic (Lowercase 'logic' appears as a package/module name in an MVC package organization statement, not the top-level component.)
+    [Logic] 9/13 seeds kept
+    Seed disambig reject: S130 -> Storage ('storage.api', 'storage.entity', and 'storage.search' are package/path identifiers, not the Storage component itself.)
+    Seed disambig reject: S125 -> Storage ('storage.entity' is a package name inside the component, so this refers to an implementation namespace rather than the top-level component.)
+    [Storage] 9/11 seeds kept
+    [Test Driver] 4/4 seeds kept
+    [UI] 11/11 seeds kept
+  Seed validated: 47 / 69
+  Entity pipeline: 44 validated
+  Coreference: 17 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 61 (from 108 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_min_teammates_20260601_154853.json
+  Checkpoint: final saved
+
+Final: 61 links (101s)
+  s_linker13_min: P=80.3% R=86.0% F1=83.1% TP=49 FP=12 FN=8 (101s)
+    Sources: {'seed': 47, 'entity': 3, 'coreference': 11}
+    FP by source: {'coreference': 7, 'seed': 4, 'entity': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 49
+  TransArc baseline: P=89.8% R=71.0% F1=79.3%
+
+  --- Variant: s_linker13_min ---
+SLinker13Clean (structural cleanup sibling of s_linker13, Phase 10, v2.1)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 87 sentences, 12 components
+    Batches: 2
+      batch 1/2: +19 (total 18)
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: conversion process -> Presentation Conversion [local]
+      batch 2/2: +26 (total 38)
+    Pass A (extract): 38 links
+      batch 1/2: +19 (total 19)
+      batch 2/2: +35 (total 49)
+    Pass B (actor):   49 links
+    Merged: 40 links
+  Model: 1 ambiguous (of 12 components)
+  Doc knowledge: 23 aliases
+  Seed: 40 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (24 pronoun sents / 87 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [P1] Entity batch 2: S51-S87 (37 sents)
+    [P2] Entity batch 2: S51-S87 (37 sents)
+[min rubric, call 1]
+DECISION RUBRIC (generated for this document):
+- COMPONENT when the name is introduced as a system part in the architecture narrative or headings, especially with app/component nouns or role statements, e.g., 'HTML5 client', 'HTML5 server', 'BBB web', 'Redis PubSub', 'Redis DB', 'FreeSWITCH', or phrases like 'is the main application', 'provides', 'is responsible for', 'holds a copy of the meeting state'.
+- COMPONENT when the name participates in inter-component structure or communication: it connects to, sits behind, sends/receives messages or events, handles load, stores meeting state/events, or is shown as part of a flow between BigBlueButton subsystems.
+- OTHER when the term refers only to a technology, protocol, framework, language, or product used by a component rather than the component itself, such as React.js, Meteor.js, MongoDB, WebRTC as a transport, nodejs, ECMA2015, LibreOffice, PDF/SVG/PNG, or generic 'API'/'web socket' mentions.
+- OTHER when the mention is about low-level implementation artifacts, configuration, commands, files, ports, events, actors, or process roles instead of the architectural component name itself, e.g., nginx, port 443, bbb-conf, apply-config.sh, bbb-html5-with-roles.conf, ValidateAuthTokenResp, MeetingActor, frontend/backend processes, instanceId.
+- When uncertain, prefer COMPONENT if the exact candidate name matches a listed project component and the surrounding sentence describes its architectural role, boundaries, or interactions in BigBlueButton rather than a generic English use or implementation detail.
+    [Apps] 4/4 seeds kept
+    Extraction consensus: Pass1=44, Pass2=45, Intersect=43 (dropped 3 unique-to-one-pass)
+    Entity extraction: 43 candidates
+  Checkpoint: entity_candidates saved
+    [BBB web] 4/4 seeds kept
+    LLM 2-pass validation (+evidence bundles): 43 candidates
+    [FSESL] 2/2 seeds kept
+    [FreeSWITCH] 7/7 seeds kept
+    [HTML5 Client] 5/5 seeds kept
+    Validation: 39 / 43
+  Checkpoint: entity_decisions saved
+    Seed disambig reject: S7 -> HTML5 Server (No explicit mention of HTML5 Server; sentence refers to nginx handling connections, so the reference is indirect and not a direct component mention.)
+    [HTML5 Server] 4/5 seeds kept
+    [Presentation Conversion] 1/1 seeds kept
+    [Recording Service] 1/1 seeds kept
+    [Redis DB] 2/2 seeds kept
+    [Redis PubSub] 4/4 seeds kept
+    Seed disambig reject: S67 -> WebRTC-SFU (Listed alongside Kurento without any architectural role or interaction; this reads like a product/technology mention rather than a verified system component reference.)
+    [WebRTC-SFU] 1/2 seeds kept
+    [kurento] 3/3 seeds kept
+  Seed validated: 38 / 40
+  Entity pipeline: 39 validated
+  Coreference: 7 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 48 (from 84 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_min_bigbluebutton_20260601_155000.json
+  Checkpoint: final saved
+
+Final: 48 links (68s)
+  s_linker13_min: P=89.6% R=69.4% F1=78.2% TP=43 FP=5 FN=19 (68s)
+    Sources: {'seed': 38, 'entity': 5, 'coreference': 5}
+    FP by source: {'seed': 2, 'coreference': 3}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 20
+  TransArc baseline: P=90.0% R=100.0% F1=94.7%
+
+  --- Variant: s_linker13_min ---
+SLinker13Clean (structural cleanup sibling of s_linker13, Phase 10, v2.1)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 13 sentences, 6 components
+    Batches: 1
+    Alias: outer shell -> gui [local]
+    Alias: API -> logic [global]
+    Alias: command line interface -> cli [local]
+    Pass A (extract): 19 links
+    Pass B (actor):   18 links
+    Merged: 19 links
+  Model: 1 ambiguous (of 6 components)
+  Doc knowledge: 3 aliases
+  Seed: 19 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 pronoun sents / 13 total)
+    Extraction consensus: Pass1=20, Pass2=20, Intersect=20 (dropped 0 unique-to-one-pass)
+    Entity extraction: 20 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+[min rubric, call 1]
+DECISION RUBRIC (generated for this document):
+- COMPONENT when the name is used as an architectural layer/package with responsibilities, capabilities, or constraints, e.g. it is said to be responsible for something, to know/interact with something, or to contain/bundle classes.
+- COMPONENT when the name participates in dependency or communication statements between parts of the system, such as depending on another component, calling another layer, publishing events to other layers, or being part of the center/outer-shell architecture.
+- COMPONENT when the name appears in explicit architectural enumerations or grouping phrases, such as lists of layers/components/packages or statements like "between X, Y, and Z" or "additional utility packages for X and Y".
+- OTHER when the term refers only to non-component content associated with a component rather than the component itself, such as user preferences as customizable information, command-line arguments/usage, GUI as a generic interface concept, or model as a general data model idea without architectural role.
+- OTHER when the term appears only as part of a code/package/class reference or implementation detail rather than as a named architectural participant, including package-qualified names, class names, test names, or mentions where another noun is the real subject and the component term is merely adjectival/modifying.
+    [cli] 2/2 seeds kept
+    Validation: 18 / 20
+  Checkpoint: entity_decisions saved
+    [gui] 4/4 seeds kept
+    [logic] 4/4 seeds kept
+    [model] 6/6 seeds kept
+    Seed disambig reject: S7 -> preferences (Refers to the user's preferences as information the GUI knows, not the preferences package/component itself.)
+    Seed disambig reject: S11 -> preferences (Describes customizable information for a user ('all information customizable by a user'), so 'preferences' denotes user preference data, not an architectural component.)
+    [preferences] 1/3 seeds kept
+  Seed validated: 17 / 19
+  Entity pipeline: 18 validated
+  Coreference: 2 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 19 (from 37 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_min_jabref_20260601_155029.json
+  Checkpoint: final saved
+
+Final: 19 links (29s)
+  s_linker13_min: P=94.7% R=100.0% F1=97.3% TP=18 FP=1 FN=0 (29s)
+    Sources: {'seed': 17, 'entity': 1, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |   s_linker13_min  
+-----------------+-------------------
+mediastore       | F1 96.8% FP   1
+teastore         | F1 98.2% FP   1
+teammates        | F1 83.1% FP  12
+bigbluebutton    | F1 78.2% FP   5
+jabref           | F1 97.3% FP   1
+-----------------+-------------------
+Macro avg        | F1 90.7% FP  20
+
+Results saved to results/ablation_results/ablation_20260601_155029.json
