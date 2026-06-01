@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Phase Summary
 status: active
-stopped_at: Phase 17-P1 complete. 17-P2 BLOCKED — probation gate redesign required before re-run.
-last_updated: "2026-06-01T19:30:00.000Z"
-last_activity: 2026-06-01 -- Phase 17-P1 done; probation gate failure diagnosed; P2 deferred pending traceability gate redesign
+stopped_at: Phase 17 complete — WEAK verdict (90.5%). Next: Phase 19.
+last_updated: "2026-06-01T20:00:00.000Z"
+last_activity: 2026-06-01 -- Phase 17 complete; WEAK verdict (macro 90.5%); probation gate redesign todo filed; next is Phase 19
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -21,17 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 17 — confirmation-tier
+**Current focus:** Phase 19 — next
 
 ## Current Position
 
-Phase: 17 — IN PROGRESS (1/2 plans executed)
-Plan: 1 of 2 executed (17-P1 complete, 17-P2 running)
-Status: 17-P2 executing — cross-split aggregation + final eval + verdict
-Last activity: 2026-06-01 -- Phase 17 plans written
+Phase: 17 — COMPLETE (2/2 plans executed)
+Status: Phase 17 done — WEAK verdict. Probation gate redesign required before any future re-run attempt.
+Last activity: 2026-06-01 -- Phase 17 P2 complete; cross-split bank aggregated; 5-dataset eval macro 90.5%; WEAK
 
 ```
-[Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ✅]──▶[Phase 17 (cond.)]──▶[Phase 19]
+[Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ✅]──▶[Phase 17 ✅ WEAK]──▶[Phase 19]
                                       │
                                FAIL──▶[Phase 18 (Compact-B)]──────────────────▶[Phase 19]
 ```
@@ -83,11 +82,14 @@ Last activity: 2026-06-01 -- Phase 17 plans written
 **Bank:** 14 patterns across 6 slots; `results/voyager_v4_beta/mainline/final_bank.json`
 **See:** `.planning/phases/16-range-tier/16-RANGE-VERDICT.md`
 
-## Phase 17 Plan (ACTIVE)
+## Phase 17 Result (COMPLETE — WEAK)
 
-**Goal:** 3-split Confirmation sweep (Voyager v2 splits 1+2+3). Cross-split aggregation, final 5-dataset eval, promotion verdict, dual-artifact registration.
-**Plans:** `.planning/phases/17-confirmation-tier/17-P1-PLAN.md` (3-split runs) + `17-P2-PLAN.md` (aggregation + verdict)
-**Next action:** `/gsd-execute-phase 17` (Confirmation Tier — 3 splits × range + cross-split bank + eval, $40–60 gpt-5.4)
+**Verdict:** WEAK — cross-split 5-dataset macro F1 = 90.5% (gpt-5.4). Above 0.87 floor, below STRONG (0.9173). Voyager v4 NOT promoted.
+**Key numbers:** cross-split macro=90.5% | 3 splits (P1P2P3 done) | s_linker13_min canonical=90.69% (+0.19pp gap vs voyager)
+**Bank:** cross-split aggregated in `results/voyager_v4_beta/mainline/`
+**See:** `.planning/phases/17-confirmation-tier/17-P2-PLAN.md`
+**Blocker:** Probation gate redesign required — see todo `2026-06-01-redesign-probation-gate-traceability.md`
+**Next:** Phase 19
 
 ## Accumulated Context
 
@@ -102,9 +104,13 @@ Last activity: 2026-06-01 -- Phase 17 plans written
 
 ### Pending Todos
 
-1 todo pending: `2026-06-01-design-better-axioms-section-context-responsibility.md`
+3 todos pending:
+1. `2026-06-01-design-better-axioms-section-context-responsibility.md`
    — Design better axioms for section-context (Gap 1), responsibility-list (Gap 2), coref alias (Gap 3)
-   — Empirical analysis complete; 3 implementation tasks prioritized; see todo for full detail
+2. `2026-06-01-redesign-probation-gate-traceability.md`
+   — Redesign probation gate: traceability over F1 delta; current gate invalid at sub-1pp differences
+3. `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md`
+   — Implement refined v3-style axiom diffs from feasibility study
 
 ### Blockers/Concerns
 
@@ -116,7 +122,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-06-01T15:00:00.000Z
-Stopped at: Phase 17 planned. Confirmation tier ready to execute.
+Last session: 2026-06-01T20:00:00.000Z
+Stopped at: Phase 17 complete — WEAK verdict (90.5%). STATE.md updated.
 Resume file: .planning/milestones/v2.3-ROADMAP.md
-Next action: `/gsd-execute-phase 17` (Confirmation Tier — 3-split runs + cross-split aggregation + verdict, $40–60 gpt-5.4)
+Next action: Phase 19 — address pending todos or proceed to next milestone phase
