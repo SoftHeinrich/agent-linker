@@ -1,4 +1,28 @@
-# Voyager-TLR Train-Test Pilot — DEFERRED
+# Voyager-TLR Train-Test Pilot — RESUMED AND COMPLETED on gpt-5.4 (2026-06-01)
+
+## RESUMED AND COMPLETED — 2026-06-01
+
+**See:** [`12-VOYAGER-PILOT-GPT-SUMMARY.md`](./12-VOYAGER-PILOT-GPT-SUMMARY.md) for full results, methodology, central-question answer, and held-out F1 vs all baselines.
+
+**Headline numbers (gpt-5.4 only, no Claude in resumption):**
+
+| Held-out (BBB + JAB) | Macro F1 |
+|---|---|
+| Voyager distilled (6 rules) | **0.8846** |
+| Voyager axiom-only floor | 0.8830 |
+| s_linker13 gpt-5.4 baseline | 0.8884 |
+| trim1 gpt-5.4 baseline | 0.8883 |
+| trim9 gpt-5.4 baseline | 0.8774 |
+
+**Verdict:** Train-test methodology transfers operationally, but the +0.16 pp lift over the axiom-only floor is within gpt-5.4 run-to-run variance and below the shipped Phase 12 distilled baselines. Skills survive frozen test-time injection without overfit collapse; per-dataset variance dominates (JAB +2.7 pp, BBB −2.4 pp).
+
+**Total cost of resumption:** 18 LLM calls, ~12.5 min wallclock, 0 taboo hits across both skill bank (10) and distilled bank (6).
+
+**Commits:** `2c21298` (--resume support). Resumption artefacts in `results/voyager_pilot/` (gitignored, on-disk only).
+
+---
+
+## Original deferral note (preserved for history)
 
 **Stopped:** 2026-05-31
 **Reason:** Claude API usage budget — prioritize gpt-5.4-driven exploration first per user directive.
