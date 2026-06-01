@@ -481,7 +481,7 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
         if s:
             ctx = f"  S{s_num}: {s.text}"
             if prev:
-                ctx = f"  S{s_num-1}: {prev.text[:80]}\n" + ctx
+                ctx = f"  S{s_num-1}: {prev.text}\n" + ctx
             fn_context_lines.append(f"FN case ({id_to_abstract.get(c_id, 'comp_?')}):\n{ctx}")
     fn_context_sample = "\n".join(fn_context_lines[:5]) or "  (no FN context available)"
 
@@ -495,9 +495,9 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
         if s:
             ctx = f"  S{s_num}: {s.text}"
             if prev:
-                ctx = f"  S{s_num-1}: {prev.text[:80]}\n" + ctx
+                ctx = f"  S{s_num-1}: {prev.text}\n" + ctx
             if nxt:
-                ctx += f"\n  S{s_num+1}: {nxt.text[:80]}"
+                ctx += f"\n  S{s_num+1}: {nxt.text}"
             fp_context_lines.append(f"FP case ({id_to_abstract.get(c_id, 'comp_?')}):\n{ctx}")
     fp_context_sample = "\n".join(fp_context_lines[:5]) or "  (no FP context available)"
 
@@ -632,7 +632,7 @@ def _run_distillator_d(llm: LLMClient, o_jsons: list[dict], bank: dict,
     # Aggregate O outputs for the prompt
     oracle_summary = json.dumps(
         [{"project": o.get("L_predictions_summary", {}).get("per_dataset", {}),
-          "failure_modes": o.get("failure_modes", [])[:5]}
+          "failure_modes": o.get("failure_modes", [])}
          for o in o_jsons],
         indent=2
     )
@@ -646,7 +646,7 @@ def _run_distillator_d(llm: LLMClient, o_jsons: list[dict], bank: dict,
     slot_list = ", ".join(SLOT_NAMES)
 
     prompt = D_PROMPT.format(
-        oracle_json=oracle_summary[:4000],  # truncate for budget
+        oracle_json=oracle_summary,
         bank_summary=bank_summary,
         iter_num=iter_num,
         slot_list=slot_list,
@@ -783,9 +783,9 @@ JUDGE TASK
 
 Return JSON:
 {{
-  "fixes_cited_fm": true,
-  "causes_new_error": false,
-  "confidence": "high",
+  "fixes_cited_fm": true | false,
+  "causes_new_error": true | false,
+  "confidence": "high" | "medium" | "low",
   "rationale": "<one sentence>"
 }}
 JSON only:"""
@@ -833,15 +833,15 @@ def _gate_b_judge(
             if fm:
                 fm_details_lines.append(
                     f"  {fid}: {fm.get('title', '?')}\n"
-                    f"    Symptom: {fm.get('symptom', '?')[:120]}\n"
-                    f"    Direction: {fm.get('suggested_direction', '?')[:120]}"
+                    f"    Symptom: {fm.get('symptom', '?')}\n"
+                    f"    Direction: {fm.get('suggested_direction', '?')}"
                 )
         fm_details = "\n".join(fm_details_lines) if fm_details_lines else "  (FM details not found)"
 
         prompt = GATE_B_PROMPT.format(
             slot=slot,
-            rule_text=rule_text[:300],
-            example_block=example_block[:200],
+            rule_text=rule_text,
+            example_block=example_block,
             cited_fm_ids=", ".join(cited_ids),
             fm_details=fm_details,
             new_errors=new_errors_text,
