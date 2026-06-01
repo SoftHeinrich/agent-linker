@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.3
-milestone_name: Trained Multi-Role Prompt Replacement (β architecture)
-status: in-progress
-last_updated: "2026-06-01T08:36:26.000Z"
-last_activity: 2026-06-01
+milestone_name: Phase Summary
+status: completed
+stopped_at: Phase 14 complete. All 32 tests pass.
+last_updated: "2026-06-01T09:38:53.840Z"
+last_activity: 2026-06-01 -- Phase 15 marked complete
 progress:
-  total_phases: 6
+  total_phases: 1
   completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
-  percent: 17
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -20,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 14 COMPLETE. Next action: Phase 15 (Probe Tier — real gpt-5.4 training runs, $5–10 budget).
+**Current focus:** Phase 15 — probe-tier
 
 ## Current Position
 
-Phase: 15 (Phase 14 complete, Phase 15 not started)
-Plan: —
-Status: Phase 14 shipped — ready for Phase 15 planning
-Last activity: 2026-06-01 — Phase 14 β harness infrastructure complete
+Phase: 15 — COMPLETE
+Plan: 1 of 2
+Status: Phase 15 complete
+Last activity: 2026-06-01 -- Phase 15 marked complete
 
 ```
 [Phase 14 ✅]──▶[Phase 15]──▶[Phase 16]──▶[Phase 17 (cond.)]──▶[Phase 19]
@@ -48,6 +49,7 @@ Last activity: 2026-06-01 — Phase 14 β harness infrastructure complete
 | GATE-02 regression | test_gate02_frozen_artifacts_unchanged | ✅ PASS |
 
 **Phase 14 success criteria verified:**
+
 1. ✅ Dry-run mode runs end-to-end (no LLM calls) — `test_dry_run_probe_single_project` passes
 2. ✅ `s_linker14_voyager` instantiates in axiom-only / empty bank mode
 3. ✅ Registered with `experimental=True`, `canonical=False`, GATE-07 docstring
@@ -77,6 +79,7 @@ Last activity: 2026-06-01 — Phase 14 β harness infrastructure complete
 ## Accumulated Context
 
 ### Decisions (carried from v2.2 + Phase 14)
+
 - β architecture (L + O + D-with-CoT-A + P) — locked
 - `s_linker14_voyager` standalone (no inheritance from s_linker13_clean variants)
 - Bank format: slot-uniform 9 slots, per-project during training, aggregated final_bank.json
@@ -85,6 +88,7 @@ Last activity: 2026-06-01 — Phase 14 β harness infrastructure complete
 - reviewer_critic_stub advisory-only in Phase 14; real LLM critic activates Phase 15+
 
 ### Blockers/Concerns
+
 None.
 
 ## Deferred Items (v2.4+ candidates)

@@ -44,7 +44,7 @@ Probe wave (4 mechanisms) + trimmed close. No new canonical promoted; `s_linker1
 ### v2.3 Phase Summary
 
 - [ ] **Phase 14: β Training Harness Infrastructure** — All code (L/O/D/P modules, bank schema, cache adapter, `s_linker14_voyager` linker, GATE-06 helpers) implemented and unit-tested. Zero LLM budget consumed. Covers REQ-V23-01 through REQ-V23-04, REQ-V23-09 through REQ-V23-12, GATE-02, GATE-06, GATE-07.
-- [ ] **Phase 15: Probe Tier** — 1–2 outer passes on mainline split (gpt-5.4, $5–10). Cheap-kill gate: train macro < 0.87 after pass 2 → kill v4 → Phase 18. Covers REQ-V23-07, REQ-V23-13, REQ-V23-14 (Probe).
+- [x] **Phase 15: Probe Tier** — 1–2 outer passes on mainline split (gpt-5.4, $5–10). Cheap-kill gate: train macro < 0.87 after pass 2 → kill v4 → Phase 18. Covers REQ-V23-07, REQ-V23-13, REQ-V23-14 (Probe). (completed 2026-06-01)
 - [ ] **Phase 16: Range Tier** — Train to convergence (macro ≥ 0.90 or pass 5 cap), 5-dataset evaluation, 3-tier verdict (gpt-5.4, $15–25). Covers REQ-V23-05, REQ-V23-07, REQ-V23-13, REQ-V23-14 (Range), REQ-V23-15.
 - [ ] **Phase 17: Confirmation Tier** — CONDITIONAL (Phase 16 ≥ 0.87). 3-split sweep, cross-split aggregation, final evaluation, dual-artifact registration, ABLATION-TABLE update (gpt-5.4, $40–60). Covers REQ-V23-06, REQ-V23-07, REQ-V23-08 (pass), REQ-V23-14 (Confirmation), REQ-V23-15, GATE-01, GATE-07, GATE-08.
 - [ ] **Phase 18: Compact-B Fallback** — CONDITIONAL (Phase 15 or 16 KILL). Implement + probe + range Compact-B (R345 single CoT role); ship positive or negative finding artifact ($10–20). Covers REQ-V23-08 (fail), REQ-V23-14 (Compact-B).
@@ -59,7 +59,7 @@ See `.planning/milestones/v2.3-ROADMAP.md` for full phase details, plans, succes
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 14. β Training Harness Infrastructure | 6/6 | ✅ Complete | 2026-06-01 |
-| 15. Probe Tier | 0/2 | Planned (2 plans, Wave 1 + Wave 2) | - |
+| 15. Probe Tier | 2/2 | Complete   | 2026-06-01 |
 | 16. Range Tier | 0/TBD | Not started (conditional on Ph 15 CONTINUE) | - |
 | 17. Confirmation Tier | 0/TBD | Not started (conditional on Ph 16 ≥ 0.87) | - |
 | 18. Compact-B Fallback | 0/TBD | Not started (conditional on Ph 15/16 KILL) | - |
