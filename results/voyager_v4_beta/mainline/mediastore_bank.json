@@ -1,0 +1,39 @@
+{
+  "version": "v4b",
+  "project": "mediastore",
+  "slot_patterns": {
+    "AMBIGUITY_FEW_SHOT": [],
+    "AMBIGUITY_RULES": [],
+    "DOC_KNOWLEDGE_EXTRACTION_RULES": [
+      {
+        "pattern_id": "p_001",
+        "rule_text": "When a subject-position or predicate-introduced multi-word-phrase is followed by a parenthetical that contains a coordinated-clause with two or more noun-phrase candidates, extract each parenthetical noun phrase as a standalone candidate. If the parenthetical is attached to a head-noun denoting a location-like or container-like mention in the same clause, treat each extracted noun phrase as an alias-defined-parenthetically or sub-element candidate of that introduced phrase. Do not extract from parentheticals whose content is only explanatory modifier material and lacks noun-phrase candidates.",
+        "example_block": "TP: \"A dedicated holding area (a primary segment or a secondary segment) is referenced in the follow-up-sentence.\" -> extract separate candidates for \"primary segment\" and \"secondary segment\".\nFP: \"A dedicated holding area (for clarity and consistency) is referenced in the follow-up-sentence.\" -> do not extract standalone candidates from the parenthetical.",
+        "why_it_transfers": "The rule depends only on parenthetical structure, coordinated-clause form, and noun-phrase extraction, not on any domain lexicon or component naming convention. It generalizes wherever documentation introduces one phrase and then refines it through parenthetical alternatives.",
+        "abstraction_check_cot": "Tested against microservice/event-sourced/layered/pipe-filter/hexagonal: in each case, parenthetical coordinated noun phrases can function as alias-defined-parenthetically or sub-element evidence independent of architecture-specific vocabulary. The trigger is purely syntactic: parenthetical attachment plus coordinated noun phrases after an introduced head-noun. No style-specific assumptions are required. Passes."
+      }
+    ],
+    "DOC_KNOWLEDGE_JUDGE_EXAMPLES": [],
+    "DOC_KNOWLEDGE_JUDGE_RULES": [
+      {
+        "pattern_id": "p_002",
+        "rule_text": "Do not down-rank an otherwise valid candidate solely because the sentence-position begins with a contrastive or discourse-marking opener. Judge mention validity from the main predicate and its local noun-phrase structure; a sentence-initial contrast marker changes discourse relation to prior context but does not cancel a candidate introduced later in the same sentence. Reject only when the clause lacks a concrete noun-phrase candidate or when the predicate is purely metadiscursive.",
+        "example_block": "TP: \"However, the aggregate record is maintained in a separate index space.\" -> keep the noun-phrase candidate in the predicate valid.\nFP: \"However, the earlier statement should be interpreted differently.\" -> do not approve a candidate because no concrete noun-phrase target is asserted.",
+        "why_it_transfers": "This rule is about discourse markers versus clause-internal mention validity. Contrastive openers occur across documentation styles, and their presence should not suppress extraction when the predicate still asserts a concrete mention.",
+        "abstraction_check_cot": "Tested against microservice/event-sourced/layered/pipe-filter/hexagonal: all five styles use contrastive sentence-position markers in prose, and in all five the marker is discourse-level rather than entity-negating. The rule relies only on sentence-position and predicate content, not on style-specific semantics. Passes."
+      }
+    ],
+    "ENTITY_EXTRACTION_RULES": [],
+    "VALIDATION_RULES": [
+      {
+        "pattern_id": "p_003",
+        "rule_text": "Allow one discourse unit to validate multiple targets when the sentence explicitly enumerates alternatives through a coordinated-clause or parenthetical expansion. If a main clause introduces one anchor phrase and a nearby parenthetical or coordinated structure supplies multiple noun-phrase candidates linked by exact-match, partial-match, alias-defined-parenthetically, or sub-element interpretation, approve each candidate independently rather than forcing one dominant target. Do not propagate validation when the coordinated material is adjectival or adverbial only.",
+        "example_block": "TP: \"The reference set is associated with a local partition (an active partition and an archival partition).\" -> validate links to both noun-phrase candidates.\nFP: \"The reference set is associated with a local partition (carefully and consistently).\" -> do not validate multiple targets because the parenthetical lacks noun-phrase candidates.",
+        "why_it_transfers": "The pattern concerns multi-target support from a single sentence, which is a general property of coordinated and parenthetical syntax. It avoids assumptions about any specific architecture vocabulary and instead uses discourse-unit structure to justify parallel validation.",
+        "abstraction_check_cot": "Tested against microservice/event-sourced/layered/pipe-filter/hexagonal: in every style, a sentence can enumerate multiple noun-phrase alternatives under one anchor phrase, and validation should attach to each enumerated candidate. The mechanism is syntactic propagation from one discourse unit to multiple mentions, not style-bound semantics. Passes."
+      }
+    ],
+    "COREF_RULES": [],
+    "SEED_DISAMBIGUATION_RULES": []
+  }
+}
