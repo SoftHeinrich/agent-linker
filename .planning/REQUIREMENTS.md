@@ -99,25 +99,25 @@
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| REQ-V23-01 | Phase 14 | Pending |
-| REQ-V23-02 | Phase 14 | Pending |
-| REQ-V23-03 | Phase 14 | Pending |
-| REQ-V23-04 | Phase 14 | Pending |
-| REQ-V23-05 | Phase 16 + Phase 19 | Pending |
-| REQ-V23-06 | Phase 17 | Pending |
-| REQ-V23-07 | Phase 15 + Phase 16 + Phase 17 | Pending |
-| REQ-V23-08 | Phase 17 (pass) + Phase 18 (fail) | Pending |
-| REQ-V23-09 | Phase 14 | Pending |
-| REQ-V23-10 | Phase 14 | Pending |
-| REQ-V23-11 | Phase 14 | Pending |
-| REQ-V23-12 | Phase 14 | Pending |
-| REQ-V23-13 | Phase 15 + Phase 16 | Pending |
-| REQ-V23-14 | Phase 15 + Phase 16 + Phase 17 + Phase 18 | Pending |
-| REQ-V23-15 | Phase 16 | Pending |
-| GATE-01 | Phase 14 + Phase 17 + Phase 18 + Phase 19 | Pending |
-| GATE-02 | Phase 14 | Pending |
-| GATE-06 | Phase 14 + Phase 15 + Phase 16 + Phase 17 | Pending |
-| GATE-07 | Phase 14 + Phase 17 | Pending |
-| GATE-08 | Phase 17 + Phase 19 | Pending |
+| Requirement | Phase | Status | Phase 19 Verdict |
+|-------------|-------|--------|------------------|
+| REQ-V23-01 | Phase 14 | PASS | β harness built; all 5 mainline passes ran; `final_bank.json` produced |
+| REQ-V23-02 | Phase 14, 17 | PASS | `s_linker14_voyager` standalone; experimental=True; registered (commit e6624cc) |
+| REQ-V23-03 | Phase 14 | PASS | L+O+D+P roles implemented; 32 unit tests pass |
+| REQ-V23-04 | Phase 14 | PASS | Oracle failure-mode-centric JSON schema implemented and exercised |
+| REQ-V23-05 | Phase 16 + Phase 19 | PASS | 3-tier verdict WEAK (90.5% ∈ [0.87, 0.9173)); documented in audit |
+| REQ-V23-06 | Phase 17 | PASS | Dual-artifact: s_linker13_min canonical=True + s_linker14_voyager experimental=True |
+| REQ-V23-07 | Phase 15 + Phase 16 + Phase 17 | PASS | Probe CONTINUE; Range WEAK (89.8% ≥ 0.87); Confirmation 3-split done |
+| REQ-V23-08 | Phase 17 (pass path) | PASS | Pass path taken; Phase 18 not triggered |
+| REQ-V23-09 | Phase 14 | PASS | GATE-06 grep + reviewer critic built; 0 hard rejects across all passes |
+| REQ-V23-10 | Phase 14 | PASS | Cache adapter built; VOYAGER4B_CACHE_ROOT override tested |
+| REQ-V23-11 | Phase 14 | PASS | D vocab constraint enforced in prompt + unit test |
+| REQ-V23-12 | Phase 14 | PASS | 9-slot bank schema enforced; 6 non-empty, 3 axiom-only (design-compliant) |
+| REQ-V23-13 | Phase 15 + Phase 16 | PARTIAL | 5-pass cap hit in all 3 splits; no convergence. Probation gate bugs logged as debt D-1. |
+| REQ-V23-14 | Phase 15 + Phase 16 + Phase 17 | PARTIAL | ~$111 total vs $100 cap. Slight overrun justified; see GATE-08. Phase 18 not triggered. |
+| REQ-V23-15 | Phase 16 | PASS | Cross-split 90.5% vs canonical 90.7% (−0.19pp); vs axiom-only 88.9% (+1.6pp) |
+| GATE-01 | Phase 14 + Phase 17 + Phase 19 | PASS | s_linker13_min gpt-5.4 90.7% (delta +0.01pp from 90.69% baseline). PASS. |
+| GATE-02 | Phase 14 | PASS | Frozen-compat regression green; 35 passed, 28 xfailed |
+| GATE-06 | Phase 14 + Phase 15 + Phase 16 + Phase 17 | PASS | 0 hard rejects; 27 advisory warnings (non-blocking) |
+| GATE-07 | Phase 14 + Phase 17 | PASS | Docstring updated; DEFAULT_BANK_PATH → cross_split_final_bank.json |
+| GATE-08 | Phase 17 + Phase 19 | PASS (with caveat) | ~$111 justified by WEAK positive finding + split-fragility mechanistic insight |

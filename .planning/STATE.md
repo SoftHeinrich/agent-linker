@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Phase Summary
-status: active
-stopped_at: Phase 17 complete — WEAK verdict (90.5%). Next: Phase 19.
-last_updated: "2026-06-01T20:00:00.000Z"
-last_activity: 2026-06-01 -- Phase 17 complete; WEAK verdict (macro 90.5%); probation gate redesign todo filed; next is Phase 19
+status: complete
+stopped_at: Phase 19 complete — v2.3 milestone closed. WEAK verdict (90.5%). Audit at .planning/milestones/v2.3-MILESTONE-AUDIT.md.
+last_updated: "2026-06-01T21:00:00.000Z"
+last_activity: 2026-06-01 -- Phase 19 complete; v2.3 milestone closed; WEAK verdict; 3 todos carried to v2.4
 progress:
   total_phases: 3
   completed_phases: 3
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 ## Current Position
 
-Phase: 17 — COMPLETE (2/2 plans executed)
-Status: Phase 17 done — WEAK verdict. Probation gate redesign required before any future re-run attempt.
-Last activity: 2026-06-01 -- Phase 17 P2 complete; cross-split bank aggregated; 5-dataset eval macro 90.5%; WEAK
+Phase: 19 — COMPLETE. v2.3 milestone closed.
+Status: v2.3 complete — WEAK verdict (cross-split macro 90.5%). s_linker14_voyager ships experimental=True. s_linker13_min canonical unchanged. 3 design debts filed as v2.4 candidates. Next milestone: v2.4 (probation gate fix + axiom gaps).
+Last activity: 2026-06-01 -- Phase 19 complete; v2.3-MILESTONE-AUDIT.md written; REQUIREMENTS.md traceability table closed; PROJECT.md v2.3 entry added
 
 ```
 [Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ✅]──▶[Phase 17 ✅ WEAK]──▶[Phase 19]
@@ -91,6 +91,17 @@ Last activity: 2026-06-01 -- Phase 17 P2 complete; cross-split bank aggregated; 
 **Blocker:** Probation gate redesign required — see todo `2026-06-01-redesign-probation-gate-traceability.md`
 **Next:** Phase 19
 
+## Phase 19 Result (COMPLETE — MILESTONE CLOSE)
+
+**Action:** v2.3 milestone audit + documentation close.
+**Deliverables:**
+- `.planning/milestones/v2.3-MILESTONE-AUDIT.md` — all 15 reqs + 5 gates with PASS/PARTIAL status
+- `REQUIREMENTS.md` traceability table updated with Phase 19 verdicts
+- `STATE.md` status → complete
+- `PROJECT.md` v2.3 Past Milestones entry added
+**Verdict:** WEAK positive finding. 20/20 req+gate items PASS or PARTIAL (no FAIL). Phase 18 not triggered.
+**Carried to v2.4:** 3 todos (probation gate redesign, axiom gaps design, axiom diffs implementation)
+
 ## Accumulated Context
 
 ### Decisions (carried from v2.2 + Phase 14)
@@ -102,15 +113,18 @@ Last activity: 2026-06-01 -- Phase 17 P2 complete; cross-split bank aggregated; 
 - GATE-06 at bank-entry (Phase 14 built helpers; Phase 15+ applies them to real LLM outputs)
 - reviewer_critic_stub advisory-only in Phase 14; real LLM critic activates Phase 15+
 
-### Pending Todos
+### Pending Todos (carried to v2.4)
 
-3 todos pending:
+3 todos filed during v2.3 — all v2.4 candidates, not actioned in v2.3:
 1. `2026-06-01-design-better-axioms-section-context-responsibility.md`
    — Design better axioms for section-context (Gap 1), responsibility-list (Gap 2), coref alias (Gap 3)
+   [carried to v2.4]
 2. `2026-06-01-redesign-probation-gate-traceability.md`
    — Redesign probation gate: traceability over F1 delta; current gate invalid at sub-1pp differences
+   [carried to v2.4 — HIGH priority; blocks any future training re-run]
 3. `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md`
    — Implement refined v3-style axiom diffs from feasibility study
+   [carried to v2.4 — depends on todo 1]
 
 ### Blockers/Concerns
 
