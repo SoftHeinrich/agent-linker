@@ -14,6 +14,14 @@
 % Within the tabular below, underscores are LaTeX-escaped as `\_` per
 % tabulate's latex_booktabs formatter; the raw identifiers above are the
 % canonical form referenced by METHODOLOGY.md and PROJECT.md.
+%
+% v2.1 addendum (added 2026-06-01 by Phase 13 Plan 13-02 — GATE-03):
+% A second tabular block at the bottom of this file extends with the
+% v2.1 cleanup + per-prompt trim ablation rows. Phase 10 baseline
+% (s_linker13_clean), Phase 12 ACCEPTed trims (trim1, trim9), and
+% Phase 13 promoted composition (s_linker13_min) are pinned with both
+% Claude and gpt-5.4 macro F1. Rejected trims are listed in a separate
+% block below for negative-result traceability.
 \begin{tabular}{lllllrllllll}
 \toprule
  variant     & parent      & rule removed                                                    & MS    & TS    &    TM & BBB   & JAB   & macro   & Δ vs 12c   & Δ vs parent   & status   \\
@@ -26,5 +34,42 @@
  s\_linker13e & s\_linker13c & \_is\_strong\_alias + \_get\_strong\_alias\_mappings (LLM scope field) & 0.984 & 0.963 & 0.939 & 0.804 & 1.000 & 0.9379  & -0.0025    & +0.0065       & PASS     \\
  s\_linker13f & s\_linker13e & \_has\_strong\_alias\_mention (coref antecedent\_via\_alias fold)     & 0.984 & 1.000 & 0.947 & 0.821 & 1.000 & 0.9506  & +0.0102    & +0.0127       & PASS     \\
  s\_linker13  & s\_linker13f & — (promotion: cumulative chain, 6 rules removed)                & 0.984 & 1.000 & 0.947 & 0.821 & 1.000 & 0.9506  & +0.0102    & 0.0000        & PROMOTED \\
+\bottomrule
+\end{tabular}
+
+% ---------------------------------------------------------------------------
+% v2.1 Cleanup / Trim Addendum — Phase 13 Plan 13-02 (GATE-03)
+% Added 2026-06-01. ACCEPTed trims + Phase 13 promoted composition.
+% gpt-5.4 macro column is new for v2.1 (v1.0/v2.0 chain rows used Claude only).
+% ---------------------------------------------------------------------------
+\vspace{0.75em}
+\begin{tabular}{lllllllllll}
+\toprule
+ variant                                & parent             & mechanism                                                 & MS    & TS    & TM    & BBB   & JAB   & Claude macro & gpt-5.4 macro & verdict       \\
+\midrule
+ s\_linker13\_clean                     & s\_linker13        & structural refactor only (helpers $\to$ helper\_v3)         & 0.984 & 1.000 & 0.938 & 0.804 & 0.973 & 0.9397       & 0.9077        & BASELINE      \\
+ s\_linker13\_trim1\_judge\_clean       & s\_linker13\_clean & DOC\_KNOWLEDGE\_JUDGE\_RULES distilled (Technique 3 + 8)    & 0.984 & 1.000 & 0.939 & 0.830 & 1.000 & 0.9553       & 0.9173        & ACCEPT        \\
+ s\_linker13\_trim9\_seed\_runtime\_clean & s\_linker13\_clean & SEED\_DISAMBIGUATION\_RULES $\to$ runtime rubric builder    & 1.000 & 0.982 & 0.938 & 0.844 & 0.973 & 0.9474       & 0.9007        & ACCEPT        \\
+ s\_linker13\_min                       & s\_linker13\_clean & trim1 + trim9 composed (judge distillation + runtime seed) & 0.984 & 0.982 & 0.938 & 0.850 & 1.000 & 0.9506       & 0.9069        & PROMOTED      \\
+\bottomrule
+\end{tabular}
+
+% ---------------------------------------------------------------------------
+% v2.1 Rejected trims — frontier-only (Scenario E only, NOT promoted).
+% Documented for negative-result traceability per Phase 12 12-06-SUMMARY.md
+% and 12-FRONTIER-MAP-SUMMARY.md.
+% ---------------------------------------------------------------------------
+\vspace{0.75em}
+\begin{tabular}{lllllll}
+\toprule
+ variant                                                & mechanism                                                                                 & Claude macro & gpt-5.4 macro & original verdict        & Scenario E verdict & rejection cause                          \\
+\midrule
+ s\_linker13\_trim2\_entval\_clean                      & ENTITY + VALIDATION rules merged via Technique 3                                          & 0.9235       & not measured  & REJECT (Claude)         & REJECT             & macro $<$ 0.93; BBB $-6.59$ pp           \\
+ s\_linker13\_trim3\_runtime\_rubric\_clean             & DOC\_KNOWLEDGE\_JUDGE\_RULES $\to$ runtime rubric                                          & 0.9396       & 0.8855        & REJECT (cross-model)    & REJECT             & gpt-5.4 $-1.22$ pp short                 \\
+ s\_linker13\_trim4\_ambiguity\_runtime\_clean          & AMBIGUITY\_FEW\_SHOT + RULES $\to$ runtime ambiguity rubric                                & 0.9374       & 0.9005        & REJECT (Claude JAB)     & ACCEPT             & JAB $-2.56$ pp (1 FP)                    \\
+ s\_linker13\_trim5\_extraction\_runtime\_clean         & DOC\_KNOWLEDGE\_EXTRACTION\_RULES $\to$ runtime extraction rubric                          & 0.9359       & 0.9056        & REJECT (Claude TS)      & ACCEPT             & TS $-3.57$ pp (proposer widening)        \\
+ s\_linker13\_trim6\_judge\_examples\_runtime\_clean    & DOC\_KNOWLEDGE\_JUDGE\_EXAMPLES $\to$ runtime examples (uses trim1 rules)                  & 0.9406       & 0.8938        & REJECT (cross-model)    & ACCEPT             & gpt-5.4 $-0.39$ pp short                 \\
+ s\_linker13\_trim7\_entity\_runtime\_clean             & ENTITY\_EXTRACTION\_RULES $\to$ runtime entity rubric                                      & 0.9365       & 0.9007        & REJECT (Claude JAB)     & ACCEPT             & JAB $-2.56$ pp (single FP)               \\
+ s\_linker13\_trim8\_validation\_runtime\_clean         & VALIDATION\_RULES $\to$ runtime validation rubric                                          & 0.9251       & 0.9070        & REJECT (Claude TS+JAB)  & ACCEPT             & TS $-3.57$ + JAB $-2.56$ pp (2-dataset)  \\
 \bottomrule
 \end{tabular}
