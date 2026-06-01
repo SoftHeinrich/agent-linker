@@ -1,0 +1,411 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker14_voyager
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 18
+  TransArc baseline: P=94.4% R=54.8% F1=69.4%
+
+  --- Variant: s_linker14_voyager ---
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json (2 patterns across 2/9 slots)
+Loaded 14 components, 37 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 37 sentences, 14 components
+    Batches: 1
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: AudioAccess -> MediaAccess [global]
+    Pass A (extract): 27 links
+    Pass B (actor):   27 links
+    Merged: 26 links
+  Model: 4 ambiguous (of 14 components)
+  Doc knowledge: 5 aliases
+  Seed: 26 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 pronoun sents / 37 total)
+    [DB] 5/5 seeds kept
+    Coref batch: empty response, retrying...
+    [Facade] 3/3 seeds kept
+    [MediaAccess] 5/5 seeds kept
+    Extraction consensus: Pass1=31, Pass2=34, Intersect=31 (dropped 3 unique-to-one-pass)
+    Entity extraction: 31 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 31 candidates
+    [MediaManagement] 4/4 seeds kept
+    [Packaging] 1/1 seeds kept
+    [Reencoding] 1/1 seeds kept
+    Validation: 27 / 31
+  Checkpoint: entity_decisions saved
+    [TagWatermarking] 2/2 seeds kept
+    [UserDBAdapter] 3/3 seeds kept
+    [UserManagement] 2/2 seeds kept
+  Seed validated: 26 / 26
+  Entity pipeline: 27 validated
+  Coreference: 5 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 30 (from 58 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_mediastore_20260601_154231.json
+  Checkpoint: final saved
+
+Final: 30 links (46s)
+  s_linker14_voyager: P=100.0% R=96.8% F1=98.4% TP=30 FP=0 FN=1 (46s)
+    Sources: {'seed': 26, 'entity': 3, 'coreference': 1}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 20
+  TransArc baseline: P=100.0% R=74.1% F1=85.1%
+
+  --- Variant: s_linker14_voyager ---
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json (2 patterns across 2/9 slots)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 43 sentences, 11 components
+    Batches: 1
+    Pass A (extract): 20 links
+    Pass B (actor):   25 links
+    Merged: 20 links
+    Alias: UI -> WebUI [global]
+    Alias: WebUI service -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: Registry instance -> Registry [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Recommender service -> Recommender [global]
+    Alias: The Recommender -> Recommender [global]
+    Alias: Auth service -> Auth [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 13 aliases
+  Seed: 20 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 pronoun sents / 43 total)
+    [Auth] 2/2 seeds kept
+    [ImageProvider] 5/5 seeds kept
+    Extraction consensus: Pass1=23, Pass2=23, Intersect=23 (dropped 0 unique-to-one-pass)
+    Entity extraction: 23 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    Coref batch: empty response, retrying...
+    [Persistence] 2/2 seeds kept
+    [Recommender] 2/2 seeds kept
+    Validation: 21 / 23
+  Checkpoint: entity_decisions saved
+    [Registry] 4/4 seeds kept
+    [SlopeOneRecommender] 1/1 seeds kept
+    [WebUI] 4/4 seeds kept
+  Seed validated: 20 / 20
+  Entity pipeline: 21 validated
+  Coreference: 6 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 28 (from 47 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teastore_20260601_154300.json
+  Checkpoint: final saved
+
+Final: 28 links (29s)
+  s_linker14_voyager: P=92.9% R=96.3% F1=94.5% TP=26 FP=2 FN=1 (29s)
+    Sources: {'seed': 20, 'entity': 3, 'coreference': 5}
+    FP by source: {'seed': 1, 'coreference': 1}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 81
+  TransArc baseline: P=60.5% R=86.0% F1=71.0%
+
+  --- Variant: s_linker14_voyager ---
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json (2 patterns across 2/9 slots)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 198 sentences, 8 components
+    Batches: 5
+      batch 1/5: +25 (total 25)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: Common component -> Common [global]
+    Alias: common -> Common [local]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [local]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: storage -> Storage [local]
+    Alias: datastore -> Storage [local]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: Test Driver component -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: GAE Datastore -> GAE Datastore [global]
+    Alias: NoSQL database -> GAE Datastore [local]
+    Alias: Google's distributed datastore -> GAE Datastore [local]
+      batch 2/5: +16 (total 40)
+      batch 3/5: +16 (total 55)
+      batch 4/5: +12 (total 65)
+      batch 5/5: +4 (total 68)
+    Pass A (extract): 68 links
+      batch 1/5: +25 (total 25)
+      batch 2/5: +22 (total 46)
+      batch 3/5: +18 (total 63)
+      batch 4/5: +10 (total 72)
+      batch 5/5: +7 (total 78)
+    Pass B (actor):   78 links
+    Merged: 65 links
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 23 aliases
+  Seed: 65 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 pronoun sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Client] 3/3 seeds kept
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    Coref batch: empty response, retrying...
+    Seed disambig reject: S91 -> Common (No mention of 'Common'; sentence is about EmailSender behavior, not the Common component.)
+    Seed disambig reject: S93 -> Common (No mention of 'Common'; sentence discusses TaskQueuer, not the Common component.)
+    Seed disambig reject: S92 -> Common (No mention of 'Common'; sentence is about connecting to an email provider.)
+    [Common] 6/9 seeds kept
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    [E2E] 5/5 seeds kept
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    Seed disambig reject: S69 -> GAE Datastore (GAE here abbreviates Google App Engine/server platform, not the specific GAE Datastore component.)
+    Seed disambig reject: S58 -> GAE Datastore (GAE server refers to the App Engine runtime sending automated requests, not the datastore.)
+    Seed disambig reject: S62 -> GAE Datastore (GAE server again denotes the Google App Engine platform/runtime, not the datastore component.)
+    Seed disambig reject: S31 -> GAE Datastore (GAE server refers to the hosting platform handling requests, not GAE Datastore.)
+    Seed disambig reject: S2 -> GAE Datastore (GAE expands to Google App Engine, the deployment platform, not the datastore component.)
+    Seed disambig reject: S94 -> GAE Datastore (GAE's task queue API belongs to Google App Engine services, not the datastore component.)
+    [GAE Datastore] 2/8 seeds kept
+    Extraction consensus: Pass1=67, Pass2=71, Intersect=65 (dropped 8 unique-to-one-pass)
+    Entity extraction: 65 candidates
+  Checkpoint: entity_candidates saved
+    Seed disambig reject: S88 -> Logic (Here 'Logic' is identified as a specific Facade class, not the component as a whole.)
+    Seed disambig reject: S83 -> Logic (Mentions generic APIs and responsibilities without naming the Logic component directly.)
+    Seed disambig reject: S8 -> Logic (Uses ordinary English 'logic' to mean application/business logic, not the named component.)
+    [Logic] 11/14 seeds kept
+    LLM 2-pass validation (+evidence bundles): 65 candidates
+    [Storage] 11/11 seeds kept
+    [Test Driver] 4/4 seeds kept
+    [UI] 11/11 seeds kept
+    Validation: 42 / 65
+  Checkpoint: entity_decisions saved
+  Seed validated: 53 / 65
+  Entity pipeline: 42 validated
+  Coreference: 16 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 64 (from 111 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teammates_20260601_154417.json
+  Checkpoint: final saved
+
+Final: 64 links (77s)
+  s_linker14_voyager: P=78.1% R=87.7% F1=82.6% TP=50 FP=14 FN=7 (77s)
+    Sources: {'seed': 53, 'entity': 1, 'coreference': 10}
+    FP by source: {'seed': 8, 'coreference': 6}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 49
+  TransArc baseline: P=89.8% R=71.0% F1=79.3%
+
+  --- Variant: s_linker14_voyager ---
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json (2 patterns across 2/9 slots)
+Loaded 12 components, 87 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 87 sentences, 12 components
+    Batches: 2
+      batch 1/2: +16 (total 16)
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: conversion process -> Presentation Conversion [local]
+    Alias: presentation conversion -> Presentation Conversion [local]
+      batch 2/2: +34 (total 44)
+    Pass A (extract): 44 links
+      batch 1/2: +18 (total 18)
+      batch 2/2: +37 (total 50)
+    Pass B (actor):   50 links
+    Merged: 38 links
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 21 aliases
+  Seed: 38 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (24 pronoun sents / 87 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Apps] 3/3 seeds kept
+    [P1] Entity batch 2: S51-S87 (37 sents)
+    [P2] Entity batch 2: S51-S87 (37 sents)
+    [BBB web] 3/3 seeds kept
+    [FSESL] 2/2 seeds kept
+    Extraction consensus: Pass1=48, Pass2=53, Intersect=47 (dropped 7 unique-to-one-pass)
+    Entity extraction: 47 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 47 candidates
+    Seed disambig reject: S65 -> FreeSWITCH (Does not mention FreeSWITCH; refers generally to WebRTC and browser-based audio connection.)
+    [FreeSWITCH] 7/8 seeds kept
+    [HTML5 Client] 6/6 seeds kept
+    [HTML5 Server] 4/4 seeds kept
+    [Recording Service] 1/1 seeds kept
+    [Redis DB] 2/2 seeds kept
+    [Redis PubSub] 4/4 seeds kept
+    [WebRTC-SFU] 2/2 seeds kept
+    Validation: 35 / 47
+  Checkpoint: entity_decisions saved
+    [kurento] 3/3 seeds kept
+  Seed validated: 37 / 38
+  Entity pipeline: 35 validated
+  Coreference: 16 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 55 (from 88 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_bigbluebutton_20260601_154519.json
+  Checkpoint: final saved
+
+Final: 55 links (62s)
+  s_linker14_voyager: P=81.8% R=72.6% F1=76.9% TP=45 FP=10 FN=17 (62s)
+    Sources: {'seed': 37, 'entity': 7, 'coreference': 11}
+    FP by source: {'coreference': 8, 'seed': 2}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 20
+  TransArc baseline: P=90.0% R=100.0% F1=94.7%
+
+  --- Variant: s_linker14_voyager ---
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json (2 patterns across 2/9 slots)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 13 sentences, 6 components
+    Batches: 1
+    Pass A (extract): 19 links
+    Alias: cli -> cli [global]
+    Alias: gui -> gui [global]
+    Alias: outer shell -> gui [local]
+    Alias: command line interface -> cli [local]
+    Alias: core -> model [local]
+    Pass B (actor):   19 links
+    Merged: 19 links
+  Model: 3 ambiguous (of 6 components)
+  Doc knowledge: 5 aliases
+  Seed: 19 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 pronoun sents / 13 total)
+    [cli] 2/2 seeds kept
+    Extraction consensus: Pass1=20, Pass2=20, Intersect=20 (dropped 0 unique-to-one-pass)
+    Entity extraction: 20 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    [gui] 4/4 seeds kept
+    [logic] 4/4 seeds kept
+    Validation: 16 / 20
+  Checkpoint: entity_decisions saved
+    [model] 6/6 seeds kept
+    Seed disambig reject: S7 -> preferences (Used in ordinary English to mean a user's personal preferences, not the preferences component itself.)
+    [preferences] 2/3 seeds kept
+  Seed validated: 18 / 19
+  Entity pipeline: 16 validated
+  Coreference: 2 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 18 (from 36 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_jabref_20260601_154540.json
+  Checkpoint: final saved
+
+Final: 18 links (21s)
+  s_linker14_voyager: P=100.0% R=100.0% F1=100.0% TP=18 FP=0 FN=0 (21s)
+    Sources: {'seed': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker14_voyager
+-----------------+-------------------
+mediastore       | F1 98.4% FP   0
+teastore         | F1 94.5% FP   2
+teammates        | F1 82.6% FP  14
+bigbluebutton    | F1 76.9% FP  10
+jabref           | F1 100.0% FP   0
+-----------------+-------------------
+Macro avg        | F1 90.5% FP  26
+
+Results saved to results/ablation_results/ablation_20260601_154540.json
