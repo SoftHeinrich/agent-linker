@@ -1,4 +1,41 @@
-"""S-Linker14 Probe D — Upstream-tier rule removal (COREF_RULES).
+"""v2.2 OPT-IN CARVE-OUT (gpt-5.4 only) — shipped 2026-06-01.
+====================================================================
+
+Status: opt-in variant, NOT canonical. v2.2 milestone canonical remains
+`s_linker13_min` unchanged. This variant is retained because:
+
+  - Probe D mediastore gpt-5.4: STRONG_PASS (+1.59pp vs anchor 0.9677;
+    closes the cross-model gap on mediastore — matches Claude baseline
+    0.9836). See `.planning/v2.2-prep/probe-D-upstream-SUMMARY.md`.
+  - Range D bigbluebutton gpt-5.4: STRONG_PASS (+3.29pp original,
+    +1.12pp cache-fix re-run; both above the +0.5pp threshold). Mean
+    across the two observations: +2.2pp. See
+    `.planning/v2.2-prep/range-D-bbb-SUMMARY.md` +
+    `.planning/v2.2-prep/probe-D-cachekey-fix-SUMMARY.md`.
+  - Range D bigbluebutton Claude: FAIL (-4.23pp) — CONFOUNDED by
+    cross-backend cache reuse on the old 2-key cache; methodologically
+    invalidated. The per-backend cache-key fix below unblocks a fresh
+    Claude rubric build in a future turn.
+
+**Gating policy**: enable ONLY when `LLM_BACKEND == openai` (gpt-5.4 path).
+Do NOT enable on Claude until a fresh Claude-authored rubric run replaces
+the FAIL verdict.
+
+**Per-backend cache infrastructure** (already proven in this file —
+SANITY_PASS 2026-06-01): the cache key is per-(text_stem, comp_hash,
+backend, model) and cache writes go to
+`results/v2_2_probes_range_d_cachefix/cache/` by default
+(override via `PROBE_D_CACHE_ROOT` env var). Old 2-key gpt-5.4 rubrics
+at `results/v2_2_probes/D_upstream/cache/` are preserved as historical
+record but no longer reused at runtime. See
+`.planning/v2.2-prep/probe-D-cachekey-fix-SUMMARY.md` for the full
+verification record.
+
+**v2.3 handoff**: the per-backend cache infrastructure here is a v2.3
+prerequisite (see `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md`). DO NOT
+re-explore it — start from this implementation.
+
+S-Linker14 Probe D — Upstream-tier rule removal (COREF_RULES).
 
 v2.2 PROBE WAVE (Phase 17 mechanism) — forked from `s_linker13_clean_v3`.
 Tests Pillar C (upstream-tier rule removal):

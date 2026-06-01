@@ -98,7 +98,7 @@ CANONICAL_VARIANTS = [
     "s_linker13g_sem_full",    # EXT-01 full-knowledge (b): LLM-only + alias + linkmap
     "s_linker14_probe_b_preamble_clean",   # v2.2 PROBE WAVE — Probe B (Phase 15): preamble + cached rubric (INFER-01)
     "s_linker14_probe_c_selfrefine_clean",   # v2.2 PROBE WAVE — Probe C (Phase 16): 2-iter Self-Refine on alias judge (INFER-02)
-    "s_linker14_probe_d_upstream_clean",   # v2.2 PROBE WAVE — Probe D (Phase 17): runtime coref rubric replaces COREF_RULES (EXT-upstream)
+    "s_linker14_probe_d_upstream_clean",   # v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric replaces COREF_RULES; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -481,7 +481,7 @@ VARIANT_SPECS = {
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker14_probe_d_upstream_clean",
         class_name="SLinker14ProbeDUpstreamClean",
-        description="S-Linker14 Probe D — v2.2 PROBE WAVE (Phase 17, EXT-upstream): runtime coref rubric REPLACES static COREF_RULES. 1 builder LLM call per dataset; cache in results/v2_2_probes/D_upstream/cache/. Forks from s_linker13_clean_v3.",
+        description="S-Linker14 Probe D — v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric REPLACES static COREF_RULES. NOT canonical — v2.2 canonical remains s_linker13_min unchanged. mediastore gpt-5.4 +1.59pp; BBB gpt-5.4 mean +2.2pp over 2 obs; BBB Claude FAIL was confounded by cross-backend cache reuse (per-backend cache key fix landed). Enable only when LLM_BACKEND==openai. 1 builder LLM call per dataset; cache key per-(text_stem, comp_hash, backend, model); default cache root results/v2_2_probes_range_d_cachefix/cache/ (PROBE_D_CACHE_ROOT env override). Forks from s_linker13_clean_v3. See .planning/v2.2-prep/probe-D-upstream-SUMMARY.md + .planning/v2.2-prep/range-D-bbb-SUMMARY.md + .planning/v2.2-prep/probe-D-cachekey-fix-SUMMARY.md.",
         canonical=False,
     ),
 }
