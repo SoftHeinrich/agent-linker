@@ -6,11 +6,39 @@ experiments are conducted for questions:
 RQ1 Can agentic approach outperform SOTA approach?
 \emph{\textbf{Motivation:}}
 
-RQ2 can arch driven metrics reveals XX properties?
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:,
+ref=RQ\arabic*, series=researchQuestions] \item \label{RQ1 SOTA comparison}
+\emph{Does \approach recover better trace links than existing approaches in architectural traceability tasks?} 
+\end{enumerate}
 \emph{\textbf{Motivation:}}
+Existing approaches use lexical similarity~\cite{swattr} or a single \ac{LLM}
+classification pass~\cite{lissa}. AALinker first builds runtime knowledge about
+the architecture (alias table, ambiguous names) and then runs several focused
+linker agents. We want to know whether this extra structure pays off in both
+link tasks: doc-to-model and doc-to-code.
 
-RQ3 whats the contribution of validators in our approach?
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:,
+ref=RQ\arabic*, series=researchQuestions, resume] \item \label{RQ2 metrics}
+\emph{What do architecture-driven metrics tell us about the recovered links that
+the standard link-level \fone does not?} \end{enumerate} 
+\emph{\textbf{Motivation:}} The standard evaluation reports one micro \fone over all links. 
+On thisbenchmark, % todo, not on this benchmark, but in the architecctural task 
+one human decision about a directory can expand into hundreds of file-level data points, %TODO, only applies to doc-code, not other task 
+so a few large components decide the score~\cite{replication}. 
+A single number can therefore hide whether a system covers all sentences, whether errors fall on small components, or whether
+developers would see noisy results. 
+We check if the metrics from \autoref{sec:metric} reveal these properties and reorder the systems.
+
+% RQ3 whats the contribution of validators in our approach?
+% \emph{\textbf{Motivation:}}
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{RQ3 validators} \emph{How much do the validators inside \approach contribute to the final result?}
+\end{enumerate}
 \emph{\textbf{Motivation:}}
+\acp{LLM} are not deterministic and can produce links that look plausible but wrong if investigate carefully. %todo, reframe
+\approach wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
+We measure how much these validators help, in \fone and in the new metrics.
 
 RQ4 ablation, whas the contribution of each sub-linker module?
 \emph{\textbf{Motivation:}}
