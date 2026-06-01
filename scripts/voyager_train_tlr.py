@@ -373,21 +373,46 @@ def _extract_patterns(
 # Training loop
 # ───────────────────────────────────────────────────────────────────────────
 
-def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> dict:
+def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None,
+          resume: bool = False) -> dict:
     print("=" * 78)
     print("PHASE 1 — TRAINING")
     print(f"Train projects: {TRAIN_PROJECTS}")
     print(f"Backend: {backend.value} model: {model or '<default>'}")
     print(f"Max outer passes: {MAX_OUTER_PASSES}, max inner iters: {MAX_INNER_ITERS}")
     print(f"Convergence threshold (macro): {CONVERGENCE_THRESHOLD}")
+    print(f"Resume mode: {resume}")
     print("=" * 78)
 
     llm = LLMClient(backend=backend, model=model)
     skill_bank = _load_skill_bank()
     trajectory: list[dict] = []
     rejected_log: list[dict] = []
+    outer_offset = 0
+    if resume:
+        # Load prior trajectory + rejected_log so we APPEND rather than overwrite.
+        prior = {}
+        if TRAJECTORY_PATH.exists():
+            try:
+                prior = json.loads(TRAJECTORY_PATH.read_text())
+            except (json.JSONDecodeError, ValueError):
+                prior = {}
+        trajectory = list(prior.get("trajectory", []))
+        rejected_log = list(prior.get("rejected_patterns", []))
+        # Offset outer index so new outer passes don't collide with prior ones.
+        if trajectory:
+            outer_offset = max((t.get("outer", 0) for t in trajectory)) + 1
+        print(f"[resume] prior_trajectory_rows={len(trajectory)} "
+              f"prior_rejected={len(rejected_log)} prior_skill_bank={len(skill_bank)} "
+              f"outer_offset={outer_offset}")
 
-    for outer in range(MAX_OUTER_PASSES):
+    # Tag every new trajectory entry with backend/model so we can audit which
+    # patterns came from which backend after the fact.
+    _backend_tag = backend.value
+    _model_tag = model or "<default>"
+
+    for _outer in range(MAX_OUTER_PASSES):
+        outer = _outer + outer_offset
         if not _budget_ok():
             print("[budget] stopping outer loop")
             break
@@ -427,7 +452,20 @@ def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> 
                     "fn": run["fn_count"],
                     "skills_before": len(skill_bank),
                     "elapsed_s": run["elapsed_s"],
+                    "backend": _backend_tag,
+                    "model": _model_tag,
                 })
+                # Persist trajectory after every iter so a budget/crash mid-loop
+                # still preserves progress.
+                TRAJECTORY_PATH.write_text(json.dumps({
+                    "outer_passes_completed": outer + 1,
+                    "calls_used": _call_count,
+                    "elapsed_s": time.time() - _start_time,
+                    "final_skill_bank_size": len(skill_bank),
+                    "trajectory": trajectory,
+                    "rejected_patterns": rejected_log,
+                    "skill_bank": skill_bank,
+                }, indent=2))
 
                 if run["F1"] >= PER_PROJECT_EARLY_STOP:
                     print(f"  [early-stop] project F1 >= {PER_PROJECT_EARLY_STOP}")
@@ -448,6 +486,7 @@ def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> 
                 for r in rejected:
                     rejected_log.append({
                         "outer": outer, "inner": inner, "project": project,
+                        "backend": _backend_tag, "model": _model_tag,
                         **r,
                     })
                 # Dedupe vs existing
@@ -467,8 +506,10 @@ def train(backend: LLMBackend = LLMBackend.CLAUDE, model: str | None = None) -> 
             print(f"[converged] macro {macro:.4f} >= {CONVERGENCE_THRESHOLD}")
             break
 
+    # `outer` may be undefined if MAX_OUTER_PASSES == 0; guard.
+    final_outer = locals().get("outer", outer_offset - 1)
     summary = {
-        "outer_passes_completed": outer + 1,
+        "outer_passes_completed": final_outer + 1,
         "calls_used": _call_count,
         "elapsed_s": time.time() - _start_time,
         "final_skill_bank_size": len(skill_bank),
@@ -703,6 +744,9 @@ def main(argv=None):
     ap.add_argument("--backend", default="claude")
     ap.add_argument("--model", default=None,
                     help="Optional model override (e.g. 'gpt-5.4', 'sonnet').")
+    ap.add_argument("--resume", action="store_true",
+                    help="Resume training: keep existing skill_bank + trajectory, "
+                         "offset outer index past prior passes.")
     args = ap.parse_args(argv)
     backend = {
         "claude": LLMBackend.CLAUDE,
@@ -711,7 +755,7 @@ def main(argv=None):
     }[args.backend]
 
     if args.phase in ("train", "all"):
-        train(backend, model=args.model)
+        train(backend, model=args.model, resume=args.resume)
     if args.phase in ("distill", "all"):
         distill(backend, model=args.model)
     if args.phase in ("test", "all"):
