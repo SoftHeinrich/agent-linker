@@ -88,6 +88,7 @@ CANONICAL_VARIANTS = [
     "s_linker13_trim7_entity_runtime_clean",   # Phase 12 EXTENSION (Plan 12-10): runtime rubric replaces ENTITY_EXTRACTION_RULES
     "s_linker13_trim8_validation_runtime_clean",   # Phase 12 EXTENSION (Plan 12-11): runtime rubric replaces VALIDATION_RULES
     "s_linker13_trim9_seed_runtime_clean",   # Phase 12 EXTENSION (Plan 12-12): runtime rubric replaces SEED_DISAMBIGUATION_RULES
+    "s_linker13_min",   # Phase 13 Plan 13-01: composed promotion candidate (trim1 distilled judge + trim9 runtime seed; PROMPT-03, GATE-03)
     "s_linker13_skill_learned_clean",   # Phase 12 EXTENSION (Voyager Pilot): axiom prompts + learned skill bank
     "s_linker13g_pre",   # EXT-01 sub-variant (a): regex pre-filter + LLM judge
     "s_linker13g_sem",   # EXT-01 sub-variant (b): LLM-only, dotted-path encoded in prompt
@@ -407,6 +408,13 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13_trim9_seed_runtime_clean",
         class_name="SLinker13Trim9SeedRuntimeClean",
         description="S-Linker13 Trim9 — Phase 12 EXTENSION (Plan 12-12): runtime rubric replaces SEED_DISAMBIGUATION_RULES; built once per document, reused across components; no static fallback",
+        canonical=False,
+    ),
+    "s_linker13_min": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker13_min",
+        class_name="SLinker13Min",
+        description="S-Linker13 Min — Phase 13 Plan 13-01: composed promotion candidate (trim1 distilled DOC_KNOWLEDGE_JUDGE_RULES + trim9 runtime SEED_DISAMBIGUATION_RULES rubric builder); no static fallback for trim9. canonical=False until sweep promotion.",
         canonical=False,
     ),
     "s_linker13_skill_learned_clean": dict(

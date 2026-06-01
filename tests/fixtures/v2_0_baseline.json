@@ -1257,6 +1257,60 @@
       ],
       "present_datasets": {},
       "note": "Phase 12 Step 3 trim variant of s_linker13_clean (PROMPT-01, PROMPT-02). Subclass replacing the static DOC_KNOWLEDGE_JUDGE_RULES with an inference-time rubric builder (AHE + Agentic Rubrics — supplement Techniques 2+3). No v2.0 baseline by definition; Phase 12 Plan 12-05 ablates against the s_linker13_clean cached anchor."
+    },
+    {
+      "variant": "s_linker13_trim4_ambiguity_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-07) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime rubric replaces AMBIGUITY_FEW_SHOT + AMBIGUITY_RULES. No v2.0 baseline by definition; rejected on Claude GATE-01 (JAB -2.56pp). Carried for negative-result traceability."
+    },
+    {
+      "variant": "s_linker13_trim5_extraction_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-08) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime rubric replaces DOC_KNOWLEDGE_EXTRACTION_RULES. No v2.0 baseline by definition; rejected on Claude GATE-01 (TS -3.57pp). Carried for negative-result traceability."
+    },
+    {
+      "variant": "s_linker13_trim6_judge_examples_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-09) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime worked-examples replace DOC_KNOWLEDGE_JUDGE_EXAMPLES; uses trim1 distilled rubric. No v2.0 baseline by definition; rejected on gpt-5.4 cross-model (0.39pp short of 0.8977 floor). Carried for negative-result traceability."
+    },
+    {
+      "variant": "s_linker13_trim7_entity_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-10) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime rubric replaces ENTITY_EXTRACTION_RULES. No v2.0 baseline by definition; rejected on Claude GATE-01 (JAB -2.56pp). Carried for negative-result traceability."
+    },
+    {
+      "variant": "s_linker13_trim8_validation_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-11) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime rubric replaces VALIDATION_RULES. No v2.0 baseline by definition; rejected on Claude GATE-01 (TS -3.57pp + JAB -2.56pp). Carried for negative-result traceability."
+    },
+    {
+      "variant": "s_linker13_trim9_seed_runtime_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION (Plan 12-12) runtime trim variant of s_linker13_clean (PROMPT-02). Runtime rubric replaces SEED_DISAMBIGUATION_RULES; built once per document. No v2.0 baseline by definition; ACCEPTED on both Claude relaxed GATE-01 (macro 0.9474) + gpt-5.4 cross-model GATE-01 (macro 0.9007). Carried to Plan 13-01 as composition input for s_linker13_min."
+    },
+    {
+      "variant": "s_linker13_skill_learned_clean",
+      "missing_datasets": ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"],
+      "present_datasets": {},
+      "note": "Phase 12 EXTENSION Voyager Pilot variant of s_linker13_clean. Axiom prompts (prompts_v3_axiom) wrapped at inference time with a JSON skill bank of learned abstract patterns. Frontier extension; does not block Phase 12 / Phase 13 close. No v2.0 baseline by definition."
+    },
+    {
+      "variant": "s_linker13_min",
+      "missing_datasets": [
+        "mediastore",
+        "teastore",
+        "teammates",
+        "bigbluebutton",
+        "jabref"
+      ],
+      "present_datasets": {},
+      "note": "Phase 13 Plan 13-01 composed promotion candidate of s_linker13_clean (PROMPT-03, GATE-03). Subclass composing trim1 (distilled DOC_KNOWLEDGE_JUDGE_RULES via Technique 3 + 8) + trim9 (runtime SEED_DISAMBIGUATION_RULES rubric builder). No v2.0 baseline by definition; Phase 13 Plan 13-01 evaluates this variant against the s_linker13_clean cached anchor (Claude relaxed GATE-01 + gpt-5.4 cross-model GATE-01)."
     }
   ],
   "notes": [
