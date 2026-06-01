@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 — Rule-to-LLM Ablation** (`s_linker12c` → `s_linker13`) — Phases 1–5 — shipped 2026-05-29. Final macro F1 0.9509. See [`milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.md).
 - ✅ **v2.0 — Complete Rule Removal + Cross-Model — Generality First** — Phases 6–9 — shipped 2026-05-31. EXT-01 closed empty (negative), CROSS evidence published on gpt-5.4. See [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) and [`milestones/v2.0-MILESTONE-AUDIT.md`](milestones/v2.0-MILESTONE-AUDIT.md).
-- 🚧 **v2.1 — Cleanup + Prompt Simplification** — Phases 10–13 — in progress.
+- ✅ **v2.1 — Cleanup + Prompt Simplification** — Phases 10–13 — shipped 2026-06-01. Final canonical: `s_linker13_min` (Claude macro 0.9506, gpt-5.4 macro 0.9069). 10/10 requirements complete; 4 standing gates held. See `.planning/phases/13-promotion-wrap/13-03-MILESTONE-SUMMARY.md`.
 
 ## Phases
 
@@ -22,14 +22,14 @@ Phases 6–9 complete. See `milestones/v2.0-ROADMAP.md` for full detail.
 
 </details>
 
-### 🚧 v2.1 — Cleanup + Prompt Simplification (In Progress)
+### ✅ v2.1 — Cleanup + Prompt Simplification (Shipped 2026-06-01)
 
 **Milestone Goal:** Produce a slimmed standalone variant (`s_linker13_clean` / `s_linker13_min`) using new versioned helpers and `prompts_v3.py`, gated by Claude Sonnet macro F1 ≥ 0.93 AND gpt-5.4 macro ≥ 0.9077 within ≤ 1pp tolerance. Nothing currently runnable breaks.
 
-- [ ] **Phase 10: Scaffolding** — Standalone clean variant, versioned helpers, frozen-compat regression test, and cross-model gate definition
-- [ ] **Phase 11: Research** — Literature + web survey on prompt minimization techniques to inform trim strategy
-- [ ] **Phase 12: Trim Ablation** — Per-prompt rule-trim variants in `prompts_v3.py` gated by Claude Sonnet AND gpt-5.4 floors; generality re-audit of every retained trim
-- [ ] **Phase 13: Promotion & Wrap** — Final `s_linker13_min.py` sweep (or negative result publication) + ABLATION-TABLE addendum and .tex regen
+- [x] **Phase 10: Scaffolding** — Standalone clean variant, versioned helpers, frozen-compat regression test, and cross-model gate definition
+- [x] **Phase 11: Research** — Literature + web survey on prompt minimization techniques to inform trim strategy
+- [x] **Phase 12: Trim Ablation** — Per-prompt rule-trim variants in `prompts_v3.py` gated by Claude Sonnet AND gpt-5.4 floors; generality re-audit of every retained trim
+- [x] **Phase 13: Promotion & Wrap** — Final `s_linker13_min.py` PROMOTED on both backends + ABLATION-TABLE v2.1 addendum (+.tex regen)
 
 ## Phase Details
 
@@ -86,7 +86,10 @@ Plans:
   2. If promotion does not hold: a negative result document is committed explaining which gates failed and on which datasets, framed as a publishable finding per the project thesis.
   3. `ABLATION-TABLE.md` contains a v2.1 addendum row for `s_linker13_clean`, at least one per-trim variant row (kept or rejected), and `s_linker13_min` if promoted; existing v1.0/v2.0 rows are unchanged.
   4. The corresponding `.tex` artifact is regenerated to include all v2.1 rows.
-**Plans**: TBD
+**Plans**: 3 plans
+- [x] 13-01-s-linker13-min-promotion-PLAN.md — Compose trim1 + trim9 → s_linker13_min; 5-dataset sweep both backends; promote on PASS (Wave 1) ✅ 2026-06-01
+- [x] 13-02-ablation-table-addendum-PLAN.md — Append v2.1 rows to ABLATION-TABLE.md + regenerate .tex (Wave 2) ✅ 2026-06-01
+- [x] 13-03-milestone-summary-PLAN.md — Write milestone v2.1 summary + Phase 13 VERIFICATION + STATE update (Wave 2) ✅ 2026-06-01
 
 ## Progress
 
@@ -94,7 +97,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Scaffolding | v2.1 | 3/4 | In Progress|  |
-| 11. Research | v2.1 | 0/TBD | Not started | - |
-| 12. Trim Ablation | v2.1 | 3/7 | In Progress|  |
-| 13. Promotion & Wrap | v2.1 | 0/TBD | Not started | - |
+| 10. Scaffolding | v2.1 | 4/4 | Complete | 2026-05-31 |
+| 11. Research | v2.1 | 1/1 | Complete | 2026-05-31 |
+| 12. Trim Ablation | v2.1 | 13/13 | Complete | 2026-06-01 |
+| 13. Promotion & Wrap | v2.1 | 3/3 | Complete | 2026-06-01 |

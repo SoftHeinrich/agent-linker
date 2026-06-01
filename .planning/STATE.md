@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Cleanup + Prompt Simplification
-status: planning
-stopped_at: "Completed Phase 12 close (Plan 12-06): GATE-06 BENCHMARK_TABOO + reviewer-defensibility re-audit PASSES on every retained surface (4 shipped + 5 frontier variants + prompts_v3 + s_linker13_clean_v3 + helper_v3). 4 lexical hits across 17 constants — all dispositioned safe. Phase 12 VERIFICATION asserted: 3/3 requirements (PROMPT-01, PROMPT-02, PROMPT-04) complete. Carry-forward set for Plan 13-01: {trim1, trim9}. Rejected trims register: {trim2, trim3, trim4, trim5, trim6, trim7, trim8} — all GATE-06 compliant, rejected on GATE-01 alone. Voyager-TLR pilot remains a parallel frontier extension (12-VOYAGER-PILOT-DEFERRED.md), does NOT block Phase 12 close. Next action: Phase 13 — Plan 13-01 (s_linker13_min) composing trim1 + trim9 over prompts_v3 + s_linker13_clean_v3 + helper_v3."
-last_updated: "2026-06-01T00:00:00.000Z"
-last_activity: 2026-06-01 — Phase 12 closed (Plan 12-06 GATE-06 audit PASS; SUMMARY + VERIFICATION + FINAL mapping committed)
+status: shipped
+stopped_at: "Completed Phase 13 close: s_linker13_min PROMOTED (composed canonical of trim1 + trim9; Claude macro 0.9506, gpt-5.4 macro 0.9069 — both gates clear). ABLATION-TABLE.md / .tex v2.1 addendum committed (11 new rows: 4 promoted/baseline block + 7 rejected block). Phase 13 VERIFICATION asserted: 2/2 requirements (PROMPT-03, GATE-03) complete. Milestone v2.1 SHIPS. Voyager-TLR pilot remains parallel frontier extension; outcome anchors v2.2 first plan. All 4 standing gates (GATE-01/02/06/07) held throughout."
+last_updated: "2026-06-01T03:50:00.000Z"
+last_activity: 2026-06-01 — Phase 13 closed; milestone v2.1 SHIPPED (s_linker13_min promoted, GATE-03 satisfied, all 4 standing gates held)
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 11
-  completed_plans: 11
-  percent: 75
+  completed_phases: 4
+  total_plans: 14
+  completed_plans: 14
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31 for v2.1 kickoff)
 
 **Core value:** Every rule removed from `s_linker13`/its prompts must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within ≤ 1pp of 0.9077 — or be rejected. Every retained prompt + helper must read as project-agnostic to a reviewer (GATE-06). Nothing currently runnable breaks.
-**Current focus:** Phase 12 — Trim Ablation — Phases 10+11 COMPLETE
+**Current focus:** v2.1 SHIPPED — milestone close complete. Awaiting v2.2 kickoff (Voyager-TLR pilot result anchors).
 
 ## Current Position
 
-Phase: 13 of 4 — Phase 12 Trim Ablation COMPLETE; Phase 13 Promotion & Wrap pending
-Plan: 13-01 (s_linker13_min) — not yet started
-Status: Phase 12 closed; awaiting Phase 13 kickoff
-Last activity: 2026-06-01 — Plan 12-06 complete (GATE-06 audit PASS); Phase 12 VERIFICATION asserted PASSED
+Phase: 13 of 4 — ALL phases COMPLETE; milestone v2.1 SHIPPED
+Plan: 13-03 complete (milestone summary + verification + state update)
+Status: v2.1 SHIPPED; s_linker13_min promoted; ABLATION-TABLE v2.1 addendum committed
+Last activity: 2026-06-01 — Phase 13 VERIFICATION asserted PASSED (PROMPT-03 + GATE-03 complete); milestone v2.1 ships
 
-Progress: [████████░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -55,6 +55,9 @@ Progress: [████████░░] 75%
 | Phase 12 P05 REVISIT | ~50min | 4 tasks | 2 files (REJECT on cross-model; GATE-06 leakage REJECT OVERTURNED) |
 | Phase 12 EXTENSION (12-07..12-12) | ~75min | 6 variants × probe + sweep | 6 variants + 7 SUMMARYs + 40 result JSONs (1 ACCEPT trim9, 1 cross-model REJECT trim6, 4 Claude REJECT) |
 | Phase 12 P06 (GATE-06 close) | ~25min | 4 artifacts (audit + final mapping + SUMMARY + VERIFICATION) | 4 docs (zero LLM); Phase 12 verdict PASSED |
+| Phase 13 P01 (s_linker13_min promotion) | ~75min | 4 tasks | 1 new variant + 2 sweep result dirs + run_ablation.py canonical=True; both gates PASS |
+| Phase 13 P02 (ABLATION-TABLE v2.1 addendum) | ~10min | 3 tasks | ABLATION-TABLE.md + .tex updated (11 new rows); GATE-03 closed |
+| Phase 13 P03 (milestone summary + verification + state) | ~10min | 3 docs | 13-03-MILESTONE-SUMMARY.md + 13-VERIFICATION.md + STATE.md update; milestone v2.1 SHIPS |
 
 ## Standing Gates (v2.1)
 
@@ -80,10 +83,11 @@ Progress: [████████░░] 75%
 - [Phase 12]: Plan 12-05 REVISIT: Methodological correction — prior REJECT applied strict-reading of GATE-06 ("project terms in LLM output = leakage") which, applied consistently, would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge from input data; the runtime-generated rubric IS that mechanism. Operationalized cross-dataset isolation as the correct empirical test (term t in dataset A's rubric is a leak iff (a) t is a PCM component of dataset B != A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc). Findings: GATE-06 static surface PASS; cross-dataset isolation PASS on both backends (0 violations across 10 rubrics); Claude relaxed GATE-01 PASS (macro 0.9396, BBB 0.8108); gpt-5.4 cross-model FAIL by 1.22pp (macro 0.8855 < 0.8977 floor). Final verdict: REJECT but on cross-model capability gap (consistent with documented Claude-vs-GPT ~5.7pp gap), NOT on leakage. Prior leakage REJECT OVERTURNED. Variant NOT carried to 13-01. Prior 12-05-SUMMARY.md preserved unchanged; 12-05-SUMMARY-REVISIT.md supersedes.
 - [Phase 12 EXTENSION]: Applied the 12-05 runtime-rubric mechanism PER PROMPT to 6 prompts (not merged). Built 6 standalone variants subclassing SLinker13Clean (consistent with the trim3 template the user directive nominated; strict standalone-class reading documented as interpretive deviation). NO STATIC FALLBACK per user directive — every variant raises RuntimeError on empty rubric. Strategic probe gating saved 20 gpt-5.4 sweep runs by skipping cross-model evaluation for Claude-arm failures. Outcomes: trim9 (SEED_DISAMBIGUATION_RULES) ACCEPTED on both arms (Claude 0.9474 / gpt-5.4 0.9007, BBB +4.04pp on Claude); trim6 (DOC_KNOWLEDGE_JUDGE_EXAMPLES + trim1 distilled rules) Claude-PASS but cross-model FAIL by 0.39pp (consistent with trim3 model-capability gap); trim4/5/7/8 (ambiguity / extraction / entity / validation) Claude per-dataset drop tolerance violations (jabref -2.56pp single-FP for small-dataset variants; teastore -3.57pp for proposer/judge-tier substitutions). trim9 CARRIED to Plan 13-01 for composition with trim1.
 - [Phase 12 CLOSE 2026-06-01]: Plan 12-06 completed. Full BENCHMARK_TABOO (100 terms) + reviewer-defensibility re-audit on every retained surface — 12 files, 17 module-level prompt-body constants — PASSES. 4 lexical hits surfaced (`layer`, `order`, `common`, `validation`), all dispositioned safe (English vocabulary in textbook-SE contexts). Zero leaked, zero borderline. PROMPT-04 closed. PROMPT-01 finalized with `12-06-V2_TO_V3_MAPPING-FINAL.md` (supersedes 12-01). Mapping conflict on DOC_KNOWLEDGE_JUDGE_RULES (trim1 vs trim3) resolved by GATE-01 outcomes — trim1 wins. Rejected-trims register: {trim2, trim3, trim4, trim5, trim6, trim7, trim8} — all GATE-06 compliant; rejection on GATE-01 alone. Phase 12 VERIFICATION asserted PASSED at `.planning/phases/12-trim-ablation/12-VERIFICATION.md`. Voyager-TLR pilot kept as parallel frontier extension; does NOT block Phase 12 close. Hand-off to Plan 13-01 is unambiguous: compose trim1 + trim9 over prompts_v3 + s_linker13_clean_v3 + helper_v3.
+- [Phase 13 CLOSE 2026-06-01]: Plan 13-01 PROMOTED s_linker13_min as composed canonical of trim1 (distilled DOC_KNOWLEDGE_JUDGE_RULES via Technique 3 + 8) + trim9 (runtime SEED_DISAMBIGUATION_RULES rubric builder). 5-dataset Claude Sonnet sweep: macro F1 0.9506 (+1.09pp vs s_linker13_clean baseline 0.9397; BBB +4.60pp; worst non-BBB drop TS −1.82pp within original −2pp tol). 5-dataset gpt-5.4 sweep: macro F1 0.9069 (+0.92pp above 0.8977 cross-model floor). Cross-model gap 4.37pp — within Phase 12 frontier envelope, composition does NOT widen vs trim9-alone (4.67pp). canonical=True flipped in run_ablation.py VARIANT_SPECS. GATE-02 regression test passes (35 passed, 28 xfailed). Plan 13-02 closed GATE-03 with additive ABLATION-TABLE.md + .tex addendum (11 new rows: 4 promoted/baseline block + 7 rejected block; v1.0 + v2.0 chain rows preserved byte-equal). Plan 13-03 wrote milestone summary + Phase 13 VERIFICATION (PASSED — PROMPT-03 + GATE-03 complete). Milestone v2.1 SHIPS with all 4 standing gates held + 10/10 requirements complete.
 
 ### Pending Todos
 
-Next action: kick off Phase 13 (Promotion & Wrap). Plan 13-01 promotes `s_linker13_min` as the composition of trim1 (distilled DOC_KNOWLEDGE_JUDGE_RULES) + trim9 (runtime SEED_DISAMBIGUATION_RULES) over prompts_v3 + s_linker13_clean_v3 + helper_v3. The composed variant must pass both gates (Claude relaxed GATE-01 + gpt-5.4 cross-model GATE-01) before promotion. Trim interaction effects are unmeasured but expected small (disjoint pipeline stages — Tier 1 alias judge vs Tier 2 seed validation). Rejected trims {trim2, trim3, trim4, trim5, trim6, trim7, trim8} are NOT carried forward but remain in repo for negative-result traceability.
+v2.1 SHIPPED — no v2.1 pending todos. Next action: v2.2 milestone kickoff anchored by Voyager-TLR pilot result (when gpt-5.4 train/test completes) + v2.1-deferred candidates (ADAPTER-01 per-model adaptive prompts, Self-Refine, Extended-thinking, upstream-tier rule removal, link provenance data structure).
 
 ### Blockers/Concerns
 
@@ -99,6 +103,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-06-01T00:00:00.000Z
-Stopped at: Completed Plan 12-06 — Phase 12 closed (PASSED). Next action: execute Plan 13-01 (s_linker13_min promotion of trim1 + trim9 composition).
+Last session: 2026-06-01T03:50:00.000Z
+Stopped at: Completed all of Phase 13. Milestone v2.1 SHIPPED. s_linker13_min promoted; ABLATION-TABLE v2.1 addendum committed; milestone summary + verification written. Next action: v2.2 milestone kickoff (Voyager pilot result is the anchor).
 Resume file: None
