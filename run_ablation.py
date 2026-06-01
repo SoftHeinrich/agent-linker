@@ -99,6 +99,7 @@ CANONICAL_VARIANTS = [
     "s_linker14_probe_b_preamble_clean",   # v2.2 PROBE WAVE — Probe B (Phase 15): preamble + cached rubric (INFER-01)
     "s_linker14_probe_c_selfrefine_clean",   # v2.2 PROBE WAVE — Probe C (Phase 16): 2-iter Self-Refine on alias judge (INFER-02)
     "s_linker14_probe_d_upstream_clean",   # v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric replaces COREF_RULES; NOT canonical
+    "s_linker14_voyager",   # v2.3 β architecture consumer (experimental=True): axiom prompts + trained slot-uniform bank patterns; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -483,6 +484,26 @@ VARIANT_SPECS = {
         class_name="SLinker14ProbeDUpstreamClean",
         description="S-Linker14 Probe D — v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric REPLACES static COREF_RULES. NOT canonical — v2.2 canonical remains s_linker13_min unchanged. mediastore gpt-5.4 +1.59pp; BBB gpt-5.4 mean +2.2pp over 2 obs; BBB Claude FAIL was confounded by cross-backend cache reuse (per-backend cache key fix landed). Enable only when LLM_BACKEND==openai. 1 builder LLM call per dataset; cache key per-(text_stem, comp_hash, backend, model); default cache root results/v2_2_probes_range_d_cachefix/cache/ (PROBE_D_CACHE_ROOT env override). Forks from s_linker13_clean_v3. See .planning/v2.2-prep/probe-D-upstream-SUMMARY.md + .planning/v2.2-prep/range-D-bbb-SUMMARY.md + .planning/v2.2-prep/probe-D-cachekey-fix-SUMMARY.md.",
         canonical=False,
+    ),
+    "s_linker14_voyager": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker14_voyager",
+        class_name="SLinker14Voyager",
+        description=(
+            "S-Linker14 Voyager — v2.3 β architecture consumer (experimental=True, NOT canonical). "
+            "Standalone pipeline (no inheritance from s_linker13_clean/v3). "
+            "Prompt source: prompts_v3_axiom (9 axiom skeletons). "
+            "Slot-uniform trained bank (results/voyager_v4_beta/mainline/final_bank.json) injected at init. "
+            "Empty bank = axiom-only floor mode (valid for Phase 14 infra testing + Phase 15 iter-0). "
+            "Training harness: scripts/voyager_train_tlr_v4_beta.py (L+O+D-with-CoT-A+P). "
+            "Backend: gpt-5.4 (per backend policy). "
+            "Promotion bar: STRONG>=0.9173 / WEAK [0.87,0.9173) / FAIL<0.87 on gpt-5.4 macro F1. "
+            "s_linker13_min retains canonical=True regardless of outcome. "
+            "Bank path override: VOYAGER4B_BANK_PATH env var. "
+            "See .planning/v2.3-prep/v2.3-ARCHITECTURE.md + .planning/milestones/v2.3-ROADMAP.md."
+        ),
+        canonical=False,
+        experimental=True,
     ),
 }
 

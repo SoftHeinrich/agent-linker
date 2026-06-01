@@ -58,7 +58,7 @@ See `.planning/milestones/v2.3-ROADMAP.md` for full phase details, plans, succes
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 14. β Training Harness Infrastructure | 0/TBD | Not started | - |
+| 14. β Training Harness Infrastructure | 6/6 | ✅ Complete | 2026-06-01 |
 | 15. Probe Tier | 0/TBD | Not started | - |
 | 16. Range Tier | 0/TBD | Not started (conditional on Ph 15 CONTINUE) | - |
 | 17. Confirmation Tier | 0/TBD | Not started (conditional on Ph 16 ≥ 0.87) | - |
