@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Phase Summary
 status: active
-stopped_at: Phase 16 planned. Ready to execute range tier.
-last_updated: "2026-06-01T09:38:53.840Z"
-last_activity: 2026-06-01 -- Phase 16 plans created (P1: range run + eval, P2: verdict)
+stopped_at: Phase 17 planned (2 plans). Ready for Phase 17-P1 execution.
+last_updated: "2026-06-01T15:00:00.000Z"
+last_activity: 2026-06-01 -- Phase 17 planned, 2 plans written (3-split confirmation runs + cross-split aggregation/verdict)
 progress:
-  total_phases: 2
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 2
-  percent: 50
+  total_phases: 3
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 16 — range-tier
+**Current focus:** Phase 17 — confirmation-tier
 
 ## Current Position
 
-Phase: 16 — IN PROGRESS (planned, not yet executed)
-Plan: 0 of 2
-Status: Phase 16 plans created; ready to execute
-Last activity: 2026-06-01 -- Phase 16 plans created
+Phase: 17 — IN PROGRESS (2/2 plans written; awaiting execution)
+Plan: 0 of 2 executed
+Status: Phase 17 planned; execute 17-P1 (3-split runs) then 17-P2 (cross-split aggregation + verdict)
+Last activity: 2026-06-01 -- Phase 17 plans written
 
 ```
-[Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ▶]──▶[Phase 17 (cond.)]──▶[Phase 19]
+[Phase 14 ✅]──▶[Phase 15 ✅]──▶[Phase 16 ✅]──▶[Phase 17 (cond.)]──▶[Phase 19]
                                       │
                                FAIL──▶[Phase 18 (Compact-B)]──────────────────▶[Phase 19]
 ```
@@ -76,12 +76,18 @@ Last activity: 2026-06-01 -- Phase 16 plans created
 **Probe banks:** `results/voyager_v4_beta/mainline/{mediastore,teastore,teammates}_bank.json` (3 real patterns each).
 **See:** `.planning/phases/15-probe-tier/15-PROBE-VERDICT.md`
 
-## Phase 16 Plan (CURRENT)
+## Phase 16 Result (COMPLETE — WEAK)
 
-**Goal:** Run Range tier to convergence on mainline split (gpt-5.4, $15–25). Aggregate final_bank.json. Evaluate all 5 datasets. Compute 3-tier verdict (STRONG/WEAK/FAIL).
-**Action:** `/gsd-execute-phase 16`
-**Budget:** $15–25 gpt-5.4
-**Plans:** 16-P1 (range run + eval), 16-P2 (verdict doc + state update)
+**Verdict:** WEAK — 5-dataset macro F1 = 89.8% (gpt-5.4, trained bank). Above 0.87 floor, below STRONG (0.9173). Phase 17 proceeds.
+**Key numbers:** trained=89.8% | axiom-only=87.6% (+2.2pp lift) | s_linker13_min canonical=90.69% (-0.89pp gap)
+**Bank:** 14 patterns across 6 slots; `results/voyager_v4_beta/mainline/final_bank.json`
+**See:** `.planning/phases/16-range-tier/16-RANGE-VERDICT.md`
+
+## Phase 17 Plan (ACTIVE)
+
+**Goal:** 3-split Confirmation sweep (Voyager v2 splits 1+2+3). Cross-split aggregation, final 5-dataset eval, promotion verdict, dual-artifact registration.
+**Plans:** `.planning/phases/17-confirmation-tier/17-P1-PLAN.md` (3-split runs) + `17-P2-PLAN.md` (aggregation + verdict)
+**Next action:** `/gsd-execute-phase 17` (Confirmation Tier — 3 splits × range + cross-split bank + eval, $40–60 gpt-5.4)
 
 ## Accumulated Context
 
@@ -94,6 +100,12 @@ Last activity: 2026-06-01 -- Phase 16 plans created
 - GATE-06 at bank-entry (Phase 14 built helpers; Phase 15+ applies them to real LLM outputs)
 - reviewer_critic_stub advisory-only in Phase 14; real LLM critic activates Phase 15+
 
+### Pending Todos
+
+1 todo pending: `2026-06-01-design-better-axioms-section-context-responsibility.md`
+   — Design better axioms for section-context (Gap 1), responsibility-list (Gap 2), coref alias (Gap 3)
+   — Empirical analysis complete; 3 implementation tasks prioritized; see todo for full detail
+
 ### Blockers/Concerns
 
 None.
@@ -104,7 +116,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-06-01T09:38:53.000Z
-Stopped at: Phase 16 planned. Range tier ready to execute.
+Last session: 2026-06-01T15:00:00.000Z
+Stopped at: Phase 17 planned. Confirmation tier ready to execute.
 Resume file: .planning/milestones/v2.3-ROADMAP.md
-Next action: `/gsd-execute-phase 16` (Range Tier — train to convergence, 5-dataset eval, $15-25 gpt-5.4)
+Next action: `/gsd-execute-phase 17` (Confirmation Tier — 3-split runs + cross-split aggregation + verdict, $40–60 gpt-5.4)
