@@ -87,3 +87,24 @@ These rows document REJECTED trims for negative-result traceability. None are pr
 **v2.1 footnote:** The Phase 12 frontier map (`12-FRONTIER-MAP-SUMMARY.md`) documents that the original v2.1 gates' REJECT verdicts on trim3 / trim4 / trim5 / trim6 / trim7 / trim8 are within 0.4-3.6 pp of the relevant floor — "at the cliff, not over it". Under Scenario E (relaxed by ~2pp per axis), 6 of 7 rejected trims pass. The v2.1 standing gates rejected those variants honestly; Scenario E is not invoked for promotion.
 
 **v2.1 thesis claim (verified):** static-prompt-distillation (trim1) and runtime-rubric mechanism (trim9), each accepted under the original v2.1 gates on both Claude Sonnet and gpt-5.4, COMPOSE without regressing either gate. The composed s\_linker13\_min variant clears both gates with safety margin (Claude +2.06pp above macro floor, gpt-5.4 +0.92pp above cross-model floor). Composition does NOT widen the cross-model gap beyond trim9-alone (Claude−gpt-5.4 gap 4.37pp vs trim9-alone 4.67pp).
+
+---
+
+## v2.3 Addendum: s_linker14_voyager (β Multi-Role Confirmation — Phase 17, 2026-06-01)
+
+This addendum documents the v2.3 Voyager architecture (β: L + O + D-with-CoT-A + P training loop). s\_linker14\_voyager is experimental=True; s\_linker13\_min retains canonical=True. The confirmation tier ran 3 cross-validation splits; the cross-split bank uses Jaccard ≥ 0.6 dedup + ≥ 2-split survival filter.
+
+| System | MS | TS | TM | BBB | JAB | Macro (5-ds) | Backend | Note |
+|--------|----|----|----|----|-----|--------------|---------|------|
+| s\_linker14\_voyager (cross-split bank, Confirmation) | 98.4 | 94.5 | 82.6 | 76.9 | 100.0 | **90.5** | gpt-5.4 | Phase 17 Confirmation; β architecture (L+O+D+P); 2-pattern cross-split bank (DOC\_KNOWLEDGE\_EXTRACTION\_RULES + COREF\_RULES); WEAK verdict |
+| s\_linker14\_voyager (mainline bank, Range) | 96.7 | 90.9 | 83.9 | 77.6 | 100.0 | **89.8** | gpt-5.4 | Phase 16 Range; 14 patterns, 6 slots |
+| s\_linker14\_voyager (axiom-only floor, split2) | 95.1 | 93.1 | 82.6 | 76.5 | 97.3 | **88.9** | gpt-5.4 | Phase 17 split2 — 0-pattern bank (probation gate rejected all); pure axiom-only |
+| s\_linker13\_min (canonical, GATE-01 Phase 17 regression) | 96.8 | 98.2 | 83.1 | 78.2 | 97.3 | **90.7** | gpt-5.4 | GATE-01 reference; Phase 17 regression confirms baseline unchanged (+0.01pp from 90.69%) |
+
+**v2.3 confirmation verdict:** WEAK — 5-dataset macro 90.5% ∈ [0.87, 0.9173). Positive finding: +1.6pp lift over axiom-only floor (88.9%) and +0.7pp over mainline Range bank (89.8%). Cross-split bank has only 2 patterns across 2 slots — indicates high training difficulty; TM (82.6%) and BBB (76.9%) remain the hardest datasets. Split-fragility analysis (split1: 2 patterns, split2: 0, split3: 8) provides mechanistic insight for v2.4 design (BBB is hard to include in train set; larger training sets benefit). GATE-01 confirmed: s\_linker13\_min canonical baseline unaffected.
+
+**v2.3 source JSONs:**
+- `s_linker14_voyager` cross-split eval: `results/ablation_results/ablation_20260601_154540.json`
+- `s_linker14_voyager` mainline Range: `results/ablation_results/` (Phase 16 range eval)
+- `s_linker14_voyager` axiom-only (split2): `results/ablation_results/ablation_20260601_145929.json`
+- `s_linker13_min` GATE-01 regression: `results/ablation_results/ablation_20260601_155029.json`
