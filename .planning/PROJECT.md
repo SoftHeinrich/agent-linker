@@ -42,11 +42,26 @@ Every rule removed from `s_linker12c` (and every prompt-rule trimmed from its su
 
 ### Active
 
-None — currently between milestones. v2.1 shipped 2026-06-01.
+**v2.3 (Trained Multi-Role Prompt Replacement, β architecture):**
+- **REQ-V23-01** — v2.3 v4 β training harness produces a trained per-slot JSON bank from gpt-5.4 outer-loop training
+- **REQ-V23-02** — `s_linker14_voyager` consumes trained bank via Voyager-mode runtime injection (extends `s_linker13_skill_learned_clean` pattern)
+- **REQ-V23-03** — Training loop = L (linker) + O (text-aware Oracle, failure-mode analysis) + D (text-blind Distillator with CoT-A inline) + P (mechanical probation gate)
+- **REQ-V23-04** — Oracle output schema = failure-mode-centric (FMs with affected_slot + symptom + apparent_cause + suggested_direction + evidence_count + abstract_example_pair + newly_introduced_errors with bank-pattern attribution)
+- **REQ-V23-05** — Promotion verdict computed against 3-tier bar (STRONG ≥0.9173 / WEAK [0.87, 0.9173) / FAIL <0.87) on gpt-5.4 macro F1, 5-dataset
+- **REQ-V23-06** — Dual-artifact registration: `s_linker13_min` retains `canonical=True` (GATE-01 bound); `s_linker14_voyager` ships `experimental=True` (bound only to 0.87 floor)
+- **REQ-V23-07** — Mainline train/test split = train MS+TS+TM, test BBB+JAB (Voyager v2 split 1). 3-split Confirmation sweep conditional on mainline ≥ 0.87.
+- **REQ-V23-08** — Compact-B fallback (R345 single CoT role) auto-triggers as v2.3 mainline replacement on v4 FAIL (<0.87)
+- **REQ-V23-09** — GATE-06 BENCHMARK_TABOO grep + reviewer critic LLM at bank-entry boundary (not O/D handoff)
+- **REQ-V23-10** — Per-(text_stem, comp_hash, backend, model) cache infrastructure applied uniformly across L, O, D, reviewer-critic
+- **REQ-V23-11** — D's pattern proposals constrained to discourse-syntactic-functional vocabulary (Probe A' R3 vocab anchor carry-forward); forbidden: role nouns + architectural-style names
+- **REQ-V23-12** — Slot-uniform bank coverage: all 9 axiom slots (`AMBIGUITY_RULES`, `AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`, `SEED_DISAMBIGUATION_RULES`) receive trained patterns
+- **REQ-V23-13** — Convergence = macro ≥ 0.90 on training projects, max 5 outer passes
+- **REQ-V23-14** — Budget cap ~$100 gpt-5.4 total (Probe $5-10 → Range $15-25 → Confirmation $40-60)
+- **REQ-V23-15** — Comparison reference: primary `s_linker14_voyager` vs `s_linker13_min` (hand-authored `prompts_v3.py`) gpt-5.4 macro F1; secondary vs `prompts_v3_axiom.py` (axiom-only floor)
 
 ## Current State
 
-**Status:** Between milestones — v2.2 SHIPPED 2026-06-01. Awaiting v2.3 kickoff (Voyager v4 multi-role with proven prereqs — see `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md`).
+**Status:** v2.3 kickoff — Trained Multi-Role Prompt Replacement (β architecture) IN PROGRESS. v2.2 archived 2026-06-01. See `.planning/v2.3-prep/v2.3-ARCHITECTURE.md` for locked architecture spec; `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md` for resolved sub-question decisions; `.planning/notes/v23-architectural-endpoint-reasoning.md` for endpoint-choice reasoning.
 
 **Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`). Composes trim1 (distilled Tier-1 judge rubric) + trim9 (runtime Tier-2 seed disambiguation rubric) over `prompts_v3` + `helper_v3` + `s_linker13_clean_v3`. Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
@@ -138,6 +153,10 @@ Active milestone: none. v2.3 anchor: Voyager v4 multi-role with proven per-backe
 | GATE-06 cross-dataset isolation methodology (v2.1) | Strict-reading of GATE-06 ("project terms in LLM output = leakage") would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge. Operationalized as: term t in dataset A's runtime artifact is a leak iff (a) t is a PCM component of dataset B ≠ A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc. PASSES on both backends across all 10 trim9 rubrics. | Codified 2026-05-31 (v2.1 Phase 12 Plan 12-05 revisit) |
 | Frontier-map vs strict-pass (v2.1) | Phase 12 exploration crossed 9 trim mechanisms; 2 ACCEPT + 7 REJECT under strict gate. Frontier map captures the full design space WITHOUT moving the promotion bar. Future milestones can revisit Scenario-E-feasible variants under a different gate regime. | Codified 2026-06-01 (v2.1 close) |
 | v2.2 trimmed-scope close (ship s_linker13_min unchanged + Probe D opt-in gpt-5.4-only + defer v4 to v2.3) | Probe wave found no Pareto-positive cross-backend mechanism; Probe D is gpt-5.4-only; Voyager v4 architecture is dataset-conditional per Probe A' BBB WEAK_PASS. Hybrid path (Option 1 + Option 3 from `v2.2-RANGE-A-PRIME-BBB-AND-CACHE-FIX-SUMMARY.md`) preserves both gpt-5.4 lift and Claude floor while deferring v4 to a milestone with adequate prereqs. | Codified 2026-06-01 (v2.2 close) |
+| v2.3 architectural endpoint = (A) Voyager-bank canonical, β architecture (L + O + D-with-CoT-A + P) | (C) Hybrid runtime-rubric + static-rules across slots ruled out via slot-asymmetry-is-ugly principle. (B) Full runtime-rubric demoted to contingency-only (all-slot uniformity required). β chosen over γ full-v4 because A folded as CoT inside D is strictly cheaper without losing the abstraction check; the separate R5 LLM role would over-engineer given Probe A' R5 0/8 BBB evidence. β chosen over α fully-merged because role-separation (text-blind D) closes the v2/v3 leak at lower architectural risk than CoT-discipline alone. | Codified 2026-06-01 (v2.3 kickoff `/gsd:new-milestone` discussion) |
+| v2.3 dual-artifact policy (canonical=True s_linker13_min retained; experimental=True s_linker14_voyager ships separately under 0.87 floor) | 0.87 promotion floor conflicts with standing GATE-01 (≥ 0.8977 gpt-5.4 absolute). Dual-track preserves GATE-01 for canonical artifacts while unblocking architectural-exploration test of v4 thesis under a lenient research-grade floor. v2.3 publishes v4 finding (positive or negative) without violating cross-model floor. | Codified 2026-06-01 (v2.3 kickoff) |
+| v2.3 Oracle = text-aware (mode i), Distillator = text-blind. Leak defense at bank-entry boundary. | Role-separation (text-blind D) is the minimal architectural barrier that distinguishes v4 from v2/v3 split-fragility. Making O ALSO text-blind would degrade O's error-analysis quality without strengthening the leak defense, because the leak-relevant boundary is the bank-entry filter (GATE-06 grep + reviewer critic on D's pattern proposals), not the O/D handoff. Testing the minimal sufficient defense surfaces whether further text-restriction is necessary. | Codified 2026-06-01 (v2.3 kickoff) |
+| v2.3 backend policy = gpt-5.4 only; Claude only if super necessary | User-set hard rule (carried from v2.2 close 2026-06-01). All v2.3 probes, ranges, sweeps default to gpt-5.4. Cross-model verification deferred to v2.4 if reviewers demand it. | Codified 2026-06-01 (v2.2 close; reaffirmed at v2.3 kickoff) |
 
 ## Evolution
 
@@ -157,4 +176,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-01 — v2.2 milestone close (Probe-Wave Trimmed Close SHIPPED)*
+*Last updated: 2026-06-01 — v2.3 milestone kickoff (Trained Multi-Role Prompt Replacement, β architecture)*

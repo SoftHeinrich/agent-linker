@@ -1,11 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: null
-milestone_name: "between milestones — v2.2 archived 2026-06-01; v2.3 anchor = Voyager v4 multi-role with proven per-backend cache infra + Probe A' vocab fix"
-status: idle
-stopped_at: "v2.2 SHIPPED 2026-06-01 (Probe-Wave Trimmed Close). Canonical s_linker13_min unchanged (Claude 0.9506, gpt-5.4 0.9069). Probe D opt-in carve-out registered (gpt-5.4 only). Voyager v4 multi-role + per-backend cache infrastructure + Probe A' vocab-aligned R3 carried to v2.3 as proven prereqs. See .planning/milestones/v2.2-MILESTONE-AUDIT.md."
-last_updated: "2026-06-01T09:30:00.000Z"
-last_activity: "2026-06-01 — v2.2 milestone close (quick-mode). Created milestones/v2.2-ROADMAP|REQUIREMENTS|MILESTONE-AUDIT, v2.2-prep/v2.2-MILESTONE-CLOSE-SUMMARY, v2.3-prep/v2.3-KICKOFF-SEED. Probe D variant docstring + registry description tagged 'v2.2 OPT-IN CARVE-OUT (gpt-5.4 only)'. ROADMAP/MILESTONES/PROJECT updated."
+milestone: v2.3
+milestone_name: Trained Multi-Role Prompt Replacement (β architecture)
+status: planning
+last_updated: "2026-06-01T08:09:47.032Z"
+last_activity: 2026-06-01
 progress:
   total_phases: 0
   completed_phases: 0
@@ -25,11 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-01 for v2.2 close)
 
 ## Current Position
 
-Phase: none active
-Plan: none active
-Status: idle — v2.2 archived 2026-06-01; v2.3 anchor seeded
-
-Progress: [          ] 0%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-01 — Milestone v2.3 started
 
 ## Standing Gates (carried forward to next milestone)
 
