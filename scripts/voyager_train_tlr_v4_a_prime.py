@@ -80,7 +80,7 @@ import run_ablation as _ra
 # Output dirs (separate from Probe A!)
 # ─────────────────────────────────────────────────────────────────────────────
 
-OUT_ROOT = Path("results/v2_2_probes_a_prime")
+OUT_ROOT = Path(os.environ.get("PROBE_A_PRIME_OUT_ROOT", "results/v2_2_probes_a_prime"))
 
 
 def _project_dir(project: str) -> Path:
