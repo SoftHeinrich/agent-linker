@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: null
 milestone_name: between milestones — v2.1 archived; v2.2 PROBE WAVE delivered (1 STRONG survivor)
 status: idle
-stopped_at: "v2.2 PROBE WAVE complete 2026-06-01. 4 probes run in parallel on mediastore gpt-5.4: A (Voyager v4) PROBE_FAIL — R5 rejects 100% of R3; B (preamble+rubric) FAIL -5.24pp; C (Self-Refine) WEAK_PASS +0.00004pp; D (upstream coref rubric) STRONG_PASS +1.59pp (matches Claude baseline). Probe D is the v2.2 PROMO-v2.2 candidate. Awaiting user approval to Range-test Probe D on bigbluebutton gpt-5.4."
-last_updated: "2026-06-01T07:32:00.000Z"
-last_activity: 2026-06-01 — v2.2 probe wave (4 parallel probes on mediastore gpt-5.4) delivered; rollup + 4 per-probe SUMMARYs committed to .planning/v2.2-prep/. Recommendation: Range-test Probe D on BBB immediately; kill Probes A + B; defer Probe C.
+stopped_at: "v2.2 RANGE A' BBB + Probe D cache-fix wave complete 2026-06-01 (gpt-5.4 only). (1) Range A' BBB gpt-5.4 = WEAK_PASS (R5 0/8 reject, iter0→iter1 -0.24pp; v4 architecture is mediastore-viable, BBB-inactive). (2) Probe D cache-key fix verified: per-backend (text_stem,comp_hash,backend,model) key, gpt-5.4 BBB sanity re-run STRONG_PASS (+1.12pp vs anchor; -2.17pp vs original 0.7965 = gpt-5.4 variance band on identical rubric). Claude re-test methodologically ready, deferred to next turn per user directive. Recommend hybrid path: ship s_linker13_min as v2.2 canonical, add Probe D opt-in gpt-5.4-only flag, defer v4 architecture to v2.3."
+last_updated: "2026-06-01T08:05:00.000Z"
+last_activity: 2026-06-01 — gpt-5.4-only wave: Range A' BBB (WEAK_PASS) + Probe D cache-fix sanity (SANITY_PASS). Per-task + combined SUMMARYs committed under .planning/v2.2-prep/. Cost ~$0.55 of $10 envelope. Awaiting user decision on v2.2 milestone scope (3 options in rollup: ship s_linker13_min unchanged + Probe D conditional flag; defer v4; re-test Claude with cache fix).
 progress:
   total_phases: 0
   completed_phases: 0
