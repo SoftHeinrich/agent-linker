@@ -70,6 +70,12 @@ No active milestone todos. v2.3 anchor and prereqs listed in `.planning/v2.3-pre
 
 None.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260601-bfe | Ship v2.2 as s_linker13_min + opt-in Probe D runtime coref rubric (gpt-5.4 only) carve-out; defer v4 to v2.3 with proven per-backend cache infrastructure + vocab fix | 2026-06-01 | 5831478 | [260601-bfe-ship-v2-2-as-s-linker13-min-opt-in-probe](./quick/260601-bfe-ship-v2-2-as-s-linker13-min-opt-in-probe/) |
+
 ## Deferred Items (v2.3 candidates)
 
 | Category | Item | Status | Deferred At |
