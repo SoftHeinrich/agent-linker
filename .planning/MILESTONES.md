@@ -4,6 +4,65 @@ Historical record of shipped milestones. See `milestones/v[X.Y]-ROADMAP.md`, `mi
 
 ---
 
+## v2.3 — Trained Multi-Role Prompt Replacement (β architecture)
+
+**Shipped:** 2026-06-01
+**Audit verdict:** WEAK — cross-split macro F1 = 90.5% (gpt-5.4, 5-dataset). Above the 0.87 floor; below the STRONG threshold (0.9173).
+**Production artifact:** `src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py` (`experimental=True`; `canonical=False`)
+**Canonical unchanged:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 canonical; unchanged)
+
+### Delivered
+
+β multi-role training harness (L + O + D-with-CoT-A + P) producing per-slot JSON pattern banks. `s_linker14_voyager` ships with 2-pattern cross-split bank delivering +1.6pp lift over axiom-only floor. Three splits run (Confirmation tier); 0/3 converged due to broken probation gate. Split2 (MS+TS+BBB) produced 0 committed patterns across 5 passes. Gap to canonical: −0.19pp. Key published finding: split-fragility mechanism (BBB as training data → LLM variance ±3.8pp swamps ≤1pp signal), plus probation gate failure analysis (6 compounding bugs). Three design debts filed as v2.4 candidates.
+
+### Stats
+
+| Item | Value |
+|------|-------|
+| Cross-split macro F1 (gpt-5.4) | 90.5% |
+| Gap to canonical (`s_linker13_min` 90.7%) | −0.19pp |
+| Axiom-only floor (cross-split) | 88.9% |
+| Trained lift over axiom-only | +1.6pp |
+| Patterns in cross-split final bank | 2 (in 2 slots) |
+| Splits converged | 0/3 |
+| Split2 commits | 0/5 passes (gate broken) |
+| Total cost | ~$111 vs $100 cap |
+| Phases completed | 5/5 (14, 15, 16, 17, 19; Phase 18 not triggered) |
+
+### Per-dataset (cross-split final bank, gpt-5.4)
+
+| Dataset | F1 |
+|---------|----|
+| MediaStore | 96.7% |
+| TeaStore | 93.7% |
+| TeaMMates | 84.6% |
+| BigBlueButton | 78.0% |
+| JabRef | 100.0% |
+| **Macro** | **90.5%** |
+
+### Key Findings
+
+1. **Split-fragility**: BBB as training data causes all-rollback. LLM variance (±3.4–3.8pp per dataset) completely swamps the pattern effect signal (≤1pp).
+2. **Minimal cross-split consensus**: 10 raw patterns → 8 clusters → 2 survive the ≥2-split survival filter. The 2 surviving patterns deliver +1.6pp lift.
+3. **Probation gate broken**: 6 compounding bugs. Root cause of split2 empty bank and the primary blocker for future re-runs. Fixed in v2.4.
+4. **Axiom vocabulary ceiling**: 14 FNs from SCN (BBB+TM) + 7 FPs from responsibility-list gerunds (TM) are not addressable by the current 9 sentence-local slots. Fixed in v2.4.
+
+### Debts Carried to v2.4
+
+| ID | Debt | v2.4 Phase |
+|----|------|-----------|
+| D-1 | Probation gate redesign (6 bugs → Traceability Gate) | 20-P1 |
+| D-2 | Axiom vocabulary gaps (SCN + gerund FPs) | 20-P2 |
+| D-3 | Refined v3-style axiom diffs implementation | 20-P2 |
+
+### Files
+
+- Archive: [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md), [`milestones/v2.3-REQUIREMENTS.md`](REQUIREMENTS.md), [`milestones/v2.3-MILESTONE-AUDIT.md`](milestones/v2.3-MILESTONE-AUDIT.md)
+- Kickoff seed: [`v2.3-prep/v2.3-KICKOFF-SEED.md`](v2.3-prep/v2.3-KICKOFF-SEED.md)
+- Architecture spec: [`v2.3-prep/v2.3-ARCHITECTURE.md`](v2.3-prep/v2.3-ARCHITECTURE.md)
+
+---
+
 ## v2.2 — Probe-Wave Trimmed Close
 
 **Shipped:** 2026-06-01
