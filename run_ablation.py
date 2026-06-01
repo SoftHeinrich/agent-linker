@@ -96,6 +96,9 @@ CANONICAL_VARIANTS = [
     "s_linker13g_sem_alias",   # EXT-01 alias-aware (b): LLM-only + alias map
     "s_linker13g_pre_full",    # EXT-01 full-knowledge (a): regex pre-filter + LLM judge + alias + linkmap
     "s_linker13g_sem_full",    # EXT-01 full-knowledge (b): LLM-only + alias + linkmap
+    "s_linker14_probe_b_preamble_clean",   # v2.2 PROBE WAVE — Probe B (Phase 15): preamble + cached rubric (INFER-01)
+    "s_linker14_probe_c_selfrefine_clean",   # v2.2 PROBE WAVE — Probe C (Phase 16): 2-iter Self-Refine on alias judge (INFER-02)
+    "s_linker14_probe_d_upstream_clean",   # v2.2 PROBE WAVE — Probe D (Phase 17): runtime coref rubric replaces COREF_RULES (EXT-upstream)
 ]
 
 VARIANT_SPECS = {
@@ -459,6 +462,27 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker13g_sem_full",
         class_name="SLinker13gSemFull",
         description="S-Linker13g-sem-full: EXT-01 full-knowledge (b): LLM-only + alias + linkmap",
+    ),
+    "s_linker14_probe_b_preamble_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker14_probe_b_preamble_clean",
+        class_name="SLinker14ProbeBPreambleClean",
+        description="S-Linker14 Probe B — v2.2 PROBE WAVE (Phase 15, INFER-01): TLR problem-statement preamble + per-dataset cached alias-judge rubric. Forks from s_linker13_clean_v3. 1 rubric LLM call per dataset; cache in results/v2_2_probes/B_preamble_rubric/cache/. GATE-06 fail-loud on rubric leakage.",
+        canonical=False,
+    ),
+    "s_linker14_probe_c_selfrefine_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker14_probe_c_selfrefine_clean",
+        class_name="SLinker14ProbeCSelfRefineClean",
+        description="S-Linker14 Probe C — v2.2 PROBE WAVE (Phase 16, INFER-02): 2-iter Self-Refine loop on alias judge. Iter 0 verifier emits {verdict, weakness_class}; iter 1 refines only mappings with weakness_class != 'none'. Forks from s_linker13_clean_v3. Iter counts recorded under results/v2_2_probes/C_selfrefine/iter_counts/.",
+        canonical=False,
+    ),
+    "s_linker14_probe_d_upstream_clean": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker14_probe_d_upstream_clean",
+        class_name="SLinker14ProbeDUpstreamClean",
+        description="S-Linker14 Probe D — v2.2 PROBE WAVE (Phase 17, EXT-upstream): runtime coref rubric REPLACES static COREF_RULES. 1 builder LLM call per dataset; cache in results/v2_2_probes/D_upstream/cache/. Forks from s_linker13_clean_v3.",
+        canonical=False,
     ),
 }
 

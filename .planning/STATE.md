@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: null
-milestone_name: between milestones — v2.1 archived; v2.2 prep delivered
+milestone_name: between milestones — v2.1 archived; v2.2 PROBE WAVE delivered (1 STRONG survivor)
 status: idle
-stopped_at: "v2.1 SHIPPED + archived 2026-06-01. s_linker13_min PROMOTED as canonical. v2.2-prep Voyager-TLR pilot v2 (3 fresh-start gpt-5.4 splits) delivered 2026-06-01 — verdict: SPLIT-FRAGILE, mean held-out lift -0.05 pp, do not promote. Awaiting v2.2 kickoff with revised anchor."
-last_updated: "2026-06-01T06:00:00.000Z"
-last_activity: 2026-06-01 — voyager-v2 pilot ran 3 splits (gpt-5.4, fresh-start, full intermediate logging); rollup + 3 per-split SUMMARYs committed to .planning/v2.2-prep/
+stopped_at: "v2.2 PROBE WAVE complete 2026-06-01. 4 probes run in parallel on mediastore gpt-5.4: A (Voyager v4) PROBE_FAIL — R5 rejects 100% of R3; B (preamble+rubric) FAIL -5.24pp; C (Self-Refine) WEAK_PASS +0.00004pp; D (upstream coref rubric) STRONG_PASS +1.59pp (matches Claude baseline). Probe D is the v2.2 PROMO-v2.2 candidate. Awaiting user approval to Range-test Probe D on bigbluebutton gpt-5.4."
+last_updated: "2026-06-01T07:32:00.000Z"
+last_activity: 2026-06-01 — v2.2 probe wave (4 parallel probes on mediastore gpt-5.4) delivered; rollup + 4 per-probe SUMMARYs committed to .planning/v2.2-prep/. Recommendation: Range-test Probe D on BBB immediately; kill Probes A + B; defer Probe C.
 progress:
   total_phases: 0
   completed_phases: 0
@@ -65,18 +65,19 @@ None.
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
 | v2.2+ | Voyager-TLR train-test methodology (gpt-5.4 pilot result) | **DECLINED — v2.2-prep pilot v2 (3 splits, fresh-start gpt-5.4) confirmed SPLIT-FRAGILE: mean +0/-0 pp, range [-1.92, +1.09], best below trim1 by 2.82 pp; see `.planning/v2.2-prep/voyager-v2-rollup.md`** | v2.2-prep close (2026-06-01) |
+| v2.2+ | Voyager v4 multi-role architecture (R1-R5) | **DECLINED — v2.2 PROBE WAVE Probe A confirmed R5 100% reject rate (falsification criterion hit) on mediastore gpt-5.4; see `.planning/v2.2-prep/probe-A-voyager-v4-SUMMARY.md`** | v2.2-prep PROBE WAVE close (2026-06-01) |
 | v2.2+ | ADAPTER-01: Multi-model backend-adaptive prompts (re-opened by v2.1 trim4/5/6/7 single-FP rejections) | Deferred | v2.0 close + v2.1 re-flagged |
-| v2.2+ | Self-Refine layered on accepted variants (proposer-side recovery for TS regression) | Deferred | v2.1 close |
+| v2.2+ | Self-Refine layered on accepted variants (proposer-side recovery for TS regression) | **PROBE WEAK_PASS — Probe C matched gpt-5.4 mediastore anchor exactly (+0.00004pp); see `.planning/v2.2-prep/probe-C-selfrefine-SUMMARY.md`. Awaiting user decision on Range test.** | v2.2-prep PROBE WAVE (2026-06-01) |
 | v2.2+ | Extended Thinking on judge stages (Tier-1 ambiguity calibration recovery on gpt-5.4) | Deferred | v2.1 close |
-| v2.2+ | Upstream-tier rule removal (extraction/coref tier — v2.0 EXT-01 evidence) | Deferred | v2.0 close |
+| v2.2+ | Upstream-tier rule removal (extraction/coref tier — v2.0 EXT-01 evidence) | **PROBE STRONG_PASS — Probe D runtime coref rubric lifted mediastore gpt-5.4 +1.59pp (0.9677 → 0.9836, matches Claude baseline); see `.planning/v2.2-prep/probe-D-upstream-SUMMARY.md`. Awaiting user approval to Range-test on BBB.** | v2.2-prep PROBE WAVE (2026-06-01) |
 | v2.2+ | Link provenance data structure | Deferred | v2.1 Phase 12 |
 | v2.2+ | EXT-04: Emit-biased boundary prompting on alias-discovery (BBB variance band 3pp → 1pp) | Deferred | v2.0 kickoff |
-| v2.2+ | Problem-statement system message preamble (Erdős-comparison discussion) | Deferred | v2.1 close |
+| v2.2+ | Problem-statement system message preamble (Erdős-comparison discussion) | **DECLINED-COMPOSED — Probe B (preamble + cached rubric) regressed mediastore gpt-5.4 -5.24pp; preamble alone not isolated. Re-test of preamble-only optional but de-prioritized.** | v2.2-prep PROBE WAVE (2026-06-01) |
 | v2.2+ | Verifier-driven iteration (Erdős-comparison Pilot A) | Deferred | v2.1 close |
-| v2.2+ | Cached problem-grounded rubric (Erdős-comparison Pilot B) | Deferred | v2.1 close |
+| v2.2+ | Cached problem-grounded rubric (Erdős-comparison Pilot B) | **DECLINED — Probe B composition included this mechanism; -5.24pp regression on mediastore gpt-5.4.** | v2.2-prep PROBE WAVE (2026-06-01) |
 
 ## Session Continuity
 
-Last session: 2026-06-01T06:00:00.000Z
-Stopped at: v2.2-prep Voyager-TLR pilot v2 SHIPPED — 3 fresh-start gpt-5.4 splits (replication, BBB-in-train acid test, rotated hold-out), full intermediate state saved (json+pkl) per iter. Verdict: SPLIT-FRAGILE, do not promote. Voyager pulled from v2.2 candidate queue; v2.2 anchor candidates remain ADAPTER-01, Self-Refine, Extended Thinking on judge, Upstream-tier rule removal, Problem-statement preamble, Verifier-driven iteration. Awaiting v2.2 kickoff decision on revised anchor.
-Resume file: None
+Last session: 2026-06-01T07:32:00.000Z
+Stopped at: v2.2 PROBE WAVE COMPLETE — 4 parallel probes ran on mediastore gpt-5.4 from `s_linker13_clean_v3`. Scoreboard: **Probe D STRONG_PASS** (runtime coref rubric, +1.59pp, matches Claude baseline); Probe C WEAK_PASS (Self-Refine, +0.00004pp); Probe B FAIL (preamble+rubric, -5.24pp); Probe A PROBE_FAIL (Voyager v4, R5 100% reject — falsification criterion hit). Budget spent: ~$2-3 of $40 envelope. v2.2 anchor candidate is Probe D's upstream coref-rubric mechanism. Next decision required: approve Range-test of Probe D on bigbluebutton gpt-5.4 (~$3-5).
+Resume file: .planning/v2.2-prep/v2.2-PROBE-WAVE-SUMMARY.md
