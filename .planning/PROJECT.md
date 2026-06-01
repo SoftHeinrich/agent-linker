@@ -46,9 +46,11 @@ None — currently between milestones. v2.1 shipped 2026-06-01.
 
 ## Current State
 
-**Status:** Between milestones — v2.1 SHIPPED. Awaiting v2.2 kickoff.
+**Status:** Between milestones — v2.2 SHIPPED 2026-06-01. Awaiting v2.3 kickoff (Voyager v4 multi-role with proven prereqs — see `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md`).
 
 **Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`). Composes trim1 (distilled Tier-1 judge rubric) + trim9 (runtime Tier-2 seed disambiguation rubric) over `prompts_v3` + `helper_v3` + `s_linker13_clean_v3`. Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
+
+**Opt-in carve-out (v2.2 shipped 2026-06-01):** `src/llm_sad_sam/linkers/experimental/s_linker14_probe_d_upstream_clean.py` — runtime coref rubric replacing static `COREF_RULES`, enable ONLY when `LLM_BACKEND == openai`. Mediastore gpt-5.4 +1.59pp; BBB gpt-5.4 mean +2.2pp over 2 obs. Claude not promoted (FAIL was confounded — per-backend cache fix unblocks re-test). NOT canonical. See `.planning/v2.2-prep/probe-D-upstream-SUMMARY.md`.
 
 **Frozen artifacts (preserved byte-equal):** `s_linker13.py`, `prompts_v2.py`, `data_types_v2.py`, `document_loader_v2.py`, `pcm_parser_v2.py`, `ilinker*.py`.
 
@@ -61,6 +63,7 @@ None — currently between milestones. v2.1 shipped 2026-06-01.
 - **v1.0** (2026-05-29) — Rule-to-LLM Ablation (`s_linker12c` → `s_linker13`). 6 rules removed, 1 rejected (VAR-04 dotted-path). Final macro 0.9509. See [`milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.md).
 - **v2.0** (2026-05-31) — Complete Rule Removal + Cross-Model. EXT-01 closed empty (negative); EXT-02 auto-skipped; COMBINE retro-satisfied; CROSS evidence published on gpt-5.4 (mixed-result, model-provider-property framing). See [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) and [`milestones/v2.0-MILESTONE-AUDIT.md`](milestones/v2.0-MILESTONE-AUDIT.md).
 - **v2.1** (2026-06-01) — Cleanup + Prompt Simplification. 3 trims shipped (Step 0 dead-code + trim1 distilled judge + trim9 runtime seed rubric); 7 frontier variants documented; Voyager-TLR methodology validated for v2.2. `s_linker13_min` promoted (Claude 0.9506, gpt-5.4 0.9069). All 10 requirements + 4 standing gates held. See [`milestones/v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md), [`milestones/v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md), and [`milestones/v2.1-MILESTONE-AUDIT.md`](milestones/v2.1-MILESTONE-AUDIT.md).
+- **v2.2** (2026-06-01) — Probe-Wave Trimmed Close. 4 probes; 1 STRONG survivor (Probe D upstream coref rubric) ships as opt-in gpt-5.4-only carve-out; canonical unchanged (`s_linker13_min`); Voyager v4 multi-role + per-backend cache infra + Probe A' vocab fix deferred to v2.3 as proven prereqs. See [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md), [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md), and [`milestones/v2.2-MILESTONE-AUDIT.md`](milestones/v2.2-MILESTONE-AUDIT.md).
 
 **Key v2.0 findings:**
 1. The "rule replaced by LLM primitive" thesis has a clean boundary: rules with project-specific surface conventions (dotted-path, casing) cannot be replaced without project-specific calibration. Same failure class hit v1.0 13d and v2.0 EXT-01.
@@ -75,16 +78,17 @@ None — currently between milestones. v2.1 shipped 2026-06-01.
 5. 6/6 runtime variants ACCEPT under Scenario E but only 1/6 ACCEPT under strict gate: the prompt-reduction × accuracy frontier is mappable.
 6. GATE-06 cross-dataset isolation methodology operationalized — testable empirical criterion for runtime LLM discovery, replacing strict-grep on outputs.
 
-## Next Milestone Candidates (v2.2+)
+## Next Milestone Candidates (v2.3+)
 
-Active milestone: none. Topics retained from v2.1 deferred items for the next milestone:
+Active milestone: none. v2.3 anchor: Voyager v4 multi-role with proven per-backend cache infrastructure + Probe A' vocab-aligned R3 (do NOT re-explore — see `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md`). Additional topics retained from v2.1 + v2.2 deferred items:
 
-- **Voyager-TLR pilot result** — gpt-5.4 train/test methodology validated; outcome anchors v2.2 first plan. See `milestones/v2.1-phases/12-trim-ablation/12-VOYAGER-PILOT-GPT-SUMMARY.md`.
+- **Voyager v4 multi-role architecture (R1-R5)** — deferred from v2.2 with vocab-aligned R3 + per-backend cache infra as proven prereqs. Fallback: Compact-B (single-role R345 reconciliation per `v2.2-SCOPE-DECISION.md`). v2.3 anchor.
+- **Claude Probe D re-test with per-backend cache fix** — methodologically ready; will produce a Claude-authored coref rubric and a clean cross-backend Probe D verdict. Cost ~$1.5. Carried from v2.2 (cache-fix wave 2026-06-01).
+- **Per-backend cache infrastructure** — proven in `s_linker14_probe_d_upstream_clean.py` per v2.2 SANITY_PASS; v2.3 should adopt as the default pattern for any runtime LLM rubric. Carried from v2.2.
 - **ADAPTER-01** — Multi-model backend-adaptive prompts (re-opened by v2.1 trim4/5/6/7 single-FP rejections). Requires fresh GATE-06 thinking.
-- **Self-Refine on accepted variants** — Tier-2 proposer-side widening regressed TS in v2.1; Self-Refine on the proposer might recover.
+- **Self-Refine on accepted variants** (contingent) — Probe C WEAK_PASS on mediastore; judge at ceiling. Re-test only if v2.3 mainline fails.
 - **Extended Thinking on judge stages** — Tier-1 ambiguity classifier shows gpt-5.4 calibration errors extended-thinking could recover.
-- **Upstream-tier rule removal** (extraction/coref tier) — v2.0 EXT-01 evidence located BBB recall gap upstream of `_has_standalone_mention`.
-- **Link provenance data structure** — Phase 12 deferred; v2.2 candidate for evidence-trail audit infrastructure.
+- **Link provenance data structure** — Phase 12 deferred; v2.3 candidate for evidence-trail audit infrastructure.
 - **EXT-04** — Emit-biased boundary prompting on alias-discovery (BBB variance band tightening 3pp → 1pp). Variance work, not rule removal.
 
 ### Out of Scope (general — applies across milestones)
@@ -133,6 +137,7 @@ Active milestone: none. Topics retained from v2.1 deferred items for the next mi
 | GATE-01 Scenario E (v2.1 Phase 12 runtime-variant exploration) | After the 6-variant runtime extension landed (Plans 12-07 through 12-12), 5/6 variants missed prior relaxation by 0.5–1.5pp on a single dataset or 0.4pp on cross-model. Reframed Phase 12 as a frontier map of prompt-reduction × accuracy, not strict pass/fail. Scenario E: per-dataset drop tolerance -4pp; cross-model floor 0.89 macro F1 (~1.8pp off 0.9077 baseline). Static-distillation variants kept tighter 0.93/0.8977 gates. | Codified 2026-05-31 (v2.1 Phase 12 close, user directive) |
 | GATE-06 cross-dataset isolation methodology (v2.1) | Strict-reading of GATE-06 ("project terms in LLM output = leakage") would invalidate every LLM call in the pipeline. CLAUDE.md actually MANDATES dynamic runtime LLM discovery of domain-specific knowledge. Operationalized as: term t in dataset A's runtime artifact is a leak iff (a) t is a PCM component of dataset B ≠ A AND (b) t is NOT in A's PCM AND (c) t is NOT in A's input doc. PASSES on both backends across all 10 trim9 rubrics. | Codified 2026-05-31 (v2.1 Phase 12 Plan 12-05 revisit) |
 | Frontier-map vs strict-pass (v2.1) | Phase 12 exploration crossed 9 trim mechanisms; 2 ACCEPT + 7 REJECT under strict gate. Frontier map captures the full design space WITHOUT moving the promotion bar. Future milestones can revisit Scenario-E-feasible variants under a different gate regime. | Codified 2026-06-01 (v2.1 close) |
+| v2.2 trimmed-scope close (ship s_linker13_min unchanged + Probe D opt-in gpt-5.4-only + defer v4 to v2.3) | Probe wave found no Pareto-positive cross-backend mechanism; Probe D is gpt-5.4-only; Voyager v4 architecture is dataset-conditional per Probe A' BBB WEAK_PASS. Hybrid path (Option 1 + Option 3 from `v2.2-RANGE-A-PRIME-BBB-AND-CACHE-FIX-SUMMARY.md`) preserves both gpt-5.4 lift and Claude floor while deferring v4 to a milestone with adequate prereqs. | Codified 2026-06-01 (v2.2 close) |
 
 ## Evolution
 
@@ -152,4 +157,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-01 — v2.1 milestone close (Cleanup + Prompt Simplification SHIPPED)*
+*Last updated: 2026-06-01 — v2.2 milestone close (Probe-Wave Trimmed Close SHIPPED)*

@@ -4,6 +4,56 @@ Historical record of shipped milestones. See `milestones/v[X.Y]-ROADMAP.md`, `mi
 
 ---
 
+## v2.2 — Probe-Wave Trimmed Close
+
+**Shipped:** 2026-06-01
+**Audit verdict:** `passed` (trimmed scope — see Outcome)
+**Production artifact unchanged:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 canonical carried forward; no new canonical promoted in v2.2)
+**Opt-in carve-out shipped:** `src/llm_sad_sam/linkers/experimental/s_linker14_probe_d_upstream_clean.py` (gpt-5.4 only)
+
+### Delivered
+
+A probe-wave methodology applied to 4 mechanism pillars (Voyager v4 multi-role, problem-statement preamble + cached rubric, Self-Refine on alias judge, upstream-tier rule removal). One strong survivor (Probe D upstream coref rubric, +1.59pp mediastore gpt-5.4, matches Claude baseline) ships as an opt-in gpt-5.4-only carve-out — NOT promoted to canonical because Range BBB Claude FAILED (CONFOUNDED by cross-backend cache reuse, methodologically unblocked but not re-run this milestone). v2.2's canonical is `s_linker13_min` unchanged.
+
+### Stats
+
+| Item | Count |
+|------|-------|
+| Probes run | 4 (A Voyager v4, B preamble+rubric, C Self-Refine, D upstream rule removal) |
+| Probe strong-pass | 1 (D) |
+| Probe weak-pass | 1 (C — declined as primary) |
+| Probe fail | 1 (B — declined) |
+| Probe falsification | 1 (A — R5 100% reject; fixed as A' but BBB WEAK_PASS, deferred to v2.3) |
+| New canonical promoted | 0 (s_linker13_min unchanged) |
+| Opt-in carve-out shipped | 1 (Probe D, gpt-5.4 only) |
+| Variant files retained (negative-finding) | 2 (Probe B, Probe C) |
+| Cumulative cost | ~$3 of $200 envelope |
+
+### Per-dataset (carve-out only — Probe D)
+
+| Dataset | Backend | F1 | Anchor | Δ | Verdict |
+|---|---|---|---|---|---|
+| mediastore | gpt-5.4 | 0.9836 | 0.9677 | +0.0159 | STRONG_PASS (matches Claude baseline) |
+| bigbluebutton (original) | gpt-5.4 | 0.7965 | 0.7636 | +0.0329 | STRONG_PASS |
+| bigbluebutton (cache-fix re-run) | gpt-5.4 | 0.7748 | 0.7636 | +0.0112 | STRONG_PASS (mean +2.2pp over 2 obs) |
+| bigbluebutton | Claude | 0.8073 | 0.8496 | -0.0423 | FAIL — CONFOUNDED by cross-backend cache reuse; per-backend cache fix unblocks re-test |
+
+### Key v2.2 lessons
+
+1. **Probe-wave methodology pays at the milestone-scoping tier.** Four cheap parallel probes (~$3) cut decisively across 4 mechanism pillars in one day, replacing what the original v2.2-MILESTONE-PROPOSAL planned as a 5-phase exploration.
+2. **Per-backend cache-key methodology is a precondition for fair cross-model evaluation of runtime LLM rubrics.** The Range D Claude FAIL was indistinguishable from a true cross-model failure until the cache-key fix isolated cross-backend rubric reuse as a confound. Carried to v2.3 as a proven prerequisite.
+3. **Vocabulary deadlock is a recurring failure mode in multi-role LLM training architectures.** Probe A's R3/R5 mutual inconsistency on textbook SE vocabulary surfaced via 100% R5 reject. Probe A' resolved it on mediastore by tightening R3 to discourse/syntactic terms — but BBB remained R5 0/8. v4 architecture is dataset-conditional, not universally promotable. Carried to v2.3.
+4. **Runtime per-dataset rubrics generalize across pipeline tiers (Phase 12 trim9 seed → Probe D coref) on the same backend, but do NOT trivially transfer across backends.** The trim9 + Probe D pair forms an internal Pareto frontier (Claude likes static, gpt-5.4 likes runtime); shipping both as backend-conditional is a viable v2.3 architecture pattern.
+
+### Files
+
+- Archive: [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md), [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md), [`milestones/v2.2-MILESTONE-AUDIT.md`](milestones/v2.2-MILESTONE-AUDIT.md)
+- Probe-wave SUMMARYs: [`v2.2-prep/v2.2-PROBE-WAVE-SUMMARY.md`](v2.2-prep/v2.2-PROBE-WAVE-SUMMARY.md), [`v2.2-prep/v2.2-RANGE-A-PRIME-BBB-AND-CACHE-FIX-SUMMARY.md`](v2.2-prep/v2.2-RANGE-A-PRIME-BBB-AND-CACHE-FIX-SUMMARY.md), [`v2.2-prep/v2.2-MILESTONE-CLOSE-SUMMARY.md`](v2.2-prep/v2.2-MILESTONE-CLOSE-SUMMARY.md)
+- Per-probe: [`v2.2-prep/probe-D-upstream-SUMMARY.md`](v2.2-prep/probe-D-upstream-SUMMARY.md), [`v2.2-prep/range-D-bbb-SUMMARY.md`](v2.2-prep/range-D-bbb-SUMMARY.md), [`v2.2-prep/probe-D-cachekey-fix-SUMMARY.md`](v2.2-prep/probe-D-cachekey-fix-SUMMARY.md), [`v2.2-prep/probe-A-voyager-v4-SUMMARY.md`](v2.2-prep/probe-A-voyager-v4-SUMMARY.md), [`v2.2-prep/probe-A-prime-vocab-aligned-SUMMARY.md`](v2.2-prep/probe-A-prime-vocab-aligned-SUMMARY.md), [`v2.2-prep/probe-A-prime-range-bbb-SUMMARY.md`](v2.2-prep/probe-A-prime-range-bbb-SUMMARY.md), [`v2.2-prep/probe-B-preamble-rubric-SUMMARY.md`](v2.2-prep/probe-B-preamble-rubric-SUMMARY.md), [`v2.2-prep/probe-C-selfrefine-SUMMARY.md`](v2.2-prep/probe-C-selfrefine-SUMMARY.md)
+- Scope decision: [`v2.2-prep/v2.2-SCOPE-DECISION.md`](v2.2-prep/v2.2-SCOPE-DECISION.md)
+
+---
+
 ## v2.0 — Complete Rule Removal + Cross-Model — Generality First
 
 **Shipped:** 2026-05-31
