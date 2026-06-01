@@ -61,7 +61,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.backend == "claude":
         os.environ["CLAUDE_MODEL"] = args.model
 
-    out_dir = Path("results/v2_2_probes_range_d")
+    out_dir = Path(
+        os.environ.get("RANGE_D_OUT_DIR", "results/v2_2_probes_range_d")
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Lazy import — env must be set first.

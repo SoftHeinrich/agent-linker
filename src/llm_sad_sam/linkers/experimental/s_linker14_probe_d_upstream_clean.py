@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 
@@ -117,14 +118,32 @@ _TABOO_PATTERN = re.compile(
 )
 
 
-CACHE_ROOT = Path("results/v2_2_probes/D_upstream/cache")
+# NOTE (v2.2-RANGE-D-CACHEFIX, 2026-06-01): cache key extended to include
+# (backend, model) so cross-backend probes do not share a rubric.
+# The original Range D Claude test was confounded because Claude reused the
+# gpt-5.4-built rubric (cache key was (text_stem, comp_hash) only). The new
+# CACHE_ROOT is separate from the original one so existing gpt-5.4 rubrics
+# under `results/v2_2_probes/D_upstream/cache/` remain untouched and the
+# Probe D wave's STRONG_PASS provenance is preserved.
+CACHE_ROOT = Path(
+    os.environ.get(
+        "PROBE_D_CACHE_ROOT",
+        "results/v2_2_probes_range_d_cachefix/cache",
+    )
+)
 
 
 class SLinker14ProbeDUpstreamClean(SLinker13CleanV3):
     """Probe D: runtime coref rubric replaces static ``COREF_RULES``.
 
-    Builds the rubric once per (text_stem, comp_hash) and caches it.
-    Reuses the rubric across all coref batches in that dataset.
+    Builds the rubric once per (text_stem, comp_hash, backend, model) and
+    caches it. Reuses the rubric across all coref batches in that
+    (dataset, backend, model) triple.
+
+    v2.2-RANGE-D-CACHEFIX: prior to this change the cache key was
+    (text_stem, comp_hash) only, which caused cross-backend rubric reuse.
+    The Range D Claude test reused gpt-5.4-authored rubrics, confounding
+    the FAIL verdict. The cache key now includes backend+model.
     """
 
     _VARIANT_NAME = "s_linker14_probe_d_upstream_clean"
@@ -132,21 +151,34 @@ class SLinker14ProbeDUpstreamClean(SLinker13CleanV3):
     # ---------------------------------------------------------------
     # Cache machinery
     # ---------------------------------------------------------------
-    def _cache_key(self, components) -> tuple[str, str]:
+    def _cache_key(self, components) -> tuple[str, str, str, str]:
         text_path = self._current_text_path or "unknown"
         text_stem = Path(text_path).stem if text_path else "unknown"
         comp_names = sorted(c.name for c in components)
         comp_hash = hashlib.sha1(
             "\n".join(comp_names).encode("utf-8")
         ).hexdigest()[:12]
-        return text_stem, comp_hash
+        try:
+            backend = self.llm.backend.value if hasattr(self.llm.backend, "value") else str(self.llm.backend)
+        except Exception:
+            backend = "unknown_backend"
+        model = self.llm.get_active_model() or "unknown_model"
+        # Sanitize model string for filename use
+        model_safe = re.sub(r"[^A-Za-z0-9._-]", "_", str(model))
+        backend_safe = re.sub(r"[^A-Za-z0-9._-]", "_", str(backend))
+        return text_stem, comp_hash, backend_safe, model_safe
 
-    def _cache_path(self, text_stem: str, comp_hash: str) -> Path:
+    def _cache_path(self, text_stem: str, comp_hash: str,
+                    backend: str = "", model: str = "") -> Path:
+        # Backward-compat: if called with 2 args, use empty backend/model
+        # (only used by callers that already unpacked the new tuple).
+        if backend or model:
+            return CACHE_ROOT / f"{text_stem}__{comp_hash}__{backend}__{model}.json"
         return CACHE_ROOT / f"{text_stem}__{comp_hash}.json"
 
     def _load_cached_rubric(self, components) -> str | None:
-        text_stem, comp_hash = self._cache_key(components)
-        p = self._cache_path(text_stem, comp_hash)
+        text_stem, comp_hash, backend, model = self._cache_key(components)
+        p = self._cache_path(text_stem, comp_hash, backend, model)
         if not p.exists():
             return None
         try:
@@ -165,13 +197,15 @@ class SLinker14ProbeDUpstreamClean(SLinker13CleanV3):
         return rubric
 
     def _save_cached_rubric(self, components, rubric: str) -> None:
-        text_stem, comp_hash = self._cache_key(components)
-        p = self._cache_path(text_stem, comp_hash)
+        text_stem, comp_hash, backend, model = self._cache_key(components)
+        p = self._cache_path(text_stem, comp_hash, backend, model)
         CACHE_ROOT.mkdir(parents=True, exist_ok=True)
         payload = {
             "variant": self._VARIANT_NAME,
             "text_stem": text_stem,
             "component_hash": comp_hash,
+            "backend": backend,
+            "model": model,
             "rubric": rubric,
         }
         p.write_text(json.dumps(payload, indent=2))
