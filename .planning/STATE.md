@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.4
-milestone_name: Probation Gate Fix + Axiom Improvements + v4 Re-run
-status: active
-stopped_at: Phase 20 code complete — 20-P3 eval pending (gpt-5.4 budget)
-last_updated: "2026-06-01"
-last_activity: 2026-06-01 -- Phase 20 code complete (Gate A/B + axioms + coref code); 20-P3 eval pending
+milestone_name: Phase Summary
+status: Phase 23 confirmation complete — verdict WEAK (90.5% macro). Phase 24 Milestone Close next.
+stopped_at: context limit (2026-06-01)
+last_updated: "2026-06-01T20:00:00.000Z"
+last_activity: 2026-06-01 -- Phase 23 confirmation done; 3 splits (5 passes each, cap hit); cross-split bank 2 patterns; 5-dataset eval=90.5%; verdict=WEAK; REQ-V24-01 FAIL (split-2 0/5 committed, gate works but BBB patterns don't generalize)
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 3
-  completed_plans: 2
-  percent: 13
+  completed_phases: 4
+  total_plans: 6
+  completed_plans: 6
+  percent: 80
 ---
 
 # Project State
@@ -25,14 +25,16 @@ See: .planning/PROJECT.md (updated 2026-06-01 for v2.3 close)
 
 ## Current Position
 
-Phase: 20 — IN PROGRESS (20-P1 + 20-P2 code complete; 20-P3 eval pending).
-Status: 20-P1 (Gate A/B + 4 bug fixes) and 20-P2 (axiom diffs + coref code) committed. 20-P3 eval (5-dataset gpt-5.4 baseline) pending budget authorization.
-Last activity: 2026-06-01 -- Phase 20 code complete (commit 72bab9e); dry-run passes; GATE-02 32/32; GATE-06 clean on axioms
+Phase: 23 — COMPLETE. Phase 24 Milestone Close next (unconditional).
+Status: Phase 23 confirmation ran 2026-06-01 (gpt-5.4, 3 splits × 5 passes each). Cross-split bank: 2 patterns (DOC_KNOWLEDGE_EXTRACTION_RULES + COREF_RULES). 5-dataset eval: 90.5% macro. Verdict: WEAK. REQ-V24-01 FAILED (split-2 0/5 committed — gate correct, BBB patterns don't generalize). Verdict doc at `.planning/phases/23-confirmation-tier/23-CONFIRMATION-VERDICT.md`.
+Last activity: 2026-06-01 -- Phase 23 confirmation complete, verdict WEAK (90.5%), REQ-V24-01 FAIL documented
 
 ```
-[Phase 20 ⬜]──▶[Phase 21 ⬜]──▶[Phase 22 ⬜]──▶[Phase 23 ⬜]──▶[Phase 24]
+[Phase 20 ✅]──▶[Phase 21 ✅]──▶[Phase 22 ✅]──▶[Phase 23 ✅]──▶[Phase 24 ⬜]
   (infra)         (probe)         (range)        (confirm)       (close)
 ```
+
+**Next action**: Phase 24 Milestone Close — audit, requirements close-out, archive, PROJECT.md update.
 
 ## v2.4 Design Decisions (Locked)
 
@@ -53,15 +55,18 @@ All locked in conversation from v2.3 post-mortem (2026-06-01). Full details in `
 ### D-2 + D-3 Fix: Three Axiom Gaps
 
 **Gap 1 — Section-context naming (SCN), 14 FNs in BBB+TM**:
+
 - Correct fix: COREF_RULES extension (not DOC_KNOWLEDGE alias — entity extraction is batch-mode without window context; local aliases filtered at lines 788-791).
 - Requires ~8-line code change in `_coref_cases_in_context`: build `role_ref_pat` from component terminal words; expand `pronoun_sents` → `anaphoric_sents`.
 - COREF_RULES axiom change has zero effect without the code change (SCN sentences contain no pronoun).
 
 **Gap 2 — Responsibility-list FPs, 7 FPs in TM**:
+
 - Axiom only. SEED_DISAMBIGUATION_RULES: add "description of the component's own capabilities without referencing an external participant" to OTHER category.
 - Empirically safe: 0/27 MS gold + 0/23 TS gold sentences start with gerund.
 
 **Gap 3 — Alias coref**:
+
 - One phrase in COREF_RULES: add "or aliased" alongside "named". Code path at line 1017 already checks `antecedent_via_alias`.
 - Combined with Gap 1 into single COREF_RULES semantic reframing.
 
@@ -105,6 +110,7 @@ All locked in conversation from v2.3 post-mortem (2026-06-01). Full details in `
 ### Pending Todos (resolved as v2.4 Phase 20)
 
 3 todos filed during v2.3 — all resolved by Phase 20 plans:
+
 1. `2026-06-01-design-better-axioms-section-context-responsibility.md` → Phase 20-P2
 2. `2026-06-01-redesign-probation-gate-traceability.md` → Phase 20-P1
 3. `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md` → Phase 20-P2
@@ -122,7 +128,7 @@ None. All three v2.3 debts have locked designs ready for implementation.
 
 ## Session Continuity
 
-Last session: 2026-06-01
-Stopped at: v2.3 complete; v2.4 kickoff documents written
-Resume file: `.planning/milestones/v2.4-ROADMAP.md`
+Last session: 2026-06-01T15:09:14.993Z
+Stopped at: context exhaustion at 75% (2026-06-01)
+Resume file: None
 Next action: Phase 20 — 3 independent plans (20-P1 gate, 20-P2 axioms, 20-P3 eval)

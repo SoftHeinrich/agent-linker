@@ -956,13 +956,55 @@ JSON only:"""
                     results[idx] = val is True or (isinstance(val, str) and val.lower() == "true")
         return results
 
+    def _classify_specific_terminals(self, components) -> set[str]:
+        """LLM-driven: which multi-word component terminal words are specific enough for role-ref coref.
+
+        Avoids generic architectural nouns (service, manager, handler...) that match
+        every sentence. Cached per component-list within a linker instance (called once per run).
+        """
+        multi_word = [c for c in components if len(c.name.split()) > 1]
+        if not multi_word:
+            return set()
+        terminal_words = sorted({c.name.split()[-1].lower() for c in multi_word})
+        component_names = [c.name for c in multi_word]
+
+        cache_key = tuple(terminal_words)
+        if not hasattr(self, "_terminal_cache"):
+            self._terminal_cache: dict = {}
+        if cache_key in self._terminal_cache:
+            return self._terminal_cache[cache_key]
+
+        prompt = f"""Architecture components have multi-word names. Identify which terminal words (last word of each name) are SPECIFIC enough to serve as unambiguous role references in technical documentation.
+
+Component names: {component_names}
+Terminal words to evaluate: {terminal_words}
+
+A terminal word is GENERIC if it could refer to any component in any system on its own — such as words that broadly describe a role or architectural tier.
+A terminal word is SPECIFIC if it is distinctive or unusual enough that "the <word>" in a sentence about this system most likely refers to one specific component.
+Also mark a terminal as GENERIC if multiple components in this list share the same terminal word (ambiguous).
+
+Return JSON:
+{{"specific": ["word1", "word2"], "generic": ["word3", "word4"]}}
+JSON only:"""
+
+        data = self.llm.extract_json(self.llm.query(prompt, timeout=60))
+        if not data:
+            print("  [coref] WARNING: terminal classification failed, role refs disabled")
+            self._terminal_cache[cache_key] = set()
+            return set()
+        valid = set(terminal_words)
+        result = {w.lower() for w in data.get("specific", []) if w.lower() in valid}
+        self._terminal_cache[cache_key] = result
+        return result
+
     def _coref_cases_in_context(self, sentences, components, name_to_id, sent_map):
         comp_names = get_comp_names(components)
         all_coref = []
 
         # Build role_ref_pat: matches "the <terminal_word>" for multi-word component names.
-        # Catches SCN sentences ("The server handles X") that contain no pronoun.
-        comp_terminals = {c.name.split()[-1].lower() for c in components if len(c.name.split()) > 1}
+        # Uses LLM-driven specificity check to exclude generic architectural nouns
+        # (e.g. "service", "manager") that would match unrelated sentences.
+        comp_terminals = self._classify_specific_terminals(components)
         role_ref_pat = re.compile(
             r'\bthe (' + '|'.join(re.escape(w) for w in sorted(comp_terminals)) + r')\b',
             re.IGNORECASE

@@ -23,7 +23,7 @@ ITERATION LOOP (per outer pass)
     L_run → O_json → D_proposals → GATE-06 filter → Gate A (FM citation)
                                                    → Gate B (LLM judge)
   commit if any accepted; else no-op
-  convergence_check (committed_macro_F1 >= 0.90 on train OR pass 5 cap)
+  convergence_check (FP+FN plateau: errors not improving vs prior pass, OR pass 5 cap)
 
 DRY-RUN MODE
 ------------
@@ -86,8 +86,6 @@ OUT_ROOT = Path(os.environ.get("VOYAGER4B_OUT_ROOT", "results/voyager_v4_beta"))
 MAINLINE_TRAIN = ["mediastore", "teastore", "teammates"]
 MAINLINE_TEST = ["bigbluebutton", "jabref"]
 MAX_OUTER_PASSES = 5
-CONVERGENCE_THRESHOLD = 0.90
-CHEAP_KILL_THRESHOLD = 0.87
 
 SLOT_NAMES = (
     "AMBIGUITY_FEW_SHOT",
@@ -163,12 +161,18 @@ def _comp_hash(project: str) -> str:
 
 
 def _bank_content_hash(bank: dict) -> str:
-    """Hash of bank slot_patterns content — used as L cache key component.
+    """Hash of bank slot_patterns content + axiom file — L cache key component.
 
-    Ensures L cache invalidates when the bank changes between passes.
+    Includes axiom hash so cache invalidates when prompts_v3_axiom.py changes.
     """
     content = json.dumps(bank.get("slot_patterns", {}), sort_keys=True)
-    return hashlib.md5(content.encode()).hexdigest()[:12]
+    bank_hash = hashlib.md5(content.encode()).hexdigest()[:8]
+    axiom_path = _ROOT / "src" / "llm_sad_sam" / "linkers" / "experimental" / "prompts_v3_axiom.py"
+    try:
+        axiom_hash = hashlib.md5(axiom_path.read_bytes()).hexdigest()[:6]
+    except FileNotFoundError:
+        axiom_hash = "noaxiom"
+    return f"{bank_hash}_{axiom_hash}"
 
 
 def _cache_key(text_path: str, project: str, backend: str, model: str, role: str) -> str:
@@ -656,8 +660,8 @@ def _run_distillator_d(llm: LLMClient, o_jsons: list[dict], bank: dict,
     if not ok:
         print(f"  [D] WARNING: prompt contains taboo tokens {hits!r}")
 
-    # D is called once per outer pass (not per project) — no per-project cache key needed
-    ck = f"d_iter{iter_num}_{backend_str}_{model_str}_{hashlib.md5(prompt[:200].encode()).hexdigest()[:8]}"
+    # Full prompt hash ensures cache invalidates when D_PROMPT template changes
+    ck = f"d_iter{iter_num}_{backend_str}_{model_str}_{hashlib.md5(prompt.encode()).hexdigest()[:12]}"
     cached = _cache_read(ck)
     if cached:
         print(f"  [D cache hit] iter{iter_num}")
@@ -717,37 +721,42 @@ def _filter_proposals(proposals: list[dict]) -> tuple[list[dict], list[dict]]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+def _to_bool(v) -> bool:
+    """Coerce LLM bool output (True, 'true', 'True') to Python bool."""
+    return v is True or v == "true" or v == "True"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Gate A — FM citation check (deterministic, $0)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _gate_a_check(
-    proposals: list[dict], o_jsons: list[dict]
+    proposals: list[dict], o_jsons_map: dict[str, dict]
 ) -> tuple[list[dict], list[dict]]:
     """Gate A: FM citation check (deterministic, $0).
 
-    Each proposal must include addresses_failure_modes (non-empty list of FM IDs
-    that all exist in O's failure_modes output). Rejects immediately on empty list
-    or unknown FM IDs. Replaces the stochastic F1-delta probation gate.
+    Validates each proposal's cited FM IDs against its own project's O output only.
+    Proposals must carry _project tag (set during D collection).
     """
-    valid_fm_ids: set[str] = set()
-    for o in o_jsons:
-        for fm in o.get("failure_modes", []):
-            fm_id = fm.get("id", "")
-            if fm_id:
-                valid_fm_ids.add(fm_id)
-
     accepted = []
     rejected = []
     for p in proposals:
         slot = p.get("slot", "?")
+        project = p.get("_project", "")
+        if not project:
+            print(f"  [Gate A REJECT] slot={slot}: missing _project tag")
+            rejected.append({**p, "gate_a_rejection": "missing _project tag"})
+            continue
         cited = p.get("addresses_failure_modes", [])
         if not isinstance(cited, list) or len(cited) == 0:
             print(f"  [Gate A REJECT] slot={slot}: addresses_failure_modes empty or missing")
             rejected.append({**p, "gate_a_rejection": "addresses_failure_modes empty"})
             continue
+        o = o_jsons_map.get(project, {})
+        valid_fm_ids = {fm.get("id", "") for fm in o.get("failure_modes", []) if fm.get("id")}
         unknown = [fid for fid in cited if fid not in valid_fm_ids]
         if unknown:
-            print(f"  [Gate A REJECT] slot={slot}: unknown FM IDs {unknown!r}")
+            print(f"  [Gate A REJECT] slot={slot}: unknown FM IDs {unknown!r} for project={project}")
             rejected.append({**p, "gate_a_rejection": f"unknown FM IDs: {unknown!r}"})
             continue
         accepted.append(p)
@@ -792,40 +801,35 @@ JSON only:"""
 
 
 def _gate_b_judge(
-    llm, proposals: list[dict], o_jsons: list[dict], dry_run: bool = False
+    llm, proposals: list[dict], o_jsons_map: dict[str, dict], dry_run: bool = False
 ) -> tuple[list[dict], list[dict]]:
     """Gate B: LLM dual-direction semantic judge (~$0.01/pass).
 
     Accept condition: fixes_cited_fm=true AND causes_new_error=false AND confidence in {high, medium}.
+    Uses each proposal's _project to look up FM details from the correct O output only.
     In dry_run or with no LLM: accepts all proposals (structural test only).
     """
     if dry_run or llm is None:
         return proposals, []
 
-    fm_lookup: dict[str, dict] = {}
-    new_errors_all: list[str] = []
-    for o in o_jsons:
-        for fm in o.get("failure_modes", []):
-            fm_id = fm.get("id", "")
-            if fm_id:
-                fm_lookup[fm_id] = fm
-        for err in o.get("newly_introduced_errors", []):
-            if isinstance(err, str):
-                new_errors_all.append(err)
-            elif isinstance(err, dict):
-                new_errors_all.append(err.get("description", str(err)))
-
-    new_errors_text = (
-        "\n".join(f"  - {e}" for e in new_errors_all[:5]) if new_errors_all else "  (none)"
-    )
-
     accepted = []
     rejected = []
     for prop in proposals:
         slot = prop.get("slot", "?")
+        project = prop.get("_project", "")
         rule_text = prop.get("rule_text", "")
         example_block = prop.get("example_block", "")
         cited_ids = prop.get("addresses_failure_modes", [])
+
+        o = o_jsons_map.get(project, {})
+        fm_lookup = {fm.get("id", ""): fm for fm in o.get("failure_modes", []) if fm.get("id")}
+        new_errors_list = [
+            (e if isinstance(e, str) else e.get("description", str(e)))
+            for e in o.get("newly_introduced_errors", [])
+        ]
+        new_errors_text = (
+            "\n".join(f"  - {e}" for e in new_errors_list[:5]) if new_errors_list else "  (none)"
+        )
 
         fm_details_lines = []
         for fid in cited_ids:
@@ -847,13 +851,13 @@ def _gate_b_judge(
             new_errors=new_errors_text,
         )
 
-        verdict = llm.extract_json(llm.query(prompt, timeout=60)) or {}
+        verdict = llm.extract_json(llm.query(prompt, timeout=300)) or {}
         fixes = verdict.get("fixes_cited_fm", False)
         causes = verdict.get("causes_new_error", True)
         confidence = verdict.get("confidence", "low")
         rationale = verdict.get("rationale", "")
 
-        accept = fixes is True and causes is False and confidence in ("high", "medium")
+        accept = _to_bool(fixes) and not _to_bool(causes) and confidence in ("high", "medium")
         if accept:
             print(f"  [Gate B ACCEPT] slot={slot}: {rationale[:80]}")
             accepted.append(prop)
@@ -891,6 +895,7 @@ def _apply_proposals(bank: dict, proposals: list[dict]) -> dict:
             "example_block": prop.get("example_block", ""),
             "why_it_transfers": prop.get("why_it_transfers", ""),
             "abstraction_check_cot": prop.get("abstraction_check_cot", ""),
+            "addresses_failure_modes": prop.get("addresses_failure_modes", []),
         }
         sp[slot].append(entry)
     return bank
@@ -919,6 +924,7 @@ def run_outer_pass(
     backend_str: str,
     model_str: str,
     prior_f1s: dict[str, float],
+    prior_errors: dict[str, int] | None = None,
     dry_run: bool = False,
     split_name: str = "mainline",
 ) -> dict:
@@ -949,11 +955,21 @@ def run_outer_pass(
     macro_f1 = sum(train_f1s.values()) / max(1, len(train_f1s))
     prior_macro = sum(prior_f1s.values()) / max(1, len(prior_f1s)) if prior_f1s else 0.0
     delta = macro_f1 - prior_macro
+
+    train_errors = {p: l_runs[p]["fp_count"] + l_runs[p]["fn_count"] for p in projects}
+    total_errors = sum(train_errors.values())
+    prior_errors = prior_errors or {}
+    prior_total_errors = sum(prior_errors.values()) if prior_errors else None
+    delta_errors = (total_errors - prior_total_errors) if prior_total_errors is not None else None
+
     print(f"\n[L] Train macro F1: {macro_f1:.4f} (delta: {delta:+.4f})")
+    print(f"[L] Total errors (FP+FN): {total_errors}"
+          + (f" (delta: {delta_errors:+d})" if delta_errors is not None else ""))
 
     # Step 2: O — Oracle (text-aware)
     print("\n[O] Running Oracle on all training projects...")
     o_jsons: list[dict] = []
+    o_jsons_map: dict[str, dict] = {}
     for project in projects:
         print(f"\n  [O] project={project}")
         o_json = _run_oracle_o(
@@ -970,6 +986,7 @@ def run_outer_pass(
             dry_run=dry_run,
         )
         o_jsons.append(o_json)
+        o_jsons_map[project] = o_json
         n_fm = len(o_json.get("failure_modes", []))
         print(f"  [O] {project}: {n_fm} failure modes")
         # Save O output
@@ -982,8 +999,8 @@ def run_outer_pass(
     # Ablation (probe pass 1): combined D → 3 slots; per-project D → 5 unique slots.
     print("\n[D] Running Distillator per-project (text-blind, CoT-A)...")
     proposals_raw: list[dict] = []
-    removals: list[dict] = []
-    seen_proposal_titles: set[str] = set()
+    project_removals: dict[str, list[dict]] = {p: [] for p in projects}
+    seen_proposal_keys: set[str] = set()
     d_results: list[dict] = []
     for proj_idx, project in enumerate(projects):
         print(f"\n  [D] project={project}")
@@ -999,23 +1016,26 @@ def run_outer_pass(
         )
         d_results.append(d_result)
         for pat in d_result.get("patterns_proposed", []):
-            key = pat.get("title", str(pat))[:40].lower()
-            if key not in seen_proposal_titles:
-                seen_proposal_titles.add(key)
+            pat = dict(pat)
+            pat["_project"] = project  # tag for Gate A/B project-scoped FM lookup
+            key = (pat.get("slot", "") + pat.get("rule_text", "")[:60]).lower()
+            if key not in seen_proposal_keys:
+                seen_proposal_keys.add(key)
                 proposals_raw.append(pat)
         for rem in d_result.get("patterns_to_remove", []):
             rid = rem.get("pattern_id", str(rem))
-            if all(r.get("pattern_id") != rid for r in removals):
-                removals.append(rem)
+            if all(r.get("pattern_id") != rid for r in project_removals[project]):
+                project_removals[project].append(rem)
         n_proposed = len(d_result.get("patterns_proposed", []))
         n_removals = len(d_result.get("patterns_to_remove", []))
         print(f"  [D] {project}: proposed {n_proposed}, removals {n_removals}")
 
-    print(f"  [D] total unique proposals: {len(proposals_raw)}, total removals: {len(removals)}")
+    total_removals = sum(len(v) for v in project_removals.values())
+    print(f"  [D] total unique proposals: {len(proposals_raw)}, total removals: {total_removals}")
 
     # Save merged D output (all per-project results)
     d_path = split_dir / f"pass{pass_num}_distillator.json"
-    d_path.write_text(json.dumps({"per_project": d_results, "merged_proposals": proposals_raw, "merged_removals": removals}, indent=2))
+    d_path.write_text(json.dumps({"per_project": d_results, "merged_proposals": proposals_raw, "per_project_removals": project_removals}, indent=2))
 
     # Step 4: GATE-06 + reviewer_critic filter
     print("\n[GATE-06] Filtering D proposals...")
@@ -1024,44 +1044,70 @@ def run_outer_pass(
 
     # Step 5b: Gate A — FM citation check (deterministic, $0)
     print("\n[Gate A] FM citation check...")
-    a_accepted, a_rejected = _gate_a_check(accepted, o_jsons)
+    a_accepted, a_rejected = _gate_a_check(accepted, o_jsons_map)
     print(f"  [Gate A] accepted={len(a_accepted)} rejected={len(a_rejected)}")
 
     # Step 5c: Gate B — LLM dual-direction judge (~$0.01/pass)
     print("\n[Gate B] Semantic validity judge...")
-    b_accepted, b_rejected = _gate_b_judge(llm, a_accepted, o_jsons, dry_run=dry_run)
+    b_accepted, b_rejected = _gate_b_judge(llm, a_accepted, o_jsons_map, dry_run=dry_run)
     print(f"  [Gate B] accepted={len(b_accepted)} rejected={len(b_rejected)}")
 
     final_accepted = b_accepted
 
     # Step 6: Commit or no-op (no probation re-run)
-    print(f"\n[Commit] {len(final_accepted)} patterns pass Gate A+B, {len(removals)} removals")
-    if final_accepted or removals:
+    any_removals = any(project_removals[p] for p in projects)
+    print(f"\n[Commit] {len(final_accepted)} patterns pass Gate A+B, {total_removals} removals")
+    did_commit = bool(final_accepted or any_removals)
+    if did_commit:
         committed_banks = {}
         for project in projects:
             cb = _apply_proposals(project_banks[project], final_accepted)
-            cb = _apply_removals(cb, removals)
+            cb = _apply_removals(cb, project_removals[project])
             _save_bank(split_dir, project, cb)
             print(f"  [Commit] bank saved: {project} ({_total_patterns(cb)} patterns)")
             committed_banks[project] = cb
         committed_f1s = train_f1s
-        print(f"  [Commit] COMMITTED {len(final_accepted)} patterns + {len(removals)} removals")
+        print(f"  [Commit] COMMITTED {len(final_accepted)} patterns + {total_removals} removals")
     else:
         print(f"  [Commit] no-op — no patterns passed Gate A+B and no removals")
         committed_banks = project_banks
         committed_f1s = prior_f1s if prior_f1s else train_f1s
 
+    # this_pass_errors: L errors measured this pass with the bank from the *previous* commit.
+    # Convergence fires when: (a) nothing was committed this pass (no-op = plateau), OR
+    # (b) pass >= 2 AND errors not improving AND nothing new to commit.
+    # We do NOT converge when patterns were committed — their effect is unmeasured until next pass.
+    this_pass_errors = train_errors
+    total_this_pass_errors = total_errors
     committed_macro = sum(committed_f1s.values()) / max(1, len(committed_f1s))
+
+    converged = (
+        not did_commit
+        and pass_num >= 2
+        and bool(prior_errors)
+        and total_this_pass_errors >= sum(prior_errors.values())
+    )
 
     summary = {
         "pass": pass_num,
         "split": split_name,
         "projects": projects,
         "dry_run": dry_run,
+        "train_errors_before": prior_errors,
+        "train_errors_after_l": train_errors,
+        "total_errors_l": total_errors,
+        "delta_errors_from_prior": delta_errors,
+        "this_pass_errors": this_pass_errors,
+        "total_this_pass_errors": total_this_pass_errors,
+        # kept as alias for caller compatibility
+        "committed_errors": this_pass_errors,
+        "total_committed_errors": total_this_pass_errors,
         "train_f1s_before": prior_f1s,
         "train_f1s_after_l": train_f1s,
         "macro_f1_l": macro_f1,
-        "delta_from_prior": delta,
+        "delta_f1_from_prior": delta,
+        "committed_f1s": committed_f1s,
+        "committed_macro_f1": committed_macro,
         "proposals_raw": len(proposals_raw),
         "proposals_gate06_accepted": len(accepted),
         "proposals_gate06_rejected": len(rejected),
@@ -1069,18 +1115,17 @@ def run_outer_pass(
         "proposals_gate_a_rejected": len(a_rejected),
         "proposals_gate_b_accepted": len(b_accepted),
         "proposals_gate_b_rejected": len(b_rejected),
-        "removals": len(removals),
-        "committed": bool(final_accepted or removals),
-        "committed_f1s": committed_f1s,
-        "committed_macro_f1": committed_macro,
-        "converged": committed_macro >= CONVERGENCE_THRESHOLD,
+        "removals": total_removals,
+        "committed": bool(final_accepted or any_removals),
+        "converged": converged,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
     summary_path = split_dir / f"pass{pass_num}_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2))
-    print(f"\n[Pass {pass_num}] committed_macro={committed_macro:.4f} converged={summary['converged']} "
-          f"(gate_a={len(a_accepted)}, gate_b={len(b_accepted)}, removals={len(removals)})")
+    print(f"\n[Pass {pass_num}] errors={total_this_pass_errors} macro_f1={committed_macro:.4f} "
+          f"converged={converged} did_commit={did_commit} "
+          f"(gate_a={len(a_accepted)}, gate_b={len(b_accepted)}, removals={total_removals})")
     return summary
 
 
@@ -1099,6 +1144,7 @@ def run_probe(projects: list[str], backend: LLMBackend, model: str | None,
     print(f"\n[PROBE TIER] projects={projects} backend={backend_str} model={model_str} dry_run={dry_run}")
 
     prior_f1s: dict[str, float] = {}
+    prior_errors: dict[str, int] = {}
     pass_summaries = []
 
     for pass_num in range(1, 3):  # 1-2 passes for probe
@@ -1111,26 +1157,22 @@ def run_probe(projects: list[str], backend: LLMBackend, model: str | None,
             backend_str=backend_str,
             model_str=model_str,
             prior_f1s=prior_f1s,
+            prior_errors=prior_errors,
             dry_run=dry_run,
             split_name=split_name,
         )
         pass_summaries.append(summary)
         prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in projects}
-
-        # Cheap-kill gate after pass 2
-        if pass_num == 2:
-            macro = summary["committed_macro_f1"]
-            if macro < CHEAP_KILL_THRESHOLD:
-                print(f"\n[PROBE] CHEAP-KILL: macro F1 {macro:.4f} < {CHEAP_KILL_THRESHOLD} after pass 2")
-                print("[PROBE] v4 KILLED — Phase 18 Compact-B should activate")
-                break
+        prior_errors = {p: summary["committed_errors"].get(p, 0) for p in projects}
 
         if summary.get("converged"):
             print(f"\n[PROBE] Converged at pass {pass_num}")
             break
 
+    final_errors = pass_summaries[-1]["total_committed_errors"]
     final_macro = pass_summaries[-1]["committed_macro_f1"]
-    verdict = "CONTINUE" if final_macro >= CHEAP_KILL_THRESHOLD else "KILL"
+    any_committed = any(s.get("committed") for s in pass_summaries)
+    verdict = "CONTINUE" if any_committed else "MARGINAL"
 
     probe_summary = {
         "tier": "probe",
@@ -1138,8 +1180,8 @@ def run_probe(projects: list[str], backend: LLMBackend, model: str | None,
         "projects": projects,
         "passes_run": len(pass_summaries),
         "final_train_macro_f1": final_macro,
+        "final_total_errors": final_errors,
         "verdict": verdict,
-        "cheap_kill_threshold": CHEAP_KILL_THRESHOLD,
         "pass_summaries": pass_summaries,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
@@ -1159,6 +1201,7 @@ def run_range(projects: list[str], backend: LLMBackend, model: str | None,
     print(f"\n[RANGE TIER] projects={projects} backend={backend_str} model={model_str} dry_run={dry_run}")
 
     prior_f1s: dict[str, float] = {}
+    prior_errors: dict[str, int] = {}
     pass_summaries = []
 
     for pass_num in range(1, MAX_OUTER_PASSES + 1):
@@ -1171,16 +1214,20 @@ def run_range(projects: list[str], backend: LLMBackend, model: str | None,
             backend_str=backend_str,
             model_str=model_str,
             prior_f1s=prior_f1s,
+            prior_errors=prior_errors,
             dry_run=dry_run,
             split_name=split_name,
         )
         pass_summaries.append(summary)
         prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in projects}
+        prior_errors = {p: summary["committed_errors"].get(p, 0) for p in projects}
 
         if summary.get("converged"):
-            print(f"\n[RANGE] Converged at pass {pass_num} (macro={summary['committed_macro_f1']:.4f})")
+            print(f"\n[RANGE] Converged at pass {pass_num} "
+                  f"(errors={summary['total_committed_errors']}, macro={summary['committed_macro_f1']:.4f})")
             break
 
+    final_errors = pass_summaries[-1]["total_committed_errors"]
     final_macro = pass_summaries[-1]["committed_macro_f1"]
 
     range_summary = {
@@ -1189,13 +1236,13 @@ def run_range(projects: list[str], backend: LLMBackend, model: str | None,
         "projects": projects,
         "passes_run": len(pass_summaries),
         "final_train_macro_f1": final_macro,
+        "final_total_errors": final_errors,
         "converged": pass_summaries[-1].get("converged", False),
-        "convergence_threshold": CONVERGENCE_THRESHOLD,
         "pass_summaries": pass_summaries,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
     (split_dir / "range_summary.json").write_text(json.dumps(range_summary, indent=2))
-    print(f"\n[RANGE] final_macro={final_macro:.4f} converged={range_summary['converged']}")
+    print(f"\n[RANGE] errors={final_errors} final_macro={final_macro:.4f} converged={range_summary['converged']}")
     return range_summary
 
 
