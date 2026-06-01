@@ -332,8 +332,11 @@ FALSE POSITIVES (abstract component IDs, NOT real names):
 FALSE NEGATIVES (abstract component IDs, NOT real names):
 {fn_abstract}
 
-SAMPLE SENTENCES (context around FN cases, with +-1 sentence window):
+SAMPLE SENTENCES — FALSE NEGATIVES (context around FN cases, with +-1 sentence window):
 {fn_context_sample}
+
+SAMPLE SENTENCES — FALSE POSITIVES (context around FP cases, with +-1 sentence window):
+{fp_context_sample}
 
 CURRENT BANK STATE (per-slot pattern counts):
 {bank_summary}
@@ -435,7 +438,7 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
         f"  (S{s}, {id_to_abstract.get(c, 'comp_?')})" for s, c in fns[:20]
     ) or "  (none)"
 
-    # Build sentence context sample for FN cases (abstract, no component names)
+    # Build sentence context for FN cases (abstract, no component names)
     fn_context_lines = []
     for s_num, c_id in fns[:10]:
         s = sent_map.get(s_num)
@@ -446,6 +449,22 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
                 ctx = f"  S{s_num-1}: {prev.text[:80]}\n" + ctx
             fn_context_lines.append(f"FN case ({id_to_abstract.get(c_id, 'comp_?')}):\n{ctx}")
     fn_context_sample = "\n".join(fn_context_lines[:5]) or "  (no FN context available)"
+
+    # Build sentence context for FP cases — without FP text the Oracle can't identify
+    # "effect-only sentence" or "algorithm-description" patterns from FPs.
+    fp_context_lines = []
+    for s_num, c_id in fps[:10]:
+        s = sent_map.get(s_num)
+        prev = sent_map.get(s_num - 1)
+        nxt = sent_map.get(s_num + 1)
+        if s:
+            ctx = f"  S{s_num}: {s.text}"
+            if prev:
+                ctx = f"  S{s_num-1}: {prev.text[:80]}\n" + ctx
+            if nxt:
+                ctx += f"\n  S{s_num+1}: {nxt.text[:80]}"
+            fp_context_lines.append(f"FP case ({id_to_abstract.get(c_id, 'comp_?')}):\n{ctx}")
+    fp_context_sample = "\n".join(fp_context_lines[:5]) or "  (no FP context available)"
 
     bank_summary = "\n".join(
         f"  {slot}: {len(pats)} patterns"
@@ -468,6 +487,7 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
         fp_abstract=fp_abstract,
         fn_abstract=fn_abstract,
         fn_context_sample=fn_context_sample,
+        fp_context_sample=fp_context_sample,
         bank_summary=bank_summary,
         slot_list=slot_list,
         project_id_quoted=f'"{project}"',
