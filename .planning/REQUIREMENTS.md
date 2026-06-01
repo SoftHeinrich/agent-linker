@@ -12,7 +12,7 @@
 ### TRAIN — Multi-Role Training Harness
 
 - [ ] **REQ-V23-01** — v4 β training harness produces a trained per-slot JSON bank from gpt-5.4 outer-loop training. Anchor on `scripts/voyager_train_tlr_v4_a_prime.py` (do NOT re-derive vocab-aligned R3); refactor outer loop to β role structure (L + O + D + P). Mainline split: train MS+TS+TM, test BBB+JAB.
-- [ ] **REQ-V23-02** — `s_linker14_voyager.py` consumes trained bank via Voyager-mode runtime injection. Extends or clones `s_linker13_skill_learned_clean` pattern: axiom prompts (`prompts_v3_axiom.py`) wrapped at linker init with `LEARNED PATTERNS` header + per-slot bullet list of rule_text + example_block. Registered in `CANONICAL_VARIANTS` with `experimental=True` tag.
+- [ ] **REQ-V23-02** — `s_linker14_voyager.py` consumes trained bank via Voyager-mode runtime injection. **Standalone implementation** — does NOT inherit from `s_linker13`, `s_linker13_clean`, or `s_linker13_clean_v3`, and does NOT import `prompts_v2`. Copies the pipeline logic verbatim (per the standing user preference for standalone linker files over inheritance chains) and imports `prompts_v3_axiom` directly. At linker init, axiom prompts are wrapped with `LEARNED PATTERNS` header + per-slot bullet list of rule_text + example_block from the trained bank. Registered in `CANONICAL_VARIANTS` with `experimental=True` tag. Rationale: the existing `s_linker13_skill_learned_clean.py` inherits `SLinker13Clean` which imports `prompts_v2`, then shadows the constants at runtime — operationally invisible but architecturally inelegant. v2.3's experimental artifact must not perpetuate that drag-forward.
 - [ ] **REQ-V23-03** — Training loop = L (linker, ~7 LLM calls/project) + O (text-aware Oracle, 1 LLM call/project) + D (text-blind Distillator with CoT-A inline, 1 LLM call/iter) + P (mechanical probation gate, 0 LLM cost). Per-iter delta-from-prior-iter tracked.
 - [ ] **REQ-V23-04** — Oracle output schema = failure-mode-centric JSON. Top-level fields: `iter`, `split`, `L_predictions_summary` (macro_F1 + delta + per_dataset), `failure_modes[]` (with `id`, `title`, `affected_slot`, `symptom`, `apparent_cause`, `suggested_direction`, `evidence_count`, `abstract_example_pair`), `newly_introduced_errors[]` (with `introduced_by_bank_pattern` attribution). Full schema in `.planning/v2.3-prep/v2.3-ARCHITECTURE.md`.
 
@@ -96,3 +96,28 @@
 | Link provenance data structure | Carried from v2.1; not v2.3-scope |
 | EXT-04 emit-biased boundary prompting | Carried from v2.0; not v2.3-scope |
 | (C) Hybrid runtime + static per-slot | Ruled out by slot-asymmetry-is-ugly principle |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| REQ-V23-01 | Phase 14 | Pending |
+| REQ-V23-02 | Phase 14 | Pending |
+| REQ-V23-03 | Phase 14 | Pending |
+| REQ-V23-04 | Phase 14 | Pending |
+| REQ-V23-05 | Phase 16 + Phase 19 | Pending |
+| REQ-V23-06 | Phase 17 | Pending |
+| REQ-V23-07 | Phase 15 + Phase 16 + Phase 17 | Pending |
+| REQ-V23-08 | Phase 17 (pass) + Phase 18 (fail) | Pending |
+| REQ-V23-09 | Phase 14 | Pending |
+| REQ-V23-10 | Phase 14 | Pending |
+| REQ-V23-11 | Phase 14 | Pending |
+| REQ-V23-12 | Phase 14 | Pending |
+| REQ-V23-13 | Phase 15 + Phase 16 | Pending |
+| REQ-V23-14 | Phase 15 + Phase 16 + Phase 17 + Phase 18 | Pending |
+| REQ-V23-15 | Phase 16 | Pending |
+| GATE-01 | Phase 14 + Phase 17 + Phase 18 + Phase 19 | Pending |
+| GATE-02 | Phase 14 | Pending |
+| GATE-06 | Phase 14 + Phase 15 + Phase 16 + Phase 17 | Pending |
+| GATE-07 | Phase 14 + Phase 17 | Pending |
+| GATE-08 | Phase 17 + Phase 19 | Pending |
