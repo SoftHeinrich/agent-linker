@@ -414,8 +414,8 @@ VARIANT_SPECS = {
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker13_min",
         class_name="SLinker13Min",
-        description="S-Linker13 Min — Phase 13 Plan 13-01: composed promotion candidate (trim1 distilled DOC_KNOWLEDGE_JUDGE_RULES + trim9 runtime SEED_DISAMBIGUATION_RULES rubric builder); no static fallback for trim9. canonical=False until sweep promotion.",
-        canonical=False,
+        description="S-Linker13 Min — Phase 13 Plan 13-01 PROMOTED: composed canonical of trim1 (distilled DOC_KNOWLEDGE_JUDGE_RULES) + trim9 (runtime SEED_DISAMBIGUATION_RULES rubric builder). Claude macro 0.9506 (+1.09pp vs s_linker13_clean baseline); gpt-5.4 macro 0.9069 (≥0.8977 floor). No static fallback for trim9.",
+        canonical=True,
     ),
     "s_linker13_skill_learned_clean": dict(
         aliases=(),
