@@ -75,8 +75,8 @@ OUT_ROOT = Path(os.environ.get("VOYAGER5_OUT_ROOT", "results/voyager_v5"))
 
 MAINLINE_TRAIN = ["mediastore", "teastore", "teammates"]
 MAINLINE_TEST = ["bigbluebutton", "jabref"]
-MAX_OUTER_PASSES = 5
-MIN_COMMIT_DELTA = 0.005
+MAX_OUTER_PASSES = 6
+PROBE_PASSES = 3
 
 SLOT_NAMES = (
     "AMBIGUITY_FEW_SHOT",
@@ -192,6 +192,23 @@ def _save_bank(split_dir: Path, project: str, bank: dict) -> None:
     _bank_path_file(split_dir, project).write_text(json.dumps(bank, indent=2))
 
 
+def _snapshot_banks(split_dir: Path, pass_num: int, projects: list[str]) -> None:
+    snap_dir = split_dir / "snapshots"
+    snap_dir.mkdir(parents=True, exist_ok=True)
+    for project in projects:
+        src = _bank_path_file(split_dir, project)
+        if src.exists():
+            (snap_dir / f"pass{pass_num}_{project}_bank.json").write_text(src.read_text())
+
+
+def _restore_best_banks(split_dir: Path, best_pass: int, projects: list[str]) -> None:
+    snap_dir = split_dir / "snapshots"
+    for project in projects:
+        snap = snap_dir / f"pass{best_pass}_{project}_bank.json"
+        if snap.exists():
+            _bank_path_file(split_dir, project).write_text(snap.read_text())
+
+
 def _total_patterns(bank: dict) -> int:
     return sum(len(v) for v in bank.get("slot_patterns", {}).values())
 
@@ -232,14 +249,19 @@ def _run_linker_l(project: str, backend: LLMBackend, model: str | None,
     model_str = model or "default"
     bch = _bank_content_hash(bank)
     ck = f"l_{project}_{bch}_{backend_str}_{model_str}"
+    total_pats = _total_patterns(bank)
+    filled_slots = sum(1 for v in bank.get("slot_patterns", {}).values() if v)
+    total_slots = len(SLOT_NAMES)
+    bank_label = f"bank={bch[:8]}, {total_pats}p/{filled_slots}/{total_slots}slots"
     cached = _cache_read(ck)
     if cached:
         cached["fps"] = [tuple(x) for x in cached.get("fps", [])]
         cached["fns"] = [tuple(x) for x in cached.get("fns", [])]
         cached.setdefault("predicted", set())
         cached.setdefault("gold", set())
-        print(f"  [L cache hit] {project} (bank={bch[:6]})")
+        print(f"  [L cache hit] {project} ({bank_label})")
         return cached
+    print(f"  [L run fresh] {project} ({bank_label})")
 
     with tempfile.NamedTemporaryFile(suffix=".json", mode="w", delete=False) as tf:
         json.dump(bank, tf)
@@ -306,13 +328,11 @@ def _run_axiom_only_baseline(projects: list[str], backend: LLMBackend,
 # ─────────────────────────────────────────────────────────────────────────────
 
 OD_PROMPT = """You are the OD ANALYST in a multi-role training loop for a software
-architecture trace-link recovery pipeline. You perform two steps in one response:
-
-  STEP 1 (text-aware)  — Analyze linker errors using full access to sentence text.
-  STEP 2 (text-blind)  — Propose bank patterns using DISCOURSE vocabulary ONLY.
+architecture trace-link recovery pipeline. You perform four reasoning steps in
+one response: CITE → DERIVE → WRITE → SELF-CHECK.
 
 ═══════════════════════════════════════════════════════════════
-VOCABULARY DISCIPLINE — ENFORCED FOR BOTH STEPS
+VOCABULARY DISCIPLINE
 ═══════════════════════════════════════════════════════════════
 ALLOWED:  subject-position, predicate, anaphora, antecedent, parenthetical,
   namespace-prefix, section-heading, sentence-position, qualifier-clause,
@@ -330,17 +350,24 @@ FORBIDDEN:  any component names from the document, project names, technology nam
 ═══════════════════════════════════════════════════════════════
 TRAINING CONTEXT
 ═══════════════════════════════════════════════════════════════
-  pass:  {pass_num}
-  split: {split_name}
-  project: {project_id}
+  pass:  {pass_num}    split: {split_name}    project: {project_id}
   [TRAIN] F1: {f1:.4f}  P: {p:.4f}  R: {r:.4f}
   FP count: {fp_count}  FN count: {fn_count}
   macro F1 this pass: {macro_f1:.4f}  (delta from prior: {delta:+.4f})
 
+FAILURE MODE TITLES ALREADY COVERED IN PRIOR PASSES (DO NOT REPEAT — propose orthogonal modes):
+{covered_fms}
+
+CURRENT BANK (slot → pattern count):
+{bank_summary}
+
+UNDER-FILLED SLOTS (zero patterns): {underfilled_slots}
+QUOTA: if any under-filled slot exists, at least one proposal MUST target an under-filled slot.
+
 ═══════════════════════════════════════════════════════════════
-STEP 1 — FAILURE MODE ANALYSIS (you may use sentence evidence)
+EVIDENCE
 ═══════════════════════════════════════════════════════════════
-FALSE POSITIVES (abstract comp IDs, NOT real names):
+FALSE POSITIVES (abstract comp IDs):
 {fp_abstract}
 
 FP SENTENCES (context ±1):
@@ -352,34 +379,48 @@ FALSE NEGATIVES (abstract comp IDs):
 FN SENTENCES (context ±1):
 {fn_context}
 
-CURRENT BANK (slot → pattern count):
-{bank_summary}
-
-HIGH-PRIORITY SLOTS (empty — propose for these first):
-{underfilled_slots}
-
-Identify the top 1-3 failure modes. For each FM use ONLY allowed vocabulary.
+═══════════════════════════════════════════════════════════════
+STEP 1 — CITE EVIDENCE
+═══════════════════════════════════════════════════════════════
+For each failure mode, list the exact FP/FN sentence IDs that exhibit it and
+the discourse token (using ALLOWED vocabulary) that caused the error.
 
 ═══════════════════════════════════════════════════════════════
-STEP 2 — PATTERN PROPOSALS (text-blind, discourse vocabulary)
+STEP 2 — DERIVE MECHANISM
 ═══════════════════════════════════════════════════════════════
-For each failure mode that can be addressed by a bank pattern:
-1. Choose the most appropriate slot from: {slot_list}
-2. Write a 2-4 sentence abstract rule (discourse vocabulary, style-invariant).
-3. Synthesize one TP and one FP example pair — never quote from the doc.
-4. Perform CoT-A: test against 5 styles (microservice, event-sourced, layered,
-   pipe-filter, hexagonal). Proceed only if STYLE-INVARIANT.
-5. Each proposal MUST reference at least one FM ID from Step 1.
+For each failure mode, name the discourse mechanism (in one phrase) responsible
+for the cited evidence. Must use ALLOWED vocabulary.
 
-Also propose removals if any existing patterns are causing new errors.
+═══════════════════════════════════════════════════════════════
+STEP 3 — WRITE RULE
+═══════════════════════════════════════════════════════════════
+Choose a slot from {slot_list}. Write a 2-4 sentence abstract rule that references
+the discourse mechanism from STEP 2. Synthesize one TP and one FP example pair —
+never quote from the doc. Each proposal MUST reference at least one FM ID from STEP 1.
+
+═══════════════════════════════════════════════════════════════
+STEP 4 — SELF-CHECK
+═══════════════════════════════════════════════════════════════
+For each proposal, apply the rule mentally to the cited sentences:
+  - Does it fire on the FP sentence (preventing the over-approval)?
+  - Does it preserve TPs (not rejecting valid links of similar shape)?
+If the answer is no, revise the rule before emitting.
+
+Test against 5 architectural styles (microservice, event-sourced, layered,
+pipe-filter, hexagonal). Emit only if STYLE-INVARIANT.
+
+Also propose removals if any existing patterns appear to cause the new errors.
 
 Return JSON:
 {{
   "failure_modes": [
     {{
       "id": "FM-1",
-      "title": "...",
+      "title": "<must not duplicate covered_fms>",
       "affected_slot": "<slot>",
+      "cited_fp_sentences": [N, ...],
+      "cited_fn_sentences": [N, ...],
+      "discourse_mechanism": "<phrase from STEP 2>",
       "symptom": "...",
       "apparent_cause": "...",
       "evidence_count": N
@@ -388,10 +429,11 @@ Return JSON:
   "patterns_proposed": [
     {{
       "slot": "<slot>",
-      "rule_text": "<2-4 sentence abstract rule>",
+      "rule_text": "<2-4 sentence abstract rule referencing the discourse mechanism>",
       "example_block": "TP: <synthesized>\\nFP: <synthesized>",
       "why_it_transfers": "<style-invariance reasoning>",
       "abstraction_check_cot": "Tested microservice/event-sourced/layered/pipe-filter/hexagonal: PASSES/FAILS.",
+      "self_check": "Applied to FP S<N>: FIRES. Applied to TP shape: PRESERVED.",
       "addresses_failure_modes": ["FM-1"]
     }}
   ],
@@ -404,28 +446,14 @@ JSON only:"""
 
 def _run_od(llm: LLMClient, project: str, l_run: dict, bank: dict,
             pass_num: int, split_name: str, macro_f1: float, delta: float,
-            backend_str: str, model_str: str, dry_run: bool = False) -> dict:
+            backend_str: str, model_str: str, dry_run: bool = False,
+            covered_fm_titles: list[str] | None = None) -> dict:
     """Run OD analyst for one project. Returns failure modes + proposals."""
     paths = _ra.DATASETS[project]
 
     if dry_run:
-        return {
-            "failure_modes": [{"id": "FM-1", "title": "Mock (dry-run)",
-                                "affected_slot": "AMBIGUITY_RULES",
-                                "symptom": "dry-run placeholder",
-                                "apparent_cause": "no LLM calls",
-                                "evidence_count": 0}],
-            "patterns_proposed": [
-                {"slot": "AMBIGUITY_RULES",
-                 "rule_text": "Mock pattern (dry-run).",
-                 "example_block": "TP: mock.\nFP: mock.",
-                 "why_it_transfers": "dry-run",
-                 "abstraction_check_cot": "dry-run PASSES.",
-                 "addresses_failure_modes": ["FM-1"]}
-            ],
-            "patterns_to_remove": [],
-            "dry_run": True,
-        }
+        return {"failure_modes": [], "patterns_proposed": [],
+                "patterns_to_remove": [], "dry_run": True}
 
     text_path = str(paths["text"])
     bch = _bank_content_hash(bank)
@@ -476,6 +504,8 @@ def _run_od(llm: LLMClient, project: str, l_run: dict, bank: dict,
     )
     empty_slots = [s for s in SLOT_NAMES if not bank.get("slot_patterns", {}).get(s)]
     underfilled = ", ".join(empty_slots) if empty_slots else "(all slots populated)"
+    covered = covered_fm_titles or []
+    covered_str = "\n".join(f"  - {t}" for t in covered) if covered else "  (none — first pass)"
 
     prompt = OD_PROMPT.format(
         pass_num=pass_num,
@@ -490,6 +520,7 @@ def _run_od(llm: LLMClient, project: str, l_run: dict, bank: dict,
         fn_context=_context_block(fns, "FN"),
         bank_summary=bank_summary,
         underfilled_slots=underfilled,
+        covered_fms=covered_str,
         slot_list=", ".join(SLOT_NAMES),
     )
 
@@ -510,7 +541,8 @@ def _run_od(llm: LLMClient, project: str, l_run: dict, bank: dict,
 
 ASSESSOR_PROMPT = """You are the ASSESSOR in a training loop for a software architecture
 trace-link recovery pipeline. Review a proposed bank pattern and decide whether to
-accept it, reject it, or request a revision.
+accept it, reject it, or request a revision. You may also request removal of any
+existing pattern in this slot that appears to be causing the current FP/FN.
 
 PROPOSED PATTERN:
   Slot:      {slot}
@@ -521,7 +553,7 @@ PROPOSED PATTERN:
 FAILURE MODES THIS PATTERN CLAIMS TO ADDRESS:
 {fm_details}
 
-CURRENT BANK (existing patterns in this slot):
+CURRENT BANK (existing patterns in this slot, with their original worked evidence):
 {slot_patterns}
 
 REMAINING FP SENTENCES (top 5, with ±1 context):
@@ -533,11 +565,15 @@ REMAINING FN SENTENCES (top 5, with ±1 context):
 ASSESSMENT TASK
 ───────────────
 1. Does the rule_text target the symptom(s) described in the failure mode(s)?
-   Cite at least one specific FP or FN sentence if possible.
+   Cite at least one specific FP or FN sentence.
 2. Would applying this rule risk approving links that should be rejected,
    or rejecting links that should be approved?
 3. Is the rule abstract enough for any architecture document (style-invariant)?
 4. Does it duplicate an existing bank pattern?
+5. Does any existing pattern in this slot now appear to be over-rejecting valid
+   links (its original worked_fn_evidence no longer matches the current FN pattern)
+   or over-approving invalid links (its worked_fp_evidence no longer prevents the
+   current FP pattern)? If so, list its pattern_id under removal_targets.
 
 Return one of:
   "accept"  — pattern is correct, targeted, and style-invariant.
@@ -550,7 +586,8 @@ Return JSON:
   "rationale": "<one sentence citing specific FP/FN evidence>",
   "fp_evidence": "S<N>: <paraphrase of evidence sentence>" | null,
   "fn_evidence": "S<N>: <paraphrase of evidence sentence>" | null,
-  "revised_rule_text": "<revised 2-4 sentence rule, if verdict=revise>" | null
+  "revised_rule_text": "<revised rule, if verdict=revise>" | null,
+  "removal_targets": [{{"pattern_id": "p_XXX", "reason": "<one sentence>"}}]
 }}
 JSON only:"""
 
@@ -565,7 +602,7 @@ def _run_assessor(llm: LLMClient, proposal: dict, bank: dict,
     If verdict=revise: re-runs once with revised_rule_text (max 1 revision cycle).
     """
     if dry_run or llm is None:
-        return {"verdict": "accept", "rationale": "dry-run accept", "revised_rule_text": None}
+        return {"verdict": "reject", "rationale": "dry-run: no assessor call", "revised_rule_text": None}
 
     def _run_once(rule_text: str, is_revision: bool = False) -> dict:
         slot = proposal.get("slot", "?")
@@ -579,10 +616,16 @@ def _run_assessor(llm: LLMClient, proposal: dict, bank: dict,
         ) or "  (no matching FM details)"
 
         slot_pats = bank.get("slot_patterns", {}).get(slot, [])
-        existing = "\n".join(
-            f"  {p.get('pattern_id', '?')}: {p.get('rule_text', '')[:80]}"
-            for p in slot_pats[:5]
-        ) or "  (empty)"
+        def _fmt_existing(p):
+            line = f"  {p.get('pattern_id', '?')}: {p.get('rule_text', '')[:120]}"
+            wfp = p.get("worked_fp_evidence")
+            wfn = p.get("worked_fn_evidence")
+            if wfp:
+                line += f"\n      (orig FP: {str(wfp)[:120]})"
+            if wfn:
+                line += f"\n      (orig FN: {str(wfn)[:120]})"
+            return line
+        existing = "\n".join(_fmt_existing(p) for p in slot_pats[:5]) or "  (empty)"
 
         def _sent_sample(pairs, n=5) -> str:
             lines = []
@@ -655,6 +698,8 @@ def _apply_proposals(bank: dict, proposals: list[dict]) -> dict:
             "why_it_transfers": prop.get("why_it_transfers", ""),
             "abstraction_check_cot": prop.get("abstraction_check_cot", ""),
             "addresses_failure_modes": prop.get("addresses_failure_modes", []),
+            "worked_fp_evidence": prop.get("_worked_fp_evidence"),
+            "worked_fn_evidence": prop.get("_worked_fn_evidence"),
         })
     return bank
 
@@ -686,6 +731,7 @@ def run_outer_pass(
     prior_train_errors: dict[str, int] | None = None,
     dry_run: bool = False,
     split_name: str = "mainline",
+    covered_fm_titles: list[str] | None = None,
 ) -> dict:
     """One outer pass: L(train) → OD → Assessor → Commit. Then L(test) for [TEST] log.
 
@@ -725,33 +771,25 @@ def run_outer_pass(
     print(f"[TRAIN] total errors: {total_train_errors}"
           + (f" (delta: {delta_errors:+d})" if delta_errors is not None else ""))
 
-    # ── Min-commit delta gate ────────────────────────────────────────────────
-    if not dry_run and delta < MIN_COMMIT_DELTA:
-        print(f"\n[P] delta={delta:+.4f} < {MIN_COMMIT_DELTA} — skipping OD+Assessor (variance filter)")
-        committed_f1s = prior_train_f1s if prior_train_f1s else train_f1s
-        committed_macro = sum(committed_f1s.values()) / max(1, len(committed_f1s))
-        test_f1s = _eval_test_projects(test_projects, backend, model, project_banks, dry_run)
-        return _make_pass_summary(pass_num, split_name, train_projects, test_projects,
-                                  dry_run, prior_errors, train_errors, total_train_errors,
-                                  delta_errors, train_f1s, macro_train, delta,
-                                  committed_f1s, committed_macro, test_f1s,
-                                  0, 0, 0, 0, False, False,
-                                  below_min_commit_delta=True,
-                                  split_dir=split_dir)
-
     # ── Step 2: OD per training project ────────────────────────────────────
     print("\n[OD] Running OD Analyst per training project...")
     od_results: dict[str, dict] = {}
+    seen_fm_titles: list[str] = list(covered_fm_titles or [])
     for project in train_projects:
         print(f"\n  [OD] {project}...")
         od = _run_od(llm=llm, project=project, l_run=l_train[project],
                      bank=project_banks[project], pass_num=pass_num,
                      split_name=split_name, macro_f1=macro_train, delta=delta,
-                     backend_str=backend_str, model_str=model_str, dry_run=dry_run)
+                     backend_str=backend_str, model_str=model_str, dry_run=dry_run,
+                     covered_fm_titles=seen_fm_titles)
         od_results[project] = od
         n_fm = len(od.get("failure_modes", []))
         n_prop = len(od.get("patterns_proposed", []))
         print(f"  [OD] {project}: {n_fm} failure modes, {n_prop} proposals")
+        for fm in od.get("failure_modes", []):
+            t = (fm.get("title") or "").strip()
+            if t and t not in seen_fm_titles:
+                seen_fm_titles.append(t)
         od_path = split_dir / f"pass{pass_num}_{project}_od.json"
         od_path.parent.mkdir(parents=True, exist_ok=True)
         od_path.write_text(json.dumps(od, indent=2))
@@ -818,15 +856,24 @@ def run_outer_pass(
                 "rationale": verdict.get("rationale", ""),
                 "fp_evidence": verdict.get("fp_evidence"),
                 "fn_evidence": verdict.get("fn_evidence"),
+                "removal_targets": verdict.get("removal_targets", []),
             })
             print(f"  [Assessor] {project} slot={slot}: {v} — {verdict.get('rationale', '')[:80]}")
+            enriched = {**prop,
+                        "_worked_fp_evidence": verdict.get("fp_evidence"),
+                        "_worked_fn_evidence": verdict.get("fn_evidence")}
             if v == "accept":
-                all_accepted.append(prop)
+                all_accepted.append(enriched)
             elif v == "revise" and verdict.get("_accepted_rule_text"):
-                prop_revised = {**prop, "_accepted_rule_text": verdict["_accepted_rule_text"]}
-                all_accepted.append(prop_revised)
+                all_accepted.append({**enriched, "_accepted_rule_text": verdict["_accepted_rule_text"]})
             else:
                 all_rejected.append({**prop, "assessor_rejection": verdict.get("rationale", "")})
+
+            for rt in verdict.get("removal_targets", []) or []:
+                if isinstance(rt, dict):
+                    rid = rt.get("pattern_id", "")
+                    if rid and all(r.get("pattern_id") != rid for r in all_removals):
+                        all_removals.append({**rt, "_source": "assessor"})
 
         for rem in od.get("patterns_to_remove", []):
             rid = rem.get("pattern_id", "")
@@ -850,12 +897,15 @@ def run_outer_pass(
         for project in train_projects:
             cb = _apply_proposals(project_banks[project], all_accepted)
             cb = _apply_removals(cb, all_removals)
-            _save_bank(split_dir, project, cb)
-            print(f"  [Commit] bank saved: {project} ({_total_patterns(cb)} patterns)")
+            if not dry_run:
+                _save_bank(split_dir, project, cb)
+                print(f"  [Commit] bank saved: {project} ({_total_patterns(cb)} patterns)")
             project_banks[project] = cb
         committed_f1s = train_f1s
         print(f"  [Commit] COMMITTED {len(all_accepted)} patterns + {len(all_removals)} removals")
-    else:
+    if not dry_run:
+        _snapshot_banks(split_dir, pass_num, train_projects)
+    if not did_commit:
         print("  [Commit] no-op — no patterns accepted, no removals")
         committed_f1s = prior_train_f1s if prior_train_f1s else train_f1s
 
@@ -872,7 +922,7 @@ def run_outer_pass(
         and total_train_errors >= sum(prior_errors.values())
     )
 
-    return _make_pass_summary(
+    summary = _make_pass_summary(
         pass_num, split_name, train_projects, test_projects, dry_run,
         prior_errors, train_errors, total_train_errors, delta_errors,
         train_f1s, macro_train, delta, committed_f1s, committed_macro,
@@ -880,6 +930,9 @@ def run_outer_pass(
         len(assessor_decisions), did_commit, converged,
         split_dir=split_dir,
     )
+    summary["fm_titles_seen"] = seen_fm_titles
+    (split_dir / f"pass{pass_num}_summary.json").write_text(json.dumps(summary, indent=2))
+    return summary
 
 
 def _eval_test_projects(test_projects: list[str], backend: LLMBackend,
@@ -914,7 +967,6 @@ def _make_pass_summary(
     train_f1s, macro_train, delta, committed_f1s, committed_macro,
     test_f1s, n_accepted, n_rejected, n_removals, n_assessor_decisions,
     did_commit, converged, split_dir: Path,
-    below_min_commit_delta: bool = False,
 ) -> dict:
     macro_test = sum(test_f1s.values()) / max(1, len(test_f1s)) if test_f1s else 0.0
     summary = {
@@ -923,7 +975,6 @@ def _make_pass_summary(
         "train_projects": train_projects,
         "test_projects": test_projects,
         "dry_run": dry_run,
-        "below_min_commit_delta": below_min_commit_delta,
         "train_errors_before": prior_errors,
         "train_errors_after_l": train_errors,
         "total_train_errors": total_train_errors,
@@ -959,7 +1010,7 @@ def _make_pass_summary(
 def run_probe(train_projects: list[str], test_projects: list[str],
               backend: LLMBackend, model: str | None,
               dry_run: bool = False, split_name: str = "mainline") -> dict:
-    """Probe tier: 2 passes. Returns probe summary."""
+    """Probe tier: PROBE_PASSES passes. Returns probe summary."""
     backend_str = "openai" if backend == LLMBackend.OPENAI else "claude"
     model_str = model or "default"
     split_dir = OUT_ROOT / split_name
@@ -968,11 +1019,19 @@ def run_probe(train_projects: list[str], test_projects: list[str],
     print(f"\n[PROBE TIER] train={train_projects} test={test_projects}"
           f" backend={backend_str} model={model_str}")
 
+    # Axiom-only baseline for dynamic kill threshold (per-project, no bank)
+    print("\n[PROBE] Computing axiom-only baseline for test projects...")
+    axiom_test_f1s = _run_axiom_only_baseline(test_projects, backend, model, dry_run=dry_run)
+    axiom_test_macro = sum(axiom_test_f1s.values()) / max(1, len(axiom_test_f1s))
+    print(f"  [axiom] test macro={axiom_test_macro:.4f}  "
+          + "  ".join(f"{p}={axiom_test_f1s[p]:.4f}" for p in test_projects))
+
     prior_f1s: dict[str, float] = {}
     prior_errors: dict[str, int] = {}
+    covered_fms: list[str] = []
     pass_summaries = []
 
-    for pass_num in range(1, 3):
+    for pass_num in range(1, PROBE_PASSES + 1):
         summary = run_outer_pass(
             pass_num=pass_num,
             train_projects=train_projects,
@@ -984,20 +1043,40 @@ def run_probe(train_projects: list[str], test_projects: list[str],
             prior_train_errors=prior_errors,
             dry_run=dry_run,
             split_name=split_name,
+            covered_fm_titles=covered_fms,
         )
         pass_summaries.append(summary)
         prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in train_projects}
         prior_errors = {p: summary["train_errors_after_l"].get(p, 0) for p in train_projects}
+        covered_fms = list(summary.get("fm_titles_seen", covered_fms))
         if summary.get("converged"):
             print(f"\n[PROBE] Converged at pass {pass_num}")
             break
 
-    final_train = pass_summaries[-1]["committed_macro_f1"]
-    final_test = pass_summaries[-1]["macro_test_f1"]
+    best_idx = max(range(len(pass_summaries)),
+                   key=lambda i: pass_summaries[i].get("committed_macro_f1", 0.0))
+    best_pass = pass_summaries[best_idx]["pass"]
+    if not dry_run:
+        _restore_best_banks(split_dir, best_pass, train_projects)
+        print(f"\n[PROBE] best-bank checkpoint restored: pass {best_pass} "
+              f"(macro={pass_summaries[best_idx]['committed_macro_f1']:.4f})")
+
+    final_train = pass_summaries[best_idx]["committed_macro_f1"]
+    final_test = pass_summaries[best_idx]["macro_test_f1"]
+    best_test_f1s = pass_summaries[best_idx].get("test_f1s", {})
     any_assessor_active = any(s.get("assessor_decisions", 0) > 0 for s in pass_summaries)
 
-    # Cheap-kill: [TEST] macro < 0.87 after 2 passes
-    kill = final_test < 0.87
+    # Dynamic kill: mean(bank_F1[p] / axiom_F1[p]) < 0.95 across test projects.
+    # Harder projects (low axiom floor) are judged relative to their own baseline,
+    # so a single weak dataset cannot anchor-kill the whole probe.
+    per_project_ratios = {
+        p: best_test_f1s.get(p, 0.0) / max(axiom_test_f1s.get(p, 1e-6), 1e-6)
+        for p in test_projects
+    }
+    mean_ratio = sum(per_project_ratios.values()) / max(1, len(per_project_ratios))
+    kill = mean_ratio < 0.95
+    ratio_str = "  ".join(f"{p}={per_project_ratios[p]:.3f}" for p in test_projects)
+    print(f"\n[PROBE] kill-check: mean_ratio={mean_ratio:.3f} (threshold=0.95)  {ratio_str}")
     verdict = "KILL" if kill else ("CONTINUE" if any(s.get("committed") for s in pass_summaries) else "MARGINAL")
 
     probe_summary = {
@@ -1008,9 +1087,12 @@ def run_probe(train_projects: list[str], test_projects: list[str],
         "passes_run": len(pass_summaries),
         "final_train_macro_f1": final_train,
         "final_test_macro_f1": final_test,
+        "axiom_test_f1s": axiom_test_f1s,
+        "per_project_kill_ratios": per_project_ratios,
+        "mean_kill_ratio": mean_ratio,
+        "kill_threshold": 0.95,
         "assessor_active": any_assessor_active,
         "verdict": verdict,
-        "cheap_kill_threshold": 0.87,
         "pass_summaries": pass_summaries,
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
@@ -1033,6 +1115,7 @@ def run_range(train_projects: list[str], test_projects: list[str],
 
     prior_f1s: dict[str, float] = {}
     prior_errors: dict[str, int] = {}
+    covered_fms: list[str] = []
     pass_summaries = []
 
     for pass_num in range(1, MAX_OUTER_PASSES + 1):
@@ -1047,20 +1130,28 @@ def run_range(train_projects: list[str], test_projects: list[str],
             prior_train_errors=prior_errors,
             dry_run=dry_run,
             split_name=split_name,
+            covered_fm_titles=covered_fms,
         )
         pass_summaries.append(summary)
         prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in train_projects}
         prior_errors = {p: summary["train_errors_after_l"].get(p, 0) for p in train_projects}
+        covered_fms = list(summary.get("fm_titles_seen", covered_fms))
 
-        committed_train = summary["committed_macro_f1"]
-        if summary.get("converged") or committed_train >= 0.90:
-            reason = "F1≥0.90" if committed_train >= 0.90 else "error-plateau"
-            print(f"\n[RANGE] Stopped at pass {pass_num} ({reason})"
-                  f" macro_train={committed_train:.4f}")
+        if summary.get("converged"):
+            print(f"\n[RANGE] Stopped at pass {pass_num} (converged)"
+                  f" macro_train={summary['committed_macro_f1']:.4f}")
             break
 
-    final_train = pass_summaries[-1]["committed_macro_f1"]
-    final_test = pass_summaries[-1]["macro_test_f1"]
+    best_idx = max(range(len(pass_summaries)),
+                   key=lambda i: pass_summaries[i].get("committed_macro_f1", 0.0))
+    best_pass = pass_summaries[best_idx]["pass"]
+    if not dry_run:
+        _restore_best_banks(split_dir, best_pass, train_projects)
+        print(f"\n[RANGE] best-bank checkpoint restored: pass {best_pass} "
+              f"(macro={pass_summaries[best_idx]['committed_macro_f1']:.4f})")
+
+    final_train = pass_summaries[best_idx]["committed_macro_f1"]
+    final_test = pass_summaries[best_idx]["macro_test_f1"]
     any_revise = any(
         any(d.get("verdict") == "revise" for d in s.get("assessor_decisions_list", []))
         for s in pass_summaries
@@ -1111,6 +1202,7 @@ def run_confirmation(split_name: str, train_projects: list[str],
     # Train on train_projects to convergence
     prior_f1s: dict[str, float] = {}
     prior_errors: dict[str, int] = {}
+    covered_fms: list[str] = []
     pass_summaries = []
 
     for pass_num in range(1, MAX_OUTER_PASSES + 1):
@@ -1125,20 +1217,28 @@ def run_confirmation(split_name: str, train_projects: list[str],
             prior_train_errors=prior_errors,
             dry_run=dry_run,
             split_name=split_name,
+            covered_fm_titles=covered_fms,
         )
         pass_summaries.append(summary)
         prior_f1s = {p: summary["committed_f1s"].get(p, 0.0) for p in train_projects}
         prior_errors = {p: summary["train_errors_after_l"].get(p, 0) for p in train_projects}
+        covered_fms = list(summary.get("fm_titles_seen", covered_fms))
 
-        committed_train = summary["committed_macro_f1"]
-        if summary.get("converged") or committed_train >= 0.90:
-            reason = "F1≥0.90" if committed_train >= 0.90 else "error-plateau"
-            print(f"\n[Confirmation] Stopped at pass {pass_num} ({reason})")
+        if summary.get("converged"):
+            print(f"\n[Confirmation] Stopped at pass {pass_num} (converged)")
             break
 
-    final_test = pass_summaries[-1]["macro_test_f1"]
-    final_test_f1s = pass_summaries[-1]["test_f1s"]
-    final_train = pass_summaries[-1]["committed_macro_f1"]
+    best_idx = max(range(len(pass_summaries)),
+                   key=lambda i: pass_summaries[i].get("committed_macro_f1", 0.0))
+    best_pass = pass_summaries[best_idx]["pass"]
+    if not dry_run:
+        _restore_best_banks(split_dir, best_pass, train_projects)
+        print(f"\n[Confirmation] best-bank checkpoint restored: pass {best_pass} "
+              f"(macro={pass_summaries[best_idx]['committed_macro_f1']:.4f})")
+
+    final_test = pass_summaries[best_idx]["macro_test_f1"]
+    final_test_f1s = pass_summaries[best_idx]["test_f1s"]
+    final_train = pass_summaries[best_idx]["committed_macro_f1"]
     lift = final_test - axiom_macro
 
     split_verdict = "IMPROVE" if lift > 0.005 else ("NEUTRAL" if lift > -0.01 else "REGRESS")

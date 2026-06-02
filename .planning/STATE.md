@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: Phase Summary
-status: completed
+status: Phase 34 KILL verdict. Phases 35+36 SKIPPED. Phase 37 is next (unconditional).
 stopped_at: context exhaustion at 75% (2026-06-02)
-last_updated: "2026-06-02T06:35:21.312Z"
-last_activity: 2026-06-02 — Phase 32 shipped (OD role, Assessor, TRAIN/TEST split, confirmation tier)
+last_updated: "2026-06-02T12:13:13.353Z"
+last_activity: 2026-06-02 — Phase 34 probe KILL ([TEST] macro 84.86% < 87%). v4 axiom Gap 2 over-aggressive (TM 81.97%). Assessor confirmed active (9 decisions).
 progress:
-  total_phases: 12
+  total_phases: 14
   completed_phases: 2
   total_plans: 10
-  completed_plans: 4
-  percent: 17
+  completed_plans: 5
+  percent: 14
 ---
 
 # Project State
@@ -98,8 +98,8 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
 ## Session Continuity
 
-Last session: 2026-06-02T06:35:21.309Z
+Last session: 2026-06-02T12:13:13.350Z
 Stopped at: context exhaustion at 75% (2026-06-02)
 Resume file: None
-Next action: Begin Phase 31 (`/gsd-plan-phase 31`)
-Last activity: 2026-06-02 - Completed quick task 260602-d1w: investigate latency implications of switching gpt backend to flex tier
+Next action: Monitor `logs/voyager_v5/probe_p36_rollback.log`; if TM train ≥82% proceed to Tier C coref-extension design (task 9)
+Last activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
