@@ -12,7 +12,7 @@ ref=RQ\arabic*, series=researchQuestions] \item \label{RQ1 SOTA comparison}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 Existing approaches use lexical similarity~\cite{swattr} or a single \ac{LLM}
-classification pass~\cite{lissa}. AALinker first builds runtime knowledge about
+classification pass~\cite{lissa}. \approach first builds runtime knowledge about
 the architecture (alias table, ambiguous names) and then runs several focused
 linker agents. We want to know whether this extra structure pays off in both
 link tasks: doc-to-model and doc-to-code.
@@ -40,16 +40,45 @@ We check if the metrics from \autoref{sec:metric} reveal these properties and re
 \approach wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
 We measure how much these validators help, in \fone and in the new metrics.
 
-RQ4 ablation, whas the contribution of each sub-linker module?
-\emph{\textbf{Motivation:}}
+% RQ4 ablation, whas the contribution of each sub-linker module?
+% \emph{\textbf{Motivation:}}
 
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{RQ4 ablation} \emph{What does each linker agent contribute on its own?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+\approach uses three linker agents, \linkerA, \linkerB, and \linkerC
+An ablation shows whether all three are needed and where they overlap.
 
 
 \subsection{Experiment Design}
-for RQ1, we run archagent-model and archagent-code and transarc, swattr on the same dataset
+% for RQ1, we run archagent-model and archagent-code and transarc, swattr on the same dataset
 
-for RQ2, we use metrics to measure recovered links from RQ1
+% for RQ2, we use metrics to measure recovered links from RQ1
 
-for RQ3, we compare running of archlinker with and without validator,
+% for RQ3, we compare running of archlinker with and without validator,
 
-for RQ4, we compare recovered links of from each sub-linker
+% for RQ4, we compare recovered links of from each sub-linker
+\subsection{Experiment Design}
+\label{sec:exp-design}
+
+To answer the four research questions we run four families of experiments on the same dataset (\autoref{sec:dataset}).
+
+\subsubsection{Experiments for \ref{RQ1 SOTA comparison} -- Comparison to Existing Approaches}
+\label{sec:exp:rq1}
+
+We run two evaluations on the same five projects (\autoref{sec:dataset}):
+\begin{enumerate}[leftmargin=*]
+    \item \emph{Doc-to-model.} For every sentence in the architecture document, we use \approach to link it back to architectural components.
+     We then compare recovered links with the doc-to-model gold standard links. 
+    We compare \approach{} with \emph{SWATTR}~\cite{swattr}, the lexical NLP pipeline by string similarity and with \emph{LiSSA}~\cite{lissa}, a recent \ac{LLM}-based link recovery tool. 
+    This is the link task where \approach{} can directly show its strength.
+    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the file-level gold standard. 
+    \approach{} reaches code files using a transitive linking approach, , the same composition used by TransArc.
+    It combinines its doc-to-model links with the architecture model's component-to-file mapping. 
+    We compare \approach{} with \emph{TransArc}~\cite{transarc}, the strongest published end-to-end pipeline on this benchmark, 
+    and with \emph{LiSSA} as an \ac{LLM} baseline.
+\end{enumerate}
+For each task we use the same metrics \emph{TransArc} and \emph{LiSSA} use. 
+We report link level precision, recall, and \fone per project and averaged across projects (both macro and micro).
+The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
