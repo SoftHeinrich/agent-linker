@@ -4,6 +4,7 @@ created: 2026-06-01
 phase: 20
 priority: high
 blocks: Phase 21 run
+resolves_phase: 25
 ---
 
 # Phase 20 Code Audit Fixes
