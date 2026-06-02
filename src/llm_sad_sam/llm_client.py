@@ -399,15 +399,16 @@ class LLMClient:
             messages.append({"role": msg.role, "content": msg.content})
 
         try:
+            service_tier = os.environ.get("OPENAI_SERVICE_TIER", "flex")
             create_kwargs = dict(
                 model=self.openai_model,
                 messages=messages,
                 temperature=self.temperature,
                 seed=42,
                 max_completion_tokens=4096,
-                timeout=timeout,
+                timeout=timeout * 2 if service_tier == "flex" else timeout,
+                service_tier=service_tier,
             )
-            create_kwargs["service_tier"] = os.environ.get("OPENAI_SERVICE_TIER", "flex")
             response = client.chat.completions.create(**create_kwargs)
 
             token_usage = None
@@ -921,6 +922,7 @@ class LLMClient:
         last_error = None
         for attempt in range(max_retries):
             try:
+                service_tier = os.environ.get("OPENAI_SERVICE_TIER", "flex")
                 create_kwargs = dict(
                     model=self.openai_model,
                     messages=[
@@ -936,9 +938,9 @@ class LLMClient:
                     temperature=self.temperature,
                     seed=42,
                     max_completion_tokens=4096,
-                    timeout=timeout,
+                    timeout=timeout * 2 if service_tier == "flex" else timeout,
+                    service_tier=service_tier,
                 )
-                create_kwargs["service_tier"] = os.environ.get("OPENAI_SERVICE_TIER", "flex")
                 response = client.chat.completions.create(**create_kwargs)
 
                 # Extract token usage
