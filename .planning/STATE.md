@@ -101,6 +101,7 @@ See `v2.5-MILESTONE-AUDIT.md` Debts section for full list. Priority order:
 - `260601-flex-tier-integration.md` — deferred to v2.6+
 - `2026-06-01-design-better-axioms-section-context-responsibility.md` — v2.6 candidate
 - `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md` — v2.6 candidate
+- `2026-06-02-redesign-voyager-training-gate-and-cross-split-logic.md` — v2.6 candidate (empirical gate + cross-split fix)
 
 ## Session Continuity
 
