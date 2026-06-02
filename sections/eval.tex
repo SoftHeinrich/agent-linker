@@ -82,3 +82,21 @@ We run two evaluations on the same five projects (\autoref{sec:dataset}):
 For each task we use the same metrics \emph{TransArc} and \emph{LiSSA} use. 
 We report link level precision, recall, and \fone per project and averaged across projects (both macro and micro).
 The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
+
+\subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\label{sec:exp:rq2}
+
+We re-evaluate our system and baselines from \ref{RQ1 SOTA comparison} with the metric set from \autoref{sec:metric}.
+For each (system, project) pair we compute:
+\begin{enumerate}[leftmargin=*]
+    \item \emph{Per-component \fone}, which gives every component the same weight, so errors on small components are not hidden by very large ones.
+    \item \emph{Per-sentence \fone}, which averages \fone over gold sentences and shows when quality is concentrated on a few sentences.
+    \item \emph{Skill score}, which rescales \fone between a random guesser and a perfect oracle, so projects with very different difficulty can be compared.
+    \item \emph{Sentence coverage}, the fraction of gold sentences that get at least one correct link, together with \emph{noise rate}, the average share of wrong links per sentence.
+    \item \emph{Coverage and purity}, a single number that combines how many sentences are served with how many are served without any wrong link.
+\end{enumerate}
+For each metric we report the per-project value and the mean gap from the standard link level \fone.
+A metric with a large gap rewards or penalises a system in a way that link level \fone alone does not.
+%TODO need reform or add new things 
+%Our expectations is it reveals a larger gap or more fine grained, like some component / sent 100 pct cover while other fp/fn cluster
+% and reveal properties twisted by benchmark bias. 
