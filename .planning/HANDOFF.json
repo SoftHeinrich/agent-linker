@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-02T09:26:57.806Z",
+  "phase": "35-axiom-rollback-and-loop-fixes",
+  "phase_name": "v2.7 prep — axiom rollback + voyager loop overhaul",
+  "phase_dir": ".planning/phases/34-probe-tier (post-mortem context)",
+  "plan": null,
+  "task": 7,
+  "total_tasks": 9,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Lift ilinker3 SEED prompts into prompts_v4_axiom SEED slots", "status": "done"},
+    {"id": 2, "name": "Soften Gap 2 gerund rule (rolled back in task 7)", "status": "done"},
+    {"id": 3, "name": "Strip dry-run mock writes from bank serialization + clean 11 stale mocks", "status": "done"},
+    {"id": 4, "name": "Replace MIN_COMMIT_DELTA gate with assessor revert + worked FP/FN persistence + removal_targets", "status": "done"},
+    {"id": 5, "name": "Add pass cap (MAX_OUTER_PASSES=6) + best-bank checkpoint/restore", "status": "done"},
+    {"id": 6, "name": "Rewrite OD prompt as single-call evidence-CoT (CITE→DERIVE→WRITE→SELF-CHECK) + FM-exclusion + slot-quota", "status": "done"},
+    {"id": 7, "name": "Tier A axiom rollback (SEED_DISAMBIGUATION + SEED_EXTRACTION + SEED_ACTOR)", "status": "done"}
+  ],
+  "remaining_tasks": [
+    {"id": 8, "name": "Re-run probe with Tier-A axiom rollback to verify TM recovers (~89-90% train macro expected)", "status": "not_started"},
+    {"id": 9, "name": "Design Tier C as coref-extension axiom (partial-form resolution unified with pronoun/role-NP)", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Phase 34 probe KILL verdict: TEST 84.86% < 87% gate, dragged by BBB 72.41%. Phase 35 probe (run today) regressed to 83.69% due to over-aggressive axiom changes — rolled back in Tier A.", "type": "technical", "workaround": "Tier A rollback shipped; needs probe re-run to confirm recovery"},
+    {"description": "BBB ceiling 70-72% is NOT axiom-fixable per s_linker10/13 forensics. Requires porting Tier 1.5 multi-word partial enrichment + Tier 2 partial injection (s10:392-470, s10:850-875). Only path to ≥87% test macro.", "type": "technical", "workaround": "Tier C reframed as coref-extension axiom — terminal partials as a fourth surface-form case (after pronoun, role-NP, alias) handled by Variant E cases-in-context"}
+  ],
+  "human_actions_pending": [
+    {"action": "Re-run probe: python3 scripts/voyager_train_tlr_v5.py probe --projects mediastore,teastore,teammates --test-projects bigbluebutton,jabref --backend openai --model gpt-5.4 --split mainline_v28", "context": "Verify Tier A rollback restores TM train F1 toward 90% baseline before any further changes", "blocking": false}
+  ],
+  "decisions": [
+    {"decision": "Tier B (rehydrate prompts_v2 bodies into axiom/bank slots) is permanently blocklisted", "rationale": "Violates Voyager experiment thesis — bank must be loop-learned. Saved as memory feedback_voyager_no_prompt_rehydration.md", "phase": "v2.7"},
+    {"decision": "Tier D (CamelCase structural-unambiguous guard) skipped", "rationale": "Silent FP risk when CamelCase component name also appears as common industry term (DataStore, MediaPlayer). Revisit only if precision becomes bottleneck", "phase": "v2.7"},
+    {"decision": "Tier C reframed as coref-extension axiom rather than separate phases", "rationale": "Partial-form reference is structurally a fourth surface-form variant alongside pronoun, role-NP, alias. Coref Variant E cases-in-context already handles antecedent resolution; extending COREF_RULES axiom keeps the architecture consistent with Voyager skeleton+slots design", "phase": "v2.7"},
+    {"decision": "MIN_COMMIT_DELTA=0.005 variance filter removed; loop now fully assessor-driven with worked FP/FN evidence + best-bank checkpoint protecting against decay", "rationale": "Variance filter wedged Phase 34 pass 2 — OD/Assessor skipped on negative delta, preventing learning. Assessor reverts pattern-level via removal_targets; best-bank restore replaces non-regression gate", "phase": "v2.7"}
+  ],
+  "uncommitted_files": [
+    "src/llm_sad_sam/linkers/experimental/prompts_v4_axiom.py (modified — Tier A rollback)",
+    "scripts/voyager_train_tlr_v5.py (modified — loop overhaul)",
+    "results/voyager_v5/mainline/{mediastore,teastore,teammates}_bank.json (modified — 11 mock patterns stripped)",
+    "logs/voyager_v5/probe_p35.log (new — failed P35 probe with overshoot axiom)",
+    "results/voyager_v5/mainline_v27/ (new — P35 probe artifacts)"
+  ],
+  "next_action": "Run probe on Tier-A rollback axiom (split: mainline_v28) and compare train/test macro vs P34 (90.58/84.86) and P35 (87.32/83.69). If TM recovers to ≥82% train, proceed to Tier C coref-extension design. If not, the rollback was insufficient — inspect P35-style FNs to refine axiom further.",
+  "context_notes": "Phase 34 verdict KILL exposed two distinct problems: (1) v4 axiom Gap 2 over-rejected TM gerunds, and (2) the loop machinery had variance-filter wedge + mock contamination + no diversity in OD. Today's work shipped fixes for BOTH but my Tier-A axiom changes overshot (made Gap 2 too permissive AND added 'concrete artifact / flow required' gate that rejected identity statements). Re-rollback in Tier A is the recovery. Sub-agent forensics revealed the actual milestone blocker is BBB at 70-72% — NOT axiom-fixable. Tier C (port s10 partial enrichment) is the milestone-saving change, reframed today as coref-axiom extension."
+}
