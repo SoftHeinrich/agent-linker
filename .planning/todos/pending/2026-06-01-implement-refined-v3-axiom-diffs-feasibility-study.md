@@ -2,6 +2,7 @@
 created: 2026-06-01T14:00:13.469Z
 title: Implement refined v3-style axiom diffs from feasibility study
 area: tooling
+resolves_phase: 33
 files:
   - src/llm_sad_sam/linkers/experimental/prompts_v3_axiom.py
   - src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py:719

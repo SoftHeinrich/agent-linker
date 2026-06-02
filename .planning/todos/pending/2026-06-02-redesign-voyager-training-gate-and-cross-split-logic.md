@@ -2,6 +2,7 @@
 created: 2026-06-02T05:40:02.000Z
 title: Redesign Voyager training gate (empirical) and fix cross-split purpose
 area: tooling
+resolves_phase: 32
 files:
   - scripts/voyager_train_tlr_v4_beta.py
   - scripts/voyager_train_tlr_v4_beta.py:789

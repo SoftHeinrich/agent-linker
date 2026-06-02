@@ -2,6 +2,7 @@
 created: 2026-06-01T12:58:44.606Z
 title: Design better axioms for section-context and responsibility-list gaps
 area: tooling
+resolves_phase: 33
 files:
   - src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py:1004
   - src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py:224
