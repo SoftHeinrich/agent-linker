@@ -1,0 +1,428 @@
+
+[RANGE TIER] projects=['teastore', 'teammates', 'jabref'] backend=openai model=gpt-5.4 dry_run=False
+
+============================================================
+OUTER PASS 1 | projects=['teastore', 'teammates', 'jabref'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=teastore
+  [L cache hit] teastore (bank=3cd617)
+  [L] teastore: F1=0.9818
+
+  [L] project=teammates
+  [L cache hit] teammates (bank=3cd617)
+  [L] teammates: F1=0.8254
+
+  [L] project=jabref
+SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmph_k3uqtj.json (0 patterns across 0/15 slots)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 13 sentences, 6 components
+    Batches: 1
+    Alias: API -> logic [global]
+    Alias: outer shell -> gui [global]
+    Alias: user interface -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: core -> model [local]
+    Pass A (extract): 19 links
+    Pass B (actor):   18 links
+    Merged: 19 links
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 5 aliases
+  Seed: 19 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    [cli] 2/2 seeds kept
+    Extraction consensus: Pass1=21, Pass2=21, Intersect=21 (dropped 0 unique-to-one-pass)
+    Entity extraction: 21 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 21 candidates
+    [gui] 4/4 seeds kept
+    [logic] 4/4 seeds kept
+    Validation: 18 / 21
+  Checkpoint: entity_decisions saved
+    [model] 6/6 seeds kept
+    Seed disambig reject: S7 -> preferences (Refers to the user's personal preferences in ordinary English ('his preferences'), not the architectural component as a participant.)
+    [preferences] 2/3 seeds kept
+  Seed validated: 18 / 19
+  Entity pipeline: 18 validated
+  Coreference: 2 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 19 (from 38 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_jabref_20260602_050548.json
+  Checkpoint: final saved
+
+Final: 19 links (21s)
+  [L] jabref: F1=0.9730
+
+[L] Train macro F1: 0.9267 (delta: +0.9267)
+[L] Total errors (FP+FN): 24
+
+[O] Running Oracle on all training projects...
+
+  [O] project=teastore
+  [O cache hit] teastore iter1
+  [O] teastore: 1 failure modes
+
+  [O] project=teammates
+  [O cache hit] teammates iter1
+  [O] teammates: 5 failure modes
+
+  [O] project=jabref
+  [O] WARNING: prompt contains taboo tokens ['jabref', 'jabref'] — check abstraction
+  [O] jabref: 1 failure modes
+
+[D] Running Distillator per-project (text-blind, CoT-A)...
+
+  [D] project=teastore
+  [D] WARNING: prompt contains taboo tokens ['teastore']
+  [D cache hit] iter1
+  [D] teastore: proposed 2, removals 0
+
+  [D] project=teammates
+  [D] WARNING: prompt contains taboo tokens ['teammates', 'persistence']
+  [D cache hit] iter1
+  [D] teammates: proposed 7, removals 0
+
+  [D] project=jabref
+  [D] WARNING: prompt contains taboo tokens ['jabref']
+  [D] jabref: proposed 4, removals 0
+  [D] total unique proposals: 13, total removals: 0
+
+[GATE-06] Filtering D proposals...
+  [GATE-06 REJECT] slot=COREF_RULES: taboo tokens ['persistence']
+  [GATE-06] accepted=12 rejected=1
+
+[Gate A] FM citation check...
+  [Gate A] accepted=12 rejected=0
+
+[Gate B] Semantic validity judge...
+  [Gate B ACCEPT] slot=GENERIC_WORD_USAGE_RULES: The rule directly targets FM-1 by blocking approvals for generic subject-positio
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-1 by requiring structural or referential anchoring 
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets the FM-1 symptom by rejecting namespace/package/contai
+  [Gate B ACCEPT] slot=COREF_RULES: The rule directly targets FM-2 by restricting anaphora propagation to nearest va
+  [Gate B ACCEPT] slot=ANTECEDENT_ALIAS_RULES: The rule directly targets FM-3 by allowing tightly scoped alias-of/appositional 
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-4 by allowing evidence when the target appears in q
+  [Gate B ACCEPT] slot=GENERIC_WORD_USAGE_RULES: The rule directly targets FM-5 by recovering generic head-noun mentions only whe
+  [Gate B ACCEPT] slot=COREF_TERMINAL_SPECIFICITY_RULES: The rule directly targets FM-2 by blocking anaphora propagation when the anteced
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_EXAMPLES: The pattern directly targets FM-4 by teaching acceptance of qualifier-clause men
+  [Gate B ACCEPT] slot=COREF_TERMINAL_SPECIFICITY_RULES: The rule directly targets FM-1 by blocking links from generic sentence-initial a
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets clause-level versus entity-level antecedent confusion 
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_EXAMPLES: The rule directly targets FM-1 by distinguishing sentence-initial anaphora that 
+  [Gate B] accepted=12 rejected=0
+
+[Commit] 12 patterns pass Gate A+B, 0 removals
+  [Commit] bank saved: teastore (12 patterns)
+  [Commit] bank saved: teammates (12 patterns)
+  [Commit] bank saved: jabref (12 patterns)
+  [Commit] COMMITTED 12 patterns + 0 removals
+
+[Pass 1] errors=24 macro_f1=0.9267 converged=False did_commit=True (gate_a=12, gate_b=12, removals=0)
+
+============================================================
+OUTER PASS 2 | projects=['teastore', 'teammates', 'jabref'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=teastore
+SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmpu32z0fwe.json (12 patterns across 7/15 slots)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 43 sentences, 11 components
+    Batches: 1
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Pass A (extract): 22 links
+    Pass B (actor):   22 links
+    Merged: 20 links
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 6 aliases
+  Seed: 20 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    [Auth] 2/2 seeds kept
+    Extraction consensus: Pass1=23, Pass2=23, Intersect=23 (dropped 0 unique-to-one-pass)
+    Entity extraction: 23 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    [ImageProvider] 4/4 seeds kept
+    Seed disambig reject: S35 -> OrderBasedRecommender (Describes a generic order-based nearest-neighbor approach/algorithm, not a reference to the specific architectural component name OrderBasedRecommender.)
+    [OrderBasedRecommender] 0/1 seeds kept
+    [Persistence] 2/2 seeds kept
+    Validation: 20 / 23
+  Checkpoint: entity_decisions saved
+    [Recommender] 2/2 seeds kept
+    [Registry] 5/5 seeds kept
+    [SlopeOneRecommender] 1/1 seeds kept
+    [WebUI] 3/3 seeds kept
+  Seed validated: 19 / 20
+  Entity pipeline: 20 validated
+  Coreference: 10 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 30 (from 49 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teastore_20260602_050712.json
+  Checkpoint: final saved
+
+Final: 30 links (26s)
+  [L] teastore: F1=0.9474
+
+  [L] project=teammates
+SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmpye5c8ijr.json (12 patterns across 7/15 slots)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 198 sentences, 8 components
+    Batches: 5
+      batch 1/5: +25 (total 25)
+      batch 2/5: +17 (total 41)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: UI Component -> UI [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: Logic Component -> Logic [global]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Logic API -> Logic [global]
+    Alias: Storage Component -> Storage [global]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: storage -> Storage [local]
+    Alias: Common Component -> Common [global]
+    Alias: Common component -> Common [global]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E Component -> E2E [global]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client Component -> Client [global]
+      batch 3/5: +24 (total 63)
+      batch 4/5: +15 (total 76)
+      batch 5/5: +17 (total 92)
+    Pass A (extract): 92 links
+      batch 1/5: +22 (total 22)
+      batch 2/5: +20 (total 41)
+      batch 3/5: +12 (total 52)
+      batch 4/5: +20 (total 69)
+      batch 5/5: +7 (total 75)
+    Pass B (actor):   75 links
+    Merged: 70 links
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 24 aliases
+  Seed: 70 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Client] 3/3 seeds kept
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    Seed disambig reject: S127 -> Common ("common.datatransfer" is a package/code identifier, not the component itself.)
+    Seed disambig reject: S160 -> Common (The matched text is part of the package name "common.datatransfer package," a code identifier.)
+    Seed disambig reject: S159 -> Common ("common.datatransfer" is a package name, not a reference to the architectural component.)
+    [Common] 5/8 seeds kept
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    Seed disambig reject: S188 -> E2E ("e2e.util" is a package/code identifier, not the architectural component itself.)
+    [E2E] 5/6 seeds kept
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    Seed disambig reject: S2 -> GAE Datastore (GAE here refers to Google App Engine, not the datastore component.)
+    Seed disambig reject: S94 -> GAE Datastore (GAE refers to App Engine's task queue API, a platform service distinct from the datastore.)
+    Seed disambig reject: S74 -> GAE Datastore (GAE denotes the App Engine platform imposing request time limits, not the datastore.)
+    Seed disambig reject: S58 -> GAE Datastore (GAE server refers to the Google App Engine server/platform, not the datastore.)
+    Seed disambig reject: S69 -> GAE Datastore (GAE server again denotes App Engine infrastructure sending automated requests.)
+    Seed disambig reject: S62 -> GAE Datastore (GAE server refers to the platform generating privileged requests, not the datastore.)
+    Seed disambig reject: S31 -> GAE Datastore (GAE server refers to the App Engine server handling requests, not the datastore.)
+    [GAE Datastore] 6/13 seeds kept
+    Extraction consensus: Pass1=75, Pass2=72, Intersect=72 (dropped 3 unique-to-one-pass)
+    Entity extraction: 72 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 72 candidates
+    Seed disambig reject: S88 -> Logic (Here 'Logic' names a Facade class/API class, not the architectural component.)
+    Seed disambig reject: S8 -> Logic (Lowercase 'main logic' is ordinary English about application logic, not the named component.)
+    Seed disambig reject: S194 -> Logic (Refers generally to the application back-end, not specifically the named Logic component.)
+    Seed disambig reject: S185 -> Logic (Lowercase 'back-end logic' is generic functionality, not the specific Logic component.)
+    [Logic] 9/13 seeds kept
+    Seed disambig reject: S136 -> Storage (No explicit mention of Storage; 'Db classes' is only an indirect implementation description and not a clear component reference.)
+    [Storage] 9/10 seeds kept
+    [Test Driver] 5/5 seeds kept
+    Seed disambig reject: S185 -> UI (Mentions a web browser and back-end logic generically, not the named UI component or one of its aliases as a component reference.)
+    [UI] 11/12 seeds kept
+    Validation: 34 / 72
+  Checkpoint: entity_decisions saved
+  Seed validated: 53 / 70
+  Entity pipeline: 34 validated
+  Coreference: 20 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 64 (from 107 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teammates_20260602_050829.json
+  Checkpoint: final saved
+
+Final: 64 links (77s)
+  [L] teammates: F1=0.8264
+
+  [L] project=jabref
+SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmpu7efe3tr.json (12 patterns across 7/15 slots)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 13 sentences, 6 components
+    Batches: 1
+    Alias: API -> logic [global]
+    Alias: command line interface -> cli [global]
+    Alias: core -> model [local]
+    Pass A (extract): 19 links
+    Pass B (actor):   18 links
+    Merged: 19 links
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 3 aliases
+  Seed: 19 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    [cli] 2/2 seeds kept
+    Extraction consensus: Pass1=20, Pass2=20, Intersect=20 (dropped 0 unique-to-one-pass)
+    Entity extraction: 20 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    [gui] 4/4 seeds kept
+    [logic] 4/4 seeds kept
+    Validation: 15 / 20
+  Checkpoint: entity_decisions saved
+    [model] 6/6 seeds kept
+    Seed disambig reject: S7 -> preferences (Refers to the user's personal preferences ('his preferences'), an ordinary English meaning rather than an architectural participant.)
+    [preferences] 2/3 seeds kept
+  Seed validated: 18 / 19
+  Entity pipeline: 15 validated
+  Coreference: 7 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 19 (from 40 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_jabref_20260602_050850.json
+  Checkpoint: final saved
+
+Final: 19 links (21s)
+  [L] jabref: F1=0.9730
+
+[L] Train macro F1: 0.9156 (delta: -0.0111)
+[L] Total errors (FP+FN): 25 (delta: +1)
+
+[P] delta=-0.0111 < MIN_COMMIT_DELTA=0.005 — skipping O+D (variance filter)
+
+[Pass 2] below-threshold no-op: delta=-0.0111 committed_macro=0.9267
+
+============================================================
+OUTER PASS 3 | projects=['teastore', 'teammates', 'jabref'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=teastore
+  [L cache hit] teastore (bank=3c9c3c)
+  [L] teastore: F1=0.9474
+
+  [L] project=teammates
+  [L cache hit] teammates (bank=3c9c3c)
+  [L] teammates: F1=0.8264
+
+  [L] project=jabref
+  [L cache hit] jabref (bank=3c9c3c)
+  [L] jabref: F1=0.9730
+
+[L] Train macro F1: 0.9156 (delta: -0.0111)
+[L] Total errors (FP+FN): 25 (delta: +0)
+
+[P] delta=-0.0111 < MIN_COMMIT_DELTA=0.005 — skipping O+D (variance filter)
+
+[Pass 3] below-threshold no-op: delta=-0.0111 committed_macro=0.9267
+
+============================================================
+OUTER PASS 4 | projects=['teastore', 'teammates', 'jabref'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=teastore
+  [L cache hit] teastore (bank=3c9c3c)
+  [L] teastore: F1=0.9474
+
+  [L] project=teammates
+  [L cache hit] teammates (bank=3c9c3c)
+  [L] teammates: F1=0.8264
+
+  [L] project=jabref
+  [L cache hit] jabref (bank=3c9c3c)
+  [L] jabref: F1=0.9730
+
+[L] Train macro F1: 0.9156 (delta: -0.0111)
+[L] Total errors (FP+FN): 25 (delta: +0)
+
+[P] delta=-0.0111 < MIN_COMMIT_DELTA=0.005 — skipping O+D (variance filter)
+
+[Pass 4] below-threshold no-op: delta=-0.0111 committed_macro=0.9267
+
+============================================================
+OUTER PASS 5 | projects=['teastore', 'teammates', 'jabref'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=teastore
+  [L cache hit] teastore (bank=3c9c3c)
+  [L] teastore: F1=0.9474
+
+  [L] project=teammates
+  [L cache hit] teammates (bank=3c9c3c)
+  [L] teammates: F1=0.8264
+
+  [L] project=jabref
+  [L cache hit] jabref (bank=3c9c3c)
+  [L] jabref: F1=0.9730
+
+[L] Train macro F1: 0.9156 (delta: -0.0111)
+[L] Total errors (FP+FN): 25 (delta: +0)
+
+[P] delta=-0.0111 < MIN_COMMIT_DELTA=0.005 — skipping O+D (variance filter)
+
+[Pass 5] below-threshold no-op: delta=-0.0111 committed_macro=0.9267
+
+[RANGE] errors=25 final_macro=0.9267 converged=False

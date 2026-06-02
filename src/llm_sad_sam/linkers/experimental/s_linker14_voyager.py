@@ -103,7 +103,7 @@ _LEARNED_HEADER = (
     "\n\nLEARNED PATTERNS (apply when relevant; do not contradict the axioms above):"
 )
 
-DEFAULT_BANK_PATH = "results/voyager_v4_beta/confirmation/cross_split_final_bank.json"
+DEFAULT_BANK_PATH = "results/voyager_v4b_v25/confirmation/cross_split_final_bank.json"
 
 
 def _load_bank(path: str | os.PathLike[str] | None) -> dict[str, list[dict]]:
@@ -255,17 +255,17 @@ class SLinker14Voyager:
     Empty bank / missing file: runs as axiom-only floor (valid for Phase 14
     infrastructure testing and for the iter-0 baseline measurement in Phase 15).
 
-    Confirmation Tier (Phase 17):
+    v2.5 Confirmation Tier (Phase 29, 2026-06-02):
+      - Infrastructure: oracle cache fix (REQ-V25-01) + 15-slot expansion (REQ-V25-04/05/06)
       - 3-split sweep (split1_replication, split2_bbb_in_train, split3_rotated_holdout)
-      - Cross-split bank: results/voyager_v4_beta/confirmation/cross_split_final_bank.json
+      - Cross-split bank: results/voyager_v4b_v25/confirmation/cross_split_final_bank.json
       - Cross-split aggregation: Jaccard >= 0.6 dedup + >= 2-split survival filter
-      - Bank: 2 patterns in 2 slots (DOC_KNOWLEDGE_EXTRACTION_RULES + COREF_RULES)
-      - Publishable macro F1 (gpt-5.4, 5-dataset): 90.5%
-        MS 98.4%, TS 94.5%, TM 82.6%, BBB 76.9%, JAB 100.0%
-      - Verdict: WEAK (5-dataset macro 90.5% in [0.87, 0.9173))
-      - Lift over mainline Range bank: +0.7pp (89.8% -> 90.5%)
-      - Lift over axiom-only floor: +1.6pp (88.9% -> 90.5%)
-      - Default bank path updated to cross_split_final_bank.json (2026-06-01)
+      - Bank: 12 patterns in 8 slots
+      - Publishable macro F1 (gpt-5.4, 5-dataset): 89.1%
+        MS 95.1%, TS 98.2%, TM 81.3%, BBB 73.7%, JAB 97.3%
+      - Verdict: WEAK (5-dataset macro 89.1% in [0.87, 0.9173))
+      - Lift over axiom-only floor: +1.5pp (87.6% -> 89.1%)
+      - Default bank path updated to v2.5 cross_split_final_bank.json (2026-06-02)
     """
 
     _VARIANT_NAME = "s_linker14_voyager"

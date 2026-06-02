@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.5
 milestone_name: Oracle Cache Fix + 15-Slot Expansion + Re-run
 status: in_progress
-last_updated: "2026-06-02T00:00:00.000Z"
+last_updated: "2026-06-02T05:00:00.000Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 6
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 67
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.5 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.5 — Phase 29 Confirmation Tier is next.
+**Current focus:** v2.5 — Phase 30 Milestone Close is next (final phase).
 
 ## Current Position
 
-Phase: 29 — Confirmation Tier
+Phase: 30 — Milestone Close
 Plan: —
 Status: planning
-Last activity: 2026-06-02 — Phase 28 complete (Range Tier: WEAK, 5-dataset macro F1=89.3%, 23 patterns in 10 slots, lift +1.7pp over axiom-only)
-Next action: Phase 29 — Confirmation Tier (3-split sweep, cross-split bank, validate oracle fix, budget ≤$60)
+Last activity: 2026-06-02 — Phase 29 complete (Confirmation Tier: WEAK, cross-split macro F1=89.1%, 12 cross-split patterns, oracle fix validated)
+Next action: Phase 30 — Milestone Close (milestone audit, requirements close-out, archive)
 
 ```
-Progress: [####################          ] 67% (4/6 phases)
+Progress: [#########################     ] 83% (5/6 phases)
 ```
 
 ## v2.5 Design Decisions (Locked)
@@ -122,7 +122,7 @@ None. All v2.5 requirements have locked designs; Phase 25 is implementation-read
 
 ## Session Continuity
 
-Last session: 2026-06-01T17:39:20.519Z
-Stopped at: v2.5 roadmap created — Phase 25 ready to plan
+Last session: 2026-06-02T03:16:13.604Z
+Stopped at: context exhaustion at 75% (2026-06-02)
 Resume file: None
 Next action: Phase 25 — Infrastructure Fixes (`/gsd-plan-phase 25`)
