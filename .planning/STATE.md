@@ -25,11 +25,11 @@ See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 ## Current Position
 
-Phase: Phase 34 (Probe Tier) — IN PROGRESS
+Phase: Phase 37 (Milestone Close) — not started
 Plan: —
-Status: Phase 34 running — probe tier launched (2-pass mainline, gpt-5.4)
-Last activity: 2026-06-02 — Phase 34 probe run launched
-Next action: Wait for probe completion; write 34-PROBE-VERDICT.md; proceed to Phase 35 if CONTINUE.
+Status: Phase 34 KILL verdict. Phases 35+36 SKIPPED. Phase 37 is next (unconditional).
+Last activity: 2026-06-02 — Phase 34 probe KILL ([TEST] macro 84.86% < 87%). v4 axiom Gap 2 over-aggressive (TM 81.97%). Assessor confirmed active (9 decisions).
+Next action: Begin Phase 37 — milestone audit, GATE-01/07/08 verification, v2.6-MILESTONE-AUDIT.md, PROJECT.md update, STATE.md close.
 
 ```
 Progress: [========                      ] 29% (2/7 phases)
@@ -88,7 +88,7 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 | HIGH | C-3 | LLM Assessor gate — replace F1-delta Gate A+B with error-set reasoning |
 | HIGH | C-4 | Axiom gaps: SCN (14 FNs), gerund FPs (7), coref alias (line 1004 code path) |
 | MEDIUM | C-5 | Cross-split redesign — independent per-split train/eval vs axiom-only baseline |
-| LOW | C-6 | ~~Flex tier cost optimization~~ CLOSED — not viable for synchronous training loop (see quick task 260602-d1w) |
+| LOW | C-6 | Flex tier cost optimization — VIABLE. Enable `OPENAI_SERVICE_TIER=flex` in .env. Trial on Phase 34. See quick task 260602-d1w. |
 
 ## Quick Tasks Completed
 
