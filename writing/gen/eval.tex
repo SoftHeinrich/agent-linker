@@ -1,19 +1,19 @@
 \section{Experiment}
 \label{sec:experiment}
 
-We evaluate AALinker on the public benchmark for trace links between architecture documentation and code.
-The evaluation has four goals: see how AALinker compares to existing tools, look at what new metrics tell us beyond the standard \fone, measure how much the validators help, and check what each linker agent contributes.
+We evaluate \approach{} on the public benchmark for trace links between architecture documentation and code.
+The evaluation has four goals: see how \approach{} compares to existing tools, look at what new metrics tell us beyond the standard \fone, measure how much the validators help, and check what each linker agent contributes.
 
 \subsection{Research Questions}
 \label{sec:rqs}
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions]
-    \item \label{RQ1 SOTA comparison} \emph{Does AALinker recover better trace links than existing approaches, both from doc to architecture model and from doc to code?}
+    \item \label{RQ1 SOTA comparison} \emph{Does \approach{} recover better trace links than existing approaches, both from doc to architecture model and from doc to code?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 Trace links between an architecture document and code can be recovered directly, or in two steps through the architecture model.
 Existing approaches use lexical similarity~\cite{swattr} or a single \ac{LLM} classification pass~\cite{lissa}.
-AALinker first builds runtime knowledge about the architecture (alias table, ambiguous names) and then runs several focused linker agents.
+\approach{} first builds runtime knowledge about the architecture (alias table, ambiguous names) and then runs several focused linker agents.
 We want to know whether this extra structure pays off in both link tasks: doc-to-model and doc-to-code.
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
@@ -26,49 +26,42 @@ A single number can therefore hide whether a system covers all sentences, whethe
 We check if the metrics from \autoref{sec:metric} reveal these properties and reorder the systems.
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
-    \item \label{RQ3 validators} \emph{How much do the validators inside AALinker contribute to the final result?}
+    \item \label{RQ3 validators} \emph{How much do the validators inside \approach{} contribute to the final result?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 \acp{LLM} are not deterministic and can produce links that look plausible but do not refer to any component in the doc.
-AALinker wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
+\approach{} wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
 We measure how much these validators help, in \fone and in the new metrics.
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
     \item \label{RQ4 ablation} \emph{What does each linker agent contribute on its own?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
-AALinker uses four linker agents, one for each kind of reference: canonical name, alias, pronoun, and partial name.
+\approach{} uses four linker agents, one for each kind of reference: canonical name, alias, pronoun, and partial name.
 A leave-one-out ablation shows whether all four are needed, where they overlap, and which agents drive the gains over the best single-strategy baseline.
 
 \subsection{Experiment Design}
 \label{sec:exp-design}
 
 To answer the four research questions we run four families of experiments on the same dataset (\autoref{sec:dataset}).
-All AALinker runs use a fixed model configuration (\autoref{sec:hyperparameters}) so results stay reproducible despite \ac{LLM} non-determinism.
+All \approach{} runs use a fixed model configuration (\autoref{sec:hyperparameters}) so results stay reproducible despite \ac{LLM} non-determinism.
 
 \subsubsection{Experiments for \ref{RQ1 SOTA comparison} -- Comparison to Existing Approaches}
 \label{sec:exp:rq1}
 
-We compare AALinker with two existing approaches:
-\begin{enumerate*}[label=(\roman*)]
-    \item \emph{TransArc}~\cite{transarc}, the strongest published pipeline on this benchmark, which routes doc-to-code links through the architecture model; and
-    \item \emph{SWATTR}~\cite{swattr}, the lexical NLP pipeline that TransArc uses for the doc-to-model step.
-\end{enumerate*}
-We also include \emph{LiSSA}~\cite{lissa}, a recent \ac{LLM}-based classifier, as an \ac{LLM} baseline.
-We take all baseline results from the original papers to avoid re-tuning bias.
-
 We run two evaluations on the same five projects (\autoref{sec:dataset}):
 \begin{enumerate}[leftmargin=*]
-    \item \emph{Doc-to-model.} For every sentence in the architecture document we recover the components it talks about and compare them with the doc-to-model gold standard. This is the link task where AALinker can directly show what its knowledge layer is worth.
-    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the file-level gold standard. AALinker reaches code files by combining its doc-to-model links with the architecture model's component-to-file mapping, the same composition used by TransArc.
+    \item \emph{Doc-to-model.} For every sentence in the architecture document we recover the components it talks about and compare them with the doc-to-model gold standard. We compare \approach{} with \emph{SWATTR}~\cite{swattr}, the lexical NLP pipeline that TransArc uses for the doc-to-model step, and with \emph{LiSSA}~\cite{lissa}, a recent \ac{LLM}-based classifier. This is the link task where \approach{} can directly show what its knowledge layer is worth.
+    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the file-level gold standard. \approach{} reaches code files by combining its doc-to-model links with the architecture model's component-to-file mapping, the same composition used by TransArc. We compare \approach{} with \emph{TransArc}~\cite{transarc}, the strongest published end-to-end pipeline on this benchmark, and with \emph{LiSSA} as an \ac{LLM} baseline.
 \end{enumerate}
+We take all baseline results from the original papers to avoid re-tuning bias.
 For each task we report precision, recall, and \fone per project and averaged across projects (both macro and micro), following the protocol of the benchmark.
-The outcome of \ref{RQ1 SOTA comparison} tells us whether AALinker improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
+The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
 
 \subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-We re-evaluate the four systems from \ref{RQ1 SOTA comparison} with the metric set from \autoref{sec:metric}.
+We re-evaluate our system and baselines from \ref{RQ1 SOTA comparison} with the metric set from \autoref{sec:metric}.
 For each (system, project) pair we compute:
 \begin{enumerate}[leftmargin=*]
     \item \emph{Per-component \fone}, which gives every component the same weight, so errors on small components are not hidden by very large ones.
@@ -77,37 +70,57 @@ For each (system, project) pair we compute:
     \item \emph{Sentence coverage}, the fraction of gold sentences that get at least one correct link, together with \emph{noise rate}, the average share of wrong links per sentence.
     \item \emph{Coverage and purity}, a single number that combines how many sentences are served with how many are served without any wrong link.
 \end{enumerate}
-For each metric we report the per-project value and the mean gap from the standard \fone.
-A metric with a large gap rewards or penalises a system in a way that \fone alone does not.
-We expect this to show that two systems with similar \fone can still differ a lot in coverage, in the worst sentences, and in how errors affect small components.
+For each metric we report the per-project value and the mean gap from the standard link level \fone.
+A metric with a large gap rewards or penalises a system in a way that link level \fone alone does not.
+%TODO need overhaul or add new things 
+%Our expectations is it reveals a larger gap or more fine grained, like some component / sent 100 pct cover while other fp/fn cluster
+% and reveal properties twisted by benchmark bias. 
 
 \subsubsection{Experiments for \ref{RQ3 validators} -- Validator Contribution}
 \label{sec:exp:rq3}
+%TODO, decide how many variants. 
+We build three variants of \approach{} that remove validators while keeping the linker agents in place:
 
-We build three variants of AALinker that remove validators while keeping the linker agents in place:
-\begin{enumerate}[leftmargin=*]
-    \item \emph{NoConsensus}: each extraction agent runs a single \ac{LLM} pass instead of two voting passes; the vote in \autoref{tab:strategies} is replaced by simply keeping every proposed link.
-    \item \emph{NoCitation}: the pronoun agent no longer has to provide a quoted antecedent sentence; resolved candidates are accepted directly.
-    \item \emph{NoValidator}: both above combined, i.e.\ no validators anywhere.
-\end{enumerate}
-We compare these to \emph{Full}, the full AALinker pipeline.
-For each variant we measure \fone, per-component \fone, sentence coverage, and noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls (mean tokens per project), since the validators roughly double the number of calls for the affected agents.
-The outcome of \ref{RQ3 validators} shows how much the validators contribute beyond the raw retrieval power of the agents, and at what cost.
+%TODO each item is the removal of  
+\begin{enumerate}[leftmargin=*] 
+\item \emph{NoConsensus}: % todo, also remove seed validator in this sense
+each extraction agent runs a single \ac{LLM} pass instead of two voting passes;
+the vote in \autoref{tab:strategies} is replaced by simply keeping every
+proposed link. 
+
+\item \emph{NoEntity valid}
+
+\item \emph{NoCitation}: the pronoun agent no longer has to provide a quoted antecedent sentence; resolved candidates are accepted directly.
+
+\item \emph{NoValidator}: both above combined, i.e.\ no validators anywhere.
+\end{enumerate} 
+
+%TODO, maybe not need full pipeline run, we can directly trace how many tp / fp killed by each validator, thats better
+We compare these to \emph{Full}, the full \approach{} pipeline. 
+For each variant we measure \fone, per-component \fone, sentence coverage, and 
+noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls 
+(mean tokens per project), since the validators roughly double the number of 
+calls for the affected agents. 
+The outcome of \ref{RQ3 validators} shows how much the validators contribute beyond the raw retrieval power of the agents, and
+at what cost.
 
 \subsubsection{Experiments for \ref{RQ4 ablation} -- Per-Agent Ablation}
 \label{sec:exp:rq4}
 
-We measure each linker agent by leave-one-out ablation:
-\emph{$-$Explicit}, \emph{$-$Contextual}, \emph{$-$Anaphoric}, \emph{$-$Abbreviated}.
-The knowledge layer (\autoref{sec:approach}) stays in place in every run, because all four agents read from it.
+We measure each linker agent by leave-one-out ablation: \emph{$-$Explicit},
+\emph{$-$Contextual}, \emph{$-$Anaphoric}. 
+The knowledge layer (\autoref{sec:approach}) stays in place in every run, because all four
+agents read from it. 
+%overhaul, we do not report those metrics, but report fp,tp percentage and overlap among linkers, or other better approach, design for that
 For each variant we report:
-\begin{enumerate*}[label=(\roman*)]
-    \item the change in macro \fone over the five projects,
-    \item the change in sentence coverage and noise rate, which tells us whether the removed agent added recall or only filtered false positives, and
-    \item how many true positives are lost that no other agent recovers.
-\end{enumerate*}
-We also report \emph{Explicit-only}, a single-agent baseline that the other agents extend on top of.
-This experiment shows whether the four reference categories really need separate agents, or whether one agent already covers the others on this benchmark.
+\begin{enumerate*}[label=(\roman*)] \item the change in macro \fone over the
+five projects, \item the change in sentence coverage and noise rate, which tells
+us whether the removed agent added recall or only filtered false positives, and
+\item how many true positives are lost that no other agent recovers.
+\end{enumerate*} We also report \emph{Explicit-only}, a single-agent baseline
+that the other agents extend on top of. This experiment shows whether the four
+reference categories really need separate agents, or whether one agent already
+covers the others on this benchmark.
 
 \subsection{Dataset}
 \label{sec:dataset}

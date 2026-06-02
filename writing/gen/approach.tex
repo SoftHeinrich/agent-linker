@@ -1,0 +1,359 @@
+% ============================================================================
+% ICSE Paper -- Approach Section
+% Generated from writing/gen/approach5.tex and the current S-Linker13 Min
+% implementation (approach/src/llm_sad_sam/linkers/experimental/s_linker13_min.py).
+% ============================================================================
+
+\section{AALinker}\label{sec:approach}
+
+This section introduces AALinker, a training-free pipeline for
+recovering trace links between architecture documents and architectural
+model components.
+Given an architecture document~$D$ with sentences
+$S = \{s_1, \ldots, s_n\}$ and an architectural model with components
+$C = \{c_1, \ldots, c_m\}$, AALinker produces a set of trace links
+$L \subseteq S \times C$.
+Each link $(s_i, c_j)$ states that sentence~$s_i$ discusses the
+architectural responsibilities, behavior, or interactions of
+component~$c_j$.
+
+The core difficulty is that architecture documents rarely use a single
+stable naming convention.
+A component can be referenced by its canonical model name, by an
+abbreviation, by a trailing word of a compound name, by a local
+synonym, by a functional role, or by a pronoun in a later sentence.
+At the same time, component names are often ordinary technical words,
+such as \texttt{Core}, \texttt{Adapter}, \texttt{Logic}, or
+\texttt{Storage}.
+Therefore, increasing recall by broadening extraction also increases
+the risk of false positives from generic word usage.
+
+AALinker addresses this problem by first learning project-specific
+architectural knowledge, i.e., which component names are ambiguous and
+which document terms denote which components.
+To the best of our knowledge, AALinker is the first trace-link recovery
+pipeline to combine runtime architectural knowledge discovery,
+multi-agent link recovery, and evidence-grounded validation for
+architecture-document-to-model tracing.
+The resulting design is deliberately modular: each agent targets one
+reference shape, while all agents consume the same knowledge base.
+
+\subsection{AALinker in a Nutshell}\label{sec:nutshell}
+
+AALinker is a three-tier directed acyclic graph
+(Figure~\ref{fig:pipeline}).
+Tier~1 learns project knowledge and extracts a first set of explicit
+links.
+Tier~2 runs three link-recovery agents in parallel.
+Tier~3 merges their outputs by priority-ordered deduplication.
+This fan-out/fan-in structure is central: the expensive large language
+model (LLM) calls are parallel where their inputs are independent, and
+their outputs meet only after each agent has applied its own validation
+logic.
+
+\begin{enumerate}
+    \item \textbf{Project knowledge discovery.}
+    Three analyses run concurrently.
+    The model-understanding agent classifies ambiguous component names.
+    The document-understanding agent extracts abbreviations and
+    aliases, and assigns each alias a global or local scope.
+    The seed-extraction agent recovers high-precision explicit links
+    through two complementary LLM passes.
+
+    \item \textbf{Candidate link recovery.}
+    Three agents then consume the Tier~1 outputs.
+    Seed reference disambiguation removes false positives from the
+    explicit seed set.
+    Contextual reference extraction recovers alias-based and functional
+    references.
+    Anaphoric coreference resolution links pronoun-bearing sentences to
+    their antecedent components.
+
+    \item \textbf{Link consolidation.}
+    AALinker converts validated candidates into trace links and removes
+    duplicates.
+    When multiple agents recover the same sentence--component pair, the
+    first source in the order seed, contextual, anaphoric is kept.
+\end{enumerate}
+
+Two design rules are used throughout the pipeline.
+\textbf{Consensus for open-ended extraction.}
+When the LLM can hallucinate candidates, AALinker uses two independent
+passes and keeps only agreed candidates, except for exact-name seed
+matches whose evidence is directly present in the sentence.
+\textbf{Evidence for validation.}
+When a decision can be checked, AALinker asks the LLM to expose the
+evidence it used, such as matched spans, mention types, anchor
+sentences, or antecedent sentence numbers.
+This makes the LLM a proposer or judge over explicit evidence rather
+than an opaque end-to-end classifier.
+
+\begin{table}[t]
+\caption{AALinker recovery agents and their validation logic.}
+\label{tab:strategies}
+\centering\footnotesize
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Agent} & \textbf{Reference type} & \textbf{Knowledge used} & \textbf{Acceptance rule} & \textbf{LLM calls} \\
+\midrule
+Seed & Canonical and explicit names & Ambiguity, aliases, anchors & Asym.\ seed vote + rubric disambig. & 2 + 1/comp. \\
+Contextual & Alias, role, interaction & Global aliases, ambiguity & Extract $\cap$ validate $\cap$ & 2 + 2--3 \\
+Anaphoric & Pronouns & Component list, antecedents & Cited antecedent check & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.94\linewidth}{
+\small
+\textbf{AALinker pipeline.}
+Tier~1 runs model understanding, document understanding, and seed
+extraction in parallel.
+Tier~2 runs seed disambiguation, contextual extraction and validation,
+and coreference resolution in parallel.
+Tier~3 merges validated links by priority-ordered deduplication.
+}}
+\caption{AALinker organizes knowledge discovery and link recovery as a
+three-tier DAG.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Project Knowledge Discovery}\label{sec:knowledge}
+
+Tier~1 builds the knowledge that later agents need in order to
+interpret project-specific vocabulary.
+This tier has no dependency among its three analyses, so AALinker runs
+them in parallel.
+The output is a model-knowledge object, a document-knowledge object,
+and a raw seed-link set.
+
+\subsubsection{Model Understanding}\label{sec:model-understanding}
+
+The model-understanding agent identifies component names whose surface
+form can also be used as ordinary technical language.
+This information is needed because a sentence containing the word
+``storage'' does not necessarily refer to a component named
+\texttt{Storage}; it may describe a general storage concern.
+
+AALinker sends the component-name list to a few-shot LLM classifier.
+The prompt separates names into two classes:
+\emph{architectural} names that identify specific roles or
+responsibilities, and \emph{ambiguous} names that writers naturally use
+as general software vocabulary.
+The implementation keeps only single-word names in the ambiguous set.
+This structural constraint prevents CamelCase compounds, multi-word
+names, and acronyms from being treated as generic merely because their
+subwords are common.
+The ambiguous-name set is later used in two places: contextual
+validation applies a generic-word precheck only to ambiguous names, and
+seed disambiguation includes the classification in each component
+dossier.
+
+\subsubsection{Document Understanding}\label{sec:doc-understanding}
+
+The document-understanding agent learns how the document names
+components.
+Specifically, it builds an alias table whose entries map an observed
+term to a canonical component and mark the term as either
+\emph{global} or \emph{local}.
+A global alias is distinctive enough to be used anywhere in the
+document, such as an abbreviation, a CamelCase identifier, or a
+capitalized trailing word.
+A local alias is a single lower-case word that is safe only when the
+surrounding context has already established the referent.
+
+\paragraph{Alias extraction.}
+The first LLM call scans the full document and proposes two kinds of
+mappings.
+Abbreviations are short forms introduced in the text, for example a
+parenthetical definition.
+Synonyms are alternative names that identify exactly one component;
+this category also includes trailing words of compound component names
+when the document uses the trailing word alone.
+The extraction prompt also asks for an alias scope.
+This scope is not cosmetic: contextual extraction receives only global
+aliases, preventing a generic local word from being broadcast into every
+sentence as if it were a project-wide name.
+
+\paragraph{Alias judging.}
+The second LLM call judges the proposed mappings.
+In S-Linker13 Min, this judge uses a compact rubric distilled from the
+earlier numbered rule set while preserving the same worked examples.
+The rubric is intentionally approval-biased.
+It approves abbreviations formed from component initials, unshared
+trailing words of multi-word names, CamelCase identifiers, and
+multi-word phrases containing the component name.
+It rejects only terms that are clearly generic, clearly name another
+component, or clearly refer to the whole system.
+This order matters: false alias rejection permanently removes a
+possible reference form, while false approval can still be filtered by
+Tier~2 validation.
+
+\subsubsection{Seed Extraction}\label{sec:seed-extraction}
+
+The seed-extraction agent finds explicit sentence--component links
+before any learned project knowledge is available.
+It uses two complementary LLM passes over batched document segments.
+The first pass is mention-framed: it asks which components are
+explicitly mentioned or referenced in each sentence.
+The second pass is actor-framed: it asks which components are
+architecturally relevant to the sentence, i.e., whose role, behavior,
+interaction, or responsibility is being described.
+
+The two passes are merged asymmetrically.
+Exact-name matches from either pass are accepted, because the evidence
+appears directly in the sentence and the main risk is missing a true
+mention.
+Non-exact matches, such as synonyms or partial names, are accepted only
+when both passes agree.
+This rule preserves recall for direct component mentions while using
+intersection to suppress hallucinated non-exact references.
+The resulting raw seed links are not final; they are passed to Tier~2
+for knowledge-aware disambiguation.
+
+\subsection{Candidate Link Recovery}\label{sec:recovery}
+
+Tier~2 turns the Tier~1 outputs into validated trace links.
+All three agents depend on Tier~1 knowledge, but they do not depend on
+each other.
+AALinker therefore runs seed disambiguation, contextual extraction and
+validation, and coreference resolution concurrently.
+
+\subsubsection{Seed Reference Disambiguation}\label{sec:seed-disambig}
+
+Seed links are high precision, but they are produced before AALinker
+knows which names are ambiguous and which aliases exist.
+The seed-disambiguation agent revisits those candidates with a
+component-specific dossier.
+For each component, the dossier contains its ambiguity classification,
+known aliases, up to five anchor sentences where the component appears
+by standalone proper-case name, and each seed case with its preceding
+sentence and mention type.
+The mention type distinguishes proper-case standalone uses, lower-case
+uses, dotted-path occurrences, alias uses, and unclear indirect
+matches.
+
+S-Linker13 Min adds a runtime rubric builder before the per-component
+disambiguation loop.
+The builder receives the project document, the component list, and one
+generic compiler-style example that demonstrates the desired rubric
+shape without using benchmark names.
+It emits a four- to six-item decision rubric for the current document.
+This generated rubric replaces the static seed-disambiguation rules in
+every per-component prompt.
+The motivation is that projects differ in how they use names: in one
+document, a component name may usually appear as a grammatical actor;
+in another, the same kind of name may appear mostly in configuration or
+interface descriptions.
+A document-specific rubric captures this regularity before individual
+cases are judged.
+
+For each seed case, the LLM returns \textsc{component} when the sentence
+discusses the architectural component and \textsc{other} when the name
+has a different meaning, such as a code path, algorithmic technique,
+embedded sub-entity, different entity, or generic English word.
+The prompt is approve-biased because seed candidates have already
+passed independent extraction.
+If the runtime rubric builder returns no rubric after two attempts,
+the implementation fails rather than silently falling back to a static
+rubric.
+This keeps the S-Linker13 Min variant attributable to its intended
+runtime-rubric design.
+
+\subsubsection{Contextual Reference Agent}\label{sec:entity}
+
+The contextual agent recovers references that are not reliable exact
+seed matches.
+These include global aliases, space-separated forms of compound names,
+functional descriptions, interaction participants, passive mentions,
+and prepositional mentions such as ``handled by'', ``via'', or
+``through'' a component.
+
+\paragraph{Dual-pass extraction.}
+The agent runs the same broad extraction prompt twice independently.
+Both passes receive the component list and the global alias table.
+Each proposed candidate must name a valid component, point to an
+existing sentence, and provide a matched text span that appears in the
+sentence.
+AALinker keeps only the intersection of the two passes.
+Using the same prompt twice avoids mixing prompt-specific biases; the
+remaining disagreement primarily reflects LLM non-determinism.
+
+\paragraph{Evidence bundles.}
+Before validation, AALinker attaches an evidence bundle to each
+candidate.
+The bundle records the matched span, mention type, preceding sentence,
+up to five anchor sentences with confirmed standalone component
+mentions, whether the component name is ambiguous, and the extraction
+rationale.
+Thus, validation sees not only a sentence and component name, but also
+why the proposer believed the link was plausible.
+
+\paragraph{Generic-word precheck.}
+For ambiguous components whose candidate mention appears only in
+lower-case form, AALinker first asks whether the word is used as a
+component reference or as ordinary English.
+Only candidates classified as component references continue to the
+main validation step.
+If the precheck fails to return a parseable answer, the implementation
+keeps the candidates, preserving the recall-first behavior used
+throughout the pipeline.
+
+\paragraph{Two-pass validation.}
+Remaining candidates are judged by two independent validation passes.
+The first pass checks architectural participation: whether the sentence
+names the component as a participant that performs an operation,
+provides a service, is configured, or takes part in system behavior.
+The second pass checks referential specificity: whether the mention
+identifies this specific architectural element rather than a generic
+technical term.
+A candidate is accepted only when both passes approve it.
+This intersection rule is stricter than seed disambiguation because the
+contextual extractor deliberately starts from a larger and noisier
+candidate space.
+
+\subsubsection{Anaphoric Coreference Agent}\label{sec:coref}
+
+Some valid trace links occur in sentences that contain no component
+name.
+For example, a sentence may introduce a component and the next sentence
+may describe what ``it'' does.
+The anaphoric agent targets these links by scanning sentences that
+contain pronouns such as \emph{it}, \emph{they}, \emph{this},
+\emph{these}, \emph{that}, \emph{those}, \emph{its}, and
+\emph{their}.
+
+For each pronoun-bearing sentence, AALinker provides a local context
+window of five sentences before and five sentences after the target,
+with the target sentence marked explicitly.
+The LLM returns only resolutions it is certain about, including the
+target sentence, pronoun, component, antecedent sentence number, and
+antecedent quote.
+The implementation then checks that the component is a valid model
+component and that the cited antecedent exists.
+For canonical-name antecedents, the antecedent sentence must contain a
+standalone mention of the component name.
+For alias-based antecedents, the LLM must explicitly mark the
+antecedent as alias-based.
+Only resolutions passing these checks become coreference links.
+
+\subsection{Link Consolidation}\label{sec:merge}
+
+Tier~3 is intentionally simple.
+The seed, contextual, and anaphoric agents have already applied their
+own acceptance rules, so consolidation does not reinterpret their
+evidence.
+AALinker converts validated contextual candidates to trace links,
+concatenates the seed, contextual, and anaphoric outputs, and removes
+duplicate sentence--component pairs.
+Deduplication is priority ordered: seed links are kept first, then
+contextual links, then anaphoric links.
+This order preserves the most direct evidence when multiple agents
+recover the same link while still allowing later agents to contribute
+links that explicit matching cannot find.
+
+The final output is a set of documentation-to-model trace links.
+These links can be evaluated directly at the architecture level or
+composed with existing model-to-code mappings to recover
+documentation-to-code traces.

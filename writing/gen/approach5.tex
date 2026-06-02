@@ -1,0 +1,406 @@
+% ============================================================================
+% ICSE Paper — Approach Section (v5: updated for S-Linker12e)
+%
+% Changes from v4:
+%   - Layer 1 now runs 3 analyses in parallel (added seed extraction);
+%     no 1a/1b sub-tier split
+%   - Trailing-word enrichment merged into document analysis
+%   - Seed validation replaces evidence-stratified revalidation:
+%     per-component disambiguation (COMPONENT/OTHER) with component
+%     profile, anchor sentences, and approve-biased framing
+%   - Entity validation uses pure intersection (no alias stratification)
+%   - Abbreviated reference agent removed (trailing words feed into
+%     entity extraction via alias table)
+%   - Consolidation simplified to priority-ordered dedup (3 agents)
+%   - Table and figure updated for 3-agent Layer 2
+% ============================================================================
+
+\section{AALinker}\label{sec:approach}
+
+We propose a multi-agent workflow for recovering trace links between
+architectural documents and model components.
+Given an architecture document~$D$ consisting of sentences
+$S = \{s_1, \ldots, s_n\}$ and an architectural model containing
+components $C = \{c_1, \ldots, c_m\}$, our approach produces a set of
+trace links $L \subseteq S \times C$, where each link $(s_i, c_j)$
+asserts that sentence~$s_i$ discusses component~$c_j$'s architectural
+responsibilities.
+
+Two problems make this task difficult.
+First, \emph{reference diversity}: documents refer to components by
+canonical name, abbreviation, functional description, trailing word,
+or pronoun.
+No single extraction strategy handles all of these forms.
+Second, \emph{name ambiguity}: component names like \texttt{Cache} or
+\texttt{Facade} are common English words that appear frequently
+without referring to any component, so broadening extraction to
+capture diverse references also increases false positives.
+
+Addressing both problems requires structured knowledge: which names
+are ambiguous, and what abbreviations, synonyms, and short forms map
+to which component.
+To the best of our knowledge, this knowledge does not exist in advance
+and must be discovered at runtime, using the same LLM that will
+consume it, with the risk of hallucinated mappings or misjudged
+ambiguity.
+We call this the \emph{architectural context knowledge gap}.
+
+Existing approaches address only part of this problem.
+Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string
+similarity and cannot resolve indirect references or discourse
+dependencies.
+LLM-based classifiers such as LISSA~\cite{lissa} add semantic
+understanding but have no mechanism to build alias mappings or classify
+name ambiguity before linking, treat each sentence in isolation, and
+do not address LLM non-determinism.
+
+Our pipeline closes the knowledge gap first, then leverages multiple
+link-recovery agents that consume the acquired knowledge.
+It is organized as a DAG (Figure~\ref{fig:pipeline}) with three
+layers:
+
+\begin{enumerate}
+\item \textbf{Project knowledge discovery} (Layer~1):
+  Three analyses run in parallel: a \emph{model understanding} agent
+  classifies component name ambiguity, a \emph{document understanding}
+  agent discovers component aliases---including trailing-word
+  references---and a \emph{seed extraction} agent recovers an initial
+  set of explicit-reference links via two complementary LLM passes
+  (\S\ref{sec:knowledge}).
+  Seed extraction requires no Layer~1 knowledge, so it runs
+  concurrently with the knowledge analyses.
+
+\item \textbf{Candidate link recovery} (Layer~2):
+  Three complementary agents refine and extend the initial link set:
+  \emph{seed reference disambiguation} filters false positives from
+  the seed using the acquired knowledge,
+  \emph{contextual entity extraction} recovers alias-based and
+  functional references,
+  and \emph{anaphoric coreference resolution} resolves pronominal
+  references.
+  The agents run in parallel, each targeting a different type of
+  component reference
+  (Table~\ref{tab:strategies}, \S\ref{sec:recovery}).
+
+\item \textbf{Link consolidation} (Layer~3):
+  All recovered links are merged into the final set by deduplicating
+  overlaps with first-seen priority (\S\ref{sec:merge}).
+\end{enumerate}
+
+Since our agents are LLM-based, their outputs may contain noise such
+as hallucinated results and non-deterministic variation across runs.
+To handle them, our pipeline uses two cross-cutting
+patterns.~\todo{cite source}
+\emph{Multi-pass consensus}: for open-ended tasks, we run two
+independent LLM passes with task-specific agreement rules to filter
+single-run variance.
+\emph{Citation-grounded verification}: for verifiable tasks, the LLM
+must produce checkable evidence---such as antecedent sentence
+numbers---that deterministic code can verify.
+
+\begin{table}[t]
+\caption{Link recovery agents and their properties.}
+\label{tab:strategies}
+\centering\footnotesize
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Agent} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{Consensus pattern} & \textbf{LLM} \\
+\midrule
+Explicit & Canonical name & Alias table, ambig.\rlap{$^\ddagger$} & Asym.\ voting + disambig. & 2+1/comp\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + $\cap$ valid. & 2+2--3\rlap{$^\dagger$} \\
+Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\scriptsize $^*$2 extraction passes (Layer~1) + 1~disambiguation pass per component (Layer~2).
+$^\dagger$2 extraction + 2--3 validation (generic-mention detection for ambiguous names, then 2 voting passes).
+$^\ddagger$Extraction needs no knowledge (runs parallel with Layer~1);
+disambiguation uses the alias table and ambiguity classification once Layer~1 completes.}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\input{fig-pipeline}
+% ---------------------------------------------------------------------------
+
+\subsection{Project Knowledge Discovery}\label{sec:knowledge}
+
+Architectural documents contain diverse references that often confuse
+link-recovery agents.
+In addition, component names are often common English words
+(\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{Redis}).
+These words appear frequently without referring to the component that
+shares the same name, posing a challenge for deep understanding of
+both document and model in the architectural context.
+
+Layer~1 builds a shared knowledge base and a first set of candidate
+links.
+Three analyses run in parallel: a \emph{model understanding agent}
+analyzes the architectural model to identify ambiguous components
+(\S\ref{sec:model-understanding}), a \emph{document understanding
+agent} extracts component aliases from the document---including
+LLM-classified trailing-word mappings
+(\S\ref{sec:doc-understanding})---and a \emph{seed extraction agent}
+recovers explicit-reference links without requiring any knowledge
+(\S\ref{sec:seed}).
+Once all three complete, the resulting knowledge base---a list of
+ambiguous components and an alias mapping table---together with the
+raw seed links, is consumed by all Layer~2 agents.
+
+\subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
+
+Architectural components operate at a high level of abstraction, so
+their names vary widely in specificity.
+Constructed identifiers like \texttt{TaskScheduler} unambiguously name
+architectural roles, but single common-English words like
+\texttt{Core} or \texttt{Adapter} appear frequently both when
+referring to a specific component and when used as general
+concepts.~\todo{cite source}
+This poses challenges for trace link recovery: blindly matching
+mentions of such names would produce false positives, and an LLM
+lacking explicit reasoning about name ambiguity may conflate general
+usage with component references.
+Therefore, we analyze component names from the input architecture model
+to identify \emph{ambiguous} components---those whose names can also
+be used as general concepts (e.g., \emph{logic}, \emph{storage}).
+This classification serves as knowledge to guide downstream agents
+when evaluating candidate links.
+
+Motivated by prior work on CamelCase identifiers and
+acronyms,~\todo{cite} we combine structural rules with a few-shot
+LLM prompt to mark ambiguous components.
+Structural cues---CamelCase boundaries, multiple words, all-uppercase
+letters---resolve most cases without LLM involvement: names exhibiting
+these cues are classified as \emph{architectural} (non-ambiguous).
+The pipeline submits remaining single-word names to the LLM with
+few-shot examples for \emph{ambiguous} classification.
+The result feeds downstream decisions:
+which candidates require generic-mention detection
+(\S\ref{sec:entity}) and
+which trailing words need capitalized matching
+(\S\ref{sec:doc-understanding}).
+
+Additionally, the analysis extracts \emph{partial words} shared among
+components.
+Because architectural models are hierarchical, a document may refer to
+a parent component using only the shared trailing word, creating two
+sources of ambiguity:
+\begin{enumerate}
+  \item Two components sharing a trailing word
+    (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}): when the
+    document says only ``Scheduler,'' it is unclear which component is
+    meant.
+  \item A component and a general concept: the trailing word may be
+    generic English rather than a component reference.
+    \todo{concrete example}
+\end{enumerate}
+Such information is used during alias enrichment
+(\S\ref{sec:doc-understanding}) and made available to Layer~2 agents.
+
+\subsubsection{Architectural Document Understanding}\label{sec:doc-understanding}
+
+Architectural documents contain heavy use of synonyms and
+abbreviations.~\todo{cite support}
+This step finds all alternative names for architectural components
+so that downstream agents can recognize references that do not use the
+canonical component name.
+
+\paragraph{Alternative name discovery.}
+An LLM extracts three categories of alternative names:
+\begin{itemize}
+    \item \emph{Abbreviations}: short forms introduced via parenthetical
+      definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
+    \item \emph{Synonyms}: alternative names that unambiguously identify
+      exactly one component.
+      \todo{example from prompt}
+    \item \emph{Partial references}: trailing words of multi-word
+      component names used alone (e.g., ``Dispatcher'' for
+      \texttt{EventDispatcher}).
+\end{itemize}
+
+Different alias types offer different validation opportunities.
+Abbreviations carry structural evidence---their letters match the
+component name's initials---enabling rule-based auto-approval.
+Synonyms lack such structure and need semantic judgment, but
+CamelCase identifiers can still be auto-approved since they are
+constructed names unlikely to be ordinary English.
+A calibrated few-shot judge validates the discovered mappings:
+the judge is instructed to auto-approve abbreviations whose letters
+match the component name's initials and CamelCase identifiers;
+remaining candidates are judged semantically, rejecting generic
+terms (\emph{system}, \emph{process}).
+
+\paragraph{Trailing-word enrichment.}
+Among the three alias types, partial references require the most
+careful handling: trailing-word shorthands are pervasive in
+architecture documents, but many trailing words are generic English
+words whose referential status depends on context.
+After the core discovery and judge steps, a trailing-word enrichment
+step identifies additional partial-reference aliases that the initial
+extraction may have missed.
+
+The step structurally identifies candidates: trailing words of
+multi-word component names that (a)~appear in at least one sentence
+where the full component name is absent, (b)~are not shared by
+multiple components, and (c)~are at least four characters long.
+An LLM-based check classifies each candidate by examining the
+sentences where the trailing word appears without the full name,
+determining whether the word is used as a standalone reference to
+the component or as an ordinary English word.
+Only candidates classified as component references are added to the
+alias table.
+The resulting alias table is consumed by all three recovery agents.
+
+\subsubsection{Seed Extraction}\label{sec:seed-extraction}
+
+The simplest form of component reference is the canonical name itself.
+A self-contained extractor uses two complementary LLM passes over
+batched document segments:
+Pass~A (mention-framed) asks which components are explicitly
+mentioned; Pass~B (actor-framed) asks which component is the
+primary actor.
+Both passes reject names inside hierarchical namespace paths and
+generic English words.
+Exact-name matches from \emph{either} pass are accepted (union);
+non-exact matches require agreement from \emph{both}
+(intersection)---a rule we call \emph{asymmetric voting}.
+This reflects that exact matches are high-confidence and reliably
+found by a single pass, while non-exact matches risk hallucination
+and benefit from independent agreement.
+
+Because seed extraction requires no Layer~1 knowledge, it runs in
+parallel with knowledge acquisition.
+The raw seed links are then refined by the seed disambiguation agent
+in Layer~2 (\S\ref{sec:seed-disambig}).
+
+% ---------------------------------------------------------------------------
+
+\subsection{Candidate Link Recovery}\label{sec:recovery}
+
+With ambiguity classifications and the enriched alias table in hand,
+three agents target distinct reference types using this shared
+knowledge base.
+All three agents run in parallel.
+
+\subsubsection{Seed Reference Disambiguation}\label{sec:seed-disambig}
+
+The seed extractor produces high-precision links but operates without
+knowledge of which names are ambiguous or what aliases exist.
+With Layer~1 knowledge now available, the seed links can be refined:
+some candidates may refer to code-level identifiers, generic English
+words, or techniques that share a component's name rather than the
+component itself.
+
+The agent groups raw seed links by component and constructs a
+per-component prompt containing three elements:
+\begin{enumerate}
+  \item A \emph{component profile} summarizing the component's
+    ambiguity classification and known aliases from Layer~1.
+  \item \emph{Anchor sentences}---up to five sentences elsewhere in the
+    document where the component name appears in proper case but is
+    \emph{not} in the seed set---providing calibration examples of
+    confirmed references.
+  \item Each seed link with its sentence text, preceding sentence, and
+    a \emph{mention classification} (proper-case standalone,
+    lowercase, inside dotted path, via alias, or indirect).
+\end{enumerate}
+
+For each seed link, the LLM classifies the reference as
+\textsc{component} (the sentence discusses the architectural
+component) or \textsc{other} (the name carries a different meaning:
+code-level notation, technique, embedded sub-entity, different entity,
+or generic English).
+The prompt is approve-biased---when uncertain, the LLM is instructed
+to choose \textsc{component}---reflecting the high precision of the
+seed extractor's asymmetric voting.
+Rejected links are removed; approved links proceed to consolidation.
+
+\subsubsection{Contextual Reference Agent}\label{sec:entity}
+
+Alias-based and functional references require knowledge that the
+seed extractor lacks, but broadening the extraction scope also
+increases the risk of hallucinated links.
+Running the \emph{same} broad-scope prompt twice independently
+and keeping only shared results filters out hallucinations while
+preserving the recall benefit of broader scope.
+Using two different prompts would introduce prompt-specific biases;
+using the same prompt ensures that disagreements between the two
+runs reflect only LLM non-determinism.
+
+Knowledge-enriched prompts receive the known aliases from the
+alias table, enabling recognition of abbreviations, synonyms, and
+partial names that the seed extractor cannot match.
+The extraction scope includes space-separated compound forms,
+functional descriptions by name or role, interaction participants
+(``X sends data to Y'' covers both X and Y),
+passive and prepositional mentions (``handled by X'', ``via X'',
+``through X''), and known alias occurrences.
+The same prompt runs twice independently, and the pipeline keeps
+only candidates found in both passes.
+
+\paragraph{Validation.}
+Candidates undergo two-stage validation:
+\begin{enumerate}
+    \item \emph{Generic-mention detection:}
+      For components whose names were classified as ambiguous by
+      the model understanding agent (\S\ref{sec:model-understanding}),
+      an LLM determines whether each lowercase occurrence is a
+      component reference or ordinary English usage, given the
+      surrounding sentence context and anchor sentences where the
+      full name appears;
+      the pipeline rejects ordinary-usage occurrences.
+    \item \emph{Two-pass intersection:}
+      Two independent LLM passes with complementary
+      foci---\emph{architectural participation} (does the sentence
+      name this component as an architectural participant performing
+      operations or providing services?)
+      and \emph{referential specificity} (is the component name used
+      to identify this specific architectural element, or does it
+      serve as a generic technical term?)---validate remaining
+      candidates.
+      Each candidate receives an evidence context including matched
+      text span, mention type, preceding sentence, and anchor
+      sentences from elsewhere in the document.
+      A candidate is accepted only if \emph{both} passes approve
+      (intersection).
+\end{enumerate}
+
+\subsubsection{Anaphoric Reference Agent}\label{sec:coref}
+
+Sentences containing pronouns (\emph{it}, \emph{they}, \emph{this},
+\emph{these}, \emph{that}, \emph{those}, \emph{its}, \emph{their})
+carry valid trace information but contain no component name, so
+the preceding agents cannot find them.
+However, LLMs can fabricate antecedents---claiming a pronoun refers
+to a component that was never mentioned in nearby sentences.
+If the LLM is required to cite a specific antecedent sentence,
+such fabrications become detectable: the cited sentence either
+contains the component name (or a known alias) or it does not.
+A separate validation LLM call would itself be subject to
+fabrication; deterministic string verification eliminates this risk.
+
+Each pronoun-bearing sentence is presented with a $\pm5$-sentence
+context window.
+The broader window provides surrounding text for disambiguation,
+while the prompt instructs the LLM to resolve only within the
+previous 3~sentences---a conservative bound that reduces
+long-distance fabrications.
+The LLM must cite a specific antecedent sentence number.
+The pipeline verifies this citation by checking that the
+component name (or a known alias) appears verbatim in the
+cited antecedent sentence.
+Because this check is strict and deterministic, anaphoric
+links that pass are accepted without further LLM review.
+
+% ---------------------------------------------------------------------------
+
+\subsection{Link Consolidation}\label{sec:merge}
+
+The three recovery agents produce independent candidate
+sets, each already validated by its own consensus pattern
+(Table~\ref{tab:strategies}).
+Because agents run independently, they may discover the
+same $(s_i, c_j)$ pair through different evidence.
+Overlaps are removed by first-seen priority:
+candidates are processed in agent order
+(explicit, contextual, anaphoric),
+and the first source to discover a pair is kept.
