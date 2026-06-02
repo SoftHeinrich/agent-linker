@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: ILinker4 + LLM-Driven Training + Axiom Re-run
-status: planning
-last_updated: "2026-06-02T05:50:00.000Z"
+status: in_progress
+last_updated: "2026-06-02T06:00:00.000Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 7
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.5 COMPLETE — v2.6 kickoff is next.
+**Current focus:** v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 31 (ILinker4 + Prompt Hygiene) — not started
 Plan: —
-Status: Defining requirements → roadmap
-Last activity: 2026-06-02 — Milestone v2.6 started
-Next action: v2.6 kickoff — BBB split strategy revision + TM FP reduction (see v2.5-MILESTONE-AUDIT.md Debts C-1/C-2)
+Status: Roadmap created — ready to begin Phase 31
+Last activity: 2026-06-02 — v2.6 roadmap written (7 phases, 13 REQs + 3 gates)
+Next action: Begin Phase 31 — build `ilinker4.py` (Voyager-native standalone, no inheritance from `ilinker3.py`); audit static prompts in `ilinker4.py` and `s_linker14_voyager.py`; wire ILinker4 into voyager.
 
 ```
-Progress: [##############################] 100% (6/6 phases)
+Progress: [                              ] 0% (0/7 phases)
 ```
 
 ## v2.5 Outcome
@@ -43,35 +43,29 @@ Progress: [##############################] 100% (6/6 phases)
 
 See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
-## v2.5 Design Decisions (Locked)
+## v2.6 Roadmap
 
-All locked in v2.5 requirements and milestone audit (2026-06-01 to 2026-06-02).
+**Phases 31–37.** See `.planning/milestones/v2.6-ROADMAP.md` for full detail.
 
-### A-1 Fix: Oracle Cache Contamination — RESOLVED
+| Phase | Goal | Key REQs |
+|-------|------|----------|
+| 31 | ILinker4 (Voyager-native) + prompt hygiene audit | REQ-V26-01, REQ-V26-02 |
+| 32 | v5 training loop: OD merge + LLM Assessor + cross-split redesign + log structure | REQ-V26-03 through REQ-V26-06 |
+| 33 | Axiom gap fixes: SCN (14 FNs), gerund FPs (7), coref alias (line 1004) | REQ-V26-08, REQ-V26-09, REQ-V26-10 |
+| 34 | Probe tier (2-pass mainline, [TRAIN]/[TEST] separate, budget ≤$10) | REQ-V26-11 |
+| 35 | Range tier (conditional on Probe CONTINUE, budget ≤$25) | REQ-V26-12 |
+| 36 | Confirmation tier (conditional on Range ≥0.87, 3-split, budget ≤$60) | REQ-V26-13 |
+| 37 | Milestone close (unconditional, GATE-01/07/08 audit) | GATE-01, GATE-07, GATE-08 |
 
-Oracle cache key in `voyager_train_tlr_v4_beta.py` lines 461–463 now includes `bch = _bank_content_hash(bank)`.
-Split-2 committed 12 patterns in Pass 1 vs 0/5 in v2.4. Fix validated.
+**REQ-V26-07 (GATE-01 regression) applies throughout all phases.**
+**Total training budget cap: ≤$80 (Phases 34–36).**
 
-### A-3 Fix: Probation Variance — RESOLVED
-
-`delta >= 0.005` threshold correctly blocks O+D on passes 2–5 (LLM run-to-run variance).
-Side effect: ≥3/5 passes criterion (REQ-V25-11 SC-2) structurally impossible — expected correct behavior.
-
-### A-4 Fix: D Slot Steering — RESOLVED
-
-Underfilled-slot list in D prompt steered Distillator toward 5/6 new slots in Phase 27 Pass 1.
-
-### B-1: 15-Slot Expansion — RESOLVED
-
-6 new slot constants defined; ILinker3Injected subclass active; 4 inline prompts wired.
-5/6 new slots have committed patterns (SEED_EXTRACTION_RULES + SEED_ACTOR_RULES not populated).
-
-## Standing Gates (post-v2.5)
+## Standing Gates (post-v2.5, into v2.6)
 
 - **GATE-01**: PASS. s_linker13_min unchanged. gpt-5.4 0.9069, Claude 0.9506. ✅
 - **GATE-06**: PASS. All bank patterns and axiom diffs clean (0 benchmark vocabulary). ✅
 - **GATE-07**: PASS. DEFAULT_BANK_PATH = v2.5 cross_split_final_bank.json. Docstring updated. ✅
-- **GATE-08**: PASS. Total ~$62 under $80 cap. ✅
+- **GATE-08**: PASS. Total ~$62 under $80 cap (v2.5). ✅
 
 ## Canonical Artifact (current)
 
@@ -81,31 +75,23 @@ Underfilled-slot list in D prompt steered Distillator toward 5/6 new slots in Ph
 ## Experimental Artifact (current)
 
 - **`src/llm_sad_sam/linkers/experimental/s_linker14_voyager.py`** (`experimental=True`, `canonical=False`)
-- v2.5 WEAK: gpt-5.4 cross-split macro F1 0.8911 | Bank: 12 patterns (8 slots)
+- v2.5 WEAK: gpt-5.4 cross-split macro F1 0.8911 | Bank: 12 patterns (8 slots populated of 15)
 - DEFAULT_BANK_PATH: `results/voyager_v4b_v25/confirmation/cross_split_final_bank.json`
 
-## v2.6 Kickoff Candidates
-
-See `v2.5-MILESTONE-AUDIT.md` Debts section for full list. Priority order:
+## v2.6 Known Debts (from v2.5)
 
 | Priority | ID | Description |
 |----------|----|-------------|
-| HIGH | C-1 | BBB split strategy — add BBB-in-train partition to all splits (or dedicated BBB split) |
-| HIGH | C-2 | TM FP reduction — Oracle FM-1/FM-2 patterns now documented; need pass to commit them |
-| MEDIUM | C-3 | SEED_EXTRACTION_RULES + SEED_ACTOR_RULES via BBB-in-train rerun |
-| MEDIUM | C-4 | Section-context axiom redesign (`2026-06-01-design-better-axioms-section-context-responsibility.md`) |
-| LOW | C-5 | Flex tier cost optimization (`260601-flex-tier-integration.md`) |
-
-## Pending Todos (post-v2.5)
-
-- `260601-flex-tier-integration.md` — deferred to v2.6+
-- `2026-06-01-design-better-axioms-section-context-responsibility.md` — v2.6 candidate
-- `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md` — v2.6 candidate
-- `2026-06-02-redesign-voyager-training-gate-and-cross-split-logic.md` — v2.6 candidate (empirical gate + cross-split fix)
+| HIGH | C-1 | BBB split strategy — SEED_EXTRACTION_RULES + SEED_ACTOR_RULES empty (ILinker4 needed) |
+| HIGH | C-2 | TM FP reduction — FM-1/FM-2 patterns documented; LLM Assessor should commit them |
+| HIGH | C-3 | LLM Assessor gate — replace F1-delta Gate A+B with error-set reasoning |
+| HIGH | C-4 | Axiom gaps: SCN (14 FNs), gerund FPs (7), coref alias (line 1004 code path) |
+| MEDIUM | C-5 | Cross-split redesign — independent per-split train/eval vs axiom-only baseline |
+| LOW | C-6 | Flex tier cost optimization (deferred to v2.7+) |
 
 ## Session Continuity
 
 Last session: 2026-06-02T06:00:00.000Z
-Stopped at: v2.5 milestone close complete
+Stopped at: v2.6 roadmap created (milestones/v2.6-ROADMAP.md written)
 Resume file: None
-Next action: v2.6 kickoff (`/gsd-new-milestone`)
+Next action: Begin Phase 31 (`/gsd-plan-phase 31`)

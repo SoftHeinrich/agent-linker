@@ -7,7 +7,9 @@
 - ✅ **v2.1 — Cleanup + Prompt Simplification** — Phases 10–13 — shipped 2026-06-01. `s_linker13_min` PROMOTED (Claude macro 0.9506, gpt-5.4 macro 0.9069). 3 trims shipped (Step 0 dead-code + trim1 distillation + trim9 runtime seed rubric) + 7 frontier variants documented. Voyager-TLR methodology validated for v2.2. See [`milestones/v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) and [`milestones/v2.1-MILESTONE-AUDIT.md`](milestones/v2.1-MILESTONE-AUDIT.md).
 - ✅ **v2.2 — Probe-Wave Trimmed Close** — `s_linker13_min` unchanged + Probe D opt-in (gpt-5.4 only) — shipped 2026-06-01. 4 probes ran; 1 strong survivor (Probe D upstream coref rubric) shipped as opt-in carve-out. Voyager v4 multi-role + per-backend cache infrastructure + Probe A' vocab fix carried to v2.3 as proven prereqs. See [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) and [`milestones/v2.2-MILESTONE-AUDIT.md`](milestones/v2.2-MILESTONE-AUDIT.md).
 - ✅ **v2.3 — Trained Multi-Role Prompt Replacement (β architecture)** — Phases 14–19 — shipped 2026-06-01. WEAK verdict (cross-split macro 90.5%, gpt-5.4). `s_linker14_voyager` ships experimental=True. See [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) and [`milestones/v2.3-MILESTONE-AUDIT.md`](milestones/v2.3-MILESTONE-AUDIT.md).
-- 🔲 **v2.4 — Probation Gate Fix + Axiom Improvements + v4 Re-run** — Phases 20–24 — in progress 2026-06-01. Fix 3 v2.3 debts (broken gate D-1 + axiom vocabulary ceiling D-2/D-3); re-run β training to close −0.19pp gap to canonical and target STRONG (≥ 0.9173). See [`milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md).
+- ✅ **v2.4 — Probation Gate Fix + Axiom Improvements + v4 Re-run** — Phases 20–24 — shipped 2026-06-01. WEAK verdict (cross-split macro 90.5%, gpt-5.4). Oracle cache contamination + slot steering gap identified; v2.5 scoped to fix both. See [`milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md) and [`milestones/v2.4-MILESTONE-AUDIT.md`](milestones/v2.4-MILESTONE-AUDIT.md).
+- ✅ **v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run** — Phases 25–30 — shipped 2026-06-02. WEAK verdict (cross-split macro 89.1%, gpt-5.4). Oracle cache fix validated (split-2 committed Pass 1); 15-slot expansion: 5/6 new slots with committed patterns. See [`milestones/v2.5-ROADMAP.md`](milestones/v2.5-ROADMAP.md) and [`milestones/v2.5-MILESTONE-AUDIT.md`](milestones/v2.5-MILESTONE-AUDIT.md).
+- 🔲 **v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run** — Phases 31–37 — in progress 2026-06-02. Replace mechanical training gate with LLM Assessor; build ILinker4 (Voyager-native seed extractor); fix 3 axiom gaps (SCN 14 FNs, gerund FPs 7, coref alias); re-run full training tiers. Target: exceed canonical (90.69% gpt-5.4). See [`milestones/v2.6-ROADMAP.md`](milestones/v2.6-ROADMAP.md).
 
 ## Phases
 
@@ -55,44 +57,78 @@ Key findings: split-fragility (BBB in training → split2 empty bank), minimal c
 </details>
 
 <details>
-<summary>🔲 v2.4 — Probation Gate Fix + Axiom Improvements + v4 Re-run — IN PROGRESS 2026-06-01</summary>
+<summary>✅ v2.4 — Probation Gate Fix + Axiom Improvements + v4 Re-run — SHIPPED 2026-06-01 — WEAK verdict (90.5%)</summary>
 
 ### v2.4 Phase Summary
 
-- [ ] **Phase 20: Infrastructure Prep** — Fix traceability gate (Gate A + Gate B) in `voyager_train_tlr_v4_beta.py`; improve axioms (COREF_RULES + SEED_DISAMBIGUATION_RULES) + code change in `s_linker14_voyager.py`; 5-dataset eval as pre-training baseline. Zero LLM training budget. 3 independent plans.
-- [ ] **Phase 21: Probe Tier** — β training with fixed gate + improved axioms on mainline split (2 passes, gpt-5.4, $5–10). Cheap-kill: train macro < 0.87 after pass 2 → document gate fix as finding.
-- [ ] **Phase 22: Range Tier** — CONDITIONAL (Phase 21 CONTINUE). Full convergence run (macro ≥ 0.90, max 5 passes), 5-dataset eval, 3-tier verdict (gpt-5.4, $15–25).
-- [ ] **Phase 23: Confirmation Tier** — CONDITIONAL (Phase 22 ≥ 0.87). 3-split sweep, cross-split aggregation, final verdict + dual-artifact registration (gpt-5.4, $40–60). Validates split-2 (BBB) commits ≥1 pattern in 3/5 passes.
-- [ ] **Phase 24: Milestone Close** — Unconditional. Milestone audit, requirements close-out, archive.
+- [x] **Phase 20: Infrastructure Prep** — Fixed traceability gate (Gate A + Gate B), improved axioms (COREF_RULES + SEED_DISAMBIGUATION_RULES), 5-dataset pre-training baseline eval. (completed 2026-06-01)
+- [x] **Phase 21: Probe Tier** — β training with fixed gate + improved axioms on mainline split. Verdict: CONTINUE. (completed 2026-06-01)
+- [x] **Phase 22: Range Tier** — Full convergence run; WEAK verdict (macro 90.5%). (completed 2026-06-01)
+- [x] **Phase 23: Confirmation Tier** — 3-split sweep; WEAK verdict (cross-split 90.5%). Split-2 zero commits — oracle cache contamination identified as root cause. (completed 2026-06-01)
+- [x] **Phase 24: Milestone Close** — Milestone audit, requirements close-out, archive. (completed 2026-06-01)
 
-See `.planning/milestones/v2.4-ROADMAP.md` for full phase details, plans, success criteria, and requirement coverage.
+Key findings: oracle cache contamination (all splits got identical D proposals), slot steering gap (ENTITY_EXTRACTION_RULES never proposed), 2 infrastructure bugs catalogued for v2.5. See `.planning/milestones/v2.4-ROADMAP.md` and `.planning/milestones/v2.4-MILESTONE-AUDIT.md`.
 
 </details>
 
-## Progress Table (v2.3 — COMPLETE)
+<details>
+<summary>✅ v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run — SHIPPED 2026-06-02 — WEAK verdict (89.1%)</summary>
+
+### v2.5 Phase Summary
+
+- [x] **Phase 25: Infrastructure Fixes** — Oracle cache key fix (`bank_content_hash`), probation threshold raised to `delta >= 0.005`, D prompt underfilled-slot steering. (completed 2026-06-02)
+- [x] **Phase 26: 15-Slot Expansion** — 6 new slot constants in `prompts_v3_axiom.py`, `ILinker3Injected` subclass, 4 inline prompts wired as slots, harness updated for 15-slot schema. (completed 2026-06-02)
+- [x] **Phase 27: Probe Tier** — 2-pass mainline run; oracle fix validated; CONTINUE verdict. (completed 2026-06-02)
+- [x] **Phase 28: Range Tier** — Convergence run; WEAK verdict (macro 89.3%); 5/6 new slots received patterns. (completed 2026-06-02)
+- [x] **Phase 29: Confirmation Tier** — 3-split sweep; WEAK verdict (cross-split macro 89.1%); split-2 committed 12 patterns (oracle fix confirmed). (completed 2026-06-02)
+- [x] **Phase 30: Milestone Close** — Milestone audit, requirements close-out, archive. (completed 2026-06-02)
+
+Key findings: oracle cache fix validated (split-2 committed 12 patterns vs 0/5 in v2.4), 15-slot expansion: 5/6 slots populated (SEED_EXTRACTION_RULES + SEED_ACTOR_RULES empty — ILinker4 needed), lift +1.5pp over axiom-only (87.6%). Debts carried to v2.6: ILinker4, LLM Assessor gate redesign, 3 axiom gaps. See `.planning/milestones/v2.5-ROADMAP.md` and `.planning/milestones/v2.5-MILESTONE-AUDIT.md`.
+
+</details>
+
+<details open>
+<summary>🔲 v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run — IN PROGRESS 2026-06-02</summary>
+
+### v2.6 Phase Summary
+
+- [ ] **Phase 31: ILinker4 + Prompt Hygiene** — Build `ilinker4.py` (Voyager-native standalone); audit + migrate inline behavioral rules to bank slots; wire `ilinker4.py` into `s_linker14_voyager.py`. Zero LLM training budget.
+- [ ] **Phase 32: LLM-Driven Training Loop (v5)** — O+D merge into `OD` role; LLM Assessor replacing Gate A + Gate B; cross-split redesign (independent per-split, axiom-only baseline per held-out); [TRAIN]/[TEST] log separation. Zero LLM training budget.
+- [ ] **Phase 33: Axiom Gap Fixes** — Gap 1 (SCN, 14 FNs); Gap 2 (gerund FPs, 7 FPs); Gap 3 (coref alias flag at line 1004). Axiom text changes only (Gap 3: minimal code branch). Zero LLM training budget.
+- [ ] **Phase 34: Probe Tier** — 2-pass mainline run with v5 loop; [TRAIN]/[TEST] separate; cheap-kill if [TEST] macro < 0.87 after pass 2. Budget ≤ $10.
+- [ ] **Phase 35: Range Tier** — CONDITIONAL (Phase 34 CONTINUE). Convergence run, max 5 passes, 5-dataset eval, 3-tier verdict. Budget ≤ $25.
+- [ ] **Phase 36: Confirmation Tier** — CONDITIONAL (Phase 35 ≥ 0.87). 3-split cross-validation, axiom-only baseline per held-out, final table vs v2.5 (89.1%) and canonical (90.69%). Budget ≤ $60.
+- [ ] **Phase 37: Milestone Close** — Unconditional. Milestone audit, requirements close-out, archive.
+
+See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, success criteria, and requirement coverage.
+
+</details>
+
+## Progress Table (v2.5 — COMPLETE)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 14. β Training Harness Infrastructure | 6/6 | ✅ Complete | 2026-06-01 |
-| 15. Probe Tier | 2/2 | ✅ Complete | 2026-06-01 |
-| 16. Range Tier | 2/2 | ✅ Complete — WEAK verdict (macro 89.8%) | 2026-06-01 |
-| 17. Confirmation Tier | 2/2 | ✅ Complete — WEAK verdict (cross-split 90.5%) | 2026-06-01 |
-| 18. Compact-B Fallback | N/A | Not triggered (Phase 16 ≥ 0.87) | — |
-| 19. Milestone Close | 1/1 | ✅ Complete | 2026-06-01 |
+| 25. Infrastructure Fixes | 1/1 | ✅ Complete | 2026-06-02 |
+| 26. 15-Slot Expansion | 1/1 | ✅ Complete | 2026-06-02 |
+| 27. Probe Tier | 1/1 | ✅ Complete | 2026-06-02 |
+| 28. Range Tier | 1/1 | ✅ Complete — WEAK verdict (macro 89.3%) | 2026-06-02 |
+| 29. Confirmation Tier | 1/1 | ✅ Complete — WEAK verdict (cross-split 89.1%) | 2026-06-02 |
+| 30. Milestone Close | 1/1 | ✅ Complete | 2026-06-02 |
 
-## Progress Table (v2.4 — IN PROGRESS)
+## Progress Table (v2.6 — IN PROGRESS)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 20. Infrastructure Prep | 0/3 | Not started | — |
-| 21. Probe Tier | 0/2 | Not started (depends on Phase 20) | — |
-| 22. Range Tier | 0/TBD | Not started (conditional on Phase 21 CONTINUE) | — |
-| 23. Confirmation Tier | 0/TBD | Not started (conditional on Phase 22 ≥ 0.87) | — |
-| 24. Milestone Close | 0/TBD | Not started | — |
+| 31. ILinker4 + Prompt Hygiene | 0/TBD | Not started | — |
+| 32. LLM-Driven Training Loop (v5) | 0/TBD | Not started (depends on Phase 31) | — |
+| 33. Axiom Gap Fixes | 0/TBD | Not started (depends on Phase 32) | — |
+| 34. Probe Tier | 0/TBD | Not started (depends on Phase 33) | — |
+| 35. Range Tier | 0/TBD | Not started (conditional on Phase 34 CONTINUE) | — |
+| 36. Confirmation Tier | 0/TBD | Not started (conditional on Phase 35 ≥ 0.87) | — |
+| 37. Milestone Close | 0/TBD | Not started | — |
 
 ## Next Milestone
 
-**v2.4 active — Phases 20–24.** Start with Phase 20 (Infrastructure Prep): 3 independent plans (gate redesign, axiom improvements, pre-training eval). No LLM training budget consumed during Phase 20. See `.planning/milestones/v2.4-ROADMAP.md` for full detail.
+**v2.6 active — Phases 31–37.** Start with Phase 31 (ILinker4 + Prompt Hygiene): build `ilinker4.py` as a standalone Voyager-native seed extractor and audit all static prompts. No LLM training budget consumed during Phase 31. See `.planning/milestones/v2.6-ROADMAP.md` for full detail.
 
-Kickoff seed (locked decisions): `.planning/v2.4-prep/v2.4-KICKOFF-SEED.md`.
-Requirements: `.planning/milestones/v2.4-REQUIREMENTS.md`.
+Requirements: `.planning/REQUIREMENTS.md` (v2.6 active section).
