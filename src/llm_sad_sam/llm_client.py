@@ -407,8 +407,7 @@ class LLMClient:
                 max_completion_tokens=4096,
                 timeout=timeout,
             )
-            if os.environ.get("OPENAI_SERVICE_TIER"):
-                create_kwargs["service_tier"] = os.environ["OPENAI_SERVICE_TIER"]
+            create_kwargs["service_tier"] = os.environ.get("OPENAI_SERVICE_TIER", "flex")
             response = client.chat.completions.create(**create_kwargs)
 
             token_usage = None
@@ -939,8 +938,7 @@ class LLMClient:
                     max_completion_tokens=4096,
                     timeout=timeout,
                 )
-                if os.environ.get("OPENAI_SERVICE_TIER"):
-                    create_kwargs["service_tier"] = os.environ["OPENAI_SERVICE_TIER"]
+                create_kwargs["service_tier"] = os.environ.get("OPENAI_SERVICE_TIER", "flex")
                 response = client.chat.completions.create(**create_kwargs)
 
                 # Extract token usage
