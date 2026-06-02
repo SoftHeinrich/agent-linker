@@ -100,6 +100,7 @@ CANONICAL_VARIANTS = [
     "s_linker14_probe_c_selfrefine_clean",   # v2.2 PROBE WAVE — Probe C (Phase 16): 2-iter Self-Refine on alias judge (INFER-02)
     "s_linker14_probe_d_upstream_clean",   # v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric replaces COREF_RULES; NOT canonical
     "s_linker14_voyager",   # v2.3 β architecture consumer (experimental=True): axiom prompts + trained slot-uniform bank patterns; NOT canonical
+    "s_linker15",   # v2.6.1 no-training axiom-only linker (experimental=True): inlined axioms + 3 FP fixes, no bank/training; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -501,6 +502,24 @@ VARIANT_SPECS = {
             "s_linker13_min retains canonical=True regardless of outcome. "
             "Bank path override: VOYAGER4B_BANK_PATH env var. "
             "See .planning/v2.3-prep/v2.3-ARCHITECTURE.md + .planning/milestones/v2.3-ROADMAP.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker15": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker15",
+        class_name="SLinker15",
+        description=(
+            "S-Linker15 — v2.6.1 no-training axiom-only linker (experimental=True, NOT canonical). "
+            "Standalone pipeline (copied from s_linker14_voyager; no inheritance). "
+            "ALL Voyager trained-bank machinery removed: no bank, no _wrap, no reload, no training coupling. "
+            "Axiom prompts INLINED (prompts_v4_axiom B-variant + three v2.6.1 FP fixes: tier/platform alias, "
+            "code-path prefix, functional-alias-as-workflow). Seed extractor: ILinker4 with empty seed rules. "
+            "Registered ALONGSIDE s_linker14_voyager (both retained). "
+            "Backend: gpt-5.4 (per backend policy). "
+            "s_linker13_min retains canonical=True. "
+            "See .planning/milestones/v2.6.1-ROADMAP.md."
         ),
         canonical=False,
         experimental=True,

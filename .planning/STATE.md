@@ -1,17 +1,20 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.7
-milestone_name: BBB Recall Closure (Tier C + Partial-Injection Port + Recall-Oracle)
-status: v2.7 roadmap defined; v2.6 close pending at Phase 37 (folds in GATE-06 'Persistence' taboo fix); Phases 38–42 plan stubs written.
-stopped_at: 2026-06-02 plan landed
-last_updated: "2026-06-02T15:00:00Z"
-last_activity: 2026-06-02 — v2.7 roadmap synthesized from HANDOFF + pending todos + voyager-improvement notes. F1 gate dropped. v2.8 partial-injection + recall-oracle pulled into v2.7. Phases 38–42 plan stubs written.
+milestone: v2.6.1
+milestone_name: Axiom FP Root-Cause Fixes (PATCH)
+status: ACTIVE — v2.6.1 patch milestone initialized 2026-06-02. v2.7 (Phases 38–42) and pending v2.6 close (Phase 37) FROZEN. Sole active focus = three isolated axiom FP fixes.
+stopped_at: 2026-06-02 v2.6.1 workspace initialized
+last_updated: "2026-06-02T16:30:00Z"
+last_activity: 2026-06-02 — v2.6.1 patch milestone created from FP-fix todo. v2.7 frozen. Workspace set up — v2.6.1-ROADMAP + phase plan written.
 progress:
-  total_phases: 5
+  total_phases: 1
   completed_phases: 0
-  total_plans: 17
+  total_plans: 1
   completed_plans: 0
   percent: 0
+frozen:
+  - "v2.7 (Phases 38–42) — BBB Recall Closure. Stubs intact at .planning/phases/38–42 + milestones/v2.7-ROADMAP.md."
+  - "v2.6 close (Phase 37) — GATE-06 'Persistence' taboo fix + v2.6 audit. Deferred until v2.6.1 closes."
 ---
 
 # Project State
@@ -21,19 +24,45 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.7 — BBB Recall Closure (Tier C axiom + s10 partial-injection port + recall-oracle training redesign). No F1 milestone gate.
+**Current focus:** v2.6.1 — Axiom FP Root-Cause Fixes (PATCH on shipped v2.6 axiom B-variant `61e038`). Three isolated slot patches in `prompts_v4_axiom.py`. Success: TM macro > 82.26%, no MS/TS/JAB regression.
+
+## FROZEN (do not touch until v2.6.1 closes)
+
+- **v2.7 (Phases 38–42)** — BBB Recall Closure. Roadmap + phase stubs intact. See `milestones/v2.7-ROADMAP.md` (freeze banner).
+- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit. Deferred behind v2.6.1.
 
 ## Current Position
 
-Phase: Phase 37 (v2.6 Milestone Close) — not started. After close, Phase 38 + Phase 39 start in parallel (v2.7).
-Plan: —
-Status: v2.6 close pending. v2.7 phase plans (38–42) drafted. F1 gate intentionally dropped for v2.7.
-Last activity: 2026-06-02 — v2.7 roadmap landed. Phases 38–42 plan stubs in `.planning/phases/`.
-Next action: Phase 37 task 9 — GATE-06 'Persistence' taboo regex fix in `scripts/voyager_train_tlr_v5.py:104-113`. Then v2.6-MILESTONE-AUDIT.md. Then milestone flip to v2.7 and start Phase 38 + 39 parallel.
+Milestone: **v2.6.1 (ACTIVE)** — PATCH. See `.planning/milestones/v2.6.1-ROADMAP.md`.
+Phase: Phase v2.6.1-01 (Axiom FP Root-Cause Fixes) — not started.
+Plan: `.planning/phases/v2.6.1-axiom-fp-fixes/PLAN.md`
+Source: `.planning/todos/pending/2026-06-02-improve-prompts-v4-axiom-three-root-cause-fp-fixes.md`
+Next action: review s_linker15 validation run (below). Decide whether to repeat for GPT-variance averaging / run isolated FP-fix attribution, then close v2.6.1.
+
+### s_linker15 validation (2026-06-02, gpt-5.4, axiom-only + 3 FP fixes)
+
+| Dataset | F1 | P | R | FP | FN |
+|---------|----|----|----|----|----|
+| MediaStore | 91.8% | 93.3 | 90.3 | 2 | 3 |
+| TeaStore | 96.4% | 93.1 | 100.0 | 2 | 0 |
+| TeaMMates | 82.5% | 75.4 | 91.2 | 17 | 5 |
+| BigBlueButton | 77.6% | 83.3 | 72.6 | 9 | 17 |
+| JabRef | 97.3% | 94.7 | 100.0 | 1 | 0 |
+| **Macro** | **89.1%** | | | **31** | |
+
+Log: `logs/v2.6.1_s_linker15.log`; CSV/JSON: `results/v2.6.1/`.
+
+**Headline finding:** axiom-only (NO training) = **89.1% macro** ≈ v2.5 trained bank (89.1%)
+and ≈ B-variant floor (88.99%). Dropping training loses nothing — supports the v2.6.1 thesis.
+TM 82.5% ≥ 82.26% target; MS/TS/BBB/JAB all ≥ their bcae0e baselines (no regression).
+**Caveat:** single gpt-5.4 run; run-to-run variance ±5–12 links. TM FP still 17 (= baseline) —
+the 3 FP fixes' specific TM-FP reduction is NOT established by one combined run; needs a repeat
+and/or per-error attribution to confirm.
 
 ```
-Progress: v2.6 [############################  ] 6/7 — close pending
-          v2.7 [                              ] 0/5 — not started
+Progress: v2.6.1 [#######################       ] code done; validation landed
+          v2.6 close [############################  ] FROZEN — Phase 37 pending
+          v2.7 [                              ] FROZEN — 0/5
 ```
 
 ## v2.5 Outcome
