@@ -1,4 +1,4 @@
-"""S-Linker14 Voyager — v2.3 β architecture consumer linker.
+"""S-Linker14 Voyager — v2.6 β architecture consumer linker (ILinker4 wired).
 
 Standalone file (per user preference). Does NOT inherit from s_linker13,
 s_linker13_clean, or s_linker13_clean_v3. Does NOT import prompts_v2.
@@ -6,6 +6,10 @@ s_linker13_clean, or s_linker13_clean_v3. Does NOT import prompts_v2.
 Pipeline logic copied verbatim from s_linker13_clean_v3 (Phase 12 Step 0).
 Prompt source: prompts_v3_axiom (axiom skeletons only). Bank patterns are
 injected at __init__ time via _wrap() — no runtime monkey-patching.
+
+Seed extractor: ILinker4 (Voyager-native standalone, Phase 31).
+  SEED_EXTRACTION_RULES and SEED_ACTOR_RULES are first-class bank slots
+  injected directly into Pass A and Pass B prompts respectively.
 
 BANK FORMAT (slot-uniform, 15 slots)
 -------------------------------------
@@ -39,8 +43,9 @@ This linker trusts the bank; no re-scan at inference time.
 FROZEN ARTIFACT CONTRACT
 -------------------------
 Does not modify any frozen artifact:
-  s_linker13.py, s_linker13_min.py, prompts_v2.py, ilinker*.py,
-  data_types_v2.py, document_loader_v2.py, pcm_parser_v2.py.
+  s_linker13.py, s_linker13_min.py, prompts_v2.py, ilinker1.py, ilinker2.py,
+  ilinker3.py, data_types_v2.py, document_loader_v2.py, pcm_parser_v2.py.
+ilinker4.py is a NEW standalone file introduced in Phase 31.
 """
 
 from __future__ import annotations
@@ -62,7 +67,7 @@ from llm_sad_sam.core.data_types_v2 import (
 from llm_sad_sam.core.document_loader_v2 import (
     Sentence, load_sentences, build_sent_map,
 )
-from llm_sad_sam.linkers.experimental.ilinker3 import ILinker3
+from llm_sad_sam.linkers.experimental.ilinker4 import ILinker4
 from llm_sad_sam.linkers.experimental import prompts_v3_axiom as _axiom
 from llm_sad_sam.linkers.experimental.helper_v3 import (
     coerce_mention_type,
@@ -143,35 +148,6 @@ def _wrap(axiom: str, slot_name: str, slot_patterns: dict[str, list[dict]]) -> s
         return axiom
     body = "\n".join(lines)
     return f"{axiom}{_LEARNED_HEADER}\n{body}"
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# ILinker3 injection subclass (REQ-V25-05)
-# ilinker3.py stays frozen; injection lives here.
-# ─────────────────────────────────────────────────────────────────────────────
-
-class ILinker3Injected(ILinker3):
-    """ILinker3 subclass that prepends bank-slot rules to seed extraction prompts.
-
-    Empty slot strings → prompts identical to base ILinker3 (backward compatible).
-    """
-
-    def __init__(self, llm, seed_extraction_rules: str = "", seed_actor_rules: str = ""):
-        super().__init__(llm=llm)
-        self._seed_extraction_rules = seed_extraction_rules
-        self._seed_actor_rules = seed_actor_rules
-
-    def _prompt_extract(self, doc_block: str, comp_block: str) -> str:
-        base = super()._prompt_extract(doc_block, comp_block)
-        if not self._seed_extraction_rules:
-            return base
-        return f"{self._seed_extraction_rules}\n\n{base}"
-
-    def _prompt_actor(self, doc_block: str, comp_block: str) -> str:
-        base = super()._prompt_actor(doc_block, comp_block)
-        if not self._seed_actor_rules:
-            return base
-        return f"{self._seed_actor_rules}\n\n{base}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -296,7 +272,7 @@ class SLinker14Voyager:
         self._phase_log: list[dict] = []
         self._current_text_path: str | None = None
 
-        # Bank loading must happen before ilinker3 construction so injection slots are available
+        # Bank loading must happen before ILinker4 construction so injection slots are available
         resolved_bank = bank_path or os.environ.get("VOYAGER4B_BANK_PATH", DEFAULT_BANK_PATH)
         self._slot_patterns = _load_bank(resolved_bank)
         self._bank_path = str(resolved_bank)
@@ -316,8 +292,8 @@ class SLinker14Voyager:
         self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
         # GENERIC_WORD_USAGE_RULES and COREF_TERMINAL_SPECIFICITY_RULES injected inline via _slot_text()
 
-        # ILinker3Injected: wires SEED_EXTRACTION_RULES + SEED_ACTOR_RULES bank slots (REQ-V25-05)
-        self._ilinker3 = ILinker3Injected(
+        # ILinker4: Voyager-native seed extractor with first-class SEED slots (Phase 31)
+        self._ilinker4 = ILinker4(
             llm=self.llm,
             seed_extraction_rules=self._slot_text("SEED_EXTRACTION_RULES"),
             seed_actor_rules=self._slot_text("SEED_ACTOR_RULES"),
@@ -325,7 +301,7 @@ class SLinker14Voyager:
 
         pattern_counts = {s: len(self._slot_patterns.get(s, [])) for s in SLOT_NAMES}
         total_patterns = sum(pattern_counts.values())
-        print(f"SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)")
+        print(f"SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)")
         print(f"  Backend: {self.llm.describe_backend()}")
         print(f"  Bank: {self._bank_path} ({total_patterns} patterns across {sum(1 for v in pattern_counts.values() if v > 0)}/15 slots)")
 
@@ -349,8 +325,8 @@ class SLinker14Voyager:
         # 15-slot expansion: reload inline-prompt slots
         self._ALIAS_SCOPE_RULES = _wrap(ALIAS_SCOPE_SCHEMA, "ALIAS_SCOPE_RULES", self._slot_patterns)
         self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
-        # Rebuild ILinker3Injected with updated seed rules
-        self._ilinker3 = ILinker3Injected(
+        # Rebuild ILinker4 with updated seed rules
+        self._ilinker4 = ILinker4(
             llm=self.llm,
             seed_extraction_rules=self._slot_text("SEED_EXTRACTION_RULES"),
             seed_actor_rules=self._slot_text("SEED_ACTOR_RULES"),
@@ -608,7 +584,7 @@ JSON only:"""
         return knowledge
 
     def _run_seed(self, sentences, components):
-        return self._ilinker3.extract(sentences, components)
+        return self._ilinker4.extract(sentences, components)
 
     # ═══════════════════════════════════════════════════════════════════════
     # Tier 2 — Link Recovery
