@@ -135,7 +135,7 @@ def _comp_hash(project: str) -> str:
 def _bank_content_hash(bank: dict) -> str:
     content = json.dumps(bank.get("slot_patterns", {}), sort_keys=True)
     bank_hash = hashlib.md5(content.encode()).hexdigest()[:8]
-    axiom_path = _ROOT / "src" / "llm_sad_sam" / "linkers" / "experimental" / "prompts_v3_axiom.py"
+    axiom_path = _ROOT / "src" / "llm_sad_sam" / "linkers" / "experimental" / "prompts_v4_axiom.py"
     try:
         axiom_hash = hashlib.md5(axiom_path.read_bytes()).hexdigest()[:6]
     except FileNotFoundError:

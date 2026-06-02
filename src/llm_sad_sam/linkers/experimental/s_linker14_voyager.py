@@ -4,7 +4,7 @@ Standalone file (per user preference). Does NOT inherit from s_linker13,
 s_linker13_clean, or s_linker13_clean_v3. Does NOT import prompts_v2.
 
 Pipeline logic copied verbatim from s_linker13_clean_v3 (Phase 12 Step 0).
-Prompt source: prompts_v3_axiom (axiom skeletons only). Bank patterns are
+Prompt source: prompts_v4_axiom (axiom skeletons only). Bank patterns are
 injected at __init__ time via _wrap() — no runtime monkey-patching.
 
 Seed extractor: ILinker4 (Voyager-native standalone, Phase 31).
@@ -68,7 +68,7 @@ from llm_sad_sam.core.document_loader_v2 import (
     Sentence, load_sentences, build_sent_map,
 )
 from llm_sad_sam.linkers.experimental.ilinker4 import ILinker4
-from llm_sad_sam.linkers.experimental import prompts_v3_axiom as _axiom
+from llm_sad_sam.linkers.experimental import prompts_v4_axiom as _axiom
 from llm_sad_sam.linkers.experimental.helper_v3 import (
     coerce_mention_type,
     format_mention_string,
@@ -171,43 +171,6 @@ class AliasEntry:
     scope: str   # "global" | "local"
 
 
-ALIAS_SCOPE_SCHEMA = """For each alias, also classify its SCOPE:
-- "global": the alias is distinctive enough to refer unambiguously to the
-  component anywhere it appears in the document.
-  Typical shapes: multi-word forms ("Task Scheduler"), hyphenated forms
-  ("task-scheduler"), CamelCase forms ("TaskScheduler"), all-caps
-  abbreviations of length >= 2 ("RPC", "API"), or names whose first
-  character is an uppercase letter ("Scheduler", "Broker").
-- "local": the alias is a single all-lowercase word that overlaps with
-  ordinary English vocabulary ("parser", "scheduler", "broker", "dispatcher").
-  This alias is only safe to use where the surrounding sentence already
-  establishes which component is being discussed.
-
-Dotted-path fragments (tokens of the form X.Y or X.Y.Z that look like
-package or module paths) are NOT aliases — do not include them.
-
-Rule of thumb: if you would feel comfortable seeing the alias on its own
-in any sentence of the document and immediately knowing which component it
-names, it is "global"; otherwise it is "local".
-"""
-
-
-ANTECEDENT_ALIAS_GUIDE = """For each resolution, also set `antecedent_via_alias`:
-- true:  the antecedent quote refers to the component by an ALIAS — an alternative
-         name (an abbreviation, a hyphenated form, or a documented alternate name)
-         rather than by the component's canonical name as listed in COMPONENTS above.
-- false: the antecedent quote refers to the component by its CANONICAL NAME exactly
-         as listed in COMPONENTS above.
-
-Examples (abstract, generic patterns):
-- COMPONENTS contains "TaskScheduler", antecedent quote is "The scheduler queues jobs"
-  -> antecedent_via_alias = true  (uses an alternate form, not the canonical name).
-- COMPONENTS contains "TaskScheduler", antecedent quote is "TaskScheduler queues jobs"
-  -> antecedent_via_alias = false (uses the canonical name verbatim).
-
-When you are unsure, default to false (the conservative side — only set true when
-the antecedent clearly does not use the canonical name).
-"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -218,7 +181,7 @@ class SLinker14Voyager:
     """v2.3 β architecture consumer linker — axiom prompts + trained bank patterns.
 
     Architecture: β (L + O + D-with-CoT-A + P training loop).
-    Inference: axiom skeletons (prompts_v3_axiom) wrapped with slot-uniform
+    Inference: axiom skeletons (prompts_v4_axiom) wrapped with slot-uniform
     bank patterns at __init__ time.
 
     experimental=True — research-grade; not canonical.
@@ -288,8 +251,8 @@ class SLinker14Voyager:
         self._COREF_RULES = _wrap(_axiom.COREF_RULES, "COREF_RULES", self._slot_patterns)
         self._SEED_DISAMBIGUATION_RULES = _wrap(_axiom.SEED_DISAMBIGUATION_RULES, "SEED_DISAMBIGUATION_RULES", self._slot_patterns)
         # 15-slot expansion (REQ-V25-06): wrap inline static prompts with bank slots
-        self._ALIAS_SCOPE_RULES = _wrap(ALIAS_SCOPE_SCHEMA, "ALIAS_SCOPE_RULES", self._slot_patterns)
-        self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
+        self._ALIAS_SCOPE_RULES = _wrap(_axiom.ALIAS_SCOPE_RULES, "ALIAS_SCOPE_RULES", self._slot_patterns)
+        self._ANTECEDENT_ALIAS_RULES = _wrap(_axiom.ANTECEDENT_ALIAS_RULES, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
         # GENERIC_WORD_USAGE_RULES and COREF_TERMINAL_SPECIFICITY_RULES injected inline via _slot_text()
 
         # ILinker4: Voyager-native seed extractor with first-class SEED slots (Phase 31)
@@ -323,8 +286,8 @@ class SLinker14Voyager:
         self._COREF_RULES = _wrap(_axiom.COREF_RULES, "COREF_RULES", self._slot_patterns)
         self._SEED_DISAMBIGUATION_RULES = _wrap(_axiom.SEED_DISAMBIGUATION_RULES, "SEED_DISAMBIGUATION_RULES", self._slot_patterns)
         # 15-slot expansion: reload inline-prompt slots
-        self._ALIAS_SCOPE_RULES = _wrap(ALIAS_SCOPE_SCHEMA, "ALIAS_SCOPE_RULES", self._slot_patterns)
-        self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
+        self._ALIAS_SCOPE_RULES = _wrap(_axiom.ALIAS_SCOPE_RULES, "ALIAS_SCOPE_RULES", self._slot_patterns)
+        self._ANTECEDENT_ALIAS_RULES = _wrap(_axiom.ANTECEDENT_ALIAS_RULES, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
         # Rebuild ILinker4 with updated seed rules
         self._ilinker4 = ILinker4(
             llm=self.llm,

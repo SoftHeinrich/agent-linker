@@ -93,9 +93,9 @@ Key findings: oracle cache fix validated (split-2 committed 12 patterns vs 0/5 i
 ### v2.6 Phase Summary
 
 - [x] **Phase 31: ILinker4 + Prompt Hygiene** — `ilinker4.py` built (Voyager-native standalone, first-class SEED slots); 0 inline behavioral rules needing migration; wired into `s_linker14_voyager.py`. GATE-06 clean. (completed 2026-06-02)
-- [ ] **Phase 32: LLM-Driven Training Loop (v5)** — O+D merge into `OD` role; LLM Assessor replacing Gate A + Gate B; cross-split redesign (independent per-split, axiom-only baseline per held-out); [TRAIN]/[TEST] log separation. Zero LLM training budget.
-- [ ] **Phase 33: Axiom Gap Fixes** — Gap 1 (SCN, 14 FNs); Gap 2 (gerund FPs, 7 FPs); Gap 3 (coref alias flag at line 1004). Axiom text changes only (Gap 3: minimal code branch). Zero LLM training budget.
-- [ ] **Phase 34: Probe Tier** — 2-pass mainline run with v5 loop; [TRAIN]/[TEST] separate; cheap-kill if [TEST] macro < 0.87 after pass 2. Budget ≤ $10.
+- [x] **Phase 32: LLM-Driven Training Loop (v5)** — `voyager_train_tlr_v5.py` built: OD role (O+D merged), LLM Assessor (accept/reject/revise, max 1 revision), [TRAIN]/[TEST] log separation, `run_confirmation` with axiom-only baseline. dry-run verified. (completed 2026-06-02)
+- [x] **Phase 33: Axiom Gap Fixes** — `prompts_v4_axiom.py` created; COREF_RULES (Gap 1 SCN + Gap 3 alias), SEED_DISAMBIGUATION_RULES (Gap 2 gerund), ALIAS_SCOPE_RULES + ANTECEDENT_ALIAS_RULES axiomized; s_linker14_voyager imports v4. (completed 2026-06-02)
+- [x] **Phase 34: Probe Tier** — KILL verdict. [TEST] macro=84.86% < 87% threshold. Assessor active (9 decisions pass 1). v4 Gap 2 gerund rule over-aggressive (teammates train 81.97%). Phases 35+36 SKIPPED. (completed 2026-06-02)
 - [ ] **Phase 35: Range Tier** — CONDITIONAL (Phase 34 CONTINUE). Convergence run, max 5 passes, 5-dataset eval, 3-tier verdict. Budget ≤ $25.
 - [ ] **Phase 36: Confirmation Tier** — CONDITIONAL (Phase 35 ≥ 0.87). 3-split cross-validation, axiom-only baseline per held-out, final table vs v2.5 (89.1%) and canonical (90.69%). Budget ≤ $60.
 - [ ] **Phase 37: Milestone Close** — Unconditional. Milestone audit, requirements close-out, archive.
@@ -120,9 +120,11 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 31. ILinker4 + Prompt Hygiene | 1/1 | ✅ Complete | 2026-06-02 |
-| 32. LLM-Driven Training Loop (v5) | 0/TBD | Not started (depends on Phase 31) | — |
-| 33. Axiom Gap Fixes | 0/TBD | Not started (depends on Phase 32) | — |
-| 34. Probe Tier | 0/TBD | Not started (depends on Phase 33) | — |
+| 32. LLM-Driven Training Loop (v5) | 1/1 | ✅ Complete | 2026-06-02 |
+| 33. Axiom Gap Fixes | 1/1 | ✅ Complete | 2026-06-02 |
+| 34. Probe Tier | 1/1 | ✅ Complete — KILL verdict ([TEST] 84.86% < 87%) | 2026-06-02 |
+| 35. Range Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
+| 36. Confirmation Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
 | 35. Range Tier | 0/TBD | Not started (conditional on Phase 34 CONTINUE) | — |
 | 36. Confirmation Tier | 0/TBD | Not started (conditional on Phase 35 ≥ 0.87) | — |
 | 37. Milestone Close | 0/TBD | Not started | — |
