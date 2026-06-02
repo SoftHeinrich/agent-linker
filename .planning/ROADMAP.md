@@ -92,7 +92,7 @@ Key findings: oracle cache fix validated (split-2 committed 12 patterns vs 0/5 i
 
 ### v2.6 Phase Summary
 
-- [ ] **Phase 31: ILinker4 + Prompt Hygiene** — Build `ilinker4.py` (Voyager-native standalone); audit + migrate inline behavioral rules to bank slots; wire `ilinker4.py` into `s_linker14_voyager.py`. Zero LLM training budget.
+- [x] **Phase 31: ILinker4 + Prompt Hygiene** — `ilinker4.py` built (Voyager-native standalone, first-class SEED slots); 0 inline behavioral rules needing migration; wired into `s_linker14_voyager.py`. GATE-06 clean. (completed 2026-06-02)
 - [ ] **Phase 32: LLM-Driven Training Loop (v5)** — O+D merge into `OD` role; LLM Assessor replacing Gate A + Gate B; cross-split redesign (independent per-split, axiom-only baseline per held-out); [TRAIN]/[TEST] log separation. Zero LLM training budget.
 - [ ] **Phase 33: Axiom Gap Fixes** — Gap 1 (SCN, 14 FNs); Gap 2 (gerund FPs, 7 FPs); Gap 3 (coref alias flag at line 1004). Axiom text changes only (Gap 3: minimal code branch). Zero LLM training budget.
 - [ ] **Phase 34: Probe Tier** — 2-pass mainline run with v5 loop; [TRAIN]/[TEST] separate; cheap-kill if [TEST] macro < 0.87 after pass 2. Budget ≤ $10.
@@ -119,7 +119,7 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 31. ILinker4 + Prompt Hygiene | 0/TBD | Not started | — |
+| 31. ILinker4 + Prompt Hygiene | 1/1 | ✅ Complete | 2026-06-02 |
 | 32. LLM-Driven Training Loop (v5) | 0/TBD | Not started (depends on Phase 31) | — |
 | 33. Axiom Gap Fixes | 0/TBD | Not started (depends on Phase 32) | — |
 | 34. Probe Tier | 0/TBD | Not started (depends on Phase 33) | — |

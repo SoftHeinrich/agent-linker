@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: ILinker4 + LLM-Driven Training + Axiom Re-run
 status: in_progress
-last_updated: "2026-06-02T06:00:00.000Z"
+last_updated: "2026-06-02T07:00:00.000Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 7
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 14
 ---
 
 # Project State
@@ -24,14 +24,14 @@ See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 ## Current Position
 
-Phase: Phase 31 (ILinker4 + Prompt Hygiene) — not started
+Phase: Phase 32 (LLM-Driven Training Loop v5) — not started
 Plan: —
-Status: Roadmap created — ready to begin Phase 31
-Last activity: 2026-06-02 — v2.6 roadmap written (7 phases, 13 REQs + 3 gates)
-Next action: Begin Phase 31 — build `ilinker4.py` (Voyager-native standalone, no inheritance from `ilinker3.py`); audit static prompts in `ilinker4.py` and `s_linker14_voyager.py`; wire ILinker4 into voyager.
+Status: Phase 31 complete — ILinker4 wired, audit clean
+Last activity: 2026-06-02 — Phase 31 shipped (ilinker4.py + s_linker14_voyager.py update + AUDIT-REPORT.md)
+Next action: Begin Phase 32 — build voyager_train_tlr_v5.py: OD merge, LLM Assessor, cross-split redesign, [TRAIN]/[TEST] log separation.
 
 ```
-Progress: [                              ] 0% (0/7 phases)
+Progress: [====                          ] 14% (1/7 phases)
 ```
 
 ## v2.5 Outcome
