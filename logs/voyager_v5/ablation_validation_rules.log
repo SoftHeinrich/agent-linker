@@ -1,0 +1,365 @@
+[variant=A_activity_only] running all 5 projects with empty bank
+  mediastore...   [L cache hit] mediastore (bank=3cd617c5, 0p/0/15slots)
+F1=0.9355 FP=2 FN=2 (0s)
+  teastore...   [L cache hit] teastore (bank=3cd617c5, 0p/0/15slots)
+F1=0.9474 FP=3 FN=0 (0s)
+  teammates...   [L cache hit] teammates (bank=3cd617c5, 0p/0/15slots)
+F1=0.8320 FP=16 FN=5 (0s)
+  bigbluebutton...   [L cache hit] bigbluebutton (bank=3cd617c5, 0p/0/15slots)
+F1=0.7603 FP=13 FN=16 (0s)
+  jabref...   [L cache hit] jabref (bank=3cd617c5, 0p/0/15slots)
+F1=0.9474 FP=2 FN=0 (0s)
+  macro=0.8845
+  wrote: /tmp/claude-1000/tmp7doiijf9_A_activity_only.json
+[variant=B_counterparts_only] running all 5 projects with empty bank
+  mediastore...   [L run fresh] mediastore (bank=3cd617c5, 0p/0/15slots)
+SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/claude-1000/tmpl6a7jeo5.json (0 patterns across 0/15 slots)
+Loaded 14 components, 37 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 37 sentences, 14 components
+    Batches: 1
+    Pass A (extract): 29 links
+    Pass B (actor):   27 links
+    Merged: 27 links
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: re-encoded -> Reencoding [local]
+  Model: 5 ambiguous (of 14 components)
+  Doc knowledge: 10 aliases
+  Seed: 27 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    [DB] 6/6 seeds kept
+    [Facade] 3/3 seeds kept
+    Coref batch: empty response, retrying...
+    Extraction consensus: Pass1=28, Pass2=28, Intersect=28 (dropped 0 unique-to-one-pass)
+    Entity extraction: 28 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 28 candidates
+    Seed disambig reject: S25 -> MediaAccess (Refers to AudioAccess, a different named entity, not MediaAccess.)
+    [MediaAccess] 4/5 seeds kept
+    [MediaManagement] 4/4 seeds kept
+    [Packaging] 1/1 seeds kept
+    Validation: 26 / 28
+  Checkpoint: entity_decisions saved
+    [Reencoding] 1/1 seeds kept
+    [TagWatermarking] 2/2 seeds kept
+    [UserDBAdapter] 3/3 seeds kept
+    [UserManagement] 2/2 seeds kept
+  Seed validated: 26 / 27
+  Entity pipeline: 26 validated
+  Coreference: 9 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 32 (from 61 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_mediastore_20260602_161419.json
+  Checkpoint: final saved
+
+Final: 32 links (33s)
+F1=0.9524 FP=2 FN=1 (33s)
+  teastore...   [L run fresh] teastore (bank=3cd617c5, 0p/0/15slots)
+SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/claude-1000/tmpkz_vhn6s.json (0 patterns across 0/15 slots)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 43 sentences, 11 components
+    Batches: 1
+    Pass A (extract): 20 links
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Pass B (actor):   28 links
+    Merged: 20 links
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 6 aliases
+  Seed: 20 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    [Auth] 2/2 seeds kept
+    Extraction consensus: Pass1=23, Pass2=23, Intersect=23 (dropped 0 unique-to-one-pass)
+    Entity extraction: 23 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    [ImageProvider] 4/4 seeds kept
+    [Persistence] 2/2 seeds kept
+    [Recommender] 2/2 seeds kept
+    Validation: 21 / 23
+  Checkpoint: entity_decisions saved
+    [Registry] 5/5 seeds kept
+    Seed disambig reject: S32 -> SlopeOneRecommender (Refers to the Slope One recommendation technique/item-based collaborative filtering method, not explicitly to the architectural component named SlopeOneRecommender.)
+    [SlopeOneRecommender] 0/1 seeds kept
+    [WebUI] 4/4 seeds kept
+  Seed validated: 19 / 20
+  Entity pipeline: 21 validated
+  Coreference: 10 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 29 (from 50 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teastore_20260602_161448.json
+  Checkpoint: final saved
+
+Final: 29 links (29s)
+F1=0.9643 FP=2 FN=0 (29s)
+  teammates...   [L run fresh] teammates (bank=3cd617c5, 0p/0/15slots)
+SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/claude-1000/tmpcok48r0q.json (0 patterns across 0/15 slots)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 198 sentences, 8 components
+    Batches: 5
+      batch 1/5: +24 (total 24)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: UI -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: logic -> Logic [local]
+    Alias: Logic API -> Logic [global]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: database -> GAE Datastore [local]
+    Alias: Google's distributed datastore -> GAE Datastore [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client -> Client [global]
+    Alias: back end -> Logic [local]
+      batch 2/5: +18 (total 41)
+      batch 3/5: +21 (total 59)
+      batch 4/5: +17 (total 74)
+      batch 5/5: +5 (total 78)
+    Pass A (extract): 78 links
+      batch 1/5: +22 (total 22)
+      batch 2/5: +16 (total 37)
+      batch 3/5: +13 (total 49)
+      batch 4/5: +17 (total 64)
+      batch 5/5: +8 (total 71)
+    Pass B (actor):   71 links
+    Merged: 63 links
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 17 aliases
+  Seed: 63 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Client] 3/3 seeds kept
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    Seed disambig reject: S159 -> Common ('common' appears only as part of the package path 'common.datatransfer', a code identifier rather than a direct component mention.)
+    Seed disambig reject: S127 -> Common ('common' is used inside the package name 'common.datatransfer package', so this is a code/package reference.)
+    Seed disambig reject: S160 -> Common ('common' occurs within the dotted package path 'common.datatransfer package', not as a standalone component reference.)
+    [Common] 5/8 seeds kept
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    [E2E] 5/5 seeds kept
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    Seed disambig reject: S83 -> GAE Datastore (GAE here refers broadly to platform-provided APIs, not specifically the GAE Datastore component.)
+    Seed disambig reject: S94 -> GAE Datastore (GAE refers to the task queue API provider/platform, not the datastore.)
+    Seed disambig reject: S144 -> GAE Datastore (GAE environment refers to the overall App Engine platform, not specifically the datastore.)
+    Seed disambig reject: S69 -> GAE Datastore (GAE server denotes the application hosting/server environment, not the datastore.)
+    Seed disambig reject: S31 -> GAE Datastore (GAE server refers to the hosting/server platform, not the datastore.)
+    Seed disambig reject: S2 -> GAE Datastore (GAE expands to Google App Engine, the overall platform the app runs on, not GAE Datastore.)
+    [GAE Datastore] 5/11 seeds kept
+    Extraction consensus: Pass1=71, Pass2=75, Intersect=68 (dropped 10 unique-to-one-pass)
+    Entity extraction: 68 candidates
+  Checkpoint: entity_candidates saved
+    Seed disambig reject: S88 -> Logic (Here 'Logic' denotes a specific facade class, i.e. a code identifier, not the component itself.)
+    Seed disambig reject: S8 -> Logic (Lowercase 'logic' is ordinary English meaning business/application logic, not the named component.)
+    [Logic] 9/11 seeds kept
+    LLM generic reject: S86 -> Logic (In "core logic of the system", "logic" describes business/application logic as a general concept, not the Logic component as a named participant.)
+    LLM 2-pass validation (+evidence bundles): 67 candidates
+    Seed disambig reject: S130 -> Storage (Refers to lowercase package/path names in a dotted package overview, not the component mention itself.)
+    Seed disambig reject: S125 -> Storage (Refers to the storage.entity package, a code/package identifier rather than the component itself.)
+    [Storage] 8/10 seeds kept
+    [Test Driver] 4/4 seeds kept
+    [UI] 11/11 seeds kept
+    Validation: 48 / 68
+  Checkpoint: entity_decisions saved
+  Seed validated: 50 / 63
+  Entity pipeline: 48 validated
+  Coreference: 24 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 67 (from 122 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teammates_20260602_161549.json
+  Checkpoint: final saved
+
+Final: 67 links (60s)
+F1=0.8226 FP=16 FN=6 (60s)
+  bigbluebutton...   [L run fresh] bigbluebutton (bank=3cd617c5, 0p/0/15slots)
+SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/claude-1000/tmp7vuj7nn_.json (0 patterns across 0/15 slots)
+Loaded 12 components, 87 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 87 sentences, 12 components
+    Batches: 2
+      batch 1/2: +18 (total 17)
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: redis pubsub -> Redis PubSub [global]
+    Alias: Redis pubsub -> Redis PubSub [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Kurento Media Server -> kurento [global]
+      batch 2/2: +29 (total 42)
+    Pass A (extract): 42 links
+      batch 1/2: +17 (total 17)
+      batch 2/2: +35 (total 47)
+    Pass B (actor):   47 links
+    Merged: 42 links
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 13 aliases
+  Seed: 42 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Apps] 4/4 seeds kept
+    [BBB web] 3/3 seeds kept
+    [P2] Entity batch 2: S51-S87 (37 sents)
+    [FSESL] 2/2 seeds kept
+    Seed disambig reject: S65 -> FreeSWITCH (Does not mention FreeSWITCH; it discusses WebRTC/browser audio capability instead.)
+    [FreeSWITCH] 8/9 seeds kept
+    [P1] Entity batch 2: S51-S87 (37 sents)
+    [HTML5 Client] 6/6 seeds kept
+    Extraction consensus: Pass1=46, Pass2=46, Intersect=41 (dropped 10 unique-to-one-pass)
+    Entity extraction: 41 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 41 candidates
+    [HTML5 Server] 5/5 seeds kept
+    [Presentation Conversion] 1/1 seeds kept
+    [Recording Service] 1/1 seeds kept
+    [Redis DB] 2/2 seeds kept
+    [Redis PubSub] 4/4 seeds kept
+    Validation: 32 / 41
+  Checkpoint: entity_decisions saved
+    [WebRTC-SFU] 2/2 seeds kept
+    [kurento] 3/3 seeds kept
+  Seed validated: 41 / 42
+  Entity pipeline: 32 validated
+  Coreference: 17 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 56 (from 90 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_bigbluebutton_20260602_161636.json
+  Checkpoint: final saved
+
+Final: 56 links (48s)
+F1=0.7627 FP=11 FN=17 (48s)
+  jabref...   [L run fresh] jabref (bank=3cd617c5, 0p/0/15slots)
+SLinker14Voyager (v2.6 β consumer, ILinker4, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/claude-1000/tmp2hjd1w09.json (0 patterns across 0/15 slots)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 13 sentences, 6 components
+    Batches: 1
+    Alias: outer shell -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> model [local]
+    Pass A (extract): 18 links
+    Pass B (actor):   19 links
+    Merged: 19 links
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 4 aliases
+  Seed: 19 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    [cli] 2/2 seeds kept
+    [gui] 4/4 seeds kept
+    Extraction consensus: Pass1=20, Pass2=20, Intersect=20 (dropped 0 unique-to-one-pass)
+    Entity extraction: 20 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    [logic] 4/4 seeds kept
+    [model] 6/6 seeds kept
+    Validation: 18 / 20
+  Checkpoint: entity_decisions saved
+    [preferences] 3/3 seeds kept
+  Seed validated: 19 / 19
+  Entity pipeline: 18 validated
+  Coreference: 5 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 20 (from 42 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_jabref_20260602_161655.json
+  Checkpoint: final saved
+
+Final: 20 links (19s)
+F1=0.9474 FP=2 FN=0 (19s)
+  macro=0.8899
+  wrote: /tmp/claude-1000/tmpvai58ahe_B_counterparts_only.json
+
+[Ablation] Variant A_activity_only
+  Rule: """Approve when the sentence treats the component as an architectural participant. Reject ...
+  Macro: 0.8845
+
+[Ablation] Variant B_counterparts_only
+  Rule: """Approve when the sentence treats the component as an architectural participant, includi...
+  Macro: 0.8899
+
+Axiom file restored.
+
+====================================================================================================
+Project          |        Baseline        |      A: +activity      |      B: +counterp      |        C: both        
+----------------------------------------------------------------------------------------------------
+mediastore       |  0.8852         13/ 5  | 0.9355(+0.0503)  2/ 2  | 0.9524(+0.0672)  2/ 1  | 0.9355(+0.0503)  2/ 2 
+teastore         |  0.9474          4/ 3  | 0.9474(-0.0000)  3/ 0  | 0.9643(+0.0169)  2/ 0  | 0.9474(+0.0000)  3/ 0 
+teammates        |  0.8160         17/ 6  | 0.8320(+0.0160) 16/ 5  | 0.8226(+0.0066) 16/ 6  | 0.7840(-0.0320) 19/ 8 
+bigbluebutton    |  0.7288         13/19  | 0.7603(+0.0315) 13/16  | 0.7627(+0.0339) 11/17  | 0.7603(+0.0315) 13/16 
+jabref           |  0.9730          1/ 0  | 0.9474(-0.0256)  2/ 0  | 0.9474(-0.0256)  2/ 0  | 0.9474(-0.0256)  2/ 0 
+----------------------------------------------------------------------------------------------------
+Macro            | 0.8701              | 0.8845(+0.0144)         | 0.8899(+0.0198)         | 0.8749(+0.0048)        
+====================================================================================================
+
+Saved: /mnt/hostshare/ardoco-home/llm-sad-sam-v45/results/voyager_v5/ablation_validation_rules.json

@@ -1,0 +1,75 @@
+[P2] Probe start. Phase cache: /mnt/hostshare/ardoco-home/llm-sad-sam-v45/results/phase_cache/ext01_probe_p2
+[P2] components=12 sentences=87 gold_pairs=62
+[P2] Running patched SLinker13 sweep on BBB ...
+SLinker13 (canonical promotion of s_linker13f, Phase 5)
+  Backend: claude (sonnet)
+Loaded 12 components, 87 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 87 sentences, 12 components
+    Batches: 2
+      batch 1/2: +19 (total 19)
+    Alias: fsels -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: KMS -> kurento [global]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: akka-apps -> Apps [global]
+      batch 2/2: +29 (total 44)
+    Pass A (extract): 44 links
+      batch 1/2: +32 (total 32)
+      batch 2/2: +36 (total 63)
+    Pass B (actor):   63 links
+    Merged: 44 links
+  Model: 1 ambiguous (of 12 components)
+  Doc knowledge: 12 aliases
+  Seed: 44 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):    Coreference: cases-in-context (24 pronoun sents / 87 total)
+
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Apps] 5/5 seeds kept
+    [BBB web] 4/4 seeds kept
+    [FSESL] 2/2 seeds kept
+    [P2] Entity batch 2: S51-S87 (37 sents)
+    [FreeSWITCH] 8/8 seeds kept
+    [P1] Entity batch 2: S51-S87 (37 sents)
+    [HTML5 Client] 5/5 seeds kept
+    [HTML5 Server] 6/6 seeds kept
+    [Presentation Conversion] 2/2 seeds kept
+    [Recording Service] 1/1 seeds kept
+    [Redis DB] 2/2 seeds kept
+    Extraction consensus: Pass1=51, Pass2=49, Intersect=48 (dropped 4 unique-to-one-pass)
+    Entity extraction: 48 candidates
+    Coref batch: empty response, retrying...
+    [Redis PubSub] 4/4 seeds kept
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 48 candidates
+    [WebRTC-SFU] 2/2 seeds kept
+    [kurento] 3/3 seeds kept
+    Validation: 46 / 48
+  Checkpoint: entity_decisions saved
+  Seed validated: 44 / 44
+  Entity pipeline: 46 validated
+  Coreference: 3 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 49 (from 93 raw)
+  Phase log saved: ./results/llm_logs/s_linker13_bigbluebutton_20260531_044705.json
+  Checkpoint: final saved
+
+Final: 49 links (506s)
+[P2] BBB sweep: P=0.9592 R=0.7581 F1=0.8468 TP=47 FP=2 FN=15 time=506s calls=37 drops=2
+[P2] Loaded baseline FN set (14 entries)
+[P2] Wrote /mnt/hostshare/ardoco-home/llm-sad-sam-v45/results/ablation_results/ext01_probes/p2_bbb.json
+[P2] DONE. F1=0.8468 TPs-lost=2 FPs-killed=0 calls=37

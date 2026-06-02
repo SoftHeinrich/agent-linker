@@ -1,0 +1,382 @@
+
+[PROBE TIER] projects=['mediastore', 'teastore', 'teammates'] backend=openai model=gpt-5.4 dry_run=False
+
+============================================================
+OUTER PASS 1 | projects=['mediastore', 'teastore', 'teammates'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=mediastore
+  [L cache hit] mediastore (bank=686edc)
+  [L] mediastore: F1=0.9333
+
+  [L] project=teastore
+  [L cache hit] teastore (bank=2c384c)
+  [L] teastore: F1=0.9818
+
+  [L] project=teammates
+  [L cache hit] teammates (bank=2c384c)
+  [L] teammates: F1=0.7737
+
+[L] Train macro F1: 0.8963 (delta: +0.8963)
+[L] Total errors (FP+FN): 36
+
+[O] Running Oracle on all training projects...
+
+  [O] project=mediastore
+  [O cache hit] mediastore iter1
+  [O] mediastore: 3 failure modes
+
+  [O] project=teastore
+  [O cache hit] teastore iter1
+  [O] teastore: 3 failure modes
+
+  [O] project=teammates
+  [O cache hit] teammates iter1
+  [O] teammates: 5 failure modes
+
+[D] Running Distillator per-project (text-blind, CoT-A)...
+
+  [D] project=mediastore
+  [D] WARNING: prompt contains taboo tokens ['mediastore']
+  [D] mediastore: proposed 3, removals 0
+
+  [D] project=teastore
+  [D] WARNING: prompt contains taboo tokens ['teastore']
+  [D] teastore: proposed 3, removals 0
+
+  [D] project=teammates
+  [D] WARNING: prompt contains taboo tokens ['teammates', 'persistence', 'persistence', 'persistence', 'persistence']
+  [D] teammates: proposed 5, removals 0
+  [D] total unique proposals: 11, total removals: 0
+
+[GATE-06] Filtering D proposals...
+  [GATE-06] accepted=11 rejected=0
+
+[Gate A] FM citation check...
+  [Gate A] accepted=11 rejected=0
+
+[Gate B] Semantic validity judge...
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_EXTRACTION_RULES: The rule directly targets the missed case of coordinated noun-phrase parenthetic
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-2 by instructing the judge to ignore sentence-initi
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-3 and FM-1 by allowing predicate propagation from a
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-1 by blocking approvals based on shared head-nouns 
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-2 by preventing promotion of possessive, qualifier-
+  [Gate B ACCEPT] slot=SEED_DISAMBIGUATION_RULES: The rule directly targets FM-3 by requiring local antecedent-based alias establi
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_EXTRACTION_RULES: The rule directly targets the missed subject-position definitional and relationa
+  [Gate B REJECT] slot=SEED_DISAMBIGUATION_RULES: fixes_cited_fm=True, causes_new_error=True, confidence=medium: The rule directly targets FM-2 by propagating seeds from locally introduced mult
+  [Gate B ACCEPT] slot=COREF_RULES: The rule directly matches FM-3 by propagating links from an enumerated container
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-4 by suppressing links based solely on weak generic
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-5 by approving target-side mentions when a sentence
+  [Gate B] accepted=10 rejected=1
+
+[Commit] 10 patterns pass Gate A+B, 0 removals
+  [Commit] bank saved: mediastore (32 patterns)
+  [Commit] bank saved: teastore (21 patterns)
+  [Commit] bank saved: teammates (21 patterns)
+  [Commit] COMMITTED 10 patterns + 0 removals
+
+[Pass 1] errors=36 macro_f1=0.8963 converged=False did_commit=True (gate_a=11, gate_b=10, removals=0)
+
+============================================================
+OUTER PASS 2 | projects=['mediastore', 'teastore', 'teammates'] | dry_run=False
+============================================================
+
+[L] Running linker on all training projects...
+
+  [L] project=mediastore
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmp0uttdp4_.json (32 patterns across 6/9 slots)
+Loaded 14 components, 37 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 37 sentences, 14 components
+    Batches: 1
+    Alias: Facade component -> Facade [global]
+    Alias: central business logic component -> MediaManagement [local]
+    Alias: business logic component -> MediaManagement [local]
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: ReEncoder component -> Reencoding [global]
+    Alias: Database component -> DB [global]
+    Alias: actual database -> DB [local]
+    Alias: database -> DB [local]
+    Alias: MediaAccess component -> MediaAccess [global]
+    Alias: DataStorage -> FileStorage [global]
+    Pass A (extract): 25 links
+    Pass B (actor):   25 links
+    Merged: 25 links
+  Model: 4 ambiguous (of 14 components)
+  Doc knowledge: 14 aliases
+  Seed: 25 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    [DB] 5/5 seeds kept
+    Extraction consensus: Pass1=28, Pass2=27, Intersect=27 (dropped 1 unique-to-one-pass)
+    Entity extraction: 27 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 27 candidates
+    [Facade] 3/3 seeds kept
+    Seed disambig reject: S25 -> MediaAccess (This sentence names 'AudioAccess', not 'MediaAccess'; it refers to a different component and should not be linked to MediaAccess.)
+    [MediaAccess] 4/5 seeds kept
+    [MediaManagement] 3/3 seeds kept
+    Validation: 24 / 27
+  Checkpoint: entity_decisions saved
+    [Packaging] 1/1 seeds kept
+    [Reencoding] 1/1 seeds kept
+    [TagWatermarking] 2/2 seeds kept
+    [UserDBAdapter] 3/3 seeds kept
+    [UserManagement] 2/2 seeds kept
+  Seed validated: 24 / 25
+  Entity pipeline: 24 validated
+  Coreference: 9 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 31 (from 57 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_mediastore_20260601_180713.json
+  Checkpoint: final saved
+
+Final: 31 links (52s)
+  [L] mediastore: F1=0.9355
+
+  [L] project=teastore
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmp2il4xfk8.json (21 patterns across 6/9 slots)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 43 sentences, 11 components
+    Batches: 1
+    Pass A (extract): 16 links
+    Alias: UI -> WebUI [global]
+    Alias: WebUI service -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: TeaStore front-end -> WebUI [global]
+    Alias: single Registry instance -> Registry [global]
+    Alias: registry -> Registry [local]
+    Alias: registry instance -> Registry [local]
+    Alias: Persistence service -> Persistence [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Recommender service -> Recommender [global]
+    Alias: fallback algorithm -> PopularityBasedRecommender [local]
+    Alias: general item popularity -> PopularityBasedRecommender [local]
+    Alias: Auth service -> Auth [global]
+    Alias: Slope One -> SlopeOneRecommender [global]
+    Alias: item-based collaborative filtering -> SlopeOneRecommender [local]
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    Pass B (actor):   23 links
+    Merged: 20 links
+  Model: 3 ambiguous (of 11 components)
+  Doc knowledge: 19 aliases
+  Seed: 20 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    [Auth] 2/2 seeds kept
+    [ImageProvider] 3/3 seeds kept
+    Extraction consensus: Pass1=24, Pass2=24, Intersect=24 (dropped 0 unique-to-one-pass)
+    Entity extraction: 24 candidates
+  Checkpoint: entity_candidates saved
+    [OrderBasedRecommender] 1/1 seeds kept
+    LLM generic reject: S25 -> Persistence ("persistence provider" describes a general technical role/provider in JPA context, not the specific Persistence component acting as a named system entity.)
+    [Persistence] 2/2 seeds kept
+    Coref batch: empty response, retrying...
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    [Recommender] 2/2 seeds kept
+    [Registry] 5/5 seeds kept
+    Validation: 21 / 24
+  Checkpoint: entity_decisions saved
+    [SlopeOneRecommender] 1/1 seeds kept
+    [WebUI] 4/4 seeds kept
+  Seed validated: 20 / 20
+  Entity pipeline: 21 validated
+  Coreference: 9 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 30 (from 50 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teastore_20260601_180739.json
+  Checkpoint: final saved
+
+Final: 30 links (26s)
+  [L] teastore: F1=0.9123
+
+  [L] project=teammates
+SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)
+  Backend: openai (gpt-5.4)
+  Bank: /tmp/tmpgrmbcpnf.json (21 patterns across 6/9 slots)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker3: 198 sentences, 8 components
+    Batches: 5
+      batch 1/5: +25 (total 25)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: Common component -> Common [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [local]
+    Alias: Logic component -> Logic [global]
+    Alias: main logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: NoSQL database -> GAE Datastore [global]
+    Alias: Test Driver component -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client component -> Client [global]
+    Alias: client -> Client [local]
+      batch 2/5: +14 (total 38)
+      batch 3/5: +21 (total 56)
+      batch 4/5: +12 (total 66)
+      batch 5/5: +14 (total 79)
+    Pass A (extract): 79 links
+      batch 1/5: +25 (total 25)
+      batch 2/5: +19 (total 43)
+      batch 3/5: +16 (total 58)
+      batch 4/5: +16 (total 72)
+      batch 5/5: +4 (total 75)
+    Pass B (actor):   75 links
+    Merged: 66 links
+  Model: 1 ambiguous (of 8 components)
+  Doc knowledge: 19 aliases
+  Seed: 66 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Client] 3/3 seeds kept
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    Seed disambig reject: S97 -> Common (No mention of Common; refers to GateKeeper/Logic interaction instead.)
+    Seed disambig reject: S92 -> Common (No mention of Common; refers to a Service class for email provider connection.)
+    Seed disambig reject: S93 -> Common (No mention of Common; refers to TaskQueuer behavior.)
+    Seed disambig reject: S91 -> Common (No mention of Common; refers to EmailSender behavior.)
+    [Common] 5/9 seeds kept
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    Seed disambig reject: S188 -> E2E ("e2e.util" is a package/code namespace identifier, not the architectural component itself.)
+    [E2E] 5/6 seeds kept
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    Seed disambig reject: S139 -> GAE Datastore (Here "GAE" appears in "GAE production environment," referring to the broader Google App Engine platform/environment, not specifically the datastore component.)
+    Seed disambig reject: S62 -> GAE Datastore ("GAE server" refers to the App Engine server/runtime generating requests, not the datastore component.)
+    Seed disambig reject: S31 -> GAE Datastore ("GAE server" denotes the App Engine server handling requests, not GAE Datastore.)
+    Seed disambig reject: S2 -> GAE Datastore (The parenthetical "(GAE)" explicitly aliases Google App Engine, which is the hosting platform, not the datastore component.)
+    Seed disambig reject: S35 -> GAE Datastore ("GAE server-invoked" refers to requests invoked by the App Engine server, not the datastore.)
+    Seed disambig reject: S94 -> GAE Datastore ("GAE's task queue API" refers to an App Engine API/service, not the datastore component.)
+    Seed disambig reject: S144 -> GAE Datastore ("GAE environment" denotes the overall App Engine environment whose limitations affect transaction control, not specifically the datastore component.)
+    Seed disambig reject: S58 -> GAE Datastore ("GAE server" again refers to the App Engine server sending automated requests, not the datastore.)
+    Seed disambig reject: S69 -> GAE Datastore ("GAE server" denotes the App Engine server as request sender, not GAE Datastore.)
+    [GAE Datastore] 2/11 seeds kept
+    Extraction consensus: Pass1=65, Pass2=73, Intersect=63 (dropped 12 unique-to-one-pass)
+    Entity extraction: 63 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 63 candidates
+    Seed disambig reject: S8 -> Logic (Ordinary English phrase 'main logic of the application', not a reference to the named architectural component.)
+    [Logic] 11/12 seeds kept
+    Seed disambig reject: S136 -> Storage ('Db classes' is a code-level representation statement without an explicit mention of Storage; too indirect to confirm as the component.)
+    [Storage] 9/10 seeds kept
+    Seed disambig reject: S163 -> Test Driver (Describes what 'Test Driver' itself can do ('can use the DataBundle...'), i.e., the component's own capabilities/implementation behavior rather than referencing the architectural component as an external participant.)
+    [Test Driver] 3/4 seeds kept
+    [UI] 11/11 seeds kept
+    Validation: 43 / 63
+  Checkpoint: entity_decisions saved
+  Seed validated: 49 / 66
+  Entity pipeline: 43 validated
+  Coreference: 27 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 74 (from 119 raw)
+  Phase log saved: ./results/llm_logs/s_linker14_voyager_teammates_20260601_180903.json
+  Checkpoint: final saved
+
+Final: 74 links (84s)
+  [L] teammates: F1=0.7634
+
+[L] Train macro F1: 0.8704 (delta: -0.0259)
+[L] Total errors (FP+FN): 40 (delta: +4)
+
+[O] Running Oracle on all training projects...
+
+  [O] project=mediastore
+  [O cache hit] mediastore iter2
+  [O] mediastore: 4 failure modes
+
+  [O] project=teastore
+  [O cache hit] teastore iter2
+  [O] teastore: 3 failure modes
+
+  [O] project=teammates
+  [O cache hit] teammates iter2
+  [O] teammates: 6 failure modes
+
+[D] Running Distillator per-project (text-blind, CoT-A)...
+
+  [D] project=mediastore
+  [D] WARNING: prompt contains taboo tokens ['mediastore']
+  [D] mediastore: proposed 4, removals 0
+
+  [D] project=teastore
+  [D] WARNING: prompt contains taboo tokens ['teastore']
+  [D] teastore: proposed 3, removals 0
+
+  [D] project=teammates
+  [D] WARNING: prompt contains taboo tokens ['teammates', 'persistence', 'datastore', 'persistence']
+  [D] teammates: proposed 6, removals 0
+  [D] total unique proposals: 13, total removals: 0
+
+[GATE-06] Filtering D proposals...
+  [GATE-06] accepted=13 rejected=0
+
+[Gate A] FM citation check...
+  [Gate A] accepted=13 rejected=0
+
+[Gate B] Semantic validity judge...
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_EXTRACTION_RULES: The rule directly targets FM-1 by extracting both subject-position sources and p
+  [Gate B ACCEPT] slot=AMBIGUITY_RULES: The rule directly targets FM-2 by preserving approval for an explicit element me
+  [Gate B ACCEPT] slot=SEED_DISAMBIGUATION_RULES: The rule directly targets FM-3 by permitting a second seed only when a qualifier
+  [Gate B ACCEPT] slot=COREF_RULES: The rule directly targets FM-4 by requiring validated immediate antecedent align
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-1 by rejecting generic indefinite subject phrases t
+  [Gate B ACCEPT] slot=COREF_RULES: The rule directly targets FM-2 by allowing anaphora propagation only from antece
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-3 by forbidding adjacency-based validation and requ
+  [Gate B ACCEPT] slot=COREF_RULES: The rule directly targets FM-1 by requiring explicit antecedents plus same-sente
+  [Gate B ACCEPT] slot=DOC_KNOWLEDGE_JUDGE_RULES: The rule directly targets FM-2 by rejecting identity inferences from conceptual-
+  [Gate B REJECT] slot=DOC_KNOWLEDGE_EXTRACTION_RULES: fixes_cited_fm=True, causes_new_error=True, confidence=high: The rule directly targets FM-3 by allowing alias extraction from definitional co
+  [Gate B ACCEPT] slot=AMBIGUITY_RULES: The rule directly targets FM-4 by demoting object/qualifier-clause mentions and 
+  [Gate B ACCEPT] slot=VALIDATION_RULES: The rule directly targets FM-5 by blocking section-heading or local-focus propag
+  [Gate B REJECT] slot=SEED_DISAMBIGUATION_RULES: fixes_cited_fm=True, causes_new_error=True, confidence=high: The rule directly targets FM-6 by allowing upward lifting from sub-element menti
+  [Gate B] accepted=11 rejected=2
+
+[Commit] 11 patterns pass Gate A+B, 0 removals
+  [Commit] bank saved: mediastore (43 patterns)
+  [Commit] bank saved: teastore (32 patterns)
+  [Commit] bank saved: teammates (32 patterns)
+  [Commit] COMMITTED 11 patterns + 0 removals
+
+[Pass 2] errors=40 macro_f1=0.8704 converged=False did_commit=True (gate_a=13, gate_b=11, removals=0)
+
+[PROBE] verdict=CONTINUE final_macro=0.8704

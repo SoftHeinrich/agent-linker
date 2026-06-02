@@ -1,0 +1,398 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker15
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 18
+  TransArc baseline: P=94.4% R=54.8% F1=69.4%
+
+  --- Variant: s_linker15 ---
+SLinker15 (v2.6.1 no-training axiom-only, ILinker4, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 37 sentences, 14 components
+    Batches: 1
+    Alias: Database -> DB [global]
+    Alias: Database component -> DB [global]
+    Alias: ReEncoder -> Reencoding [global]
+    Pass A (extract): 26 links
+    Pass B (actor):   28 links
+    Merged: 26 links
+  Model: 5 ambiguous (of 14 components)
+  Doc knowledge: 3 aliases
+  Seed: 26 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    [DB] 5/5 seeds kept
+    Extraction consensus: Pass1=24, Pass2=25, Intersect=24 (dropped 1 unique-to-one-pass)
+    Entity extraction: 24 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 24 candidates
+    [Facade] 3/3 seeds kept
+    Seed disambig reject: S25 -> MediaAccess (Refers to a different named entity, "AudioAccess," not MediaAccess.)
+    [MediaAccess] 4/5 seeds kept
+    Validation: 23 / 24
+  Checkpoint: entity_decisions saved
+    [MediaManagement] 4/4 seeds kept
+    [Packaging] 1/1 seeds kept
+    [Reencoding] 1/1 seeds kept
+    [TagWatermarking] 2/2 seeds kept
+    [UserDBAdapter] 3/3 seeds kept
+    [UserManagement] 2/2 seeds kept
+  Seed validated: 25 / 26
+  Entity pipeline: 23 validated
+  Coreference: 9 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 30 (from 57 raw)
+  Phase log saved: ./results/llm_logs/s_linker15_mediastore_20260602_180226.json
+  Checkpoint: final saved
+
+Final: 30 links (49s)
+  s_linker15: P=93.3% R=90.3% F1=91.8% TP=28 FP=2 FN=3 (49s)
+    Sources: {'seed': 25, 'coreference': 5}
+    FP by source: {'coreference': 2}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 20
+  TransArc baseline: P=100.0% R=74.1% F1=85.1%
+
+  --- Variant: s_linker15 ---
+SLinker15 (v2.6.1 no-training axiom-only, ILinker4, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 43 sentences, 11 components
+    Batches: 1
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Pass A (extract): 23 links
+    Pass B (actor):   23 links
+    Merged: 22 links
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 5 aliases
+  Seed: 22 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    [Auth] 2/2 seeds kept
+    [ImageProvider] 5/5 seeds kept
+    Extraction consensus: Pass1=24, Pass2=23, Intersect=23 (dropped 1 unique-to-one-pass)
+    Entity extraction: 23 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    Seed disambig reject: S35 -> OrderBasedRecommender ("order-based nearest-neighbor approach" describes a recommendation technique/algorithm variant, not a specific architectural unit named OrderBasedRecommender.)
+    [OrderBasedRecommender] 0/1 seeds kept
+    [Persistence] 2/2 seeds kept
+    Validation: 21 / 23
+  Checkpoint: entity_decisions saved
+    [Recommender] 2/2 seeds kept
+    [Registry] 5/5 seeds kept
+    Seed disambig reject: S32 -> SlopeOneRecommender (Refers to the Slope One recommendation technique/item-based collaborative filtering being applied, not clearly to a named architectural unit called SlopeOneRecommender.)
+    [SlopeOneRecommender] 0/1 seeds kept
+    [WebUI] 4/4 seeds kept
+  Seed validated: 20 / 22
+  Entity pipeline: 21 validated
+  Coreference: 10 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 29 (from 51 raw)
+  Phase log saved: ./results/llm_logs/s_linker15_teastore_20260602_180302.json
+  Checkpoint: final saved
+
+Final: 29 links (36s)
+  s_linker15: P=93.1% R=100.0% F1=96.4% TP=27 FP=2 FN=0 (36s)
+    Sources: {'seed': 20, 'entity': 2, 'coreference': 7}
+    FP by source: {'coreference': 2}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 81
+  TransArc baseline: P=60.5% R=86.0% F1=71.0%
+
+  --- Variant: s_linker15 ---
+SLinker15 (v2.6.1 no-training axiom-only, ILinker4, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 198 sentences, 8 components
+    Batches: 5
+      batch 1/5: +24 (total 24)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: L&P -> E2E [global]
+    Alias: UI -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: server -> UI [local]
+    Alias: back end -> Logic [global]
+    Alias: business logic -> Logic [local]
+    Alias: logic layer -> Logic [local]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: database -> GAE Datastore [local]
+    Alias: Google App Engine -> GAE Datastore [global]
+    Alias: end-to-end component -> E2E [global]
+    Alias: Web browser -> Client [global]
+      batch 2/5: +18 (total 41)
+      batch 3/5: +21 (total 59)
+      batch 4/5: +21 (total 78)
+      batch 5/5: +5 (total 82)
+    Pass A (extract): 82 links
+      batch 1/5: +23 (total 23)
+      batch 2/5: +16 (total 38)
+      batch 3/5: +13 (total 50)
+      batch 4/5: +17 (total 65)
+      batch 5/5: +6 (total 70)
+    Pass B (actor):   70 links
+    Merged: 62 links
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 18 aliases
+  Seed: 62 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [Client] 3/3 seeds kept
+    Seed disambig reject: S160 -> Common ('common' appears only as part of the code/package path 'common.datatransfer', so it is a code identifier rather than a direct mention of the component.)
+    Seed disambig reject: S127 -> Common (The mention is inside the package name 'common.datatransfer', which is a code path fragment, not the component name used as an architectural unit.)
+    Seed disambig reject: S159 -> Common (Again used only within the dotted package path 'common.datatransfer', so it refers to a code/package identifier rather than the component itself.)
+    [Common] 3/6 seeds kept
+    [P2] Entity batch 2: S51-S100 (50 sents)
+    [P1] Entity batch 2: S51-S100 (50 sents)
+    [P2] Entity batch 3: S101-S150 (50 sents)
+    [P1] Entity batch 3: S101-S150 (50 sents)
+    [P2] Entity batch 4: S151-S198 (48 sents)
+    [P1] Entity batch 4: S151-S198 (48 sents)
+    Extraction consensus: Pass1=85, Pass2=91, Intersect=83 (dropped 10 unique-to-one-pass)
+    Entity extraction: 83 candidates
+  Checkpoint: entity_candidates saved
+    LLM generic reject: S7 -> Logic ("back end logic" describes application/business logic generally, not the named Logic component as an entity.)
+    LLM generic reject: S8 -> Logic ("main logic of the application" refers to the application's logic in general, not explicitly the Logic component.)
+    LLM generic reject: S185 -> Logic ("back-end logic" describes backend behavior/functionality generally, not the Logic component as a named architectural participant.)
+    [E2E] 5/5 seeds kept
+    LLM 2-pass validation (+evidence bundles): 80 candidates
+    Seed disambig reject: S2 -> GAE Datastore (Google App Engine/GAE here names the hosting platform/environment, not the GAE Datastore component.)
+    Seed disambig reject: S83 -> GAE Datastore (GAE refers to platform-provided APIs in general, not specifically to the datastore component.)
+    Seed disambig reject: S94 -> GAE Datastore (GAE refers to the task queue API provider/platform, not the datastore.)
+    Seed disambig reject: S144 -> GAE Datastore (GAE environment refers to the broader platform constraints, not specifically to the datastore component.)
+    Seed disambig reject: S69 -> GAE Datastore (GAE server refers to the application server/platform handling requests, not the datastore.)
+    Seed disambig reject: S139 -> GAE Datastore (GAE production environment refers to the deployment environment broadly; datastore is only contextual, not the matched alias.)
+    Seed disambig reject: S31 -> GAE Datastore (GAE server refers to the server/platform receiving requests, not the datastore component.)
+    [GAE Datastore] 4/11 seeds kept
+    Seed disambig reject: S88 -> Logic (Here 'Logic' denotes the Facade class named Logic, not the architectural component.)
+    Seed disambig reject: S185 -> Logic ('back-end logic' is a functional description of application behavior, not the named Logic component.)
+    Seed disambig reject: S8 -> Logic ('main logic of the application' is ordinary descriptive vocabulary, not the component name.)
+    [Logic] 9/12 seeds kept
+    Seed disambig reject: S130 -> Storage ("storage.api, storage.entity, storage.search" are package/path names, not the component mention itself.)
+    Seed disambig reject: S136 -> Storage (No explicit mention of Storage; "Db classes" is only an indirect implementation reference.)
+    Seed disambig reject: S125 -> Storage ("storage.entity" is a package name inside a dotted path, not the component as such.)
+    [Storage] 7/10 seeds kept
+    [Test Driver] 4/4 seeds kept
+    Validation: 51 / 83
+  Checkpoint: entity_decisions saved
+    Seed disambig reject: S50 -> UI ('Front-end' here describes where processing happens in a workflow step, not clearly the named architectural unit.)
+    [UI] 10/11 seeds kept
+  Seed validated: 45 / 62
+  Entity pipeline: 51 validated
+  Coreference: 25 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 69 (from 121 raw)
+  Phase log saved: ./results/llm_logs/s_linker15_teammates_20260602_180425.json
+  Checkpoint: final saved
+
+Final: 69 links (83s)
+  s_linker15: P=75.4% R=91.2% F1=82.5% TP=52 FP=17 FN=5 (83s)
+    Sources: {'seed': 45, 'entity': 10, 'coreference': 14}
+    FP by source: {'entity': 5, 'coreference': 10, 'seed': 2}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 49
+  TransArc baseline: P=89.8% R=71.0% F1=79.3%
+
+  --- Variant: s_linker15 ---
+SLinker15 (v2.6.1 no-training axiom-only, ILinker4, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 87 sentences, 12 components
+    Batches: 2
+      batch 1/2: +20 (total 19)
+    Alias: KMS -> kurento [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: Redis pubsub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: conversion process -> Presentation Conversion [local]
+    Alias: presentation conversion -> Presentation Conversion [local]
+      batch 2/2: +26 (total 40)
+    Pass A (extract): 40 links
+      batch 1/2: +17 (total 17)
+      batch 2/2: +36 (total 48)
+    Pass B (actor):   48 links
+    Merged: 39 links
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 19 aliases
+  Seed: 39 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+    [P1] Entity batch 1: S1-S50 (50 sents)
+    [P2] Entity batch 1: S1-S50 (50 sents)
+    [P1] Entity batch 2: S51-S87 (37 sents)
+    [P2] Entity batch 2: S51-S87 (37 sents)
+    Extraction consensus: Pass1=45, Pass2=42, Intersect=42 (dropped 3 unique-to-one-pass)
+    Entity extraction: 42 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 42 candidates
+    [Apps] 3/3 seeds kept
+    [BBB web] 3/3 seeds kept
+    Validation: 37 / 42
+  Checkpoint: entity_decisions saved
+    Seed disambig reject: S57 -> FSESL (Fragmentary mention only ('FSESL akka.') with no clear architectural role or reference; likely a note/label rather than a verified component mention.)
+    [FSESL] 1/2 seeds kept
+    [FreeSWITCH] 8/8 seeds kept
+    [HTML5 Client] 6/6 seeds kept
+    Seed disambig reject: S7 -> HTML5 Server (No explicit mention of HTML5 Server or alias; the sentence refers only to nginx handling connections.)
+    [HTML5 Server] 4/5 seeds kept
+    Seed disambig reject: S76 -> Presentation Conversion ('conversion process' is used as a generic activity description of converting uploaded presentations for display, not clearly as the named architectural unit; removing the alias still leaves the same process-step meaning.)
+    [Presentation Conversion] 0/1 seeds kept
+    Seed disambig reject: S50 -> Recording Service (The sentence names a "Recording Processor," not the "Recording Service." It appears to describe a processing step/entity after meeting end, and there is no clear evidence this is the specific architectural component named Recording Service.)
+    [Recording Service] 0/1 seeds kept
+    [Redis DB] 2/2 seeds kept
+    [Redis PubSub] 4/4 seeds kept
+    [WebRTC-SFU] 2/2 seeds kept
+    [kurento] 2/2 seeds kept
+  Seed validated: 35 / 39
+  Entity pipeline: 37 validated
+  Coreference: 19 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 54 (from 91 raw)
+  Phase log saved: ./results/llm_logs/s_linker15_bigbluebutton_20260602_180532.json
+  Checkpoint: final saved
+
+Final: 54 links (68s)
+  s_linker15: P=83.3% R=72.6% F1=77.6% TP=45 FP=9 FN=17 (68s)
+    Sources: {'seed': 35, 'entity': 7, 'coreference': 12}
+    FP by source: {'coreference': 8, 'seed': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 20
+  TransArc baseline: P=90.0% R=100.0% F1=94.7%
+
+  --- Variant: s_linker15 ---
+SLinker15 (v2.6.1 no-training axiom-only, ILinker4, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Tier 1] Knowledge Acquisition (parallel)
+  ILinker4: 13 sentences, 6 components
+    Batches: 1
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Pass A (extract): 18 links
+    Pass B (actor):   18 links
+    Merged: 18 links
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 2 aliases
+  Seed: 18 raw links
+  Checkpoint: layer1 saved
+
+[Tier 2] Link Recovery (parallel)
+    Extraction pass A + B (parallel):
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    [cli] 2/2 seeds kept
+    Extraction consensus: Pass1=20, Pass2=20, Intersect=20 (dropped 0 unique-to-one-pass)
+    Entity extraction: 20 candidates
+  Checkpoint: entity_candidates saved
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    [gui] 4/4 seeds kept
+    Validation: 18 / 20
+  Checkpoint: entity_decisions saved
+    [logic] 4/4 seeds kept
+    [model] 6/6 seeds kept
+    [preferences] 2/2 seeds kept
+  Seed validated: 18 / 18
+  Entity pipeline: 18 validated
+  Coreference: 5 links
+  Checkpoint: layer2 saved
+
+[Tier 3] Link Consolidation
+  After dedup: 19 (from 41 raw)
+  Phase log saved: ./results/llm_logs/s_linker15_jabref_20260602_180552.json
+  Checkpoint: final saved
+
+Final: 19 links (19s)
+  s_linker15: P=94.7% R=100.0% F1=97.3% TP=18 FP=1 FN=0 (19s)
+    Sources: {'seed': 18, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker15    
+-----------------+-------------------
+mediastore       | F1 91.8% FP   2
+teastore         | F1 96.4% FP   2
+teammates        | F1 82.5% FP  17
+bigbluebutton    | F1 77.6% FP   9
+jabref           | F1 97.3% FP   1
+-----------------+-------------------
+Macro avg        | F1 89.1% FP  31
+
+Results saved to results/v2.6.1/ablation_20260602_180552.json
