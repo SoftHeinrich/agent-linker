@@ -7,8 +7,8 @@ Pipeline logic copied verbatim from s_linker13_clean_v3 (Phase 12 Step 0).
 Prompt source: prompts_v3_axiom (axiom skeletons only). Bank patterns are
 injected at __init__ time via _wrap() — no runtime monkey-patching.
 
-BANK FORMAT (slot-uniform, 9 slots)
-------------------------------------
+BANK FORMAT (slot-uniform, 15 slots)
+-------------------------------------
 {
   "version": "v4b",
   "slot_patterns": {
@@ -19,7 +19,7 @@ BANK FORMAT (slot-uniform, 9 slots)
         "example_block": "TP: <synthesized example>\\nFP: <synthesized counter-example>"
       }
     ],
-    ... 9 slots total ...
+    ... 15 slots total (9 original + 6 new in v2.5) ...
   }
 }
 
@@ -248,8 +248,8 @@ class SLinker14Voyager:
     experimental=True — research-grade; not canonical.
     canonical=False   — s_linker13_min remains canonical=True.
 
-    Trained Bank (default, post-Confirmation):
-      results/voyager_v4_beta/confirmation/cross_split_final_bank.json
+    Trained Bank (default, post-v2.5 Confirmation):
+      results/voyager_v4b_v25/confirmation/cross_split_final_bank.json
     (override via bank_path constructor kwarg or VOYAGER4B_BANK_PATH env var).
 
     Empty bank / missing file: runs as axiom-only floor (valid for Phase 14
