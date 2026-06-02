@@ -35,7 +35,13 @@ Target: each axiom prompt body ≤ 30% of its prompts_v3 counterpart by characte
 # v3 size: AMBIGUITY_FEW_SHOT 1620 chars + AMBIGUITY_RULES 920 chars = 2540 chars.
 # Axiom target: ≤ 762 chars (30%). Achieved by removing all 4 worked examples.
 
-AMBIGUITY_FEW_SHOT = ""  # No few-shot — learned skills carry calibration if needed.
+AMBIGUITY_FEW_SHOT = """Example 1: Name = "Scheduler"
+Sentence: "The Scheduler queues jobs and dispatches them to worker threads."
+Classification: ARCHITECTURAL — "Scheduler" is the grammatical subject with a named role (queuing, dispatching). It identifies a specific mechanism, not a generic scheduling concept.
+
+Example 2: Name = "Scheduler"
+Sentence: "The system uses a scheduler-based approach to balance load across nodes."
+Classification: AMBIGUOUS — "scheduler-based approach" describes a technique. Ordinary technical writing about any system would use "scheduler" here without naming a specific component."""
 
 
 AMBIGUITY_RULES = """A name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component."""
@@ -52,7 +58,13 @@ DOC_KNOWLEDGE_EXTRACTION_RULES = """Find surface forms the document uses to refe
 
 # v3 size: DOC_KNOWLEDGE_JUDGE_EXAMPLES 1880 chars. Removed in axiom form.
 
-DOC_KNOWLEDGE_JUDGE_EXAMPLES = ""  # No examples — learned skills carry calibration if needed.
+DOC_KNOWLEDGE_JUDGE_EXAMPLES = """Example 1: Candidate = "Handler", Component = "RequestHandler"
+Evidence: "The RequestHandler (hereafter Handler) processes incoming requests from clients."
+Judgment: VALID — The document explicitly establishes "Handler" as an alternate name for RequestHandler via parenthetical definition. The alias is distinctive and scoped to one component.
+
+Example 2: Candidate = "the system", Component = "CacheLayer"
+Evidence: "The system stores frequently accessed records in the CacheLayer."
+Judgment: INVALID — "the system" refers to the overall application, not to CacheLayer specifically. It names a different entity (the whole system) rather than establishing CacheLayer as an alias."""
 
 
 # v3 size: DOC_KNOWLEDGE_JUDGE_RULES 780 chars. Target ≤ 234.
@@ -90,3 +102,27 @@ COREF_RULES = """For each case, decide whether a pronoun or role-referential nou
 # v3 size: SEED_DISAMBIGUATION_RULES 870 chars. Target ≤ 261.
 
 SEED_DISAMBIGUATION_RULES = """For each sentence, decide whether the matched name refers to the architectural component (COMPONENT) or carries a different meaning (OTHER: code identifier, technique sharing the name, sub-entity of a larger name, ordinary English, or description of the component's own capabilities without referencing an external participant). When uncertain, choose COMPONENT."""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 15-Slot Expansion — 6 new injectable slots (REQ-V25-04)
+# Empty string default: behavior identical to v2.4 baseline when no patterns committed.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ILinker3 seed extraction prompt prefix (injected via ILinker3Injected subclass)
+SEED_EXTRACTION_RULES = ""
+
+# ILinker3 seed actor prompt prefix (injected via ILinker3Injected subclass)
+SEED_ACTOR_RULES = ""
+
+# Generic-word-usage LLM filter additional rules (appended before Return JSON in filter prompt)
+GENERIC_WORD_USAGE_RULES = ""
+
+# Alias scope classification additional rules (appended to ALIAS_SCOPE_SCHEMA)
+ALIAS_SCOPE_RULES = ""
+
+# Antecedent-via-alias detection additional rules (appended to ANTECEDENT_ALIAS_GUIDE)
+ANTECEDENT_ALIAS_RULES = ""
+
+# Coref terminal-word specificity classification additional rules
+COREF_TERMINAL_SPECIFICITY_RULES = ""

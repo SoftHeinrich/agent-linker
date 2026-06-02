@@ -90,6 +90,13 @@ SLOT_NAMES = (
     "VALIDATION_RULES",
     "COREF_RULES",
     "SEED_DISAMBIGUATION_RULES",
+    # 15-slot expansion (REQ-V25-04): 6 new slots, empty default = v2.4 behavior preserved
+    "SEED_EXTRACTION_RULES",
+    "SEED_ACTOR_RULES",
+    "GENERIC_WORD_USAGE_RULES",
+    "ALIAS_SCOPE_RULES",
+    "ANTECEDENT_ALIAS_RULES",
+    "COREF_TERMINAL_SPECIFICITY_RULES",
 )
 
 _LEARNED_HEADER = (
@@ -136,6 +143,35 @@ def _wrap(axiom: str, slot_name: str, slot_patterns: dict[str, list[dict]]) -> s
         return axiom
     body = "\n".join(lines)
     return f"{axiom}{_LEARNED_HEADER}\n{body}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ILinker3 injection subclass (REQ-V25-05)
+# ilinker3.py stays frozen; injection lives here.
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ILinker3Injected(ILinker3):
+    """ILinker3 subclass that prepends bank-slot rules to seed extraction prompts.
+
+    Empty slot strings → prompts identical to base ILinker3 (backward compatible).
+    """
+
+    def __init__(self, llm, seed_extraction_rules: str = "", seed_actor_rules: str = ""):
+        super().__init__(llm=llm)
+        self._seed_extraction_rules = seed_extraction_rules
+        self._seed_actor_rules = seed_actor_rules
+
+    def _prompt_extract(self, doc_block: str, comp_block: str) -> str:
+        base = super()._prompt_extract(doc_block, comp_block)
+        if not self._seed_extraction_rules:
+            return base
+        return f"{self._seed_extraction_rules}\n\n{base}"
+
+    def _prompt_actor(self, doc_block: str, comp_block: str) -> str:
+        base = super()._prompt_actor(doc_block, comp_block)
+        if not self._seed_actor_rules:
+            return base
+        return f"{self._seed_actor_rules}\n\n{base}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -258,10 +294,9 @@ class SLinker14Voyager:
         self.model_knowledge: ModelKnowledge | None = None
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log: list[dict] = []
-        self._ilinker3 = ILinker3(llm=self.llm)
         self._current_text_path: str | None = None
 
-        # Bank loading + axiom wrapping (core of v4 vs skill_learned_clean)
+        # Bank loading must happen before ilinker3 construction so injection slots are available
         resolved_bank = bank_path or os.environ.get("VOYAGER4B_BANK_PATH", DEFAULT_BANK_PATH)
         self._slot_patterns = _load_bank(resolved_bank)
         self._bank_path = str(resolved_bank)
@@ -276,12 +311,23 @@ class SLinker14Voyager:
         self._VALIDATION_RULES = _wrap(_axiom.VALIDATION_RULES, "VALIDATION_RULES", self._slot_patterns)
         self._COREF_RULES = _wrap(_axiom.COREF_RULES, "COREF_RULES", self._slot_patterns)
         self._SEED_DISAMBIGUATION_RULES = _wrap(_axiom.SEED_DISAMBIGUATION_RULES, "SEED_DISAMBIGUATION_RULES", self._slot_patterns)
+        # 15-slot expansion (REQ-V25-06): wrap inline static prompts with bank slots
+        self._ALIAS_SCOPE_RULES = _wrap(ALIAS_SCOPE_SCHEMA, "ALIAS_SCOPE_RULES", self._slot_patterns)
+        self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
+        # GENERIC_WORD_USAGE_RULES and COREF_TERMINAL_SPECIFICITY_RULES injected inline via _slot_text()
+
+        # ILinker3Injected: wires SEED_EXTRACTION_RULES + SEED_ACTOR_RULES bank slots (REQ-V25-05)
+        self._ilinker3 = ILinker3Injected(
+            llm=self.llm,
+            seed_extraction_rules=self._slot_text("SEED_EXTRACTION_RULES"),
+            seed_actor_rules=self._slot_text("SEED_ACTOR_RULES"),
+        )
 
         pattern_counts = {s: len(self._slot_patterns.get(s, [])) for s in SLOT_NAMES}
         total_patterns = sum(pattern_counts.values())
-        print(f"SLinker14Voyager (v2.3 β consumer, axiom+bank, experimental=True)")
+        print(f"SLinker14Voyager (v2.5 β consumer, axiom+bank, experimental=True)")
         print(f"  Backend: {self.llm.describe_backend()}")
-        print(f"  Bank: {self._bank_path} ({total_patterns} patterns across {sum(1 for v in pattern_counts.values() if v > 0)}/9 slots)")
+        print(f"  Bank: {self._bank_path} ({total_patterns} patterns across {sum(1 for v in pattern_counts.values() if v > 0)}/15 slots)")
 
     def reload_bank(self, bank_path: str | None = None) -> int:
         """Reload bank from disk and recompute wrapped prompt strings.
@@ -300,7 +346,30 @@ class SLinker14Voyager:
         self._VALIDATION_RULES = _wrap(_axiom.VALIDATION_RULES, "VALIDATION_RULES", self._slot_patterns)
         self._COREF_RULES = _wrap(_axiom.COREF_RULES, "COREF_RULES", self._slot_patterns)
         self._SEED_DISAMBIGUATION_RULES = _wrap(_axiom.SEED_DISAMBIGUATION_RULES, "SEED_DISAMBIGUATION_RULES", self._slot_patterns)
+        # 15-slot expansion: reload inline-prompt slots
+        self._ALIAS_SCOPE_RULES = _wrap(ALIAS_SCOPE_SCHEMA, "ALIAS_SCOPE_RULES", self._slot_patterns)
+        self._ANTECEDENT_ALIAS_RULES = _wrap(ANTECEDENT_ALIAS_GUIDE, "ANTECEDENT_ALIAS_RULES", self._slot_patterns)
+        # Rebuild ILinker3Injected with updated seed rules
+        self._ilinker3 = ILinker3Injected(
+            llm=self.llm,
+            seed_extraction_rules=self._slot_text("SEED_EXTRACTION_RULES"),
+            seed_actor_rules=self._slot_text("SEED_ACTOR_RULES"),
+        )
         return sum(len(v) for v in self._slot_patterns.values())
+
+    def _slot_text(self, slot_name: str) -> str:
+        """Return formatted bank patterns for slot_name, or empty string if slot is empty.
+
+        Used for inline prompt injection (GENERIC_WORD_USAGE_RULES, COREF_TERMINAL_SPECIFICITY_RULES,
+        SEED_EXTRACTION_RULES, SEED_ACTOR_RULES). Empty string = no change to existing prompt text.
+        """
+        patterns = self._slot_patterns.get(slot_name, [])
+        if not patterns:
+            return ""
+        lines = [f"- {p.get('rule_text', '').strip()}" for p in patterns if p.get('rule_text', '').strip()]
+        if not lines:
+            return ""
+        return "\n\nLEARNED PATTERNS:\n" + "\n".join(lines)
 
     # ═══════════════════════════════════════════════════════════════════════
     # DAG Infrastructure (verbatim from s_linker13_clean_v3)
@@ -459,7 +528,7 @@ COMPONENTS: {', '.join(comp_names)}
 
 {self._DOC_KNOWLEDGE_EXTRACTION_RULES}
 
-{ALIAS_SCOPE_SCHEMA}
+{self._ALIAS_SCOPE_RULES}
 
 DOCUMENT:
 {chr(10).join(doc_lines)}
@@ -859,7 +928,7 @@ For each case, determine:
 
 Key distinction: A component reference names a specific system entity as a participant.
 A generic use describes a type of activity or quality that happens to share the word.
-
+{self._slot_text("GENERIC_WORD_USAGE_RULES")}
 Return JSON:
 {{"results": [{{"case": 1, "usage": "component" or "generic", "reason": "brief"}}]}}
 JSON only:"""
@@ -982,7 +1051,7 @@ Terminal words to evaluate: {terminal_words}
 A terminal word is GENERIC if it could refer to any component in any system on its own — such as words that broadly describe a role or architectural tier.
 A terminal word is SPECIFIC if it is distinctive or unusual enough that "the <word>" in a sentence about this system most likely refers to one specific component.
 Also mark a terminal as GENERIC if multiple components in this list share the same terminal word (ambiguous).
-
+{self._slot_text("COREF_TERMINAL_SPECIFICITY_RULES")}
 Return JSON:
 {{"specific": ["word1", "word2"], "generic": ["word3", "word4"]}}
 JSON only:"""
@@ -1040,7 +1109,7 @@ COMPONENTS: {', '.join(comp_names)}
 
             prompt += f"""{self._COREF_RULES}
 
-{ANTECEDENT_ALIAS_GUIDE}
+{self._ANTECEDENT_ALIAS_RULES}
 
 Return JSON:
 {{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "reference": "the server", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name", "antecedent_via_alias": false}}]}}

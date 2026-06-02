@@ -43,6 +43,9 @@ def test_slot_names_complete():
         "DOC_KNOWLEDGE_JUDGE_EXAMPLES", "DOC_KNOWLEDGE_JUDGE_RULES",
         "ENTITY_EXTRACTION_RULES", "VALIDATION_RULES", "COREF_RULES",
         "SEED_DISAMBIGUATION_RULES",
+        # 15-slot expansion (REQ-V25-04)
+        "SEED_EXTRACTION_RULES", "SEED_ACTOR_RULES", "GENERIC_WORD_USAGE_RULES",
+        "ALIAS_SCOPE_RULES", "ANTECEDENT_ALIAS_RULES", "COREF_TERMINAL_SPECIFICITY_RULES",
     }
     assert set(SLOT_NAMES) == expected, f"Missing or extra slots: {set(SLOT_NAMES) ^ expected}"
 

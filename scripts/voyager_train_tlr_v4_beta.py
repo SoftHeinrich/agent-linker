@@ -86,6 +86,7 @@ OUT_ROOT = Path(os.environ.get("VOYAGER4B_OUT_ROOT", "results/voyager_v4_beta"))
 MAINLINE_TRAIN = ["mediastore", "teastore", "teammates"]
 MAINLINE_TEST = ["bigbluebutton", "jabref"]
 MAX_OUTER_PASSES = 5
+MIN_COMMIT_DELTA = 0.005  # REQ-V25-02: filters ±3-4pp BBB LLM run-to-run variance
 
 SLOT_NAMES = (
     "AMBIGUITY_FEW_SHOT",
@@ -97,6 +98,13 @@ SLOT_NAMES = (
     "VALIDATION_RULES",
     "COREF_RULES",
     "SEED_DISAMBIGUATION_RULES",
+    # 15-slot expansion (REQ-V25-07)
+    "SEED_EXTRACTION_RULES",
+    "SEED_ACTOR_RULES",
+    "GENERIC_WORD_USAGE_RULES",
+    "ALIAS_SCOPE_RULES",
+    "ANTECEDENT_ALIAS_RULES",
+    "COREF_TERMINAL_SPECIFICITY_RULES",
 )
 
 
@@ -450,9 +458,10 @@ def _run_oracle_o(llm: LLMClient, project: str, l_run: dict, bank: dict,
             "dry_run": True,
         }
 
-    # Cache lookup
+    # Cache lookup — key includes bank_content_hash to prevent cross-split oracle reuse (REQ-V25-01)
     text_path = str(paths["text"])
-    ck = _cache_key(text_path, project, backend_str, model_str, f"oracle_iter{iter_num}")
+    bch = _bank_content_hash(bank)
+    ck = f"{Path(text_path).stem}_{_comp_hash(project)}_{bch}_{backend_str}_{model_str}_oracle_iter{iter_num}"
     cached = _cache_read(ck)
     if cached:
         print(f"  [O cache hit] {project} iter{iter_num}")
@@ -575,6 +584,9 @@ ORACLE FAILURE MODES (from O for this iter):
 CURRENT BANK STATE (patterns already inserted; do not duplicate):
 {bank_summary}
 
+HIGH-PRIORITY SLOTS (zero patterns — propose for these first before adding to populated slots):
+{underfilled_slots}
+
 INSTRUCTIONS
 ────────────
 For each failure mode, decide:
@@ -647,11 +659,17 @@ def _run_distillator_d(llm: LLMClient, o_jsons: list[dict], bank: dict,
         for slot, pats in bank.get("slot_patterns", {}).items()
     )
 
+    empty_slots = [s for s in SLOT_NAMES if not bank.get("slot_patterns", {}).get(s)]
+    underfilled_slots = (
+        ", ".join(empty_slots) if empty_slots else "(all slots have ≥1 pattern)"
+    )
+
     slot_list = ", ".join(SLOT_NAMES)
 
     prompt = D_PROMPT.format(
         oracle_json=oracle_summary,
         bank_summary=bank_summary,
+        underfilled_slots=underfilled_slots,
         iter_num=iter_num,
         slot_list=slot_list,
     )
@@ -965,6 +983,49 @@ def run_outer_pass(
     print(f"\n[L] Train macro F1: {macro_f1:.4f} (delta: {delta:+.4f})")
     print(f"[L] Total errors (FP+FN): {total_errors}"
           + (f" (delta: {delta_errors:+d})" if delta_errors is not None else ""))
+
+    # Step 1.5: Min-commit delta gate (REQ-V25-02) — filters LLM run-to-run variance
+    if not dry_run and delta < MIN_COMMIT_DELTA:
+        print(f"\n[P] delta={delta:+.4f} < MIN_COMMIT_DELTA={MIN_COMMIT_DELTA} — skipping O+D (variance filter)")
+        committed_f1s = prior_f1s if prior_f1s else train_f1s
+        committed_macro = sum(committed_f1s.values()) / max(1, len(committed_f1s))
+        summary = {
+            "pass": pass_num,
+            "split": split_name,
+            "projects": projects,
+            "dry_run": dry_run,
+            "train_errors_before": prior_errors,
+            "train_errors_after_l": train_errors,
+            "total_errors_l": total_errors,
+            "delta_errors_from_prior": delta_errors,
+            "this_pass_errors": train_errors,
+            "total_this_pass_errors": total_errors,
+            "committed_errors": train_errors,
+            "total_committed_errors": total_errors,
+            "train_f1s_before": prior_f1s,
+            "train_f1s_after_l": train_f1s,
+            "macro_f1_l": macro_f1,
+            "delta_f1_from_prior": delta,
+            "committed_f1s": committed_f1s,
+            "committed_macro_f1": committed_macro,
+            "proposals_raw": 0,
+            "proposals_gate06_accepted": 0,
+            "proposals_gate06_rejected": 0,
+            "proposals_gate_a_accepted": 0,
+            "proposals_gate_a_rejected": 0,
+            "proposals_gate_b_accepted": 0,
+            "proposals_gate_b_rejected": 0,
+            "removals": 0,
+            "committed": False,
+            "converged": False,
+            "below_min_commit_delta": True,
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+        summary_path = split_dir / f"pass{pass_num}_summary.json"
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        summary_path.write_text(json.dumps(summary, indent=2))
+        print(f"\n[Pass {pass_num}] below-threshold no-op: delta={delta:+.4f} committed_macro={committed_macro:.4f}")
+        return summary
 
     # Step 2: O — Oracle (text-aware)
     print("\n[O] Running Oracle on all training projects...")
