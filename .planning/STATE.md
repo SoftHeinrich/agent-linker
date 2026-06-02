@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.5
 milestone_name: Oracle Cache Fix + 15-Slot Expansion + Re-run
-status: planning
-last_updated: "2026-06-01T17:39:20.519Z"
-last_activity: 2026-06-01
+status: in_progress
+last_updated: "2026-06-02T00:00:00.000Z"
+last_activity: 2026-06-02
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 50
 ---
 
 # Project State
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01 for v2.5 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run. Roadmap defined; Phase 25 is next.
+**Current focus:** v2.5 — Phase 28 Range Tier is next.
 
 ## Current Position
 
-Phase: 25 — Infrastructure Fixes
+Phase: 28 — Range Tier
 Plan: —
 Status: planning
-Last activity: 2026-06-01 — Roadmap v2.5 created (Phases 25–30)
-Next action: Phase 25 — Infrastructure Fixes
+Last activity: 2026-06-02 — Phase 27 complete (Probe Tier: CONTINUE, macro F1=0.9193, 12 patterns committed, 5/6 new slots populated)
+Next action: Phase 28 — Range Tier (full convergence, macro ≥ 0.90, max 5 passes, 5-dataset eval, budget ≤$25)
 
 ```
-Progress: [                              ] 0% (0/6 phases)
+Progress: [###############               ] 50% (3/6 phases)
 ```
 
 ## v2.5 Design Decisions (Locked)
