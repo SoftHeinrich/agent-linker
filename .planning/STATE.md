@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.6
-milestone_name: ILinker4 + LLM-Driven Training + Axiom Re-run
-status: in_progress
-last_updated: "2026-06-02T07:00:00.000Z"
-last_activity: 2026-06-02
+milestone_name: Phase Summary
+status: completed
+stopped_at: context exhaustion at 75% (2026-06-02)
+last_updated: "2026-06-02T06:35:21.312Z"
+last_activity: 2026-06-02 — Phase 32 shipped (OD role, Assessor, TRAIN/TEST split, confirmation tier)
 progress:
-  total_phases: 7
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 14
+  total_phases: 12
+  completed_phases: 2
+  total_plans: 10
+  completed_plans: 4
+  percent: 17
 ---
 
 # Project State
@@ -24,14 +25,14 @@ See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 ## Current Position
 
-Phase: Phase 32 (LLM-Driven Training Loop v5) — not started
+Phase: Phase 34 (Probe Tier) — IN PROGRESS
 Plan: —
-Status: Phase 31 complete — ILinker4 wired, audit clean
-Last activity: 2026-06-02 — Phase 31 shipped (ilinker4.py + s_linker14_voyager.py update + AUDIT-REPORT.md)
-Next action: Begin Phase 32 — build voyager_train_tlr_v5.py: OD merge, LLM Assessor, cross-split redesign, [TRAIN]/[TEST] log separation.
+Status: Phase 34 running — probe tier launched (2-pass mainline, gpt-5.4)
+Last activity: 2026-06-02 — Phase 34 probe run launched
+Next action: Wait for probe completion; write 34-PROBE-VERDICT.md; proceed to Phase 35 if CONTINUE.
 
 ```
-Progress: [====                          ] 14% (1/7 phases)
+Progress: [========                      ] 29% (2/7 phases)
 ```
 
 ## v2.5 Outcome
@@ -87,11 +88,18 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 | HIGH | C-3 | LLM Assessor gate — replace F1-delta Gate A+B with error-set reasoning |
 | HIGH | C-4 | Axiom gaps: SCN (14 FNs), gerund FPs (7), coref alias (line 1004 code path) |
 | MEDIUM | C-5 | Cross-split redesign — independent per-split train/eval vs axiom-only baseline |
-| LOW | C-6 | Flex tier cost optimization (deferred to v2.7+) |
+| LOW | C-6 | ~~Flex tier cost optimization~~ CLOSED — not viable for synchronous training loop (see quick task 260602-d1w) |
+
+## Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
 
 ## Session Continuity
 
-Last session: 2026-06-02T06:00:00.000Z
-Stopped at: v2.6 roadmap created (milestones/v2.6-ROADMAP.md written)
+Last session: 2026-06-02T06:35:21.309Z
+Stopped at: context exhaustion at 75% (2026-06-02)
 Resume file: None
 Next action: Begin Phase 31 (`/gsd-plan-phase 31`)
+Last activity: 2026-06-02 - Completed quick task 260602-d1w: investigate latency implications of switching gpt backend to flex tier
