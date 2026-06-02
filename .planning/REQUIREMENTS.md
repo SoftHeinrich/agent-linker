@@ -1,123 +1,80 @@
-# Requirements: llm-sad-sam-v45 — Milestone v2.3
+# Requirements: llm-sad-sam-v45 — Milestone v2.6
 
-**Defined:** 2026-06-01
-**Milestone:** v2.3 — Trained Multi-Role Prompt Replacement (β architecture)
-**Architecture spec:** `.planning/v2.3-prep/v2.3-ARCHITECTURE.md`
-**Endpoint reasoning:** `.planning/notes/v23-architectural-endpoint-reasoning.md`
-**Kickoff seed:** `.planning/v2.3-prep/v2.3-KICKOFF-SEED.md`
-**Core Value:** Multi-role training (L + O + D-with-CoT-A + P) produces per-slot rich rules+examples that, composed with axiom skeletons, match or beat hand-authored `prompts_v3.py` on gpt-5.4 macro F1. Validates whether expert-hand-tuning of LLM-pipeline prompts can be automated. Static-prompt-elegance preserved; backend = gpt-5.4 only.
+**Defined:** 2026-06-02
+**Milestone:** v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
+**Core Value:** Replace the mechanical training gate with an LLM Assessor that reasons over the actual error set (remaining FP + FN sentences); build ILinker4 as a Voyager-native seed extractor; fix axiom gaps that account for the remaining 27 systematic errors. Target: exceed canonical (s_linker13_min gpt-5.4 90.69%).
 
-## Active v2.3 Requirements
+## Active v2.6 Requirements
 
-### TRAIN — Multi-Role Training Harness
+### ILINKER — Voyager-Native Seed Extractor
 
-- [ ] **REQ-V23-01** — v4 β training harness produces a trained per-slot JSON bank from gpt-5.4 outer-loop training. Anchor on `scripts/voyager_train_tlr_v4_a_prime.py` (do NOT re-derive vocab-aligned R3); refactor outer loop to β role structure (L + O + D + P). Mainline split: train MS+TS+TM, test BBB+JAB.
-- [ ] **REQ-V23-02** — `s_linker14_voyager.py` consumes trained bank via Voyager-mode runtime injection. **Standalone implementation** — does NOT inherit from `s_linker13`, `s_linker13_clean`, or `s_linker13_clean_v3`, and does NOT import `prompts_v2`. Copies the pipeline logic verbatim (per the standing user preference for standalone linker files over inheritance chains) and imports `prompts_v3_axiom` directly. At linker init, axiom prompts are wrapped with `LEARNED PATTERNS` header + per-slot bullet list of rule_text + example_block from the trained bank. Registered in `CANONICAL_VARIANTS` with `experimental=True` tag. Rationale: the existing `s_linker13_skill_learned_clean.py` inherits `SLinker13Clean` which imports `prompts_v2`, then shadows the constants at runtime — operationally invisible but architecturally inelegant. v2.3's experimental artifact must not perpetuate that drag-forward.
-- [ ] **REQ-V23-03** — Training loop = L (linker, ~7 LLM calls/project) + O (text-aware Oracle, 1 LLM call/project) + D (text-blind Distillator with CoT-A inline, 1 LLM call/iter) + P (mechanical probation gate, 0 LLM cost). Per-iter delta-from-prior-iter tracked.
-- [ ] **REQ-V23-04** — Oracle output schema = failure-mode-centric JSON. Top-level fields: `iter`, `split`, `L_predictions_summary` (macro_F1 + delta + per_dataset), `failure_modes[]` (with `id`, `title`, `affected_slot`, `symptom`, `apparent_cause`, `suggested_direction`, `evidence_count`, `abstract_example_pair`), `newly_introduced_errors[]` (with `introduced_by_bank_pattern` attribution). Full schema in `.planning/v2.3-prep/v2.3-ARCHITECTURE.md`.
+- [ ] **REQ-V26-01** — `ilinker4.py` new standalone file. Voyager-native design: Pass A (extract) and Pass B (actor) prompts are structural scaffolding only — no inline rules. `SEED_EXTRACTION_RULES` and `SEED_ACTOR_RULES` are first-class bank slots injected at call time (empty string = baseline behavior identical to ILinker3). Does NOT inherit from `ilinker3.py`; standalone per user preference. `s_linker14_voyager.py` wires ILinker4 instead of ILinker3Injected.
 
-### GATE — Promotion + Validation
+- [ ] **REQ-V26-02** — Prompt hygiene audit: every static prompt in `s_linker14_voyager.py` and `ilinker4.py` audited and classified as (a) structural scaffolding (acceptable) or (b) inline rule (must migrate to bank slot). Audit report produced; all (b) items migrated. After migration: zero behavioral inline rules remain in static prompts.
 
-- [ ] **REQ-V23-05** — Promotion verdict computed against 3-tier bar on gpt-5.4 macro F1, 5-dataset: STRONG ≥ 0.9173 (= trim1) / WEAK [0.87, 0.9173) / FAIL < 0.87. Reported in milestone audit.
-- [ ] **REQ-V23-06** — Dual-artifact registration: `s_linker13_min` retains `canonical=True` (GATE-01 bound — Claude floor + cross-model floor 0.8977); `s_linker14_voyager` ships `experimental=True` (bound only to 0.87 floor). v2.3 ships v4 finding regardless of polarity without violating standing GATE-01.
-- [ ] **REQ-V23-07** — Mainline single-split (Probe + Range tiers) on train MS+TS+TM, test BBB+JAB. Confirmation 3-split sweep (Voyager v2 splits 1+2+3) ONLY if mainline ≥ 0.87. Cheap-kill at each tier per budget cap.
-- [ ] **REQ-V23-08** — Compact-B fallback (R345 single role with structured CoT, per `v2.2-SCOPE-DECISION.md`) auto-triggered as v2.3 mainline replacement if v4 FAIL (< 0.87). If Compact-B also FAILs, v2.3 ships negative-finding paper artifact.
+### TRAINING LOOP — LLM-Driven Architecture (voyager_train v5)
 
-### GENERALITY — Static-Prompt-Elegance + Leak Defense
+- [ ] **REQ-V26-03** — O+D merge: collapse Oracle (O) and Distillator (D) into a single text-aware LLM role `OD`. `OD` receives: current bank, per-project FP sentence list, per-project FN sentence list, gold standard. In one call it (a) identifies failure modes, (b) proposes new bank patterns to address them. Prompt enforces abstract/general vocabulary — proposed pattern text must use discourse/syntactic/functional terminology, not project component names. Hard anti-superficiality instruction in prompt: proposed pattern must be semantically novel and cover an error class not already addressed by existing bank rules.
 
-- [ ] **REQ-V23-09** — GATE-06 BENCHMARK_TABOO grep + reviewer-defensibility critic LLM at bank-entry boundary. Every D pattern proposal grep'd before insertion. Failed-grep patterns rejected; D may be asked to reformulate. Per-pattern critic call gates final acceptance.
-- [ ] **REQ-V23-10** — Per-(text_stem, comp_hash, backend, model) cache infrastructure applied uniformly across L (per-stage outputs), O (failure-mode JSON), D (pattern proposals), reviewer critic. Cache key formula per `s_linker14_probe_d_upstream_clean.py` (do NOT re-derive). Cache root: `results/voyager_v4_beta/cache/` (override via `VOYAGER4B_CACHE_ROOT` env var).
-- [ ] **REQ-V23-11** — D's pattern proposals constrained to discourse-syntactic-functional vocabulary (Probe A' R3 vocab anchor). Allowed: subject-position, predicate, anaphora, parenthetical, namespace-prefix, section-heading, sentence-position, qualifier-clause, cross-reference + structural verbs (over-approved, under-rejected, propagated, missed, expansion, alias-of, container-of, sub-element-of). Forbidden: role nouns + architectural-style names.
-- [ ] **REQ-V23-12** — Slot-uniform bank: trained patterns cover all 9 axiom slots (`AMBIGUITY_RULES`, `AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`, `SEED_DISAMBIGUATION_RULES`). No mixing static + bank within any slot.
+- [ ] **REQ-V26-04** — LLM Assessor role: replaces Gate A + Gate B entirely. One LLM call per proposal. Inputs: proposed pattern text + slot, full current bank (all existing patterns), remaining FP sentence list (with component context), remaining FN sentence list (with component context). Assessor decides: **accept / reject / revise** — with rationale identifying which specific FP or FN sentences the pattern would address. No hard vocabulary grep. Abstraction quality (abstract vs project-specific vocabulary in the proposed rule) is one of the Assessor's evaluation criteria. `revise` verdict returns a reformulated pattern for re-evaluation (max 1 revision cycle per proposal).
 
-### INFRA — Training Convergence + Budget
+- [ ] **REQ-V26-05** — Cross-split redesign: each split trains independently, evaluates its trained bank on its own held-out test set, and reports against an axiom-only baseline on the same test set. Verdict question per split: "does training on projects {train_set} improve F1 on {test_set} beyond axiom-only?" No cross-split aggregation or dedup. Final deployed bank = mainline (MS+TS+TM train). Cross-split result is a stability/generalization check, not an input to consensus.
 
-- [ ] **REQ-V23-13** — Convergence = macro F1 ≥ 0.90 on training projects, max 5 outer passes. Per-pass macros logged; converged-early result preserved (do not over-train).
-- [ ] **REQ-V23-14** — Budget cap ~$100 gpt-5.4 total. Probe tier $5-10 (mainline split, 1-2 outer passes). Range tier $15-25 (mainline, run to convergence). Confirmation tier $40-60 (3-split sweep). Compact-B fallback budget $10-20 (if triggered). Per-tier cheap-kill on tier-floor miss.
-- [ ] **REQ-V23-15** — Comparison reference: primary `s_linker14_voyager` (axiom + trained bank) vs `s_linker13_min` (hand-authored `prompts_v3.py`) — gpt-5.4 macro F1, 5-dataset. Secondary vs `prompts_v3_axiom.py` (axiom-only floor) to attribute lift between trained patterns and minimal-skeleton baseline. Both numbers in milestone audit.
+- [ ] **REQ-V26-06** — Log structure: every training log must report [TRAIN] and [TEST] project metrics separately per pass. Format: `[TRAIN] MS: F1=x TS: F1=x TM: F1=x macro=x` and `[TEST] BBB: F1=x JAB: F1=x macro=x` (or equivalent for non-mainline splits). The delta used for commit decision uses [TRAIN] macro only. [TEST] is reported for tracking but does not gate commits.
+
+- [ ] **REQ-V26-07** — GATE-01 regression test unchanged: `s_linker13_min` Claude macro ≥ 0.9506 AND gpt-5.4 macro ≥ 0.9069 throughout v2.6. `s_linker14_voyager` bound to 0.87 floor only (experimental=True policy).
+
+### AXIOM — Vocabulary Gap Fixes
+
+- [ ] **REQ-V26-08** — Axiom Gap 1 (section-context naming / SCN): extend `COREF_RULES` or `DOC_KNOWLEDGE_EXTRACTION_RULES` axiom to cover role-referential definite NPs ("the server", "the client") where the component was established earlier in the section. Rule framing must be semantic/intent-level (not surface pattern). Empirical safety check: zero regression on MS/TS/JAB gold links before deployment. Targets 14 systematic FNs across BBB+TM.
+
+- [ ] **REQ-V26-09** — Axiom Gap 2 (responsibility-list gerunds): extend `SEED_DISAMBIGUATION_RULES` axiom to reject bare gerund/nominal fragments describing a component's own capabilities without referencing an external participant. Must not reject legitimate cross-component gerund references. Empirical check: zero regression on MS/TS gold links. Targets 7 systematic FPs in TM.
+
+- [ ] **REQ-V26-10** — Axiom Gap 3 (coref alias): extend `COREF_RULES` or `ANTECEDENT_ALIAS_RULES` axiom to instruct the LLM to set `antecedent_via_alias=True` when the antecedent sentence contains a known alias of the component (not just full canonical name). Uses existing code path at `s_linker14_voyager.py:1004`. Axiom change only, no code change. Safety check: BBB pronoun sentences must stay FP-free.
+
+### TRAIN — Evaluation Tiers
+
+- [ ] **REQ-V26-11** — Probe tier: 2-pass mainline run with new v5 loop. [TRAIN] and [TEST] F1 reported separately. Cheap-kill: [TEST] macro < 0.87 after pass 2 → KILL. Budget ≤ $10.
+
+- [ ] **REQ-V26-12** — Range tier (conditional on Probe CONTINUE): convergence run, max 5 passes, mainline split. 5-dataset eval. 3-tier verdict. Budget ≤ $25.
+
+- [ ] **REQ-V26-13** — Confirmation tier (conditional on Range ≥ 0.87): 3-split cross-validation with axiom-only baseline per held-out. Each split reports axiom-only vs trained-bank test F1. Final table vs v2.5 (89.1%) and canonical (90.69%). Budget ≤ $60.
 
 ### CARRY-FORWARD — Standing Gates
 
-- [ ] **GATE-01** (carried) — `s_linker13_min` regression test passes throughout v2.3 (Claude macro ≥ 0.93 AND gpt-5.4 macro ≥ 0.8977). v4 NOT bound to this gate.
-- [ ] **GATE-02** (carried) — frozen-compat regression test extended with `s_linker14_voyager` against locked-evaluation baseline JSON. New baseline allowed (single-run snapshot) since v4 is `experimental=True`.
-- [ ] **GATE-06** (carried) — generality audit applies to all v4 artifacts: trained bank patterns + reviewer-critic prompts + Oracle prompts + Distillator prompts. Cross-dataset isolation methodology applies.
-- [ ] **GATE-07** (carried) — `s_linker14_voyager` registered in `CANONICAL_VARIANTS` + `VARIANT_SPECS` with structured docstring documenting β architecture + trained-bank dependency.
-- [ ] **GATE-08** (carried from v2.2) — cost-per-improvement audit on v4 mainline. v4 must justify ~$60-100 training cost via STRONG promotion OR document failure mode publishable as negative finding.
+- [ ] **GATE-01** (carried) — `s_linker13_min` regression gate (Claude ≥ 0.9506, gpt-5.4 ≥ 0.9069) passes throughout v2.6. Code unmodified.
+- [ ] **GATE-07** (carried) — `DEFAULT_BANK_PATH` updated to v2.6 trained bank; docstring updated with v2.6 results.
+- [ ] **GATE-08** — Total training budget ≤ $80 (Phases 34–36). Infrastructure phases = $0.
 
-## Locked Decisions Reference
+## Future Requirements (deferred)
 
-| Decision | Lock |
-|---|---|
-| Architectural endpoint | (A) Voyager-bank canonical |
-| Promotion bar | 3-tier on gpt-5.4 macro F1 |
-| Dual-artifact policy | s_linker13_min canonical=True + s_linker14_voyager experimental=True |
-| Backend | gpt-5.4 only; Claude only if super necessary |
-| Output artifact | Static JSON bank (Voyager-mode runtime injection) |
-| Per-pattern content | Rich (rule_text + example_block + why_it_transfers + abstraction_check_cot) |
-| Training architecture | β (L + O + D-with-CoT-A + P) |
-| Oracle mode | (i) text-aware O, text-blind D |
-| Oracle output | Failure-mode-centric (FM list + newly_introduced_errors) |
-| Leak defense placement | Bank-entry boundary (not O/D handoff) |
-| Slot scope | All 9 axiom slots, joint per iter |
-| Probation gate | Mechanical, per-batch rollback on F1 delta < 0 |
-| Convergence | macro ≥ 0.90, max 5 outer passes |
-| Train/test split | Mainline MS+TS+TM → BBB+JAB; 3-split confirmation conditional |
-| Budget | ~$100 cap, tiered cheap-kill |
-| Comparison reference | vs prompts_v3.py primary, vs prompts_v3_axiom.py secondary |
-| Cross-iter state | D + O both see current bank |
-| Cache | Per-(text_stem, comp_hash, backend, model) uniform |
-| D vocab constraint | Discourse-syntactic-functional only |
-| R3 anchor | scripts/voyager_train_tlr_v4_a_prime.py |
-| Fallback | Compact-B (R345 single CoT) on v4 FAIL |
-| Linker name | s_linker14_voyager |
-| Bank persistence | Per-project banks during training; aggregated global at end |
+- Flex tier integration (`260601-flex-tier-integration.md`) — cost optimization, v2.7+
+- AMBIGUITY_FEW_SHOT calibration — defer unless Assessor flags it
 
-## Out of Scope (v2.3)
+## Out of Scope for v2.6
 
-- Claude backend runs (per `[[feedback-prefer-gpt-backend]]` memory)
-- Voyager v3 Claude splits 2+3 (parked per `.planning/todos/260601-skipped-experiments-v22.md`)
-- Probe D Claude re-test (skipped per backend policy)
-- Cross-model promotion of v4 to canonical (defer to v2.4 if reviewers require)
-- (B) endpoint full runtime-rubric linker (contingency only — reconsidered if v4 FAIL)
-- (B-new) runtime bank-builder (considered, rejected for v2.3, logged for future)
-- Separate R5 abstraction-validator as standalone LLM role (folded into D's CoT-A)
-- Changes to frozen artifacts (`s_linker13.py`, `prompts_v2.py`, `ilinker*`, `data_types_v2`, `document_loader_v2`, `pcm_parser_v2`)
-- Modifications to `s_linker13_min` (canonical, must be preserved untouched)
-- New seed/linker approaches beyond v4 β + Compact-B fallback
+- Cross-model Claude validation — gpt-5.4 only (per standing policy)
+- `s_linker13_min` prompt changes — canonical frozen
+- New benchmark datasets — 5-dataset benchmark unchanged
+- GATE-06 mechanical vocab grep — replaced by Assessor abstraction-quality criterion + OD prompt enforcement
 
-## Deferred to Future Milestones (v2.4+)
+## Requirement Traceability
 
-| Item | Why deferred |
-|---|---|
-| Claude cross-model verification of v4 | Per backend policy — only run if reviewers require; out-of-scope for v2.3 publish |
-| (B-new) runtime bank-builder | Considered at v2.3 kickoff; rejected as more complex than (A) static bank with weaker A/B comparison story. Future milestone candidate if (A) shows per-doc adaptation gap |
-| ADAPTER-01 backend-adaptive prompts | Re-opened by v2.1 trim4/5/6/7 evidence; not v2.3-scope |
-| Extended Thinking on judge stages | Carried from v2.1; not v2.3-scope |
-| Link provenance data structure | Carried from v2.1; not v2.3-scope |
-| EXT-04 emit-biased boundary prompting | Carried from v2.0; not v2.3-scope |
-| (C) Hybrid runtime + static per-slot | Ruled out by slot-asymmetry-is-ugly principle |
-
-## Traceability
-
-| Requirement | Phase | Status | Phase 19 Verdict |
-|-------------|-------|--------|------------------|
-| REQ-V23-01 | Phase 14 | PASS | β harness built; all 5 mainline passes ran; `final_bank.json` produced |
-| REQ-V23-02 | Phase 14, 17 | PASS | `s_linker14_voyager` standalone; experimental=True; registered (commit e6624cc) |
-| REQ-V23-03 | Phase 14 | PASS | L+O+D+P roles implemented; 32 unit tests pass |
-| REQ-V23-04 | Phase 14 | PASS | Oracle failure-mode-centric JSON schema implemented and exercised |
-| REQ-V23-05 | Phase 16 + Phase 19 | PASS | 3-tier verdict WEAK (90.5% ∈ [0.87, 0.9173)); documented in audit |
-| REQ-V23-06 | Phase 17 | PASS | Dual-artifact: s_linker13_min canonical=True + s_linker14_voyager experimental=True |
-| REQ-V23-07 | Phase 15 + Phase 16 + Phase 17 | PASS | Probe CONTINUE; Range WEAK (89.8% ≥ 0.87); Confirmation 3-split done |
-| REQ-V23-08 | Phase 17 (pass path) | PASS | Pass path taken; Phase 18 not triggered |
-| REQ-V23-09 | Phase 14 | PASS | GATE-06 grep + reviewer critic built; 0 hard rejects across all passes |
-| REQ-V23-10 | Phase 14 | PASS | Cache adapter built; VOYAGER4B_CACHE_ROOT override tested |
-| REQ-V23-11 | Phase 14 | PASS | D vocab constraint enforced in prompt + unit test |
-| REQ-V23-12 | Phase 14 | PASS | 9-slot bank schema enforced; 6 non-empty, 3 axiom-only (design-compliant) |
-| REQ-V23-13 | Phase 15 + Phase 16 | PARTIAL | 5-pass cap hit in all 3 splits; no convergence. Probation gate bugs logged as debt D-1. |
-| REQ-V23-14 | Phase 15 + Phase 16 + Phase 17 | PARTIAL | ~$111 total vs $100 cap. Slight overrun justified; see GATE-08. Phase 18 not triggered. |
-| REQ-V23-15 | Phase 16 | PASS | Cross-split 90.5% vs canonical 90.7% (−0.19pp); vs axiom-only 88.9% (+1.6pp) |
-| GATE-01 | Phase 14 + Phase 17 + Phase 19 | PASS | s_linker13_min gpt-5.4 90.7% (delta +0.01pp from 90.69% baseline). PASS. |
-| GATE-02 | Phase 14 | PASS | Frozen-compat regression green; 35 passed, 28 xfailed |
-| GATE-06 | Phase 14 + Phase 15 + Phase 16 + Phase 17 | PASS | 0 hard rejects; 27 advisory warnings (non-blocking) |
-| GATE-07 | Phase 14 + Phase 17 | PASS | Docstring updated; DEFAULT_BANK_PATH → cross_split_final_bank.json |
-| GATE-08 | Phase 17 + Phase 19 | PASS (with caveat) | ~$111 justified by WEAK positive finding + split-fragility mechanistic insight |
+| REQ-ID | Phase |
+|--------|-------|
+| REQ-V26-01 | Phase 31 |
+| REQ-V26-02 | Phase 31 |
+| REQ-V26-03 | Phase 32 |
+| REQ-V26-04 | Phase 32 |
+| REQ-V26-05 | Phase 32 |
+| REQ-V26-06 | Phase 32 |
+| REQ-V26-07 | Throughout |
+| REQ-V26-08 | Phase 33 |
+| REQ-V26-09 | Phase 33 |
+| REQ-V26-10 | Phase 33 |
+| REQ-V26-11 | Phase 34 |
+| REQ-V26-12 | Phase 35 |
+| REQ-V26-13 | Phase 36 |
+| GATE-01 | Throughout |
+| GATE-07 | Phase 37 |
+| GATE-08 | Phases 34–36 |

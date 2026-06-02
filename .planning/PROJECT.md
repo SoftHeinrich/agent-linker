@@ -56,13 +56,24 @@ Key requirements:
 - **REQ-V25-07** — Training harness Oracle + Distillator updated to recognize and propose for all 15 slots
 - **REQ-V25-08** — Full 3-split Confirmation re-run with clean infrastructure; promotion verdict vs STRONG threshold ≥ 0.9173
 
-## Current Milestone: v2.5 — COMPLETE (2026-06-02); v2.6 not yet started
+## Current Milestone: v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
 
-**v2.5 Outcome:** WEAK — cross-split macro 89.1% (gpt-5.4, 5-dataset). Oracle fix validated; 15-slot expansion active (5/6 new slots populated). See `milestones/v2.5-MILESTONE-AUDIT.md`.
+**Goal:** Replace mechanical training gate with LLM Assessor reasoning over actual FP/FN error sets; build ILinker4 as Voyager-native seed extractor; fix 3 axiom gaps (SCN, gerunds, coref alias). Target: exceed canonical (90.69% gpt-5.4).
+
+**Target features:**
+- ILinker4: Voyager-native seed extractor (SEED_EXTRACTION_RULES + SEED_ACTOR_RULES as first-class bank slots)
+- Prompt hygiene: all static prompts = structural scaffolding only
+- O+D merge: single text-aware role (diagnose errors + propose patterns; anti-superficiality rule)
+- LLM Assessor: replaces Gate A + Gate B; sees remaining FP/FN sentence lists + full bank; accept/reject/revise
+- Cross-split as train/test validation with axiom-only baseline per held-out
+- Log structure: [TRAIN] vs [TEST] separation per pass
+- Axiom fixes: Gap 1 (SCN 14 FNs), Gap 2 (gerunds 7 FPs), Gap 3 (coref alias)
+
+**v2.5 Outcome (prior):** WEAK — cross-split macro 89.1% (gpt-5.4). See `milestones/v2.5-MILESTONE-AUDIT.md`.
 
 ## Current State
 
-**Status:** v2.5 complete — v2.6 kickoff pending. Next: BBB split strategy revision (C-1) + TM FM-1/FM-2 FP reduction (C-2).
+**Status:** v2.6 in progress — started 2026-06-02.
 
 **Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`, unchanged). Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
@@ -178,4 +189,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-01 — v2.5 milestone kickoff (Oracle Cache Fix + 15-Slot Expansion + Re-run)*
+*Last updated: 2026-06-02 — v2.6 milestone kickoff (ILinker4 + LLM-Driven Training + Axiom Re-run)*

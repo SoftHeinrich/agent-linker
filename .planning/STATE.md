@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.5
-milestone_name: Oracle Cache Fix + 15-Slot Expansion + Re-run
-status: complete
-last_updated: "2026-06-02T06:00:00.000Z"
+milestone: v2.6
+milestone_name: ILinker4 + LLM-Driven Training + Axiom Re-run
+status: planning
+last_updated: "2026-06-02T05:50:00.000Z"
 last_activity: 2026-06-02
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  total_phases: 7
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 ## Current Position
 
-Phase: 30 — Milestone Close
-Plan: 30-P1
-Status: complete
-Last activity: 2026-06-02 — Phase 30 complete (v2.5 closed, WEAK verdict, 89.1% cross-split macro F1)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements → roadmap
+Last activity: 2026-06-02 — Milestone v2.6 started
 Next action: v2.6 kickoff — BBB split strategy revision + TM FP reduction (see v2.5-MILESTONE-AUDIT.md Debts C-1/C-2)
 
 ```
