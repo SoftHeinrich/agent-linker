@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6
-milestone_name: Phase Summary
-status: Phase 34 KILL verdict. Phases 35+36 SKIPPED. Phase 37 is next (unconditional).
-stopped_at: context exhaustion at 75% (2026-06-02)
-last_updated: "2026-06-02T12:13:13.353Z"
-last_activity: 2026-06-02 — Phase 34 probe KILL ([TEST] macro 84.86% < 87%). v4 axiom Gap 2 over-aggressive (TM 81.97%). Assessor confirmed active (9 decisions).
+milestone: v2.7
+milestone_name: BBB Recall Closure (Tier C + Partial-Injection Port + Recall-Oracle)
+status: v2.7 roadmap defined; v2.6 close pending at Phase 37 (folds in GATE-06 'Persistence' taboo fix); Phases 38–42 plan stubs written.
+stopped_at: 2026-06-02 plan landed
+last_updated: "2026-06-02T15:00:00Z"
+last_activity: 2026-06-02 — v2.7 roadmap synthesized from HANDOFF + pending todos + voyager-improvement notes. F1 gate dropped. v2.8 partial-injection + recall-oracle pulled into v2.7. Phases 38–42 plan stubs written.
 progress:
-  total_phases: 14
-  completed_phases: 2
-  total_plans: 10
-  completed_plans: 5
-  percent: 14
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 17
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,18 +21,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
+**Current focus:** v2.7 — BBB Recall Closure (Tier C axiom + s10 partial-injection port + recall-oracle training redesign). No F1 milestone gate.
 
 ## Current Position
 
-Phase: Phase 37 (Milestone Close) — not started
+Phase: Phase 37 (v2.6 Milestone Close) — not started. After close, Phase 38 + Phase 39 start in parallel (v2.7).
 Plan: —
-Status: Phase 34 KILL verdict. Phases 35+36 SKIPPED. Phase 37 is next (unconditional).
-Last activity: 2026-06-02 — Phase 34 probe KILL ([TEST] macro 84.86% < 87%). v4 axiom Gap 2 over-aggressive (TM 81.97%). Assessor confirmed active (9 decisions).
-Next action: Begin Phase 37 — milestone audit, GATE-01/07/08 verification, v2.6-MILESTONE-AUDIT.md, PROJECT.md update, STATE.md close.
+Status: v2.6 close pending. v2.7 phase plans (38–42) drafted. F1 gate intentionally dropped for v2.7.
+Last activity: 2026-06-02 — v2.7 roadmap landed. Phases 38–42 plan stubs in `.planning/phases/`.
+Next action: Phase 37 task 9 — GATE-06 'Persistence' taboo regex fix in `scripts/voyager_train_tlr_v5.py:104-113`. Then v2.6-MILESTONE-AUDIT.md. Then milestone flip to v2.7 and start Phase 38 + 39 parallel.
 
 ```
-Progress: [========                      ] 29% (2/7 phases)
+Progress: v2.6 [############################  ] 6/7 — close pending
+          v2.7 [                              ] 0/5 — not started
 ```
 
 ## v2.5 Outcome
@@ -98,8 +99,8 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
 ## Session Continuity
 
-Last session: 2026-06-02T12:13:13.350Z
-Stopped at: context exhaustion at 75% (2026-06-02)
+Last session: 2026-06-02T13:58:22.620Z
+Stopped at: context exhaustion at 76% (2026-06-02)
 Resume file: None
 Next action: Monitor `logs/voyager_v5/probe_p36_rollback.log`; if TM train ≥82% proceed to Tier C coref-extension design (task 9)
 Last activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
