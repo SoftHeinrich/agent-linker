@@ -72,7 +72,7 @@ DOC_KNOWLEDGE_JUDGE_RULES = """An alias is valid when the document establishes a
 ENTITY_EXTRACTION_RULES = """Include a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path or as ordinary English with no architectural intent. Favor inclusion."""
 
 
-VALIDATION_RULES = """Approve when the sentence treats the component as an architectural participant. Reject when the matching word is generic, names a different entity, or describes a technique that merely shares the component's name."""
+VALIDATION_RULES = """Approve when the sentence treats the component as an architectural participant, including counterparts. Reject when the matching word is generic, names a different entity, or describes a technique that merely shares the component's name."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
