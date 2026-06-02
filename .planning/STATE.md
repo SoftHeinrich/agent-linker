@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-06-01T17:39:20.519Z"
 last_activity: 2026-06-01
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,111 +17,112 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-01 for v2.3 close)
+See: .planning/PROJECT.md (updated 2026-06-01 for v2.5 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.4 complete. Next: v2.5 (oracle cache fix + axiom scope expansion 9→15 slots + re-run).
+**Current focus:** v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run. Roadmap defined; Phase 25 is next.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 25 — Infrastructure Fixes
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-01 — Milestone v2.5 started
+Status: planning
+Last activity: 2026-06-01 — Roadmap v2.5 created (Phases 25–30)
+Next action: Phase 25 — Infrastructure Fixes
 
-## v2.4 Design Decisions (Locked)
+```
+Progress: [                              ] 0% (0/6 phases)
+```
 
-All locked in conversation from v2.3 post-mortem (2026-06-01). Full details in `.planning/v2.4-prep/v2.4-KICKOFF-SEED.md`.
+## v2.5 Design Decisions (Locked)
 
-### D-1 Fix: Traceability Gate (replaces broken F1-delta probation gate)
+All locked in v2.5 requirements and milestone audit (2026-06-01). Full details in `.planning/milestones/v2.5-REQUIREMENTS.md`.
 
-**Root cause of split2 empty bank**: 6 compounding bugs in `_probation_check()` — two independent stochastic L runs compared; LLM variance ±3.4–3.8pp per dataset swamps ≤1pp pattern signal.
+### A-1 Fix: Oracle Cache Contamination
 
-**Gate A (deterministic, $0)**: D prompt must include `addresses_failure_modes` list (non-empty, all IDs exist in O's failure_modes for this pass). Reject if empty — not advisory.
+**Root cause of v2.4 split-3 TM reuse**: Oracle cache key in `voyager_train_tlr_v4_beta.py` line 455 does not include `bank_content_hash`. Split-3 TM reuses mainline oracle outputs when bank state differs, invalidating cross-split diversity.
 
-**Gate B (LLM judge, ~$0.01/pass)**: Checks `fixes_cited_fm: true AND causes_new_error: false AND confidence: high|medium`. Uses O's failure_modes and newly_introduced_errors as inputs.
+**Fix**: Add `bch = _bank_content_hash(bank)` to oracle key — same pattern as L cache fix already in place.
 
-**Drop probation re-run entirely**: Gate A/B are the replacement.
+### A-3 Fix: Probation Variance
 
-**4 supporting bug fixes**: L cache (project + bank_content_hash + backend + model); `prior_f1s` from committed state; per-project candidate bank; `committed_macro >= CONVERGENCE_THRESHOLD` convergence condition.
+**Root cause**: `delta > 0` threshold allows ±3–4pp BBB LLM run-to-run variance to trigger false commits.
 
-### D-2 + D-3 Fix: Three Axiom Gaps
+**Fix (user-selected)**: Raise threshold to `delta >= 0.005`. No extra LLM calls. Over-rejection risk accepted.
 
-**Gap 1 — Section-context naming (SCN), 14 FNs in BBB+TM**:
+### A-4 Fix: D Slot Steering
 
-- Correct fix: COREF_RULES extension (not DOC_KNOWLEDGE alias — entity extraction is batch-mode without window context; local aliases filtered at lines 788-791).
-- Requires ~8-line code change in `_coref_cases_in_context`: build `role_ref_pat` from component terminal words; expand `pronoun_sents` → `anaphoric_sents`.
-- COREF_RULES axiom change has zero effect without the code change (SCN sentences contain no pronoun).
+**Problem**: D over-proposes DOC_KNOWLEDGE_EXTRACTION_RULES while ENTITY_EXTRACTION_RULES, AMBIGUITY_FEW_SHOT, DOC_KNOWLEDGE_JUDGE_EXAMPLES remain empty.
 
-**Gap 2 — Responsibility-list FPs, 7 FPs in TM**:
+**Fix**: After per-slot pattern count display in D prompt, list zero-pattern slots by name as high-priority proposal targets.
 
-- Axiom only. SEED_DISAMBIGUATION_RULES: add "description of the component's own capabilities without referencing an external participant" to OTHER category.
-- Empirically safe: 0/27 MS gold + 0/23 TS gold sentences start with gerund.
+### B-1: 15-Slot Expansion
 
-**Gap 3 — Alias coref**:
+**6 new slots**: `SEED_EXTRACTION_RULES`, `SEED_ACTOR_RULES`, `GENERIC_WORD_USAGE_RULES`, `ALIAS_SCOPE_RULES`, `ANTECEDENT_ALIAS_RULES`, `COREF_TERMINAL_SPECIFICITY_RULES`.
 
-- One phrase in COREF_RULES: add "or aliased" alongside "named". Code path at line 1017 already checks `antecedent_via_alias`.
-- Combined with Gap 1 into single COREF_RULES semantic reframing.
+**`ilinker3.py` frozen**: `ILinker3Injected` subclass in `s_linker14_voyager.py` overrides `_prompt_extract()` and `_prompt_actor()` — frozen-artifact policy preserved.
 
-## Phase 20 Plans (all independent — any order)
+**4 inline prompts wired**: ALIAS_SCOPE_SCHEMA, ANTECEDENT_ALIAS_GUIDE, generic filter, `_classify_specific_terminals()` prompt.
 
-| Plan | File Target | Change |
-|------|-------------|--------|
-| 20-P1 | `scripts/voyager_train_tlr_v4_beta.py` | Gate A + Gate B + drop probation + 4 bug fixes |
-| 20-P2 | `prompts_v3_axiom.py` + `s_linker14_voyager.py` | COREF_RULES + SEED_DISAMBIGUATION_RULES + `_coref_cases_in_context` |
-| 20-P3 | eval + DEFAULT_BANK_PATH | 5-dataset eval (gpt-5.4) as Phase 20 baseline |
+## Phase Sequence
+
+| Phase | Name | Budget | Condition |
+|-------|------|--------|-----------|
+| 25 | Infrastructure Fixes | $0 | Unconditional |
+| 26 | 15-Slot Expansion | $0 | After Phase 25 |
+| 27 | Probe Tier | ≤ $10 gpt-5.4 | After Phase 26 |
+| 28 | Range Tier | ≤ $25 gpt-5.4 | Phase 27 CONTINUE |
+| 29 | Confirmation Tier | ≤ $60 gpt-5.4 | Phase 28 ≥ 0.87 |
+| 30 | Milestone Close | $0 | Unconditional |
 
 ## Standing Gates (carried forward)
 
-- **GATE-01**: `s_linker13_min` macro F1 ≥ 0.93 Claude AND gpt-5.4 ≥ 0.8977. Applies to canonical only.
-- **GATE-06**: BENCHMARK_TABOO grep + reviewer_critic. Applies at bank-entry AND at axiom-diff boundary (Phase 20-P2).
-- **GATE-07**: `s_linker14_voyager` registered experimental=True; DEFAULT_BANK_PATH updated in Phase 20-P3.
-- **GATE-08**: Total budget cap ~$80 (Phase 21–23). Lower than v2.3 because Phase 20 eliminates split2 empty-bank waste.
+- **GATE-01**: `s_linker13_min` macro F1 ≥ 0.93 Claude AND gpt-5.4 ≥ 0.8977. Applies to canonical only. Formal check at Phase 29 and Phase 30.
+- **GATE-06**: BENCHMARK_TABOO grep + reviewer_critic. Applies at bank-entry AND at all new slot seed text (Phase 26) AND all new Oracle + Distillator prompt text (Phase 26).
+- **GATE-07**: `s_linker14_voyager` registered experimental=True; DEFAULT_BANK_PATH updated to v2.5 `cross_split_final_bank.json` after Phase 29 Confirmation.
+- **GATE-08**: Total training budget cap ≤ $80 gpt-5.4 (Phases 27–29). Infrastructure phases 25, 26, 30 have zero LLM training cost.
 
 ## Canonical Artifact (current)
 
 - **`src/llm_sad_sam/linkers/experimental/s_linker13_min.py`** (v2.1 PROMOTED, `canonical=True`, unchanged)
 - Claude Sonnet macro F1: 0.9506 | gpt-5.4 macro F1: 0.9069
 
-## v2.3 Summary (for context)
+## v2.4 Summary (for context)
 
 **Verdict:** WEAK — cross-split macro F1 = 90.5% (gpt-5.4, 5-dataset). Gap to canonical: −0.19pp.
-**Key finding:** Probation gate broken (6 bugs) → split2 0/5 passes committed. Axiom vocabulary ceiling (SCN + gerund FPs). 2 patterns survive cross-split filter; deliver +1.6pp lift.
-**See:** `.planning/milestones/v2.3-MILESTONE-AUDIT.md`
+**Key findings:** Oracle cache contamination invalidated cross-split diversity (all splits got identical Distillator proposals). Split-2 0/5 commits due to oracle key bug (not probation threshold, as v2.3 assumed). Slot steering gap: ENTITY_EXTRACTION_RULES never proposed — D always over-proposed to already-filled slots. 6 new static prompts outside axiom scope identified → v2.5 bank 9→15 expansion.
+**See:** `.planning/milestones/v2.4-MILESTONE-AUDIT.md`
 
 ## Accumulated Context
 
-### Decisions (carried from v2.3)
+### Decisions (locked for v2.5)
 
-- β architecture (L + O + D-with-CoT-A + P) — kept, same roles
-- `s_linker14_voyager` standalone (no inheritance)
-- Bank format: slot-uniform 9 slots, per-project during training, aggregated final_bank.json
-- Cache: per-(text_stem, comp_hash, backend, model), VOYAGER4B_CACHE_ROOT override
-- GATE-06 at bank-entry (helpers already built in Phase 14; apply in Phase 21+)
-- gpt-5.4 default backend (Claude only if explicitly required)
+- Probation fix = raise threshold to `delta >= 0.005` (not multi-run averaging — cheaper, user-selected)
+- `ilinker3.py` stays frozen — `ILinker3Injected` subclass in `s_linker14_voyager.py`
+- gpt-5.4 default backend; Claude only if explicitly required
+- β architecture (L + O + D-with-CoT-A + P) — same roles, same topology
+- Bank format: 15 slots uniform, per-project during training, aggregated `cross_split_final_bank.json`
+- Flex tier deferred (cost optimization, out of scope v2.5)
 
-### Pending Todos (resolved as v2.4 Phase 20)
+### Pending Todos from v2.4
 
-3 todos filed during v2.3 — all resolved by Phase 20 plans:
-
-1. `2026-06-01-design-better-axioms-section-context-responsibility.md` → Phase 20-P2
-2. `2026-06-01-redesign-probation-gate-traceability.md` → Phase 20-P1
-3. `2026-06-01-implement-refined-v3-axiom-diffs-feasibility-study.md` → Phase 20-P2
+- `.planning/todos/pending/260601-flex-tier-integration.md` — deferred, out of scope v2.5
+- `.planning/todos/pending/260601-ilinker-prompts-not-axiomed.md` — addressed by REQ-V25-04/05/06 (Phase 26)
 
 ### Blockers/Concerns
 
-None. All three v2.3 debts have locked designs ready for implementation.
+None. All v2.5 requirements have locked designs; Phase 25 is implementation-ready.
 
-## Deferred Items (v2.5+ candidates)
+## Deferred Items (v2.6+ candidates)
 
 - Claude cross-model verification of v4 (per backend policy)
-- Complete v4 re-architecture beyond infra fix
+- OpenAI Flex tier integration (cost optimization)
 - Per-document or runtime-adaptive bank building
-- (B-new) runtime bank-builder
+- Complete v4 re-architecture beyond infra fix + slot expansion
 
 ## Session Continuity
 
-Last session: 2026-06-01T15:09:14.993Z
-Stopped at: context exhaustion at 75% (2026-06-01)
+Last session: 2026-06-01T17:39:20.519Z
+Stopped at: v2.5 roadmap created — Phase 25 ready to plan
 Resume file: None
-Next action: Phase 20 — 3 independent plans (20-P1 gate, 20-P2 axioms, 20-P3 eval)
+Next action: Phase 25 — Infrastructure Fixes (`/gsd-plan-phase 25`)
