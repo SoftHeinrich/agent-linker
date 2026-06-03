@@ -52,6 +52,31 @@ Next action: review s_linker15 validation run (below). Decide whether to repeat 
 
 Log: `logs/v2.6.1_s_linker15.log`; CSV/JSON: `results/v2.6.1/`.
 
+### s_linker15 dual-backend (2026-06-02/03)
+
+| Dataset | GPT-5.4 | Claude Sonnet |
+|---------|---------|---------------|
+| MediaStore | 91.8 | 95.1 |
+| TeaStore | 96.4 | 96.4 |
+| TeaMMates | 82.5 | 91.4 |
+| BigBlueButton | 77.6 | 83.5 |
+| JabRef | 97.3 | 97.3 |
+| **Macro** | **89.1** | **92.7** |
+
+Claude run: `logs/v2.6.1_s15_claude_tm_bbb_jab.log` (TM/BBB/JAB) + cached MS/TS from
+the killed 4-variant compare run; JSON `results/v2.6.1_claude/`.
+
+**Cross-backend + historical findings:**
+- No-training thesis holds: GPT 89.1 ties trained s14 (89.11); Claude 92.7.
+- Claude beats GPT by +3.6pp macro, concentrated in TM (+8.9) and BBB (+5.9); FP 12 vs 31.
+- BBB Claude 83.5 ≈ canonical s13_min (~85) and > s13 v1.0 (82.1). Dropping training costs ~0 on BBB.
+- Pre-existing gaps (NOT from v2.6.1): (a) trim tax — early rich s_linkers (s2–s12) hit BBB
+  0.90–0.96 on Claude vs s15 83.5; (b) canonical gap — s15 Claude 92.7 vs s13_min 95.06 (−2.3pp).
+- BBB FN-dominated (14 FN) both backends → recall ceiling = frozen-v2.7 Tier-C/partial-injection target.
+- Cached BBB history (all Claude unless noted) in `results/ablation_results/`:
+  s2 .92, s3 .90, s5 .91, s6 .92, s8 .91, s9 .92, s10 .94, s11 .88–.96, s12b .93;
+  GPT-5.4 BBB only exists s13+: s13 .80, s13_min ~.76, s14 trained .74, s15 .78.
+
 **Headline finding:** axiom-only (NO training) = **89.1% macro** ≈ v2.5 trained bank (89.1%)
 and ≈ B-variant floor (88.99%). Dropping training loses nothing — supports the v2.6.1 thesis.
 TM 82.5% ≥ 82.26% target; MS/TS/BBB/JAB all ≥ their bcae0e baselines (no regression).
