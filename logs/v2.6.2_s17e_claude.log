@@ -1,0 +1,99 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker17e
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 18
+  TransArc baseline: P=94.4% R=54.8% F1=69.4%
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: AudioAccess -> MediaAccess [global]
+  Model: 4 ambiguous (of 14 components)
+  Doc knowledge: 4 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=30, Pass2=30, Intersect=30
+  Framing A: 27 links
+  Framing B: 27 links
+  Framing C: 30 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 30
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 30 candidates
+  Validated: 28 / 30
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+  Coreference raw: 5 links
+    Coref val reject: S21 -> Reencoding
+    Coref val reject: S36 -> FileStorage
+  Coreference validated: 3 / 5
+
+[Phase 6] Final Merge
+  After dedup: 31 (from 31 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_mediastore_20260603_113819.json
+  Checkpoint: final saved
+
+Final: 31 links (278s)
+  s_linker17e: P=100.0% R=100.0% F1=100.0% TP=31 FP=0 FN=0 (278s)
+    Sources: {'multi_framing': 28, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 20
+  TransArc baseline: P=100.0% R=74.1% F1=85.1%
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: claude (sonnet)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: UI -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [global]
+    Alias: registry -> Registry [local]
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=23, Pass2=35, Intersect=23
+  Framing A: 23 links
+  Framing B: 23 links
+  Framing C: 23 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 23
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+  Validated: 21 / 23
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
