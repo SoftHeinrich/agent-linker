@@ -15,6 +15,9 @@ Retained runtime files:
 - [src/llm_sad_sam/linkers/experimental/s_linker15c.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker15c.py) — v2.6.2 negative result (ILinker4+entity hybrid, −0.6pp)
 - [src/llm_sad_sam/linkers/experimental/s_linker17a.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17a.py) — v2.6.2 renaming-only (ICSE Framing A/B/C names)
 - [src/llm_sad_sam/linkers/experimental/s_linker17b.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17b.py) — v2.6.2 unified k=2 voting architecture
+- [src/llm_sad_sam/linkers/experimental/s_linker17c.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17c.py) — v2.6.2 union merge variant (87.1% GPT, −2.0pp vs s15)
+- [src/llm_sad_sam/linkers/experimental/s_linker17d.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17d.py) — v2.6.2 validated-antecedent coref gate (86.8% GPT, wrong hypothesis)
+- [src/llm_sad_sam/linkers/experimental/s_linker17e.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17e.py) — v2.6.2 validated coref (92.3% GPT, +3.2pp vs s15, **breakthrough**)
 - [src/llm_sad_sam/linkers/experimental/prompts.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts.py)
 - [src/llm_sad_sam/linkers/experimental/prompts_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts_v2.py)
 - [src/llm_sad_sam/core/data_types_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/core/data_types_v2.py)
@@ -34,19 +37,22 @@ pytest
 
 [run_ablation.py](/home/yu/project/adc/agent-linker/run_ablation.py) is lightweight and only supports the retained ILinker/S-Linker set.
 
-## Current Milestone (v2.6.2) — Multi-Framing Extraction Design
+## Current Milestone (v2.6.2) — Multi-Framing Extraction Design + Validated Coref
 
-v2.6.2 explores unified multi-framing architecture for the ICSE paper. Two new variants:
+v2.6.2 explored unified multi-framing architecture for the ICSE paper, then extended into
+validated coref. ICSE architecture decision (FINAL): use s_linker17a naming (Framing A/B/C).
 
-- **`s_linker17a`** — rename-only variant of `s_linker15` using ICSE-friendly names (Framing A/B/C
-  instead of Tier 1/2/3). Zero logic change. Validates that renaming is safe (expected F1 ≈ s15).
-- **`s_linker17b`** — unified k=2 voting architecture. Alias discovery runs first (sequential),
-  then all three Framings (A/B/C) extracted in parallel (all alias-aware), k=2 voting merge, unified
-  evidence-bundle validation.
+Key variants (all GPT-5.4):
+- **`s_linker17a`** — rename-only (zero logic change). 86.3% GPT ≈ s15 (variance).
+- **`s_linker17b`** — unified k=2 voting. 85.0% (−4.1pp, TM/BBB regression).
+- **`s_linker17c`** — union merge. 87.1% (−2.0pp, +12 FP). Union > k=2 but s15 wins.
+- **`s_linker17d`** — validated-antecedent coref gate. 86.8% (wrong hypothesis, discardable).
+- **`s_linker17e`** — **BREAKTHROUGH**: coref links pass single-pass validation before Phase 6.
+  **92.3% GPT (+3.2pp vs s15), FP 43→14.** Log: `logs/v2.6.2_s17e_gpt.log`.
 
 v2.7 (BBB Recall Closure) is frozen behind v2.6.2.
 
-Run: `python run_ablation.py --variants s_linker17a s_linker17b`
+Run: `python run_ablation.py --variants s_linker17e`
 
 ## Production Linker (v2.6.1) — `s_linker15`
 

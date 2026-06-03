@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.6.2
-milestone_name: Multi-Framing Extraction Design
+milestone_name: milestone
 status: v2.6.2 SHIPPED 2026-06-03. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
-stopped_at: milestone complete — ICSE decision final; awaiting git tag
-last_updated: "2026-06-03T09:32:00.000Z"
-last_activity: 2026-06-03 — 17c ablation complete (GPT-5.4 87.1%); ICSE decision finalized; docs updated
+stopped_at: context exhaustion at 76% (2026-06-03)
+last_updated: "2026-06-03T09:02:47.363Z"
+last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_phases: 22
+  completed_phases: 5
+  total_plans: 18
+  completed_plans: 8
+  percent: 23
 ---
 
 # Project State
@@ -29,27 +29,28 @@ s_linker15 no-training axiom linker shipped. macro 89.1% gpt-5.4 / 92.7% Claude.
 non-additive (s15 = trained s14 on gpt). FP fixes fire on Claude (TM FP 17→6), inert on gpt.
 See `.planning/milestones/v2.6.1-MILESTONE-AUDIT.md`. Results below retained for reference.
 
-## v2.6.2 — SHIPPED 2026-06-03 (final with 17c, 2026-06-03)
+## v2.6.2 — SHIPPED 2026-06-03 + post-ship 17d/17e extension
 
-Multi-framing extraction design exploration complete. All three unified variants tested on GPT-5.4.
-17a (rename-only) ≈ s15 within variance. 17b (k=2) regresses −4.1pp. 17c (union) regresses −2.0pp
-but +12 FPs. Union > k=2 by +2.1pp but s15 integrated approach still wins both.
-**ICSE decision (FINAL): use s_linker17a naming (Framing A/B/C) for the paper architecture.**
+Multi-framing exploration complete. ICSE decision (FINAL): use s_linker17a naming.
+Post-ship: 17d (wrong hypothesis) + **17e breakthrough** (92.3% GPT, +3.2pp vs s15, FP 31→14).
+Unified validation concept validated: ALL links (framing + coref) pass the same quality gate.
 See `.planning/milestones/v2.6.2-MILESTONE-AUDIT.md`.
 
 ### v2.6.2 results (reference) — GPT-5.4
 
-| Dataset | s_linker15 | s_linker17a | s_linker17b (k=2) | s_linker17c (union) |
-|---------|-----------|------------|------------|---------------------|
-| MediaStore | 91.8% | 90.3% | 92.1% | 92.1% |
-| TeaStore | 96.4% | 94.7% | 94.5% | 96.4% |
-| TeaMmates | 82.5% | 82.3% | 78.3% | 80.0% |
-| BigBlueButton | 77.6% | 74.1% | 70.2% | 77.0% |
-| JabRef | 97.3% | 90.0% | 90.0% | 90.0% |
-| **Macro** | **89.1%** | **86.3%** | **85.0%** | **87.1%** |
+| Dataset | s15 | 17a | 17b (k=2) | 17c (union) | 17d | **17e** |
+|---------|-----|-----|-----------|-------------|-----|---------|
+| MediaStore | 91.8% | 90.3% | 92.1% | 92.1% | 90.3% | **94.9%** |
+| TeaStore | 96.4% | 94.7% | 94.5% | 96.4% | 98.2% | 96.3% |
+| TeaMmates | 82.5% | 82.3% | 78.3% | 80.0% | 80.3% | **89.8%** |
+| BigBlueButton | 77.6% | 74.1% | 70.2% | 77.0% | 75.0% | **80.4%** |
+| JabRef | 97.3% | 90.0% | 90.0% | 90.0% | 90.0% | **100.0%** |
+| **Macro** | **89.1%** | 86.3% | 85.0% | 87.1% | 86.8% | **92.3%** |
+| FP | 31 | 37 | 37 | 43 | 43 | **14** |
 
 Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
-`logs/v2.6.2_s17c_gpt.log` (17c, GPT-5.4).
+`logs/v2.6.2_s17c_gpt.log` (17c); `logs/v2.6.2_s17d_gpt.log` (17d);
+`logs/v2.6.2_s17e_gpt.log` (17e).
 
 ## Frozen / pending
 
@@ -58,8 +59,8 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Milestone: **v2.6.2 (shipped)**. v2.7 frozen.
-Next action: git tag v2.6.2 → optionally run 17a/17b on Claude backend → decide whether to tune 17b k-threshold or proceed to v2.7.
+Milestone: **v2.6.2 (shipped + 17e post-ship)**. v2.7 frozen.
+Next action: run 17e on Claude backend → update memory/audit → git tag v2.6.2 → (optionally 17f C-privileged union) → proceed to v2.7.
 
 ### v2.6.1 results (reference) — s_linker15 axiom-only + 3 FP fixes
 
@@ -179,8 +180,8 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
 ## Session Continuity
 
-Last session: 2026-06-03T07:06:50.621Z
-Stopped at: context exhaustion at 82% (2026-06-03)
+Last session: 2026-06-03T09:02:47.360Z
+Stopped at: context exhaustion at 76% (2026-06-03)
 Resume file: None
 Next action: Monitor `logs/voyager_v5/probe_p36_rollback.log`; if TM train ≥82% proceed to Tier C coref-extension design (task 9)
 Last activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
