@@ -434,6 +434,9 @@ JSON only:"""
                     all_mappings[term] = full
                     all_scopes[term] = scope
 
+        if self._current_text_path:
+            self._save_phase(self._current_text_path, "alias_proposed",
+                             {"all_mappings": all_mappings, "all_scopes": all_scopes})
         data2 = None
         if all_mappings:
             mapping_list = [f"'{k}' -> {v}" for k, v in list(all_mappings.items())[:25]]
@@ -736,6 +739,9 @@ JSON only:"""
         intersected = {key: pass1[key] for key in pass1 if key in pass2}
         print(f"    Extraction consensus: Pass1={len(pass1)}, Pass2={len(pass2)}, "
               f"Intersect={len(intersected)} (dropped {len(pass1) + len(pass2) - 2*len(intersected)} unique-to-one-pass)")
+        if self._current_text_path:
+            self._save_phase(self._current_text_path, "extraction_passes",
+                             {"pass1": pass1, "pass2": pass2, "intersected": intersected})
         return list(intersected.values())
 
     def _validate_with_evidence(self, candidates, bundles, components, sent_map):
@@ -936,6 +942,7 @@ JSON only:"""
     def _coref_cases_in_context(self, sentences, components, name_to_id, sent_map):
         comp_names = get_comp_names(components)
         all_coref = []
+        coref_rejects = []
 
         # Build role_ref_pat: matches "the <terminal_word>" for multi-word component names.
         # Uses LLM-driven specificity check to exclude generic architectural nouns
@@ -951,6 +958,14 @@ JSON only:"""
             if self.PRONOUN_PATTERN.search(s.text)
             or (role_ref_pat and role_ref_pat.search(s.text))
         ]
+        if self._current_text_path:
+            self._save_phase(self._current_text_path, "coref_scope", {
+                "comp_terminals": comp_terminals,
+                "pronoun_sents": [s.number for s in anaphoric_sents
+                                  if self.PRONOUN_PATTERN.search(s.text)],
+                "role_ref_sents": [s.number for s in anaphoric_sents
+                                   if role_ref_pat and role_ref_pat.search(s.text)],
+            })
 
         for batch_start in range(0, len(anaphoric_sents), 10):
             batch = anaphoric_sents[batch_start:batch_start + 10]
@@ -1001,14 +1016,19 @@ Only include resolutions you are CERTAIN about. JSON only:"""
                 ant_snum = parse_snum(res.get("antecedent_sentence"))
                 if ant_snum is None:
                     print(f"    Coref skip (no antecedent): S{snum} -> {comp}")
+                    coref_rejects.append({"snum": snum, "comp": comp, "reason": "no_antecedent"})
                     continue
                 ant_sent = sent_map.get(ant_snum)
                 if not ant_sent:
                     continue
                 if not (has_standalone_mention(comp, ant_sent.text) or res.get("antecedent_via_alias", False)):
+                    coref_rejects.append({"snum": snum, "comp": comp,
+                                          "ant_snum": ant_snum, "reason": "citation_fail"})
                     continue
                 all_coref.append(SadSamLink(snum, name_to_id[comp], comp, source="coreference"))
 
+        if self._current_text_path:
+            self._save_phase(self._current_text_path, "coref_rejects", {"rejects": coref_rejects})
         return all_coref
 
     # ═══════════════════════════════════════════════════════════════════════
