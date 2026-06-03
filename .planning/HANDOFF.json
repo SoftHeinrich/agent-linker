@@ -1,71 +1,39 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-03T00:00:00Z",
-  "milestone": "v2.7",
-  "milestone_name": "BBB Recall Closure (Tier C + Partial-Injection Port + Recall-Oracle)",
-  "phase": "37-milestone-close (v2.6) / 38-tier-c-coref (v2.7) — re-scope pending",
-  "phase_dir": ".planning/phases/38-tier-c-coref",
+  "timestamp": "2026-06-03T09:01:10Z",
+  "phase": "v2.6.2-variant-exploration",
+  "phase_name": "Multi-Framing Variant Exploration (17c/17d/17e)",
+  "phase_dir": null,
   "plan": null,
-  "task": "v2.6.1 SHIPPED. Resume v2.7: re-evaluate Phases 40–41 vs no-training finding, then Phase 37 close / Phases 38+39.",
-  "total_tasks": 5,
-  "status": "v2.6.1 SHIPPED 2026-06-03 (tag v2.6.1). v2.7 unfrozen/resumable. v2.6 close (37) pending.",
-  "v261_outcome": "s_linker15 no-training axiom linker: macro 89.1 gpt / 92.7 Claude. Training non-additive (s15=trained s14 on gpt). FP fixes fire on Claude (TM FP 17->6), inert on gpt. See milestones/v2.6.1-MILESTONE-AUDIT.md.",
-  "f1_gate": "DROPPED for v2.7 (qualitative). v2.6.1 used TM macro > 82.26% / no MS/TS/JAB regression — met.",
-  "completed_v26_prep_tasks": [
-    {"id": 1, "name": "Lift ilinker3 SEED prompts into prompts_v4_axiom SEED slots", "status": "done"},
-    {"id": 2, "name": "Soften Gap 2 gerund rule (rolled back in task 7)", "status": "done"},
-    {"id": 3, "name": "Strip dry-run mock writes from bank serialization + clean 11 stale mocks", "status": "done"},
-    {"id": 4, "name": "Replace MIN_COMMIT_DELTA gate with assessor revert + worked FP/FN persistence + removal_targets", "status": "done"},
-    {"id": 5, "name": "Add pass cap (MAX_OUTER_PASSES=6) + best-bank checkpoint/restore", "status": "done"},
-    {"id": 6, "name": "Rewrite OD prompt as single-call evidence-CoT (CITE→DERIVE→WRITE→SELF-CHECK) + FM-exclusion + slot-quota", "status": "done"},
-    {"id": 7, "name": "Tier A axiom rollback (SEED_DISAMBIGUATION + SEED_EXTRACTION + SEED_ACTOR)", "status": "done"},
-    {"id": 8, "name": "Re-run probe with Tier-A rollback to verify TM recovers (achieved: TRAIN 0.9122, TM 0.8571; P36 KILL on test gate, expected)", "status": "done", "notes": "See .planning/phases/34-probe-tier/P36-FORENSICS.md"}
+  "task": 4,
+  "total_tasks": 6,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "17c ablation (GPT-5.4, all 5 datasets)", "status": "done", "commit": "5d4a3e7", "result": "87.1% macro, −2.0pp vs s15, ICSE decision final"},
+    {"id": 2, "name": "v2.6.2 milestone docs update with 17c", "status": "done", "commit": "5d4a3e7"},
+    {"id": 3, "name": "17d (validated-antecedent coref gate)", "status": "done", "commit": "30db116", "result": "86.8% macro, wrong hypothesis — discardable"},
+    {"id": 4, "name": "17e (validated coref)", "status": "done", "commit": "30db116", "result": "92.3% macro, +3.2pp vs s15, FP 43→14, JAB 100%, TM 89.8%"}
   ],
-  "v27_phase_tasks": [
-    {"phase": 37, "id": 9, "name": "GATE-06 fix: remove 'Persistence' from taboo regex in scripts/voyager_train_tlr_v5.py:104-113", "status": "not_started", "scope": "v2.6 close hygiene fold-in"},
-    {"phase": 38, "id": "10a", "name": "Add COREF_TERMINAL_PARTIAL_RULES + SUB_COMPONENT_OF_RULES axiom slots to prompts_v4_axiom.py", "status": "not_started"},
-    {"phase": 38, "id": "10b", "name": "Code: build runtime role_ref_pat regex + widen _coref_cases_in_context filter at s_linker14_voyager.py:949", "status": "not_started", "load_bearing": true, "note": "Axiom slots have NO EFFECT without this code change — feasibility-study finding"},
-    {"phase": 38, "id": "10c", "name": "Scan MS/TS gold for legitimate gerund TPs (prereq for 10d)", "status": "not_started"},
-    {"phase": 38, "id": "10d", "name": "SEED_DISAMBIGUATION diff (gerund/responsibility-list rejection)", "status": "not_started", "conditional_on": "10c clean"},
-    {"phase": 39, "id": 12, "name": "BBB-specific coref aggressiveness flag (auto-trigger when model_knowledge.ambiguous_names empty)", "status": "not_started"},
-    {"phase": 39, "id": 14, "name": "Port s_linker10 Tier 1.5 multi-word partial enrichment (terminal-word alias set)", "status": "not_started"},
-    {"phase": 39, "id": 15, "name": "Port s_linker10 Tier 2 partial injection (partial-form candidate seeds + protection from boundary filter)", "status": "not_started"},
-    {"phase": 40, "id": 13, "name": "Cross-split → per-split validation (drop Jaccard consensus dedup)", "status": "not_started"},
-    {"phase": 40, "id": "16a", "name": "BBB into mainline training set (mainline = MS+TS+TM+BBB train, JAB hold-out)", "status": "not_started"},
-    {"phase": 40, "id": "16b", "name": "Dual-objective Assessor gate (delta_FP AND delta_FN tracked separately; precision guard)", "status": "not_started"},
-    {"phase": 40, "id": "16c", "name": "Precision-rule preservation (v2.6 TM FP rules guarded against recall-rule cascading)", "status": "not_started"},
-    {"phase": 41, "id": "17a", "name": "Probe (2-pass mainline) with new stack", "status": "not_started", "budget_usd": 10},
-    {"phase": 41, "id": "17b", "name": "Range (convergence, max 5 passes) with new stack", "status": "not_started", "budget_usd": 25},
-    {"phase": 41, "id": "17c", "name": "Cross-split per-split validation (3 splits, no consensus)", "status": "not_started"},
-    {"phase": 42, "id": "18a", "name": "v2.7-MILESTONE-AUDIT.md + requirements close-out", "status": "not_started"},
-    {"phase": 42, "id": "18b", "name": "GATE-01/06/07/08 verifications + STATE/PROJECT updates", "status": "not_started"}
+  "remaining_tasks": [
+    {"id": 5, "name": "Update docs/memory with 17e result", "status": "not_started", "files": ["STATE.md", ".planning/milestones/v2.6.2-MILESTONE-AUDIT.md", ".planning/milestones/v2.6.2-ROADMAP.md", "CLAUDE.md", "memory/project_v262_s_linker17.md"]},
+    {"id": 6, "name": "Run 17e on Claude backend", "status": "not_started", "command": "python run_ablation.py --variants s_linker17e (set LLM_BACKEND=claude in .env)"},
+    {"id": 7, "name": "Design + test 17f (C-privileged union, targets multi_framing FPs)", "status": "not_started", "note": "TM 5 multi_framing FP + BBB 3 multi_framing FP remaining"},
+    {"id": 8, "name": "git tag v2.6.2", "status": "not_started"}
   ],
+  "blockers": [],
+  "human_actions_pending": [],
   "decisions": [
-    {"decision": "F1 milestone gate dropped for v2.7", "rationale": "BBB ceiling ~0.77-0.80 even with full Tier C is structural (FN-dominant, not axiom-fixable). Setting a 0.87 gate guarantees WEAK verdict + wasted $60 confirmation tier. v2.7 ships qualitatively: architecture lands + recall-oracle path active + GATE-01 holds.", "phase": "v2.7"},
-    {"decision": "Tier C scope = TWO axiom slots (terminal-partial AND service-of)", "rationale": "P36 forensics identified Pattern A (modifier-stripped) AND Pattern B (sub-component-of) as distinct surface forms. Single slot insufficient.", "phase": "v2.7-Phase-38"},
-    {"decision": "Axiom-only Tier C insufficient — code filter widening required", "rationale": "Per feasibility-study todo: SCN sentences have no pronoun, never reach Variant E coref batch. Runtime role_ref_pat regex + filter union at s_linker14_voyager.py:949 is the load-bearing change.", "phase": "v2.7-Phase-38"},
-    {"decision": "s10 partial-injection port (Tier 1.5 + Tier 2) pulled into v2.7 (not v2.8)", "rationale": "User decision: BBB structural ceiling needs both axiom extension AND direct injection. Pulling both v2.8 candidates (partial-injection + recall-oracle) into v2.7 for one cohesive close.", "phase": "v2.7-Phase-39"},
-    {"decision": "Recall-oracle scope = FULL (BBB into training + dual-objective Assessor gate)", "rationale": "User chose full architectural redesign over bolt-on. Voyager has structurally been precision-only learner because TM has no FN failures; dual-objective gate fixes this.", "phase": "v2.7-Phase-40"},
-    {"decision": "Phase 38 + Phase 39 run in parallel", "rationale": "Independent files (axiom + coref filter vs partial-injection paths). Wall-clock saving. Attribution muddier but acceptable.", "phase": "v2.7"},
-    {"decision": "Confirmation tier removed from v2.7", "rationale": "No F1 gate to defend. Per-split cross-validation in Phase 41 is the final F1 evidence. Saves $60.", "phase": "v2.7-Phase-41"},
-    {"decision": "GATE-06 'Persistence' fix folded into Phase 37 (v2.6 close)", "rationale": "5-min correctness hygiene; lives naturally in v2.6 close as GATE-06 self-fix. v2.7 starts clean.", "phase": "v2.7-Phase-37"},
-    {"decision": "Tier B (rehydrate prompts_v2 bodies) permanently blocklisted", "rationale": "Violates Voyager loop-learns-bank thesis. Memory: feedback-voyager-no-prompt-rehydration.", "phase": "v2.7"},
-    {"decision": "Tier D (CamelCase structural-unambiguous guard) skipped", "rationale": "Silent FP risk when CamelCase component name overlaps with industry term. Revisit only if precision becomes bottleneck.", "phase": "v2.7"}
+    {"decision": "17c ICSE architecture decision final: use 17a naming on s15 architecture", "rationale": "Union (−2.0pp) and k=2 (−4.1pp) both regress vs s15; integrated approach wins both merge strategies"},
+    {"decision": "17d discarded: wrong hypothesis about coref gate", "rationale": "Coref FPs are for validated components (gate doesn't fire), not unvalidated ones"},
+    {"decision": "17e is the breakthrough: validated coref completes unified validation concept", "rationale": "+3.2pp vs s15, FP 43→14. All links now pass same quality gate regardless of source. Clean ICSE story."}
   ],
-  "blockers": [
-    {"description": "None active. v2.7 has no F1 gate so prior 'BBB ceiling blocks milestone' framing dissolves.", "type": "n/a"}
-  ],
-  "uncommitted_files": [
-    ".planning/milestones/v2.7-ROADMAP.md (NEW)",
-    ".planning/phases/38-tier-c-coref/38-PLAN.md (NEW)",
-    ".planning/phases/39-partial-injection-port/39-PLAN.md (NEW)",
-    ".planning/phases/40-recall-oracle/40-PLAN.md (NEW)",
-    ".planning/phases/41-training-rerun/41-PLAN.md (NEW)",
-    ".planning/phases/42-milestone-close/42-PLAN.md (NEW)",
-    ".planning/HANDOFF.json (modified — v2.7 task list)",
-    ".planning/.continue-here.md (modified — v2.7 task list)",
-    ".planning/STATE.md (modified — milestone flip to v2.7, Phase 37 next)"
-  ],
-  "next_action": "Phase 37 (v2.6 close) — task 9 GATE-06 'Persistence' taboo fix, then v2.6-MILESTONE-AUDIT.md + STATE flip. After v2.6 closed, start Phase 38 + Phase 39 in parallel.",
-  "context_notes": "v2.7 milestone is the consolidated landing zone for: (a) the Tier C axiom + coref widening work that emerged from P36 forensics, (b) the s10 partial-injection port that was the historical baseline for BBB recall, and (c) the recall-oracle / dual-objective Assessor redesign that fixes voyager's structural inability to learn FN-recovery rules. All three converge on closing the BBB FN ceiling. F1 gate dropped — v2.7 ships on architecture + recall-oracle activity + GATE-01 holding. Total training budget ≤$35 vs v2.6 ≤$80 (saves $60 confirmation tier)."
+  "uncommitted_files": ["scratch_coref_forcedchoice_test.py", "scratch_coref_prosecutor_test.py", "scratch_coref_selection_test.py", ".claude/"],
+  "results_table_gpt54": {
+    "s15":  {"MS": 91.8, "TS": 96.4, "TM": 82.5, "BBB": 77.6, "JAB": 97.3, "macro": 89.1, "FP": 31},
+    "17c":  {"MS": 92.1, "TS": 96.4, "TM": 80.0, "BBB": 77.0, "JAB": 90.0, "macro": 87.1, "FP": 43},
+    "17d":  {"MS": 90.3, "TS": 98.2, "TM": 80.3, "BBB": 75.0, "JAB": 90.0, "macro": 86.8, "FP": 43},
+    "17e":  {"MS": 94.9, "TS": 96.3, "TM": 89.8, "BBB": 80.4, "JAB": 100.0, "macro": 92.3, "FP": 14}
+  },
+  "next_action": "Update STATE.md and v2.6.2 MILESTONE-AUDIT with 17e column. Then update memory/project_v262_s_linker17.md. Then run 17e on Claude backend.",
+  "context_notes": "17e validates the unified validation architectural concept empirically. Coref links in 17c bypassed Phase 4; 17e adds a coref-specific single-pass validation gate, cutting FPs from 43 to 14. This is both cleaner for ICSE and empirically superior to s15 (+3.2pp GPT). The next session should start with doc updates before any further variant work. v2.7 (BBB Recall Closure) remains frozen behind this exploration; v2.7 tasks are in the old handoff decisions above."
 }
