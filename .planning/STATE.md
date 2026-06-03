@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.7
-milestone_name: BBB Recall Closure (Tier C + Partial-Injection Port + Recall-Oracle)
+milestone_name: milestone
 status: v2.6.1 SHIPPED 2026-06-03 (tagged). v2.7 unfrozen/resumable. v2.6 close (Phase 37) still pending.
-stopped_at: 2026-06-03 v2.6.1 milestone closed
-last_updated: "2026-06-03T00:00:00Z"
-last_activity: 2026-06-03 — v2.6.1 closed (s_linker15 no-training axiom linker shipped; training proven non-additive). v2.7 unfrozen.
+stopped_at: context exhaustion at 82% (2026-06-03)
+last_updated: "2026-06-03T07:06:50.624Z"
+last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 17
-  completed_plans: 0
-  percent: 0
+  total_phases: 22
+  completed_phases: 5
+  total_plans: 18
+  completed_plans: 8
+  percent: 23
 ---
 
 # Project State
@@ -69,11 +69,13 @@ Claude run: `logs/v2.6.1_s15_claude_tm_bbb_jab.log` (TM/BBB/JAB) + cached MS/TS 
 the killed 4-variant compare run; JSON `results/v2.6.1_claude/`.
 
 **Cross-backend + historical findings:**
+
 - No-training thesis holds: GPT 89.1 ties trained s14 (89.11); Claude 92.7.
 - Claude beats GPT by +3.6pp macro, concentrated in TM (+8.9) and BBB (+5.9); FP 12 vs 31.
 - BBB Claude 83.5 ≈ canonical s13_min (~85) and > s13 v1.0 (82.1). Dropping training costs ~0 on BBB.
 - Pre-existing gaps (NOT from v2.6.1): (a) trim tax — early rich s_linkers (s2–s12) hit BBB
   0.90–0.96 on Claude vs s15 83.5; (b) canonical gap — s15 Claude 92.7 vs s13_min 95.06 (−2.3pp).
+
 - BBB FN-dominated (14 FN) both backends → recall ceiling = frozen-v2.7 Tier-C/partial-injection target.
 - Cached BBB history (all Claude unless noted) in `results/ablation_results/`:
   s2 .92, s3 .90, s5 .91, s6 .92, s8 .91, s9 .92, s10 .94, s11 .88–.96, s12b .93;
@@ -155,8 +157,8 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
 ## Session Continuity
 
-Last session: 2026-06-02T13:58:22.620Z
-Stopped at: context exhaustion at 76% (2026-06-02)
+Last session: 2026-06-03T07:06:50.621Z
+Stopped at: context exhaustion at 82% (2026-06-03)
 Resume file: None
 Next action: Monitor `logs/voyager_v5/probe_p36_rollback.log`; if TM train ≥82% proceed to Tier C coref-extension design (task 9)
 Last activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)

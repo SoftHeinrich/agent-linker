@@ -101,6 +101,10 @@ CANONICAL_VARIANTS = [
     "s_linker14_probe_d_upstream_clean",   # v2.2 OPT-IN CARVE-OUT (gpt-5.4 only, shipped 2026-06-01): runtime coref rubric replaces COREF_RULES; NOT canonical
     "s_linker14_voyager",   # v2.3 β architecture consumer (experimental=True): axiom prompts + trained slot-uniform bank patterns; NOT canonical
     "s_linker15",   # v2.6.1 no-training axiom-only linker (experimental=True): inlined axioms + 3 FP fixes, no bank/training; NOT canonical
+    "s_linker15b",  # v2.6.1 alias-recovery variant of s_linker15: entity pipeline replaced by targeted alias scan + seed_validation reuse; NOT canonical
+    "s_linker15c",  # v2.6.1 ILinker4-entity hybrid: entity pipeline extraction replaced by ILinker4 Pass A+B with alias injection; intersection + validation unchanged; NOT canonical
+    "s_linker17a",  # v2.6.1 Multi-Framing renaming variant of s_linker15: same logic, ICSE-friendly method names (Framing A+B+C taxonomy); NOT canonical
+    "s_linker17b",  # v2.6.1 unified multi-framing k=2: sequential alias discovery then parallel Framings A/B/C, k≥2 voting merge + unified evidence-bundle validation; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -520,6 +524,70 @@ VARIANT_SPECS = {
             "Backend: gpt-5.4 (per backend policy). "
             "s_linker13_min retains canonical=True. "
             "See .planning/milestones/v2.6.1-ROADMAP.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker15b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker15b",
+        class_name="SLinker15b",
+        description=(
+            "S-Linker15b — v2.6.1 alias-recovery variant of s_linker15 (experimental=True, NOT canonical). "
+            "Replaces full entity pipeline (2-pass LLM scan + 2-pass validation ~8-10 LLM calls) with a "
+            "targeted alias-recovery pass: regex-scan sentences for global-scope alias mentions, then reuse "
+            "_run_seed_validation for per-component LLM disambiguation (~1-2 LLM calls). No-op for datasets "
+            "with no global aliases (MS, JAB). Eliminates entity pipeline FP surface (5 FP on TM) while "
+            "preserving alias-based TPs (7 BBB). All other pipeline logic identical to s_linker15. "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker15c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker15c",
+        class_name="SLinker15c",
+        description=(
+            "S-Linker15c — v2.6.1 ILinker4-entity hybrid (experimental=True, NOT canonical). "
+            "Entity pipeline extraction replaced by ILinker4 Pass A (explicit-mention) + Pass B (actor-framed) "
+            "with global-scope aliases injected as learned patterns. Intersection merge and 2-pass "
+            "evidence-bundle validation unchanged from s_linker15. Hypothesis: ILinker4 framing is more "
+            "discriminating than the generic entity extraction prompt, reducing FP generation. "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17a",
+        class_name="SLinker17a",
+        description=(
+            "S-Linker17a — v2.6.1 Multi-Framing renaming variant (experimental=True, NOT canonical). "
+            "Conceptually identical to s_linker15; renamed for ICSE paper clarity. "
+            "Three linguistic framings: Framing A (explicit-mention, ILinker4 Pass A), "
+            "Framing B (actor-role, ILinker4 Pass B), Framing C (alias-aware entity pipeline). "
+            "Framings A+B run in Tier 1 (parallel with alias discovery; no alias knowledge). "
+            "Framing C runs in Tier 2 (after alias discovery; uses global aliases). "
+            "ZERO logic changes vs s_linker15 — renaming only. "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17b",
+        class_name="SLinker17b",
+        description=(
+            "S-Linker17b — v2.6.1 unified multi-framing k=2 (experimental=True, NOT canonical). "
+            "Sequential alias discovery (Phase 1) followed by parallel Framings A, B, C (Phase 2), "
+            "all with alias knowledge. k-voting merge (k=2, Phase 3): keep link if found by ≥2 framings. "
+            "Unified evidence-bundle validation (Phase 4) on all k≥2 candidates. "
+            "Eliminates the execution-order artifact of s_linker15/17a where Framings A+B lack alias knowledge. "
+            "Framings A+B use ILinker4 Pass A/B directly (no ILinker4 internal merge). "
+            "s_linker13_min retains canonical=True."
         ),
         canonical=False,
         experimental=True,
