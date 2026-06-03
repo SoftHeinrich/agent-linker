@@ -105,6 +105,9 @@ CANONICAL_VARIANTS = [
     "s_linker15c",  # v2.6.1 ILinker4-entity hybrid: entity pipeline extraction replaced by ILinker4 Pass A+B with alias injection; intersection + validation unchanged; NOT canonical
     "s_linker17a",  # v2.6.1 Multi-Framing renaming variant of s_linker15: same logic, ICSE-friendly method names (Framing A+B+C taxonomy); NOT canonical
     "s_linker17b",  # v2.6.1 unified multi-framing k=2: sequential alias discovery then parallel Framings A/B/C, k≥2 voting merge + unified evidence-bundle validation; NOT canonical
+    "s_linker17c",  # v2.6.2 unified multi-framing union: same as 17b but union merge (k=1) — validation is sole quality gate; NOT canonical
+    "s_linker17d",  # v2.6.2 17c + validated-antecedent coref gate: coref only fires for components with ≥1 validated link; targets JAB coref over-firing; NOT canonical
+    "s_linker17e",  # v2.6.2 17c + validated coref: Phase 5 coref output passes single-pass validation before Phase 6; all links share same quality gate; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -587,6 +590,51 @@ VARIANT_SPECS = {
             "Unified evidence-bundle validation (Phase 4) on all k≥2 candidates. "
             "Eliminates the execution-order artifact of s_linker15/17a where Framings A+B lack alias knowledge. "
             "Framings A+B use ILinker4 Pass A/B directly (no ILinker4 internal merge). "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17c",
+        class_name="SLinker17c",
+        description=(
+            "S-Linker17c — v2.6.2 unified multi-framing union (experimental=True, NOT canonical). "
+            "Same as s_linker17b but uses union merge (Phase 3) instead of k=2 voting. "
+            "All framing candidates enter unified evidence-bundle validation (Phase 4) — "
+            "validation is the sole quality gate, not agreement count. "
+            "Recovers recall lost by 17b on TM/BBB (k=2 dropped single-framing TPs). "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17d": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17d",
+        class_name="SLinker17d",
+        description=(
+            "S-Linker17d — v2.6.2 17c + validated-antecedent coref gate (experimental=True, NOT canonical). "
+            "Identical to s_linker17c except Phase 5 coreference is gated: resolutions are only "
+            "accepted for components that already appear in Phase 4 validated output (≥1 validated link). "
+            "Targets JAB coref over-firing (17c: 4 FP all from coreference on 13-sentence doc). "
+            "Other datasets unaffected if coref TPs come from already-validated components. "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17e": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17e",
+        class_name="SLinker17e",
+        description=(
+            "S-Linker17e — v2.6.2 17c + validated coref (experimental=True, NOT canonical). "
+            "Identical to s_linker17c except Phase 5 coreference output is passed through "
+            "a single-pass validation before Phase 6. All links — framing and coref — share "
+            "the same quality gate. Targets coref FPs on ambiguous-name datasets (JAB: 4 FP "
+            "coref; TM: 16 FP coref in 17c). "
             "s_linker13_min retains canonical=True."
         ),
         canonical=False,
