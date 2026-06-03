@@ -58,31 +58,22 @@ We take all baseline results from the original papers to avoid re-tuning bias.
 For each task we report precision, recall, and \fone per project and averaged across projects (both macro and micro), following the protocol of the benchmark.
 The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
 
-\subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\subsubsection{Experiments for \ref{RQ2 metrics} Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-Two trivial baselines inflate the standard link-level \fone\ by $2\times$ on both link tasks without doing any real link prediction (\autoref{sec:metric:prestudy}).
+In (\autoref{sec:metric:prestudy}), we show that two trivial baselines inflate the standard link-level \fone\ by $2\times$ on both link tasks without doing meaningful real link prediction. 
+This motivate us to use architecture driven metrics to reveal XX.  
 The four primary metrics from \autoref{sec:metric:suite} catch this inflation: per-component \fone\ and sentence coverage reverse the ranking on the high-enrollment projects of doc-to-code, and noise rate exposes the predict-everything strategy on both tasks.
 Here we apply the suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and SWATTR for doc-to-model.
 %TODO LiSSA placeholder: per-project link outputs for LiSSA are not in the replication package; either obtain them from the LiSSA authors and recompute the new metrics, or restrict the RQ2 comparison to AALinker vs TransArc/SWATTR and footnote the omission.
 
-For each (system, project, task) cell we report the four primary metrics---link-level precision, recall, and \fone, per-component \fone, sentence coverage, and noise rate---per project and as macro means.
-Per system we add two diagnostic views:
-\begin{enumerate}[leftmargin=*]
-    \item a \emph{per-component \fone\ distribution}, showing which components are fully covered, which are uncovered, and where false-positive and false-negative mass piles up;
-    \item a \emph{per-sentence coverage--noise scatter}, splitting gold sentences into served-cleanly, served-noisily, and unserved, with the share of each reported per system.
+For each (system, project, task) cell we report the following primary metrics: precision, recall, and \fone, at link and component level, sentence coverage, and noise rate.
+%TODO, mention they are defined at xx section
+
 \end{enumerate}
-Across systems and projects we report the rank correlation between the standard link-level \fone\ and each new metric.
-A metric that reorders the systems shows something that the standard \fone\ does not.
-The appendix reports per-sentence \fone, the coverage--purity composite, and the skill score, with a redundancy analysis showing they do not change the ranking conclusions.
 
 \emph{\textbf{Expected outcome.}}
-We commit to two falsifiable predictions:
-\begin{enumerate*}[label=(\roman*)]
-    \item per-component \fone\ reorders systems compared to the standard link-level \fone, because the latter is dominated by a few large components;
-    \item sentence coverage and noise rate vary independently of \fone---two systems with similar \fone\ can show very different coverage and noise.
-\end{enumerate*}
-The outcome of \ref{RQ2 metrics} is the table of (system, metric, project) values, the diagnostic plots, the rank correlations, and a verdict on each prediction.
+%TODO, write after results
 
 \subsubsection{Experiments for \ref{RQ3 validators} -- Validator Contribution}
 \label{sec:exp:rq3}

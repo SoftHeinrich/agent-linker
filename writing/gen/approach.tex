@@ -1,30 +1,44 @@
 % ============================================================================
 % ICSE Paper -- Approach Section
 %
-% v6 rewrite. Two changes from v5 (approach5.tex):
-%   1. Story arc reframed.  By the definition of a trace link, every linked
-%      sentence must reference the linked component in some form, and the
-%      dominant form is the canonical component name itself.  \linkerA is
-%      therefore the primary linker that recovers the majority of links;
-%      \linkerB and \linkerC are supplementary fillers for the residual
-%      gap (aliases and pronouns).
-%   2. Style overhaul.  Follows Wang's first-author conventions:
-%      single-sentence section scope opener, "\approach in a Nutshell"
-%      subsection with (i)/(ii)/(iii) walkthrough, "thereby"/"essentially"
-%      consequence closers, bolded inline mini-subheadings, declarative
-%      first-person plural, "to the best of our knowledge" positioning,
-%      bottom-up exposition (phenomenon -> derivation -> design).
+% v7 rewrite -- updated to track s_linker17e (v2.6.2 production: multi-framing
+% extraction with union merge + validated coref).  Changes from v6:
+%
+%   1. Story arc.  The trace-link definition still pins every link to a
+%      textual reference, but the primary mechanism is now the
+%      \textbf{three-framing ensemble} (\linkerA mention-framing,
+%      \linkerB actor-framing, \linkerC entity-framing): three complementary
+%      linguistic angles on the same trace-link evidence, run in parallel,
+%      all alias-aware, unioned, and validated by a single evidence-bundle
+%      pass.  The supplementary linker is \coref, which closes the
+%      pronominal gap with citation grounding plus a coref-specific
+%      single-pass validation (the v2.6.2 / s17e change; +3.2pp F1, FP
+%      43->14 vs s15).
+%   2. Architecture replaces "AnchorLinker per-component disambiguation"
+%      (gone in s17e) with "union merge + unified validation."
+%   3. Style.  Wang's first-author conventions: single-sentence section
+%      scope opener, "\approach in a Nutshell" subsection with
+%      (i)/(ii)/(iii) walkthrough, "thereby" consequence closers, bolded
+%      inline mini-subheadings, declarative first-person plural, "to the
+%      best of our knowledge" positioning, bottom-up exposition.
 % ============================================================================
 
 % --------------------------------------------------------------------------
 % Naming macros.  Edit a single line here to rename the pipeline or any of
-% the three linkers; all in-text references update automatically.  \xspace
+% the linkers; all in-text references update automatically.  \xspace
 % absorbs the trailing space when followed by punctuation.
+%
+% \linkerA/\linkerB/\linkerC name the three linguistic framings that
+% together form the primary multi-framing linker.  \coref names the
+% supplementary pronominal linker.  \multiframing names the three-framing
+% ensemble as a unit.
 % --------------------------------------------------------------------------
 \providecommand{\approach}{AALinker\xspace}
-\providecommand{\linkerA}{AnchorLinker\xspace}   % primary, canonical-name links
-\providecommand{\linkerB}{EntityLinker\xspace}   % supplementary, alias/role links
-\providecommand{\linkerC}{CorefLinker\xspace}    % supplementary, pronoun links
+\providecommand{\multiframing}{multi-framing linker\xspace}
+\providecommand{\linkerA}{Framing\,A\xspace}      % explicit-mention framing
+\providecommand{\linkerB}{Framing\,B\xspace}      % actor-role framing
+\providecommand{\linkerC}{Framing\,C\xspace}      % alias-aware entity framing
+\providecommand{\coref}{CorefLinker\xspace}       % supplementary, pronoun links
 
 \section{\approach}\label{sec:approach}
 
@@ -40,89 +54,113 @@ or interactions of component~$c_j$.
 Trace links are, by definition, anchored on a textual reference to the
 linked component: the linked sentence has to mention the component in
 some form.
-The dominant form is the canonical component name itself --- when a
-document discusses \texttt{EventDispatcher}, the most common
-documentary act is to write ``EventDispatcher.''
-The remaining sentences refer to the same component through one of two
-oblique forms: a project-specific alias (i.e., an abbreviation, a
-synonym, a partial name, or a functional role) or a discourse pronoun
-(\emph{it}, \emph{this}, \emph{their}, $\ldots$), and these two forms
-together account for a long tail of the gold
-links.\todo{cite empirical distribution from RQ4: $\sim$70\% canonical,
-$\sim$25\% alias, $<$5\% pronoun}
-Two facts complicate this otherwise direct picture.
+That form is not unique.
+The same trace link surfaces, in our corpus, under three complementary
+linguistic forms:
+the component appears as an \emph{explicit mention} of its name
+(``the \texttt{EventDispatcher} routes requests'');
+the component appears as the \emph{actor} of an architectural action
+(``\texttt{EventDispatcher} routes requests'');
+or the component is named indirectly through a project-specific
+\emph{entity alias} --- an abbreviation, a synonym, a partial name, or
+a functional role (``the dispatcher routes requests'').
+A residual fraction of trace links carry no surface name at all and
+refer to the component only through a discourse pronoun
+(\emph{it}, \emph{this}, \emph{their}, $\ldots$).\todo{cite empirical
+distribution: framings together cover $\sim$95\% of gold links;
+pronoun-only links account for $<$5\%.}
+Two facts complicate this picture.
 First, component names are often ordinary technical English
-(\texttt{Core}, \texttt{Adapter}, \texttt{Logic}, \texttt{Storage}),
-so a surface-level lexical match overshoots into generic uses of those
+(\texttt{Core}, \texttt{Adapter}, \texttt{Logic}, \texttt{Storage}), so
+a surface-level lexical match overshoots into generic uses of those
 words.
 Second, project-specific aliases are not known in advance, so any
-linker that targets the long-tail reference forms must first discover
-them at runtime.
+linker that targets indirect reference forms must first discover them
+at runtime.
 
 \approach resolves these complications in three stages.
-\textbf{Project knowledge discovery} (Tier~1, \S\ref{sec:knowledge})
-learns, at runtime, which component names are ambiguous and which
-document terms are aliases for which components.
-\textbf{\linkerA} (Tier~2, \S\ref{sec:anchor}) recovers the
-majority of trace links by exploiting the most direct evidence
-permitted by the trace-link definition --- canonical component
-mentions --- and uses the learned knowledge to prune false-positive
-name matches.
-The \textbf{supplementary linkers} (Tier~2, \S\ref{sec:supplementary})
-close the residual gap left by \linkerA: \linkerB recovers alias-based
-references and \linkerC recovers pronoun-based references.
-Tier~3 (\S\ref{sec:merge}) consolidates the three sources into a
-single de-duplicated link set.
+\textbf{Project knowledge discovery} (\S\ref{sec:knowledge}) learns,
+at runtime, which component names are ambiguous and which document
+terms are aliases for which components.
+The \textbf{\multiframing} (\S\ref{sec:multiframing}) recovers the
+majority of trace links by running three complementary linguistic
+framings --- \linkerA, \linkerB, and \linkerC --- in parallel,
+unioning their outputs into one candidate pool, and applying a single
+evidence-bundle validation pass that is the sole quality gate for
+multi-framing candidates.
+The supplementary \textbf{\coref} (\S\ref{sec:coref}) closes the
+residual pronominal gap by resolving discourse references and
+verifying each resolution with a deterministic antecedent check and
+a coref-specific validation pass.
+A trivial merge step (\S\ref{sec:merge}) deduplicates the two link
+sets.
 To the best of our knowledge, \approach is the first trace-link
 recovery pipeline that combines runtime architectural-knowledge
-discovery, a definition-driven primary linker, and evidence-grounded
-supplementary linkers for architecture-document-to-model tracing.
+discovery, a definition-driven multi-framing primary linker, and an
+evidence-grounded pronominal linker for
+architecture-document-to-model tracing.
 
 \subsection{\approach in a Nutshell}\label{sec:nutshell}
 
-\approach is organised as a three-tier directed acyclic graph
+\approach is organised as a six-phase directed acyclic graph
 (Figure~\ref{fig:pipeline}).
 As illustrated in Figure~\ref{fig:pipeline}, \approach proceeds in
-three steps:
-(i)~three independent Tier-1 analyses, run in parallel, produce a
-\emph{model ambiguity map}, a \emph{document alias table}, and a
-raw \emph{anchor set} of canonical-name mentions;
-(ii)~\linkerA disambiguates those raw mentions against the
-ambiguity map, while \linkerB and \linkerC --- both supplementary ---
-target the references \linkerA cannot see;
-(iii)~the three validated link sets are merged by priority-ordered
-deduplication.
+six steps:
+(i)~two independent knowledge analyses --- model understanding and
+document understanding --- run in parallel and emit a
+\emph{model ambiguity map} and a \emph{document alias table};
+(ii)~the three framings of the \multiframing run in parallel, each
+receiving the full alias table, and each emits its own candidate
+link set;
+(iii)~a \emph{union merge} folds the three framing outputs into a
+single candidate pool;
+(iv)~a \emph{unified evidence-bundle validation} pass --- consisting
+of a generic-word precheck and a two-pass approve-or-reject decision
+on architectural participation and referential specificity --- is the
+sole quality gate for the multi-framing pool;
+(v)~\coref runs in parallel with the multi-framing pipeline, resolves
+each pronoun-bearing sentence against a $\pm 5$ context window with
+a deterministic antecedent check, and then passes the resolutions
+through a coref-specific validation;
+(vi)~the two validated link sets are concatenated and deduplicated.
 The fan-out/fan-in structure is deliberate: every expensive LLM call
 whose inputs are independent runs in parallel, thereby keeping the
-latency of the pipeline within a single round-trip per project
-regardless of how many linkers participate.
+end-to-end latency of the pipeline within a single round-trip per
+project regardless of how many framings or linkers participate.
 
-Two design rules cut across all three tiers.
-\textbf{Consensus for open-ended extraction.}
-Where the LLM may hallucinate candidates, \approach runs two
-independent passes and keeps only candidates on which both passes
-agree --- except for exact canonical-name matches, whose evidence
-appears verbatim in the sentence and need not be intersected.
+Two design rules cut across all six phases.
+\textbf{Union for open-ended extraction.}
+Where the LLM may miss true references because of a single
+prompt-specific bias, \approach unions the outputs of independent
+prompts and lets a downstream validation pass do the filtering ---
+thereby keeping recall above the cost of any one framing.
 \textbf{Evidence for validation.}
 Where a decision can be checked against the document, \approach
 requires the LLM to expose the evidence it used --- matched spans,
 mention types, anchor sentences, or antecedent sentence numbers ---
-so that a deterministic check, rather than a second opaque LLM call,
+so that a deterministic check, rather than an opaque second LLM call,
 decides acceptance.
 
 \begin{table}[t]
-\caption{The three \approach linkers, the reference type they target,
-their role in the pipeline, their acceptance rule, and their LLM cost.
-\linkerA is primary; \linkerB and \linkerC are supplementary.}
+\caption{The two \approach linkers and the framings that compose
+them.  The \multiframing unions three linguistic framings and applies
+a single unified validation pass; \coref runs its own
+extraction-plus-validation pipeline for pronouns.}
 \label{tab:strategies}
 \centering\footnotesize
-\begin{tabular}{@{}lllll@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{Linker} & \textbf{Reference type} & \textbf{Role} & \textbf{Acceptance rule} & \textbf{LLM calls} \\
+\textbf{Linker / Framing} & \textbf{Reference form}   & \textbf{Knowledge consumed}    & \textbf{LLM calls} \\
 \midrule
-\linkerA & Canonical, explicit name & Primary       & Asym.\ vote + per-comp.\ disambig.     & 2 + 1/comp.\ \\
-\linkerB & Alias, role, interaction & Supplementary & Two-pass extr.\ $\cap$ two-pass valid. & 2 + 2--3     \\
-\linkerC & Pronoun                  & Supplementary & Cited-antecedent check                 & 1            \\
+\multicolumn{4}{@{}l@{}}{\emph{\multiframing} -- union merge + unified evidence-bundle validation}\\
+\quad\linkerA          & Explicit mention          & Alias table                   & 1 batched          \\
+\quad\linkerB          & Actor role                & Alias table                   & 1 batched          \\
+\quad\linkerC          & Entity alias / role       & Alias table                   & 2 batched          \\
+\quad\textit{validation} & ---                     & Ambiguity map, anchor sents.\ & 2 + 1/ambig.\ comp.\ \\
+\midrule
+\multicolumn{4}{@{}l@{}}{\emph{\coref} -- cited antecedent + coref-specific validation}\\
+\quad extraction        & Pronoun, role-referent   & Alias table, $\pm 5$ window   & 1 batched          \\
+\quad validation        & ---                       & Component list                & 1 batched          \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -132,29 +170,32 @@ their role in the pipeline, their acceptance rule, and their LLM cost.
 \fbox{\parbox{0.94\linewidth}{
 \small
 \textbf{\approach pipeline.}
-Tier~1 runs model understanding, document understanding, and \linkerA
-extraction in parallel.
-Tier~2 runs \linkerA disambiguation, \linkerB, and \linkerC in
-parallel.
-Tier~3 merges the three link sets by priority-ordered deduplication.
+Phase~1 runs model and document understanding in parallel and
+produces an ambiguity map and an alias table.
+Phase~2 runs \linkerA, \linkerB, and \linkerC in parallel, all
+alias-aware.
+Phase~3 union-merges their outputs; Phase~4 validates the union
+through one evidence-bundle pass.
+Phase~5 (parallel with Phases~2--4) runs \coref's extraction and
+its coref-specific validation.
+Phase~6 deduplicates the two validated link sets.
 }}
-\caption{\approach organises knowledge discovery and link recovery as
-a three-tier DAG.}
+\caption{\approach organises knowledge discovery, multi-framing
+extraction-and-validation, and pronominal linking as a six-phase
+DAG.}
 \label{fig:pipeline}
 \end{figure}
 
 \subsection{Project Knowledge Discovery}\label{sec:knowledge}
 
-Tier~1 builds the project-specific vocabulary the downstream linkers
-need.
-Its three analyses are mutually independent, so \approach runs them
-concurrently and emits three outputs: an \emph{ambiguity map} over
-the component set, an \emph{alias table} over the document, and a
-raw \emph{anchor set} of canonical mentions ready for
-disambiguation.
-The first two outputs are described in this subsection; the third is
-the input to \linkerA and is described together with it in
-\S\ref{sec:anchor-extraction}.
+Phase~1 builds the project-specific vocabulary the downstream
+linkers need.
+Its two analyses are mutually independent, so \approach runs them
+concurrently and emits two outputs: an \emph{ambiguity map} over the
+component set and an \emph{alias table} over the document.
+The alias table is fed into every framing of the \multiframing and
+into \coref; the ambiguity map gates the unified validation's
+generic-word precheck.
 
 \subsubsection{Model Understanding}\label{sec:model-understanding}
 
@@ -173,11 +214,9 @@ A structural filter keeps only single-word, lowercaseable names in
 the ambiguous bucket, so that CamelCase compounds, multi-word names,
 and acronyms are never classified as generic merely because their
 sub-words are common.
-The ambiguity map is consumed by both \linkerA (whose per-component
-disambiguator embeds the classification in its dossier) and \linkerB
-(whose generic-word precheck applies only to ambiguous names),
-thereby giving every downstream linker the same view of which names
-need careful handling.
+The ambiguity map is consumed by the unified validation's
+generic-word precheck, thereby giving every multi-framing candidate
+the same view of which names need careful handling.
 
 \subsubsection{Document Understanding}\label{sec:doc-understanding}
 
@@ -197,9 +236,9 @@ e.g., ``Abstract Syntax Tree (AST)'') and \emph{synonyms}
 trailing words of multi-word component names when the document uses
 the trailing word alone).
 The prompt asks for an alias scope; the scope is load-bearing
-because \linkerB (\S\ref{sec:contextual}) receives only the global
-subset, thereby preventing a generic local word from being broadcast
-into every sentence as if it were a project-wide name.
+because only the global subset is injected into the three framings
+and into \coref, thereby preventing a generic local word from being
+broadcast into every sentence as if it were a project-wide name.
 
 \textbf{Alias judging.}
 A second LLM pass judges the proposed mappings with an
@@ -208,141 +247,125 @@ The rubric approves abbreviations formed from a component's
 initials, unshared trailing words of multi-word names, CamelCase
 identifiers, and multi-word phrases containing the component name;
 it rejects only terms that are clearly generic, clearly name a
-different component, or clearly refer to the whole system.
+different component, clearly refer to the whole system, or name an
+architectural tier or technology platform that encompasses
+multiple elements.
 The asymmetry is deliberate: a falsely rejected alias permanently
 removes a possible reference form, while a falsely approved alias
-can still be filtered by Tier~2 validation.
+can still be filtered by the unified validation.
 
-\subsection{\linkerA: The Primary Linker}\label{sec:anchor}
+\subsection{The \multiframing}\label{sec:multiframing}
 
-The first observation behind \approach is that, by the definition of
-a trace link, the linked component must be present in the linked
-sentence in some form.
-The simplest such form --- and, on every benchmark project we
-inspected, the most frequent\todo{cite RQ4 breakdown} --- is the
-canonical component name itself.
-\linkerA exploits this property directly: it recovers the trace links
-whose evidence is the canonical name, and only those links.
-It is therefore primary, not in the sense that it runs first
-(the supplementary linkers run in parallel with its disambiguator),
-but in the sense that it carries the largest share of recall and
-that the supplementary linkers are sized against the gap it leaves.
+The first observation behind \approach is that, by the definition
+of a trace link, the linked component must be present in the linked
+sentence in some surface form.
+The same link, however, manifests under three complementary
+linguistic forms --- an explicit mention of the component name, an
+actor-role reference to the component as the grammatical agent of
+an action, and an entity-alias reference through a project-specific
+synonym or partial name --- and a single LLM prompt biased toward
+any one of those forms misses references in the other two.
+The \multiframing runs three framings that each target one of the
+three reference forms, unions their outputs to recover the
+recall that no single framing achieves on its own, and validates
+the union through a single evidence-bundle pass that is the sole
+quality gate for the entire multi-framing pool.
 
-\linkerA is split into two stages: a Tier-1 \textbf{extractor} that
-operates without any learned knowledge, and a Tier-2
-\textbf{disambiguator} that operates once the ambiguity map and alias
-table are available.
-Splitting the two stages lets the extractor run concurrently with
-knowledge discovery while still permitting knowledge-aware filtering
-before any link is emitted.
+The three framings are parallel, alias-aware, and intentionally
+redundant.
+Parallelism keeps the latency of the multi-framing equal to the
+slowest framing rather than to their sum.
+Alias-awareness gives every framing access to the document alias
+table from \S\ref{sec:doc-understanding}, so that a reference such
+as ``the dispatcher'' is recognised regardless of which framing
+the linker is currently asking about.
+Redundancy is the safety margin: if one framing misses a true
+reference, another framing recovers it; if one framing hallucinates
+a candidate, the unified validation rejects it.
 
-\subsubsection{Anchor Extraction}\label{sec:anchor-extraction}
+\subsubsection{\linkerA: Explicit-Mention Framing}\label{sec:linkerA}
 
-Two complementary LLM passes scan the document in batched
-segments.
-The \textbf{mention-framed pass} asks which components are
-explicitly mentioned or referenced in each sentence.
-The \textbf{actor-framed pass} asks which components are
-architecturally relevant to the sentence --- that is, whose role,
-behaviour, interaction, or responsibility is being described.
-The two passes are merged asymmetrically.
-Exact canonical-name matches from \emph{either} pass are accepted,
-because the evidence appears verbatim in the sentence and the
-dominant risk is a missed mention.
-Non-exact matches, such as synonyms or partial names, are accepted
-only when \emph{both} passes agree.
-The asymmetric vote preserves recall on direct mentions and uses
-intersection to suppress hallucinated non-exact references,
-thereby emitting a raw anchor set that is high precision even
-before any learned knowledge is applied.
+\linkerA is the mention-framed framing.
+A single batched LLM pass asks, for every sentence in the document,
+which components are explicitly mentioned or referenced by name or
+by a known alias.
+The prompt is biased toward inclusion: the framing is intended to
+fire whenever the surface form of the component appears, even when
+the component is not the grammatical subject of the sentence.
+\linkerA therefore covers references such as ``configures the
+\texttt{EventDispatcher}'' or ``the \texttt{EventDispatcher}'s
+queue is bounded,'' which an actor-framed prompt would skip.
 
-\subsubsection{Anchor Disambiguation}\label{sec:anchor-disambig}
+\subsubsection{\linkerB: Actor-Role Framing}\label{sec:linkerB}
 
-Raw anchors are high precision but blind to project-specific
-ambiguity: a sentence containing the word ``logic'' may discuss the
-\texttt{Logic} component, may describe generic program logic, or
-may refer to a code path that shares the name.
-The disambiguator revisits each raw anchor with a
-component-specific \emph{dossier} containing four elements:
-(i)~the component's ambiguity classification and its known aliases
-from Tier~1;
-(ii)~up to five \emph{anchor sentences} elsewhere in the document
-where the component name appears in proper-case standalone form,
-serving as calibration examples of confirmed reference;
-(iii)~each raw anchor case with its preceding sentence and a
-\emph{mention type} (proper-case standalone, lower-case,
-dotted-path occurrence, alias, or unclear indirect match);
-(iv)~a runtime-generated decision rubric of four to six items,
-built by a separate LLM call from the document and the component
-list using a generic compiler-style example as the rubric shape.
+\linkerB is the actor-framed framing.
+A separate batched LLM pass asks, for every sentence, which
+components are architecturally relevant to the sentence --- that
+is, whose role, behaviour, interaction, or responsibility is
+being described.
+The prompt is biased toward agency: it fires when the component
+\emph{does} something, \emph{provides} something, or \emph{takes
+part in} an interaction.
+\linkerB therefore covers references such as ``the
+\texttt{EventDispatcher} routes events to subscribers,'' where the
+component is the grammatical subject, and the
+``handled by \texttt{EventDispatcher}'' / ``via the dispatcher''
+prepositional mentions that lexical matchers find awkward.
 
-The runtime rubric is the only document-specific element of the
-prompt: it captures regularities that vary between projects --- in
-some documents component names appear mostly as grammatical actors,
-in others mostly in configuration or interface descriptions --- and
-replaces a static rubric that cannot accommodate these differences.
-For each raw anchor case, the LLM returns \textsc{component} when
-the sentence discusses the architectural component, and
-\textsc{other} when the name carries a different meaning (a code
-path, an algorithmic technique, an embedded sub-entity, a different
-entity, or a generic English word).
-The prompt is approval-biased because the raw anchors have already
-passed asymmetric voting; if the rubric builder returns no rubric
-after two attempts, the implementation fails rather than silently
-falling back to a static rubric, thereby keeping every emitted
-\linkerA link attributable to the intended runtime-rubric design.
+\subsubsection{\linkerC: Entity-Alias Framing}\label{sec:linkerC}
 
-\subsection{Supplementary Linkers}\label{sec:supplementary}
-
-A trace link whose evidence is not a canonical component name is,
-by construction, invisible to \linkerA.
-Two reference forms produce such links.
-First, the sentence may refer to the component through a
-project-specific alias --- an abbreviation, a synonym, a partial
-name, a functional role, or a prepositional mention such as
-``handled by'' or ``via.''
-Second, the sentence may refer to the component pronominally
-(\emph{it}, \emph{this}, \emph{these}, \emph{their}, $\ldots$),
-with no component name or alias present at all.
-\linkerB and \linkerC are sized to exactly these two gaps, and each
-is therefore narrower in scope than \linkerA.
-
-\subsubsection{\linkerB: Alias and Role References}\label{sec:contextual}
-
-\linkerB recovers alias-based and functional references using the
-global alias table from \S\ref{sec:doc-understanding}.
-
-\textbf{Dual-pass extraction.}
-The same broad extraction prompt is run twice independently.
-Each pass receives the component list and the global alias table,
-and each proposed candidate must name a valid component, point to
-an existing sentence, and provide a matched text span that appears
-in that sentence.
+\linkerC is the entity-framed framing.
+Two independent LLM passes scan the document with the global alias
+table and ask for every component reference --- by name, by alias,
+by partial name, or as a participant in a described interaction.
 \approach keeps only the intersection of the two passes; using the
 same prompt twice avoids mixing prompt-specific biases, so the
 residual disagreement reflects only LLM non-determinism.
+\linkerC therefore covers references that surface only through an
+alias --- ``the dispatcher,'' ``the AST,'' ``the routing layer'' ---
+and that neither \linkerA nor \linkerB picks up because the
+canonical name itself is absent.
 
-\textbf{Evidence bundles.}
-Before validation, \approach attaches an evidence bundle to each
-candidate.
-The bundle records the matched span, the mention type, the
+\subsubsection{Union Merge and Unified Validation}\label{sec:unified}
+
+\textbf{Union merge.}
+The three framings emit three candidate sets keyed by
+sentence--component pairs.
+\approach takes their set union: a pair is admitted to the
+candidate pool if any framing emitted it.
+Union is deliberate.
+Intersection would discard a true reference whenever it surfaces
+under only one framing --- e.g., an alias-only reference seen by
+\linkerC but not by \linkerA or \linkerB --- and that loss
+empirically dominates the false-positive cost of union when a
+strong downstream validation is available.\todo{cite RQ: union
+vs k=2 voting (s17b $-$4.1pp vs union; s17c with union $\approx$
+s15)}
+
+\textbf{Unified evidence-bundle validation.}
+Each union candidate carries an \emph{evidence bundle} recording
+the matched span, the mention type (proper-case standalone,
+lower-case, dotted-path occurrence, alias, or indirect), the
 preceding sentence, up to five anchor sentences with confirmed
-standalone component mentions, the ambiguity flag for the
-component, and the extraction rationale.
+standalone mentions of the component elsewhere in the document,
+the ambiguity flag for the component, and the framing that
+proposed the candidate.
 Validation therefore sees not only a sentence and a component name
-but also \emph{why} the proposer believed the link was plausible.
+but also \emph{why} the proposer believed the link was plausible,
+and which framing's bias it carries.
 
 \textbf{Generic-word precheck.}
-For ambiguous components whose candidate mention appears only in
-lower-case form, \approach first asks whether the word is being
-used as a component reference or as ordinary English.
+For candidates whose component is in the ambiguity map and whose
+mention appears only in lower-case form, \approach first asks
+whether the word is being used as a component reference or as
+ordinary English, conditioned on the up-to-five anchor sentences.
 Only candidates classified as component references continue to the
-main validation step.
+two-pass step.
 If the precheck cannot parse a clear answer, \approach keeps the
 candidates, thereby preserving the recall-first behaviour used
 throughout the pipeline.
 
-\textbf{Two-pass validation.}
+\textbf{Two-pass approve--reject.}
 Remaining candidates are judged by two independent validation
 passes with complementary foci.
 The first pass checks \emph{architectural participation}: does the
@@ -352,49 +375,85 @@ system behaviour?
 The second pass checks \emph{referential specificity}: does the
 mention identify this specific architectural element rather than a
 generic technical term?
-A candidate is accepted only when both passes approve it.
-The intersection is stricter than \linkerA's disambiguation because
-\linkerB deliberately starts from a larger and noisier candidate
-space.
+A candidate is accepted only when both passes approve it, thereby
+making the unified validation the sole quality gate for every
+multi-framing link emitted by \approach.
 
-\subsubsection{\linkerC: Pronominal References}\label{sec:coref}
+\subsection{\coref: The Pronominal Linker}\label{sec:coref}
 
-\linkerC targets sentences whose evidence is a pronoun:
-\emph{it}, \emph{they}, \emph{this}, \emph{these}, \emph{that},
-\emph{those}, \emph{its}, and \emph{their}.
-Each pronoun-bearing sentence is presented with a $\pm5$-sentence
-context window, with the target sentence marked explicitly.
-The LLM returns only the resolutions it is certain about and, for
-each resolution, must cite the target sentence, the pronoun, the
-component, the antecedent sentence number, and the antecedent
-quote.
+A trace link whose evidence is a discourse pronoun is, by
+construction, invisible to the \multiframing: no surface name and
+no alias appears in the linked sentence.
+\coref targets exactly that gap.
+It is supplementary because the gap itself is small in absolute
+terms, but the pronominal residue contains the architecturally
+densest sentences --- the sentences that describe what a previously
+introduced component \emph{does} --- and discarding them costs
+real recall.
 
-\approach then verifies the cited antecedent deterministically.
+\textbf{Cases-in-context extraction.}
+\coref scans the document for sentences containing a pronoun
+(\emph{it}, \emph{they}, \emph{this}, \emph{these}, \emph{that},
+\emph{those}, \emph{its}, \emph{their}) or a role-referential
+noun phrase (``the dispatcher,'' ``the service,'' ``the module'')
+formed from a component-specific terminal word.
+A separate LLM call classifies, once per project, which terminal
+words of multi-word component names are specific enough to serve
+as unambiguous role references; only those terminals are admitted
+to the role-referential pattern.
+Each candidate sentence is then presented to the resolver with a
+$\pm 5$-sentence context window, with the target sentence marked
+explicitly, and the resolver is asked to return only the
+resolutions it is certain about, citing the target sentence, the
+pronoun or role-referential phrase, the component, the antecedent
+sentence number, and the antecedent quote.
+
+\textbf{Cited-antecedent check.}
+\approach verifies every cited antecedent deterministically before
+the resolution reaches validation.
 For canonical-name antecedents, the antecedent sentence must
 contain a standalone mention of the component name.
-For alias-based antecedents, the LLM must explicitly mark the
+For alias-based antecedents, the resolver must explicitly mark the
 antecedent as alias-based, in which case the alias-table lookup
 provides the same deterministic check.
-Only resolutions surviving these checks become \linkerC trace
-links.
 Citation grounding therefore removes any antecedent the LLM may
 have fabricated, thereby reducing pronoun resolution from an
 open-ended reasoning task to a deterministic verification.
 
+\textbf{Coref-specific validation.}
+Surviving resolutions then pass through a single LLM validation
+call whose focus is coref-specific: does the pronoun or
+role-referential phrase in this sentence actually refer to the
+named component as an architectural participant --- performing
+operations, providing services, or being the grammatical topic of
+the sentence?
+This validation is the s17e change: in earlier variants, coref
+links bypassed every quality gate and entered the final link set
+on the strength of the antecedent check alone, which empirically
+let through false positives whose pronouns resolved to a component
+by surface association rather than by architectural role.
+The added pass closes that hole and is, on the v2.6.2 benchmark,
+responsible for a $+3.2$~pp F1 gain and a drop in false-positive
+coref links from 43 to 14.\todo{cite RQ: s17e vs s15 ablation
+showing the +3.2pp / FP 43->14 attribution.}
+
 \subsection{Link Consolidation}\label{sec:merge}
 
-Tier~3 is intentionally simple.
-\linkerA, \linkerB, and \linkerC have each applied their own
-acceptance rules, so consolidation does not reinterpret their
-evidence.
-\approach concatenates the three link sets and removes duplicate
-sentence--component pairs in a fixed priority order: \linkerA
-first, \linkerB second, \linkerC third.
-The priority preserves the most direct evidence whenever multiple
+The final phase is intentionally simple.
+The \multiframing has emitted a validated link set through its
+unified evidence-bundle validation, and \coref has emitted a
+validated link set through its cited-antecedent check plus its
+coref-specific validation.
+\approach concatenates the two sets and removes duplicate
+sentence--component pairs in a fixed priority order: multi-framing
+first, coref second.
+The priority preserves the most direct evidence whenever both
 linkers recover the same pair and reflects the linker hierarchy ---
-\linkerA is primary by the trace-link definition itself, while the
-supplementary linkers contribute the pairs that \linkerA, by the
-same definition, cannot find.
+the \multiframing is primary because its three framings exhaust
+the surface forms of textual reference admitted by the trace-link
+definition, while \coref contributes the pairs whose evidence is
+a pronoun and which the multi-framing pipeline, by the same
+definition, cannot see.
 
 The final output is a documentation-to-model trace-link set; these
 links can be evaluated directly at the architecture level or
