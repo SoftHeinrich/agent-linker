@@ -61,7 +61,8 @@ The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves o
 \subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-A pre-study (\autoref{sec:metric:prestudy}) motivates the metric suite from \autoref{sec:metric:suite}: two simple baselines---\emph{Random} and a structural \emph{Top-3} (one per task)---already trip up the standard link-level precision, recall, and \fone, while per-component \fone, sentence coverage, and noise rate catch them.
+Two trivial baselines inflate the standard link-level \fone\ by $2\times$ on both link tasks without doing any real link prediction (\autoref{sec:metric:prestudy}).
+The four primary metrics from \autoref{sec:metric:suite} catch this inflation: per-component \fone\ and sentence coverage reverse the ranking on the high-enrollment projects of doc-to-code, and noise rate exposes the predict-everything strategy on both tasks.
 Here we apply the suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and SWATTR for doc-to-model.
 %TODO LiSSA placeholder: per-project link outputs for LiSSA are not in the replication package; either obtain them from the LiSSA authors and recompute the new metrics, or restrict the RQ2 comparison to AALinker vs TransArc/SWATTR and footnote the omission.
 
