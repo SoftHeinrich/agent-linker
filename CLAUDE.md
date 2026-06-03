@@ -10,6 +10,11 @@ Retained runtime files:
 - [src/llm_sad_sam/linkers/experimental/ilinker2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/ilinker2.py)
 - [src/llm_sad_sam/linkers/experimental/ilinker3.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/ilinker3.py)
 - [src/llm_sad_sam/linkers/experimental/s_linker.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker.py) through [src/llm_sad_sam/linkers/experimental/s_linker11a.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker11a.py)
+- [src/llm_sad_sam/linkers/experimental/s_linker15.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker15.py) — v2.6.1 production (axiom-only, no training)
+- [src/llm_sad_sam/linkers/experimental/s_linker15b.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker15b.py) — v2.6.2 negative result (alias-recovery, −2.5pp)
+- [src/llm_sad_sam/linkers/experimental/s_linker15c.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker15c.py) — v2.6.2 negative result (ILinker4+entity hybrid, −0.6pp)
+- [src/llm_sad_sam/linkers/experimental/s_linker17a.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17a.py) — v2.6.2 renaming-only (ICSE Framing A/B/C names)
+- [src/llm_sad_sam/linkers/experimental/s_linker17b.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17b.py) — v2.6.2 unified k=2 voting architecture
 - [src/llm_sad_sam/linkers/experimental/prompts.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts.py)
 - [src/llm_sad_sam/linkers/experimental/prompts_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts_v2.py)
 - [src/llm_sad_sam/core/data_types_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/core/data_types_v2.py)
@@ -29,9 +34,23 @@ pytest
 
 [run_ablation.py](/home/yu/project/adc/agent-linker/run_ablation.py) is lightweight and only supports the retained ILinker/S-Linker set.
 
-## Current Linker (v2.6.1) — `s_linker15`
+## Current Milestone (v2.6.2) — Multi-Framing Extraction Design
 
-`src/llm_sad_sam/linkers/experimental/s_linker15.py` is the current experimental
+v2.6.2 explores unified multi-framing architecture for the ICSE paper. Two new variants:
+
+- **`s_linker17a`** — rename-only variant of `s_linker15` using ICSE-friendly names (Framing A/B/C
+  instead of Tier 1/2/3). Zero logic change. Validates that renaming is safe (expected F1 ≈ s15).
+- **`s_linker17b`** — unified k=2 voting architecture. Alias discovery runs first (sequential),
+  then all three Framings (A/B/C) extracted in parallel (all alias-aware), k=2 voting merge, unified
+  evidence-bundle validation.
+
+v2.7 (BBB Recall Closure) is frozen behind v2.6.2.
+
+Run: `python run_ablation.py --variants s_linker17a s_linker17b`
+
+## Production Linker (v2.6.1) — `s_linker15`
+
+`src/llm_sad_sam/linkers/experimental/s_linker15.py` is the v2.6.1 experimental
 linker: a **no-training, axiom-only** SAD-SAM linker (`experimental=True`,
 `canonical=False`). It is `s_linker14_voyager` with ALL Voyager trained-bank
 machinery removed — no bank loading, no `_wrap` injection, no `reload_bank`, no

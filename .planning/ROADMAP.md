@@ -11,7 +11,8 @@
 - ✅ **v2.5 — Oracle Cache Fix + 15-Slot Expansion + Re-run** — Phases 25–30 — shipped 2026-06-02. WEAK verdict (cross-split macro 89.1%, gpt-5.4). Oracle cache fix validated (split-2 committed Pass 1); 15-slot expansion: 5/6 new slots with committed patterns. See [`milestones/v2.5-ROADMAP.md`](milestones/v2.5-ROADMAP.md) and [`milestones/v2.5-MILESTONE-AUDIT.md`](milestones/v2.5-MILESTONE-AUDIT.md).
 - ❄️ **v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run** — Phases 31–37 — close FROZEN behind v2.6.1 (2026-06-02). Phase 37 close tasks (GATE-06 'Persistence' fix + audit) deferred. See [`milestones/v2.6-ROADMAP.md`](milestones/v2.6-ROADMAP.md).
 - ✅ **v2.6.1 — No-Training Axiom Linker (s_linker15) + Axiom FP Fixes (PATCH)** — shipped 2026-06-03. Dropped Voyager training; `s_linker15` = axiom-only standalone (inlined prompts + 3 FP fixes), no bank. macro 89.1% gpt-5.4 / 92.7% Claude. Finding: training adds nothing (s15 = trained s14 on gpt); FP fixes fire on Claude, inert on gpt. See [`milestones/v2.6.1-ROADMAP.md`](milestones/v2.6.1-ROADMAP.md) and [`milestones/v2.6.1-MILESTONE-AUDIT.md`](milestones/v2.6.1-MILESTONE-AUDIT.md).
-- 🔲 **v2.7 — BBB Recall Closure** — Phases 38–42 — resumable (unfrozen after v2.6.1 close, 2026-06-03). ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution. See [`milestones/v2.7-ROADMAP.md`](milestones/v2.7-ROADMAP.md).
+- ✅ **v2.6.2 — Multi-Framing Extraction Design (s_linker17a/17b)** — shipped 2026-06-03. 17a (rename-only) ≈ s15 within GPT variance (validates ICSE Framing A/B/C naming). 17b (k=2 unified) regresses TM −4.2pp / BBB −7.4pp (k=2 too conservative). ICSE decision: use 17a naming for paper. See [`milestones/v2.6.2-ROADMAP.md`](milestones/v2.6.2-ROADMAP.md) and [`milestones/v2.6.2-MILESTONE-AUDIT.md`](milestones/v2.6.2-MILESTONE-AUDIT.md).
+- ❄️ **v2.7 — BBB Recall Closure** — Phases 38–42 — FROZEN behind v2.6.2 (2026-06-03). ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution. See [`milestones/v2.7-ROADMAP.md`](milestones/v2.7-ROADMAP.md).
 
 ## Phases
 
@@ -89,8 +90,8 @@ Key findings: oracle cache fix validated (split-2 committed 12 patterns vs 0/5 i
 
 </details>
 
-<details open>
-<summary>🔲 v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run — IN PROGRESS 2026-06-02</summary>
+<details>
+<summary>❄️ v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run — FROZEN (close deferred)</summary>
 
 ### v2.6 Phase Summary
 

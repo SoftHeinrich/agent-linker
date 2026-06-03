@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.7
-milestone_name: milestone
-status: v2.6.1 SHIPPED 2026-06-03 (tagged). v2.7 unfrozen/resumable. v2.6 close (Phase 37) still pending.
-stopped_at: context exhaustion at 82% (2026-06-03)
-last_updated: "2026-06-03T07:06:50.624Z"
-last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
+milestone: v2.6.2
+milestone_name: Multi-Framing Extraction Design
+status: v2.6.2 SHIPPED 2026-06-03. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
+stopped_at: milestone complete — ICSE decision final; awaiting git tag
+last_updated: "2026-06-03T09:32:00.000Z"
+last_activity: 2026-06-03 — 17c ablation complete (GPT-5.4 87.1%); ICSE decision finalized; docs updated
 progress:
-  total_phases: 22
-  completed_phases: 5
-  total_plans: 18
-  completed_plans: 8
-  percent: 23
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 4
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.7 — BBB Recall Closure (resumable; unfrozen after v2.6.1 close). ⚠ Re-evaluate v2.7 Phases 40–41 (training redesign + re-runs) against the v2.6.1 finding that training adds nothing on the current bench.
+**Current focus:** v2.6.2 — Multi-Framing Extraction Design (s_linker17a/17b ICSE architecture exploration). v2.7 FROZEN.
 
 ## v2.6.1 — SHIPPED 2026-06-03 (tag v2.6.1)
 
@@ -29,15 +29,37 @@ s_linker15 no-training axiom linker shipped. macro 89.1% gpt-5.4 / 92.7% Claude.
 non-additive (s15 = trained s14 on gpt). FP fixes fire on Claude (TM FP 17→6), inert on gpt.
 See `.planning/milestones/v2.6.1-MILESTONE-AUDIT.md`. Results below retained for reference.
 
-## Resumable / pending
+## v2.6.2 — SHIPPED 2026-06-03 (final with 17c, 2026-06-03)
 
-- **v2.7 (Phases 38–42)** — BBB Recall Closure. Unfrozen. Phase plan stubs at `.planning/phases/38–42`. ⚠ Phases 40–41 predicated on keeping training — re-evaluate first.
-- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit, still pending (pre-existing).
+Multi-framing extraction design exploration complete. All three unified variants tested on GPT-5.4.
+17a (rename-only) ≈ s15 within variance. 17b (k=2) regresses −4.1pp. 17c (union) regresses −2.0pp
+but +12 FPs. Union > k=2 by +2.1pp but s15 integrated approach still wins both.
+**ICSE decision (FINAL): use s_linker17a naming (Framing A/B/C) for the paper architecture.**
+See `.planning/milestones/v2.6.2-MILESTONE-AUDIT.md`.
+
+### v2.6.2 results (reference) — GPT-5.4
+
+| Dataset | s_linker15 | s_linker17a | s_linker17b (k=2) | s_linker17c (union) |
+|---------|-----------|------------|------------|---------------------|
+| MediaStore | 91.8% | 90.3% | 92.1% | 92.1% |
+| TeaStore | 96.4% | 94.7% | 94.5% | 96.4% |
+| TeaMmates | 82.5% | 82.3% | 78.3% | 80.0% |
+| BigBlueButton | 77.6% | 74.1% | 70.2% | 77.0% |
+| JabRef | 97.3% | 90.0% | 90.0% | 90.0% |
+| **Macro** | **89.1%** | **86.3%** | **85.0%** | **87.1%** |
+
+Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
+`logs/v2.6.2_s17c_gpt.log` (17c, GPT-5.4).
+
+## Frozen / pending
+
+- **v2.7 (Phases 38–42)** — FROZEN. Resume after v2.6.2. ⚠ Phases 40–41 predicated on keeping training — re-evaluate when v2.7 resumes.
+- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit, deferred.
 
 ## Current Position
 
-Milestone: **v2.7 (resumable)**. v2.6.1 closed.
-Next action: decide v2.7 re-scope given no-training finding, then `/gsd-progress` to resume (Phase 37 close → Phases 38/39, or re-plan 40/41).
+Milestone: **v2.6.2 (shipped)**. v2.7 frozen.
+Next action: git tag v2.6.2 → optionally run 17a/17b on Claude backend → decide whether to tune 17b k-threshold or proceed to v2.7.
 
 ### v2.6.1 results (reference) — s_linker15 axiom-only + 3 FP fixes
 
