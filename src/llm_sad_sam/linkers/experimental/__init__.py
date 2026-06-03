@@ -30,6 +30,7 @@ from .s_linker17b import SLinker17b
 from .s_linker17c import SLinker17c
 from .s_linker17d import SLinker17d
 from .s_linker17e import SLinker17e
+from .s_linker17f import SLinker17f
 
 __all__ = [
     "ILinker1",
@@ -62,4 +63,5 @@ __all__ = [
     "SLinker17c",
     "SLinker17d",
     "SLinker17e",
+    "SLinker17f",
 ]

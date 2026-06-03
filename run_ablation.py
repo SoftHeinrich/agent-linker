@@ -108,6 +108,7 @@ CANONICAL_VARIANTS = [
     "s_linker17c",  # v2.6.2 unified multi-framing union: same as 17b but union merge (k=1) — validation is sole quality gate; NOT canonical
     "s_linker17d",  # v2.6.2 17c + validated-antecedent coref gate: coref only fires for components with ≥1 validated link; targets JAB coref over-firing; NOT canonical
     "s_linker17e",  # v2.6.2 17c + validated coref: Phase 5 coref output passes single-pass validation before Phase 6; all links share same quality gate; NOT canonical
+    "s_linker17f",  # v2.6.2 17e + Phase 4b code-path filter: drops dotted package-path-only multi_framing links (logic.api, x.e2e); clean full-LLM, no regex; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -635,6 +636,22 @@ VARIANT_SPECS = {
             "a single-pass validation before Phase 6. All links — framing and coref — share "
             "the same quality gate. Targets coref FPs on ambiguous-name datasets (JAB: 4 FP "
             "coref; TM: 16 FP coref in 17c). "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17f": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17f",
+        class_name="SLinker17f",
+        description=(
+            "S-Linker17f — v2.6.2 17e + code-path filter (experimental=True, NOT canonical). "
+            "Identical to s_linker17e plus Phase 4b: one narrow full-LLM question drops "
+            "multi_framing links whose component name appears only as a segment of a dotted "
+            "package path (logic.api, storage.entity, x.e2e). No regex, no per-dataset rules. "
+            "Targets the dominant residual FP source (TM: 8 dotted-path FP). Checkpoint: "
+            "TM 87.4→92.0, 0 TP killed, macro 93.4→94.3 (Claude). "
             "s_linker13_min retains canonical=True."
         ),
         canonical=False,
