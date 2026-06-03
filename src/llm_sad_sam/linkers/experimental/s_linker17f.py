@@ -276,6 +276,9 @@ class SLinker17f:
 
         self._save_phase(text_path, "layer2", {
             "framing_a": fa, "framing_b": fb, "framing_c": fc,
+            # Framing C sub-pass link sets (pre-intersection) for pass-level audit.
+            "framing_c_pass1": getattr(self, "_framing_c_pass1", None),
+            "framing_c_pass2": getattr(self, "_framing_c_pass2", None),
         })
 
         print("\n[Phase 3] Framing Union")
@@ -515,6 +518,10 @@ JSON only:"""
         intersected = {key: pass1[key] for key in pass1 if key in pass2}
         print(f"    Framing C consensus: Pass1={len(pass1)}, Pass2={len(pass2)}, "
               f"Intersect={len(intersected)}")
+        # Stash the individual sub-pass link sets so layer2 can persist them
+        # (otherwise only the intersection survives; pass1/pass2 disagreements lost).
+        self._framing_c_pass1 = pass1
+        self._framing_c_pass2 = pass2
         return list(intersected.values())
 
     # ═══════════════════════════════════════════════════════════════════════
