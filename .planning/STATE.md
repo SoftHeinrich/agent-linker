@@ -1,20 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6.1
-milestone_name: Axiom FP Root-Cause Fixes (PATCH)
-status: ACTIVE — v2.6.1 patch milestone initialized 2026-06-02. v2.7 (Phases 38–42) and pending v2.6 close (Phase 37) FROZEN. Sole active focus = three isolated axiom FP fixes.
-stopped_at: 2026-06-02 v2.6.1 workspace initialized
-last_updated: "2026-06-02T16:30:00Z"
-last_activity: 2026-06-02 — v2.6.1 patch milestone created from FP-fix todo. v2.7 frozen. Workspace set up — v2.6.1-ROADMAP + phase plan written.
+milestone: v2.7
+milestone_name: BBB Recall Closure (Tier C + Partial-Injection Port + Recall-Oracle)
+status: v2.6.1 SHIPPED 2026-06-03 (tagged). v2.7 unfrozen/resumable. v2.6 close (Phase 37) still pending.
+stopped_at: 2026-06-03 v2.6.1 milestone closed
+last_updated: "2026-06-03T00:00:00Z"
+last_activity: 2026-06-03 — v2.6.1 closed (s_linker15 no-training axiom linker shipped; training proven non-additive). v2.7 unfrozen.
 progress:
-  total_phases: 1
+  total_phases: 5
   completed_phases: 0
-  total_plans: 1
+  total_plans: 17
   completed_plans: 0
   percent: 0
-frozen:
-  - "v2.7 (Phases 38–42) — BBB Recall Closure. Stubs intact at .planning/phases/38–42 + milestones/v2.7-ROADMAP.md."
-  - "v2.6 close (Phase 37) — GATE-06 'Persistence' taboo fix + v2.6 audit. Deferred until v2.6.1 closes."
 ---
 
 # Project State
@@ -24,20 +21,25 @@ frozen:
 See: .planning/PROJECT.md (updated 2026-06-02 for v2.5 close)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.6.1 — Axiom FP Root-Cause Fixes (PATCH on shipped v2.6 axiom B-variant `61e038`). Three isolated slot patches in `prompts_v4_axiom.py`. Success: TM macro > 82.26%, no MS/TS/JAB regression.
+**Current focus:** v2.7 — BBB Recall Closure (resumable; unfrozen after v2.6.1 close). ⚠ Re-evaluate v2.7 Phases 40–41 (training redesign + re-runs) against the v2.6.1 finding that training adds nothing on the current bench.
 
-## FROZEN (do not touch until v2.6.1 closes)
+## v2.6.1 — SHIPPED 2026-06-03 (tag v2.6.1)
 
-- **v2.7 (Phases 38–42)** — BBB Recall Closure. Roadmap + phase stubs intact. See `milestones/v2.7-ROADMAP.md` (freeze banner).
-- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit. Deferred behind v2.6.1.
+s_linker15 no-training axiom linker shipped. macro 89.1% gpt-5.4 / 92.7% Claude. Training proven
+non-additive (s15 = trained s14 on gpt). FP fixes fire on Claude (TM FP 17→6), inert on gpt.
+See `.planning/milestones/v2.6.1-MILESTONE-AUDIT.md`. Results below retained for reference.
+
+## Resumable / pending
+
+- **v2.7 (Phases 38–42)** — BBB Recall Closure. Unfrozen. Phase plan stubs at `.planning/phases/38–42`. ⚠ Phases 40–41 predicated on keeping training — re-evaluate first.
+- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit, still pending (pre-existing).
 
 ## Current Position
 
-Milestone: **v2.6.1 (ACTIVE)** — PATCH. See `.planning/milestones/v2.6.1-ROADMAP.md`.
-Phase: Phase v2.6.1-01 (Axiom FP Root-Cause Fixes) — not started.
-Plan: `.planning/phases/v2.6.1-axiom-fp-fixes/PLAN.md`
-Source: `.planning/todos/pending/2026-06-02-improve-prompts-v4-axiom-three-root-cause-fp-fixes.md`
-Next action: review s_linker15 validation run (below). Decide whether to repeat for GPT-variance averaging / run isolated FP-fix attribution, then close v2.6.1.
+Milestone: **v2.7 (resumable)**. v2.6.1 closed.
+Next action: decide v2.7 re-scope given no-training finding, then `/gsd-progress` to resume (Phase 37 close → Phases 38/39, or re-plan 40/41).
+
+### v2.6.1 results (reference) — s_linker15 axiom-only + 3 FP fixes
 
 ### s_linker15 validation (2026-06-02, gpt-5.4, axiom-only + 3 FP fixes)
 

@@ -4,6 +4,54 @@ Historical record of shipped milestones. See `milestones/v[X.Y]-ROADMAP.md`, `mi
 
 ---
 
+## v2.6.1 — No-Training Axiom Linker (s_linker15) + Axiom FP Fixes (PATCH)
+
+**Shipped:** 2026-06-03
+**Audit verdict:** PASSED (research patch). **Tag:** v2.6.1
+**Production artifact:** `src/llm_sad_sam/linkers/experimental/s_linker15.py` (`experimental=True`, `canonical=False`)
+**Canonical unchanged:** `s_linker13_min.py`
+
+### Delivered
+
+`s_linker15` — drop Voyager training, commit to the axiom-only floor. s_linker14_voyager with all
+bank/training machinery removed; axiom prompts inlined (B-variant + three FP root-cause fixes: tier/
+platform alias, code-path prefix, functional-alias-as-workflow); ILinker4 on empty seed rules.
+Registered alongside s14. Dual-backend validated + zero-cost FP attribution.
+
+### Key findings
+
+- **Training adds nothing:** s15 no-training GPT-5.4 macro 89.1% == trained s14_voyager (89.11%).
+- **FP fixes fire on Claude, inert on GPT-5.4** (attribution): TM FP Claude 17→6, GPT 17.
+- **BBB Claude 83.5 ≈ canonical s13_min (~85)** — dropping training is free on the hard dataset.
+
+### Stats
+
+| Item | Value |
+|------|-------|
+| s15 macro F1 (gpt-5.4) | 89.1% |
+| s15 macro F1 (Claude Sonnet) | 92.7% |
+| Total FP (gpt / Claude) | 31 / 12 |
+| Phases | 3 (FP fixes, s_linker15, cleanup+docs) |
+| GATE-01 / GATE-06 | PASS / PASS |
+
+### Per-dataset (s15, Claude Sonnet)
+
+| Dataset | F1 |
+|---------|----|
+| MediaStore | 95.1% |
+| TeaStore | 96.4% |
+| TeaMMates | 91.4% |
+| BigBlueButton | 83.5% |
+| JabRef | 97.3% |
+
+### Archive
+
+- `milestones/v2.6.1-ROADMAP.md`
+- `milestones/v2.6.1-MILESTONE-AUDIT.md`
+- Phase directories retained under `.planning/phases/v2.6.1-*` (no cleanup at this time)
+
+---
+
 ## v2.3 — Trained Multi-Role Prompt Replacement (β architecture)
 
 **Shipped:** 2026-06-01
