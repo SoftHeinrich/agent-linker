@@ -7,7 +7,7 @@
 \toprule
 \textbf{Task} & \textbf{Baseline} & \textbf{MediaStore} & \textbf{TeaStore} & \textbf{Teammates} & \textbf{BBB} & \textbf{JabRef} & \textbf{Macro mean} \\
 \midrule
-\multicolumn{8}{@{}l}{\emph{File-level (micro) \fone}} \\
+\multicolumn{8}{@{}l}{\emph{Link-level (micro) \fone}} \\
 Doc-to-code  & Random             & 0.017          & 0.154          & 0.106          & 0.067          & 0.407          & 0.150 \\
              & Top-3 (file count) & \textbf{0.079} & \textbf{0.371} & \textbf{0.184} & \textbf{0.247} & \textbf{0.596} & \textbf{0.296} \\
 Doc-to-model & Random             & 0.065          & 0.074          & 0.088          & 0.048          & 0.333          & 0.122 \\
@@ -33,5 +33,5 @@ Doc-to-model & Random             & 0.913          & 0.956          & 0.889     
 \bottomrule
 \end{tabular}
 \\[2pt]
-{\scriptsize Doc-to-code: per-component \fone\ reverses on the three projects with non-trivial enrollment (Teammates 35.5$\times$, BigBlueButton 11.6$\times$, JabRef 217.6$\times$); sentence coverage reverses on four projects (all except MediaStore). MediaStore (enrollment factor 1.0$\times$) shows no reversal --- exactly as expected when there is no structural bias to expose. Doc-to-model: Top-3 wins on all primary metrics, but the metric suite narrows the popularity-skew inflation (per-component \fone\ gap: 0.27/0.16 = 1.7$\times$ vs file-level \fone\ gap 2.3$\times$). Noise rate remains $\geq 0.79$ for both baselines on both tasks, well above real-system noise ($<$0.30).}
+{\scriptsize Doc-to-code: per-component \fone\ reverses on the three projects with non-trivial enrollment (Teammates 35.5$\times$, BigBlueButton 11.6$\times$, JabRef 217.6$\times$); sentence coverage reverses on four projects (all except MediaStore). MediaStore (enrollment factor 1.0$\times$) shows no reversal --- exactly as expected when there is no structural bias to expose. Doc-to-model: Top-3 wins on all primary metrics, but the metric suite narrows the popularity-skew inflation (per-component \fone\ gap: 0.27/0.16 = 1.7$\times$ vs link-level \fone\ gap 2.3$\times$). Noise rate remains $\geq 0.79$ for both baselines on both tasks, well above real-system noise ($<$0.30).}
 \end{table*}

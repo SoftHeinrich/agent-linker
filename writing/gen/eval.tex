@@ -20,8 +20,8 @@ We want to know whether this extra structure pays off in both link tasks: doc-to
     \item \label{RQ2 metrics} \emph{What do architecture-driven metrics tell us about the recovered links that the standard \fone does not?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
-The standard evaluation reports one micro \fone over all file-level links.
-On this benchmark, one human decision about a directory can expand into hundreds of file-level data points, so a few large components decide the score~\cite{replication}.
+The standard evaluation reports one micro \fone\ over all sentence-target pairs at the link level.
+On this benchmark, one human decision about a directory can expand into hundreds of link-level data points, so a few large components decide the score~\cite{replication}.
 A single number can therefore hide whether a system covers all sentences, whether errors fall on small components, or whether developers would see noisy results.
 We check if the metrics from \autoref{sec:metric} reveal these properties and reorder the systems.
 
@@ -52,7 +52,7 @@ All \approach{} runs use a fixed model configuration (\autoref{sec:hyperparamete
 We run two evaluations on the same five projects (\autoref{sec:dataset}):
 \begin{enumerate}[leftmargin=*]
     \item \emph{Doc-to-model.} For every sentence in the architecture document we recover the components it talks about and compare them with the doc-to-model gold standard. We compare \approach{} with \emph{SWATTR}~\cite{swattr}, the lexical NLP pipeline that TransArc uses for the doc-to-model step, and with \emph{LiSSA}~\cite{lissa}, a recent \ac{LLM}-based classifier. This is the link task where \approach{} can directly show what its knowledge layer is worth.
-    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the file-level gold standard. \approach{} reaches code files by combining its doc-to-model links with the architecture model's component-to-file mapping, the same composition used by TransArc. We compare \approach{} with \emph{TransArc}~\cite{transarc}, the strongest published end-to-end pipeline on this benchmark, and with \emph{LiSSA} as an \ac{LLM} baseline.
+    \item \emph{Doc-to-code.} For every sentence we recover the code files it talks about and compare them with the link-level gold standard. \approach{} reaches code files by combining its doc-to-model links with the architecture model's component-to-file mapping, the same composition used by TransArc. We compare \approach{} with \emph{TransArc}~\cite{transarc}, the strongest published end-to-end pipeline on this benchmark, and with \emph{LiSSA} as an \ac{LLM} baseline.
 \end{enumerate}
 We take all baseline results from the original papers to avoid re-tuning bias.
 For each task we report precision, recall, and \fone per project and averaged across projects (both macro and micro), following the protocol of the benchmark.
@@ -61,25 +61,25 @@ The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves o
 \subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-The metric suite from \autoref{sec:metric:suite} is validated as a pre-study in \autoref{sec:metric:prestudy}, where two structural Top-3 baselines (one per task) and a random baseline confirm that per-component \fone, sentence coverage, and noise rate carry information that standard \fone\ does not.
-Here we apply the validated suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and SWATTR for the doc-to-model task.
+A pre-study (\autoref{sec:metric:prestudy}) motivates the metric suite from \autoref{sec:metric:suite}: two simple baselines---\emph{Random} and a structural \emph{Top-3} (one per task)---already trip up the standard link-level precision, recall, and \fone, while per-component \fone, sentence coverage, and noise rate catch them.
+Here we apply the suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and SWATTR for doc-to-model.
 %TODO LiSSA placeholder: per-project link outputs for LiSSA are not in the replication package; either obtain them from the LiSSA authors and recompute the new metrics, or restrict the RQ2 comparison to AALinker vs TransArc/SWATTR and footnote the omission.
 
-For each (system, project, task) cell we recompute the four primary metrics---file-level \fone, per-component \fone, sentence coverage, and noise rate---and report per-project values plus macro means.
-Per system we provide two diagnostic views:
+For each (system, project, task) cell we report the four primary metrics---link-level precision, recall, and \fone, per-component \fone, sentence coverage, and noise rate---per project and as macro means.
+Per system we add two diagnostic views:
 \begin{enumerate}[leftmargin=*]
-    \item a \emph{per-component \fone\ distribution}, showing which components are fully covered, which are uncovered, and where false-positive and false-negative mass concentrates;
+    \item a \emph{per-component \fone\ distribution}, showing which components are fully covered, which are uncovered, and where false-positive and false-negative mass piles up;
     \item a \emph{per-sentence coverage--noise scatter}, splitting gold sentences into served-cleanly, served-noisily, and unserved, with the share of each reported per system.
 \end{enumerate}
-Across systems and projects we report the rank correlation between standard file-level \fone\ and each new metric.
-A metric that reorders the systems carries information that file-level \fone\ does not.
-The appendix additionally reports per-sentence \fone, the coverage--purity composite, and the skill score together with a redundancy analysis showing they do not change the ranking conclusions.
+Across systems and projects we report the rank correlation between the standard link-level \fone\ and each new metric.
+A metric that reorders the systems shows something that the standard \fone\ does not.
+The appendix reports per-sentence \fone, the coverage--purity composite, and the skill score, with a redundancy analysis showing they do not change the ranking conclusions.
 
 \emph{\textbf{Expected outcome.}}
 We commit to two falsifiable predictions:
 \begin{enumerate*}[label=(\roman*)]
-    \item per-component \fone\ reorders systems compared to file-level \fone, because file-level \fone\ is dominated by a few large components;
-    \item sentence coverage and noise rate vary independently of \fone---two systems with similar \fone\ can show markedly different coverage and noise profiles.
+    \item per-component \fone\ reorders systems compared to the standard link-level \fone, because the latter is dominated by a few large components;
+    \item sentence coverage and noise rate vary independently of \fone---two systems with similar \fone\ can show very different coverage and noise.
 \end{enumerate*}
 The outcome of \ref{RQ2 metrics} is the table of (system, metric, project) values, the diagnostic plots, the rank correlations, and a verdict on each prediction.
 
@@ -133,13 +133,13 @@ covers the others on this benchmark.
 \label{sec:dataset}
 
 We use the public benchmark released with TransArc~\cite{transarc,replication}.
-It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at both the component and file level:
+It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at two grains, sentence-to-component and sentence-to-file:
 \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
 We use this benchmark because it is the standard evaluation set for this task~\cite{transarc,lissa} and because it gives us gold links at both granularities, which we need for both \ref{RQ1 SOTA comparison} (doc-to-model and doc-to-code) and \ref{RQ2 metrics}.
 
 \input{table/dataset-stat}
 
-\autoref{tab:dataset} lists, per project, the number of sentences in the architecture document, the number of components in the architecture model, the number of code files, the number of human gold decisions, and the number of file-level links after each directory decision is expanded to its files.
+\autoref{tab:dataset} lists, per project, the number of sentences in the architecture document, the number of components in the architecture model, the number of code files, the number of human gold decisions, and the number of link-level pairs after each directory decision is expanded to its files.
 The expansion factor differs by two orders of magnitude across projects (1.0$\times$ for MediaStore, 217.6$\times$ for JabRef).
 This is one of the reasons we report the extra metrics in \ref{RQ2 metrics}.
 

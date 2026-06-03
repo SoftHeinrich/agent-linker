@@ -12,11 +12,11 @@ At evaluation time, each directory entry is \emph{enrolled}: it is expanded to a
 After enrollment, precision, recall, and \fone are computed over (sentence, file) pairs.
 
 \autoref{tab:enrollment} shows how strongly enrollment changes the data on which \fone is computed.
-The 525 raw human decisions become 18,660 file-level data points, with project-specific factors ranging from 1.0$\times$ to 217.6$\times$.
+The 525 raw human decisions become 18,660 link-level data points, with project-specific factors ranging from 1.0$\times$ to 217.6$\times$.
 
 \input{table/enrollment}
 % \begin{table}[h]
-% \caption{Enrollment expansion in the benchmark: raw human decisions vs.\ file-level data points after directory expansion.}
+% \caption{Enrollment expansion in the benchmark: raw human decisions vs.\ link-level data points after directory expansion.}
 % \label{tab:enrollment}
 % \centering\small
 % \begin{tabular}{lrrr}
@@ -39,19 +39,19 @@ The standard \fone treats each (sentence, file) pair as one equally weighted dat
 The benchmark's structure breaks this assumption in three ways at once.
 
 \emph{Enrollment inflation.}
-One human decision becomes between 1 and 972 file-level data points.
+One human decision becomes between 1 and 972 link-level data points.
 On JabRef, 38 decisions become 8,268 points (217.6$\times$), so a single directory decision can swing \fone by up to four percentage points.
 The metric appears to be computed on thousands of data points, but it really reflects a few dozen human decisions.
 
 \emph{Block correlation.}
 Files enrolled from the same directory share the same outcome: a system either identifies that component or it does not.
 We measured block homogeneity (whether all files in a block are correct or all wrong) and found it ranges from 96\% to 100\% across the five projects.
-File-level pairs are therefore not independent data points; they are redundant copies of one decision.
+Link-level pairs are therefore not independent data points; they are redundant copies of one decision.
 
 \emph{Gold concentration.}
 In every project, a small number of components dominates the gold standard.
-The top three components hold between 38\% and 99\% of all file-level gold links, and the single top component accounts for 45\%–48\% of the gold in four out of five projects.
-On JabRef, three components alone produce 98.6\% of the file-level gold.
+The top three components hold between 38\% and 99\% of all link-level gold links, and the single top component accounts for 45\%–48\% of the gold in four out of five projects.
+On JabRef, three components alone produce 98.6\% of the link-level gold.
 
 \subsubsection*{What this means for the metric}
 Under heavy structural inequality, \fone is dominated by the few largest items.
@@ -59,11 +59,11 @@ Getting JabRef's three big components right yields \fone\,$>$\,0.95 regardless o
 Two consequences follow.
 
 First, the same \fone number means different things on different projects.
-A file-level \fone of 0.94 on JabRef summarises performance on essentially three components; the same \fone on MediaStore summarises performance on roughly 50 mostly file-level decisions.
+A link-level \fone of 0.94 on JabRef summarises performance on essentially three components; the same \fone on MediaStore summarises performance on roughly 50 mostly link-level decisions.
 Cross-project comparison under one \fone is therefore not meaningful, even though the literature routinely averages it.
 
 Second, a system that improves on the harder, smaller decisions is rewarded only weakly.
-Improvements that change one large-component outcome are amplified into hundreds of file-level true positives, while improvements that change many small-component outcomes count for only a few points each.
+Improvements that change one large-component outcome are amplified into hundreds of link-level true positives, while improvements that change many small-component outcomes count for only a few points each.
 The standard ruler is most sensitive to the part of the benchmark with the least information, and least sensitive to the part where systems differ most.
 
 \subsubsection*{Stance}
@@ -73,7 +73,7 @@ Each metric is chosen to correct one of the three biases above, or to expose a p
 We then evaluate AALinker and all baselines under both the standard ruler and the new rulers, so future work can be compared honestly under either.
 
 The metric story is not "we win bigger under the new metrics".
-As we will show in \autoref{sec:exp:rq2}, AALinker leads under every metric we report, but the standard \fone underreports the gain: the gap over TransArc is $+12.9$ percentage points on file-level \fone and $+22.7$ percentage points on the metric matched to a single human annotator decision.
+As we will show in \autoref{sec:exp:rq2}, AALinker leads under every metric we report, but the standard \fone underreports the gain: the gap over TransArc is $+12.9$ percentage points on link-level \fone and $+22.7$ percentage points on the metric matched to a single human annotator decision.
 The standard ruler is the one that hides the improvement, because the same structural inequality that inflates good performance on a few large components also dilutes per-decision gains into the average.
 
 The picture also varies by project, and we report this honestly rather than averaging it away.
@@ -86,27 +86,27 @@ We discuss this Teammates pattern in \autoref{sec:exp:rq2} and \autoref{sec:disc
 \label{sec:metric:suite}
 
 We propose four primary metrics.
-Each one addresses a structural weakness of standard file-level \fone\ identified in \autoref{sec:metric:bias} or surfaces a property of trace-link quality that \fone\ cannot express.
+Each one fixes a weakness of the standard link-level precision, recall, and \fone\ identified in \autoref{sec:metric:bias}, or shows a property of trace-link quality that the standard metrics cannot.
 Three further metrics (per-sentence \fone, a coverage--purity composite, and a skill score) are reported in the appendix; a redundancy analysis (\autoref{sec:metric:prestudy}) shows they carry the same ranking signal as the four primary metrics and do not change the conclusions.
 
-\paragraph{File-level \fone\ (reference).}
-The standard metric used in prior work: micro \fone\ over all (sentence, file) pairs.
-We retain it as the comparison point with prior work, not because we endorse it, but because the literature reports it.
+\paragraph{Link-level precision, recall, and \fone\ (reference).}
+The standard metrics used in prior work: micro precision, recall, and \fone\ over all (sentence, target) pairs.
+We keep them as the comparison point with prior work, not because we endorse them, but because the literature reports them.
 
 \paragraph{Per-component \fone\ (macro).}
-For each component~$c$, compute file-level \fone\ over the (sentence, file) pairs that touch~$c$, then average across all components.
+For each component~$c$, compute precision, recall, and \fone\ over the (sentence, target) pairs that touch~$c$, then macro-average \fone\ across all components.
 This gives every architectural component equal weight, so a system is no longer rewarded for getting a few large components right while ignoring small ones.
 Corrects the gold-concentration and enrollment-inflation biases of \autoref{sec:metric:bias}.
 
 \paragraph{Sentence coverage.}
 The fraction of gold sentences for which the system produced at least one correct link.
-Asks the binary question per sentence: \emph{did the system serve this sentence at all?}
+Asks the simple per-sentence question: \emph{did the system serve this sentence at all?}
 Independent of how many wrong links the system added---only counts correct hits.
 
 \paragraph{Noise rate.}
-For each sentence the system predicted at least one link for, compute the wrong-link share $\text{FP}_s / (\text{TP}_s + \text{FP}_s)$, then macro-average across predicted sentences (silent sentences are excluded from the denominator).
+For each sentence the system predicted at least one link for, compute the wrong-link share $\text{FP}_s / (\text{TP}_s + \text{FP}_s)$, then macro-average across predicted sentences (silent sentences are dropped from the denominator).
 Reports \emph{per sentence, how messy is the output?}
-This is the only metric in the suite that catches over-prediction distributed across many sentences; file-level and per-component \fone\ can both hide such behaviour when the false positives are spread thinly.
+This is the only metric in the suite that catches a system that over-predicts across many sentences; link-level and per-component \fone\ can both hide that when the false positives are spread thinly.
 
 \subsection{Metric Validation Pre-Study}
 \label{sec:metric:prestudy}
@@ -119,7 +119,7 @@ The $K$ components are chosen by a \emph{structural ranking} computed from archi
 A bias-resistant metric refuses to credit such a baseline beyond chance, no matter which structural feature the ranking exploits.
 
 The choice of ranking feature is task-specific because the human annotation process correlates with a different signal on each task.
-On doc-to-code, one human directory decision expands into all files in that directory, so the structural feature most correlated with gold-link mass is \emph{component file count}---a few large components dominate the file-level gold by construction.
+On doc-to-code, one human directory decision expands into all files in that directory, so the structural feature most correlated with gold-link mass is \emph{component file count}---a few large components dominate the link-level gold by construction.
 On doc-to-model, each human decision is one (sentence, component) link, and the feature most correlated with gold mass is \emph{in-doc name frequency}---components whose names appear in the doc attract most annotator decisions.
 
 We use $K{=}3$ with two task-specific structural rankings: file count on doc-to-code, in-doc case-insensitive name frequency on doc-to-model.
@@ -127,12 +127,12 @@ Both rules use only structural signals (architecture-model file counts, doc text
 For comparison we also run \emph{Random}, which samples (sentence, target) pairs at the gold link density and serves as a zero-skill anchor.
 
 \paragraph{Doc-to-code: reversal under enrollment.}
-The structural Top-3 baseline averages 0.30 file-level \fone\ against \emph{Random}'s 0.15---a roughly two-fold inflation that file-level \fone\ credits despite zero real link-prediction skill.
+The structural Top-3 baseline averages 0.30 link-level \fone\ against \emph{Random}'s 0.15---a roughly two-fold inflation that link-level \fone\ credits despite zero real link-prediction skill.
 Per-component \fone\ reverses the ranking on the three projects with non-trivial enrollment expansion---JabRef (217.6$\times$), Teammates (35.5$\times$), and BigBlueButton (11.6$\times$)---where \emph{Random}'s scattered hits (mean 0.23) beat Top-3's concentrated mass (mean 0.18) under macro averaging.
 Sentence coverage reverses on four of the five projects (all except MediaStore), with macro means 0.69 (Random) vs 0.46 (Top-3); the reversal extends to TeaStore (10.1$\times$ enrollment) because coverage is sensitive to broad scatter even at moderate enrollment, while per-component \fone\ needs heavier structural inequality to flip.
 MediaStore (enrollment factor 1.0$\times$, no structural inequality) is the only project where neither metric reverses---exactly as expected when there is no bias to expose.
 Noise rate confirms the inflation has no per-sentence basis: both baselines average $\geq 0.80$ wrong-link share per predicted sentence (macro mean 0.85 for \emph{Random}, 0.80 for Top-3), while real systems sit below 0.30 on the same metric.
-The two-fold file-level \fone\ gap between Top-3 and \emph{Random} is therefore structural, not behavioural.
+The two-fold link-level \fone\ gap between Top-3 and \emph{Random} is therefore structural, not behavioural.
 
 \paragraph{Doc-to-model: exposure of the narrative split.}
 The structural Top-3 baseline averages 0.28 micro \fone\ against \emph{Random}'s 0.12---also a roughly two-fold inflation, but with a different mechanism.
