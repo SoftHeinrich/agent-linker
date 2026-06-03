@@ -85,6 +85,69 @@ We discuss this Teammates pattern in \autoref{sec:exp:rq2} and \autoref{sec:disc
 \subsection{Metric Suite}
 \label{sec:metric:suite}
 
-We organise the metric suite into four groups, each addressing one weakness of standard file-level \fone.
+We propose four primary metrics.
+Each one addresses a structural weakness of standard file-level \fone\ identified in \autoref{sec:metric:bias} or surfaces a property of trace-link quality that \fone\ cannot express.
+Three further metrics (per-sentence \fone, a coverage--purity composite, and a skill score) are reported in the appendix; a redundancy analysis (\autoref{sec:metric:prestudy}) shows they carry the same ranking signal as the four primary metrics and do not change the conclusions.
 
-\todo{Continue with the metric definitions: \fone variants (per-sentence, decision-level, per-component, weighted), classification quality (MCC, exact match, Jaccard), sentence coverage and noise, coverage--purity score, and the skill score (random$\to$oracle rescale). Pull definitions from \texttt{evaluation/writing/eval.tex}, restate in plain English consistent with the naming used in \autoref{sec:exp:rq2}.}
+\paragraph{File-level \fone\ (reference).}
+The standard metric used in prior work: micro \fone\ over all (sentence, file) pairs.
+We retain it as the comparison point with prior work, not because we endorse it, but because the literature reports it.
+
+\paragraph{Per-component \fone\ (macro).}
+For each component~$c$, compute file-level \fone\ over the (sentence, file) pairs that touch~$c$, then average across all components.
+This gives every architectural component equal weight, so a system is no longer rewarded for getting a few large components right while ignoring small ones.
+Corrects the gold-concentration and enrollment-inflation biases of \autoref{sec:metric:bias}.
+
+\paragraph{Sentence coverage.}
+The fraction of gold sentences for which the system produced at least one correct link.
+Asks the binary question per sentence: \emph{did the system serve this sentence at all?}
+Independent of how many wrong links the system added---only counts correct hits.
+
+\paragraph{Noise rate.}
+For each sentence the system predicted at least one link for, compute the wrong-link share $\text{FP}_s / (\text{TP}_s + \text{FP}_s)$, then macro-average across predicted sentences (silent sentences are excluded from the denominator).
+Reports \emph{per sentence, how messy is the output?}
+This is the only metric in the suite that catches over-prediction distributed across many sentences; file-level and per-component \fone\ can both hide such behaviour when the false positives are spread thinly.
+
+\subsection{Metric Validation Pre-Study}
+\label{sec:metric:prestudy}
+
+Before applying the metric suite to real systems (\autoref{sec:exp:rq2}), we check that each primary metric resists trivial inflation on both link tasks: doc-to-code and doc-to-model.
+
+\paragraph{Structural Top-K baselines.}
+A \emph{naive Top-K baseline} predicts the same fixed set of $K$ components for every sentence in the doc, regardless of sentence content.
+The $K$ components are chosen by a \emph{structural ranking} computed from architecture-model or doc features alone, without ever consulting the gold standard.
+A bias-resistant metric refuses to credit such a baseline beyond chance, no matter which structural feature the ranking exploits.
+
+The choice of ranking feature is task-specific because the human annotation process correlates with a different signal on each task.
+On doc-to-code, one human directory decision expands into all files in that directory, so the structural feature most correlated with gold-link mass is \emph{component file count}---a few large components dominate the file-level gold by construction.
+On doc-to-model, each human decision is one (sentence, component) link, and the feature most correlated with gold mass is \emph{in-doc name frequency}---components whose names appear in the doc attract most annotator decisions.
+
+We use $K{=}3$ with two task-specific structural rankings: file count on doc-to-code, in-doc case-insensitive name frequency on doc-to-model.
+Both rules use only structural signals (architecture-model file counts, doc text); neither uses gold.
+For comparison we also run \emph{Random}, which samples (sentence, target) pairs at the gold link density and serves as a zero-skill anchor.
+
+\paragraph{Doc-to-code: reversal under enrollment.}
+The structural Top-3 baseline averages 0.30 file-level \fone\ against \emph{Random}'s 0.15---a roughly two-fold inflation that file-level \fone\ credits despite zero real link-prediction skill.
+Per-component \fone\ reverses the ranking on the three projects with non-trivial enrollment expansion---JabRef (217.6$\times$), Teammates (35.5$\times$), and BigBlueButton (11.6$\times$)---where \emph{Random}'s scattered hits (mean 0.23) beat Top-3's concentrated mass (mean 0.18) under macro averaging.
+Sentence coverage reverses on four of the five projects (all except MediaStore), with macro means 0.69 (Random) vs 0.46 (Top-3); the reversal extends to TeaStore (10.1$\times$ enrollment) because coverage is sensitive to broad scatter even at moderate enrollment, while per-component \fone\ needs heavier structural inequality to flip.
+MediaStore (enrollment factor 1.0$\times$, no structural inequality) is the only project where neither metric reverses---exactly as expected when there is no bias to expose.
+Noise rate confirms the inflation has no per-sentence basis: both baselines average $\geq 0.80$ wrong-link share per predicted sentence (macro mean 0.85 for \emph{Random}, 0.80 for Top-3), while real systems sit below 0.30 on the same metric.
+The two-fold file-level \fone\ gap between Top-3 and \emph{Random} is therefore structural, not behavioural.
+
+\paragraph{Doc-to-model: exposure of the narrative split.}
+The structural Top-3 baseline averages 0.28 micro \fone\ against \emph{Random}'s 0.12---also a roughly two-fold inflation, but with a different mechanism.
+Doc-to-model gold has no enrollment expansion; the inflation comes from popularity skew (the top-3 components hold 52--78\,\% of gold links per project; Gini $\approx 0.62$).
+The metric suite responds differently here than on doc-to-code: per-component \fone\ narrows the inflation (0.14 vs 0.08) but does not reverse, because architecture models contain few components (6--22 per project) and macro averaging is less punishing on Top-3.
+The strongest discriminators are sentence coverage and noise rate.
+Across projects, 44\,\% of doc sentences carry no gold link---the \emph{narrative/referential split}, ranging from 23\,\% on JabRef to 77\,\% on Teammates---so a baseline that predicts components for every sentence accumulates noise rate 0.79.
+Micro \fone\ cannot diagnose this because narrative sentences contribute no pairs to either side of the ratio.
+Noise rate plays the same role here as on doc-to-code: it exposes Top-K's predict-everything strategy uniformly, independent of which structural inequality the task carries.
+
+\paragraph{Take-away.}
+The metric suite earns its place on both tasks for different reasons.
+On doc-to-code it \emph{reverses} the structural Top-3 baseline on the high-enrollment projects, resisting enrollment-driven inflation.
+On doc-to-model it \emph{exposes} the narrative/referential split that micro \fone\ cannot diagnose, and narrows the popularity-skew inflation that micro \fone\ amplifies.
+Per-component \fone\ and sentence coverage are task-conditional discriminators---they reverse where the task's structural bias is severe---while noise rate is a task-uniform discriminator: it punishes the predict-everything strategy on both tasks.
+The combination covers both bias-driven and strategy-driven triviality, independent of which task's bias dominates.
+\input{table/prestudy}
+%TODO: appendix wire-up: \input{table/prestudy-full} once an appendix.tex exists.

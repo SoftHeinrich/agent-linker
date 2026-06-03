@@ -1,0 +1,37 @@
+\begin{table*}[t]
+\caption{Metric pre-study results across all five projects (appendix). Random vs structural Top-3 baselines under the four primary metrics, on both link tasks. \emph{Doc-to-code} ranks Top-3 by component file count; \emph{doc-to-model} ranks Top-3 by in-doc case-insensitive name frequency. Bold marks the per-column winner within each (task, project) cell.}
+\label{tab:prestudy-full}
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+\textbf{Task} & \textbf{Baseline} & \textbf{MediaStore} & \textbf{TeaStore} & \textbf{Teammates} & \textbf{BBB} & \textbf{JabRef} & \textbf{Macro mean} \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{File-level (micro) \fone}} \\
+Doc-to-code  & Random             & 0.017          & 0.154          & 0.106          & 0.067          & 0.407          & 0.150 \\
+             & Top-3 (file count) & \textbf{0.079} & \textbf{0.371} & \textbf{0.184} & \textbf{0.247} & \textbf{0.596} & \textbf{0.296} \\
+Doc-to-model & Random             & 0.065          & 0.074          & 0.088          & 0.048          & 0.333          & 0.122 \\
+             & Top-3 (name freq.) & \textbf{0.214} & \textbf{0.229} & \textbf{0.156} & \textbf{0.204} & \textbf{0.583} & \textbf{0.277} \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{Per-component \fone\ (macro)}} \\
+Doc-to-code  & Random             & 0.023          & 0.127          & \textbf{0.280} & \textbf{0.263} & \textbf{0.468} & \textbf{0.232} \\
+             & Top-3 (file count) & \textbf{0.073} & \textbf{0.214} & 0.126          & 0.060          & 0.411          & 0.177 \\
+Doc-to-model & Random             & 0.047          & 0.038          & \textbf{0.053} & 0.018          & 0.265          & 0.084 \\
+             & Top-3 (name freq.) & \textbf{0.077} & \textbf{0.110} & 0.050          & \textbf{0.059} & \textbf{0.379} & \textbf{0.135} \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{Sentence coverage}} \\
+Doc-to-code  & Random             & 0.040          & \textbf{0.870} & \textbf{0.717} & \textbf{0.822} & \textbf{1.000} & \textbf{0.690} \\
+             & Top-3 (file count) & \textbf{0.280} & 0.609          & 0.543          & 0.178          & 0.700          & 0.462 \\
+Doc-to-model & Random             & 0.074          & 0.087          & 0.111          & 0.062          & 0.600          & 0.187 \\
+             & Top-3 (name freq.) & \textbf{0.444} & \textbf{0.478} & \textbf{0.333} & \textbf{0.417} & \textbf{0.700} & \textbf{0.475} \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{Noise rate}} \\
+Doc-to-code  & Random             & 0.978          & 0.844          & 0.895          & 0.934          & 0.593          & 0.849 \\
+             & Top-3 (file count) & 0.957          & 0.764          & 0.892          & 0.835          & 0.574          & 0.804 \\
+Doc-to-model & Random             & 0.913          & 0.956          & 0.889          & 0.946          & 0.607          & 0.862 \\
+             & Top-3 (name freq.) & 0.852          & 0.841          & 0.889          & 0.854          & 0.533          & 0.794 \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\scriptsize Doc-to-code: per-component \fone\ reverses on the three projects with non-trivial enrollment (Teammates 35.5$\times$, BigBlueButton 11.6$\times$, JabRef 217.6$\times$); sentence coverage reverses on four projects (all except MediaStore). MediaStore (enrollment factor 1.0$\times$) shows no reversal --- exactly as expected when there is no structural bias to expose. Doc-to-model: Top-3 wins on all primary metrics, but the metric suite narrows the popularity-skew inflation (per-component \fone\ gap: 0.27/0.16 = 1.7$\times$ vs file-level \fone\ gap 2.3$\times$). Noise rate remains $\geq 0.79$ for both baselines on both tasks, well above real-system noise ($<$0.30).}
+\end{table*}

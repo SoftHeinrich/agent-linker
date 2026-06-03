@@ -61,20 +61,27 @@ The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves o
 \subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-We re-evaluate our system and baselines from \ref{RQ1 SOTA comparison} with the metric set from \autoref{sec:metric}.
-For each (system, project) pair we compute:
+The metric suite from \autoref{sec:metric:suite} is validated as a pre-study in \autoref{sec:metric:prestudy}, where two structural Top-3 baselines (one per task) and a random baseline confirm that per-component \fone, sentence coverage, and noise rate carry information that standard \fone\ does not.
+Here we apply the validated suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and SWATTR for the doc-to-model task.
+%TODO LiSSA placeholder: per-project link outputs for LiSSA are not in the replication package; either obtain them from the LiSSA authors and recompute the new metrics, or restrict the RQ2 comparison to AALinker vs TransArc/SWATTR and footnote the omission.
+
+For each (system, project, task) cell we recompute the four primary metrics---file-level \fone, per-component \fone, sentence coverage, and noise rate---and report per-project values plus macro means.
+Per system we provide two diagnostic views:
 \begin{enumerate}[leftmargin=*]
-    \item \emph{Per-component \fone}, which gives every component the same weight, so errors on small components are not hidden by very large ones.
-    \item \emph{Per-sentence \fone}, which averages \fone over gold sentences and shows when quality is concentrated on a few sentences.
-    \item \emph{Skill score}, which rescales \fone between a random guesser and a perfect oracle, so projects with very different difficulty can be compared.
-    \item \emph{Sentence coverage}, the fraction of gold sentences that get at least one correct link, together with \emph{noise rate}, the average share of wrong links per sentence.
-    \item \emph{Coverage and purity}, a single number that combines how many sentences are served with how many are served without any wrong link.
+    \item a \emph{per-component \fone\ distribution}, showing which components are fully covered, which are uncovered, and where false-positive and false-negative mass concentrates;
+    \item a \emph{per-sentence coverage--noise scatter}, splitting gold sentences into served-cleanly, served-noisily, and unserved, with the share of each reported per system.
 \end{enumerate}
-For each metric we report the per-project value and the mean gap from the standard link level \fone.
-A metric with a large gap rewards or penalises a system in a way that link level \fone alone does not.
-%TODO need overhaul or add new things 
-%Our expectations is it reveals a larger gap or more fine grained, like some component / sent 100 pct cover while other fp/fn cluster
-% and reveal properties twisted by benchmark bias. 
+Across systems and projects we report the rank correlation between standard file-level \fone\ and each new metric.
+A metric that reorders the systems carries information that file-level \fone\ does not.
+The appendix additionally reports per-sentence \fone, the coverage--purity composite, and the skill score together with a redundancy analysis showing they do not change the ranking conclusions.
+
+\emph{\textbf{Expected outcome.}}
+We commit to two falsifiable predictions:
+\begin{enumerate*}[label=(\roman*)]
+    \item per-component \fone\ reorders systems compared to file-level \fone, because file-level \fone\ is dominated by a few large components;
+    \item sentence coverage and noise rate vary independently of \fone---two systems with similar \fone\ can show markedly different coverage and noise profiles.
+\end{enumerate*}
+The outcome of \ref{RQ2 metrics} is the table of (system, metric, project) values, the diagnostic plots, the rank correlations, and a verdict on each prediction.
 
 \subsubsection{Experiments for \ref{RQ3 validators} -- Validator Contribution}
 \label{sec:exp:rq3}
