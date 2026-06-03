@@ -2,10 +2,27 @@
 milestone: v2.6.1
 phase: v2.6.1-01
 title: Axiom FP Root-Cause Fixes
-status: not_started
-budget: $0 (ablation harness only; cached results)
+status: validated (combined + FP attribution)
+budget: $0 (cached results)
 source_todo: .planning/todos/pending/2026-06-02-improve-prompts-v4-axiom-three-root-cause-fp-fixes.md
 ---
+
+## OUTCOME (2026-06-03) — fixes proven via FP attribution
+
+Fixes baked into s_linker15 (inlined prompts), validated combined, then attributed
+against documented baseline FPs using cached link CSVs vs gold (zero cost).
+
+**Fixes fire on Claude, NOT on GPT-5.4** (documented GPT-literal-reading limitation):
+
+| Fix | Target FPs | Claude | GPT-5.4 |
+|-----|-----------|--------|---------|
+| A tier/platform alias | UI×4 + GAE Datastore×2 | ✅ all 6 gone | ❌ GAE×2 remain |
+| B code-path prefix | Logic@85, Storage@125/136, Common@127 | ◑ Logic@85+Common@127 gone; Storage@125 remains | ❌ all remain |
+| C functional alias | Pres.Conversion cluster (5+) | ✅ 5+→1 | ❌ still 3 |
+
+TM FP: Claude 17→6, GPT 17 (unchanged). BBB FP: Claude 5, GPT 9.
+Residual on Claude: Storage@125 (Cause B miss). Isolated per-fix ablation not run
+(combined + attribution sufficient; isolated runs would cost real $).
 
 # Phase v2.6.1-01 — Axiom FP Root-Cause Fixes
 
