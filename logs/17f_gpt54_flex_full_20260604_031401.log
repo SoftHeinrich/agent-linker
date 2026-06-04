@@ -1,0 +1,622 @@
+
+Running analyze_framings with backend=openai
+SLinker17f (v2.6.2 multi-framing union + validated coref + code-path filter, experimental=True)
+  Backend: openai (gpt-5.4)
+
+======================================================================
+  mediastore  (gold: 31 links)
+======================================================================
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: ReEncoder -> Reencoding [global]
+  Model: 4 ambiguous (of 14 components)
+  Doc knowledge: 9 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=30, Pass2=28, Intersect=28
+  Framing A: 27 links
+  Framing B: 28 links
+  Framing C: 28 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 31
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 31 candidates
+  Validated: 24 / 31
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 24 / 24
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+  Coreference raw: 9 links
+    Coref val reject: S15 -> TagWatermarking
+    Coref val reject: S17 -> TagWatermarking
+    Coref val reject: S25 -> MediaAccess
+    Coref val reject: S36 -> FileStorage
+  Coreference validated: 5 / 9
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 27 (from 29 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_mediastore_20260604_031440.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_mediastore_20260604_031440_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 27 links (39.0s, 15 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 27
+    Framing B: 28
+    Framing C: 28  (pass1=30 pass2=28)
+
+  [Phase 3] Union: 31 candidates (31 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 31 candidates, 24 approved (7 rejected)
+    Validated (pre-4b): 24
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 24,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 11
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 9 (5 via_alias, 4 via_canonical)
+    Validation: 5 approved, 4 rejected
+    Validated final: 5
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      1 -> 1 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       5 -> 4 TP, 1 FP
+  Overlap:
+    A∩B∩C: 23  (TP 23)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 27 links -> 26 TP, 1 FP
+    P=0.963  R=0.839  F1=0.897
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  1  elapsed=   6.00s  tokens=1303
+    phase_1_doc_judge                 calls=  1  elapsed=   1.45s  tokens=460
+    phase_1_model                     calls=  1  elapsed=   4.98s  tokens=398
+    phase_2_framing_a                 calls=  1  elapsed=   4.61s  tokens=1717
+    phase_2_framing_b                 calls=  1  elapsed=   9.21s  tokens=1798
+    phase_2_framing_c_pass1           calls=  1  elapsed=   6.16s  tokens=1551
+    phase_2_framing_c_pass2           calls=  1  elapsed=   5.80s  tokens=1522
+    phase_4_twopass_p1                calls=  2  elapsed=   4.58s  tokens=4679
+    phase_4_twopass_p2                calls=  2  elapsed=   4.94s  tokens=4679
+    phase_4b_codepath                 calls=  1  elapsed=   5.78s  tokens=1654
+    phase_5_coref                     calls=  2  elapsed=   5.73s  tokens=4255
+    phase_5_coref_validation          calls=  1  elapsed=   1.29s  tokens=734
+    _total                            calls= 15  elapsed=  39.00s
+
+======================================================================
+  teastore  (gold: 27 links)
+======================================================================
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=24, Pass2=24, Intersect=24
+  Framing A: 22 links
+  Framing B: 22 links
+  Framing C: 24 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 25
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 25 candidates
+  Validated: 21 / 25
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 21 / 21
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+  Coreference raw: 10 links
+    Coref val reject: S26 -> Persistence
+    Coref val reject: S30 -> Recommender
+    Coref val reject: S43 -> Registry
+  Coreference validated: 7 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 27 (from 28 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_teastore_20260604_031511.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_teastore_20260604_031511_calls.json (13 calls)
+  Checkpoint: final saved
+
+Final: 27 links (31.0s, 13 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 22
+    Framing B: 22
+    Framing C: 24  (pass1=24 pass2=24)
+
+  [Phase 3] Union: 25 candidates (25 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 25 candidates, 21 approved (4 rejected)
+    Validated (pre-4b): 21
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 21,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 11
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 10 (6 via_alias, 4 via_canonical)
+    Validation: 7 approved, 3 rejected
+    Validated final: 7
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      2 -> 2 TP, 0 FP
+    Coref:       7 -> 6 TP, 1 FP
+  Overlap:
+    A∩B∩C: 19  (TP 19)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 27 links -> 26 TP, 1 FP
+    P=0.963  R=0.963  F1=0.963
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  1  elapsed=   3.26s  tokens=1302
+    phase_1_doc_judge                 calls=  1  elapsed=   1.14s  tokens=415
+    phase_1_model                     calls=  1  elapsed=   1.40s  tokens=393
+    phase_2_framing_a                 calls=  1  elapsed=   3.90s  tokens=1638
+    phase_2_framing_b                 calls=  1  elapsed=   5.43s  tokens=1713
+    phase_2_framing_c_pass1           calls=  1  elapsed=   4.55s  tokens=1519
+    phase_2_framing_c_pass2           calls=  1  elapsed=   4.48s  tokens=1519
+    phase_4_twopass_p1                calls=  1  elapsed=   2.96s  tokens=3528
+    phase_4_twopass_p2                calls=  1  elapsed=   3.25s  tokens=3528
+    phase_4b_codepath                 calls=  1  elapsed=   6.89s  tokens=1447
+    phase_5_coref                     calls=  2  elapsed=   6.62s  tokens=4307
+    phase_5_coref_validation          calls=  1  elapsed=   1.41s  tokens=793
+    _total                            calls= 13  elapsed=  31.00s
+
+======================================================================
+  teammates  (gold: 57 links)
+======================================================================
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: Logic Component -> Logic [global]
+    Alias: main logic -> Logic [local]
+    Alias: logic -> Logic [local]
+    Alias: Storage Component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: storage -> Storage [local]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E Component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client Component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: Common Component -> Common [global]
+    Alias: GAE Datastore -> GAE Datastore [global]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: NoSQL database -> GAE Datastore [global]
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 25 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)
+    [C2] Framing C batch 1: S1-S50 (50 sents)
+    [C1] Framing C batch 2: S51-S100 (50 sents)
+    [C2] Framing C batch 2: S51-S100 (50 sents)
+      batch 1/5: +26 (total 25)
+      batch 1/5: +27 (total 25)
+    [C1] Framing C batch 3: S101-S150 (50 sents)
+      batch 2/5: +10 (total 34)
+      batch 2/5: +15 (total 39)
+    [C2] Framing C batch 3: S101-S150 (50 sents)
+    [C2] Framing C batch 4: S151-S198 (48 sents)
+    [C1] Framing C batch 4: S151-S198 (48 sents)
+      batch 3/5: +12 (total 45)
+      batch 3/5: +12 (total 50)
+      batch 4/5: +14 (total 62)
+      batch 4/5: +12 (total 56)
+    Framing C consensus: Pass1=72, Pass2=63, Intersect=62
+      batch 5/5: +4 (total 64)
+      batch 5/5: +4 (total 58)
+  Framing A: 64 links
+  Framing B: 58 links
+  Framing C: 62 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 72
+
+[Phase 4] Unified Validation
+    LLM generic reject: S8 -> Logic ("main logic of the application" describes business/application logic in general, not the named Logic component as a system participant.)
+    LLM 2-pass validation (+evidence bundles): 71 candidates
+  Validated: 46 / 72
+
+[Phase 4b] Code-Path Filter
+    Code-path reject: S22 -> Logic (Every occurrence of "logic" is only as a segment in dot-separated/pack)
+    Code-path reject: S130 -> Storage ("storage" appears only within dot-separated package names like "storag)
+    Code-path reject: S159 -> Common ("common" appears only in the dot-separated identifier "common.datatran)
+  After code-path filter: 43 / 46
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+  Coreference raw: 32 links
+    Coref val reject: S28 -> UI
+    Coref val reject: S57 -> Common
+    Coref val reject: S59 -> GAE Datastore
+    Coref val reject: S61 -> GAE Datastore
+    Coref val reject: S62 -> GAE Datastore
+    Coref val reject: S63 -> GAE Datastore
+    Coref val reject: S64 -> GAE Datastore
+    Coref val reject: S64 -> GAE Datastore
+    Coref val reject: S70 -> GAE Datastore
+    Coref val reject: S72 -> GAE Datastore
+    Coref val reject: S92 -> Logic
+    Coref val reject: S94 -> Logic
+    Coref val reject: S139 -> Storage
+    Coref val reject: S140 -> Storage
+    Coref val reject: S141 -> GAE Datastore
+    Coref val reject: S168 -> Test Driver
+  Coreference validated: 16 / 32
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 55 (from 59 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_teammates_20260604_031652.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_teammates_20260604_031652_calls.json (41 calls)
+  Checkpoint: final saved
+
+Final: 55 links (101.0s, 41 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 64
+    Framing B: 58
+    Framing C: 62  (pass1=72 pass2=63)
+
+  [Phase 3] Union: 72 candidates (72 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  1 candidates evaluated, 1 rejected (0 passed)
+    Twopass (p1∧p2): 71 candidates, 46 approved (25 rejected)
+    Validated (pre-4b): 46
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 46,  Dropped: 3
+    of which 0 were gold (TPs killed) and 3 were FP-killing wins
+      [FP-killed] S22 -> cid=_3LCnIKESEeu-mYqkDskRow: Every occurrence of "logic" is only as a segment in dot-separated/package-style 
+      [FP-killed] S130 -> cid=_9JlCIKESEeu-mYqkDskRow: "storage" appears only within dot-separated package names like "storage.api" and
+      [FP-killed] S159 -> cid=_zUmhEKESEeu-mYqkDskRow: "common" appears only in the dot-separated identifier "common.datatransfer" with
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 60
+    Specific terminals (LLM-classified): 1
+    Raw resolutions: 31 (23 via_alias, 8 via_canonical)
+    Validation: 16 approved, 15 rejected
+    Validated final: 16
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:      16 -> 9 TP, 7 FP
+  Overlap:
+    A∩B∩C: 41  (TP 40)
+    A∩B only: 0  (TP 0)
+    A∩C only: 1  (TP 1)
+    B∩C only: 1  (TP 1)
+
+  [Phase 6] FINAL: 55 links -> 48 TP, 7 FP
+    P=0.873  R=0.842  F1=0.857
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  1  elapsed=   7.27s  tokens=4287
+    phase_1_doc_judge                 calls=  1  elapsed=   1.51s  tokens=601
+    phase_1_model                     calls=  1  elapsed=   1.13s  tokens=323
+    phase_2_framing_a                 calls=  5  elapsed=  16.97s  tokens=7721
+    phase_2_framing_b                 calls=  5  elapsed=  17.24s  tokens=7846
+    phase_2_framing_c_pass1           calls=  4  elapsed=  14.71s  tokens=6074
+    phase_2_framing_c_pass2           calls=  4  elapsed=  15.22s  tokens=5972
+    phase_4_generic_filter            calls=  3  elapsed=   5.54s  tokens=1634
+    phase_4_twopass_p1                calls=  3  elapsed=  13.62s  tokens=12542
+    phase_4_twopass_p2                calls=  3  elapsed=   8.09s  tokens=12542
+    phase_4b_codepath                 calls=  2  elapsed=  15.15s  tokens=3189
+    phase_5_coref                     calls=  6  elapsed=  26.32s  tokens=19734
+    phase_5_coref_validation          calls=  2  elapsed=   5.09s  tokens=2121
+    phase_5_terminal                  calls=  1  elapsed=   1.13s  tokens=227
+    _total                            calls= 41  elapsed= 101.00s
+
+======================================================================
+  bigbluebutton  (gold: 62 links)
+======================================================================
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [global]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: Apps Akka -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: Kurento -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 22 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)    [C2] Framing C batch 1: S1-S50 (50 sents)
+
+      batch 1/2: +16 (total 16)
+    [C1] Framing C batch 2: S51-S87 (37 sents)
+    [C2] Framing C batch 2: S51-S87 (37 sents)
+      batch 1/2: +17 (total 16)
+      batch 2/2: +25 (total 36)
+      batch 2/2: +25 (total 36)
+    Framing C consensus: Pass1=43, Pass2=41, Intersect=39
+  Framing A: 36 links
+  Framing B: 36 links
+  Framing C: 39 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 43
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 43 candidates
+  Validated: 42 / 43
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 42 / 42
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+  Coreference raw: 18 links
+    Coref val reject: S7 -> HTML5 Client
+    Coref val reject: S17 -> HTML5 Server
+    Coref val reject: S22 -> HTML5 Server
+    Coref val reject: S32 -> HTML5 Server
+    Coref val reject: S56 -> Apps
+    Coref val reject: S84 -> Presentation Conversion
+    Coref val reject: S85 -> HTML5 Client
+  Coreference validated: 11 / 18
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 46 (from 53 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_bigbluebutton_20260604_031801.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_bigbluebutton_20260604_031801_calls.json (22 calls)
+  Checkpoint: final saved
+
+Final: 46 links (68.6s, 22 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 36
+    Framing B: 36
+    Framing C: 39  (pass1=43 pass2=41)
+
+  [Phase 3] Union: 43 candidates (43 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 43 candidates, 42 approved (1 rejected)
+    Validated (pre-4b): 42
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 42,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 25
+    Specific terminals (LLM-classified): 4
+    Raw resolutions: 18 (15 via_alias, 3 via_canonical)
+    Validation: 11 approved, 7 rejected
+    Validated final: 11
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      1 -> 0 TP, 1 FP
+    B-only:      1 -> 0 TP, 1 FP
+    C-only:      5 -> 5 TP, 0 FP
+    Coref:      11 -> 11 TP, 0 FP
+  Overlap:
+    A∩B∩C: 33  (TP 33)
+    A∩B only: 2  (TP 2)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 46 links -> 44 TP, 2 FP
+    P=0.957  R=0.710  F1=0.815
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  1  elapsed=   8.32s  tokens=2653
+    phase_1_doc_judge                 calls=  1  elapsed=   1.52s  tokens=667
+    phase_1_model                     calls=  1  elapsed=   3.30s  tokens=383
+    phase_2_framing_a                 calls=  2  elapsed=   9.46s  tokens=3826
+    phase_2_framing_b                 calls=  2  elapsed=  10.51s  tokens=3975
+    phase_2_framing_c_pass1           calls=  2  elapsed=   8.62s  tokens=3304
+    phase_2_framing_c_pass2           calls=  2  elapsed=  13.33s  tokens=3277
+    phase_4_twopass_p1                calls=  2  elapsed=   5.93s  tokens=6906
+    phase_4_twopass_p2                calls=  2  elapsed=   6.25s  tokens=6906
+    phase_4b_codepath                 calls=  2  elapsed=  15.15s  tokens=3153
+    phase_5_coref                     calls=  3  elapsed=  14.15s  tokens=9185
+    phase_5_coref_validation          calls=  1  elapsed=   2.23s  tokens=1345
+    phase_5_terminal                  calls=  1  elapsed=   1.74s  tokens=273
+    _total                            calls= 22  elapsed=  68.60s
+
+======================================================================
+  jabref  (gold: 18 links)
+======================================================================
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: outer shell -> gui [local]
+    Alias: user interface -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> model [local]
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=20, Pass2=20, Intersect=20
+  Framing A: 19 links
+  Framing B: 18 links
+  Framing C: 20 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 20
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+  Validated: 18 / 20
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 18 / 18
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+  Coreference raw: 4 links
+    Coref val reject: S13 -> model
+  Coreference validated: 3 / 4
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 18 (from 21 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_jabref_20260604_031829.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_jabref_20260604_031829_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 18 links (27.9s, 12 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 19
+    Framing B: 18
+    Framing C: 20  (pass1=20 pass2=20)
+
+  [Phase 3] Union: 20 candidates (20 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 20 candidates, 18 approved (2 rejected)
+    Validated (pre-4b): 18
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 18,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 5
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 4 (0 via_alias, 4 via_canonical)
+    Validation: 3 approved, 1 rejected
+    Validated final: 3
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       3 -> 3 TP, 0 FP
+  Overlap:
+    A∩B∩C: 18  (TP 18)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 18 links -> 18 TP, 0 FP
+    P=1.000  R=1.000  F1=1.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  1  elapsed=   3.79s  tokens=723
+    phase_1_doc_judge                 calls=  1  elapsed=   2.46s  tokens=365
+    phase_1_model                     calls=  1  elapsed=   1.13s  tokens=302
+    phase_2_framing_a                 calls=  1  elapsed=   3.28s  tokens=870
+    phase_2_framing_b                 calls=  1  elapsed=   5.22s  tokens=1068
+    phase_2_framing_c_pass1           calls=  1  elapsed=   4.61s  tokens=786
+    phase_2_framing_c_pass2           calls=  1  elapsed=   5.22s  tokens=786
+    phase_4_twopass_p1                calls=  1  elapsed=   2.28s  tokens=3600
+    phase_4_twopass_p2                calls=  1  elapsed=   2.43s  tokens=3600
+    phase_4b_codepath                 calls=  1  elapsed=   5.32s  tokens=1412
+    phase_5_coref                     calls=  1  elapsed=   3.48s  tokens=1953
+    phase_5_coref_validation          calls=  1  elapsed=   2.89s  tokens=441
+    _total                            calls= 12  elapsed=  27.90s
+
+
+==========================================================================================
+SUMMARY: per-dataset pipeline funnel + per-framing unique TP/FP
+==========================================================================================
+Dataset           A    B    C   Un   V4  V4b  CrR  CrV   A-TP/FP   B-TP/FP   C-TP/FP   CoTP/FP   F-TP/FP
+--------------------------------------------------------------------------------------------------------------
+mediastore       27   28   28   31   24   24    9    5   0/0       1/0       0/0       4/1      26/1    
+teastore         22   22   24   25   21   21   10    7   0/0       0/0       2/0       6/1      26/1    
+teammates        64   58   62   72   46   43   31   16   0/0       0/0       0/0       9/7      48/7    
+bigbluebutton    36   36   39   43   42   42   18   11   0/1       0/1       5/0      11/0      44/2    
+jabref           19   18   20   20   18   18    4    3   0/0       0/0       0/0       3/0      18/0    
+--------------------------------------------------------------------------------------------------------------
+TOTAL                                                    0/1       1/1       7/0      33/9     162/11   
+
+Column key: A/B/C raw cands, Un=union, V4=Phase-4 validated, V4b=post-4b, CrR=coref raw, CrV=coref validated
+
+Summary written to results/analyze_framings_openai_gpt54_20260604_031401.json

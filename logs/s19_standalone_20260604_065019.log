@@ -1,0 +1,217 @@
+
+################################################################################
+# s_linker19
+################################################################################
+SLinker19 (paper variant — standalone; prompts in prompts_v5)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: Facade component -> Facade [global]
+    Alias: ReEncoder component -> Reencoding [global]
+  Model: 5 ambiguous of 14 components
+  Doc knowledge: 10 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-framing extraction (parallel; alias-aware)
+    Framing C consensus: P1=30 P2=30 ∩=30
+  Framing A: 27  B: 29  C: 30
+  Checkpoint: layer2 saved
+
+[Phase 3] Union merge
+  Candidates after union: 32
+
+[Phase 4] Unified twopass validation (V3 p1)
+  Entity validated: 25 / 32
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (alias-aware antecedent + unified twopass)
+    Anaphoric sentences: 11 / 37
+    Coref batch: empty response, retrying...
+  Coref raw: 7
+    Coref twopass reject: S21 -> Reencoding
+    Coref twopass reject: S24 -> DB
+    Coref twopass reject: S25 -> MediaAccess
+  Coref validated: 4 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 25 (from 29 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_openai_mediastore_20260604_065049.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_openai_mediastore_20260604_065049_calls.json (16 calls)
+  Checkpoint: final saved
+
+Final: 25 links (29.3s, 16 LLM calls)
+  mediastore     TP= 25 FP=0   P=1.000 R=0.806 F1=0.893 (29.3s)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 9 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-framing extraction (parallel; alias-aware)
+    Framing C consensus: P1=23 P2=23 ∩=23
+  Framing A: 20  B: 26  C: 23
+  Checkpoint: layer2 saved
+
+[Phase 3] Union merge
+  Candidates after union: 27
+
+[Phase 4] Unified twopass validation (V3 p1)
+  Entity validated: 21 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (alias-aware antecedent + unified twopass)
+    Anaphoric sentences: 11 / 43
+  Coref raw: 9
+    Coref twopass reject: S26 -> Persistence
+    Coref twopass reject: S30 -> Recommender
+  Coref validated: 7 / 9
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 28 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_openai_teastore_20260604_065119.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_openai_teastore_20260604_065119_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 26 links (30.6s, 15 LLM calls)
+  teastore       TP= 26 FP=0   P=1.000 R=0.963 F1=0.981 (30.6s)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: logic -> Logic [local]
+    Alias: Logic API -> Logic [global]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: database -> GAE Datastore [local]
+    Alias: Google's distributed datastore -> GAE Datastore [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: end-to-end component -> E2E [local]
+    Alias: back end -> Client [local]
+  Model: 5 ambiguous of 8 components
+  Doc knowledge: 16 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-framing extraction (parallel; alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)
+    [C2] Framing C batch 1: S1-S50 (50 sents)
+      batch 1/5: +27 (total 27)
+      batch 1/5: +25 (total 25)
+    [C1] Framing C batch 2: S51-S100 (50 sents)
+    [C2] Framing C batch 2: S51-S100 (50 sents)
+      batch 2/5: +11 (total 34)
+      batch 2/5: +15 (total 41)
+    [C1] Framing C batch 3: S101-S150 (50 sents)
+      batch 3/5: +12 (total 45)
+      batch 3/5: +15 (total 55)
+    [C2] Framing C batch 3: S101-S150 (50 sents)
+    [C1] Framing C batch 4: S151-S198 (48 sents)
+      batch 4/5: +20 (total 63)
+      batch 4/5: +16 (total 69)
+    [C2] Framing C batch 4: S151-S198 (48 sents)
+      batch 5/5: +6 (total 66)
+    Framing C consensus: P1=66 P2=74 ∩=64
+      batch 5/5: +5 (total 72)
+  Framing A: 72  B: 66  C: 64
+  Checkpoint: layer2 saved
+
+[Phase 3] Union merge
+  Candidates after union: 81
+
+[Phase 4] Unified twopass validation (V3 p1)
+  Entity validated: 52 / 81
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (alias-aware antecedent + unified twopass)
+    Anaphoric sentences: 59 / 198
+  Coref raw: 19
+    Coref twopass reject: S27 -> UI
+    Coref twopass reject: S50 -> UI
+    Coref twopass reject: S59 -> GAE Datastore
+    Coref twopass reject: S63 -> GAE Datastore
+    Coref twopass reject: S64 -> GAE Datastore
+    Coref twopass reject: S70 -> GAE Datastore
+    Coref twopass reject: S96 -> Logic
+    Coref twopass reject: S141 -> GAE Datastore
+  Coref validated: 11 / 19
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 58 (from 63 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_openai_teammates_20260604_065236.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_openai_teammates_20260604_065236_calls.json (38 calls)
+  Checkpoint: final saved
+
+Final: 58 links (76.3s, 38 LLM calls)
+  teammates      TP= 52 FP=6   P=0.897 R=0.912 F1=0.904 (76.3s)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: KMS -> kurento [global]
+    Alias: fsels -> FSESL [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 21 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-framing extraction (parallel; alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)    [C2] Framing C batch 1: S1-S50 (50 sents)
+
+      batch 1/2: +17 (total 17)
+    [C2] Framing C batch 2: S51-S87 (37 sents)
+    [C1] Framing C batch 2: S51-S87 (37 sents)
+      batch 1/2: +17 (total 17)
+      batch 2/2: +23 (total 35)
+    Framing C consensus: P1=46 P2=46 ∩=46
+      batch 2/2: +23 (total 36)
+  Framing A: 35  B: 36  C: 46
+  Checkpoint: layer2 saved
+
+[Phase 3] Union merge
+  Candidates after union: 47
+
+[Phase 4] Unified twopass validation (V3 p1)

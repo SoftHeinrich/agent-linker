@@ -1,0 +1,549 @@
+
+Running analyze_framings with backend=openai
+SLinker17f (v2.6.2 multi-framing union + validated coref + code-path filter, experimental=True)
+  Backend: openai (gpt-5.4)
+
+======================================================================
+  mediastore  (gold: 31 links)
+======================================================================
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Ambiguity classification: empty response, retrying...    Doc knowledge: empty response, retrying...
+
+  Model: 0 ambiguous (of 14 components)
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+      LLM error: OPENAI_API_KEY environment variable not set
+      LLM error: OPENAI_API_KEY environment variable not set
+    [C1] Empty response, retrying batch...
+    [C2] Empty response, retrying batch...
+    Framing C consensus: Pass1=0, Pass2=0, Intersect=0
+  Framing A: 0 links
+  Framing B: 0 links
+  Framing C: 0 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 0
+
+[Phase 4] Unified Validation
+  Validated: 0 / 0
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+  Coreference raw: 0 links
+  Coreference validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_mediastore_20260604_031247.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_mediastore_20260604_031247_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.3s, 14 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 0
+    Framing B: 0
+    Framing C: 0  (pass1=0 pass2=0)
+
+  [Phase 3] Union: 0 candidates (0 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 0 candidates, 0 approved (0 rejected)
+    Validated (pre-4b): 0
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 0,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 11
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 0 (0 via_alias, 0 via_canonical)
+    Validation: 0 approved, 0 rejected
+    Validated final: 0
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       0 -> 0 TP, 0 FP
+  Overlap:
+    A∩B∩C: 0  (TP 0)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 0 links -> 0 TP, 0 FP
+    P=0.000  R=0.000  F1=0.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  2  elapsed=   0.34s  tokens=0
+    phase_1_model                     calls=  2  elapsed=   0.34s  tokens=0
+    phase_2_framing_a                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_b                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass1           calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass2           calls=  2  elapsed=   0.00s  tokens=0
+    phase_5_coref                     calls=  4  elapsed=   0.00s  tokens=0
+    _total                            calls= 14  elapsed=   0.30s
+
+======================================================================
+  teastore  (gold: 27 links)
+======================================================================
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Ambiguity classification: empty response, retrying...
+    Doc knowledge: empty response, retrying...
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+      LLM error: OPENAI_API_KEY environment variable not set
+      LLM error: OPENAI_API_KEY environment variable not set
+    [C1] Empty response, retrying batch...
+    [C2] Empty response, retrying batch...
+    Framing C consensus: Pass1=0, Pass2=0, Intersect=0
+  Framing A: 0 links
+  Framing B: 0 links
+  Framing C: 0 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 0
+
+[Phase 4] Unified Validation
+  Validated: 0 / 0
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+  Coreference raw: 0 links
+  Coreference validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_teastore_20260604_031247.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_teastore_20260604_031247_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 14 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 0
+    Framing B: 0
+    Framing C: 0  (pass1=0 pass2=0)
+
+  [Phase 3] Union: 0 candidates (0 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 0 candidates, 0 approved (0 rejected)
+    Validated (pre-4b): 0
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 0,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 11
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 0 (0 via_alias, 0 via_canonical)
+    Validation: 0 approved, 0 rejected
+    Validated final: 0
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       0 -> 0 TP, 0 FP
+  Overlap:
+    A∩B∩C: 0  (TP 0)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 0 links -> 0 TP, 0 FP
+    P=0.000  R=0.000  F1=0.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  2  elapsed=   0.00s  tokens=0
+    phase_1_model                     calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_a                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_b                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass1           calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass2           calls=  2  elapsed=   0.00s  tokens=0
+    phase_5_coref                     calls=  4  elapsed=   0.00s  tokens=0
+    _total                            calls= 14  elapsed=   0.00s
+
+======================================================================
+  teammates  (gold: 57 links)
+======================================================================
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Ambiguity classification: empty response, retrying...    Doc knowledge: empty response, retrying...
+
+  Model: 0 ambiguous (of 8 components)
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+      LLM error: OPENAI_API_KEY environment variable not set
+      batch 1/5: +0 (total 0)
+    [C1] Framing C batch 1: S1-S50 (50 sents)      LLM error: OPENAI_API_KEY environment variable not set    [C2] Framing C batch 1: S1-S50 (50 sents)
+
+
+      LLM error: OPENAI_API_KEY environment variable not set      batch 1/5: +0 (total 0)
+    [C1] Empty response, retrying batch...
+
+      batch 2/5: +0 (total 0)
+      LLM error: OPENAI_API_KEY environment variable not set    [C1] Framing C batch 2: S51-S100 (50 sents)
+
+      batch 2/5: +0 (total 0)
+    [C2] Empty response, retrying batch...
+      LLM error: OPENAI_API_KEY environment variable not set    [C1] Empty response, retrying batch...
+
+      batch 3/5: +0 (total 0)
+      LLM error: OPENAI_API_KEY environment variable not set
+      batch 3/5: +0 (total 0)
+    [C2] Framing C batch 2: S51-S100 (50 sents)
+    [C1] Framing C batch 3: S101-S150 (50 sents)
+      LLM error: OPENAI_API_KEY environment variable not set      LLM error: OPENAI_API_KEY environment variable not set
+      batch 4/5: +0 (total 0)    [C1] Empty response, retrying batch...
+
+
+      batch 4/5: +0 (total 0)
+    [C2] Empty response, retrying batch...    [C1] Framing C batch 4: S151-S198 (48 sents)
+
+      LLM error: OPENAI_API_KEY environment variable not set      LLM error: OPENAI_API_KEY environment variable not set
+    [C1] Empty response, retrying batch...
+      batch 5/5: +0 (total 0)
+      batch 5/5: +0 (total 0)
+
+    [C2] Framing C batch 3: S101-S150 (50 sents)
+    [C2] Empty response, retrying batch...
+    [C2] Framing C batch 4: S151-S198 (48 sents)
+    [C2] Empty response, retrying batch...
+    Framing C consensus: Pass1=0, Pass2=0, Intersect=0
+  Framing A: 0 links
+  Framing B: 0 links
+  Framing C: 0 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 0
+
+[Phase 4] Unified Validation
+  Validated: 0 / 0
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+  [coref] WARNING: terminal classification failed, role refs disabled
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+  Coreference raw: 0 links
+  Coreference validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_teammates_20260604_031247.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_teammates_20260604_031247_calls.json (43 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 43 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 0
+    Framing B: 0
+    Framing C: 0  (pass1=0 pass2=0)
+
+  [Phase 3] Union: 0 candidates (0 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 0 candidates, 0 approved (0 rejected)
+    Validated (pre-4b): 0
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 0,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 59
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 0 (0 via_alias, 0 via_canonical)
+    Validation: 0 approved, 0 rejected
+    Validated final: 0
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       0 -> 0 TP, 0 FP
+  Overlap:
+    A∩B∩C: 0  (TP 0)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 0 links -> 0 TP, 0 FP
+    P=0.000  R=0.000  F1=0.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  2  elapsed=   0.00s  tokens=0
+    phase_1_model                     calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_a                 calls=  5  elapsed=   0.00s  tokens=0
+    phase_2_framing_b                 calls=  5  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass1           calls=  8  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass2           calls=  8  elapsed=   0.00s  tokens=0
+    phase_5_coref                     calls= 12  elapsed=   0.00s  tokens=0
+    phase_5_terminal                  calls=  1  elapsed=   0.00s  tokens=0
+    _total                            calls= 43  elapsed=   0.00s
+
+======================================================================
+  bigbluebutton  (gold: 62 links)
+======================================================================
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Ambiguity classification: empty response, retrying...    Doc knowledge: empty response, retrying...
+
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+      LLM error: OPENAI_API_KEY environment variable not set
+      LLM error: OPENAI_API_KEY environment variable not set      batch 1/2: +0 (total 0)    [C1] Framing C batch 1: S1-S50 (50 sents)
+
+    [C2] Framing C batch 1: S1-S50 (50 sents)
+
+      batch 1/2: +0 (total 0)
+      LLM error: OPENAI_API_KEY environment variable not set
+      batch 2/2: +0 (total 0)
+    [C1] Empty response, retrying batch...
+    [C2] Empty response, retrying batch...
+      LLM error: OPENAI_API_KEY environment variable not set
+      batch 2/2: +0 (total 0)
+    [C1] Framing C batch 2: S51-S87 (37 sents)
+    [C2] Framing C batch 2: S51-S87 (37 sents)
+    [C1] Empty response, retrying batch...
+    [C2] Empty response, retrying batch...
+    Framing C consensus: Pass1=0, Pass2=0, Intersect=0
+  Framing A: 0 links
+  Framing B: 0 links
+  Framing C: 0 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 0
+
+[Phase 4] Unified Validation
+  Validated: 0 / 0
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+  [coref] WARNING: terminal classification failed, role refs disabled
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+    Coref batch: empty response, retrying...
+  Coreference raw: 0 links
+  Coreference validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_bigbluebutton_20260604_031247.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_bigbluebutton_20260604_031247_calls.json (23 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 23 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 0
+    Framing B: 0
+    Framing C: 0  (pass1=0 pass2=0)
+
+  [Phase 3] Union: 0 candidates (0 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 0 candidates, 0 approved (0 rejected)
+    Validated (pre-4b): 0
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 0,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 24
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 0 (0 via_alias, 0 via_canonical)
+    Validation: 0 approved, 0 rejected
+    Validated final: 0
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       0 -> 0 TP, 0 FP
+  Overlap:
+    A∩B∩C: 0  (TP 0)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 0 links -> 0 TP, 0 FP
+    P=0.000  R=0.000  F1=0.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  2  elapsed=   0.00s  tokens=0
+    phase_1_model                     calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_a                 calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_b                 calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass1           calls=  4  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass2           calls=  4  elapsed=   0.00s  tokens=0
+    phase_5_coref                     calls=  6  elapsed=   0.00s  tokens=0
+    phase_5_terminal                  calls=  1  elapsed=   0.00s  tokens=0
+    _total                            calls= 23  elapsed=   0.00s
+
+======================================================================
+  jabref  (gold: 18 links)
+======================================================================
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Ambiguity classification: empty response, retrying...
+    Doc knowledge: empty response, retrying...
+  Model: 0 ambiguous (of 6 components)
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+      LLM error: OPENAI_API_KEY environment variable not set
+      LLM error: OPENAI_API_KEY environment variable not set
+    [C1] Empty response, retrying batch...
+    [C2] Empty response, retrying batch...
+    Framing C consensus: Pass1=0, Pass2=0, Intersect=0
+  Framing A: 0 links
+  Framing B: 0 links
+  Framing C: 0 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 0
+
+[Phase 4] Unified Validation
+  Validated: 0 / 0
+
+[Phase 4b] Code-Path Filter
+  After code-path filter: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    Coref batch: empty response, retrying...
+  Coreference raw: 0 links
+  Coreference validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Final Merge
+  After dedup: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker17f_openai_jabref_20260604_031247.json
+  LLM call trace saved: ./results/llm_logs/s_linker17f_openai_jabref_20260604_031247_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 12 LLM calls)
+
+  [Phase 2] Raw framing candidates:
+    Framing A: 0
+    Framing B: 0
+    Framing C: 0  (pass1=0 pass2=0)
+
+  [Phase 3] Union: 0 candidates (0 after sent_map filter)
+
+  [Phase 4] Validation:
+    Generic filter:  0 candidates evaluated, 0 rejected (0 passed)
+    Twopass (p1∧p2): 0 candidates, 0 approved (0 rejected)
+    Validated (pre-4b): 0
+
+  [Phase 4b] Code-path filter:
+    Evaluated: 0,  Dropped: 0
+
+  [Phase 5] Coreference:
+    Anaphoric sents considered: 5
+    Specific terminals (LLM-classified): 0
+    Raw resolutions: 0 (0 via_alias, 0 via_canonical)
+    Validation: 0 approved, 0 rejected
+    Validated final: 0
+
+  Per-framing UNIQUE contributions (validated post-4b):
+    A-only:      0 -> 0 TP, 0 FP
+    B-only:      0 -> 0 TP, 0 FP
+    C-only:      0 -> 0 TP, 0 FP
+    Coref:       0 -> 0 TP, 0 FP
+  Overlap:
+    A∩B∩C: 0  (TP 0)
+    A∩B only: 0  (TP 0)
+    A∩C only: 0  (TP 0)
+    B∩C only: 0  (TP 0)
+
+  [Phase 6] FINAL: 0 links -> 0 TP, 0 FP
+    P=0.000  R=0.000  F1=0.000
+
+  [Trace] Per-phase LLM metrics:
+    phase_1_doc_extract               calls=  2  elapsed=   0.00s  tokens=0
+    phase_1_model                     calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_a                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_b                 calls=  1  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass1           calls=  2  elapsed=   0.00s  tokens=0
+    phase_2_framing_c_pass2           calls=  2  elapsed=   0.00s  tokens=0
+    phase_5_coref                     calls=  2  elapsed=   0.00s  tokens=0
+    _total                            calls= 12  elapsed=   0.00s
+
+
+==========================================================================================
+SUMMARY: per-dataset pipeline funnel + per-framing unique TP/FP
+==========================================================================================
+Dataset           A    B    C   Un   V4  V4b  CrR  CrV   A-TP/FP   B-TP/FP   C-TP/FP   CoTP/FP   F-TP/FP
+--------------------------------------------------------------------------------------------------------------
+mediastore        0    0    0    0    0    0    0    0   0/0       0/0       0/0       0/0       0/0    
+teastore          0    0    0    0    0    0    0    0   0/0       0/0       0/0       0/0       0/0    
+teammates         0    0    0    0    0    0    0    0   0/0       0/0       0/0       0/0       0/0    
+bigbluebutton     0    0    0    0    0    0    0    0   0/0       0/0       0/0       0/0       0/0    
+jabref            0    0    0    0    0    0    0    0   0/0       0/0       0/0       0/0       0/0    
+--------------------------------------------------------------------------------------------------------------
+TOTAL                                                    0/0       0/0       0/0       0/0       0/0    
+
+Column key: A/B/C raw cands, Un=union, V4=Phase-4 validated, V4b=post-4b, CrR=coref raw, CrV=coref validated
+
+Summary written to results/analyze_framings_openai_gpt54_20260604_031247.json

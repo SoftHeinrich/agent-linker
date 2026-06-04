@@ -1,0 +1,249 @@
+
+5-pass Framing-C experiment | backend=openai | passes=5 | datasets=['mediastore', 'teastore', 'teammates', 'bigbluebutton', 'jabref']
+
+SLinker17f (v2.6.2 multi-framing union + validated coref + code-path filter, experimental=True)
+  Backend: openai (gpt-5.4)
+
+======================================================================
+  mediastore  (gold: 31, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: Facade component -> Facade [global]
+    Alias: ReEncoder component -> Reencoding [global]
+    10 aliases, 5 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 1: 27 candidates
+    pass 4: 30 candidates
+    pass 5: 30 candidates
+    pass 2: 30 candidates
+    pass 3: 30 candidates
+  Union: 30 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 3), (5, 27)])
+  [Phase 4] validating union of 30 candidates...
+    LLM 2-pass validation (+evidence bundles): 30 candidates
+    Phase 4 validated: 26 / 30
+    Phase 4b kept: 26 / 26
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |31|):
+    k     raw   rawTP/FP   val   valTP/FP      P      R     F1
+    1      30  27/3         26  26/0       1.000  0.839  0.912
+    2      30  27/3         26  26/0       1.000  0.839  0.912
+    3      30  27/3         26  26/0       1.000  0.839  0.912
+    4      30  27/3         26  26/0       1.000  0.839  0.912
+    5      27  26/1         25  25/0       1.000  0.806  0.893
+  Dataset wall time: 46.7s
+
+======================================================================
+  teastore  (gold: 27, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    9 aliases, 0 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 2: 23 candidates
+    pass 3: 23 candidates
+    pass 1: 23 candidates
+    pass 4: 23 candidates
+    pass 5: 23 candidates
+  Union: 23 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 0), (5, 23)])
+  [Phase 4] validating union of 23 candidates...
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    Phase 4 validated: 21 / 23
+    Phase 4b kept: 21 / 21
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |27|):
+    k     raw   rawTP/FP   val   valTP/FP      P      R     F1
+    1      23  21/2         21  21/0       1.000  0.778  0.875
+    2      23  21/2         21  21/0       1.000  0.778  0.875
+    3      23  21/2         21  21/0       1.000  0.778  0.875
+    4      23  21/2         21  21/0       1.000  0.778  0.875
+    5      23  21/2         21  21/0       1.000  0.778  0.875
+  Dataset wall time: 25.9s
+
+======================================================================
+  teammates  (gold: 57, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: web page -> UI [local]
+    Alias: browser -> UI [local]
+    Alias: Logic Component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Logic API -> Logic [global]
+    Alias: Storage Component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: NoSQL database -> GAE Datastore [global]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E Component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client Component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: Common Component -> Common [global]
+    23 aliases, 5 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    [C1/5] Framing C batch 1: S1-S50 (50 sents)
+    [C2/5] Framing C batch 1: S1-S50 (50 sents)
+    [C3/5] Framing C batch 1: S1-S50 (50 sents)
+    [C4/5] Framing C batch 1: S1-S50 (50 sents)    [C5/5] Framing C batch 1: S1-S50 (50 sents)
+
+    [C1/5] Framing C batch 2: S51-S100 (50 sents)
+    [C3/5] Framing C batch 2: S51-S100 (50 sents)
+    [C4/5] Framing C batch 2: S51-S100 (50 sents)
+    [C5/5] Framing C batch 2: S51-S100 (50 sents)
+    [C1/5] Framing C batch 3: S101-S150 (50 sents)
+    [C3/5] Framing C batch 3: S101-S150 (50 sents)
+    [C4/5] Framing C batch 3: S101-S150 (50 sents)
+    [C5/5] Framing C batch 3: S101-S150 (50 sents)
+    [C1/5] Framing C batch 4: S151-S198 (48 sents)
+    [C2/5] Framing C batch 2: S51-S100 (50 sents)
+    [C3/5] Framing C batch 4: S151-S198 (48 sents)
+    [C4/5] Framing C batch 4: S151-S198 (48 sents)
+    [C5/5] Framing C batch 4: S151-S198 (48 sents)
+    [C2/5] Framing C batch 3: S101-S150 (50 sents)
+    pass 1: 67 candidates
+    pass 4: 68 candidates
+    [C2/5] Framing C batch 4: S151-S198 (48 sents)
+    pass 3: 68 candidates
+    pass 5: 66 candidates
+    pass 2: 68 candidates
+  Union: 69 unique candidates (vote distribution: [(1, 1), (2, 0), (3, 1), (4, 2), (5, 65)])
+  [Phase 4] validating union of 69 candidates...
+    LLM generic reject: S185 -> Logic ("back-end logic" describes general backend/business logic, not the named Logic component as a participant.)
+    LLM 2-pass validation (+evidence bundles): 68 candidates
+    Phase 4 validated: 46 / 69
+    Phase 4b kept: 46 / 46
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |57|):
+    k     raw   rawTP/FP   val   valTP/FP      P      R     F1
+    1      69  48/21        46  44/2       0.957  0.772  0.854
+    2      68  48/20        46  44/2       0.957  0.772  0.854
+    3      68  48/20        46  44/2       0.957  0.772  0.854
+    4      67  47/20        45  43/2       0.956  0.754  0.843
+    5      65  47/18        45  43/2       0.956  0.754  0.843
+  Dataset wall time: 70.1s
+
+======================================================================
+  bigbluebutton  (gold: 62, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: KMS -> kurento [global]
+    Alias: fsels -> FSESL [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: conversion process -> Presentation Conversion [local]
+    21 aliases, 0 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    [C1/5] Framing C batch 1: S1-S50 (50 sents)    [C2/5] Framing C batch 1: S1-S50 (50 sents)
+
+    [C3/5] Framing C batch 1: S1-S50 (50 sents)
+    [C4/5] Framing C batch 1: S1-S50 (50 sents)
+    [C5/5] Framing C batch 1: S1-S50 (50 sents)
+    [C1/5] Framing C batch 2: S51-S87 (37 sents)
+    [C3/5] Framing C batch 2: S51-S87 (37 sents)
+    [C4/5] Framing C batch 2: S51-S87 (37 sents)
+    [C2/5] Framing C batch 2: S51-S87 (37 sents)
+    [C5/5] Framing C batch 2: S51-S87 (37 sents)
+    pass 1: 46 candidates
+    pass 3: 46 candidates
+    pass 4: 46 candidates
+    pass 2: 47 candidates
+    pass 5: 46 candidates
+  Union: 48 unique candidates (vote distribution: [(1, 2), (2, 0), (3, 0), (4, 1), (5, 45)])
+  [Phase 4] validating union of 48 candidates...
+    LLM 2-pass validation (+evidence bundles): 48 candidates
+    Phase 4 validated: 39 / 48
+    Phase 4b kept: 39 / 39
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |62|):
+    k     raw   rawTP/FP   val   valTP/FP      P      R     F1
+    1      48  44/4         39  38/1       0.974  0.613  0.752
+    2      46  44/2         38  38/0       1.000  0.613  0.760
+    3      46  44/2         38  38/0       1.000  0.613  0.760
+    4      46  44/2         38  38/0       1.000  0.613  0.760
+    5      45  44/1         38  38/0       1.000  0.613  0.760
+  Dataset wall time: 42.6s
+
+======================================================================
+  jabref  (gold: 18, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: outer shell -> gui [local]
+    Alias: command line interface -> cli [global]
+    2 aliases, 6 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 2: 20 candidates
+    pass 1: 20 candidates
+    pass 5: 20 candidates
+    pass 3: 20 candidates
+    pass 4: 20 candidates
+  Union: 20 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 0), (5, 20)])
+  [Phase 4] validating union of 20 candidates...
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    Phase 4 validated: 18 / 20
+    Phase 4b kept: 18 / 18
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |18|):
+    k     raw   rawTP/FP   val   valTP/FP      P      R     F1
+    1      20  18/2         18  18/0       1.000  1.000  1.000
+    2      20  18/2         18  18/0       1.000  1.000  1.000
+    3      20  18/2         18  18/0       1.000  1.000  1.000
+    4      20  18/2         18  18/0       1.000  1.000  1.000
+    5      20  18/2         18  18/0       1.000  1.000  1.000
+  Dataset wall time: 21.7s
+
+
+==========================================================================================
+AGGREGATE: macro per-k summary
+==========================================================================================
+
+Dataset        |   k=1: TP/FP F1 |   k=2: TP/FP F1 |   k=3: TP/FP F1 |   k=4: TP/FP F1 |   k=5: TP/FP F1
+--------------------------------------------------------------------------------------------------------
+mediastore     |      26/0 0.912 |      26/0 0.912 |      26/0 0.912 |      26/0 0.912 |      25/0 0.893
+teastore       |      21/0 0.875 |      21/0 0.875 |      21/0 0.875 |      21/0 0.875 |      21/0 0.875
+teammates      |      44/2 0.854 |      44/2 0.854 |      44/2 0.854 |      43/2 0.843 |      43/2 0.843
+bigbluebutton  |      38/1 0.752 |      38/0 0.760 |      38/0 0.760 |      38/0 0.760 |      38/0 0.760
+jabref         |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000
+--------------------------------------------------------------------------------------------------------
+macro avg F1   |          0.8788 |          0.8803 |          0.8803 |          0.8781 |          0.8742
+micro sum      |           147/3 |           147/2 |           147/2 |           146/2 |           145/2
+
+Results saved to results/c5pass_gpt54_20260604_044641.json

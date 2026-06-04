@@ -1,0 +1,327 @@
+
+5-pass Framing-C experiment | backend=openai | passes=5 | datasets=['mediastore', 'teastore', 'teammates', 'bigbluebutton', 'jabref']
+
+SLinker17f (v2.6.2 multi-framing union + validated coref + code-path filter, experimental=True)
+  Backend: openai (gpt-5.4)
+
+======================================================================
+  mediastore  (gold: 31, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: Facade component -> Facade [global]
+    Alias: ReEncoder component -> Reencoding [global]
+    10 aliases, 5 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 5: 30 candidates
+    pass 2: 30 candidates
+    pass 3: 30 candidates
+    pass 4: 30 candidates
+    pass 1: 30 candidates
+  Union: 30 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 0), (5, 30)])
+  [Phase 4] validating union of 30 candidates...
+    LLM 2-pass validation (+evidence bundles): 30 candidates
+    Phase 4 validated: 22 / 30
+    Phase 4b kept: 22 / 22
+  [Phase 5] running coreference...
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    Coref batch: empty response, retrying...
+    coref raw: 8
+    Coref val reject: S15 -> TagWatermarking
+    Coref val reject: S17 -> TagWatermarking
+    Coref val reject: S21 -> Reencoding
+    Coref val reject: S25 -> MediaAccess
+    coref validated: 4 / 8
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |31|):
+    k     raw   rawTP/FP   val   valTP/FP     F1    +coref     cTP/FP    cF1
+    1      30  27/3         22  22/0       0.830        25  25/0       0.893
+    2      30  27/3         22  22/0       0.830        25  25/0       0.893
+    3      30  27/3         22  22/0       0.830        25  25/0       0.893
+    4      30  27/3         22  22/0       0.830        25  25/0       0.893
+    5      30  27/3         22  22/0       0.830        25  25/0       0.893
+  Dataset wall time: 333.9s
+
+======================================================================
+  teastore  (gold: 27, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    9 aliases, 0 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 1: 23 candidates
+    pass 4: 23 candidates
+    pass 3: 23 candidates
+    pass 2: 23 candidates
+    pass 5: 23 candidates
+  Union: 23 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 0), (5, 23)])
+  [Phase 4] validating union of 23 candidates...
+    LLM 2-pass validation (+evidence bundles): 23 candidates
+    Phase 4 validated: 21 / 23
+    Phase 4b kept: 21 / 21
+  [Phase 5] running coreference...
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+    coref raw: 10
+    Coref val reject: S26 -> Persistence
+    Coref val reject: S30 -> Recommender
+    Coref val reject: S43 -> Registry
+    coref validated: 7 / 10
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |27|):
+    k     raw   rawTP/FP   val   valTP/FP     F1    +coref     cTP/FP    cF1
+    1      23  21/2         21  21/0       0.875        27  26/1       0.963
+    2      23  21/2         21  21/0       0.875        27  26/1       0.963
+    3      23  21/2         21  21/0       0.875        27  26/1       0.963
+    4      23  21/2         21  21/0       0.875        27  26/1       0.963
+    5      23  21/2         21  21/0       0.875        27  26/1       0.963
+  Dataset wall time: 31.4s
+
+======================================================================
+  teammates  (gold: 57, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Component -> UI [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: Logic Component -> Logic [global]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage Component -> Storage [global]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: storage -> Storage [local]
+    Alias: Common Component -> Common [global]
+    Alias: Common component -> Common [global]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E Component -> E2E [global]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client Component -> Client [global]
+    25 aliases, 5 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    [C1/5] Framing C batch 1: S1-S50 (50 sents)    [C2/5] Framing C batch 1: S1-S50 (50 sents)
+    [C3/5] Framing C batch 1: S1-S50 (50 sents)    [C4/5] Framing C batch 1: S1-S50 (50 sents)
+
+    [C5/5] Framing C batch 1: S1-S50 (50 sents)
+
+    [C5/5] Framing C batch 2: S51-S100 (50 sents)
+    [C3/5] Framing C batch 2: S51-S100 (50 sents)
+    [C4/5] Framing C batch 2: S51-S100 (50 sents)
+    [C2/5] Framing C batch 2: S51-S100 (50 sents)
+    [C1/5] Framing C batch 2: S51-S100 (50 sents)
+    [C5/5] Framing C batch 3: S101-S150 (50 sents)
+    [C3/5] Framing C batch 3: S101-S150 (50 sents)
+    [C4/5] Framing C batch 3: S101-S150 (50 sents)
+    [C1/5] Framing C batch 3: S101-S150 (50 sents)
+    [C2/5] Framing C batch 3: S101-S150 (50 sents)
+    [C3/5] Framing C batch 4: S151-S198 (48 sents)
+    [C1/5] Framing C batch 4: S151-S198 (48 sents)
+    [C4/5] Framing C batch 4: S151-S198 (48 sents)
+    [C2/5] Framing C batch 4: S151-S198 (48 sents)
+    [C5/5] Framing C batch 4: S151-S198 (48 sents)
+    pass 5: 64 candidates
+    pass 1: 66 candidates
+    pass 3: 69 candidates
+    pass 2: 64 candidates
+    pass 4: 66 candidates
+  Union: 73 unique candidates (vote distribution: [(1, 2), (2, 7), (3, 2), (4, 3), (5, 59)])
+  [Phase 4] validating union of 73 candidates...
+    LLM 2-pass validation (+evidence bundles): 73 candidates
+    Phase 4 validated: 48 / 73
+    Phase 4b kept: 48 / 48
+  [Phase 5] running coreference...
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+    coref raw: 31
+    Coref val reject: S27 -> UI
+    Coref val reject: S47 -> UI
+    Coref val reject: S57 -> Common
+    Coref val reject: S59 -> GAE Datastore
+    Coref val reject: S61 -> Client
+    Coref val reject: S62 -> Client
+    Coref val reject: S63 -> GAE Datastore
+    Coref val reject: S64 -> Client
+    Coref val reject: S64 -> GAE Datastore
+    Coref val reject: S70 -> GAE Datastore
+    Coref val reject: S72 -> GAE Datastore
+    Coref val reject: S92 -> Logic
+    Coref val reject: S94 -> Logic
+    Coref val reject: S137 -> GAE Datastore
+    Coref val reject: S139 -> Storage
+    Coref val reject: S140 -> Storage
+    Coref val reject: S141 -> GAE Datastore
+    Coref val reject: S161 -> Common
+    coref validated: 13 / 31
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |57|):
+    k     raw   rawTP/FP   val   valTP/FP     F1    +coref     cTP/FP    cF1
+    1      73  46/27        48  43/5       0.819        56  48/8       0.850
+    2      71  46/25        48  43/5       0.819        56  48/8       0.850
+    3      64  46/18        48  43/5       0.819        56  48/8       0.850
+    4      62  46/16        47  43/4       0.827        55  48/7       0.857
+    5      59  46/13        45  43/2       0.843        53  48/5       0.873
+  Dataset wall time: 103.5s
+
+======================================================================
+  bigbluebutton  (gold: 62, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: KMS -> kurento [global]
+    Alias: fsels -> FSESL [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: conversion process -> Presentation Conversion [local]
+    21 aliases, 0 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    [C1/5] Framing C batch 1: S1-S50 (50 sents)
+    [C2/5] Framing C batch 1: S1-S50 (50 sents)
+    [C3/5] Framing C batch 1: S1-S50 (50 sents)
+    [C4/5] Framing C batch 1: S1-S50 (50 sents)
+    [C5/5] Framing C batch 1: S1-S50 (50 sents)
+    [C1/5] Framing C batch 2: S51-S87 (37 sents)
+    [C2/5] Framing C batch 2: S51-S87 (37 sents)
+    [C3/5] Framing C batch 2: S51-S87 (37 sents)
+    [C5/5] Framing C batch 2: S51-S87 (37 sents)
+    [C4/5] Framing C batch 2: S51-S87 (37 sents)
+    pass 1: 46 candidates
+    pass 2: 46 candidates
+    pass 3: 46 candidates
+    pass 4: 47 candidates
+    pass 5: 46 candidates
+  Union: 48 unique candidates (vote distribution: [(1, 2), (2, 0), (3, 0), (4, 1), (5, 45)])
+  [Phase 4] validating union of 48 candidates...
+    LLM 2-pass validation (+evidence bundles): 48 candidates
+    Phase 4 validated: 39 / 48
+    Phase 4b kept: 39 / 39
+  [Phase 5] running coreference...
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+    coref raw: 20
+    Coref val reject: S7 -> HTML5 Client
+    Coref val reject: S17 -> HTML5 Server
+    Coref val reject: S22 -> HTML5 Server
+    Coref val reject: S32 -> HTML5 Server
+    Coref val reject: S56 -> Apps
+    Coref val reject: S59 -> FSESL
+    Coref val reject: S84 -> Presentation Conversion
+    Coref val reject: S85 -> HTML5 Client
+    coref validated: 12 / 20
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |62|):
+    k     raw   rawTP/FP   val   valTP/FP     F1    +coref     cTP/FP    cF1
+    1      48  44/4         39  39/0       0.772        45  43/2       0.804
+    2      46  44/2         39  39/0       0.772        45  43/2       0.804
+    3      46  44/2         39  39/0       0.772        45  43/2       0.804
+    4      46  44/2         39  39/0       0.772        45  43/2       0.804
+    5      45  44/1         39  39/0       0.772        45  43/2       0.804
+  Dataset wall time: 57.5s
+
+======================================================================
+  jabref  (gold: 18, passes: 5)
+======================================================================
+  [Phase 1] knowledge acquisition...
+    Alias: outer shell -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: API -> logic [global]
+    Alias: core -> model [local]
+    4 aliases, 6 ambiguous
+  [Phase 2] running 5 parallel C passes...
+    pass 1: 20 candidates
+    pass 2: 20 candidates
+    pass 5: 20 candidates
+    pass 4: 20 candidates
+    pass 3: 20 candidates
+  Union: 20 unique candidates (vote distribution: [(1, 0), (2, 0), (3, 0), (4, 0), (5, 20)])
+  [Phase 4] validating union of 20 candidates...
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+    Phase 4 validated: 18 / 20
+    Phase 4b kept: 18 / 18
+  [Phase 5] running coreference...
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+    coref raw: 8
+    Coref val reject: S4 -> logic
+    Coref val reject: S4 -> model
+    Coref val reject: S4 -> gui
+    Coref val reject: S6 -> model
+    Coref val reject: S6 -> gui
+    Coref val reject: S13 -> model
+    coref validated: 2 / 8
+
+  Per-k breakdown (after Phase 4 + 4b, vs gold |18|):
+    k     raw   rawTP/FP   val   valTP/FP     F1    +coref     cTP/FP    cF1
+    1      20  18/2         18  18/0       1.000        18  18/0       1.000
+    2      20  18/2         18  18/0       1.000        18  18/0       1.000
+    3      20  18/2         18  18/0       1.000        18  18/0       1.000
+    4      20  18/2         18  18/0       1.000        18  18/0       1.000
+    5      20  18/2         18  18/0       1.000        18  18/0       1.000
+  Dataset wall time: 33.3s
+
+
+==========================================================================================
+AGGREGATE: macro per-k summary
+==========================================================================================
+
+Dataset        |   k=1: TP/FP F1 |   k=2: TP/FP F1 |   k=3: TP/FP F1 |   k=4: TP/FP F1 |   k=5: TP/FP F1
+--------------------------------------------------------------------------------------------------------
+mediastore     |      22/0 0.830 |      22/0 0.830 |      22/0 0.830 |      22/0 0.830 |      22/0 0.830
+teastore       |      21/0 0.875 |      21/0 0.875 |      21/0 0.875 |      21/0 0.875 |      21/0 0.875
+teammates      |      43/5 0.819 |      43/5 0.819 |      43/5 0.819 |      43/4 0.827 |      43/2 0.843
+bigbluebutton  |      39/0 0.772 |      39/0 0.772 |      39/0 0.772 |      39/0 0.772 |      39/0 0.772
+jabref         |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000
+--------------------------------------------------------------------------------------------------------
+macro avg F1   |          0.8593 |          0.8593 |          0.8593 |          0.8609 |          0.8641
+micro sum      |           143/5 |           143/5 |           143/5 |           143/4 |           143/2
+
+==========================================================================================
+WITH COREF (C-union ∪ coref): per-k macro F1
+==========================================================================================
+
+Dataset        |   k=1: TP/FP F1 |   k=2: TP/FP F1 |   k=3: TP/FP F1 |   k=4: TP/FP F1 |   k=5: TP/FP F1
+--------------------------------------------------------------------------------------------------------
+mediastore     |      25/0 0.893 |      25/0 0.893 |      25/0 0.893 |      25/0 0.893 |      25/0 0.893
+teastore       |      26/1 0.963 |      26/1 0.963 |      26/1 0.963 |      26/1 0.963 |      26/1 0.963
+teammates      |      48/8 0.850 |      48/8 0.850 |      48/8 0.850 |      48/7 0.857 |      48/5 0.873
+bigbluebutton  |      43/2 0.804 |      43/2 0.804 |      43/2 0.804 |      43/2 0.804 |      43/2 0.804
+jabref         |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000 |      18/0 1.000
+--------------------------------------------------------------------------------------------------------
+macro avg F1   |          0.9018 |          0.9018 |          0.9018 |          0.9033 |          0.9065
+micro sum      |          160/11 |          160/11 |          160/11 |          160/10 |           160/8
+
+Results saved to results/c5pass_coref_gpt54_20260604_050600.json
