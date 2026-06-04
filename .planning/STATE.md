@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.6.2
 milestone_name: milestone
 status: v2.6.2 SHIPPED 2026-06-03. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
-stopped_at: context exhaustion at 76% (2026-06-03)
-last_updated: "2026-06-03T09:02:47.363Z"
+stopped_at: Phase 43 context gathered
+last_updated: "2026-06-04T15:04:19.499Z"
 last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
 progress:
-  total_phases: 22
-  completed_phases: 5
-  total_plans: 18
-  completed_plans: 8
-  percent: 23
+  total_phases: 1
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -180,8 +180,8 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 
 ## Session Continuity
 
-Last session: 2026-06-03T09:02:47.360Z
-Stopped at: context exhaustion at 76% (2026-06-03)
-Resume file: None
+Last session: 2026-06-04T15:04:19.495Z
+Stopped at: Phase 43 context gathered
+Resume file: .planning/phases/43-replay-s-linker19-checkpoints-for-paper-rq1-rq4-eval/43-CONTEXT.md
 Next action: Monitor `logs/voyager_v5/probe_p36_rollback.log`; if TM train ≥82% proceed to Tier C coref-extension design (task 9)
 Last activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
