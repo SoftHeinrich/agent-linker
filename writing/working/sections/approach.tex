@@ -1,155 +1,145 @@
-\section{AALinker}
+\section{\approach}\label{sec:approach}
 
-We propose a multi-agent workflow for recovering  trace links between architectural doc and model components.
-Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ and an architectural model containing components ${c_1, \ldots, c_m}$, our approach produces a set of trace links $L \subseteq S
-  \times C$, where each link $(s_i, c_j)$ asserts that sentence $s_i$ discusses component $c_j$'s architectural responsibilities.
+We propose \approach, a training-free pipeline that recovers trace links between an architecture document and the components of an architectural model.
+Given a document $D$ with sentences $S = \{s_1, \ldots, s_n\}$ and a component set $C = \{c_1, \ldots, c_m\}$, \approach outputs a link set $L \subseteq S \times C$, where each pair $(s_i, c_j) \in L$ asserts that sentence $s_i$ discusses the architectural responsibilities, behaviour, or interactions of component $c_j$.
 
-Architectural doc has XX charistics, brings 2 problems, then its difficult.
-Two problems make this task difficult.
-First, \emph{reference diversity}: documents refer to components by exact name, abbreviation, synonym, trailing word, or pronoun.
-No single entity extraction strategy handles all of these forms.
-Second, \emph{name ambiguity}: component names like \texttt{Cache} or \texttt{Facade} are common English words that appear frequently without referring to any component, 
-so broadening extraction to capture diverse references also increases false positives.
+Trace links are anchored on a textual reference to the linked component: sentence $s_i$ must mention $c_j$ in some form.
+That form is not unique.
+Across the documents in our corpus, the same trace link surfaces under exactly one of \textbf{three reference forms}: an \emph{explicit mention} of the component's canonical name (``the \texttt{EventDispatcher} routes requests''); an \emph{entity alias} --- an abbreviation, a synonym, or a trailing-word shorthand of a multi-word name (``the dispatcher routes requests''); or a \emph{pronominal reference} that carries no surface name and resolves through discourse (``it routes requests'').
+Named mentions together account for XX\% of gold links across the XX projects of the benchmark; pronominal references account for the remaining XX\%.
+We treat this account of the reference forms as our first knowledge contribution: it partitions the trace-link recovery problem into two structurally distinct sub-problems, named-mention recovery and pronominal recovery, each calling for a different evidence model and a different validator.
 
-Addressing both problems requires structured knowledge: which names are ambiguous, and what abbreviations, synonyms, and short forms map to which component.
-To the best of our knowledge, this knowledge does not exist in advance and must be discovered at runtime.\todo{define runtime} 
-Using the same LLM that will consume it, with the risk of hallucinated mappings or misjudged ambiguity. 
-\todo{refactor to difficult to extract, needs much work, but can be reuse}
-We call this the \emph{architectural context knowledge gap}.
+Two facts complicate the recovery of named mentions.
+First, component names are often ordinary technical English (\texttt{Core}, \texttt{Adapter}, \texttt{Logic}, \texttt{Storage}), so a surface-level lexical match overshoots into generic uses of those words.
+Second, project-specific aliases are not known in advance, so any linker that targets indirect reference forms must first discover them at runtime from the document itself.
+We call the gap between what an out-of-the-box \ac{LLM} knows and what disambiguating these references requires the \emph{architectural context knowledge gap}.
+Pronominal references add a third complication: a pronoun resolves to a component only when the antecedent sentence carries either the canonical name or one of the discovered aliases --- a \emph{structural antecedent constraint} that cannot be checked without the alias table.
 
-Existing approaches address only part of this problem.
-Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string similarity and cannot resolve indirect references or discourse dependencies.
-LLM-based classifiers such as LISSA~\cite{lissa} add semantic understanding via LLM 
-but have no mechanism to build alias mappings or classify name ambiguity before linking,
+Existing automated recovery pipelines address only part of this picture.
+Lexical pipelines such as SWATTR~\cite{swattr} score sentence--component pairs against canonical component names and curated linguistic patterns.
+While effective at recovering links that surface the component name directly, they inherently rely on that name appearing on the surface and cannot resolve aliases or pronominal references.
+A more recent line uses a single-pass \ac{LLM} classifier per sentence~\cite{lissa}.
+Despite their stronger headline \fone, single-pass classifiers enter the document without any structured knowledge of which component names are ambiguous English and which document phrases are aliases for which component --- essentially leaving the model to invent that knowledge per call, with no separation between knowledge acquisition and link scoring.
 
-Our pipeline closes the knowledge gap first, then leverage multiple link recovery agents using the acquired knowledge.
-It is organized as a DAG (Figure~\ref{fig:pipeline}) with three layers:
+\approach closes the architectural context knowledge gap first, then uses the acquired knowledge to drive two specialised linkers.
+The pipeline is organised as a three-layer directed acyclic graph (\autoref{fig:pipeline}):
 
 \begin{enumerate}
-\item \textbf{Project knowledge discovery} (layer~1): 
-Agents analyze the architectural document and model to extract structured knowledge. 
-Knowledge includes component alias table and identify ambiguous components. 
-\item \textbf{Candidate Link recovery} (layer~2): 
-Four complementary agents recover candidate links via different mechanisms: explicit mentioning match, entity extraction, coreference resolution, and abbreviated reference matching. 
-The strategies are largely independent: each targets a different type of component reference.
-The agents are largely independent: each targets a different type of component reference
-\item \textbf{Link consolidation} (layer~3): All recovered links merge to final link set.
-\todo{benefits}
+  \item \textbf{Project knowledge discovery} (\autoref{sec:knowledge}). Two analyses run in parallel --- one over the component set, one over the document --- to produce an \emph{ambiguity map} (which component names are ambiguous English) and an \emph{alias table} (which document phrases refer to which component).
+  \item \textbf{Reference-form-specialised linkers} (\autoref{sec:entity-linker}, \autoref{sec:coref-linker}). \linkerB recovers the named mentions of the three reference forms via a single alias-aware extraction, and \linkerC recovers pronominal references via discourse resolution under the structural antecedent constraint.
+  Each linker consumes the knowledge layer and is gated by its own evidence-grounded validator.
+  \item \textbf{Link consolidation} (\autoref{sec:merge}). The validated link sets are concatenated and deduplicated by $(s,c)$ key.
 \end{enumerate}
 
-\acp{LLM} bring the benefits of rich semantic understanding, however, they are non-deterministic and may output noises like hallucinated results.
-To this challenge, our pipeline uses two cross-cutting patterns. \todo{cite source}
-\emph{Multi-pass consensus}: for open-ended tasks, we use two independent LLM passes with agreement rules to avoid single run variance.
-\emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence for resolved coreference.
+\acp{LLM} bring rich semantic understanding but are non-deterministic and can hallucinate.
+\approach absorbs both costs through a single cross-cutting methodology: \emph{evidence-grounded asymmetric \ac{LLM} validators}.
+Every linker is required to expose, alongside each candidate link, the evidence it relied on --- the matched span in the sentence, the form of the reference (canonical, alias, or pronominal), the antecedent sentence number when applicable, and a short extraction rationale --- in a structured \emph{evidence bundle}.
+A downstream validator then decides acceptance against the bundle, not against a black-box re-classification.
+The two validators are deliberately asymmetric, because the two recovery sub-problems pose different epistemic questions.
+For named mentions, \linkerB's validator is a \emph{two-pass conjunction} that asks (i) whether the matched span participates in an architectural action attributable to the component and (ii) whether the reference is specific to that component rather than generic; a candidate is approved only if both passes agree.
+For pronominal references, \linkerC's validator is a \emph{single pass} focused on the narrower question of whether the discourse resolution is consistent with the antecedent's content; a structural pre-check has already enforced the alias-aware antecedent constraint, so a second conjunction would be redundant.
+We treat the asymmetry as a design contribution: matching the number of validation passes to the epistemic difficulty of the underlying decision keeps the validator's \ac{LLM} budget proportional to the question it is answering.
 
+\autoref{tab:strategies} summarises the two linkers, the reference forms they cover, the knowledge they consume, and the shape of their validators.
 
 \begin{table}[t]
-\caption{Link recovery strategies and their properties.}
+\caption{The two linkers of \approach. Each consumes the runtime knowledge layer (ambiguity map and alias table) and is gated by an evidence-grounded validator whose pass count matches the epistemic difficulty of the decision.}
 \label{tab:strategies}
 \centering\footnotesize
 \begin{tabular}{@{}lllll@{}}
 \toprule
-\textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{Consensus pattern} & \textbf{LLM} \\
+\textbf{Linker} & \textbf{Reference forms covered} & \textbf{Knowledge consumed} & \textbf{Extraction} & \textbf{Validator} \\
 \midrule
-Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2--3\rlap{$^*$} \\
-Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + stratified valid. & 2+2--3\rlap{$^*$} \\
-Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
-Abbreviated & Partial name & Alias table & Union valid. & 0+2--3\rlap{$^\dagger$} \\
+\linkerB & Canonical name, abbreviation, & Ambiguity map, & 2-pass alias-aware & 2-pass conjunction \\
+(named mentions) & synonym, trailing-word partial & alias table & extraction, $\cap$ & ($p_1 \land p_2$) on bundle \\
+\addlinespace[2pt]
+\linkerC & Pronominal & Alias table (for structural & 1-pass per-sentence & 1-pass, narrower \\
+(pronominal) & & antecedent gate) & discourse scan & epistemic question \\
 \bottomrule
 \end{tabular}
-\\[2pt]
-{\scriptsize $^*$2 extraction + 2--3 validation (generic-mention detection for ambiguous names, then 2 voting passes).
-$^\dagger$0 extraction (deterministic) + 2--3 validation.
-$^\ddagger$Extraction needs no knowledge (runs parallel with Layer~1);
-validation uses the alias table once Layer~1 completes.
-Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
-Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
 \end{table}
 
-\subsection{Project Knowledge Discovery}
-Software architectural documents contains diverse references that often confuse link-recovery agents.
-In addition, component names are often common English words (\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{TBD}).
-These words appear frequently, sometimes referring to the component share the same name, sometimes used as a generic concepts.
-It poses a need for deep understanding both doc and model in the architectural context.
-Although \acp{LLM} have shown improved ability to understand,\todo{cite } still gaps. \todo{cite }
-And techniques for improving understanding ability are often more costy token.\cite{cite }
+\subsection{Trace-Link Reference Knowledge}\label{sec:refknowledge}
 
+We describe the three reference forms more precisely before showing how each is recovered.
+Let $c \in C$ be a component with canonical name $\mathrm{name}(c)$ and let $s \in S$ be a sentence.
+A trace link $(s, c)$ is \emph{realised in $s$} through exactly one of:
 
-To help \acp{LLM} understand and make knowledge reusable,  Layer~1 builds a shared knowledge base for downstream linkers.
-Two sub-agents run in parallel: a \emph{model understanding agent} analyzes the architectural model to identify ambiguous components
-(\S\ref{sec:model-understanding}), and a \emph{document understanding agent} extracts component aliases from the document
-(\S\ref{sec:doc-understanding}).
-Once both complete, a partial-reference refinement step merges their outputs and enriches the alias table with LLM-classified trailing-word mappings.
-The resulting knowledge base: a list of ambiguous components and an alias mapping table.
-This serves as a handbook for layer~2 agents to analyze the architectural doc and model.
+\begin{description}[leftmargin=*,style=nextline]
+  \item[\emph{Explicit mention.}] A surface substring of $s$ matches $\mathrm{name}(c)$ (modulo casing and morphology), and $s$ discusses an architectural action attributable to $c$.
+  \item[\emph{Entity alias.}] A surface substring of $s$ matches an alias $a \in A(c)$, where $A(c)$ is the project-specific alias set discovered for $c$ in the document.
+  Aliases are partitioned into abbreviations (e.g., AST $\to$ \texttt{AbstractSyntaxTree}), synonyms (alternative names that unambiguously identify one component), and partial references (trailing words of a multi-word component name, e.g., \emph{dispatcher} $\to$ \texttt{EventDispatcher}).
+  \item[\emph{Pronominal reference.}] $s$ contains no surface mention of $c$, but a discourse pronoun in $s$ refers to an antecedent sentence $s' \in S$ that carries either $\mathrm{name}(c)$ or some $a \in A(c)$.
+  This is the \emph{structural antecedent constraint}.
+\end{description}
+
+Two consequences follow from this account and shape the rest of the design.
+First, $A(c)$ is project-specific and is part of the runtime knowledge layer, not a prior of the linker.
+Second, pronominal recovery is conditionally dependent on the alias table: without $A(c)$, the antecedent constraint cannot be checked structurally and is left to opaque \ac{LLM} judgement.
+
+\subsection{Project Knowledge Discovery}\label{sec:knowledge}
+
+Software architecture documents contain diverse references that confuse out-of-the-box link recovery, and component names are frequently ordinary English words (\texttt{Core}, \texttt{Adapter}, \texttt{Logic}) that appear without referring to any component.
+Recovering trace links under these conditions requires structured knowledge about both the model and the document.
+Layer~1 of \approach builds this knowledge \emph{before} any link is scored.
+Two sub-agents run in parallel: a \emph{model understanding agent} (\autoref{sec:model-understanding}) analyses the architectural model to mark which component names are ambiguous, and a \emph{document understanding agent} (\autoref{sec:doc-understanding}) extracts the alias table from the document.
+The two outputs --- the \emph{ambiguity map} over $C$ and the \emph{alias table} $A$ over $D$ --- are passed unchanged to both linkers in Layer~2.
 
 \subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
-Architectural components operate at a high level of abstraction, so their names vary widely.
-Constructed identifiers like \texttt{TaskScheduler} unambiguously name architectural roles, 
-but single common-English words like \texttt{Core} or \texttt{Adapter} appear frequently in both refering specific component and general concepts.
-\todo{source}
-This poses challenges for trace link recovery: blindly matching mentions of such names would produce false positives, 
-and an LLM lacking explicit reasoning about name ambiguity may confuse general usage with component references.
-Therefore, we analyze component names from the input architecture model to identify \emph{ambiguous} components: those whose names can also be used as general concepts (e.g., \emph{logic}, \emph{storage}).
-This classification serves as knowledge to guide downstream agents when evaluating candidate links.
-% Therefore, we build a knowledge base at this step to help downstream trace link recovery\emph{architectural}
-% or \emph{ambiguous} using a two-step hybrid:
 
-% % Therefore, blindly matching mentions of generic usage would cause false positive links.
-% motivating by xx paper, todo, cite ref, we extract knowledge from it.
-% Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
-% This can serve as knowledge and provide context for to guide futher LLM trace linker when evaluating the link. 
+Component names range from constructed identifiers like \texttt{TaskScheduler}, which unambiguously name an architectural role, to single common-English words like \texttt{Core} or \texttt{Adapter}, which appear in prose both as component references and as generic concepts.
+Blindly matching surface occurrences of such names produces systematic false positives, and an \ac{LLM} without explicit reasoning about name ambiguity will confuse generic usage with component reference.
+We therefore classify each component name into \emph{architectural} (unambiguous: CamelCase compounds, multi-word names, acronyms) or \emph{ambiguous} (single common-English words) using a hybrid of structural rules and a few-shot \ac{LLM} prompt, with structural rules deciding the easy cases and the \ac{LLM} resolving the boundary.
+Additionally, we extract a hierarchy of partial words shared between components, so that downstream coreference and partial-reference resolution can disambiguate (e.g., \texttt{Scheduler}) into the right hierarchical parent.
 
-% Motivated by previously work on camelcase identifiers, acronyms, \todo{cite}
-% We combine these rules with a few-shot LLM prompt to mark ambiguous components.
-% We marked coumpound names like CamelCase, acronyms as non-ambiguous, and use LLM to find others.\todo{cite for retionale}
+\subsubsection{Architectural Document Understanding}\label{sec:doc-understanding}
 
-Motivated by prior work on CamelCase identifiers and acronyms,~\todo{cite} we combine structural rules with a few-shot LLM prompt to mark ambiguous components.
-
-Additionally, we also check component names with each other, to build a hiearchy.
-Because XXX. arch model are hiearchical.
-In order to disambiguates trace inks when a doc refer to parent component.
-shared partial words, like XX, will be used for better coreference.
-TODO example needed.
-
-
-The analysis additionally extracts partial words among components. 
-Because partial words can bring ambiguity by confusing 
-\begin{enumerate}
-  \item two components:  (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}), when the document only say Scheduler
-  \item a component and general concepts: (todo: example)
-\end{enumerate}
-Such information will be feed to Abbreviations linking agents in layer to.
-
-(\S\ref{sec:partial}).
-
-\subsubsection{Architectural Document Understanding}
-Since architectural documents contain heavy synonym, abbraviations, \todo{cite support}
-this step is to find all alternative names for architectural components. 
-\paragraph{Alternative name discovery.}
-An LLM extracts three categories of alternative names:
+Architecture documents use abbreviations, synonyms, and partial references densely.
+An \ac{LLM} extracts three categories of aliases:
 \begin{itemize}
-    \item \emph{Abbreviations}: short forms introduced via parenthetical definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
-    \item \emph{Synonyms}: alternative names that unambiguously identify exactly one component. \todo{example from prompt}
-    \item \emph{Partial references}: trailing words of multi-word component names used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
+    \item \emph{Abbreviations}: short forms introduced via parenthetical definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST as an alias of \texttt{AbstractSyntaxTree}).
+    \item \emph{Synonyms}: alternative names that unambiguously identify exactly one component.
+    \item \emph{Partial references}: trailing words of a multi-word component name used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
 \end{itemize}
+Partial references are the trickiest of the three: trailing-word shorthands are pervasive in architecture documents, but many trailing words are generic English words whose referential status depends on context.
+We therefore resolve partial references against the ambiguity map from \autoref{sec:model-understanding}, so that an ambiguous trailing word is admitted as a partial-reference alias only under specific surface conditions (e.g., capitalised occurrences).
+A few-shot \ac{LLM} judge then validates each proposed alias mapping before it enters the alias table.
 
-\paragraph{Partial-reference refinement.}
-Among the three alias types, partial references require the most careful handling: 
-trailing-word shorthands are pervasive in architecture documents, but many trailing words are generic English words whose referential status depends on context.
-Therefore, identify corect partial-reference needs the detected ambiguous component names from the model understanding agent.
+\subsection{\linkerB: Entity Linker for Named Mentions}\label{sec:entity-linker}
 
-After the extraction, a few-shot judge validates each proposed mapping.
-Finally, this output a mapping table, which later linkers can use to XX. 
+\linkerB recovers the three named reference forms --- explicit name, abbreviation, synonym, and trailing-word partial --- in a single alias-aware extraction step that consumes both the ambiguity map and the alias table.
+The \ac{LLM} scans the document in two independent passes over the sentence sequence, each producing candidate $(s, c)$ pairs tagged with the matched span, the reference form, and a short extraction rationale.
+The two passes are intersected: a candidate enters Layer~2's pool only if both passes produced it.
+The intersection is the linker's first robustness mechanism --- it removes single-run hallucinations without committing to a specific consensus threshold over more passes.
+The intersected candidates are then packed into evidence bundles and handed to the named-mention validator described in \autoref{sec:validators}.
 
+\subsection{\linkerC: Coreference Linker for Pronominal References}\label{sec:coref-linker}
 
-% partial references are ambiguous, Because XX
-% generic names. 
-% For each partial references to ambiguous terms,
-%  we use only  capitalized occurences as they refer to specific usage. 
-%TODO: check how partial refernces added 
+\linkerC recovers pronominal references that cannot be resolved by any surface match.
+For each sentence containing a discourse pronoun, an \ac{LLM} pass produces a candidate antecedent sentence and a candidate component, together with the antecedent sentence number as evidence.
+The candidate is then subjected to the \emph{structural antecedent gate}: we admit the resolution only if the proposed antecedent sentence contains, on the surface, either the canonical name of the component or one of its discovered aliases.
+This gate is deterministic and uses no \ac{LLM} judgement; it directly enforces the structural antecedent constraint described in \autoref{sec:refknowledge}.
+Surviving candidates are validated by the pronominal validator described in \autoref{sec:validators}.
 
+\subsection{Evidence-Grounded LLM Validators}\label{sec:validators}
 
+Both linkers feed into validators that decide acceptance against the evidence bundles produced at extraction time.
+The named-mention validator (\linkerB) runs two passes with disjoint focuses:
+\begin{description}[leftmargin=*,style=sameline]
+  \item[$p_1$ --- architectural participation.] Does the matched span participate in an architectural action attributable to the component, or is it a generic, code-path, or non-architectural mention?
+  \item[$p_2$ --- referential specificity.] Does the matched span refer specifically to the candidate component, or is it ambiguous between multiple components or a generic English usage?
+\end{description}
+A candidate is approved iff $p_1 \land p_2$.
+The conjunction is principled: $p_1$ targets the relevance of the link, $p_2$ targets its uniqueness, and a link is a trace link only when both hold.
 
+The pronominal validator (\linkerC) runs a single pass focused on whether the discourse resolution is consistent with the antecedent's content.
+This validator is intentionally asymmetric to the named-mention validator: the structural antecedent gate has already removed every candidate whose alias-aware structural prerequisite fails, so a second conjunction pass would not add information.
+The narrower epistemic question of pronominal resolution --- ``is this pronoun referring to that component, given that the antecedent is consistent?'' --- is well-matched by a single focused pass.
 
+This asymmetric design is one of the paper's methodological contributions: rather than imposing a uniform validation protocol on every linker, we match the validator's pass count to the epistemic difficulty of the underlying sub-problem.
 
+\subsection{Link Consolidation}\label{sec:merge}
+
+The two validated link sets are concatenated and deduplicated by $(s, c)$ key.
+Because the two linkers target structurally disjoint reference forms (named vs.\ pronominal), the overlap between the sets is small in practice, and deduplication is a safety net rather than the linker's central operation.
+\approach emits each remaining link together with the provenance of its evidence bundle and the validator decisions it passed, so that downstream consumers --- including the metric suite of \autoref{sec:metric} --- can interrogate the link at the granularity at which it was produced.

@@ -2,14 +2,20 @@
 
 Single source of truth for every static prompt fragment used by s_linker19.
 Byte-identical to s_linker17f's inlined prompts where the design is unchanged;
-the one substantive edit is P1_FOCUS — extended by 7 words to absorb Phase 4b's
-code-path-rejection role into twopass's architectural-participation question.
+the one substantive edit is P1_FOCUS — extended by a trailing clause to
+absorb Phase 4b's code-path-rejection role into twopass's
+architectural-participation question.
 
-The +7-word modification was empirically validated by
-experiment_4b_prompt_absorption.py: catches 2 of 3 code-path FPs that 17f's
-Phase 4b kills, with 0 collateral damage on a 4-TP control set. The third
-("logic" as the head of a code-path list) escapes — accepted as a small
-limitation; no prompt modification can reasonably encode that nuance.
+The trailing clause was empirically validated by
+experiment_4b_prompt_absorption.py + experiment_dotted_path_rename.py:
+the chosen wording ("qualified-name identifier (e.g. a package- or
+member-access path X.Y.Z)") catches 2 of 3 code-path FPs on gpt-5.4 and
+1 of 3 on Claude Sonnet with 0 collateral damage on the 4-TP control set
+(strict joint improvement over the original "dotted-path identifier"
+wording, which catches 0 of 3 on Sonnet). The third FP ("logic" as the
+head of a code-path list, with no surrounding dotted neighbours) escapes
+on both backends — accepted as a small limitation; no prompt modification
+can reasonably encode that nuance.
 
 GATE-06 (BENCHMARK_TABOO): all rule text uses textbook SE domain terms.
 Zero benchmark component names. Zero project-specific vocabulary.
@@ -51,7 +57,7 @@ DOC_KNOWLEDGE_JUDGE_RULES = """An alias is valid when the document establishes a
 ALIAS_SCOPE_RULES = """For each alias, classify its SCOPE:
 - "global": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.
 - "local": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.
-Dotted-path fragments (tokens of the form X.Y or X.Y.Z) are NOT aliases — do not include them."""
+Qualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases — do not include them."""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -65,14 +71,18 @@ ENTITY_EXTRACTION_RULES = """Include a reference when the sentence refers to the
 # Phase 4 — Unified evidence-bundle twopass validation
 # ─────────────────────────────────────────────────────────────────────────────
 
-# P1_FOCUS — architectural participation, V3 (+7 words vs s_linker17f).
-# The trailing clause "and not just as a dotted-path identifier" absorbs
-# Phase 4b's code-path-rejection role into the participation question.
+# P1_FOCUS — architectural participation, V3 + qualified-name rename.
+# The trailing clause "and not just as a qualified-name identifier (e.g. a
+# package- or member-access path X.Y.Z)" absorbs Phase 4b's code-path-
+# rejection role into the participation question. The explicit X.Y.Z schema
+# is the structural anchor that empirically carries the clause across LLM
+# backends (see experiment_dotted_path_rename.py).
 P1_FOCUS = (
     "Check architectural participation: does the sentence name this "
     "component as an architectural participant — performing operations, "
     "providing services, or taking part in the described system behavior, "
-    "and not just as a dotted-path identifier?"
+    "and not just as a qualified-name identifier (e.g. a package- or "
+    "member-access path X.Y.Z)?"
 )
 
 P2_FOCUS = (

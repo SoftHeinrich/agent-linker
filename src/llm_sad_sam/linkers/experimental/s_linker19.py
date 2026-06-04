@@ -26,8 +26,15 @@ Phase 4 — Unified evidence-bundle twopass validation (sole entity quality gate
     is_ambiguous, extraction_rationale)
   • Two-pass twopass:
       p1 (prompts_v5.P1_FOCUS): architectural participation — INCLUDES
-         dotted-path-identifier exclusion (V3 +7 words vs 17f, absorbing
-         the role of 17f's Phase 4b code-path filter)
+         qualified-name-identifier exclusion (V3 + rename vs 17f, absorbing
+         the role of 17f's Phase 4b code-path filter). The clause is the
+         original V3 reframed in textbook SE vocabulary, with an explicit
+         X.Y.Z schema as the structural anchor.
+         Joint-backend probe (experiment_dotted_path_rename.py):
+           - gpt-5.4 : 2/3 code-path FPs caught, 4/4 TPs preserved
+           - sonnet  : 1/3 code-path FPs caught, 4/4 TPs preserved
+         The original "dotted-path identifier" wording caught 2/3 on
+         gpt-5.4 but 0/3 on Sonnet — strict joint improvement.
       p2 (prompts_v5.P2_FOCUS): referential specificity
     Approve iff p1 ∧ p2.
   • No generic-filter pre-pass — empirically dead code at gpt-5.4 (1
@@ -160,7 +167,7 @@ class MentionType(Enum):
     """Classification of how a component name appears in a sentence."""
     PROPER_STANDALONE = "proper case, standalone"
     LOWERCASE_PROSE = "lowercase mention"
-    CODE_TOKEN = "lowercase, inside dotted path"
+    CODE_TOKEN = "lowercase, inside qualified name"
     VIA_ALIAS = "via known alias"
     ANAPHORIC = "anaphoric reference"
     INDIRECT = "indirect/unclear match"
@@ -582,7 +589,7 @@ JSON only:"""
             return MentionType.PROPER_STANDALONE
         comp_lower = comp_name.lower()
         if re.search(rf'\b{re.escape(comp_lower)}\b', text):
-            if self._all_occurrences_in_dotted_path(comp_lower, text):
+            if self._all_occurrences_in_qualified_path(comp_lower, text):
                 return MentionType.CODE_TOKEN
             return MentionType.LOWERCASE_PROSE
         if self.doc_knowledge:
@@ -594,17 +601,17 @@ JSON only:"""
         return MentionType.INDIRECT
 
     @staticmethod
-    def _all_occurrences_in_dotted_path(comp_lower: str, text: str) -> bool:
+    def _all_occurrences_in_qualified_path(comp_lower: str, text: str) -> bool:
         any_match = False
         for m in re.finditer(rf'\b{re.escape(comp_lower)}\b', text):
             any_match = True
             s, e = m.start(), m.end()
-            in_dotted = (
+            in_qualified_path = (
                 (s > 0 and text[s - 1] == ".") or
                 (e < len(text) and text[e] == "." and e + 1 < len(text)
                  and text[e + 1].isalpha())
             )
-            if not in_dotted:
+            if not in_qualified_path:
                 return False
         return any_match
 

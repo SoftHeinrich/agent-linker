@@ -8,7 +8,7 @@
 Software systems pair tens of thousands of source files with architecture documentation written by people, and the two artefacts drift apart as soon as the code starts to evolve.
 As much as this documentation has long guided design, review, and onboarding, keeping it aligned with the evolving code has become one of the central bottlenecks for change-impact analysis, compliance audit, and any traceability-driven maintenance task.
 I.e., when the document and the code drift, every downstream task that consumes the pairing degrades, and recovering the missing trace links by hand does not scale to industrial repositories.
-For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of 0.803, leaving roughly one in five gold-standard decisions unrecovered or mis-recovered~\cite{transarc,replication}.
+For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of XX, leaving roughly XX of gold-standard decisions unrecovered or mis-recovered~\cite{transarc,replication}.
 
 % ---------------------------------------------------------------
 % Para 2 -- gap: two prior-work categories, each killed in a
@@ -21,33 +21,40 @@ A more recent line uses a single-pass \ac{LLM} classifier per sentence, treating
 Despite their stronger raw \fone on the benchmark, they enter the document without any runtime knowledge of which component names are ambiguous English and which document phrases are aliases for which component --- essentially leaving the \ac{LLM} to invent that knowledge per call.
 
 % ---------------------------------------------------------------
-% Para 3 -- proposal reveal: "This paper presents X, the first..."
-% + insight + "At a high level" mechanism + "as simple as" simplicity
-% + forward-referenced headline number.
+% Para 3 -- INSIGHTS: two deep, novel findings that ground both
+% contributions, each anchored by one striking number from our
+% empirical work on the benchmark.
 % ---------------------------------------------------------------
-This paper presents \approach, the first training-free trace-link recovery pipeline for architecture-to-code documentation that acquires project-specific knowledge before linking.
-\approach is uniquely built on the observation that the difficulty of this task is concentrated in two structural facts about the document: component names overlap with ordinary technical English (\texttt{Core}, \texttt{Adapter}, \texttt{Logic}), and project-specific aliases for those components are not known in advance.
-At a high level, \approach first runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce an \emph{ambiguity map} and an \emph{alias table}; the two artefacts are then fed into an alias-aware entity linker and a pronoun-resolving linker, each gated by an evidence-bundle validation pass that records the spans it relied on.
-Running the pipeline is as simple as supplying the document and the component set: no fine-tuning, no labelled trace links, and no benchmark-specific tuning.
-On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of 0.931, thereby improving the strongest published pipeline by 12.9 percentage points~\cite{transarc,replication}.
+We arrive at the design of this paper through two findings that together upend the standard view of the task.
+\textbf{First, the trace-link recovery signal lives in a runtime knowledge layer about the document, not in the linker itself.}
+Lexical pipelines burn this layer into hand-crafted patterns; single-pass \ac{LLM} classifiers ask the model to reinvent it per sentence; neither separates it as a first-class artefact built before any link is scored.
+I.e., once an \ac{LLM} is given an \emph{ambiguity map} (which component names are ordinary technical English) and an \emph{alias table} (which document phrases refer to which component), a single alias-aware framing of the entity linker recovers what previous multi-framing designs covered with three independent framings --- across the five projects of the benchmark, the auxiliary framings contribute XX unique true positives.
+\textbf{Second, the established ruler does not measure what it claims to measure.}
+A trivial substring-match baseline with zero architectural understanding reaches a corpus-level file-level \fone of XX --- within XX points of the strongest published pipeline, and matching it within XX point on one project --- because enrolment inflation, block correlation, and a XX\% concentration of the gold mass on three sentences of one project let the standard \fone summarise a handful of large components rather than the recovery task.
+These two findings shape the two contributions of this paper, and we treat the second one as a co-equal contribution rather than a tooling note.
 
 % ---------------------------------------------------------------
-% Metric-suite glimpse -- CrystalBLEU-shaped, six sentences.
-% Order: flaw + quantified anchor -> concrete failure -> diagnosis
-% -> proposal (named) -> forward-reference -> stance.
+% Para 4 -- \approach reveal: mechanism that operationalises
+% insight 1, "as simple as" simplicity, forward-referenced number.
 % ---------------------------------------------------------------
-The standard evaluation reports a single corpus-level \fone, computed over file-level (sentence, file) pairs obtained by enrolling each directory-granularity human decision into all of its files --- turning 525 human decisions into 18{,}660 file-level data points, with project-specific factors of 1.0$\times$ to 217.6$\times$~\cite{transarc,replication}.
-On JabRef, this expansion concentrates 98.6\% of the gold standard on three components, so a system that gets those three right scores \fone\,$>$\,0.94 regardless of its behaviour on the rest of the architecture~\cite{replication}.
-We call this the \emph{structural inequality} of the benchmark: enrolment inflation, block correlation between files of the same directory, and component-size concentration together cause \fone to summarise three components rather than five projects.
-We therefore propose a six-metric evaluation suite --- per-component \fone, per-sentence \fone, sentence coverage, noise rate, coverage-and-purity, and a skill score normalised against random and oracle baselines --- each chosen to correct one source of inequality or to surface a property of trace-link quality that \fone is structurally unable to expose.
-On the same benchmark, AALinker improves the standard file-level \fone over TransArc by $+12.9$ percentage points, but on the metric matched to a single human annotator decision the improvement is $+22.7$ percentage points: the standard ruler underreports the gain.
-We treat the metric suite as a co-equal contribution and motivate it from the structure of the benchmark, not from AALinker's results; we evaluate AALinker and all baselines under both the old and the new rulers.
+We present \approach, the first training-free trace-link recovery pipeline for architecture-to-code documentation that separates the runtime knowledge layer from the linker.
+At a high level, \approach first runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce the ambiguity map and the alias table; the two artefacts are then fed into an alias-aware entity linker and a pronoun-resolving linker that enforces a structural antecedent constraint (the antecedent sentence must carry the canonical name or one of the discovered aliases), each gated by an evidence-bundle validation pass that records the spans it relied on.
+Running \approach is as simple as supplying the document and the component set: no fine-tuning, no labelled trace links, and no benchmark-specific tuning.
+On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of XX, thereby improving the strongest published pipeline by XX percentage points~\cite{transarc,replication}.
+
+% ---------------------------------------------------------------
+% Para 5 -- metric-suite reveal: operationalises insight 2,
+% lists the suite, gives the gap-between-rulers headline.
+% ---------------------------------------------------------------
+To put numbers on the second finding and to fix the ruler going forward, we propose an architecture-driven evaluation suite of XX complementary metrics --- including per-component \fone, per-sentence \fone, sentence coverage, noise rate, coverage-and-purity, and a skill score normalised against random and oracle baselines --- each chosen to correct one source of structural inequality in the benchmark (enrolment inflation, block correlation, component-size concentration, cross-project incomparability) or to surface a property of trace-link quality that the standard \fone is structurally unable to expose.
+On the same benchmark, \approach improves the standard file-level \fone over the strongest published pipeline by XX percentage points, but on the metric matched to a single human annotator decision the improvement is XX percentage points: the standard ruler underreports the gain.
+We motivate the suite from the structure of the benchmark, not from \approach's results, and we evaluate \approach and all baselines --- including the trivial substring-match baseline above --- under both the old and the new rulers.
 
 \subsection*{Contributions}
 \begin{itemize}[leftmargin=*]
-    \item \textbf{AALinker}, a training-free pipeline for trace-link recovery between architecture documentation and code, that closes the runtime knowledge gap before linking with an alias-aware entity linker and a pronoun-resolving linker, each gated by an evidence-bundle validation pass (\autoref{sec:approach}).
-    \item An \textbf{architecture-driven evaluation suite} of six metrics that corrects three structural biases in the established benchmark and reorders the size of reported improvements without changing the ranking (\autoref{sec:metric}).
-    \item An empirical study on the five projects of the established benchmark, comparing AALinker against TransArc, SWATTR, and LiSSA under both the standard and the new evaluation, with per-agent and per-validator ablations (\autoref{sec:experiment}, \autoref{sec:results}).
+    \item \textbf{\approach}, a training-free pipeline for trace-link recovery between architecture documentation and code, that closes the runtime knowledge gap before linking with an alias-aware entity linker and a pronoun-resolving linker, each gated by an evidence-bundle validation pass (\autoref{sec:approach}).
+    \item An \textbf{architecture-driven evaluation suite} of XX complementary metrics that corrects the compounding structural biases of the established benchmark and reorders the size of reported improvements without changing the ranking of the systems under test (\autoref{sec:metric}).
+    \item An empirical study on the five projects of the established benchmark, comparing \approach against TransArc, SWATTR, and LiSSA under both the standard and the new evaluation, with per-stage and per-validator ablations (\autoref{sec:experiment}, \autoref{sec:results}).
     \item A replication package containing prompts, agent code, raw \ac{LLM} responses, per-project results, and the metric implementations~\cite{replication}.
 \end{itemize}
 

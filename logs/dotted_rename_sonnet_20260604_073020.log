@@ -1,0 +1,112 @@
+Dotted-path rename empirical tuning | backend=checkpoint | fallback=claude
+Variants: V0_no_clause, V1_dotted_current, V2_qualified_full, V3_qualified_short, V4_qualified_hybrid, V5_package_member_path
+
+SLinker19 (paper variant — standalone; prompts in prompts_v5)
+  Backend: checkpoint -> claude (sonnet)
+SLinker19 (paper variant — standalone; prompts in prompts_v5)
+  Backend: checkpoint -> claude (sonnet)
+SLinker19 (paper variant — standalone; prompts in prompts_v5)
+  Backend: checkpoint -> claude (sonnet)
+
+================================================================================
+  variant: V0_no_clause
+================================================================================
+  P1 tail : (no tail clause — baseline)
+  CODE_TOKEN: lowercase, inside dotted path
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (8.6s)
+  [MISS] teammates     FP code-path 'storage'                   p1=True p2=True → approve (expected reject) (7.7s)
+  [MISS] teammates     FP code-path 'common.datatransfer'       p1=True p2=True → approve (expected reject) (7.7s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (8.2s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (9.0s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (8.4s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (7.6s)
+
+================================================================================
+  variant: V1_dotted_current
+================================================================================
+  P1 tail : and not just as a dotted-path identifier
+  CODE_TOKEN: lowercase, inside dotted path
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (3.9s)
+  [MISS] teammates     FP code-path 'storage'                   p1=True p2=True → approve (expected reject) (3.7s)
+  [MISS] teammates     FP code-path 'common.datatransfer'       p1=True p2=True → approve (expected reject) (5.2s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (3.5s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.0s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (3.8s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (3.7s)
+
+================================================================================
+  variant: V2_qualified_full
+================================================================================
+  P1 tail : and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)
+  CODE_TOKEN: lowercase, inside qualified name
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (3.8s)
+  [OK  ] teammates     FP code-path 'storage'                   p1=False p2=True → reject  (expected reject) (3.6s)
+  [MISS] teammates     FP code-path 'common.datatransfer'       p1=True p2=True → approve (expected reject) (3.5s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (3.7s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (3.9s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (4.4s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (3.8s)
+
+================================================================================
+  variant: V3_qualified_short
+================================================================================
+  P1 tail : and not just as a qualified-name identifier
+  CODE_TOKEN: lowercase, inside qualified name
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (3.9s)
+  [MISS] teammates     FP code-path 'storage'                   p1=True p2=True → approve (expected reject) (3.9s)
+  [MISS] teammates     FP code-path 'common.datatransfer'       p1=True p2=True → approve (expected reject) (5.3s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.0s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.1s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (4.1s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (3.8s)
+
+================================================================================
+  variant: V4_qualified_hybrid
+================================================================================
+  P1 tail : and not just as a qualified-name (dotted) identifier
+  CODE_TOKEN: lowercase, inside qualified (dotted) name
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (3.7s)
+  [MISS] teammates     FP code-path 'storage'                   p1=True p2=True → approve (expected reject) (4.0s)
+  [OK  ] teammates     FP code-path 'common.datatransfer'       p1=False p2=True → reject  (expected reject) (3.8s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.1s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.1s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (3.6s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (4.9s)
+
+================================================================================
+  variant: V5_package_member_path
+================================================================================
+  P1 tail : and not just as a package- or member-access path
+  CODE_TOKEN: lowercase, inside member-access path
+  [MISS] teammates     FP code-path 'logic'                     p1=True p2=True → approve (expected reject) (3.5s)
+  [OK  ] teammates     FP code-path 'storage'                   p1=False p2=True → reject  (expected reject) (3.7s)
+  [MISS] teammates     FP code-path 'common.datatransfer'       p1=True p2=True → approve (expected reject) (3.7s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (3.9s)
+  [OK  ] mediastore    TP DB via 'Database component'           p1=True p2=True → approve (expected approve) (4.1s)
+  [OK  ] bigbluebutton TP kurento via 'KMS'                     p1=True p2=True → approve (expected approve) (4.0s)
+  [OK  ] bigbluebutton TP HTML5 Server via 'bbb-html5'          p1=True p2=True → approve (expected approve) (3.7s)
+
+
+====================================================================================================
+SUMMARY — dotted-path rename probe (V1 = current production)
+====================================================================================================
+Variant                     Correct (of 7)   FPs rejected   TPs preserved
+---------------------------------------------------------------------------
+V0_no_clause               4/7               0/3             4/4             
+V1_dotted_current          4/7               0/3             4/4             
+V2_qualified_full          5/7               1/3             4/4             
+V3_qualified_short         4/7               0/3             4/4             
+V4_qualified_hybrid        5/7               1/3             4/4             
+V5_package_member_path     5/7               1/3             4/4             
+
+====================================================================================================
+Pass criterion: FPs rejected ≥ 2/3 AND TPs preserved = 4/4
+====================================================================================================
+V1 (production) reference: FP=0/3, TP=4/4
+  V0_no_clause               FP=0/3 TP=4/4  → FAIL — regresses vs V1 floor
+  V2_qualified_full          FP=1/3 TP=4/4  → FAIL — regresses vs V1 floor
+  V3_qualified_short         FP=0/3 TP=4/4  → FAIL — regresses vs V1 floor
+  V4_qualified_hybrid        FP=1/3 TP=4/4  → FAIL — regresses vs V1 floor
+  V5_package_member_path     FP=1/3 TP=4/4  → FAIL — regresses vs V1 floor
+
+Results: /mnt/hostshare/ardoco-home/agent-linker/results/dotted_path_rename_20260604_073336.json
