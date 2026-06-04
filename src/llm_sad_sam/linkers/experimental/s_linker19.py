@@ -245,6 +245,51 @@ class SLinker19:
                 raise
         return results
 
+    # ── LLM call helper ──────────────────────────────────────────────────────
+
+    def _ask(
+        self,
+        prompt: str,
+        *,
+        timeout: int = 120,
+        label: str = "LLM call",
+        phase: str | None = None,
+        require: str | None = None,
+        require_present: str | None = None,
+    ) -> dict:
+        """Query the LLM, parse JSON, retry once on empty/incomplete response.
+
+        Success rule (in priority order):
+          - require_present=KEY  → KEY must appear in the parsed dict (empty list OK)
+          - require=KEY          → data[KEY] must be truthy (non-empty)
+          - neither              → any non-empty parsed dict succeeds
+
+        Returns the last parsed dict (possibly empty {}) — callers can still
+        do `if not data: continue`.
+        """
+        if phase is not None:
+            self.llm.set_phase(phase)
+
+        def _ok(d: dict | None) -> bool:
+            if not d:
+                return False
+            if require_present is not None:
+                return require_present in d
+            if require is not None:
+                return bool(d.get(require))
+            return True
+
+        data: dict = {}
+        for attempt in range(2):
+            parsed = self.llm.extract_json(self.llm.query(prompt, timeout=timeout))
+            if parsed is not None:
+                data = parsed
+            if _ok(data):
+                return data
+            if attempt == 0:
+                print(f"    {label}: empty response, retrying...")
+        return data
+
     # ── Main entry ───────────────────────────────────────────────────────────
 
     def link(self, text_path, model_path, **_kwargs):
@@ -402,13 +447,7 @@ Return JSON:
 {AMBIGUITY_RULES}
 
 JSON only:"""
-        data = None
-        for attempt in range(2):
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=100))
-            if data:
-                break
-            if attempt == 0:
-                print("    Ambiguity classification: empty response, retrying...")
+        data = self._ask(prompt, timeout=100, label="Ambiguity classification")
         if data:
             valid = set(names)
             raw_ambiguous = set(data.get("ambiguous", [])) & valid
@@ -438,13 +477,7 @@ Return JSON:
 }}
 JSON only:"""
 
-        data1 = None
-        for attempt in range(2):
-            data1 = self.llm.extract_json(self.llm.query(prompt1, timeout=300))
-            if data1:
-                break
-            if attempt == 0:
-                print("    Doc knowledge: empty response, retrying...")
+        data1 = self._ask(prompt1, timeout=300, label="Doc knowledge")
 
         all_mappings: dict[str, str] = {}
         all_scopes: dict[str, str] = {}
@@ -465,9 +498,7 @@ JSON only:"""
                     all_mappings[term] = full
                     all_scopes[term] = scope
 
-        data2 = None
         if all_mappings:
-            self.llm.set_phase("phase_1_doc_judge")
             mapping_list = [f"'{k}' -> {v}" for k, v in list(all_mappings.items())[:25]]
             prompt2 = f"""JUDGE: Review these component name mappings for correctness.
 
@@ -483,12 +514,8 @@ PROPOSED MAPPINGS:
 Return JSON:
 {{"approved": ["term1", "term2"]}}
 JSON only:"""
-            for attempt in range(2):
-                data2 = self.llm.extract_json(self.llm.query(prompt2, timeout=120))
-                if data2 and data2.get("approved"):
-                    break
-                if attempt == 0:
-                    print("    Doc knowledge judge: empty response, retrying...")
+            data2 = self._ask(prompt2, timeout=120, label="Doc knowledge judge",
+                              phase="phase_1_doc_judge", require="approved")
             approved = set(data2.get("approved", [])) if data2 else set(all_mappings.keys())
         else:
             approved = set()
@@ -551,13 +578,8 @@ DOCUMENT:
 Return JSON:
 {{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence"}}]}}
 JSON only:"""
-            data = None
-            for attempt in range(2):
-                data = self.llm.extract_json(self.llm.query(prompt, timeout=240))
-                if data and data.get("references"):
-                    break
-                if attempt == 0:
-                    print(f"    {pass_label}empty response, retrying batch...")
+            data = self._ask(prompt, timeout=240,
+                             label=f"{pass_label}batch", require="references")
             if not data:
                 continue
             for ref in data.get("references", []):
@@ -713,13 +735,8 @@ CASES:
 Return JSON:
 {{"validations": [{{"case": 1, "approve": true}}]}}
 JSON only:"""
-        data = None
-        for attempt in range(2):
-            data = self.llm.extract_json(self.llm.query(prompt, timeout=120))
-            if data and data.get("validations"):
-                break
-            if attempt == 0:
-                print("    Validation pass: empty response, retrying...")
+        data = self._ask(prompt, timeout=120, label="Validation pass",
+                         require="validations")
         results: dict[int, bool] = {}
         if data:
             for v in data.get("validations", []):
@@ -799,14 +816,9 @@ Return JSON:
 
 JSON only:"""
 
-            data = None
-            for attempt in range(2):
-                data = self.llm.extract_json(self.llm.query(prompt, timeout=300))
-                if data is not None and "resolutions" in data:
-                    break
-                if attempt == 0:
-                    print(f"    Coref batch {batch_start//batch_size + 1}: "
-                          "empty response, retrying...")
+            data = self._ask(prompt, timeout=300,
+                             label=f"Coref batch {batch_start//batch_size + 1}",
+                             require_present="resolutions")
             if not data:
                 continue
 
