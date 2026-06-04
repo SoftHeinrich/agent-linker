@@ -1,31 +1,27 @@
-"""S-Linker17f — Multi-Framing Extraction (union + validated coref + code-path filter).
+"""S-Linker17g — Framing C union (replaces L3 intersection) + code-path filter.
 
-Standalone copy of s_linker17e with ONE addition: a clean, full-LLM code-path
-filter on the validated multi_framing links.
+Standalone copy of s_linker17f with ONE change: Framing C 2-pass extraction
+now uses UNION instead of intersection (L3 consensus gate removed).
 
-  17e residual problem: the multi_framing extractor links a component when its
-  name appears only as a segment of a dotted package path (e.g. "logic.api",
-  "storage.entity", "common.datatransfer", "x.e2e", "client.util"). These are
-  code locations, not prose references — gold does not credit them. They were the
-  dominant remaining FP source (teammates: 8 of 10 FP).
+  17f residual problem (L3 intersection): empirical analysis across all 5
+  datasets showed the 2-pass intersection (keeping only candidates agreed by
+  both passes) is harmful or redundant:
+    - BBB: L3 rejected 5 candidates, all 5 TPs — pure recall loss, 0 FP benefit.
+    - TeaStore/JabRef: L3 redundant with Phase 4 (100% of rejected FPs caught
+      by Phase 4 anyway).
+    - Teammates: L3 suppresses some FPs independently but at 27% TP cost.
 
-  17f fix: Phase 4b — one narrow LLM question over the validated multi_framing
-  links. A link is dropped only when EVERY occurrence of the component name is a
-  segment of a longer DOT-SEPARATED identifier (name.x / x.name / a.name.b) with
-  no prose mention. Hyphenated/compound deployment names (e.g. "bbb-html5") and
-  any normal prose mention are kept. No regex, no mention_type detector, no
-  per-dataset rules — a single general principle the LLM applies.
+  17g fix: replace intersection with union in _extract_framing_c_candidates.
+  Phase 4 unified validation is the correct sole quality gate for all union
+  candidates. Expected: +5 recall on BBB, minimal precision cost (Phase 4
+  handles the FPs L3 was catching on Teammates).
 
-  Measured at checkpoint level (frozen 17e candidates): teammates 87.4→92.0
-  (6 dotted-path FP dropped, 0 TP killed), all other datasets unchanged.
-  Macro 93.4→94.3 (Claude).
-
-Architecture (unchanged from 17e except the Phase 4b filter):
+Architecture (unchanged from 17f except Framing C union):
   Phase 1: Alias discovery (doc_knowledge + model analysis) runs first.
   Phase 2: All three framings run in parallel, all with alias knowledge.
   Phase 3: Union merge — any framing match enters the candidate pool.
   Phase 4: Unified evidence-bundle validation (sole quality gate for framing links).
-  Phase 4b: Code-path filter — drop dot-separated package-path-only mentions (17f addition).
+  Phase 4b: Code-path filter — drop dot-separated package-path-only mentions.
   Phase 5: Coreference → single-pass validation.
   Phase 6: Final merge of validated framing links + validated coref links.
 
@@ -216,21 +212,18 @@ class AliasEntry:
 # Main linker class
 # ─────────────────────────────────────────────────────────────────────────────
 
-class SLinker17f:
-    """v2.6.2 unified multi-framing linker with union merge + validated coref.
+class SLinker17g:
+    """v2.6.2 unified multi-framing linker with Framing C union + validated coref + code-path filter.
 
-    Sequential alias discovery followed by parallel extraction across three
-    framings. Union merge feeds all candidates to a single unified
-    evidence-bundle validation pass — validation is the sole quality gate.
-
-    Compared to s_linker17b (k=2 voting): union keeps single-framing
-    candidates that k=2 dropped, recovering recall on TM/BBB.
+    Identical to s_linker17f except Framing C 2-pass extraction uses UNION
+    instead of intersection. Phase 4 unified validation is the sole quality
+    gate — no pre-filtering by pass agreement.
 
     experimental=True — research-grade; not canonical.
     canonical=False   — s_linker13_min remains canonical=True.
     """
 
-    _VARIANT_NAME = "s_linker17f"
+    _VARIANT_NAME = "s_linker17g"
 
     PRONOUN_PATTERN = re.compile(
         r'\b(it|they|this|these|that|those|its|their)\b',
@@ -280,7 +273,7 @@ class SLinker17f:
         # Note: no self._ilinker4 — 17c creates ILinker4 instances on-demand
         # in _run_framing_a and _run_framing_b with alias injection.
 
-        print(f"SLinker17f (v2.6.2 multi-framing union + validated coref + code-path filter, experimental=True)")
+        print(f"SLinker17g (v2.6.2 Framing C union + validated coref + code-path filter, experimental=True)")
         print(f"  Backend: {self.llm.describe_backend()}")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -691,7 +684,11 @@ JSON only:"""
         return {(c.sentence_number, c.component_id): c for c in candidates}
 
     def _extract_framing_c_candidates(self, sentences, components, name_to_id, sent_map):
-        """Framing C extraction: 2-pass entity-style with alias injection + intersection."""
+        """Framing C extraction: 2-pass entity-style with alias injection + UNION.
+
+        Uses union instead of intersection (17g change). Phase 4 is the sole
+        quality gate — pre-filtering by pass agreement (L3) rejected TPs on BBB.
+        """
         comp_names = get_comp_names(components)
         mappings = (
             [f"{term}={entry.component}" for term, entry in self.doc_knowledge.aliases.items()
@@ -707,14 +704,13 @@ JSON only:"""
                 pass_label="[C2] ", phase_tag="phase_2_framing_c_pass2"),
         })
         pass1, pass2 = results["pass1"], results["pass2"]
-        intersected = {key: pass1[key] for key in pass1 if key in pass2}
-        print(f"    Framing C consensus: Pass1={len(pass1)}, Pass2={len(pass2)}, "
-              f"Intersect={len(intersected)}")
-        # Stash the individual sub-pass link sets so layer2 can persist them
-        # (otherwise only the intersection survives; pass1/pass2 disagreements lost).
+        # Union: prefer pass1's CandidateLink when a key appears in both.
+        unioned = {key: pass1.get(key, pass2[key]) for key in set(pass1) | set(pass2)}
+        print(f"    Framing C union: Pass1={len(pass1)}, Pass2={len(pass2)}, "
+              f"Union={len(unioned)}")
         self._framing_c_pass1 = pass1
         self._framing_c_pass2 = pass2
-        return list(intersected.values())
+        return list(unioned.values())
 
     # ═══════════════════════════════════════════════════════════════════════
     # Phase 3 — Framing Union

@@ -109,6 +109,12 @@ CANONICAL_VARIANTS = [
     "s_linker17d",  # v2.6.2 17c + validated-antecedent coref gate: coref only fires for components with ≥1 validated link; targets JAB coref over-firing; NOT canonical
     "s_linker17e",  # v2.6.2 17c + validated coref: Phase 5 coref output passes single-pass validation before Phase 6; all links share same quality gate; NOT canonical
     "s_linker17f",  # v2.6.2 17e + Phase 4b code-path filter: drops dotted package-path-only multi_framing links (logic.api, x.e2e); clean full-LLM, no regex; NOT canonical
+    "s_linker17g",  # v2.6.2 17f + Framing C union (replaces L3 intersection): Phase 4 is sole gate; removes BBB recall loss from intersection; NOT canonical
+    "s_linker18a", # v2.6.3 17f + cleanup F (drop generic-filter): subclass of 17f, single twopass validator path, no CONTEXTUAL WORD USAGE prompt; NOT canonical
+    "s_linker18b", # v2.6.3 18a + cleanup E (unify coref validation via entity twopass); subclass of 18a; NOT canonical
+    "s_linker18c", # v2.6.3 18b + cleanup C (drop Phase 4b): no separate code-path filter LLM call; twopass p2 catches the FP class via mention_type signal; NOT canonical
+    "s_linker18d", # v2.6.3 18c + cleanup B-refactor (alias-aware antecedent check, replaces antecedent_via_alias LLM-flag bypass); NOT canonical
+    "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -653,6 +659,90 @@ VARIANT_SPECS = {
             "Targets the dominant residual FP source (TM: 8 dotted-path FP). Checkpoint: "
             "TM 87.4→92.0, 0 TP killed, macro 93.4→94.3 (Claude). "
             "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker17g": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker17g",
+        class_name="SLinker17g",
+        description=(
+            "S-Linker17g — v2.6.2 17f + Framing C union (experimental=True, NOT canonical). "
+            "Identical to s_linker17f except Framing C 2-pass extraction uses UNION instead of "
+            "intersection (L3 consensus gate removed). Empirical analysis: L3 intersection "
+            "hurt BBB (5 TPs killed, 0 FPs saved) and was redundant with Phase 4 on TeaStore/JabRef. "
+            "Phase 4 unified validation is the sole quality gate. "
+            "Expected: +5 recall on BBB, minimal precision cost. "
+            "s_linker13_min retains canonical=True."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker18a": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker18a",
+        class_name="SLinker18a",
+        description=(
+            "S-Linker18a — v2.6.3 17f + cleanup F (experimental=True, NOT canonical). "
+            "Subclass of s_linker17f. Removes the generic-filter pre-pass in Phase 4: all "
+            "candidates go directly to twopass validation. The is_ambiguous bundle field "
+            "carries ambiguity info into twopass p2. Empirically zero behavior change on "
+            "gpt-5.4 (only 1 candidate across 5 projects ever hit generic-filter). "
+            "Removes ~80 LOC and one LLM prompt variant."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker18b": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker18b",
+        class_name="SLinker18b",
+        description=(
+            "S-Linker18b — v2.6.3 18a + cleanup E (experimental=True, NOT canonical). "
+            "Subclass of s_linker18a. Unifies coref validation with entity twopass — coref "
+            "candidates go through the same p1+p2 validator as multi_framing candidates. "
+            "Feasibility study: +1 TP, −4 FP across 5 projects vs single-pass."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker18c": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker18c",
+        class_name="SLinker18c",
+        description=(
+            "S-Linker18c — v2.6.3 18b + cleanup C (experimental=True, NOT canonical). "
+            "Subclass of s_linker18b. Drops Phase 4b code-path filter entirely. The "
+            "evidence bundle's mention_type='lowercase, inside dotted path' signal is "
+            "surfaced to twopass p2, which catches 2 of 3 teammates dotted-path FPs. The "
+            "third (common.datatransfer→Common) escapes — accept +1 FP for ~50 LOC removed."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker18d": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker18d",
+        class_name="SLinker18d",
+        description=(
+            "S-Linker18d — v2.6.3 18c + cleanup B-refactor (experimental=True, NOT canonical). "
+            "Subclass of s_linker18c. Replaces the antecedent_via_alias LLM-flag bypass with "
+            "a structural alias-match check on the antecedent sentence. Equivalent recall, "
+            "removes a coupling between LLM-emitted metadata and a post-filter regex."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker18": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker18",
+        class_name="SLinker18",
+        description=(
+            "S-Linker18 — v2.6.3 clean unified variant (experimental=True, NOT canonical). "
+            "Subclass of s_linker18d. Refactors _classify_mention to return a typed "
+            "MentionType enum + structured info. Pure code readability — no behavior change "
+            "vs 18d. Final clean variant; the unified design supporting the paper narrative."
         ),
         canonical=False,
         experimental=True,
