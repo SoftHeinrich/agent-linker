@@ -245,6 +245,137 @@ class SLinker19:
                 raise
         return results
 
+    # ── Small utility helpers ────────────────────────────────────────────────
+
+    @staticmethod
+    def _iter_batches(items, n):
+        """Yield (batch_num, batch_slice) — batch_num is 1-indexed."""
+        for i, start in enumerate(range(0, len(items), n), start=1):
+            yield i, items[start:start + n]
+
+    @staticmethod
+    def _prev_prefix(snum, sent_map) -> str:
+        prev = sent_map.get(snum - 1)
+        return f"[prev: {prev.text}] " if prev else ""
+
+    # ── Prompt builders (strings kept byte-identical to inline versions) ─────
+
+    @staticmethod
+    def _prompt_ambiguity(names) -> str:
+        return f"""Classify these software architecture component names.
+
+NAMES: {', '.join(names)}
+
+{AMBIGUITY_FEW_SHOT}
+
+NOW CLASSIFY THE NAMES ABOVE.
+
+Return JSON:
+{{
+  "architectural": ["names that identify specific components"],
+  "ambiguous": ["names that could easily be used as ordinary words in documentation"]
+}}
+
+{AMBIGUITY_RULES}
+
+JSON only:"""
+
+    @staticmethod
+    def _prompt_doc_knowledge_extract(comp_names, doc_lines) -> str:
+        return f"""Find all alternative names used for these components in the document.
+
+COMPONENTS: {', '.join(comp_names)}
+
+{DOC_KNOWLEDGE_EXTRACTION_RULES}
+
+{ALIAS_SCOPE_RULES}
+
+DOCUMENT:
+{chr(10).join(doc_lines)}
+
+Return JSON:
+{{
+  "abbreviations": [{{"term": "short_form", "component": "FullComponent", "scope": "global"}}],
+  "synonyms":      [{{"term": "specific_alternative_name", "component": "FullComponent", "scope": "local"}}]
+}}
+JSON only:"""
+
+    @staticmethod
+    def _prompt_doc_knowledge_judge(comp_names, mapping_list) -> str:
+        return f"""JUDGE: Review these component name mappings for correctness.
+
+COMPONENTS: {', '.join(comp_names)}
+
+PROPOSED MAPPINGS:
+{chr(10).join(mapping_list)}
+
+{DOC_KNOWLEDGE_JUDGE_EXAMPLES}
+
+{DOC_KNOWLEDGE_JUDGE_RULES}
+
+Return JSON:
+{{"approved": ["term1", "term2"]}}
+JSON only:"""
+
+    @staticmethod
+    def _prompt_extraction(comp_names, mappings, batch) -> str:
+        return f"""Extract ALL references to software architecture components from this document.
+
+COMPONENTS: {', '.join(comp_names)}
+{f'KNOWN ALIASES: {", ".join(mappings)}' if mappings else ''}
+
+{ENTITY_EXTRACTION_RULES}
+
+DOCUMENT:
+{chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
+
+Return JSON:
+{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence"}}]}}
+JSON only:"""
+
+    @staticmethod
+    def _prompt_validation(comp_names, cases, focus) -> str:
+        return f"""Validate component references in a software architecture document. {focus}
+
+COMPONENTS: {', '.join(comp_names)}
+
+{VALIDATION_RULES}
+
+CASES:
+{chr(10).join(cases)}
+
+Return JSON:
+{{"validations": [{{"case": 1, "approve": true}}]}}
+JSON only:"""
+
+    @staticmethod
+    def _prompt_coref(comp_names, cases) -> str:
+        prompt = f"""Resolve anaphoric references (pronouns and role-referential noun phrases) to architecture components.
+
+COMPONENTS: {', '.join(comp_names)}
+
+For each TARGET sentence below, identify any pronoun or role-referential
+noun phrase that refers back to a component listed above. If a target
+sentence has no anaphoric reference to a listed component, return no
+resolution for it. Be conservative — only include resolutions you are
+CERTAIN about.
+
+"""
+        for i, case in enumerate(cases):
+            prompt += f"--- Case {i+1}: S{case['sent'].number} ---\n"
+            prompt += "CONTEXT:\n" + "\n".join(case["context"]) + "\n"
+            prompt += f"TARGET: S{case['sent'].number} (marked with >>>)\n\n"
+
+        prompt += f"""{COREF_RULES}
+
+{ANTECEDENT_ALIAS_RULES}
+
+Return JSON:
+{{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "reference": "the server", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name", "antecedent_via_alias": false}}]}}
+
+JSON only:"""
+        return prompt
+
     # ── LLM call helper ──────────────────────────────────────────────────────
 
     def _ask(
@@ -430,23 +561,7 @@ class SLinker19:
         self.llm.set_phase("phase_1_model")
         names = [c.name for c in components]
         knowledge = ModelKnowledge()
-        prompt = f"""Classify these software architecture component names.
-
-NAMES: {', '.join(names)}
-
-{AMBIGUITY_FEW_SHOT}
-
-NOW CLASSIFY THE NAMES ABOVE.
-
-Return JSON:
-{{
-  "architectural": ["names that identify specific components"],
-  "ambiguous": ["names that could easily be used as ordinary words in documentation"]
-}}
-
-{AMBIGUITY_RULES}
-
-JSON only:"""
+        prompt = self._prompt_ambiguity(names)
         data = self._ask(prompt, timeout=100, label="Ambiguity classification")
         if data:
             valid = set(names)
@@ -459,23 +574,7 @@ JSON only:"""
         comp_names = [c.name for c in components]
         doc_lines = [s.text for s in sentences]
 
-        prompt1 = f"""Find all alternative names used for these components in the document.
-
-COMPONENTS: {', '.join(comp_names)}
-
-{DOC_KNOWLEDGE_EXTRACTION_RULES}
-
-{ALIAS_SCOPE_RULES}
-
-DOCUMENT:
-{chr(10).join(doc_lines)}
-
-Return JSON:
-{{
-  "abbreviations": [{{"term": "short_form", "component": "FullComponent", "scope": "global"}}],
-  "synonyms":      [{{"term": "specific_alternative_name", "component": "FullComponent", "scope": "local"}}]
-}}
-JSON only:"""
+        prompt1 = self._prompt_doc_knowledge_extract(comp_names, doc_lines)
 
         data1 = self._ask(prompt1, timeout=300, label="Doc knowledge")
 
@@ -499,21 +598,8 @@ JSON only:"""
                     all_scopes[term] = scope
 
         if all_mappings:
-            mapping_list = [f"'{k}' -> {v}" for k, v in list(all_mappings.items())[:25]]
-            prompt2 = f"""JUDGE: Review these component name mappings for correctness.
-
-COMPONENTS: {', '.join(comp_names)}
-
-PROPOSED MAPPINGS:
-{chr(10).join(mapping_list)}
-
-{DOC_KNOWLEDGE_JUDGE_EXAMPLES}
-
-{DOC_KNOWLEDGE_JUDGE_RULES}
-
-Return JSON:
-{{"approved": ["term1", "term2"]}}
-JSON only:"""
+            mapping_list = [f"'{k}' -> {v}" for k, v in all_mappings.items()]
+            prompt2 = self._prompt_doc_knowledge_judge(comp_names, mapping_list)
             data2 = self._ask(prompt2, timeout=120, label="Doc knowledge judge",
                               phase="phase_1_doc_judge", require="approved")
             approved = set(data2.get("approved", [])) if data2 else set(all_mappings.keys())
@@ -560,24 +646,11 @@ JSON only:"""
             self.llm.set_phase(phase_tag)
         batch_size = 50
         candidates: dict = {}
-        for batch_start in range(0, len(sentences), batch_size):
-            batch = sentences[batch_start:batch_start + batch_size]
+        for batch_num, batch in self._iter_batches(sentences, batch_size):
             if len(sentences) > batch_size:
-                print(f"    {pass_label}batch {batch_start//batch_size + 1}: "
+                print(f"    {pass_label}batch {batch_num}: "
                       f"S{batch[0].number}-S{batch[-1].number} ({len(batch)} sents)")
-            prompt = f"""Extract ALL references to software architecture components from this document.
-
-COMPONENTS: {', '.join(comp_names)}
-{f'KNOWN ALIASES: {", ".join(mappings[:20])}' if mappings else ''}
-
-{ENTITY_EXTRACTION_RULES}
-
-DOCUMENT:
-{chr(10).join([f"S{s.number}: {s.text}" for s in batch])}
-
-Return JSON:
-{{"references": [{{"sentence": N_INTEGER, "component": "Name", "matched_text": "text found in sentence"}}]}}
-JSON only:"""
+            prompt = self._prompt_extraction(comp_names, mappings, batch)
             data = self._ask(prompt, timeout=240,
                              label=f"{pass_label}batch", require="references")
             if not data:
@@ -602,9 +675,6 @@ JSON only:"""
         return candidates
 
     # ── Phase 4 — Mention classification + evidence bundle ──────────────────
-
-    def _classify_mention(self, comp_name: str, text: str) -> str:
-        return self._classify_mention_typed(comp_name, text).value
 
     def _classify_mention_typed(self, comp_name: str, text: str) -> MentionType:
         if has_standalone_mention(comp_name, text):
@@ -640,7 +710,7 @@ JSON only:"""
     def _build_evidence_bundle(self, candidate, sent_map, rationale="Framing C extraction"):
         comp_name = candidate.component_name
         snum = candidate.sentence_number
-        mention_type = self._classify_mention(comp_name, candidate.sentence_text)
+        mention_type = self._classify_mention_typed(comp_name, candidate.sentence_text).value
         prev_sent = sent_map.get(snum - 1)
         preceding_text = prev_sent.text if prev_sent else ""
         anchors = []
@@ -673,11 +743,11 @@ JSON only:"""
             f"  Rationale: {bundle.extraction_rationale}",
         ]
         if bundle.preceding_text:
-            lines.append(f"  [prev: \"{bundle.preceding_text[:80]}\"]")
+            lines.append(f"  [prev: \"{bundle.preceding_text}\"]")
         if bundle.anchor_sentences:
             lines.append("  Anchors (confirmed refs):")
-            for a in bundle.anchor_sentences[:3]:
-                lines.append(f"    {a[:100]}")
+            for a in bundle.anchor_sentences:
+                lines.append(f"    {a}")
         return "\n".join(lines)
 
     # ── Phase 4 — Twopass validation ────────────────────────────────────────
@@ -689,12 +759,10 @@ JSON only:"""
         comp_names = get_comp_names(components)
         decisions: dict = {}
         approved = []
-        for batch_start in range(0, len(candidates), 25):
-            batch = candidates[batch_start:batch_start + 25]
+        for _, batch in self._iter_batches(candidates, 25):
             cases = []
             for i, c in enumerate(batch):
-                prev = sent_map.get(c.sentence_number - 1)
-                p = f"[prev: {prev.text[:60]}] " if prev else ""
+                p = self._prev_prefix(c.sentence_number, sent_map)
                 bundle = bundles.get((c.sentence_number, c.component_id))
                 evidence_block = self._format_evidence(bundle) if bundle else ""
                 case_text = (
@@ -723,18 +791,7 @@ JSON only:"""
     def _run_validation_pass(self, comp_names, cases, focus, phase_tag=None):
         if phase_tag:
             self.llm.set_phase(phase_tag)
-        prompt = f"""Validate component references in a software architecture document. {focus}
-
-COMPONENTS: {', '.join(comp_names)}
-
-{VALIDATION_RULES}
-
-CASES:
-{chr(10).join(cases)}
-
-Return JSON:
-{{"validations": [{{"case": 1, "approve": true}}]}}
-JSON only:"""
+        prompt = self._prompt_validation(comp_names, cases, focus)
         data = self._ask(prompt, timeout=120, label="Validation pass",
                          require="validations")
         results: dict[int, bool] = {}
@@ -778,9 +835,7 @@ JSON only:"""
         self.llm.set_phase("phase_5_coref")
 
         # Batch all sentences in groups of 10 (LLM context window).
-        batch_size = 10
-        for batch_start in range(0, len(sentences), batch_size):
-            batch = sentences[batch_start:batch_start + batch_size]
+        for batch_num, batch in self._iter_batches(sentences, 10):
             cases = []
             for sent in batch:
                 context = []
@@ -791,33 +846,10 @@ JSON only:"""
                         context.append(f"{marker} S{s.number}: {s.text}")
                 cases.append({"sent": sent, "context": context})
 
-            prompt = f"""Resolve anaphoric references (pronouns and role-referential noun phrases) to architecture components.
-
-COMPONENTS: {', '.join(comp_names)}
-
-For each TARGET sentence below, identify any pronoun or role-referential
-noun phrase that refers back to a component listed above. If a target
-sentence has no anaphoric reference to a listed component, return no
-resolution for it. Be conservative — only include resolutions you are
-CERTAIN about.
-
-"""
-            for i, case in enumerate(cases):
-                prompt += f"--- Case {i+1}: S{case['sent'].number} ---\n"
-                prompt += "CONTEXT:\n" + "\n".join(case["context"]) + "\n"
-                prompt += f"TARGET: S{case['sent'].number} (marked with >>>)\n\n"
-
-            prompt += f"""{COREF_RULES}
-
-{ANTECEDENT_ALIAS_RULES}
-
-Return JSON:
-{{"resolutions": [{{"case": 1, "sentence": N_INTEGER, "reference": "the server", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name", "antecedent_via_alias": false}}]}}
-
-JSON only:"""
+            prompt = self._prompt_coref(comp_names, cases)
 
             data = self._ask(prompt, timeout=300,
-                             label=f"Coref batch {batch_start//batch_size + 1}",
+                             label=f"Coref batch {batch_num}",
                              require_present="resolutions")
             if not data:
                 continue
@@ -860,8 +892,7 @@ JSON only:"""
         validated = []
         decisions: dict = {}
         self.llm.set_phase("phase_5_coref_validation")
-        for batch_start in range(0, len(coref_links), 25):
-            batch = coref_links[batch_start:batch_start + 25]
+        for _, batch in self._iter_batches(coref_links, 25):
             cases = []
             for i, lk in enumerate(batch):
                 key = (lk.sentence_number, lk.component_id)
@@ -870,8 +901,7 @@ JSON only:"""
                     validated.append(lk)
                     decisions[key] = {"approved": True, "path": "coref_no_sentence_keep"}
                     continue
-                prev = sent_map.get(lk.sentence_number - 1)
-                p = f"[prev: {prev.text[:60]}] " if prev else ""
+                p = self._prev_prefix(lk.sentence_number, sent_map)
                 cases.append((
                     i, lk,
                     f'Case {len(cases)+1}: pronoun/role-ref -> {lk.component_name}\n'
