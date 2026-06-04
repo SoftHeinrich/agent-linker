@@ -155,40 +155,14 @@ that the other agents extend on top of. This experiment shows whether the four
 reference categories really need separate agents, or whether one agent already
 covers the others on this benchmark.
 
-\subsection{Dataset} \label{sec:dataset}
-
-We use the public benchmark released with TransArc~\cite{transarc,replication}.
-It contains five Java open-source systems with hand-curated architecture docs,
-an architecture model, and a gold standard at both the component and file level:
-\emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and
-\emph{JabRef}. We use this benchmark because it is the standard evaluation set
-for this task~\cite{transarc,lissa} and because it gives us gold links at both
-granularities, which we need for both \ref{RQ1 SOTA comparison} (doc-to-model
-and doc-to-code) and \ref{RQ2 metrics}.
-
-\input{table/dataset-stat}
-
-\autoref{tab:dataset} lists, per project, the number of sentences in the
-architecture document, the number of components in the architecture model, the
-number of code files, the number of human gold decisions, and the number of
-file-level links after each directory decision is expanded to its files. The
-expansion factor differs by two orders of magnitude across projects (1.0$\times$
-for MediaStore, 217.6$\times$ for JabRef). This is one of the reasons we report
-the extra metrics in \ref{RQ2 metrics}.
-
-For each project we use the architecture document as input~$D$, the
-architecture model as the component set~$C$, and the gold standard as the
-ground-truth links between sentences of~$D$ and components of~$C$ (or files
-belonging to components of~$C$, for the doc-to-code task). We use the official
-benchmark loaders for $D$ and $C$ to stay aligned with prior work.
 
 \subsection{Dataset}
 \label{sec:dataset}
 
-We use the public benchmark released with TransArc~\cite{transarc,replication}.
+We use the ardoco benchmark, the largest architectural traceability benchmark to the best of our knowledge\cite{}.
 It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at two grains, sentence-to-component and sentence-to-file:
 \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
-We use this benchmark because it is the standard evaluation set for this task~\cite{transarc,lissa} and because it gives us gold links at both granularities, which we need for both \ref{RQ1 SOTA comparison} (doc-to-model and doc-to-code) and \ref{RQ2 metrics}.
+We use this benchmark because it is the standard evaluation set for this task~\cite{transarc,lissa}.
 
 \input{table/dataset-stat}
 
@@ -198,3 +172,4 @@ This is one of the reasons we report the extra metrics in \ref{RQ2 metrics}.
 
 For each project we use the architecture document as input~$D$, the architecture model as the component set~$C$, and the gold standard as the ground-truth links between sentences of~$D$ and components of~$C$ (or files belonging to components of~$C$, for the doc-to-code task).
 We use the official benchmark loaders for $D$ and $C$ to stay aligned with prior work.
+%%%%TODO, also show how bias and long tail distribution in trace links
