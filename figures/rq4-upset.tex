@@ -1,0 +1,82 @@
+% RQ4 UpSet-style plot of true-positive sets per agent.
+% Top: bar heights = number of TPs in each intersection.
+% Bottom: intersection matrix; filled dots mark which agents are in the
+% intersection, connected by a vertical line.
+%
+% Selected intersections (a full UpSet would enumerate all non-empty subsets;
+% we display the most informative seven):
+%   1. Canonical exclusive
+%   2. Alias exclusive
+%   3. Pronoun exclusive
+%   4. Partial exclusive
+%   5. Canonical + Alias
+%   6. Canonical + Partial
+%   7. All four
+%
+% All bar heights at 0 until per-agent TP attribution is extracted from the
+% s_linker17f logs.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  bar/.style={fill=darkblue,draw=black!70},
+  dot/.style={circle,fill=black,inner sep=1.4pt},
+  no-dot/.style={circle,draw=black!30,fill=white,inner sep=1.4pt},
+  connect/.style={thick,black},
+  label/.style={font=\scriptsize,anchor=east},
+  axn/.style={font=\tiny,gray!60},
+]
+\def\cw{0.6}\def\bh{2.0}\def\rh{0.30}\def\maxct{100}
+
+% --- top bar chart ---
+% (col index, count) -- all counts 0 placeholder
+\foreach \col/\ct/\lbl in {%
+  0/0/{Canon only},%
+  1/0/{Alias only},%
+  2/0/{Pronoun only},%
+  3/0/{Partial only},%
+  4/0/{Can+Alias},%
+  5/0/{Can+Partial},%
+  6/0/{All four}%
+} {
+  \pgfmathsetmacro{\bhc}{\bh * \ct / \maxct}
+  \draw[bar] ({\cw*\col + 0.15*\cw},0) rectangle ({\cw*\col + 0.85*\cw},\bhc);
+  \node[axn,anchor=south] at ({\cw*\col + 0.5*\cw},\bhc) {\ct};
+}
+
+% --- intersection matrix below ---
+% rows: Canonical, Alias, Pronoun, Partial
+% mark membership per column.
+\foreach \row/\agent in {0/Canonical,1/Alias,2/Pronoun,3/Partial-name} {
+  \node[label] at (-0.1,{-\rh*\row - 0.4}) {\agent};
+  \foreach \col in {0,1,2,3,4,5,6} {
+    \node[no-dot] at ({\cw*\col + 0.5*\cw},{-\rh*\row - 0.4}) {};
+  }
+}
+% memberships:
+% col 0: Canonical
+\node[dot] at ({\cw*0 + 0.5*\cw},-\rh*0 - 0.4) {};
+% col 1: Alias
+\node[dot] at ({\cw*1 + 0.5*\cw},-\rh*1 - 0.4) {};
+% col 2: Pronoun
+\node[dot] at ({\cw*2 + 0.5*\cw},-\rh*2 - 0.4) {};
+% col 3: Partial
+\node[dot] at ({\cw*3 + 0.5*\cw},-\rh*3 - 0.4) {};
+% col 4: Canonical + Alias
+\node[dot] at ({\cw*4 + 0.5*\cw},-\rh*0 - 0.4) {};
+\node[dot] at ({\cw*4 + 0.5*\cw},-\rh*1 - 0.4) {};
+\draw[connect] ({\cw*4 + 0.5*\cw},-\rh*0 - 0.4) -- ({\cw*4 + 0.5*\cw},-\rh*1 - 0.4);
+% col 5: Canonical + Partial
+\node[dot] at ({\cw*5 + 0.5*\cw},-\rh*0 - 0.4) {};
+\node[dot] at ({\cw*5 + 0.5*\cw},-\rh*3 - 0.4) {};
+\draw[connect] ({\cw*5 + 0.5*\cw},-\rh*0 - 0.4) -- ({\cw*5 + 0.5*\cw},-\rh*3 - 0.4);
+% col 6: All four
+\foreach \row in {0,1,2,3} {
+  \node[dot] at ({\cw*6 + 0.5*\cw},-\rh*\row - 0.4) {};
+}
+\draw[connect] ({\cw*6 + 0.5*\cw},-\rh*0 - 0.4) -- ({\cw*6 + 0.5*\cw},-\rh*3 - 0.4);
+
+\node[font=\scriptsize,anchor=south west,rotate=90] at (-1.0,0) {TPs in set};
+\end{tikzpicture}
+\caption{UpSet-style summary of true-positive set membership across the four linker agents in the Full \approach{} pipeline. Dots in a column mark the agents whose TP sets intersect; bar height = number of gold links in that intersection. Bars at height $0$ are not yet obtained.}
+\label{fig:rq4-upset}
+\end{figure}

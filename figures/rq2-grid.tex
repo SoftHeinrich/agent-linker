@@ -1,0 +1,60 @@
+% RQ2 small-multiples grid: 4 metrics x 5 projects, 3 systems per panel.
+% Each panel is one (metric, project) cell with three side-by-side bars:
+% TransArc (grey), LiSSA (hatched), \approach{} (saturated blue).
+% Y-axis shared per row.
+%
+% Data filled where available (TransArc per-project F1 from SAD-CODE CSV);
+% \approach{} doc-to-code metrics and LiSSA columns are placeholders at 0.
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  bar-ta/.style={fill=gray!55,draw=black!60},
+  bar-li/.style={fill=white,draw=black!60,pattern color=black!50,pattern=north east lines},
+  bar-aa/.style={fill=darkblue,draw=black!70},
+  panel/.style={draw=black!25,thin},
+  metric/.style={font=\scriptsize,anchor=east,align=right},
+  proj/.style={font=\scriptsize,anchor=south},
+  axn/.style={font=\tiny,gray!60},
+]
+\def\W{1.6}  % panel width
+\def\H{1.0}  % panel height
+\def\bw{0.18}% bar width
+
+% metric rows (top to bottom) and their TransArc / 0 / 0 values per project
+% columns: MediaStore, TeaStore, Teammates, BigBlueButton, JabRef
+% data is filled where we have it; AALinker and LiSSA are 0 placeholders.
+\foreach \row/\mname/\v in {%
+  0/File \fone/{0.588,0.830,0.821,0.831,0.943},%
+  1/Per-comp \fone/{0.642,0.828,0.648,0.574,0.880},%
+  2/Decision \fone/{0.568,0.824,0.564,0.629,0.394},%
+  3/Noise rate/{0.000,0.000,0.000,0.000,0.000}%
+} {
+  \node[metric] at (-0.1,-\H*\row - 0.5*\H) {\mname};
+  \foreach \col/\ta in \v {
+    \pgfmathsetmacro{\hta}{\H*\ta}
+    \def\hli{0}\def\haa{0}
+    \begin{scope}[xshift=\W*\col cm,yshift=-\H*\row cm]
+      \draw[panel] (0,0) rectangle (\W,-\H);
+      \draw[bar-ta] ({0.20*\W - \bw},-\H) rectangle ({0.20*\W + \bw},{-\H + \hta});
+      \draw[bar-li] ({0.50*\W - \bw},-\H) rectangle ({0.50*\W + \bw},{-\H + \hli});
+      \draw[bar-aa] ({0.80*\W - \bw},-\H) rectangle ({0.80*\W + \bw},{-\H + \haa});
+    \end{scope}
+  }
+}
+
+% project headers
+\foreach \col/\pname in {0/MediaStore,1/TeaStore,2/Teammates,3/BigBlueButton,4/JabRef} {
+  \node[proj] at ({\W*\col + 0.5*\W},0.15) {\pname};
+}
+
+% legend
+\node[bar-ta,minimum width=8pt,minimum height=6pt,inner sep=0pt] (lt) at (0.2,-\H*4 - 0.2) {};
+\node[anchor=west,font=\tiny] at (0.35,-\H*4 - 0.2) {TransArc};
+\node[bar-li,minimum width=8pt,minimum height=6pt,inner sep=0pt] (ll) at (2.0,-\H*4 - 0.2) {};
+\node[anchor=west,font=\tiny] at (2.15,-\H*4 - 0.2) {LiSSA};
+\node[bar-aa,minimum width=8pt,minimum height=6pt,inner sep=0pt] (la) at (3.4,-\H*4 - 0.2) {};
+\node[anchor=west,font=\tiny] at (3.55,-\H*4 - 0.2) {\approach{}};
+\end{tikzpicture}
+\caption{Per-metric, per-project comparison on doc-to-code. Each panel shows three bars (TransArc, LiSSA, \approach{}); higher is better except \emph{Noise rate} (last row). \approach{} bars at height $0$ are not yet obtained.}
+\label{fig:rq2-grid}
+\end{figure*}
