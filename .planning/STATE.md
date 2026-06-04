@@ -177,6 +177,7 @@ See `.planning/milestones/v2.5-MILESTONE-AUDIT.md` for full audit.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
+| 20260604-lissa-rq1-eval | Clone lissa-replication into sota/; re-evaluate gpt-5-mini d2m/d2c tracelinks via metrics_api.py; fill RQ1 LiSSA cells (d2m all 5 projects; d2c 3 projects, teammates/jabref em-dashed) | 2026-06-04 | — | [20260604-lissa-rq1-eval](./quick/20260604-lissa-rq1-eval/) |
 
 ## Session Continuity
 

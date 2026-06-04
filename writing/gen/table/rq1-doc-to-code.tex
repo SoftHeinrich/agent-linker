@@ -1,13 +1,23 @@
 % RQ1 doc-to-code: per-project P/R/F1 for TransArc, LiSSA, AALinker.
 % Data sources:
-%   TransArc F1: evaluation/reports/SADCODE_S11_S13F_VS_TRANSARC.csv (transarc_file_f1 column)
+%   TransArc F1:           evaluation/reports/SADCODE_S11_S13F_VS_TRANSARC.csv (transarc_file_f1 column)
+%   LiSSA (gpt-5-mini):    evaluation/reports/lissa_rq1_d2c.csv
+%                          produced by approach/scripts/v2.6.3/eval_lissa_rq1.py from
+%                          sota/lissa-replication/results/tracelinks/d2c/<project>-gpt-5-mini.csv,
+%                          re-evaluated against the TransArc sad-code enrolled gold via
+%                          transarc-emp/src/lib/metrics_api.py::compute_sad_code_metrics
+%                          (apples-to-apples, file-level).
 % Cells reported as 0.000 are not yet obtained:
 %   - TransArc P/R: CSV gives only F1 columns.
-%   - LiSSA P/R/F1: not yet run on doc-to-code.
 %   - AALinker P/R/F1: 17f composition with the component-to-file mapping
 %     has not yet been re-evaluated on the doc-to-code task.
+% Cells reported as --- mean the system did not run on that project:
+%   - LiSSA d2c covers only MediaStore, TeaStore, BigBlueButton; the LiSSA
+%     replication package ships no d2c tracelinks for Teammates / JabRef.
+%   - LiSSA macro is em-dashed because it would otherwise mix a 3-project
+%     mean into a column whose other rows are 5-project means.
 \begin{table}[t]
-\caption{Doc-to-code performance per project, file-level. Macro = mean across five projects. Cells reported as $0.000$ are not yet obtained.}
+\caption{Doc-to-code performance per project, file-level. Macro = mean across five projects. Cells reported as $0.000$ are not yet obtained; cells reported as $\text{---}$ mean the system was not run on that project (LiSSA d2c was only released for MediaStore, TeaStore, BigBlueButton).}
 \label{tab:rq1-doc-to-code}
 \centering\small
 \begin{tabular}{@{}lrrrrrrrrr@{}}
@@ -16,13 +26,13 @@
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
 Project        &     P &     R &  \fone &     P &     R &  \fone &     P &     R &  \fone \\
 \midrule
-MediaStore     & 0.000 & 0.000 & 0.588 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-TeaStore       & 0.000 & 0.000 & 0.830 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-Teammates      & 0.000 & 0.000 & 0.821 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-BigBlueButton  & 0.000 & 0.000 & 0.831 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-JabRef         & 0.000 & 0.000 & 0.943 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+MediaStore     & 0.000 & 0.000 & 0.588 & 0.076 & 0.627 & 0.136 & 0.000 & 0.000 & 0.000 \\
+TeaStore       & 0.000 & 0.000 & 0.830 & 0.357 & 0.310 & 0.332 & 0.000 & 0.000 & 0.000 \\
+Teammates      & 0.000 & 0.000 & 0.821 &   --- &   --- &   --- & 0.000 & 0.000 & 0.000 \\
+BigBlueButton  & 0.000 & 0.000 & 0.831 & 0.149 & 0.111 & 0.127 & 0.000 & 0.000 & 0.000 \\
+JabRef         & 0.000 & 0.000 & 0.943 &   --- &   --- &   --- & 0.000 & 0.000 & 0.000 \\
 \midrule
-Macro average  & 0.000 & 0.000 & 0.803 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+Macro average  & 0.000 & 0.000 & 0.803 &   --- &   --- &   --- & 0.000 & 0.000 & 0.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
