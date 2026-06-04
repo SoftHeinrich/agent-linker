@@ -12,7 +12,7 @@ We answer the four research questions on the five-project benchmark; \approach{}
 \autoref{tab:rq1} reports per-project precision, recall, and \fone\ on both link tasks, and \autoref{fig:rq1-dumbbell} visualises the per-project gain.
 \approach{} reaches a doc-to-model macro \fone\ of $0.920$ against SWATTR's $0.799$ -- a gain of $+12.1$ percentage points.
 The picture is uniform on four projects and reverses on one: doc-to-model \fone\ rises from $0.694$ to $0.949$ on MediaStore ($+25.5$pp), from $0.851$ to $0.964$ on TeaStore ($+11.3$pp), from $0.710$ to $0.922$ on Teammates ($+21.2$pp), and from $0.947$ to $0.973$ on JabRef ($+2.6$pp).
-This is because the knowledge layer resolves each alias and partial-name reference once and the four linker agents reuse that resolution across every sentence in the document, whereas SWATTR's lexical pipeline renegotiates the same name on every encounter and LiSSA's single-pass classifier carries no document-level state at all~\todo{LiSSA doc-to-model numbers}.
+This is because the knowledge layer resolves each alias and partial-name reference once and the four linker agents reuse that resolution across every sentence in the document, whereas SWATTR's lexical pipeline renegotiates the same name on every encounter and LiSSA's single-pass classifier carries no document-level state at all~\todo{LiSSA numbers}.
 Therefore \approach{} closes most of the macro \fone\ gap to the oracle ceiling on the link task it targets directly.
 
 The same picture holds on the downstream doc-to-code task, where \approach{} composes its doc-to-model output with the component-to-file mapping that TransArc also uses.

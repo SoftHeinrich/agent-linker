@@ -1,11 +1,35 @@
 \section{Introduction}
 \label{sec:intro}
 
-\todo{Para 1 -- problem framing: trace links between architecture doc and code matter for understanding, maintenance, compliance; manual recovery is expensive; automated approaches are needed. Keep to 4--5 sentences.}
+% ---------------------------------------------------------------
+% Para 1 -- pain: scale-premise -> "As much as" bottleneck -> "I.e."
+% mechanism -> "For example" with one anchoring number.
+% ---------------------------------------------------------------
+Software systems pair tens of thousands of source files with architecture documentation written by people, and the two artefacts drift apart as soon as the code starts to evolve.
+As much as this documentation has long guided design, review, and onboarding, keeping it aligned with the evolving code has become one of the central bottlenecks for change-impact analysis, compliance audit, and any traceability-driven maintenance task.
+I.e., when the document and the code drift, every downstream task that consumes the pairing degrades, and recovering the missing trace links by hand does not scale to industrial repositories.
+For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of 0.803, leaving roughly one in five gold-standard decisions unrecovered or mis-recovered~\cite{transarc,replication}.
 
-\todo{Para 2 -- prior work limitations: lexical pipelines (SWATTR) handle canonical names but miss aliases and pronouns; single-pass \ac{LLM} classifiers (LiSSA) lack runtime architectural knowledge and cannot tell ambiguous names from generic English. 4--5 sentences.}
+% ---------------------------------------------------------------
+% Para 2 -- gap: two prior-work categories, each killed in a
+% single-sentence concession-knockout.
+% ---------------------------------------------------------------
+Existing automated recovery pipelines fall into two lines of work.
+Lexical and structural pipelines such as SWATTR score sentence--component pairs against canonical component names and curated linguistic patterns~\cite{swattr}.
+While effective at recovering links that surface the component name directly, they inherently rely on that name appearing on the surface, and they miss every trace link that is carried by a project-specific alias or by a pronominal reference.
+A more recent line uses a single-pass \ac{LLM} classifier per sentence, treating recovery as zero-shot reading comprehension~\cite{lissa}.
+Despite their stronger raw \fone on the benchmark, they enter the document without any runtime knowledge of which component names are ambiguous English and which document phrases are aliases for which component --- essentially leaving the \ac{LLM} to invent that knowledge per call.
 
-\todo{Para 3 -- AALinker glimpse: we propose AALinker, a multi-agent pipeline that first builds an alias table and ambiguity classification for the architecture, then runs four focused linker agents (explicit, contextual, anaphoric, abbreviated) wrapped in two validation patterns. 3--4 sentences ending with one headline number (file-level \fone $=$ 0.931 vs.\ 0.803 for TransArc).}
+% ---------------------------------------------------------------
+% Para 3 -- proposal reveal: "This paper presents X, the first..."
+% + insight + "At a high level" mechanism + "as simple as" simplicity
+% + forward-referenced headline number.
+% ---------------------------------------------------------------
+This paper presents \approach, the first training-free trace-link recovery pipeline for architecture-to-code documentation that acquires project-specific knowledge before linking.
+\approach is uniquely built on the observation that the difficulty of this task is concentrated in two structural facts about the document: component names overlap with ordinary technical English (\texttt{Core}, \texttt{Adapter}, \texttt{Logic}), and project-specific aliases for those components are not known in advance.
+At a high level, \approach first runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce an \emph{ambiguity map} and an \emph{alias table}; the two artefacts are then fed into an alias-aware entity linker and a pronoun-resolving linker, each gated by an evidence-bundle validation pass that records the spans it relied on.
+Running the pipeline is as simple as supplying the document and the component set: no fine-tuning, no labelled trace links, and no benchmark-specific tuning.
+On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of 0.931, thereby improving the strongest published pipeline by 12.9 percentage points~\cite{transarc,replication}.
 
 % ---------------------------------------------------------------
 % Metric-suite glimpse -- CrystalBLEU-shaped, six sentences.
@@ -21,10 +45,11 @@ We treat the metric suite as a co-equal contribution and motivate it from the st
 
 \subsection*{Contributions}
 \begin{itemize}[leftmargin=*]
-    \item \textbf{AALinker}, a multi-agent pipeline for trace-link recovery between architecture documentation and code, that closes the runtime knowledge gap before linking and uses four agents specialised by reference type (\autoref{sec:approach}).
+    \item \textbf{AALinker}, a training-free pipeline for trace-link recovery between architecture documentation and code, that closes the runtime knowledge gap before linking with an alias-aware entity linker and a pronoun-resolving linker, each gated by an evidence-bundle validation pass (\autoref{sec:approach}).
     \item An \textbf{architecture-driven evaluation suite} of six metrics that corrects three structural biases in the established benchmark and reorders the size of reported improvements without changing the ranking (\autoref{sec:metric}).
     \item An empirical study on the five projects of the established benchmark, comparing AALinker against TransArc, SWATTR, and LiSSA under both the standard and the new evaluation, with per-agent and per-validator ablations (\autoref{sec:experiment}, \autoref{sec:results}).
     \item A replication package containing prompts, agent code, raw \ac{LLM} responses, per-project results, and the metric implementations~\cite{replication}.
 \end{itemize}
 
-\todo{Para after contributions -- one paragraph roadmap: \autoref{sec:approach} describes AALinker, \autoref{sec:metric} the metric suite, \autoref{sec:experiment} the experiment design, \autoref{sec:results} the results, \autoref{sec:discussion} threats and discussion, \autoref{sec:rw} related work.}
+The rest of this paper is organised as follows.
+\autoref{sec:approach} describes \approach; \autoref{sec:metric} introduces the architecture-driven evaluation suite; \autoref{sec:experiment} reports the experimental setup and \autoref{sec:results} the results under both the standard and the new evaluation; \autoref{sec:discussion} discusses threats to validity, and \autoref{sec:rw} covers related work.

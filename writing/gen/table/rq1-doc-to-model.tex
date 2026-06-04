@@ -1,0 +1,27 @@
+% RQ1 doc-to-model: per-project P/R/F1 for SWATTR, LiSSA, AALinker.
+% Data sources:
+%   AALinker (s_linker17f): approach/results/ablation_results/ablation_20260603_173544.json
+%   SWATTR F1:              evaluation/reports/SADSAM_S11_S13F_VS_TRANSARC.csv (transarc_link_f1 column)
+% Cells filled with 0.000 are not yet obtained:
+%   - SWATTR P/R: not in CSV (only F1).
+%   - LiSSA P/R/F1: not yet run on doc-to-model.
+\begin{table}[t]
+\caption{Doc-to-model performance per project. Macro = mean across five projects. Cells reported as $0.000$ are not yet obtained.}
+\label{tab:rq1-doc-to-model}
+\centering\small
+\begin{tabular}{@{}lrrrrrrrrr@{}}
+\toprule
+ & \multicolumn{3}{c}{SWATTR} & \multicolumn{3}{c}{LiSSA} & \multicolumn{3}{c}{\approach{}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+Project        &     P &     R &  \fone &     P &     R &  \fone &     P &     R &  \fone \\
+\midrule
+MediaStore     & 0.000 & 0.000 & 0.694 & 0.000 & 0.000 & 0.000 & \textbf{1.000} & 0.903 & \textbf{0.949} \\
+TeaStore       & 0.000 & 0.000 & 0.851 & 0.000 & 0.000 & 0.000 & 0.931 & \textbf{1.000} & \textbf{0.964} \\
+Teammates      & 0.000 & 0.000 & 0.710 & 0.000 & 0.000 & 0.000 & \textbf{0.914} & \textbf{0.930} & \textbf{0.922} \\
+BigBlueButton  & 0.000 & 0.000 & \textbf{0.793} & 0.000 & 0.000 & 0.000 & 0.790 & 0.790 & 0.790 \\
+JabRef         & 0.000 & 0.000 & 0.947 & 0.000 & 0.000 & 0.000 & 0.947 & \textbf{1.000} & \textbf{0.973} \\
+\midrule
+Macro average  & 0.000 & 0.000 & 0.799 & 0.000 & 0.000 & 0.000 & \textbf{0.916} & \textbf{0.925} & \textbf{0.920} \\
+\bottomrule
+\end{tabular}
+\end{table}

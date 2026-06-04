@@ -1,0 +1,26 @@
+% RQ4 per-agent ablation: Full vs each-agent-removed, on doc-to-model.
+% Data sources:
+%   Full (s_linker17f) macro F1 = 0.920, from
+%     approach/results/ablation_results/ablation_20260603_173544.json.
+% Cells reported as 0.000 (or 0 for counts) are not yet obtained:
+%   - The four single-agent removals and the canonical-only floor have not
+%     yet been run against 17f.
+%   - Coverage and noise-rate columns for the Full row are not yet extracted.
+\begin{table}[t]
+\caption{Per-agent ablation, macro across five projects on doc-to-model. $\Delta$ is the change against the Full pipeline. \emph{Unique TPs lost} counts gold sentences linked only by the removed agent. The canonical-only floor reports a single-agent baseline. Cells reported as $0.000$ (or $0$) are not yet obtained.}
+\label{tab:rq4-agents}
+\centering\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Variant                 &  \fone & $\Delta$\fone & $\Delta$ Coverage & $\Delta$ Noise & Unique TPs lost \\
+\midrule
+Full                    &  0.920 &     ---       &        ---        &      ---       &        ---      \\
+$-$ Canonical-name      &  0.000 &    0.000      &       0.000       &     0.000      &         0       \\
+$-$ Alias               &  0.000 &    0.000      &       0.000       &     0.000      &         0       \\
+$-$ Pronoun             &  0.000 &    0.000      &       0.000       &     0.000      &         0       \\
+$-$ Partial-name        &  0.000 &    0.000      &       0.000       &     0.000      &         0       \\
+\midrule
+Canonical-name only     &  0.000 &     ---       &        ---        &      ---       &        ---      \\
+\bottomrule
+\end{tabular}
+\end{table}
