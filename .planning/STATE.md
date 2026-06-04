@@ -4,7 +4,7 @@ milestone: v2.6.2
 milestone_name: milestone
 status: v2.6.2 SHIPPED 2026-06-03. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
 stopped_at: Phase 43 context gathered
-last_updated: "2026-06-04T15:04:19.499Z"
+last_updated: "2026-06-04T16:10:52.101Z"
 last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
 progress:
   total_phases: 1

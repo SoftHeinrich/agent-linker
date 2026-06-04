@@ -149,6 +149,7 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 **Requirements**: Paper-eval scope only — no algorithm changes to `s_linker19.py`. v2.6.3-specific REQs to be added to `.planning/REQUIREMENTS.md` during discuss-phase.
 
 **Success Criteria** (what must be TRUE):
+
   1. **RQ1 doc-to-model.** A `phase_cache/s_linker19/<backend>/<project>/final.pkl` → TransArc sad-sam CSV adapter exists; running `python3 ../transarc-emp/src/lib/metrics_api.py --task sad-sam` against those CSVs produces `reports/metrics_sad-sam.csv` and `writing/tables/metrics_sad-sam.tex` populated for both backends × all 5 projects (10 rows). Per-component F1, sentence coverage, and noise rate are reported in the resulting TeX table.
   2. **RQ1 doc-to-code.** s_linker19 doc-to-model output composed with transarc-emp's SAM→code mapping (`load_code_model_files` + `load_gs_sam_code_maps`) emits per-project sad-code CSVs; `metrics_api.py --task sad-code` populates `reports/metrics_sad-code.csv` and `writing/tables/metrics_sad-code.tex` for both backends. Numbers are apples-to-apples with TransArc's own sad-code numbers in the same table.
   3. **RQ3 validator counterfactuals.** Four offline replay variants are computed from `layer{2,3,4}.pkl` per (backend, project): `NoConsensus` = `framing_c_pass1 ∪ framing_c_pass2` passed through layer3+layer4 AS LOGGED; `NoEntityValid` = `layer3.candidates` (skip the p1∧p2 entity gate); `NoCitation` = `layer4.coref_raw` (skip the coref validator); `NoValidator` = composition of all three. Each variant's P/R/F1 vs gold is computed, and per-validator gold-vs-spurious / killed-vs-kept counts are derived from the `decisions` and `coref_decisions` dicts. The `\autoref{fig:rq3-validator}` cell in `results.tex` is filled with these numbers.
@@ -158,7 +159,20 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
   7. **GATE-01 unchanged.** `s_linker13_min.py` is byte-equal to its current canonical state at phase close; `s_linker19.py` is byte-equal to its 2026-06-04 state. Eval-only phase, no algorithm changes.
   8. **NoConsensus replay strategy documented.** The decision to accept `pass1 ∪ pass2` directly (vs re-running Phase 4 on the union with `LLM_BACKEND=checkpoint`) is recorded in the phase report, including the acknowledged caveat that layer3+layer4 gates were originally fit against the intersection so passing the union through them is a lossy approximation of a true counterfactual. The choice is justified by the "zero new LLM calls" constraint and by the natural-counterfactual reading of `s_linker19.py:557`.
 
-**Plans**: TBD (created during `/gsd-plan-phase 43`).
+**Plans**: 5 plans in 3 waves (created 2026-06-04).
+**Wave 1**
+
+- [ ] 43-01-PLAN.md — REQUIREMENTS REQ-V263-01..08 + ROADMAP criteria revision per D-12 + GATE-01 baseline SHA record (Wave 1)
+- [ ] 43-02-PLAN.md — Replay-stage scripts (approach/scripts/v2.6.3/) emitting RQ1/RQ3/RQ4 CSV schema from phase_cache pickles (Wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 43-03-PLAN.md — RQ1 sad-sam + sad-code wide TeX tables via transarc-emp/src/paper/rq1_table.py (Wave 2, depends on 43-02)
+- [ ] 43-04-PLAN.md — RQ3 + RQ4 formatters + abbrev.tex D-10 macros + figure/table edits + GPT-5.4 appendix mirror (Wave 2, depends on 43-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 43-05-PLAN.md — eval.tex / results.tex D-11 rewrites + main.tex \appendix wiring + GATE-01 verify (Wave 3, depends on 43-01/03/04)
 
 **UI hint**: no
 

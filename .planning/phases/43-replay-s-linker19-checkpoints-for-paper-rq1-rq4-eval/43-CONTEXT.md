@@ -76,7 +76,7 @@ Populate every `\todo{}` cell in `writing/working/sections/{eval,results}.tex` f
 
 ### Out of Scope (explicitly confirmed)
 
-- **D-13:** **RQ2** is out of phase 43. The metrics-validation pillar lives in `evaluation/` (transarc-emp `src/bias/`) and produces its tables independently via `evaluation/src/paper/generate_tables.py`.
+- **D-13 [informational]:** **RQ2** is out of phase 43. The metrics-validation pillar lives in `evaluation/` (transarc-emp `src/bias/`) and produces its tables independently via `evaluation/src/paper/generate_tables.py`.
 - **D-14:** **No algorithm changes** to `s_linker19.py` or `s_linker13_min.py` during this phase. GATE-01 byte-equality verified at phase close.
 
 ### Claude's Discretion
