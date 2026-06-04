@@ -1,0 +1,207 @@
+
+################################################################################
+# s_linker19
+################################################################################
+SLinker19 (paper variant — standalone; prompts in prompts_v5)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: Database -> DB [global]
+    Alias: ReEncoder -> Reencoding [global]
+  Model: 3 ambiguous of 14 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass intersection)
+    Consensus: P1=30 P2=27 ∩=27
+  Framing C: 27 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 23 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (no pre-filter, alias-aware antecedent, focused single-pass validator)
+  Coref raw: 5
+  Coref validated: 5 / 5
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 27 (from 28 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_claude_mediastore_20260604_080700.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_claude_mediastore_20260604_080700_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 27 links (653.7s, 14 LLM calls)
+  mediastore     TP= 27 FP=0   P=1.000 R=0.871 F1=0.931 (653.7s)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: registry -> Registry [local]
+    Alias: Slope One -> SlopeOneRecommender [global]
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender [global]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 7 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass intersection)
+    Consensus: P1=28 P2=27 ∩=26
+  Framing C: 26 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 21 / 26
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (no pre-filter, alias-aware antecedent, focused single-pass validator)
+  Coref raw: 12
+    Coref reject: S33 -> SlopeOneRecommender
+  Coref validated: 11 / 12
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 28 (from 32 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_claude_teastore_20260604_081730.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_claude_teastore_20260604_081730_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 28 links (630.4s, 15 LLM calls)
+  teastore       TP= 27 FP=1   P=0.964 R=1.000 F1=0.982 (630.4s)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: datastore -> GAE Datastore [local]
+    Alias: end-to-end -> E2E [global]
+  Model: 5 ambiguous of 8 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass intersection)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=51 P2=55 ∩=50
+  Framing C: 50 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 50 / 50
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (no pre-filter, alias-aware antecedent, focused single-pass validator)
+  Coref raw: 16
+    Coref reject: S92 -> Logic
+    Coref reject: S141 -> GAE Datastore
+  Coref validated: 14 / 16
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 57 (from 64 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_claude_teammates_20260604_085017.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_claude_teammates_20260604_085017_calls.json (36 calls)
+  Checkpoint: final saved
+
+Final: 57 links (1967.0s, 36 LLM calls)
+  teammates      TP= 52 FP=5   P=0.912 R=0.912 F1=0.912 (1967.0s)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: KMS -> kurento [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: akka-apps -> Apps [global]
+    Alias: fsels -> FSESL [local]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: Kurento -> kurento [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: Redis pubsub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 17 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass intersection)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=49 P2=45 ∩=45
+  Framing C: 45 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 42 / 45
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (no pre-filter, alias-aware antecedent, focused single-pass validator)
+    LLM error: Claude request timed out — retrying in 3s (attempt 1/3)
+  Coref raw: 20
+  Coref validated: 20 / 20
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 54 (from 62 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_claude_bigbluebutton_20260604_091848.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_claude_bigbluebutton_20260604_091848_calls.json (21 calls)
+  Checkpoint: final saved
+
+Final: 54 links (1710.4s, 21 LLM calls)
+  bigbluebutton  TP= 52 FP=2   P=0.963 R=0.839 F1=0.897 (1710.4s)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: command line interface -> cli [global]
+  Model: 2 ambiguous of 6 components
+  Doc knowledge: 1 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass intersection)
+    Consensus: P1=19 P2=19 ∩=19
+  Framing C: 19 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 18 / 19
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference (no pre-filter, alias-aware antecedent, focused single-pass validator)
+  Coref raw: 4
+    Coref reject: S13 -> model
+  Coref validated: 3 / 4
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 19 (from 21 raw)
+  Phase log saved: ./results/llm_logs/s_linker19_claude_jabref_20260604_092300.json
+  LLM call trace saved: ./results/llm_logs/s_linker19_claude_jabref_20260604_092300_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 19 links (251.8s, 10 LLM calls)
+  jabref         TP= 18 FP=1   P=0.947 R=1.000 F1=0.973 (251.8s)
+
+
+====================================================================================================
+SUMMARY: macro F1 per variant
+====================================================================================================
+Variant           mediastore      teastore     teammates bigbluebutton        jabref  macro F1   micro TP/FP
+----------------------------------------------------------------------------------------------------
+s_linker19        27/0 0.931    27/1 0.982    52/5 0.912    52/2 0.897    18/1 0.973    0.9389   176/9
+
+Results: results/s19_sonnet_post_rename_20260604_075606.json
