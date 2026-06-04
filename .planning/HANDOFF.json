@@ -1,39 +1,51 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-03T09:01:10Z",
-  "phase": "v2.6.2-variant-exploration",
-  "phase_name": "Multi-Framing Variant Exploration (17c/17d/17e)",
-  "phase_dir": null,
+  "timestamp": "2026-06-04T02:34:43.229Z",
+  "context": "research",
+  "phase": "paper-writing-eval-rq4",
+  "phase_name": "eval.tex RQ4 framing analysis",
+  "phase_dir": "writing/gen/",
   "plan": null,
-  "task": 4,
-  "total_tasks": 6,
+  "task": "framing-analysis-decision",
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "17c ablation (GPT-5.4, all 5 datasets)", "status": "done", "commit": "5d4a3e7", "result": "87.1% macro, −2.0pp vs s15, ICSE decision final"},
-    {"id": 2, "name": "v2.6.2 milestone docs update with 17c", "status": "done", "commit": "5d4a3e7"},
-    {"id": 3, "name": "17d (validated-antecedent coref gate)", "status": "done", "commit": "30db116", "result": "86.8% macro, wrong hypothesis — discardable"},
-    {"id": 4, "name": "17e (validated coref)", "status": "done", "commit": "30db116", "result": "92.3% macro, +3.2pp vs s15, FP 43→14, JAB 100%, TM 89.8%"}
+    {"id": 1, "name": "Read and map all 7 TODOs in eval.tex", "status": "done"},
+    {"id": 2, "name": "Propose top-k solutions per TODO (RQ2, RQ3, RQ4)", "status": "done"},
+    {"id": 3, "name": "Read approach.tex v7 + s_linker17e/17f code", "status": "done"},
+    {"id": 4, "name": "Write approach/analyze_framings.py", "status": "done"},
+    {"id": 5, "name": "Run 17f checkpoint replay for all 5 projects", "status": "done", "progress": "mediastore/teastore/teammates valid; BBB/jabref = 0 candidates (checkpoint miss)"},
+    {"id": 6, "name": "Analyze 3/5 projects: per-framing unique TP/FP", "status": "done"}
   ],
   "remaining_tasks": [
-    {"id": 5, "name": "Update docs/memory with 17e result", "status": "not_started", "files": ["STATE.md", ".planning/milestones/v2.6.2-MILESTONE-AUDIT.md", ".planning/milestones/v2.6.2-ROADMAP.md", "CLAUDE.md", "memory/project_v262_s_linker17.md"]},
-    {"id": 6, "name": "Run 17e on Claude backend", "status": "not_started", "command": "python run_ablation.py --variants s_linker17e (set LLM_BACKEND=claude in .env)"},
-    {"id": 7, "name": "Design + test 17f (C-privileged union, targets multi_framing FPs)", "status": "not_started", "note": "TM 5 multi_framing FP + BBB 3 multi_framing FP remaining"},
-    {"id": 8, "name": "git tag v2.6.2", "status": "not_started"}
+    {"id": 7, "name": "Fix BBB/jabref: run 17f with LLM_BACKEND=claude", "status": "not_started"},
+    {"id": 8, "name": "Get complete 5-project framing summary", "status": "not_started"},
+    {"id": 9, "name": "Decide paper narrative for RQ4", "status": "not_started"},
+    {"id": 10, "name": "Rewrite eval.tex RQ4 section", "status": "not_started"},
+    {"id": 11, "name": "Address RQ2 overhaul (lines 75-77)", "status": "not_started"},
+    {"id": 12, "name": "Address RQ3 validator variant design (lines 81-98)", "status": "not_started"},
+    {"id": 13, "name": "Revise approach.tex three-framing narrative if BBB/jabref confirm A=B", "status": "not_started"}
   ],
-  "blockers": [],
+  "blockers": [
+    {
+      "description": "BBB/jabref phase cache empty — 17f checkpoint miss due to Phase 4b different prompt hashes",
+      "type": "technical",
+      "workaround": "cd approach && LLM_BACKEND=claude PHASE_CACHE_DIR=./results/phase_cache python analyze_framings.py"
+    }
+  ],
   "human_actions_pending": [],
   "decisions": [
-    {"decision": "17c ICSE architecture decision final: use 17a naming on s15 architecture", "rationale": "Union (−2.0pp) and k=2 (−4.1pp) both regress vs s15; integrated approach wins both merge strategies"},
-    {"decision": "17d discarded: wrong hypothesis about coref gate", "rationale": "Coref FPs are for validated components (gate doesn't fire), not unvalidated ones"},
-    {"decision": "17e is the breakthrough: validated coref completes unified validation concept", "rationale": "+3.2pp vs s15, FP 43→14. All links now pass same quality gate regardless of source. Clean ICSE story."}
+    {"decision": "Log-replay valid for per-framing analysis", "rationale": "Phase 4 validates candidates independently; all union candidates have decisions in layer3.pkl"},
+    {"decision": "C unique TPs are alias-backed", "rationale": "4/5 C-unique TPs in mediastore via DataStorage/AudioAccess aliases; confirmed from s_linker12c phase cache"},
+    {"decision": "A and B not empirically distinct on 3/5 projects", "rationale": "A=B on mediastore/teastore; B adds only FPs on teammates"},
+    {"decision": "Coref is dominant supplement", "rationale": "14 TPs / 3 FPs across 3 projects vs C 1 TP total"},
+    {"decision": "RQ2: 1D+1A approach", "rationale": "Trivial baselines expose benchmark bias most directly; evaluation/src/bias/ has machinery"},
+    {"decision": "RQ3: 2a-iii (counterfactual log replay + one NoValidator run)", "rationale": "Zero extra per-validator runs; NoConsensus = voting only not seed disambig"}
   ],
-  "uncommitted_files": ["scratch_coref_forcedchoice_test.py", "scratch_coref_prosecutor_test.py", "scratch_coref_selection_test.py", ".claude/"],
-  "results_table_gpt54": {
-    "s15":  {"MS": 91.8, "TS": 96.4, "TM": 82.5, "BBB": 77.6, "JAB": 97.3, "macro": 89.1, "FP": 31},
-    "17c":  {"MS": 92.1, "TS": 96.4, "TM": 80.0, "BBB": 77.0, "JAB": 90.0, "macro": 87.1, "FP": 43},
-    "17d":  {"MS": 90.3, "TS": 98.2, "TM": 80.3, "BBB": 75.0, "JAB": 90.0, "macro": 86.8, "FP": 43},
-    "17e":  {"MS": 94.9, "TS": 96.3, "TM": 89.8, "BBB": 80.4, "JAB": 100.0, "macro": 92.3, "FP": 14}
-  },
-  "next_action": "Update STATE.md and v2.6.2 MILESTONE-AUDIT with 17e column. Then update memory/project_v262_s_linker17.md. Then run 17e on Claude backend.",
-  "context_notes": "17e validates the unified validation architectural concept empirically. Coref links in 17c bypassed Phase 4; 17e adds a coref-specific single-pass validation gate, cutting FPs from 43 to 14. This is both cleaner for ICSE and empirically superior to s15 (+3.2pp GPT). The next session should start with doc updates before any further variant work. v2.7 (BBB Recall Closure) remains frozen behind this exploration; v2.7 tasks are in the old handoff decisions above."
+  "uncommitted_files": [
+    "approach/analyze_framings.py",
+    ".planning/.continue-here.md",
+    ".planning/HANDOFF.json"
+  ],
+  "next_action": "cd approach && LLM_BACKEND=claude PHASE_CACHE_DIR=./results/phase_cache python analyze_framings.py — get BBB/jabref data, complete 5-project summary, then decide RQ4 paper narrative",
+  "context_notes": "Session challenged approach.tex three-framing narrative empirically. Data: C is superset extractor, A/B redundant on easy projects, Coref is real supplement. Decision deferred until BBB/jabref data. approach5.tex is stale. approach.tex v7 is current."
 }
