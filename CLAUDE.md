@@ -17,7 +17,8 @@ Retained runtime files:
 - [src/llm_sad_sam/linkers/experimental/s_linker17b.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17b.py) — v2.6.2 unified k=2 voting architecture
 - [src/llm_sad_sam/linkers/experimental/s_linker17c.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17c.py) — v2.6.2 union merge variant (87.1% GPT, −2.0pp vs s15)
 - [src/llm_sad_sam/linkers/experimental/s_linker17d.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17d.py) — v2.6.2 validated-antecedent coref gate (86.8% GPT, wrong hypothesis)
-- [src/llm_sad_sam/linkers/experimental/s_linker17e.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17e.py) — v2.6.2 validated coref (92.3% GPT, +3.2pp vs s15, **breakthrough**)
+- [src/llm_sad_sam/linkers/experimental/s_linker17e.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17e.py) — v2.6.2 validated coref (**best**: GPT 92.3% / Claude 93.4%, +3.2pp vs s15, **breakthrough**)
+- [src/llm_sad_sam/linkers/experimental/s_linker17f.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17f.py) — v2.6.2 code-path filter (negative result, 92.0% both backends)
 - [src/llm_sad_sam/linkers/experimental/s_linker20.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker20.py) — v2.6.4 minimized-prompt standalone (experimental=True, no inheritance from s19; all constants inlined)
 - [src/llm_sad_sam/linkers/experimental/prompts.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts.py)
 - [src/llm_sad_sam/linkers/experimental/prompts_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts_v2.py)
@@ -48,12 +49,13 @@ Key variants (all GPT-5.4):
 - **`s_linker17b`** — unified k=2 voting. 85.0% (−4.1pp, TM/BBB regression).
 - **`s_linker17c`** — union merge. 87.1% (−2.0pp, +12 FP). Union > k=2 but s15 wins.
 - **`s_linker17d`** — validated-antecedent coref gate. 86.8% (wrong hypothesis, discardable).
-- **`s_linker17e`** — **BREAKTHROUGH**: coref links pass single-pass validation before Phase 6.
-  **92.3% GPT (+3.2pp vs s15), FP 43→14.** Log: `logs/v2.6.2_s17e_gpt.log`.
+- **`s_linker17e`** — **BEST VARIANT**: coref links pass single-pass validation before Phase 6.
+  GPT 92.3% (+3.2pp vs s15, FP 14) / Claude 93.4% (+0.7pp, FP 15). Logs: `logs/v2.6.2_s17e_*.log`.
+- **`s_linker17f`** — v2.6.2 code-path filter (negative: 92.0% both backends; Claude FP 15→21).
 
 v2.7 (BBB Recall Closure) is frozen behind v2.6.2.
 
-Run: `python run_ablation.py --variants s_linker17e`
+Best variant run: `python run_ablation.py --variants s_linker17e`
 
 ## Production Linker (v2.6.1) — `s_linker15`
 
