@@ -13,6 +13,7 @@
 - ✅ **v2.6.1 — No-Training Axiom Linker (s_linker15) + Axiom FP Fixes (PATCH)** — shipped 2026-06-03. Dropped Voyager training; `s_linker15` = axiom-only standalone (inlined prompts + 3 FP fixes), no bank. macro 89.1% gpt-5.4 / 92.7% Claude. Finding: training adds nothing (s15 = trained s14 on gpt); FP fixes fire on Claude, inert on gpt. See [`milestones/v2.6.1-ROADMAP.md`](milestones/v2.6.1-ROADMAP.md) and [`milestones/v2.6.1-MILESTONE-AUDIT.md`](milestones/v2.6.1-MILESTONE-AUDIT.md).
 - ✅ **v2.6.2 — Multi-Framing Extraction Design (s_linker17a/17b)** — shipped 2026-06-03. 17a (rename-only) ≈ s15 within GPT variance (validates ICSE Framing A/B/C naming). 17b (k=2 unified) regresses TM −4.2pp / BBB −7.4pp (k=2 too conservative). ICSE decision: use 17a naming for paper. See [`milestones/v2.6.2-ROADMAP.md`](milestones/v2.6.2-ROADMAP.md) and [`milestones/v2.6.2-MILESTONE-AUDIT.md`](milestones/v2.6.2-MILESTONE-AUDIT.md).
 - ❄️ **v2.7 — BBB Recall Closure** — Phases 38–42 — FROZEN behind v2.6.2 (2026-06-03). ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution. See [`milestones/v2.7-ROADMAP.md`](milestones/v2.7-ROADMAP.md).
+- 🟡 **v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay** — Phase 43 — opened 2026-06-04. Offline replay of the shipped `s_linker19` `phase_cache/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts to populate the `\todo{}` cells in `writing/working/sections/{eval,results}.tex` (RQ1 doc-to-model + doc-to-code, RQ3 validator counterfactuals, RQ4 2-linker set overlap), plus paper rewrites where text disagrees with code (per [[code-is-canonical]]). Zero new LLM calls.
 
 ## Phases
 
@@ -132,8 +133,41 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 | 36. Confirmation Tier | 0/TBD | Not started (conditional on Phase 35 ≥ 0.87) | — |
 | 37. Milestone Close | 0/TBD | Not started | — |
 
+<details open>
+<summary>🟡 v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay — IN PROGRESS (opened 2026-06-04)</summary>
+
+### v2.6.3 Phase Summary
+
+- [ ] **Phase 43: Replay s_linker19 checkpoints for paper RQ1–RQ4 eval** — Offline replay of `results/phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` to fill `\todo{}` cells in `writing/working/sections/{eval,results}.tex`. Zero new LLM calls. Detail block below.
+
+### Phase 43: Replay s_linker19 checkpoints for paper RQ1–RQ4 eval
+
+**Goal**: The `\todo{}` cells in `writing/working/sections/eval.tex` and `results.tex` for RQ1 (link-level P/R/F1 + per-component F1, doc-to-model + doc-to-code), RQ3 (validator-ablation counterfactuals: `NoConsensus`, `NoEntityValid`, `NoCitation`, `NoValidator`), and RQ4 (2-linker set overlap: entity-validated ∪/∩ coref-validated vs gold) are populated for both Claude Sonnet and gpt-5.4 across all 5 benchmark projects (mediastore, teastore, teammates, bigbluebutton, jabref), produced entirely from the existing `results/phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts with zero new LLM calls, and the paper text in `eval.tex` §exp:rq3 + §exp:rq4 and `results.tex` §results:rq3 + §results:rq4 is rewritten where it disagrees with `s_linker19.py` (per [[code-is-canonical]]).
+
+**Depends on**: s_linker19 shipped + phase_cache populated for both backends (already true as of 2026-06-04). No other phase in this milestone.
+
+**Requirements**: Paper-eval scope only — no algorithm changes to `s_linker19.py`. v2.6.3-specific REQs to be added to `.planning/REQUIREMENTS.md` during discuss-phase.
+
+**Success Criteria** (what must be TRUE):
+  1. **RQ1 doc-to-model.** A `phase_cache/s_linker19/<backend>/<project>/final.pkl` → TransArc sad-sam CSV adapter exists; running `python3 ../transarc-emp/src/lib/metrics_api.py --task sad-sam` against those CSVs produces `reports/metrics_sad-sam.csv` and `writing/tables/metrics_sad-sam.tex` populated for both backends × all 5 projects (10 rows). Per-component F1, sentence coverage, and noise rate are reported in the resulting TeX table.
+  2. **RQ1 doc-to-code.** s_linker19 doc-to-model output composed with transarc-emp's SAM→code mapping (`load_code_model_files` + `load_gs_sam_code_maps`) emits per-project sad-code CSVs; `metrics_api.py --task sad-code` populates `reports/metrics_sad-code.csv` and `writing/tables/metrics_sad-code.tex` for both backends. Numbers are apples-to-apples with TransArc's own sad-code numbers in the same table.
+  3. **RQ3 validator counterfactuals.** Four offline replay variants are computed from `layer{2,3,4}.pkl` per (backend, project): `NoConsensus` = `framing_c_pass1 ∪ framing_c_pass2` passed through layer3+layer4 AS LOGGED; `NoEntityValid` = `layer3.candidates` (skip the p1∧p2 entity gate); `NoCitation` = `layer4.coref_raw` (skip the coref validator); `NoValidator` = composition of all three. Each variant's P/R/F1 vs gold is computed, and per-validator gold-vs-spurious / killed-vs-kept counts are derived from the `decisions` and `coref_decisions` dicts. The `\autoref{fig:rq3-validator}` cell in `results.tex` is filled with these numbers.
+  4. **RQ4 2-linker set overlap.** From `layer3.validated` (entity-validated set) + `layer4.coref_validated` (coref-validated set) + gold, the cardinalities `|entity ∩ gold|`, `|coref ∩ gold|`, unique-TP per linker, overlap-TP, and `|(entity ∪ coref) ∩ gold|` are tabulated for both backends × 5 projects in a compact UpSet-style table that lands in `results.tex` §results:rq4. Numbers reflect the 2-linker shape implemented in `s_linker19.py` (entity + coref), not the 3- or 4-agent shape currently in the prose.
+  5. **Paper text reconciled with code.** `eval.tex` §exp:rq3 NoConsensus wording is rewritten to "the consensus intersection in `_run_framing_c` is replaced by the union of pass1 and pass2" (not "each agent runs a single LLM pass"); §exp:rq4 agent count is rewritten from 3 (Explicit/Contextual/Anaphoric) to 2 (entity + coref) matching `s_linker19.py`; `results.tex` §results:rq4 prose is rewritten from 4 agents (canonical/alias/pronoun/partial) to 2 linkers; `results.tex` §results:rq3's "~2× LLM calls" claim is reconciled with what is actually doubled (entity validator p1∧p2, not the two extraction passes).
+  6. **Zero new LLM calls.** All numbers derive from existing `phase_cache` pickles. No `claude` CLI subprocess and no `openai` API key are used during this phase. `LLM_BACKEND` does not need to be set; if a script accidentally triggers an LLM call, the phase fails verification.
+  7. **GATE-01 unchanged.** `s_linker13_min.py` is byte-equal to its current canonical state at phase close; `s_linker19.py` is byte-equal to its 2026-06-04 state. Eval-only phase, no algorithm changes.
+  8. **NoConsensus replay strategy documented.** The decision to accept `pass1 ∪ pass2` directly (vs re-running Phase 4 on the union with `LLM_BACKEND=checkpoint`) is recorded in the phase report, including the acknowledged caveat that layer3+layer4 gates were originally fit against the intersection so passing the union through them is a lossy approximation of a true counterfactual. The choice is justified by the "zero new LLM calls" constraint and by the natural-counterfactual reading of `s_linker19.py:557`.
+
+**Plans**: TBD (created during `/gsd-plan-phase 43`).
+
+**UI hint**: no
+
+</details>
+
 ## Next Milestone
 
-**v2.6 active — Phases 31–37.** Start with Phase 31 (ILinker4 + Prompt Hygiene): build `ilinker4.py` as a standalone Voyager-native seed extractor and audit all static prompts. No LLM training budget consumed during Phase 31. See `.planning/milestones/v2.6-ROADMAP.md` for full detail.
+**v2.6.3 active — Phase 43.** Paper eval via checkpoint replay. Start with `/gsd-discuss-phase 43` to lock the phase boundary + the two pending design choices (backend ordering in tables, RQ3 NoConsensus union assumption documentation depth), then `/gsd-plan-phase 43`.
 
-Requirements: `.planning/REQUIREMENTS.md` (v2.6 active section).
+**v2.6 close (Phase 37) and v2.7 BBB-recall (Phases 38–42)** remain frozen behind v2.6.3 paper eval.
+
+Requirements: `.planning/REQUIREMENTS.md` (v2.6 active section; v2.6.3-specific requirements to be added during discuss-phase).
