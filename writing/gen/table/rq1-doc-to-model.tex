@@ -1,15 +1,15 @@
 % RQ1 doc-to-model: per-project P/R/F1 for SWATTR, LiSSA, AALinker.
-% Data sources:
+% Data sources (run the script and copy-paste the printed cells per system):
 %   AALinker (s_linker17f): approach/results/ablation_results/ablation_20260603_173544.json
-%   SWATTR F1:              evaluation/reports/SADSAM_S11_S13F_VS_TRANSARC.csv (transarc_link_f1 column)
-%   LiSSA (gpt-5-mini):     evaluation/reports/lissa_rq1_d2m.csv
-%                           produced by approach/scripts/v2.6.3/eval_lissa_rq1.py from
-%                           sota/lissa-replication/results/tracelinks/d2m/<project>-gpt-5-mini.csv,
-%                           re-evaluated against the TransArc sad-sam gold via
-%                           transarc-emp/src/lib/metrics_api.py::compute_sad_sam_metrics
-%                           (apples-to-apples with TransArc / SWATTR / AALinker).
-% Cells filled with 0.000 are not yet obtained:
-%   - SWATTR P/R: not in CSV (only F1).
+%   SWATTR (P/R/F1):        approach/scripts/v2.6.3/eval_rq1_baselines.py
+%                           -> evaluation/reports/swattr_rq1_d2m.csv
+%                           Re-evaluates the TransArc sad-sam standalone results
+%                           (transarc-emp/results/<project>/sad-sam/) against the
+%                           gold via transarc-emp/src/lib/transarc_error_analysis.py::calc_metrics.
+%   LiSSA (gpt-5-mini):     same script
+%                           -> evaluation/reports/lissa_rq1_d2m.csv
+%                           Re-evaluates sota/lissa-replication/results/tracelinks/d2m/
+%                           <project>-gpt-5-mini.csv against the same gold (apples-to-apples).
 \begin{table}[t]
 \caption{Doc-to-model performance per project. Macro = mean across five projects. Cells reported as $0.000$ are not yet obtained.}
 \label{tab:rq1-doc-to-model}
@@ -20,13 +20,13 @@
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
 Project        &     P &     R &  \fone &     P &     R &  \fone &     P &     R &  \fone \\
 \midrule
-MediaStore     & 0.000 & 0.000 & 0.694 & 0.297 & 0.968 & 0.455 & \textbf{1.000} & 0.903 & \textbf{0.949} \\
-TeaStore       & 0.000 & 0.000 & 0.851 & 0.248 & 0.963 & 0.394 & 0.931 & \textbf{1.000} & \textbf{0.964} \\
-Teammates      & 0.000 & 0.000 & 0.710 & 0.096 & 0.526 & 0.163 & \textbf{0.914} & \textbf{0.930} & \textbf{0.922} \\
-BigBlueButton  & 0.000 & 0.000 & \textbf{0.793} & 0.157 & 0.710 & 0.257 & 0.790 & 0.790 & 0.790 \\
-JabRef         & 0.000 & 0.000 & 0.947 & 0.750 & 1.000 & 0.857 & 0.947 & \textbf{1.000} & \textbf{0.973} \\
+MediaStore     & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textbf{1.000} & 0.903 & \textbf{0.949} \\
+TeaStore       & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.931 & \textbf{1.000} & \textbf{0.964} \\
+Teammates      & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textbf{0.914} & \textbf{0.930} & \textbf{0.922} \\
+BigBlueButton  & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.790 & 0.790 & 0.790 \\
+JabRef         & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.947 & \textbf{1.000} & \textbf{0.973} \\
 \midrule
-Macro average  & 0.000 & 0.000 & 0.799 & 0.309 & 0.833 & 0.425 & \textbf{0.916} & \textbf{0.925} & \textbf{0.920} \\
+Macro average  & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textbf{0.916} & \textbf{0.925} & \textbf{0.920} \\
 \bottomrule
 \end{tabular}
 \end{table}
