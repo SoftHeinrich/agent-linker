@@ -30,6 +30,7 @@ VARIANTS = {
     "s_linker18c": ("llm_sad_sam.linkers.experimental.s_linker18c", "SLinker18c"),
     "s_linker18d": ("llm_sad_sam.linkers.experimental.s_linker18d", "SLinker18d"),
     "s_linker18":  ("llm_sad_sam.linkers.experimental.s_linker18",  "SLinker18"),
+    "s_linker19":  ("llm_sad_sam.linkers.experimental.s_linker19",  "SLinker19"),
 }
 
 DATASETS = {
