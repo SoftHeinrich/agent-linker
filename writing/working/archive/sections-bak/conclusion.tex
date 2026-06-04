@@ -1,0 +1,30 @@
+\section{Conclusion}
+\section{Conclusion}
+\label{s:conclusion}
+
+This paper addresses the challenge of preventing architectural decay by identifying and predicting \acl{ASI} issues, i.e., issues arising from implementation that intensify architectural smells.
+Unlike prior work that focuses on issues affected by existing smells, we target the root causes of architectural decay, enabling early intervention.
+
+We developed  and evaluated a traceability approach that links architectural smells to their inducing issues by combining smell evolution analysis with issue-commit traceability.
+% Applied to three open-source projects, our method successfully traces detected smells back to their inducing issues, demonstrating that architectural decay can be connected to specific development activities.
+% By applying to three open-source projects, we demonstrated that architectural decay can be linked to specific development activities.
+Building on this foundation, we introduced \approach. 
+It classifies whether an issue will induce architectural smells using only information available at issue creation time: the title and description of an issue.
+% Our evaluation shows that SVM with OpenAI embeddings achieves the best performance, with F\textsubscript{1}-scores of 0.360 for \ARCADE-detected smells and 0.506 for \Arcan-detected smells.
+% We found that pre-implementation discussions contribute negligibly to prediction accuracy, confirming that architectural implications are already present in the initial issue description.
+
+% These findings have important practical implications.
+By enabling prediction when an issue is created, \approach provides developers with early warnings about potential architectural risks 
+% during the planning phase, 
+when design alternatives are still being considered.
+This proactive approach shifts the focus from reactive remediation to active prevention, potentially reducing the accumulation of architectural technical debt.
+% This work bridges the gap between issues and architectural decay, shifting the focus from detecting existing smells to preventing their introduction and providing the foundation for proactive approaches to maintaining software architecture quality.
+
+% TODO: Make sure to adapt future work to match the final paper content
+% Future work could explore several promising directions.
+% First, incorporating additional contextual signals such as component coupling metrics or historical smell patterns could improve prediction accuracy.
+% Second, extending the approach to predict specific smell types rather than binary classification would provide more guidance.
+% Finally, evaluating how architectural smell predictions influence real-world development decisions would validate the practical impact.
+
+
+

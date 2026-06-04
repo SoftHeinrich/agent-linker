@@ -1,0 +1,136 @@
+\section{Related Work}
+\label{s:rw}
+\todo{cite papers by RE A \cite{6606700} \cite{buckley2015real} \cite{10.1145/2304696.2304702}, \cite{ali2018architecture}}
+\todo{The relationship to research on architectural violations and architecture conformance is not discussed, }
+
+Architectural decay can manifest as \aclp{AS}~\cite{as_catalog} or as inconsistency between prescribed and implemented architecture models\cite{ghorbani_2024,ghorbani_2019}.
+Most tools for detecting of \acl{AS} instances in systems are based on static analysis on graphs\cite{fontana_2017, tommasel_2022,garcia_2022,martini_architectural_2020,bakhtin_leveraging_2025,mo_2021}, or patterns~\cite{ntentos_2023}. 
+Existence of smells can also be predicted by smell evolution history\cite{garcia_2022,arcelli_fontana_study_2019}.
+Beyond mere detection, architectural smells and architectural technical debt can be ranked according to their potential risk using indexing approaches~\cite{diaz-pace_2020,sas_ArchitecturalTechnical_2023,verdecchia_2020} or estimated maintenance costs~\cite{xiao_detecting_2022}.
+A transformer-based approach has also been proposed to recommend refactorings for smells~\cite{nursapa_rose_2025}.
+Different from these works, we target at finding which implementation will cause \aclp{AS}, making prediction earlier and fine-grained.
+
+The consequences of \aclp{AS} include increased defect~\cite{tamburri_architecture_2023,mo_hotspot_2015} and change proneness~\cite{aversano_2020,sas_2022_relation,sas_2020},  higher memory consumption and response time~\cite{arcelli_fontana_impact_2023} and more issues~\cite{le_2018}.
+% Most approaches for architectural smell detection in software projects are based on graphs~\cite{fontana_2017, tommasel_2022} or on patterns~\cite{ntentos_2023}.
+% Instead of relying solely on structural information, Garcia et al.~\cite{garcia_2022} predict the quality of an architectural element based on structural and semantic information.
+The negative impact of \aclp{AS} are also reported by industry practitioners\cite{sas_2022_evolution,sas_perception_2021}.
+In a grounded-theory study of Stack Overflow posts, Tian et al.~\cite{tian_2020} report that developers describe architectural smells using general, high-level terms, and further analyze how developers discuss smells in online forums~\cite{tian_2019}.
+These findings collectively indicate that semantic and textual cues in developer communication carry information about architectural problems.
+
+Several studies explicitly exploit such semantic information to identify architecture-related problems.
+Shahbazian et al.~\cite{shahbazian_2018} propose an approach to predict the architectural significance of issues.
+Similarly, Li~et~al. automatically identify code review comments related to architecture erosion~\cite{li_2022} and characterize symptoms of architecture violations in these comments~\cite{li_2023}.
+In a complementary study, Li et al.~\cite{li_2021} investigate practitioners' perception of architecture erosion, its causes and consequences, and the supporting tools and practices used for identifying and controlling erosion.
+
+Traceability studies for issue-commits have considered temporal relationships\cite{rath_traceability_2018}. 
+Traceability in software architecture has been studied between architecture models, documentation, and code~\cite{fuchs_enabling_2025,fuchs_whos_2025,keim_recovering_2024,fuchs_establishing_2023,keim_trace_2021,fuchs_lissa_2025}.
+These approaches focus on recovering  links between architectural descriptions and implementation artifacts in a statical setting.
+In contrast, we shift the focus of traceability for architectural smells from code and models to issues: we link architectural smells to their inducing issues and study how far the textual and semantic characteristics of issues can be used to predict whether an issue is smell-inducing.
+
+% The role of semantic information for architectural smell detection is backed up by many studies:
+% For example, artifacts involved in architectural smells are changed more often~\cite{aversano_2020, sas_2022_relation, sas_2020}, are more error-prone~\cite{mo_2021}, and lead to more issues~\cite{le_2018}.
+% Especially the close relation between issues and architectural smells is often highlighted~\cite{le_2018, shahbazian_2018}.
+% In a grounded theory study on descriptions of architectural smells in Stack Overflow posts, Tian et al.~\cite{tian_2020} found that developers describe smells with general terms. 
+% How developer discuss smells\cite{tian_2019}
+% Shahbazian et al.~\cite{shahbazian_2018} take advantage of this. They propose an approach to predict the architectural significance of issues to prevent architectural decay as a side-effect. To do so, they use a naive Bayes classifier that represents the issues as bag-of-words with term frequencies.
+% Similarly, Li et al. identify code review comments about architecture erosion~\cite{li_2022} and indicate characteristics of architecture violation symptoms in code review comments~\cite{li_2023}.
+% Li et al.~\cite{li_2021} investigate the perception of architecture erosion, its causes, and consequences from practitioners. Further, they asked them to name supporting tolls and practices for identification and control of erosion. They collect 13 tools to detect symptoms of architecture erosion.
+% \cite{arcelli_fontana_impact_2023} Architectural smells also increase memory use and response time. 
+% A transformer-based approach \cite{nursapa_rose_2025} was proposed to recommend refactoring for smells. 
+% Traceability tasks in software architectural primarily focus on model, documentation, code\cite{fuchs_enabling_2025,fuchs_whos_2025,keim_recovering_2024,fuchs_establishing_2023,keim_trace_2021,fuchs_lissa_2025}. Different from theirs, we shift the focus of traceability of architectural smells to issues.
+
+\begin{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% General Architecture Smell Detection %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Fontana et al.~\cite{fontana_2017} propose \Arcan, a tool for architectural smell detection that analyzes projects. To uncover cyclic dependency, unstable dependency and hub-like dependency smells, \Arcan uses a graph representation.
+-> Note: there's much more related work on smell detection in the rw section than you've here
+
+Ntentos et al.~\cite{ntentos_2023} propose an approach that automatically checks that infrastructure as code-based deployments adhere to patterns and do not contain architectural smells.
+
+Instead of detecting already introduced smells, Tommasel and Diaz-Pace~\cite{tommasel_2022} identify smells that could emerge from inferring package dependencies. To do so, they analyze the design as a network and information on previous versions of the project.
+
+Garcia et al.~\cite{garcia_2022} predict the quality of an architectural element to forcast architectural decay. To do so, their models utilize various metrics on structural and semantic view including the detection of four smells. Their smell prediction works well. However, they also observed that once emerged, architecture smells tend to remain.
+
+Sonargraph?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Architecture Smells Detection in Natural Language %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Li et al.identified code review comments that discuss architecture erosion~\cite{li_2022}. In their case study on two pretty active open source software projects, they observed that the architectures seemed to stabilize over time as erosion symptoms were declining and code reviews that identified sympoms had a positive impact on their removal. They furhter indicate characteristics of architecture violation symptoms in code review comments~\cite{li_2023}. To identify code review comments concerning architecture erosion and related symptoms, they then use machine learning and deep learning techniques as well as \acp{LLM}~\cite{li_2025}.
+
+Tian et al.~\cite{tian_2020} use machine learning to identify posts of Stack Overflow that relate to architectural smells.
+
+Shahbazian et al.~\cite{shahbazian_2018} propose an approach to predict the architectural significance of issues. To do so, they use a naive bayes classifier thet gets the issues represented as bag-of-words and with term frequencies.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Detecting Architectural Decay/ Erosion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Le et al.~\cite{le_2018} provide an overview of representative architectural smells and developed algorithms to automatically detect them. They further observed that archtiectural smells led to more issues as well as commits and thus an increased maintenance effort.
+
+Mo et al.~\cite{mo_2021} detect architectural anti-patterns by analyzing structural relationships and revision history of projects. They observe that the involvment of files in patterns correlates with how error-prone and change-prone they are.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Needs further investigations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Li et al.~\cite{li_2021} investigate the perception of architecture erosion, its causes, and consequences from practitioners. Further, they asked them to name supporting tolls and practices for identification and control of erosion. They collect 13 tools to detect symptoms of architecture erosion.
+-> Note: These tools are probably more related work than the most literature here -> compare against
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Rather Motivational %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+Sas et al~\cite{sas_2022_relation} use \Arcan, a tool to detect architectural smells via dependency graphs, to investigate the frequency and size of changes for artifacts with smells. In their study, they observe that the number of smells relates to the frequency of changes of artifacts.
+
+Sas et al.~\cite{sas_2020} investigate the influence of maintainability and reliability on each other regarding co-changes of source code files and architectural smells. They observe that 50\% of co-changes led to architectural smells. Additionally, files that are part of smells are more likely to co-change. Furthermore, co-changes appeared often before smells.
+
+Sas et al.~\cite{sas_2022_evolution} did an empirical study on architectural smells in industrial projects. They have many interesting results there -> look for interesting, motiviational things in the discussion chapter.
+
+
+Cui et al.~\cite{cui_2021} propose an approach to track architectural changes from code commits. They observe that about 53\% of code commits influence the architecture.
+
+Tian et al.~\cite{tian_2019} investigate how architectural smells are discussed on Stack Overflow. They observe that smells are often caused by violating patterns, that there is a lack of dedicated tools for detecting and refactoring smells, and smells are hard to quantify, so that developers often focus on maintainability and performance instead.
+Diaz-Pace et al.~\cite{diaz-pace_2020} quantify design violations and smells by proposing an index for architecture debts. For the calculation, \Arcan as well as Sonargraph can be used to detect violations and smells.
+
+Chaniotaki and Sharma~\cite{chaniotaki_2021} investigate the distribution of architectural smells over components for Java and C\#. They observed that 45.7\% of Java and 66\% of C\# projects have 80\% of the architecture smells in just 20\% of their components.
+
+Eposhi et al.~\cite{eposhi_2019} investigated the impact of refactorings on the symptoms of design problems. However, they observed that  especially for code smells, the refactoring increased the density and diversity heavily. They thus intepret the occurrence of code smells as a strong indicator of design problems.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Other %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Architecture Inconsistency Detection %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Note: Do not understand how this contributes to related work.
+
+Hammad et al.~\cite{hammad_2022} provide an approach to convert object-oriented projects into component based programs.
+
+Ghorbani et al. proposed DARCY to detect and repair specified inconsistent dependencies in Java applications and their architectures~\cite{ghorbani_2024,ghorbani_2019}.
+
+
+\end{comment}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{comment}
+
+Cerney et al.~\cite{cerney_2023} provide a catalog of recurring bad design practices and provide a classification as well as detection methods.
+
+    Zhong et al.~\cite{zhong_2022} investigate impacts, causes, and solutions for architectural smells in microservice architectures. They observe that refactorings often focus on maintenance issues rather than removing smells. In their opinion, it is essential to inform developers about the effects of smells and the required refactorings to resolve the issues.
+
+Verdecchia et al.~\cite{verdecchia_2020} propose to build an architectural technical debt index (ATDx), which provides an overview of present debts in a system.
+    
+Aversano et al.~\cite{aversano_2020} did an exploratory study on the evolution of design smells and came to the conclusion that classes affected by design smells are more subject to change, especially when multiple smells occurred. They further observe that refactorings and smell removal are two different tasks and not related.
+
+Zhong et al.~\cite{zhong_2024} present a novel type of architecture smell and its identification.
+
+Ntentos el al.~\cite{ntentos_2021} present violations of three representative mircroservice architecture design decisions and suggest possible fixes as solutions.
+\end{comment}

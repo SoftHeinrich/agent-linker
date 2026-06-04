@@ -1,0 +1,62 @@
+% RQ3 validator contribution: per-validator stacked-bar showing what each
+% validator filtered out of the Full pipeline's candidate set.
+%
+% Left half of each row: links the validator *killed* (rejected from the
+% candidate set). Right half: links the validator *kept*. Within each half,
+% red = wrong decision, green = right decision. So:
+%   - TP killed (left, red)   = gold link the validator wrongly rejected (cost)
+%   - FP killed (left, green) = spurious link the validator correctly rejected (benefit)
+%   - TP kept  (right, green) = gold link the validator correctly admitted
+%   - FP kept  (right, red)   = spurious link the validator wrongly admitted (residual)
+%
+% All cells at 0 because per-validator counts have not yet been extracted
+% from the s_linker17f LLM logs.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  tpk/.style={fill=darkorange,draw=black!70}, % TP killed -- bad
+  fpk/.style={fill=darkgreen,draw=black!70},  % FP killed -- good
+  tpw/.style={fill=darkgreen!40,draw=black!70},% TP kept  -- good
+  fpw/.style={fill=darkorange!40,draw=black!70},% FP kept -- bad (residual noise)
+  vlabel/.style={font=\scriptsize,anchor=east},
+  axn/.style={font=\tiny,gray!60},
+  ax/.style={draw=black!50,thick},
+]
+% Coordinates: x=0 is the split line; left half is "killed", right half is "kept".
+% Each validator is one row at y = -row * \H.
+\def\H{0.7}\def\maxw{2.6}\def\bh{0.30}
+
+% Validator rows; values are (TPk, FPk, TPw, FPw), all 0 placeholders for now.
+\foreach \row/\vname/\tpk/\fpk/\tpw/\fpw in {%
+  0/Consensus voter/0/0/0/0,%
+  1/Entity validator/0/0/0/0,%
+  2/Citation validator/0/0/0/0%
+} {
+  \node[vlabel] at (-\maxw - 0.2, -\H*\row) {\vname};
+  % left (killed): stack tpk above fpk, leftward from 0
+  \pgfmathsetmacro{\wA}{-\tpk*\maxw/100}
+  \pgfmathsetmacro{\wB}{\wA - \fpk*\maxw/100}
+  \draw[tpk] (0,-\H*\row - \bh/2) rectangle (\wA,-\H*\row + \bh/2);
+  \draw[fpk] (\wA,-\H*\row - \bh/2) rectangle (\wB,-\H*\row + \bh/2);
+  % right (kept): stack tpw above fpw, rightward from 0
+  \pgfmathsetmacro{\wC}{\tpw*\maxw/100}
+  \pgfmathsetmacro{\wD}{\wC + \fpw*\maxw/100}
+  \draw[tpw] (0,-\H*\row - \bh/2) rectangle (\wC,-\H*\row + \bh/2);
+  \draw[fpw] (\wC,-\H*\row - \bh/2) rectangle (\wD,-\H*\row + \bh/2);
+}
+
+% center split line + outer axes
+\draw[ax] (0,0.4) -- (0,-\H*3);
+\node[font=\scriptsize,anchor=south] at (-\maxw/2, 0.45) {killed};
+\node[font=\scriptsize,anchor=south] at ( \maxw/2, 0.45) {kept};
+
+% legend
+\foreach \i/\sty/\lab in {0/tpk/{TP killed (cost)}, 1/fpk/{FP killed (benefit)}, 2/tpw/{TP kept}, 3/fpw/{FP kept (noise)}} {
+  \node[\sty,minimum width=8pt,minimum height=6pt,inner sep=0pt]
+       at (-\maxw + \i*1.6 - 0.1, -\H*3.6) {};
+  \node[anchor=west,font=\tiny] at (-\maxw + \i*1.6 + 0.05, -\H*3.6) {\lab};
+}
+\end{tikzpicture}
+\caption{Per-validator contribution measured from the Full \approach{} pipeline. Bars left of the centre line are links the validator \emph{rejected}; bars right are links it \emph{kept}. Green = correct decision, orange = wrong decision. Counts at $0$ are not yet obtained.}
+\label{fig:rq3-validator}
+\end{figure}

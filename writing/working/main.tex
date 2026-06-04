@@ -1,0 +1,191 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{orcidlink}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{nicefrac}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{KIT_colors}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\usepackage{comment}
+\usepackage{todonotes}
+\usepackage{csquotes}
+\usetikzlibrary{calc,positioning,backgrounds,arrows,shapes,fit,shadows,arrows.meta,patterns,patterns.meta}
+
+\pgfdeclarelayer{midground}
+\pgfsetlayers{background,midground,main}
+\usepackage{adjustbox}
+\usepackage{graphicx}
+%\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage[inline]{enumitem}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage[theorems, skins, breakable, listings]{tcolorbox}
+\usepackage{footnote}
+\usepackage{makecell}
+\usepackage[nohyperlinks,nolist]{acronym}
+\usepackage{fontawesome}
+
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{Z}{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}X}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+% Define a new column type R with right alignment and fixed width
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newsavebox\CBox
+\def\textBF#1{\sbox\CBox{#1}\resizebox{\wd\CBox}{\ht\CBox}{\textbf{#1}}}
+
+\usepackage{mathabx}
+
+% Even out last page references
+\usepackage{flushend}
+
+\definecolor{darkgreen}{HTML}{3C8031}
+\definecolor{darkblue}{HTML}{002982}
+\definecolor{mulberry}{HTML}{A93C93}
+\definecolor{darkorange}{HTML}{C44601}
+
+\newcounter{prompt}
+\newtcbtheorem[use counter=prompt]{promptL}{Prompt}{%
+	attach title to upper,%
+	after title={\ },%
+	colback=white,%
+	colframe=kit-green,%
+	fonttitle={\bfseries\color{black}},%
+        sharp corners=east,%
+        leftrule=3mm,
+	subtitle style={%
+		boxrule=0.4pt,%
+		colback=kit-blue70,%
+		fonttitle={\bfseries\color{white}}%
+	}%
+}{prompt}
+\newcommand{\promptautorefname}{Prompt}
+\def\promptautorefname{Prompt}%
+\BeforeBeginEnvironment{promptL}{\savenotes}
+\AfterEndEnvironment{promptL}{\spewnotes}
+
+\newtcbtheorem[use counter=prompt]{promptR}{Prompt}{%
+	attach title to upper,%
+	after title={\ },%
+	colback=white,%
+	colframe=kit-green,%
+	fonttitle={\bfseries\color{black}},%
+        sharp corners=west,%
+        rightrule=3mm,%
+	subtitle style={%
+		boxrule=0.4pt,%
+		colback=kit-blue70,%
+		fonttitle={\bfseries\color{white}}%
+	}%
+}{prompt}
+%\newcommand{\promptRautorefname}{Prompt}
+%\def\promptRautorefname{Prompt}%
+\BeforeBeginEnvironment{promptR}{\savenotes}
+\AfterEndEnvironment{promptR}{\spewnotes}
+
+\ifCLASSOPTIONcompsoc
+\usepackage[caption=false,font=normalsize,labelfon
+t=sf,textfont=sf]{subfig}
+\else
+\usepackage[caption=false,font=footnotesize]{subfi
+g}
+\fi
+
+\newcommand{\subfigureautorefname}{\figureautorefname}
+\def\subfigureautorefname{\figureautorefname}
+
+\usepackage{mdframed}
+\newmdenv[
+  backgroundcolor=black!8, % slight grey
+  linecolor=black!20,
+  skipabove=6pt,
+  skipbelow=6pt,
+  innerleftmargin=4pt,
+  innerrightmargin=4pt,
+  innertopmargin=4pt,
+  innerbottommargin=4pt
+]{rqanswer}    
+
+\begin{document}
+\bstctlcite{IEEEexample:BSTcontrol}
+\input{abbrev.tex}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\newcommand{\fone}{F\textsubscript{1}\xspace}
+
+\title{AALinker: An Agentic Approach for Software Architectural Traceability}
+
+\author{\IEEEauthorblockN{Anonymous Authors}}
+
+% \author{\IEEEauthorblockN{
+% 	  Haoyu Liu\orcidlink{0009-0002-7676-5010},
+%     Dominik Fuchß\orcidlink{0000-0001-6410-6769},
+%     Sophie Corallo\orcidlink{0000-0002-1531-2977},
+% 	  Jan Keim\orcidlink{0000-0002-8899-7081},
+%     Tobias Hey\orcidlink{0000-0003-0381-1020}}
+% \IEEEauthorblockA{\textit{KASTEL - Institute of Information Security and Dependability} \\
+% \textit{Karlsruhe Institute of Technology (KIT)}, \\
+% Karlsruhe, Germany\\
+% \{haoyu.liu, dominik.fuchss, sophie.corallo, maximilian.hummel, jan.keim, hey\}@kit.edu}
+% }
+
+\maketitle
+
+\begin{abstract}
+Architectural decay can manifest as evolution of architectural smells, degrading integrity, and increasing maintenance costs.
+% Most existing techniques surface these smells post hoc, after code is committed or merged, making remediation costly and impossible to act upon during planning.
+Existing techniques capture smells post hoc, or predict on component level, acting too late or on a too coarse granularity. 
+We investigate if the risk of introducing architectural smells can already be predicted when issues are opened.
+Thus, we propose an issue-level prediction approach that utilizes the semantic representations of Large Language Models (LLMs).
+
+To enable training and evaluation, we construct a multi-project dataset by linking issues to smells via smell-inducing changes.
+On this dataset, we train classifiers to identify high-risk issues and conduct an empirical study comparing seven different representations and nine classifiers.
+
+Our best performing classifier (SVM with OpenAI embeddings) achieves F\textsubscript{1}-scores of up to 0.506, with recall of about 0.74.
+This means that our approach can identify approximately 74\% of smell-inducing issues before implementation begins.
+When design alternatives are still being considered. our approach is able to give early warnings about potential architectural risks.  
+This work shifts from reactive remediation to preventive quality assurance, reducing the accumulation of architectural technical debt.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Architectural Decay, Architectural Smells, Smell-Inducing Issues, Issue Classification, Smell Prediction
+\end{IEEEkeywords}
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+\input{sections/intro}
+\input{sections/prestudy}
+\input{sections/approach}
+\input{sections/metric.tex}
+\input{sections/eval}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/rw}
+\input{sections/conclusion.tex}
+
+\section*{Data Availability Statement}
+Code, data, and results are in the replication package~\cite{replication}.
+
+%\section*{Acknowledgements}
+%Omitted for Review.
+%This work was funded by Core Informatics at KIT (KiKIT) of the Helmholtz Assoc. (HGF) and the German Research Foundation (DFG) - SFB 1608 - 501798263 and supported by KASTEL Security Research Labs.
+
+\bibliographystyle{IEEEtran}
+\bibliography{smelly-discussion}
+
+
+\end{document}

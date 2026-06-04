@@ -1,0 +1,53 @@
+\begin{table} 
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{1.43pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Results of the Top-2 Configuration of Each Classifier on the Smells Recovered With \ARCADE 
+    (\acf{ffNN}, \acf{kNN}, \acf{LR}, \acf{NB}, \acf{RF}, \acf{SVM}, \acf{XGB}, and
+    %ffNN = feedforward neural network,
+    %kNN = k-nearest neighbors,
+    %LR = logistic regression,
+    %NB = Na\"ive Bayes,
+    %RF = random forest,
+    %SVM = support vector machine,
+    %XGB = XGBoost
+    Sentence-BERT (SB)).
+    }
+    \label{tab:rq2_arcade}
+    \begin{tabularx}{\columnwidth}{@{}llcccccccccccc}
+        \toprule
+                                       &                          & \multicolumn{3}{c}{Inkscape} & \multicolumn{3}{c}{StackGres} & \multicolumn{3}{c}{Shepard} & \multicolumn{3}{c}{Avg.}                                                                                                           \\
+        \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11} \cmidrule(lr){12-14}
+        Class.                     & Emb.                & \multicolumn{1}{c}{P}                        & \multicolumn{1}{c}{R}                        & \multicolumn{1}{c}{F\textsubscript{1}}          & \multicolumn{1}{c}{P}                    & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} \\
+        \midrule
+\multirow{2}{*}{ffNN} & OpenAI  & .158 & .652 & .251 & .290 & .704 & .409 & .180 & .800 & .286 & .210 & .719 & .315 \\
+ & SB\textsubscript{max}        & .150 & .591 & .229 & .275 & .704 & .392 & .169 & \textBF{.823} & .279 & .198 & .706 & .300 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{kNN} & OpenAI   & .141 & \textBF{.694} & .235 & .274 & .751 & .401 & .178 & .816 & .292 & .198 & \textBF{.753} & .309 \\
+ & SB\textsubscript{max}        & .134 & .589 & .218 & .260 & .692 & .378 & .206 & .724 & .319 & .200 & .668 & .305 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{LR} & OpenAI    & .160 & .615 & .253 & .271 & .776 & .402 & .215 & .772 & .334 & .215 & .721 & .330 \\
+ & TF-IDF                       & .160 & .523 & .244 & \textBF{.307} & .717 & \textBF{.429} & .221 & .661 & .330 & .229 & .634 & .334 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{NB} & OpenAI    & .164 & .592 & .257 & .272 & .763 & .401 & .252 & .627 & .357 & .230 & .661 & .338 \\
+ & SB\textsubscript{max}        & .138 & .549 & .220 & .270 & .699 & .389 & .254 & .683 & .366 & .221 & .644 & .325 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{RF} & OpenAI    & .165 & .588 & .257 & .280 & .722 & .403 & .234 & .746 & .354 & .226 & .685 & .338 \\
+ & SB\textsubscript{max}        & .138 & .581 & .222 & .284 & .708 & .405 & .212 & .683 & .322 & .211 & .658 & .316 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{SVM} & OpenAI   & \textBF{.195} & .601 & \textBF{.294} & .280 & \textBF{.803} & .415 & .253 & .726 & .371 & \textbf{.243} & .710 & \textBF{.360} \\
+ & SB\textsubscript{max}        & .150 & .591 & .238 & .284 & .733 & .410 & \textBF{.257} & .727 & \textBF{.376} & .230 & .684 & .341 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{XGB} & OpenAI   & .163 & .603 & .257 & .291 & .708 & .412 & .223 & .640 & .329 & .226 & .650 & .333 \\
+ & SB\textsubscript{max}        & .139 & .580 & .225 & .279 & .683 & .396 & .222 & .697 & .335 & .213 & .653 & .319 \\
+ \arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+ \multicolumn{2}{l}{RoBERTa\textsubscript{fine-t.}} & .133 & .593 & .210 & .296 & .656 & .401 & .134 & .822 & .228 & .187 & .690 & .334 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multicolumn{2}{l}{GPT-5-mini}  & .167 & .012 & .023 & .176 & .011 & .020 & .222 & .043 & .073 & .188 & .022 & .066 \\
+ \arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+ \multicolumn{2}{l}{Random} & .078 & .080 & .078 & .196 & .202 & .199 & .183 & .207 & .191 & .152 & .163 & .156 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+

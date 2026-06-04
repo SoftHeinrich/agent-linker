@@ -1,0 +1,155 @@
+\section{AALinker}
+
+We propose a multi-agent workflow for recovering  trace links between architectural doc and model components.
+Given a architecture document $D$ consisting of sentences ${s_1, \ldots, s_n}$ and an architectural model containing components ${c_1, \ldots, c_m}$, our approach produces a set of trace links $L \subseteq S
+  \times C$, where each link $(s_i, c_j)$ asserts that sentence $s_i$ discusses component $c_j$'s architectural responsibilities.
+
+Architectural doc has XX charistics, brings 2 problems, then its difficult.
+Two problems make this task difficult.
+First, \emph{reference diversity}: documents refer to components by exact name, abbreviation, synonym, trailing word, or pronoun.
+No single entity extraction strategy handles all of these forms.
+Second, \emph{name ambiguity}: component names like \texttt{Cache} or \texttt{Facade} are common English words that appear frequently without referring to any component, 
+so broadening extraction to capture diverse references also increases false positives.
+
+Addressing both problems requires structured knowledge: which names are ambiguous, and what abbreviations, synonyms, and short forms map to which component.
+To the best of our knowledge, this knowledge does not exist in advance and must be discovered at runtime.\todo{define runtime} 
+Using the same LLM that will consume it, with the risk of hallucinated mappings or misjudged ambiguity. 
+\todo{refactor to difficult to extract, needs much work, but can be reuse}
+We call this the \emph{architectural context knowledge gap}.
+
+Existing approaches address only part of this problem.
+Lexical NLP pipelines such as SWATTR~\cite{swattr} rely on string similarity and cannot resolve indirect references or discourse dependencies.
+LLM-based classifiers such as LISSA~\cite{lissa} add semantic understanding via LLM 
+but have no mechanism to build alias mappings or classify name ambiguity before linking,
+
+Our pipeline closes the knowledge gap first, then leverage multiple link recovery agents using the acquired knowledge.
+It is organized as a DAG (Figure~\ref{fig:pipeline}) with three layers:
+
+\begin{enumerate}
+\item \textbf{Project knowledge discovery} (layer~1): 
+Agents analyze the architectural document and model to extract structured knowledge. 
+Knowledge includes component alias table and identify ambiguous components. 
+\item \textbf{Candidate Link recovery} (layer~2): 
+Four complementary agents recover candidate links via different mechanisms: explicit mentioning match, entity extraction, coreference resolution, and abbreviated reference matching. 
+The strategies are largely independent: each targets a different type of component reference.
+The agents are largely independent: each targets a different type of component reference
+\item \textbf{Link consolidation} (layer~3): All recovered links merge to final link set.
+\todo{benefits}
+\end{enumerate}
+
+\acp{LLM} bring the benefits of rich semantic understanding, however, they are non-deterministic and may output noises like hallucinated results.
+To this challenge, our pipeline uses two cross-cutting patterns. \todo{cite source}
+\emph{Multi-pass consensus}: for open-ended tasks, we use two independent LLM passes with agreement rules to avoid single run variance.
+\emph{Citation-grounded verification}: for verifiable tasks, the LLM must produce checkable evidence, such as antecedent sentence for resolved coreference.
+
+
+\begin{table}[t]
+\caption{Link recovery strategies and their properties.}
+\label{tab:strategies}
+\centering\footnotesize
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Strategy} & \textbf{Reference type} & \textbf{Knowledge} & \textbf{Consensus pattern} & \textbf{LLM} \\
+\midrule
+Explicit & Canonical name & Alias table\rlap{$^\ddagger$} & Asym.\ voting + stratified valid. & 2+2--3\rlap{$^*$} \\
+Contextual & Alias, functional & Alias table, ambig.\ classif. & $\cap$ extr.\ + stratified valid. & 2+2--3\rlap{$^*$} \\
+Anaphoric & Pronoun & Alias table & Citation verif. & 1 pass \\
+Abbreviated & Partial name & Alias table & Union valid. & 0+2--3\rlap{$^\dagger$} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\scriptsize $^*$2 extraction + 2--3 validation (generic-mention detection for ambiguous names, then 2 voting passes).
+$^\dagger$0 extraction (deterministic) + 2--3 validation.
+$^\ddagger$Extraction needs no knowledge (runs parallel with Layer~1);
+validation uses the alias table once Layer~1 completes.
+Stratified valid.: $\cup$ for alias-confirmed, $\cap$ for exact-name matches.
+Union valid.: all candidates are alias-confirmed, so $\cup$ only.}
+\end{table}
+
+\subsection{Project Knowledge Discovery}
+Software architectural documents contains diverse references that often confuse link-recovery agents.
+In addition, component names are often common English words (\texttt{Core}, \texttt{Adapter}) or technologies (\texttt{TBD}).
+These words appear frequently, sometimes referring to the component share the same name, sometimes used as a generic concepts.
+It poses a need for deep understanding both doc and model in the architectural context.
+Although \acp{LLM} have shown improved ability to understand,\todo{cite } still gaps. \todo{cite }
+And techniques for improving understanding ability are often more costy token.\cite{cite }
+
+
+To help \acp{LLM} understand and make knowledge reusable,  Layer~1 builds a shared knowledge base for downstream linkers.
+Two sub-agents run in parallel: a \emph{model understanding agent} analyzes the architectural model to identify ambiguous components
+(\S\ref{sec:model-understanding}), and a \emph{document understanding agent} extracts component aliases from the document
+(\S\ref{sec:doc-understanding}).
+Once both complete, a partial-reference refinement step merges their outputs and enriches the alias table with LLM-classified trailing-word mappings.
+The resulting knowledge base: a list of ambiguous components and an alias mapping table.
+This serves as a handbook for layer~2 agents to analyze the architectural doc and model.
+
+\subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
+Architectural components operate at a high level of abstraction, so their names vary widely.
+Constructed identifiers like \texttt{TaskScheduler} unambiguously name architectural roles, 
+but single common-English words like \texttt{Core} or \texttt{Adapter} appear frequently in both refering specific component and general concepts.
+\todo{source}
+This poses challenges for trace link recovery: blindly matching mentions of such names would produce false positives, 
+and an LLM lacking explicit reasoning about name ambiguity may confuse general usage with component references.
+Therefore, we analyze component names from the input architecture model to identify \emph{ambiguous} components: those whose names can also be used as general concepts (e.g., \emph{logic}, \emph{storage}).
+This classification serves as knowledge to guide downstream agents when evaluating candidate links.
+% Therefore, we build a knowledge base at this step to help downstream trace link recovery\emph{architectural}
+% or \emph{ambiguous} using a two-step hybrid:
+
+% % Therefore, blindly matching mentions of generic usage would cause false positive links.
+% motivating by xx paper, todo, cite ref, we extract knowledge from it.
+% Therefore, analyze component names from the input architecture model to identify ambiguous components, whose name can be used to as a general concepts: like logic, storage.
+% This can serve as knowledge and provide context for to guide futher LLM trace linker when evaluating the link. 
+
+% Motivated by previously work on camelcase identifiers, acronyms, \todo{cite}
+% We combine these rules with a few-shot LLM prompt to mark ambiguous components.
+% We marked coumpound names like CamelCase, acronyms as non-ambiguous, and use LLM to find others.\todo{cite for retionale}
+
+Motivated by prior work on CamelCase identifiers and acronyms,~\todo{cite} we combine structural rules with a few-shot LLM prompt to mark ambiguous components.
+
+Additionally, we also check component names with each other, to build a hiearchy.
+Because XXX. arch model are hiearchical.
+In order to disambiguates trace inks when a doc refer to parent component.
+shared partial words, like XX, will be used for better coreference.
+TODO example needed.
+
+
+The analysis additionally extracts partial words among components. 
+Because partial words can bring ambiguity by confusing 
+\begin{enumerate}
+  \item two components:  (e.g., \texttt{BasicScheduler}~$\to$~\texttt{Scheduler}), when the document only say Scheduler
+  \item a component and general concepts: (todo: example)
+\end{enumerate}
+Such information will be feed to Abbreviations linking agents in layer to.
+
+(\S\ref{sec:partial}).
+
+\subsubsection{Architectural Document Understanding}
+Since architectural documents contain heavy synonym, abbraviations, \todo{cite support}
+this step is to find all alternative names for architectural components. 
+\paragraph{Alternative name discovery.}
+An LLM extracts three categories of alternative names:
+\begin{itemize}
+    \item \emph{Abbreviations}: short forms introduced via parenthetical definitions (e.g., ``Abstract Syntax Tree (AST)'' defines AST).
+    \item \emph{Synonyms}: alternative names that unambiguously identify exactly one component. \todo{example from prompt}
+    \item \emph{Partial references}: trailing words of multi-word component names used alone (e.g., ``Dispatcher'' for \texttt{EventDispatcher}).
+\end{itemize}
+
+\paragraph{Partial-reference refinement.}
+Among the three alias types, partial references require the most careful handling: 
+trailing-word shorthands are pervasive in architecture documents, but many trailing words are generic English words whose referential status depends on context.
+Therefore, identify corect partial-reference needs the detected ambiguous component names from the model understanding agent.
+
+After the extraction, a few-shot judge validates each proposed mapping.
+Finally, this output a mapping table, which later linkers can use to XX. 
+
+
+% partial references are ambiguous, Because XX
+% generic names. 
+% For each partial references to ambiguous terms,
+%  we use only  capitalized occurences as they refer to specific usage. 
+%TODO: check how partial refernces added 
+
+
+
+
+

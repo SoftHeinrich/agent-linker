@@ -1,0 +1,30 @@
+% RQ4: per-agent contribution by set overlap.
+% Per the eval.tex \autoref{sec:exp:rq4} note ("report fp,tp percentage and
+% overlap among linkers, or other better approach"), this table replaces the
+% leave-one-out F1 grid with set-membership counts that read directly from
+% the Full pipeline's per-link source attribution.
+% Data sources:
+%   Full (s_linker17f) macro F1 = 0.920, from
+%     ../../approach/results/ablation_results/ablation_20260603_173544.json.
+%   Per-link source attribution: each linker run logs the source agent
+%     ("multi_framing", "coreference", ...) under sources / fp_by_source in
+%     the same JSON; per-agent attribution for the four named agents has not
+%     yet been extracted into this table.
+% Cells reported as 0 are not yet obtained.
+\begin{table}[t]
+\caption{Per-agent contribution measured from the Full \approach{} pipeline. \emph{TPs caught} counts gold links the agent emitted (an agent may share a TP with others); \emph{Unique TPs} counts gold links no other agent emitted (the agent's irreplaceable contribution); \emph{FP rate} is the agent's own precision complement. The \emph{Canonical-only} floor reports a single-agent baseline that runs the canonical-name agent in isolation. Cells reported as $0$ (or $0.000$) are not yet obtained.}
+\label{tab:rq4-agents}
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Agent                  & TPs caught & Unique TPs & FP rate & $\Delta$\fone\ if removed \\
+\midrule
+Canonical-name         &     0      &     0      &  0.000  &           0.000           \\
+Alias                  &     0      &     0      &  0.000  &           0.000           \\
+Pronoun                &     0      &     0      &  0.000  &           0.000           \\
+Partial-name           &     0      &     0      &  0.000  &           0.000           \\
+\midrule
+\emph{Canonical-only}  &     0      &    ---     &  0.000  &           ---             \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,31 @@
+\begin{table}
+    \centering
+    \caption{Avg. Results with Addit. Discussion Input (C\textsubscript{jit}) Compared to Performance on C\textsubscript{0}. Results For the Best Configuration From RQ2 (T\&D) and the Best Performing on the Addit. Data (Full).
+    %ffNN = feedforward neural network,
+    %kNN = k-nearest neighbors,
+    %LR = logistic regression,
+    %NB = Na\"ive Bayes,
+    %RF = random forest,
+    %SVM = support vector machine,
+    %XGB = XGBoost;
+    %(SD = smell detector) %, TOP specifies whether this configuration was top on full issue (onFull, see RQ2) or on the reduced input (onT\&D). Deltas are calculated based on performance of this configuration in RQ2.
+    }
+    \setlength{\tabcolsep}{1.5pt}
+    \renewcommand{\arraystretch}{1.1}
+    \label{tab:rq3}
+    \begin{tabularx}{\columnwidth}{lZZXcccccc}
+        \toprule
+                                     &&  &           &                \multicolumn{6}{c}{Average}                                                                                                           \\
+        \cmidrule(lr){5-10}
+        \multirow{-2}{3.2em}{Smell- detector}&\multirow{-2}{3.2em}{Config. top on}&Class.                     & Emb.                & \multicolumn{1}{c}{P} & $\Delta$                       & \multicolumn{1}{c}{R}     & $\Delta$                   & \multicolumn{1}{c}{F\textsubscript{1}}& $\Delta$          \\
+        \midrule
+        \multirow{2}{*}{\ARCADE}&T\&D&\multirow{2}{*}{SVM} & \multirow{2}{*}{OpenAI}& \multirow{2}{*}{.241}	&\multirow{2}{*}{(\textcolor{kit-red}{--.002})}&\multirow{2}{*}{.721}	&\multirow{2}{*}{(\textcolor{kit-green}{+.011})}&\multirow{2}{*}{.360}&\multirow{2}{*}{($\pm$.000)}
+\\
+        &Full&\\
+         \arrayrulecolor{kit-gray30}\midrule\arrayrulecolor{black}
+        \multirow{2}{*}{\Arcan}&T\&D&\multirow{2}{*}{SVM} & \multirow{2}{*}{OpenAI}& \multirow{2}{*}{.406}	&\multirow{2}{*}{(\textcolor{kit-green}{+.001})}&\multirow{2}{*}{.737}	&\multirow{2}{*}{(\textcolor{kit-red}{--.004})}&\multirow{2}{*}{.505}&\multirow{2}{*}{(\textcolor{kit-red}{$-$.001})}
+\\
+        &Full&\\
+        \bottomrule
+    \end{tabularx}
+\end{table}

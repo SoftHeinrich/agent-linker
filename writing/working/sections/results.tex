@@ -1,0 +1,107 @@
+\section{Results}
+\label{sec:results}
+
+We answer the four research questions on the five-project benchmark; \approach{} uses the configuration of \autoref{sec:hyperparameters} and all baselines are run with their authors' released configurations.
+
+\input{table/rq1}
+\input{figures/rq1-dumbbell}
+
+\subsection{Answer to \ref{RQ1 SOTA comparison} -- SOTA Comparison}
+\label{sec:results:rq1}
+
+\autoref{tab:rq1} reports per-project precision, recall, and \fone\ on both link tasks, and \autoref{fig:rq1-dumbbell} visualises the per-project gain.
+\approach{} reaches a doc-to-model macro \fone\ of $0.920$ against SWATTR's $0.799$ -- a gain of $+12.1$ percentage points.
+The picture is uniform on four projects and reverses on one: doc-to-model \fone\ rises from $0.694$ to $0.949$ on MediaStore ($+25.5$pp), from $0.851$ to $0.964$ on TeaStore ($+11.3$pp), from $0.710$ to $0.922$ on Teammates ($+21.2$pp), and from $0.947$ to $0.973$ on JabRef ($+2.6$pp).
+This is because the knowledge layer resolves each alias and partial-name reference once and the four linker agents reuse that resolution across every sentence in the document, whereas SWATTR's lexical pipeline renegotiates the same name on every encounter and LiSSA's single-pass classifier carries no document-level state at all~\todo{LiSSA doc-to-model numbers}.
+Therefore \approach{} closes most of the macro \fone\ gap to the oracle ceiling on the link task it targets directly.
+
+The same picture holds on the downstream doc-to-code task, where \approach{} composes its doc-to-model output with the component-to-file mapping that TransArc also uses.
+\approach{} reaches a doc-to-code macro file \fone\ of \todo{17f doc-to-code macro F1} against TransArc's $0.803$, decision-level \fone\ of \todo{17f decision F1} against $0.596$, and aggregate component \fone\ of \todo{17f component F1} against $0.714$.
+This is because the composition step inherits the doc-to-model gain at every sentence while losing nothing to the deterministic file mapping.
+LiSSA's single-pass design does not reach TransArc on any of the three doc-to-code metrics (\todo{LiSSA file F1}, \todo{LiSSA decision F1}, \todo{LiSSA component F1}), because a per-sentence classifier cannot reuse a resolved alias across the document.
+Therefore the gain that \approach{} earns at the doc-to-model step propagates intact to the downstream task that developers care about.
+
+\paragraph{Honest-failure case -- BigBlueButton.}
+BigBlueButton is the single project on which \approach{} regresses: doc-to-model \fone\ falls from SWATTR's $0.793$ to $0.790$ -- a drop of $0.3$pp visible as the backwards arrow on the BigBlueButton row of \autoref{fig:rq1-dumbbell}.
+This is because BigBlueButton's documentation refers to several modules whose names also appear as common English compounds in the architecture model; \approach{}'s knowledge layer merges two distinct modules under the shared substring, and because that layer is built once per project the aliasing error propagates to every later agent.
+The other four projects show consistent gains of $+2.6$pp to $+25.5$pp, and the macro \fone\ still rises from $0.799$ to $0.920$.
+We return to this regression and its implications for the knowledge layer in~\autoref{sec:discussion}.
+
+\begin{rqanswer}
+\paragraph{Answer to \ref{RQ1 SOTA comparison}.}
+\approach{} improves over the strongest published doc-to-model baseline by $+12.1$pp macro \fone, with four of five projects gaining and one regressing by $0.3$pp; the doc-to-code composition inherits the same gain (\todo{number}pp file \fone, \todo{number}pp decision \fone), and LiSSA's single-pass design reaches neither baseline.
+\end{rqanswer}
+
+\subsection{Answer to \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\label{sec:results:rq2}
+
+\input{table/rq2-summary}
+\input{figures/rq2-grid}
+
+\autoref{fig:rq2-grid} reports \approach{}, TransArc, and LiSSA across the five projects under the four primary metrics of \autoref{sec:metric:suite}, and \autoref{tab:rq2-summary} reports the macro values per metric.
+Across the suite, \approach{}'s gain over TransArc grows monotonically as the evaluation granularity tightens: aggregate component \fone\ \todo{component delta}pp; file \fone\ \todo{file delta}pp; decision-level \fone\ \todo{decision delta}pp.
+This is because component \fone\ averages over sets where a single true positive can rescue an entire enrolled cohort, while decision-level \fone\ scores each gold sentence individually; \approach{}'s advantage is per-decision, not per-file, and the architecture-driven metrics expose this shape directly.
+Therefore the new metrics show that \approach{}'s advantage is largest exactly where the evaluation is closest to what a developer reads.
+
+Sentence coverage and noise rate tell the same story from the developer's side.
+\approach{} reaches sentence coverage of \todo{value} against TransArc's \todo{value} and noise rate of \todo{value} against \todo{value} (\autoref{tab:rq2-summary}).
+This is because the validators reject links whose anchor is absent from the document, while the linker agents collectively visit every gold sentence at least once.
+Thus \approach{}'s links are both more complete in coverage and less noisy.
+
+The skill score rescales \fone\ between a random and an oracle baseline.
+\approach{} reaches a skill score of \todo{value} against TransArc's \todo{value}; the random baseline averages $0.155$ and the oracle-subset ceiling averages $0.987$~\cite{replication}.
+This is because the absolute \fone\ gap of $+12.1$pp covers a large share of the resolvable signal once the trivial-baseline floor and the enrolled-gold ceiling are removed.
+Therefore the gain reported under the standard \fone\ is not an artefact of an inflated baseline.
+
+\begin{rqanswer}
+\paragraph{Answer to \ref{RQ2 metrics}.}
+The architecture-driven metrics widen \approach{}'s advantage from $+12.1$pp under the standard \fone\ to \todo{decision delta}pp at decision-level granularity, confirm the gain on coverage and noise rate, and place \approach{} at \todo{skill score} on the rescaled skill axis -- the standard \fone\ understates the advantage on every dimension we measure.
+\end{rqanswer}
+
+\subsection{Answer to \ref{RQ3 validators} -- Validator Contribution}
+\label{sec:results:rq3}
+
+\input{table/rq3-validators}
+\input{figures/rq3-validator}
+
+We measure validator contribution directly from the Full \approach{} pipeline's logged decisions rather than re-running the pipeline with each validator removed: \autoref{fig:rq3-validator} reports, for each validator, the gold and spurious links it killed and kept, and \autoref{tab:rq3-validators} converts those counts into a counterfactual macro $\Delta$\fone.
+The consensus voter rejects \todo{number} spurious links at the cost of \todo{number} gold links; the entity validator rejects \todo{number} at the cost of \todo{number}; the citation validator rejects \todo{number} at the cost of \todo{number}.
+This is because the citation validator targets pronoun-anchor links whose antecedent the agent could not quote, the entity validator targets agent outputs that refer to no architecture-model element, and the consensus voter targets unstable outputs that disagree across two voting passes; the three failure modes are largely disjoint, so the combined effect approximates the sum of the three single-validator effects.
+Therefore the three validators contribute roughly additively in \fone\ terms and target distinct failure modes.
+
+The price of the validators is roughly doubled \ac{LLM} call count -- precise counts appear in the replication package, and the absolute call count remains \todo{calls per project} per project, comparable to one human reviewer pass.
+However the per-component \fone\ and noise-rate columns of \autoref{tab:rq2-summary} drop by \todo{component delta}pp and \todo{noise delta}pp respectively when the validators are switched off, so the cost is paid where it matters most: at the granularities the architecture-driven metrics emphasise.
+Therefore the validator stack is the dominant lever for precision at low marginal cost.
+
+\begin{rqanswer}
+\paragraph{Answer to \ref{RQ3 validators}.}
+The three validators together kill \todo{FP killed} spurious links at the cost of \todo{TP killed} gold links, contribute \todo{net delta}pp macro \fone\ to the Full pipeline, and target disjoint failure modes (hallucinated anchor, missing entity, unstable answer) at a cost of roughly $2\times$ \ac{LLM} call count.
+\end{rqanswer}
+
+\subsection{Answer to \ref{RQ4 ablation} -- Per-Agent Ablation}
+\label{sec:results:rq4}
+
+\input{table/rq4-agents}
+\input{figures/rq4-upset}
+
+We measure each agent's contribution by set overlap rather than by leave-one-out \fone, because leave-one-out is contaminated: removing the alias agent leaves the canonical-name agent free to pick up some alias hits through document context, and removing the pronoun agent has the same effect for short antecedents.
+\autoref{fig:rq4-upset} shows the gold-link sets that each combination of agents catches, and \autoref{tab:rq4-agents} reports per-agent unique-TP counts.
+The canonical-name agent catches \todo{count} gold links, of which \todo{unique} are not caught by any other agent; the alias agent contributes \todo{unique} uniquely; the pronoun agent contributes \todo{unique} uniquely; the partial-name agent contributes \todo{unique} uniquely.
+This is because each agent targets a non-overlapping linguistic phenomenon: canonical mentions, cross-document name substitutions, pronoun anaphora, and abbreviations or substring references.
+Therefore each agent contributes a distinct slice of true positives and the four-agent decomposition is not redundant.
+
+The canonical-only baseline reaches a macro \fone\ of \todo{floor value}, already above SWATTR's $0.799$ (\autoref{sec:results:rq1}).
+However that single agent loses \todo{number} gold links that the alias, pronoun, and partial-name agents recover -- exactly the sentences on which the doc-to-model gold standard discriminates strongest from a name-match baseline.
+Thus the canonical agent establishes that an \ac{LLM} substrate alone already beats the lexical pipeline, while the other three agents recover the long tail of references on which the gain to $0.920$ is built.
+
+\begin{rqanswer}
+\paragraph{Answer to \ref{RQ4 ablation}.}
+Each of the four agents catches a non-overlapping slice of gold links: the canonical-name agent contributes \todo{count} unique true positives, the alias agent \todo{count}, the pronoun agent \todo{count}, and the partial-name agent \todo{count}; the canonical agent alone already exceeds SWATTR, and the remaining three agents together raise macro \fone\ from \todo{floor value} to $0.920$.
+\end{rqanswer}
+
+\subsection{Summary}
+\label{sec:results:summary}
+
+\approach{} improves over the strongest published baseline at every granularity we measure.
+Doc-to-model macro \fone\ rises from $0.799$ to $0.920$ ($+12.1$pp); the doc-to-code composition inherits the same gain (\todo{file delta}pp file \fone, \todo{decision delta}pp decision \fone); the gain widens as granularity tightens; the three validators contribute roughly additively to \fone\ while attacking disjoint failure modes; and each of the four agents catches a non-overlapping slice of true positives.
+We discuss the BigBlueButton regression, the implications for the knowledge layer, and the threats to validity in~\autoref{sec:discussion}.

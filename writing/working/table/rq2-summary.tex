@@ -1,0 +1,32 @@
+% RQ2 summary: architecture-driven metrics, macro across 5 projects, doc-to-code.
+% Data sources:
+%   TransArc doc-to-code macro: ../../evaluation/reports/SADCODE_S11_S13F_VS_TRANSARC.csv (Average row).
+%     - File F1               = 0.803
+%     - Decision F1           = 0.596
+%     - Per-component F1      = 0.714
+%     - Weighted F1           = 0.594
+% Cells reported as 0.000 are not yet obtained:
+%   - AALinker: 17f has not yet been evaluated under the full metric suite on doc-to-code.
+%   - Sentence coverage, noise rate, skill score: not in SADCODE_S11_S13F_VS_TRANSARC.csv.
+%   - All Delta columns: derived from the above gaps.
+\begin{table}[t]
+\caption{Architecture-driven metric panel on doc-to-code, macro across five projects. $\Delta$ is \approach{} minus TransArc. The reference row (file \fone) is the standard ruler; subsequent rows progressively tighten granularity, then expose per-sentence behaviour, and the last row rescales between random and oracle. Cells reported as $0.000$ are not yet obtained.}
+\label{tab:rq2-summary}
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Metric                 & TransArc & \approach{} & $\Delta$ \\
+\midrule
+File \fone\ (reference)& 0.803    & 0.000       & 0.000 \\
+\addlinespace[2pt]
+Per-component \fone    & 0.714    & 0.000       & 0.000 \\
+Decision \fone         & 0.596    & 0.000       & 0.000 \\
+Weighted \fone         & 0.594    & 0.000       & 0.000 \\
+\addlinespace[2pt]
+Sentence coverage      & 0.000    & 0.000       & 0.000 \\
+Noise rate ($\downarrow$)& 0.000  & 0.000       & 0.000 \\
+\addlinespace[2pt]
+Skill score            & 0.000    & 0.000       & 0.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
