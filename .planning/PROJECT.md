@@ -56,20 +56,28 @@ Key requirements:
 - **REQ-V25-07** — Training harness Oracle + Distillator updated to recognize and propose for all 15 slots
 - **REQ-V25-08** — Full 3-split Confirmation re-run with clean infrastructure; promotion verdict vs STRONG threshold ≥ 0.9173
 
-## Current Milestone: v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
+## Current Milestone: v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
 
-**Goal:** Replace mechanical training gate with LLM Assessor reasoning over actual FP/FN error sets; build ILinker4 as Voyager-native seed extractor; fix 3 axiom gaps (SCN, gerunds, coref alias). Target: exceed canonical (90.69% gpt-5.4).
+**Goal:** Audit every LLM-call site in `s_linker19` (6 prompt builders + their imported PROMPT CONSTANTS) with per-prompt golden-replay unit tests; ship `s_linker20.py` whose prompts are at the Pareto-best of size-cut × generality, without regressing the 17e-line macro F1 floor (gpt-5.4 92.3%, T=1.0pp → floor 91.3%).
 
 **Target features:**
-- ILinker4: Voyager-native seed extractor (SEED_EXTRACTION_RULES + SEED_ACTOR_RULES as first-class bank slots)
-- Prompt hygiene: all static prompts = structural scaffolding only
-- O+D merge: single text-aware role (diagnose errors + propose patterns; anti-superficiality rule)
-- LLM Assessor: replaces Gate A + Gate B; sees remaining FP/FN sentence lists + full bank; accept/reject/revise
-- Cross-split as train/test validation with axiom-only baseline per held-out
-- Log structure: [TRAIN] vs [TEST] separation per pass
-- Axiom fixes: Gap 1 (SCN 14 FNs), Gap 2 (gerunds 7 FPs), Gap 3 (coref alias)
+- Per-prompt unit-test harness using v2.6.3 `phase_cache/openai/<project>/{layer1..4,final}.pkl` artefacts as golden-replay fixtures (zero new LLM calls for harness build)
+- Pytest + snapshot/syrupy on parsed JSON outputs for each of the 6 s19 prompt sites: ambiguity, doc-knowledge extract, doc-knowledge judge, extraction, validation, coref
+- Audit + rewrite of imported PROMPT CONSTANTS (`AMBIGUITY_FEW_SHOT`, `AMBIGUITY_RULES`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`) AND in-class f-string scaffolding
+- Generality target: "look general but still SAD/SAM-tuned" — strip benchmark + jargon surface vocabulary; behaviour stays tuned to SAD→SAM
+- Lexical scope: rewrite few-shot examples + RULES constants to neutral domain; drop few-shots entirely when removal does not move the per-prompt golden test
+- Size-cut policy: Pareto-frontier per prompt — keep removals only when per-prompt golden tests are byte-equal on parsed structured outputs
+- New variant `s_linker20.py` (`experimental=True`, `canonical=False`); `s_linker19.py` preserved byte-equal (paper RQ1–RQ4 replay determinism)
+- Backend: gpt-5.4 only (per v2.3 standing policy)
 
-**v2.5 Outcome (prior):** WEAK — cross-split macro 89.1% (gpt-5.4). See `milestones/v2.5-MILESTONE-AUDIT.md`.
+**Standing gates:**
+- GATE-01: `s_linker13_min.py` + `s_linker19.py` byte-equal (canonical/paper untouched)
+- GATE-06: no benchmark-derived vocabulary in any prompt or constant (re-verified across both layers)
+- Macro F1 floor: `s_linker20` GPT-5.4 5-dataset macro ≥ 91.3% (s17e 92.3% − T 1.0pp)
+
+**Frozen / deferred carried forward:** v2.7 (BBB recall closure, Phases 38–42) FROZEN; v2.6 close (Phase 37 GATE-06 'Persistence' taboo fix) DEFERRED.
+
+**v2.6.3 Outcome (prior):** PASSED — paper RQ1–RQ4 cells populated via s_linker19 checkpoint replay; zero new LLM calls. See `milestones/v2.6.3-MILESTONE-AUDIT.md`.
 
 ## Current State
 
@@ -189,4 +197,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-02 — v2.6 milestone kickoff (ILinker4 + LLM-Driven Training + Axiom Re-run)*
+*Last updated: 2026-06-05 — v2.6.4 milestone kickoff (per-prompt unit-tested minimization + generality pass on s_linker19 → s_linker20)*
