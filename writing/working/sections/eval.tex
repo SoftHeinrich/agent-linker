@@ -111,49 +111,36 @@ The outcome of \ref{RQ2 metrics} is the table of (system, metric, project) value
 
 \subsubsection{Experiments for \ref{RQ3 validators} -- Validator Contribution}
 \label{sec:exp:rq3}
-%TODO, decide how many variants. 
-We build three variants of \approach{} that remove validators while keeping the linker agents in place:
+We build three ablations of \approach{} that remove validators while keeping the linker agents in place. We compare each ablation against \emph{\fullVariant{}}, the full pipeline.
 
-%TODO each item is the removal of  
-\begin{enumerate}[leftmargin=*] 
-\item \emph{NoConsensus}: % todo, also remove seed validator in this sense
-each extraction agent runs a single \ac{LLM} pass instead of two voting passes;
-the vote in \autoref{tab:strategies} is replaced by simply keeping every
-proposed link. 
+\begin{enumerate}[leftmargin=*]
+\item \emph{\noEntityValid{}}: skip the entity validator (Phase 4 in \autoref{sec:approach}); accept all candidates from the entity extractor without the p1 \ensuremath{\wedge} p2 evidence gate.
 
-\item \emph{NoEntity valid}
+\item \emph{\noCitation{}}: skip the coreference / citation validator; accept all coreference candidates without the quoted-antecedent gate.
 
-\item \emph{NoCitation}: the pronoun agent no longer has to provide a quoted antecedent sentence; resolved candidates are accepted directly.
+\item \emph{\noValidator{}}: skip both validators (the two above combined).
+\end{enumerate}
 
-\item \emph{NoValidator}: both above combined, i.e.\ no validators anywhere.
-\end{enumerate} 
+Consensus voting in the entity extractor (the two-pass intersection at \autoref{sec:approach}) is kept inside \fullVariant{} as part of the extractor and is not ablated separately; reconstructing a no-consensus counterfactual would require new LLM calls and is out of scope.
 
-%TODO, maybe not need full pipeline run, we can directly trace how many tp / fp killed by each validator, thats better
-We compare these to \emph{Full}, the full \approach{} pipeline. 
-For each variant we measure \fone, per-component \fone, sentence coverage, and 
-noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls 
-(mean tokens per project), since the validators roughly double the number of 
-calls for the affected agents. 
+
+For each variant we measure \fone, per-component \fone, sentence coverage, and
+noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls
+(mean tokens per project), since the entity validator's two-pass p1 \ensuremath{\wedge} p2 evidence pattern roughly doubles entity-validation calls — not the entity-extraction calls themselves, which are a separate two-pass step inside the extractor and are included in the \fullVariant{} baseline cost.
 The outcome of \ref{RQ3 validators} shows how much the validators contribute beyond the raw retrieval power of the agents, and
 at what cost.
 
 \subsubsection{Experiments for \ref{RQ4 ablation} -- Per-Agent Ablation}
 \label{sec:exp:rq4}
 
-We measure each linker agent by leave-one-out ablation: \emph{$-$Explicit},
-\emph{$-$Contextual}, \emph{$-$Anaphoric}. 
-The knowledge layer (\autoref{sec:approach}) stays in place in every run, because all four
-agents read from it. 
-%overhaul, we do not report those metrics, but report fp,tp percentage and overlap among linkers, or other better approach, design for that
+We measure each linker by leave-one-out ablation across the two linkers: \linkerB{} (entity) and \linkerC{} (coreference).
+The knowledge layer (\autoref{sec:approach}) stays in place in every run, because both linkers read from it.
 For each variant we report:
 \begin{enumerate*}[label=(\roman*)] \item the change in macro \fone over the
 five projects, \item the change in sentence coverage and noise rate, which tells
 us whether the removed agent added recall or only filtered false positives, and
 \item how many true positives are lost that no other agent recovers.
-\end{enumerate*} We also report \emph{Explicit-only}, a single-agent baseline
-that the other agents extend on top of. This experiment shows whether the four
-reference categories really need separate agents, or whether one agent already
-covers the others on this benchmark.
+\end{enumerate*} Set overlap is reported via the UpSet decomposition |only_E|, |both|, |only_C| in \autoref{fig:rq4-upset}; per-linker unique-TP counts in \autoref{tab:rq4-agents}.
 
 
 \subsection{Dataset}
