@@ -44,21 +44,22 @@ In plain prose (matching the executor's grep contract):
 
 ```bash
 # 5 projects × 2 backends × 2 CSVs each = 20 RQ1 CSVs
-python3 scripts/v2.6.3/replay_s19_to_csv.py --all
+python3 scripts/v2.6.3/replay_s19_to_csv.py
 
 # 5 × 2 = 10 RQ3 CSVs (plus 10 rq3_audit.csv)
-python3 scripts/v2.6.3/replay_s19_rq3.py --all
+python3 scripts/v2.6.3/replay_s19_rq3.py
 
 # 5 × 2 = 10 RQ4 CSVs (plus 10 rq4_upset.csv)
-python3 scripts/v2.6.3/replay_s19_rq4.py --all
+python3 scripts/v2.6.3/replay_s19_rq4.py
 
 # One-liner for the whole pipeline:
-python3 scripts/v2.6.3/replay_s19_to_csv.py --all \
-  && python3 scripts/v2.6.3/replay_s19_rq3.py --all \
-  && python3 scripts/v2.6.3/replay_s19_rq4.py --all
+python3 scripts/v2.6.3/replay_s19_to_csv.py \
+  && python3 scripts/v2.6.3/replay_s19_rq3.py \
+  && python3 scripts/v2.6.3/replay_s19_rq4.py
 ```
 
-Per-project / per-backend slices are available via
+All three scripts default to `--backend all --project all` (5 projects ×
+2 backends). Per-project / per-backend slices are available via
 `--backend {claude,openai}` and `--project {mediastore,teastore,teammates,bigbluebutton,jabref}`.
 Default `--out-root` is `<repo>/results/v2.6.3`.
 

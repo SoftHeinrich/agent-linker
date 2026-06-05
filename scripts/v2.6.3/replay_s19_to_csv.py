@@ -138,8 +138,6 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Which project(s) to replay (default: all).")
     p.add_argument("--out-root", default=str(OUTPUT_ROOT),
                    help=f"Output root directory (default: {OUTPUT_ROOT}).")
-    p.add_argument("--all", action="store_true",
-                   help="Shorthand for --backend all --project all (also the default).")
     return p
 
 
@@ -150,12 +148,8 @@ def main(argv=None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    if args.all:
-        backends = list(BACKENDS)
-        projects = list(PROJECTS)
-    else:
-        backends = list(BACKENDS) if args.backend == "all" else [args.backend]
-        projects = list(PROJECTS) if args.project == "all" else [args.project]
+    backends = list(BACKENDS) if args.backend == "all" else [args.backend]
+    projects = list(PROJECTS) if args.project == "all" else [args.project]
 
     out_root = Path(args.out_root)
 
