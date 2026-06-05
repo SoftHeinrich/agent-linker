@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+  \centering
+  \caption{Doc-to-model link-level metrics for \approach{} across two backends. Macro row is the unweighted mean across the five projects.}
+  \label{tab:metrics-sad-sam}
+  \begin{tabular}{lrrrrrrrrrrrrrr}
+    \toprule
+    Project & \multicolumn{7}{c}{Claude} & \multicolumn{7}{c}{GPT-5.4} \\
+    \cmidrule(lr){2-8} \cmidrule(lr){9-15}
+    {} & Link \fone & Sentence \fone & MCC & MAP & ACF1 & NDG & HUS & Link \fone & Sentence \fone & MCC & MAP & ACF1 & NDG & HUS \\
+    \midrule
+    MediaStore & 0.931 & 0.962 & 0.930 & 0.889 & -- & -- & 0.962 & 0.951 & 0.963 & 0.949 & 0.963 & -- & -- & 0.963 \\
+    TeaStore & 0.982 & 0.979 & 0.981 & 1.000 & -- & -- & 0.979 & 0.981 & 0.978 & 0.981 & 0.957 & -- & -- & 0.978 \\
+    TeaMmates & 0.912 & 0.935 & 0.910 & 0.911 & -- & -- & 0.924 & 0.862 & 0.894 & 0.859 & 0.867 & -- & -- & 0.871 \\
+    BigBlueButton & 0.897 & 0.935 & 0.896 & 0.851 & -- & -- & 0.924 & 0.815 & 0.889 & 0.819 & 0.767 & -- & -- & 0.889 \\
+    JabRef & 0.973 & 0.952 & 0.965 & 1.000 & -- & -- & 0.952 & 1.000 & 1.000 & 1.000 & 1.000 & -- & -- & 1.000 \\
+    Macro & 0.939 & 0.952 & 0.937 & 0.930 & -- & -- & 0.948 & 0.922 & 0.945 & 0.922 & 0.911 & -- & -- & 0.940 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\footnotesize Source: \texttt{approach/results/v2.6.3/<backend>/<project>/sad-sam.csv} (Plan 02 replay of s\_linker19 phase\_cache pickles; zero LLM calls).
+\end{table}
