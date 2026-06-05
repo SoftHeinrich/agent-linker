@@ -13,7 +13,7 @@
 - ✅ **v2.6.1 — No-Training Axiom Linker (s_linker15) + Axiom FP Fixes (PATCH)** — shipped 2026-06-03. Dropped Voyager training; `s_linker15` = axiom-only standalone (inlined prompts + 3 FP fixes), no bank. macro 89.1% gpt-5.4 / 92.7% Claude. Finding: training adds nothing (s15 = trained s14 on gpt); FP fixes fire on Claude, inert on gpt. See [`milestones/v2.6.1-ROADMAP.md`](milestones/v2.6.1-ROADMAP.md) and [`milestones/v2.6.1-MILESTONE-AUDIT.md`](milestones/v2.6.1-MILESTONE-AUDIT.md).
 - ✅ **v2.6.2 — Multi-Framing Extraction Design (s_linker17a/17b)** — shipped 2026-06-03. 17a (rename-only) ≈ s15 within GPT variance (validates ICSE Framing A/B/C naming). 17b (k=2 unified) regresses TM −4.2pp / BBB −7.4pp (k=2 too conservative). ICSE decision: use 17a naming for paper. See [`milestones/v2.6.2-ROADMAP.md`](milestones/v2.6.2-ROADMAP.md) and [`milestones/v2.6.2-MILESTONE-AUDIT.md`](milestones/v2.6.2-MILESTONE-AUDIT.md).
 - ❄️ **v2.7 — BBB Recall Closure** — Phases 38–42 — FROZEN behind v2.6.2 (2026-06-03). ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution. See [`milestones/v2.7-ROADMAP.md`](milestones/v2.7-ROADMAP.md).
-- 🟡 **v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay** — Phase 43 — opened 2026-06-04. Offline replay of the shipped `s_linker19` `phase_cache/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts to populate the `\todo{}` cells in `writing/working/sections/{eval,results}.tex` (RQ1 doc-to-model + doc-to-code, RQ3 validator counterfactuals, RQ4 2-linker set overlap), plus paper rewrites where text disagrees with code (per [[code-is-canonical]]). Zero new LLM calls.
+- ✅ **v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay** — Phase 43 — shipped 2026-06-05. Offline replay of `s_linker19` phase-cache pickles populated RQ1/RQ3/RQ4 tables, figures, and paper text. Zero new LLM calls; GATE-01 byte-equal. RQ4 ΔF1 switched to true linker-ablation per D-05. See [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md) and [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md).
 
 ## Phases
 
@@ -133,14 +133,24 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 | 36. Confirmation Tier | 0/TBD | Not started (conditional on Phase 35 ≥ 0.87) | — |
 | 37. Milestone Close | 0/TBD | Not started | — |
 
-<details open>
-<summary>🟡 v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay — IN PROGRESS (opened 2026-06-04)</summary>
+<details>
+<summary>✅ v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay — SHIPPED 2026-06-05</summary>
 
-### v2.6.3 Phase Summary
+Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md), [`milestones/v2.6.3-REQUIREMENTS.md`](milestones/v2.6.3-REQUIREMENTS.md), [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md).
 
-- [ ] **Phase 43: Replay s_linker19 checkpoints for paper RQ1–RQ4 eval** — Offline replay of `results/phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` to fill `\todo{}` cells in `writing/working/sections/{eval,results}.tex`. Zero new LLM calls. Detail block below.
+**Highlights:**
+- Phase 43 closed at 11/11 verification score; all 8 REQ-V263 satisfied.
+- 5 plans across 3 waves: REQ + GATE-01 baseline → replay scripts + 60 CSVs → RQ1 + RQ3/RQ4 tables/figures → paper text + GATE-01 verify.
+- Code review fixed 9 findings; WR-01 switched RQ4 ΔF1 metric to true linker-ablation per CONTEXT D-05 (Claude Macro \linkerB +0.584, \linkerC +0.060, overlap 21).
+- GATE-01 byte-equal preserved throughout. Zero new LLM calls.
+- Out-of-scope deferrals: 4 LiSSA cells + 13 RQ2 cells in results.tex remain `\todo{}` for follow-up work.
 
-### Phase 43: Replay s_linker19 checkpoints for paper RQ1–RQ4 eval
+</details>
+
+<!-- Pre-archive Phase 43 detail block retained below for reference; superseded by archive above. -->
+
+<details>
+<summary>Pre-archive Phase 43 detail block (reference only)</summary>
 
 **Goal**: The `\todo{}` cells in `writing/working/sections/eval.tex` and `results.tex` for RQ1 (link-level P/R/F1 + per-component F1, doc-to-model + doc-to-code), RQ3 (validator-ablation counterfactuals: `NoConsensus`, `NoEntityValid`, `NoCitation`, `NoValidator`), and RQ4 (2-linker set overlap: entity-validated ∪/∩ coref-validated vs gold) are populated for both Claude Sonnet and gpt-5.4 across all 5 benchmark projects (mediastore, teastore, teammates, bigbluebutton, jabref), produced entirely from the existing `results/phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts with zero new LLM calls, and the paper text in `eval.tex` §exp:rq3 + §exp:rq4 and `results.tex` §results:rq3 + §results:rq4 is rewritten where it disagrees with `s_linker19.py` (per [[code-is-canonical]]).
 
@@ -179,8 +189,11 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 
 ## Next Milestone
 
-**v2.6.3 active — Phase 43.** Paper eval via checkpoint replay. Start with `/gsd-discuss-phase 43` to lock the phase boundary + the two pending design choices (backend ordering in tables, RQ3 NoConsensus union assumption documentation depth), then `/gsd-plan-phase 43`.
+**v2.6.3 shipped 2026-06-05** — Phase 43 paper-eval closed via checkpoint replay. See [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md) for headline numbers.
 
-**v2.6 close (Phase 37) and v2.7 BBB-recall (Phases 38–42)** remain frozen behind v2.6.3 paper eval.
+**Next active candidates** (project priorities determine order):
+- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit. Frozen since 2026-06-02.
+- **v2.7 — BBB Recall Closure (Phases 38–42)** — frozen since 2026-06-03. ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution.
+- **Out-of-scope writing pass** — backfill LiSSA cells (results.tex lines 18, 24) and RQ2 cells (lines 45, 50, 55, 61, 76) once the LiSSA pipeline and RQ2 metrics work land.
 
-Requirements: `.planning/REQUIREMENTS.md` (v2.6 active section; v2.6.3-specific requirements to be added during discuss-phase).
+Requirements: `.planning/REQUIREMENTS.md` retains REQ-V26-05..13, GATE-01/07/08, and the now-shipped REQ-V263-01..08 (checked off). v2.6.3 archive in `.planning/milestones/v2.6.3-REQUIREMENTS.md`.

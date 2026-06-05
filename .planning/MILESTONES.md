@@ -4,6 +4,48 @@ Historical record of shipped milestones. See `milestones/v[X.Y]-ROADMAP.md`, `mi
 
 ---
 
+## v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay
+
+**Shipped:** 2026-06-05
+**Audit verdict:** PASSED. **Tag:** _not tagged_ (deferred to manual tagging per project preference)
+**Production artifact:** paper tables/figures populated in `writing/working/{tables,table,figures,appendix}/`; replay scripts `scripts/v2.6.3/replay_s19_*.py`; transarc-emp formatters `src/paper/rq{1,3,4}_table.py`
+**Canonical unchanged:** `s_linker13_min.py`, `s_linker19.py` — GATE-01 byte-equal preserved throughout
+
+### Delivered
+
+Offline replay of `s_linker19` `phase_cache/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts populates every in-scope `\todo{}` cell in `writing/working/sections/{eval,results}.tex` for RQ1 (doc-to-model + doc-to-code), RQ3 (LLM-call validator counterfactuals), and RQ4 (2-linker set overlap with true linker-ablation ΔF1). Paper text reconciled with code per CONTEXT D-11. Zero new LLM calls.
+
+### Key findings
+
+- **Plan 02 → Plan 03/04 contract** documented in `scripts/v2.6.3/README.md` enabled clean schema separation between replay (agent-linker) and format (transarc-emp) stages.
+- **Code-review WR-01:** RQ4 `delta_f1_if_removed` was initially set-difference, not true ablation; switched to ablation per CONTEXT D-05. Claude Macro Entity dF1 dropped from inflated +0.732 to true +0.584; Coref from +0.130 to +0.060.
+- **RQ3 NoConsensus dropped** — consensus voting is part of the extractor (`_run_framing_c` pass1∩pass2), not a validator. Variants finalised at {Full, NoEntityValid, NoCitation, NoValidator}.
+
+### Stats
+
+| Item | Value |
+|------|-------|
+| Phases | 1 (Phase 43) |
+| Plans executed | 5 (across 3 waves) |
+| CSVs produced | 60 (5 projects × 2 backends × 6 schemas) |
+| Code-review findings fixed | 9 (4 Warning + 5 Info) |
+| Python sources written | 8 (5 in agent-linker, 3 in transarc-emp) |
+| New LLM calls | 0 |
+| GATE-01 verify | PASS (s_linker19.py + s_linker13_min.py byte-equal) |
+
+### Per-backend headline (Claude main body)
+
+| Metric | Value | Source |
+|--------|-------|--------|
+| Doc-to-SAM macro Link F1 | 0.939 | metrics_sad-sam.tex |
+| Doc-to-code macro File F1 | 0.939 | metrics_sad-code.tex |
+| Doc-to-code macro Decision F1 | 0.803 | metrics_sad-code.tex |
+| RQ3 combined dF1 (validators removed) | +0.041 | rq3-validators.tex |
+| RQ4 \linkerB dF1 (true ablation) | +0.584 | rq4-agents.tex |
+| RQ4 \linkerC dF1 (true ablation) | +0.060 | rq4-agents.tex |
+
+---
+
 ## v2.6.1 — No-Training Axiom Linker (s_linker15) + Axiom FP Fixes (PATCH)
 
 **Shipped:** 2026-06-03

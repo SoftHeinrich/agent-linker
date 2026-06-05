@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6.2
-milestone_name: milestone
-status: v2.6.2 SHIPPED 2026-06-03. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
-stopped_at: Phase 43 context gathered
-last_updated: "2026-06-04T16:10:52.101Z"
-last_activity: 2026-06-02 — launched Tier-A rollback probe (PID 1505398, detached nohup)
+milestone: v2.6.3
+milestone_name: Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay
+status: v2.6.3 SHIPPED 2026-06-05 (paper eval). v2.6.2/v2.6.1 SHIPPED earlier. v2.7 FROZEN. v2.6 close (Phase 37) still deferred.
+stopped_at: v2.6.3 milestone closed; ready for v2.6/v2.7 resume or next milestone
+last_updated: "2026-06-05T00:00:00.000Z"
+last_activity: 2026-06-05 — Phase 43 closed (5 plans + code-review + gap-closure); v2.6.3 archived
 progress:
   total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
