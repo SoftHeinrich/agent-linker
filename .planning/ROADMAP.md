@@ -115,6 +115,7 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md), [`milestones/v2.6.3-REQUIREMENTS.md`](milestones/v2.6.3-REQUIREMENTS.md), [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md).
 
 **Highlights:**
+
 - Phase 43 closed at 11/11 verification score; all 8 REQ-V263 satisfied.
 - 5 plans across 3 waves: REQ + GATE-01 baseline → replay scripts + 60 CSVs → RQ1 + RQ3/RQ4 tables/figures → paper text + GATE-01 verify.
 - Code review fixed 9 findings; WR-01 switched RQ4 ΔF1 metric to true linker-ablation per CONTEXT D-05 (Claude Macro \linkerB +0.584, \linkerC +0.060, overlap 21).
@@ -139,7 +140,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 44. HARNESS | 0/TBD | Not started | — |
+| 44. HARNESS | 0/2 | Planned | — |
 | 45. AUDIT | 0/TBD | Not started | — |
 | 46. MINIMIZE | 0/TBD | Not started | — |
 | 47. SHIP | 0/TBD | Not started | — |
@@ -149,77 +150,102 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 ## Phase Details
 
 ### Phase 44: HARNESS
+
 **Goal**: A pytest snapshot harness backed by existing phase-cache pickles gives zero-cost per-prompt golden-replay tests for all 6 s19 prompt sites, so any subsequent prompt change can be verified without triggering a single LLM call.
 **Depends on**: Nothing (first phase of v2.6.4). Prerequisite artefacts already exist: `results/phase_cache/openai/<project>/{layer1..4,final}.pkl` from v2.6.3.
 **Requirements**: REQ-V264-01, REQ-V264-02
 **Success Criteria** (what must be TRUE):
+
   1. `tests/harness/` (or equivalent) loads all 5-project phase-cache pkls and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites — zero new LLM calls during load.
   2. Six pytest test modules exist (`test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`), each rebuilding the prompt from the fixture and asserting snapshot equality on parsed structured output.
   3. All snapshot tests pass on the unmodified s19 baseline (initial snapshots captured from s19 byte-equal run).
-  4. Running the full harness suite with `pytest tests/harness/` completes with exit code 0 and zero LLM API calls (verified by absence of network I/O or mock assertion).
-**Plans**: TBD
+  4. Running the full harness suite with `pytest tests/harness/` completes with exit code 0 and zero LLM API calls (verified by absence of network I/O or mock assertion).**Plans**: 2 plans
+
+**Wave 1**
+
+- [ ] 44-01-fixture-infrastructure-PLAN.md — Build tests/harness/ package (manifest, loader, ReplayClient, D-03 adapter map) + add syrupy + pytest-socket dev deps
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 44-02-snapshot-modules-PLAN.md — Six pytest snapshot modules + initial snapshot capture + GATE-01/zero-LLM-call invariants
+
 **UI hint**: no
 
 ### Phase 45: AUDIT
+
 **Goal**: Every imported PROMPT CONSTANT and every in-class f-string scaffold used by s_linker19 has a documented generality verdict and a concrete list of candidate cuts, so Phase 46 has an unambiguous input list rather than open-ended exploration.
 **Depends on**: Phase 44 (harness must exist so audit verdicts can be checked against it)
 **Requirements**: REQ-V264-03, REQ-V264-04
 **Success Criteria** (what must be TRUE):
+
   1. `s_linker20-PROMPT-AUDIT.md` exists and covers all 9 imported PROMPT CONSTANTS (`AMBIGUITY_FEW_SHOT`, `AMBIGUITY_RULES`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`) with current LOC, generality verdict (`clean` / `domain-loaded` / `benchmark-leak`), and line-level cut candidates.
   2. The audit also covers all 6 in-class f-string scaffolds (`_prompt_ambiguity`, `_prompt_doc_knowledge_extract`, `_prompt_doc_knowledge_judge`, `_prompt_extraction`, `_prompt_validation`, `_prompt_coref`) with the same columns.
   3. Every `benchmark-leak` finding has a proposed neutral rewording included in the audit doc.
   4. Zero code changes to s19, s13_min, or any imported prompt module — audit is read-only.
+
 **Plans**: TBD
 **UI hint**: no
 
 ### Phase 46: MINIMIZE
+
 **Goal**: Each candidate cut from the audit is trialled against the Phase 44 golden tests and either committed (snapshot byte-equal, no benchmark vocab introduced) or reverted, producing a minimized prompt set whose Pareto-frontier position (size cut × generality) is fully logged and reproducible.
 **Depends on**: Phase 44 (golden tests), Phase 45 (candidate-cut list)
 **Requirements**: REQ-V264-05, REQ-V264-06, REQ-V264-07
 **Success Criteria** (what must be TRUE):
+
   1. `s_linker20-MINIMIZE-LOG.md` exists with one row per candidate cut listing: which prompt/constant, the change attempted, verdict (kept / reverted / unsafe), and which golden snapshot(s) were checked.
   2. For every kept cut, the golden test suite passes byte-equal on parsed structured outputs after the cut is applied.
   3. Few-shot blocks (`AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`) have been tested with full-block removal; where removal breaks byte-equality, the smallest passing replacement (synthetic-domain examples or empty) is documented in the log.
   4. All surviving vocabulary in the minimized constants is free of benchmark-derived terms (GATE-06 cross-dataset isolation check applied per constant).
   5. Zero new LLM calls during the minimize loop — all decisions are driven by the cached golden fixtures.
+
 **Plans**: TBD
 **UI hint**: no
 
 ### Phase 47: SHIP
+
 **Goal**: `s_linker20.py` exists as a self-contained standalone variant with minimized inlined constants, is registered in the runner, and does not touch the byte-equal state of s_linker19 or s_linker13_min.
 **Depends on**: Phase 46 (locked minimized prompt set)
 **Requirements**: REQ-V264-08, GATE-01
 **Success Criteria** (what must be TRUE):
+
   1. `src/llm_sad_sam/linkers/experimental/s_linker20.py` exists with `experimental=True`, `canonical=False`, no inheritance from `s_linker19`, and all minimized prompt constants inlined directly in the file.
   2. `run_ablation.py --variants s_linker20` executes without error (dry-run or cached mode sufficient; no LLM calls required).
   3. `git diff` on `s_linker19.py` and `s_linker13_min.py` (against their v2.6.3 close hashes) is empty — GATE-01 verified.
   4. The constants imported by `s_linker19` are unchanged on disk (byte-equal) — paper RQ1–RQ4 replay determinism preserved.
+
 **Plans**: TBD
 **UI hint**: no
 
 ### Phase 48: SWEEP
+
 **Goal**: `s_linker20` is validated at gpt-5.4 macro F1 ≥ 91.3% across all 5 datasets within the $20 budget cap, confirming that Pareto-minimized prompts do not regress the 17e-line breakthrough floor.
 **Depends on**: Phase 47 (s_linker20 wired into runner)
 **Requirements**: REQ-V264-09, GATE-06, GATE-08
 **Success Criteria** (what must be TRUE):
+
   1. `logs/v2.6.4_s_linker20_gpt.log` exists and records a completed 5-dataset gpt-5.4 sweep on `s_linker20`.
   2. Macro F1 ≥ 91.3% (= s17e 92.3% − T 1.0pp).
   3. No individual dataset drops more than 2pp vs s17e per-dataset numbers (MediaStore 94.9%, TeaStore 96.3%, TeaMmates 89.8%, BigBlueButton 80.4%, JabRef 100.0%).
   4. GATE-06 re-verified on `s_linker20`: zero benchmark-derived vocabulary in any inlined constant or f-string scaffold (cross-dataset isolation methodology from v2.1).
   5. Total API cost for this sweep ≤ $20 (GATE-08); cost logged or estimated from token counts.
+
 **Plans**: TBD
 **UI hint**: no
 
 ### Phase 49: MILESTONE CLOSE
+
 **Goal**: The v2.6.4 milestone is formally closed: all gates verified, MILESTONES.md updated with outcome, and the archive artifacts exist so future milestones have a clean handoff.
 **Depends on**: Phase 48 (sweep result in hand)
 **Requirements**: GATE-01 (final), GATE-06 (final), GATE-08 (final)
 **Success Criteria** (what must be TRUE):
+
   1. GATE-01 final check passes: `s_linker13_min.py` and `s_linker19.py` SHA-256 byte-equal to their v2.6.3 close hashes.
   2. GATE-06 final check passes: `s_linker20` prompt audit confirms zero benchmark-derived vocabulary remaining.
   3. GATE-08 final check passes: total sweep cost ≤ $20 recorded.
   4. `MILESTONES.md` updated with v2.6.4 shipped entry (verdict, macro F1, key findings, phase count).
   5. `s_linker20-PROMPT-AUDIT.md` and `s_linker20-MINIMIZE-LOG.md` are committed to the repo (or referenced under `.planning/milestones/v2.6.4-*/`).
+
 **Plans**: TBD
 **UI hint**: no
 
@@ -230,6 +256,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 **v2.6.4 active** — Phases 44–49. Per-prompt unit-tested minimization + generality pass on s_linker19; ship s_linker20.
 
 **Frozen candidates (after v2.6.4):**
+
 - **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit. Frozen since 2026-06-02.
 - **v2.7 — BBB Recall Closure (Phases 38–42)** — frozen since 2026-06-03. ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution.
 - **Out-of-scope writing pass** — backfill LiSSA cells (results.tex lines 18, 24) and RQ2 cells (lines 45, 50, 55, 61, 76) once the LiSSA pipeline and RQ2 metrics work land.
