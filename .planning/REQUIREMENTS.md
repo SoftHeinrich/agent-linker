@@ -57,15 +57,15 @@
 
 | REQ-ID | Phase |
 |--------|-------|
-| REQ-V264-01 | TBD (set by roadmapper) |
-| REQ-V264-02 | TBD |
-| REQ-V264-03 | TBD |
-| REQ-V264-04 | TBD |
-| REQ-V264-05 | TBD |
-| REQ-V264-06 | TBD |
-| REQ-V264-07 | TBD |
-| REQ-V264-08 | TBD |
-| REQ-V264-09 | TBD |
-| GATE-01 | Throughout |
-| GATE-06 | Throughout (close-gated) |
-| GATE-08 | Sweep phase |
+| REQ-V264-01 | Phase 44 |
+| REQ-V264-02 | Phase 44 |
+| REQ-V264-03 | Phase 45 |
+| REQ-V264-04 | Phase 45 |
+| REQ-V264-05 | Phase 46 |
+| REQ-V264-06 | Phase 46 |
+| REQ-V264-07 | Phase 46 |
+| REQ-V264-08 | Phase 47 |
+| REQ-V264-09 | Phase 48 |
+| GATE-01 | Phase 47 (interim); Phase 49 (final) |
+| GATE-06 | Phase 48 (re-verify); Phase 49 (final) |
+| GATE-08 | Phase 48 (budget cap); Phase 49 (final) |

@@ -14,6 +14,7 @@
 - ✅ **v2.6.2 — Multi-Framing Extraction Design (s_linker17a/17b)** — shipped 2026-06-03. 17a (rename-only) ≈ s15 within GPT variance (validates ICSE Framing A/B/C naming). 17b (k=2 unified) regresses TM −4.2pp / BBB −7.4pp (k=2 too conservative). ICSE decision: use 17a naming for paper. See [`milestones/v2.6.2-ROADMAP.md`](milestones/v2.6.2-ROADMAP.md) and [`milestones/v2.6.2-MILESTONE-AUDIT.md`](milestones/v2.6.2-MILESTONE-AUDIT.md).
 - ❄️ **v2.7 — BBB Recall Closure** — Phases 38–42 — FROZEN behind v2.6.2 (2026-06-03). ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution. See [`milestones/v2.7-ROADMAP.md`](milestones/v2.7-ROADMAP.md).
 - ✅ **v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay** — Phase 43 — shipped 2026-06-05. Offline replay of `s_linker19` phase-cache pickles populated RQ1/RQ3/RQ4 tables, figures, and paper text. Zero new LLM calls; GATE-01 byte-equal. RQ4 ΔF1 switched to true linker-ablation per D-05. See [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md) and [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md).
+- 🔄 **v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19** — Phases 44–49 — IN PROGRESS (started 2026-06-05). Audit every LLM-call site in s_linker19; ship s_linker20 at Pareto-best of size × generality; floor: gpt-5.4 macro ≥ 91.3%.
 
 ## Phases
 
@@ -108,31 +109,6 @@ See `.planning/milestones/v2.6-ROADMAP.md` for full phase details, plans, succes
 
 </details>
 
-## Progress Table (v2.5 — COMPLETE)
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 25. Infrastructure Fixes | 1/1 | ✅ Complete | 2026-06-02 |
-| 26. 15-Slot Expansion | 1/1 | ✅ Complete | 2026-06-02 |
-| 27. Probe Tier | 1/1 | ✅ Complete | 2026-06-02 |
-| 28. Range Tier | 1/1 | ✅ Complete — WEAK verdict (macro 89.3%) | 2026-06-02 |
-| 29. Confirmation Tier | 1/1 | ✅ Complete — WEAK verdict (cross-split 89.1%) | 2026-06-02 |
-| 30. Milestone Close | 1/1 | ✅ Complete | 2026-06-02 |
-
-## Progress Table (v2.6 — IN PROGRESS)
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 31. ILinker4 + Prompt Hygiene | 1/1 | ✅ Complete | 2026-06-02 |
-| 32. LLM-Driven Training Loop (v5) | 1/1 | ✅ Complete | 2026-06-02 |
-| 33. Axiom Gap Fixes | 1/1 | ✅ Complete | 2026-06-02 |
-| 34. Probe Tier | 1/1 | ✅ Complete — KILL verdict ([TEST] 84.86% < 87%) | 2026-06-02 |
-| 35. Range Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
-| 36. Confirmation Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
-| 35. Range Tier | 0/TBD | Not started (conditional on Phase 34 CONTINUE) | — |
-| 36. Confirmation Tier | 0/TBD | Not started (conditional on Phase 35 ≥ 0.87) | — |
-| 37. Milestone Close | 0/TBD | Not started | — |
-
 <details>
 <summary>✅ v2.6.3 — Paper RQ1–RQ4 Eval via s_linker19 Checkpoint Replay — SHIPPED 2026-06-05</summary>
 
@@ -147,53 +123,113 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 
 </details>
 
-<!-- Pre-archive Phase 43 detail block retained below for reference; superseded by archive above. -->
+## Progress Table (v2.6 — FROZEN)
 
-<details>
-<summary>Pre-archive Phase 43 detail block (reference only)</summary>
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 31. ILinker4 + Prompt Hygiene | 1/1 | ✅ Complete | 2026-06-02 |
+| 32. LLM-Driven Training Loop (v5) | 1/1 | ✅ Complete | 2026-06-02 |
+| 33. Axiom Gap Fixes | 1/1 | ✅ Complete | 2026-06-02 |
+| 34. Probe Tier | 1/1 | ✅ Complete — KILL verdict ([TEST] 84.86% < 87%) | 2026-06-02 |
+| 35. Range Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
+| 36. Confirmation Tier | — | ⏭ SKIPPED (Phase 34 KILL) | — |
+| 37. Milestone Close | 0/TBD | FROZEN | — |
 
-**Goal**: The `\todo{}` cells in `writing/working/sections/eval.tex` and `results.tex` for RQ1 (link-level P/R/F1 + per-component F1, doc-to-model + doc-to-code), RQ3 (validator-ablation counterfactuals: `NoConsensus`, `NoEntityValid`, `NoCitation`, `NoValidator`), and RQ4 (2-linker set overlap: entity-validated ∪/∩ coref-validated vs gold) are populated for both Claude Sonnet and gpt-5.4 across all 5 benchmark projects (mediastore, teastore, teammates, bigbluebutton, jabref), produced entirely from the existing `results/phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` artefacts with zero new LLM calls, and the paper text in `eval.tex` §exp:rq3 + §exp:rq4 and `results.tex` §results:rq3 + §results:rq4 is rewritten where it disagrees with `s_linker19.py` (per [[code-is-canonical]]).
+## Progress Table (v2.6.4 — IN PROGRESS)
 
-**Depends on**: s_linker19 shipped + phase_cache populated for both backends (already true as of 2026-06-04). No other phase in this milestone.
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 44. HARNESS | 0/TBD | Not started | — |
+| 45. AUDIT | 0/TBD | Not started | — |
+| 46. MINIMIZE | 0/TBD | Not started | — |
+| 47. SHIP | 0/TBD | Not started | — |
+| 48. SWEEP | 0/TBD | Not started | — |
+| 49. MILESTONE CLOSE | 0/TBD | Not started | — |
 
-**Requirements**: Paper-eval scope only — no algorithm changes to `s_linker19.py`. v2.6.3-specific REQs to be added to `.planning/REQUIREMENTS.md` during discuss-phase.
+## Phase Details
 
+### Phase 44: HARNESS
+**Goal**: A pytest snapshot harness backed by existing phase-cache pickles gives zero-cost per-prompt golden-replay tests for all 6 s19 prompt sites, so any subsequent prompt change can be verified without triggering a single LLM call.
+**Depends on**: Nothing (first phase of v2.6.4). Prerequisite artefacts already exist: `results/phase_cache/openai/<project>/{layer1..4,final}.pkl` from v2.6.3.
+**Requirements**: REQ-V264-01, REQ-V264-02
 **Success Criteria** (what must be TRUE):
-
-  1. **RQ1 doc-to-model.** A `phase_cache/s_linker19/<backend>/<project>/final.pkl` → TransArc sad-sam CSV adapter exists; running `python3 ../transarc-emp/src/lib/metrics_api.py --task sad-sam` against those CSVs produces `reports/metrics_sad-sam.csv` and `writing/tables/metrics_sad-sam.tex` populated for both backends × all 5 projects (10 rows). Per-component F1, sentence coverage, and noise rate are reported in the resulting TeX table.
-  2. **RQ1 doc-to-code.** s_linker19 doc-to-model output composed with transarc-emp's SAM→code mapping (`load_code_model_files` + `load_gs_sam_code_maps`) emits per-project sad-code CSVs; `metrics_api.py --task sad-code` populates `reports/metrics_sad-code.csv` and `writing/tables/metrics_sad-code.tex` for both backends. Numbers are apples-to-apples with TransArc's own sad-code numbers in the same table.
-  3. **RQ3 validator counterfactuals (3 ablations + Full per D-08).** Four offline replay variants — 1 Full + 3 ablations — are computed from `layer{2,3,4}.pkl` + `final.pkl` per (backend, project): `Full = layer3.validated ∪ layer4.coref_validated` (= `final.pkl`); `NoEntityValid = layer3.candidates ∪ layer4.coref_validated` (skip the layer3 entity validator); `NoCitation = layer3.validated ∪ layer4.coref_raw` (skip the layer4 coref/citation validator); `NoValidator = layer3.candidates ∪ layer4.coref_raw` (skip both LLM-call validators). Each variant's P/R/F1 vs gold is computed, and per-validator gold-vs-spurious / killed-vs-kept counts are derived from the `decisions` and `coref_decisions` dicts. The `\autoref{fig:rq3-validator}` cell in `results.tex` is filled with these numbers.
-  4. **RQ4 2-linker set overlap.** From `layer3.validated` (entity-validated set) + `layer4.coref_validated` (coref-validated set) + gold, the cardinalities `|entity ∩ gold|`, `|coref ∩ gold|`, unique-TP per linker, overlap-TP, and `|(entity ∪ coref) ∩ gold|` are tabulated for both backends × 5 projects in a compact UpSet-style table that lands in `results.tex` §results:rq4. Numbers reflect the 2-linker shape implemented in `s_linker19.py` (entity + coref), not the 3- or 4-agent shape currently in the prose.
-  5. **Paper text reconciled with code.** `eval.tex` §exp:rq3 is rewritten to drop the NoConsensus bullet entirely and add a note that consensus voting is kept inside `\fullVariant{}` as part of the extractor (NOT rewritten to "consensus = union of pass1 and pass2"); §exp:rq4 agent count is rewritten from 3 (Explicit/Contextual/Anaphoric) to 2 (entity + coref) matching `s_linker19.py`; `results.tex` §results:rq4 prose is rewritten from 4 agents (canonical/alias/pronoun/partial) to 2 linkers; `results.tex` §results:rq3's "~2× LLM calls" claim is reconciled with what is actually doubled — the entity validator's p1∧p2 evidence pattern doubles entity-validation calls (not the framing-c extractor, which is a separate 2-pass step inside the extractor and was already in baseline cost).
-  6. **Zero new LLM calls.** All numbers derive from existing `phase_cache` pickles. No `claude` CLI subprocess and no `openai` API key are used during this phase. `LLM_BACKEND` does not need to be set; if a script accidentally triggers an LLM call, the phase fails verification.
-  7. **GATE-01 unchanged.** `s_linker13_min.py` is byte-equal to its current canonical state at phase close; `s_linker19.py` is byte-equal to its 2026-06-04 state. Eval-only phase, no algorithm changes.
-
-**Plans**: 5 plans in 3 waves (created 2026-06-04).
-**Wave 1**
-
-- [ ] 43-01-PLAN.md — REQUIREMENTS REQ-V263-01..08 + ROADMAP criteria revision per D-12 + GATE-01 baseline SHA record (Wave 1)
-- [ ] 43-02-PLAN.md — Replay-stage scripts (approach/scripts/v2.6.3/) emitting RQ1/RQ3/RQ4 CSV schema from phase_cache pickles (Wave 1)
-
-**Wave 2** *(blocked on Wave 1 completion)*
-
-- [ ] 43-03-PLAN.md — RQ1 sad-sam + sad-code wide TeX tables via transarc-emp/src/paper/rq1_table.py (Wave 2, depends on 43-02)
-- [ ] 43-04-PLAN.md — RQ3 + RQ4 formatters + abbrev.tex D-10 macros + figure/table edits + GPT-5.4 appendix mirror (Wave 2, depends on 43-02)
-
-**Wave 3** *(blocked on Wave 2 completion)*
-
-- [ ] 43-05-PLAN.md — eval.tex / results.tex D-11 rewrites + main.tex \appendix wiring + GATE-01 verify (Wave 3, depends on 43-01/03/04)
-
+  1. `tests/harness/` (or equivalent) loads all 5-project phase-cache pkls and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites — zero new LLM calls during load.
+  2. Six pytest test modules exist (`test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`), each rebuilding the prompt from the fixture and asserting snapshot equality on parsed structured output.
+  3. All snapshot tests pass on the unmodified s19 baseline (initial snapshots captured from s19 byte-equal run).
+  4. Running the full harness suite with `pytest tests/harness/` completes with exit code 0 and zero LLM API calls (verified by absence of network I/O or mock assertion).
+**Plans**: TBD
 **UI hint**: no
 
-</details>
+### Phase 45: AUDIT
+**Goal**: Every imported PROMPT CONSTANT and every in-class f-string scaffold used by s_linker19 has a documented generality verdict and a concrete list of candidate cuts, so Phase 46 has an unambiguous input list rather than open-ended exploration.
+**Depends on**: Phase 44 (harness must exist so audit verdicts can be checked against it)
+**Requirements**: REQ-V264-03, REQ-V264-04
+**Success Criteria** (what must be TRUE):
+  1. `s_linker20-PROMPT-AUDIT.md` exists and covers all 9 imported PROMPT CONSTANTS (`AMBIGUITY_FEW_SHOT`, `AMBIGUITY_RULES`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`) with current LOC, generality verdict (`clean` / `domain-loaded` / `benchmark-leak`), and line-level cut candidates.
+  2. The audit also covers all 6 in-class f-string scaffolds (`_prompt_ambiguity`, `_prompt_doc_knowledge_extract`, `_prompt_doc_knowledge_judge`, `_prompt_extraction`, `_prompt_validation`, `_prompt_coref`) with the same columns.
+  3. Every `benchmark-leak` finding has a proposed neutral rewording included in the audit doc.
+  4. Zero code changes to s19, s13_min, or any imported prompt module — audit is read-only.
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 46: MINIMIZE
+**Goal**: Each candidate cut from the audit is trialled against the Phase 44 golden tests and either committed (snapshot byte-equal, no benchmark vocab introduced) or reverted, producing a minimized prompt set whose Pareto-frontier position (size cut × generality) is fully logged and reproducible.
+**Depends on**: Phase 44 (golden tests), Phase 45 (candidate-cut list)
+**Requirements**: REQ-V264-05, REQ-V264-06, REQ-V264-07
+**Success Criteria** (what must be TRUE):
+  1. `s_linker20-MINIMIZE-LOG.md` exists with one row per candidate cut listing: which prompt/constant, the change attempted, verdict (kept / reverted / unsafe), and which golden snapshot(s) were checked.
+  2. For every kept cut, the golden test suite passes byte-equal on parsed structured outputs after the cut is applied.
+  3. Few-shot blocks (`AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`) have been tested with full-block removal; where removal breaks byte-equality, the smallest passing replacement (synthetic-domain examples or empty) is documented in the log.
+  4. All surviving vocabulary in the minimized constants is free of benchmark-derived terms (GATE-06 cross-dataset isolation check applied per constant).
+  5. Zero new LLM calls during the minimize loop — all decisions are driven by the cached golden fixtures.
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 47: SHIP
+**Goal**: `s_linker20.py` exists as a self-contained standalone variant with minimized inlined constants, is registered in the runner, and does not touch the byte-equal state of s_linker19 or s_linker13_min.
+**Depends on**: Phase 46 (locked minimized prompt set)
+**Requirements**: REQ-V264-08, GATE-01
+**Success Criteria** (what must be TRUE):
+  1. `src/llm_sad_sam/linkers/experimental/s_linker20.py` exists with `experimental=True`, `canonical=False`, no inheritance from `s_linker19`, and all minimized prompt constants inlined directly in the file.
+  2. `run_ablation.py --variants s_linker20` executes without error (dry-run or cached mode sufficient; no LLM calls required).
+  3. `git diff` on `s_linker19.py` and `s_linker13_min.py` (against their v2.6.3 close hashes) is empty — GATE-01 verified.
+  4. The constants imported by `s_linker19` are unchanged on disk (byte-equal) — paper RQ1–RQ4 replay determinism preserved.
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 48: SWEEP
+**Goal**: `s_linker20` is validated at gpt-5.4 macro F1 ≥ 91.3% across all 5 datasets within the $20 budget cap, confirming that Pareto-minimized prompts do not regress the 17e-line breakthrough floor.
+**Depends on**: Phase 47 (s_linker20 wired into runner)
+**Requirements**: REQ-V264-09, GATE-06, GATE-08
+**Success Criteria** (what must be TRUE):
+  1. `logs/v2.6.4_s_linker20_gpt.log` exists and records a completed 5-dataset gpt-5.4 sweep on `s_linker20`.
+  2. Macro F1 ≥ 91.3% (= s17e 92.3% − T 1.0pp).
+  3. No individual dataset drops more than 2pp vs s17e per-dataset numbers (MediaStore 94.9%, TeaStore 96.3%, TeaMmates 89.8%, BigBlueButton 80.4%, JabRef 100.0%).
+  4. GATE-06 re-verified on `s_linker20`: zero benchmark-derived vocabulary in any inlined constant or f-string scaffold (cross-dataset isolation methodology from v2.1).
+  5. Total API cost for this sweep ≤ $20 (GATE-08); cost logged or estimated from token counts.
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 49: MILESTONE CLOSE
+**Goal**: The v2.6.4 milestone is formally closed: all gates verified, MILESTONES.md updated with outcome, and the archive artifacts exist so future milestones have a clean handoff.
+**Depends on**: Phase 48 (sweep result in hand)
+**Requirements**: GATE-01 (final), GATE-06 (final), GATE-08 (final)
+**Success Criteria** (what must be TRUE):
+  1. GATE-01 final check passes: `s_linker13_min.py` and `s_linker19.py` SHA-256 byte-equal to their v2.6.3 close hashes.
+  2. GATE-06 final check passes: `s_linker20` prompt audit confirms zero benchmark-derived vocabulary remaining.
+  3. GATE-08 final check passes: total sweep cost ≤ $20 recorded.
+  4. `MILESTONES.md` updated with v2.6.4 shipped entry (verdict, macro F1, key findings, phase count).
+  5. `s_linker20-PROMPT-AUDIT.md` and `s_linker20-MINIMIZE-LOG.md` are committed to the repo (or referenced under `.planning/milestones/v2.6.4-*/`).
+**Plans**: TBD
+**UI hint**: no
 
 ## Next Milestone
 
 **v2.6.3 shipped 2026-06-05** — Phase 43 paper-eval closed via checkpoint replay. See [`milestones/v2.6.3-MILESTONE-AUDIT.md`](milestones/v2.6.3-MILESTONE-AUDIT.md) for headline numbers.
 
-**Next active candidates** (project priorities determine order):
+**v2.6.4 active** — Phases 44–49. Per-prompt unit-tested minimization + generality pass on s_linker19; ship s_linker20.
+
+**Frozen candidates (after v2.6.4):**
 - **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit. Frozen since 2026-06-02.
 - **v2.7 — BBB Recall Closure (Phases 38–42)** — frozen since 2026-06-03. ⚠ Phases 40–41 (recall-oracle training redesign + training re-runs) need re-evaluation vs the v2.6.1 no-training finding before execution.
 - **Out-of-scope writing pass** — backfill LiSSA cells (results.tex lines 18, 24) and RQ2 cells (lines 45, 50, 55, 61, 76) once the LiSSA pipeline and RQ2 metrics work land.
-
-Requirements: `.planning/REQUIREMENTS.md` retains REQ-V26-05..13, GATE-01/07/08, and the now-shipped REQ-V263-01..08 (checked off). v2.6.3 archive in `.planning/milestones/v2.6.3-REQUIREMENTS.md`.
