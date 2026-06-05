@@ -1,10 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.6.4
-milestone_name: Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
+milestone_name: — IN PROGRESS)
 status: planning
-last_updated: "2026-06-05T00:00:00.000Z"
-last_activity: 2026-06-05
+stopped_at: Phase 44 context gathered
+last_updated: "2026-06-05T14:12:03.137Z"
+last_activity: 2026-06-05 — v2.6.4 roadmap created (Phases 44–49)
 progress:
   total_phases: 6
   completed_phases: 0
@@ -118,7 +119,7 @@ Progress: v2.6.4 [                              ] 0/6 phases
 
 ## Session Continuity
 
-Last session: 2026-06-05
-Stopped at: v2.6.4 roadmap written; Phase 44 not yet started
-Resume file: .planning/ROADMAP.md (Phase 44 detail)
+Last session: 2026-06-05T14:12:03.133Z
+Stopped at: Phase 44 context gathered
+Resume file: .planning/phases/44-harness/44-CONTEXT.md
 Next action: `/gsd-plan-phase 44` — build golden-replay harness from phase_cache pkls
