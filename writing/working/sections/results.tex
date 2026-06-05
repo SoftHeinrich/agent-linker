@@ -12,27 +12,25 @@ We answer the four research questions on the five-project benchmark; \approach{}
 \input{tables/metrics_sad-sam}
 \input{tables/metrics_sad-code}
 
-\autoref{tab:rq1} reports per-project precision, recall, and \fone\ on both link tasks, and \autoref{fig:rq1-dumbbell} visualises the per-project gain.
-\approach{} reaches a doc-to-model macro \fone\ of $0.920$ against SWATTR's $0.799$ -- a gain of $+12.1$ percentage points.
-The picture is uniform on four projects and reverses on one: doc-to-model \fone\ rises from $0.694$ to $0.949$ on MediaStore ($+25.5$pp), from $0.851$ to $0.964$ on TeaStore ($+11.3$pp), from $0.710$ to $0.922$ on Teammates ($+21.2$pp), and from $0.947$ to $0.973$ on JabRef ($+2.6$pp).
-This is because the knowledge layer resolves each alias and partial-name reference once and the four linker agents reuse that resolution across every sentence in the document, whereas SWATTR's lexical pipeline renegotiates the same name on every encounter and LiSSA's single-pass classifier carries no document-level state at all~\todo{LiSSA numbers}.
+\autoref{tab:rq1} reports per-project \fone\ on both link tasks, and \autoref{fig:rq1-dumbbell} visualises the per-project gain.
+\approach{} reaches a doc-to-model macro \fone\ of $0.939$ against SWATTR's $0.799$ -- a gain of $+14.0$ percentage points.
+The gain is consistent across all five projects: doc-to-model \fone\ rises from $0.694$ to $0.931$ on MediaStore ($+23.7$pp), from $0.851$ to $0.982$ on TeaStore ($+13.1$pp), from $0.710$ to $0.912$ on Teammates ($+20.2$pp), from $0.793$ to $0.897$ on BigBlueButton ($+10.4$pp), and from $0.947$ to $0.973$ on JabRef ($+2.6$pp).
+This is because the knowledge layer resolves each alias and partial-name reference once and the linker agents reuse that resolution across every sentence in the document, whereas SWATTR's lexical pipeline renegotiates the same name on every encounter and LiSSA's single-pass classifier carries no document-level state at all~\todo{LiSSA numbers}.
 Therefore \approach{} closes most of the macro \fone\ gap to the oracle ceiling on the link task it targets directly.
 
-The same picture holds on the downstream doc-to-code task, where \approach{} composes its doc-to-model output with the component-to-file mapping that TransArc also uses.
-\approach{} reaches a doc-to-code macro file \fone\ of $0.939$ against TransArc's $0.803$, decision-level \fone\ of $0.803$ against $0.596$, and aggregate component \fone\ of $0.885$ against $0.714$.
+The same picture holds on the downstream doc-to-code task, where \approach{} reaches code files using a transitive linking approach, the same composition used by TransArc.
+\approach{} reaches a doc-to-code macro file \fone\ of $0.939$ against TransArc's $0.803$ ($+13.6$pp) and per-component \fone\ of $0.885$ against $0.714$ ($+17.0$pp).
 This is because the composition step inherits the doc-to-model gain at every sentence while losing nothing to the deterministic file mapping.
-LiSSA's single-pass design does not reach TransArc on any of the three doc-to-code metrics (\todo{LiSSA file F1}, \todo{LiSSA decision F1}, \todo{LiSSA component F1}), because a per-sentence classifier cannot reuse a resolved alias across the document.
+LiSSA's single-pass design does not reach TransArc on either doc-to-code metric (\todo{LiSSA file F1}, \todo{LiSSA component F1}), because a per-sentence classifier cannot reuse a resolved alias across the document.
 Therefore the gain that \approach{} earns at the doc-to-model step propagates intact to the downstream task that developers care about.
 
-\paragraph{Honest-failure case -- BigBlueButton.}
-BigBlueButton is the single project on which \approach{} regresses: doc-to-model \fone\ falls from SWATTR's $0.793$ to $0.790$ -- a drop of $0.3$pp visible as the backwards arrow on the BigBlueButton row of \autoref{fig:rq1-dumbbell}.
-This is because BigBlueButton's documentation refers to several modules whose names also appear as common English compounds in the architecture model; \approach{}'s knowledge layer merges two distinct modules under the shared substring, and because that layer is built once per project the aliasing error propagates to every later agent.
-The other four projects show consistent gains of $+2.6$pp to $+25.5$pp, and the macro \fone\ still rises from $0.799$ to $0.920$.
-We return to this regression and its implications for the knowledge layer in~\autoref{sec:discussion}.
+\paragraph{Smallest-gain case -- JabRef.}
+JabRef is the project on which \approach{} gains the least: doc-to-model \fone\ rises from SWATTR's $0.947$ to $0.973$, only $+2.6$pp because SWATTR already reaches near-ceiling there.
+The other four projects show gains of $+10.4$pp to $+23.7$pp; the macro gain of $+14.0$pp is therefore driven by the projects whose architecture documents use the most alias-heavy and indirect references, exactly the shape the knowledge layer was designed for.
 
 \begin{rqanswer}
 \paragraph{Answer to \ref{RQ1 SOTA comparison}.}
-\approach{} improves over the strongest published doc-to-model baseline by $+12.1$pp macro \fone, with four of five projects gaining and one regressing by $0.3$pp; the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+20.7$pp decision \fone), and LiSSA's single-pass design reaches neither baseline.
+\approach{} improves over the strongest published doc-to-model baseline by $+14.0$pp macro \fone, with all five projects gaining (smallest $+2.6$pp on JabRef where SWATTR is already near-ceiling); the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+17.0$pp per-component \fone), and LiSSA's single-pass design reaches neither baseline.
 \end{rqanswer}
 
 \subsection{Answer to \ref{RQ2 metrics} -- Architecture-Driven Metrics}
@@ -42,23 +40,22 @@ We return to this regression and its implications for the knowledge layer in~\au
 \input{figures/rq2-grid}
 
 \autoref{fig:rq2-grid} reports \approach{}, TransArc, and LiSSA across the five projects under the four primary metrics of \autoref{sec:metric:suite}, and \autoref{tab:rq2-summary} reports the macro values per metric.
-Across the suite, \approach{}'s gain over TransArc grows monotonically as the evaluation granularity tightens: aggregate component \fone\ \todo{component delta}pp; file \fone\ \todo{file delta}pp; decision-level \fone\ \todo{decision delta}pp.
-This is because component \fone\ averages over sets where a single true positive can rescue an entire enrolled cohort, while decision-level \fone\ scores each gold sentence individually; \approach{}'s advantage is per-decision, not per-file, and the architecture-driven metrics expose this shape directly.
+Across the suite, \approach{}'s gain over TransArc widens once the metric stops favouring large components: file \fone\ $+13.6$pp; per-component \fone\ $+17.0$pp.
+This is because file \fone\ averages over enrolled (sentence, file) pairs where a single true positive can rescue an entire enrolled cohort of a large component, while per-component \fone\ weights every component equally regardless of size; \approach{}'s advantage is uniform across components rather than concentrated in the largest ones, and the architecture-driven metrics expose this shape directly.
 Therefore the new metrics show that \approach{}'s advantage is largest exactly where the evaluation is closest to what a developer reads.
 
 Sentence coverage and noise rate tell the same story from the developer's side.
-\approach{} reaches sentence coverage of \todo{value} against TransArc's \todo{value} and noise rate of \todo{value} against \todo{value} (\autoref{tab:rq2-summary}).
+\approach{} reaches sentence coverage of $0.869$ against TransArc's $0.751$ ($+11.8$pp) and noise rate of $0.050$ against $0.130$ ($-8.1$pp; lower is better) (\autoref{tab:rq2-summary}).
 This is because the validators reject links whose anchor is absent from the document, while the linker agents collectively visit every gold sentence at least once.
 Thus \approach{}'s links are both more complete in coverage and less noisy.
 
-The skill score rescales \fone\ between a random and an oracle baseline.
-\approach{} reaches a skill score of \todo{value} against TransArc's \todo{value}; the random baseline averages $0.155$ and the oracle-subset ceiling averages $0.987$~\cite{replication}.
-This is because the absolute \fone\ gap of $+12.1$pp covers a large share of the resolvable signal once the trivial-baseline floor and the enrolled-gold ceiling are removed.
-Therefore the gain reported under the standard \fone\ is not an artefact of an inflated baseline.
+As a sanity check that the gain is not an artefact of an inflated baseline, the skill score (NDG, reported in the appendix \autoref{tab:rq2-redundancy}) rescales \fone\ between a random and an oracle baseline.
+\approach{} reaches a skill score of $0.964$ against TransArc's $0.806$, with the random baseline averaging $0.155$ and the oracle-subset ceiling averaging $0.987$~\cite{replication}.
+Therefore the absolute \fone\ gap of $+13.6$pp covers a large share of the resolvable signal once the trivial-baseline floor and the enrolled-gold ceiling are removed.
 
 \begin{rqanswer}
 \paragraph{Answer to \ref{RQ2 metrics}.}
-The architecture-driven metrics widen \approach{}'s advantage from $+12.1$pp under the standard \fone\ to \todo{decision delta}pp at decision-level granularity, confirm the gain on coverage and noise rate, and place \approach{} at \todo{skill score} on the rescaled skill axis -- the standard \fone\ understates the advantage on every dimension we measure.
+The architecture-driven metrics widen \approach{}'s advantage from $+13.6$pp under file \fone\ to $+17.0$pp at the size-blind per-component aggregation, confirm the gain on coverage ($+11.8$pp) and noise rate ($-8.1$pp), and place \approach{} at $0.964$ on the rescaled skill axis -- the standard \fone\ understates the advantage on every dimension we measure.
 \end{rqanswer}
 
 \subsection{Answer to \ref{RQ3 validators} -- Validator Contribution}
@@ -106,5 +103,5 @@ Each of the two linkers catches a non-overlapping slice of gold links: \linkerB{
 \label{sec:results:summary}
 
 \approach{} improves over the strongest published baseline at every granularity we measure.
-Doc-to-model macro \fone\ rises from $0.799$ to $0.920$ ($+12.1$pp); the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+20.7$pp decision \fone); the gain widens as granularity tightens; the two validators contribute roughly additively to \fone\ while attacking disjoint failure modes; and each of the two linkers catches a non-overlapping slice of true positives.
-We discuss the BigBlueButton regression, the implications for the knowledge layer, and the threats to validity in~\autoref{sec:discussion}.
+Doc-to-model macro \fone\ rises from $0.799$ to $0.939$ ($+14.0$pp), with all five projects gaining; the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+17.0$pp per-component \fone); the gain widens once the metric stops favouring large components; the two validators contribute roughly additively to \fone\ while attacking disjoint failure modes; and each of the two linkers catches a non-overlapping slice of true positives.
+We discuss the implications for the knowledge layer and the threats to validity in~\autoref{sec:discussion}.

@@ -2,56 +2,75 @@
 \label{sec:intro}
 
 % ---------------------------------------------------------------
-% Para 1 -- pain: scale-premise -> "As much as" bottleneck ->
+% Para 1 -- pain: pieces (1) background + (2) specific question.
+% scale-premise -> "As much as" bottleneck ->
 % "I.e." mechanism -> "For example" with one anchoring number.
 % ---------------------------------------------------------------
+
+%%%TODO
+%%%Background should from doc comprehension -> tracability -> architectural traceability
+% a specific question should be something we can neatly solve and our evaluation metrics 
+%%%END
 Software systems pair tens of thousands of source files with architecture documentation written by people, and the two artefacts drift apart as soon as the code starts to evolve.
-As much as this documentation has long guided design, review, and onboarding, keeping it aligned with the evolving code has become one of the central bottlenecks for change-impact analysis, compliance audit, and any traceability-driven maintenance task.
+As much as this documentation has long guided design, review, and onboarding, keeping it aligned with the evolving code has become one of the central bottlenecks for change-impact analysis, compliance audit, and any traceability-driven maintenance task~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
 I.e., when the document and the code drift, every downstream task that consumes the pairing degrades, and recovering the missing trace links by hand does not scale to industrial repositories.
 For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of XX, leaving roughly XX of gold-standard decisions unrecovered or mis-recovered~\cite{transarc,replication}.
 
 % ---------------------------------------------------------------
-% Para 2 -- gap: two prior-work categories, each killed in a
-% single-sentence concession-knockout.
+% Para 2 -- gap: pieces (3) prior approaches + (4) fatal problem.
+% Two prior-work categories, each killed in a single-sentence
+% concession-knockout. The shared root cause is intentionally
+% left for the opener of Para 3.
 % ---------------------------------------------------------------
 Existing automated recovery pipelines fall into two lines of work.
 Lexical pipelines such as SWATTR score sentence--component pairs against canonical component names and curated linguistic patterns~\cite{swattr}.
 While effective at recovering links that surface the component name directly, they inherently rely on that name appearing on the surface, and they miss every trace link that is carried by a project-specific alias or by a pronominal reference.
 A more recent line uses a single-pass \ac{LLM} classifier per sentence, treating recovery as zero-shot reading comprehension~\cite{lissa}.
-Despite their stronger raw \fone on the benchmark, they enter the document without any structured knowledge of which component names are ambiguous English and which document phrases are aliases for which component --- essentially leaving the \ac{LLM} to invent that knowledge per call, with no separation between knowledge acquisition and link scoring.
+Despite their stronger raw \fone on the benchmark, they enter the document without any structured knowledge of which component names are ambiguous English and which document phrases are aliases for which component, leaving the \ac{LLM} to invent that knowledge per call.
 
 % ---------------------------------------------------------------
-% Para 3 -- two deep, novel findings (insights). One motivates
-% AALinker's knowledge-layer design; one motivates the metric
-% suite. Each anchored by a striking number from our empirical work.
+% Para 3 -- insight: pieces (5) root cause + (6) new observation.
+% Open with the joint root cause across both prior lines; then
+% state the insight as a bold claim, anchored to an empirical
+% number from our knowledge-layer analysis.
 % ---------------------------------------------------------------
-The design of this paper rests on two findings that together upend the standard view of the task.
-\textbf{First, the trace-link recovery signal lives in a runtime knowledge layer about the document, not in the linker itself.}
-Lexical pipelines burn this layer into hand-crafted patterns; single-pass \ac{LLM} classifiers ask the model to reinvent it per sentence; neither separates it as a first-class artefact built before any link is scored.
-I.e., once an \ac{LLM} is given an ambiguity map (which component names are ordinary technical English) and an alias table (which document phrases refer to which component), one alias-aware recovery framing covers the full taxonomy of named mentions across the XX projects of the benchmark --- and a separate pronominal linker, gated by a structural antecedent check against the same alias table, recovers the discourse-only links that the named framing cannot reach.
-\textbf{Second, the established ruler does not measure what it claims to measure.}
-A trivial substring-match baseline with zero architectural understanding reaches a corpus-level file-level \fone of XX --- within XX points of the strongest published pipeline, and matching it within XX point on one project --- because enrolment inflation, block correlation, and a XX\% concentration of the gold mass on three sentences of one project let the standard \fone summarise a handful of large components rather than the recovery task.
-These two findings shape the two halves of the paper, and we treat both as primary contributions.
+Both lines inherit the same root cause: they entangle the runtime knowledge needed to disambiguate indirect references with the link-scoring decision itself, so neither builds the document- and component-specific knowledge as a first-class artefact before any link is scored.
+The design of this paper rests on the inverse observation.
+\textbf{The trace-link recovery signal lives in a runtime knowledge layer about the document and the component set, not in the linker itself.}
+Once an \ac{LLM} is given an ambiguity map --- which component names are ordinary technical English --- and an alias table --- which document phrases refer to which component --- one alias-aware framing covers the full taxonomy of named mentions across the XX projects of the benchmark, and a separate pronominal linker, gated by a structural antecedent check against the same alias table, recovers the discourse-only links that the named framing cannot reach.
 
 % ---------------------------------------------------------------
-% Para 4 -- \approach reveal: the knowledge layer + two linkers
-% + evidence-grounded asymmetric validators. "as simple as" +
-% forward-referenced headline number.
+% Para 4 -- proposal: pieces (7) challenge + (8) design.
+% Open with the AALinker reveal, then name the challenge in one
+% explicit sentence, then the two-layer design that overcomes it,
+% then the asymmetric validators, then "as simple as" + headline.
 % ---------------------------------------------------------------
-We present \approach, a training-free trace-link recovery pipeline for architecture-to-code documentation that separates the runtime knowledge layer from the linker.
-\approach first runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce the ambiguity map and the alias table; the two artefacts are then fed into \linkerB, an alias-aware entity linker that recovers all named mention forms in a single framing, and \linkerC, a pronoun-resolving linker that enforces the structural antecedent constraint described in \autoref{sec:approach}.
-Each linker is required to expose, alongside every candidate link, the evidence it relied on --- the matched span, the form of the reference, and the antecedent sentence when applicable --- as a structured \emph{evidence bundle}, and each is gated by its own asymmetric \ac{LLM} validator: \linkerB by a two-pass conjunction over architectural participation and referential specificity, \linkerC by a single focused pass on a narrower epistemic question, since the structural antecedent check has already removed every alias-failing candidate.
+We present \approach, the first training-free trace-link recovery pipeline for architecture-to-code documentation that separates the runtime knowledge layer from the linker.
+However, building this knowledge layer is non-trivial: project-specific aliases cannot be known in advance, many component names are ordinary English words whose surface match would overshoot, and pronominal resolution itself depends on the alias table to enforce the structural antecedent check that separates a true coreference from a coincidental pronoun.
+\approach absorbs this challenge in two layers.
+Layer~1 runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce the ambiguity map and the alias table; Layer~2 feeds both artefacts into \linkerB, an alias-aware entity linker that recovers every named reference form in a single framing, and \linkerC, a pronoun-resolving linker that enforces the structural antecedent constraint deterministically against the same alias table.
+Each linker exposes the evidence it relied on --- the matched span, the form of the reference, and the antecedent sentence when applicable --- to its own asymmetric \ac{LLM} validator: \linkerB by a two-pass conjunction over architectural participation and referential specificity, \linkerC by a single focused pass on a narrower epistemic question, since the structural antecedent check has already removed every alias-failing candidate.
 Running \approach is as simple as supplying the document and the component set: no fine-tuning, no labelled trace links, and no benchmark-specific tuning.
 On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of XX, thereby improving the strongest published pipeline by XX percentage points~\cite{transarc,replication}.
 
 % ---------------------------------------------------------------
-% Para 5 -- metric-suite reveal: operationalises the second
-% finding; lists the suite; reports gap between old/new rulers;
-% co-equal stance.
+% Para 5 -- co-equal second finding: the ruler is wrong.
+% Carries its own mini-cycle: (4) prior-work problem -> (5) root
+% cause -> (6) insight -> (8) the metric-suite design that
+% operationalises it.
 % ---------------------------------------------------------------
-To put numbers on the second finding and to fix the ruler going forward, we propose an architecture-driven evaluation suite of XX complementary metrics --- including per-component \fone, per-sentence \fone, sentence coverage, noise rate, coverage-and-purity, and a skill score normalised against random and oracle baselines --- each chosen to correct one source of structural inequality in the benchmark (enrolment inflation, block correlation, component-size concentration, cross-project incomparability) or to surface a property of trace-link quality that the standard \fone is structurally unable to expose.
-On the same benchmark, \approach improves the standard file-level \fone over the strongest published pipeline by XX percentage points, but on the metric matched to a single human annotator decision the improvement is XX percentage points: the standard ruler underreports the gain.
+A second finding shapes the second half of the paper.
+\textbf{The established ruler does not measure what it claims to measure.}
+A trivial substring-match baseline with zero architectural understanding reaches a corpus-level file-level \fone of XX --- within XX points of the strongest published pipeline, and matching it within XX point on one project --- because enrolment inflation, block correlation, and an XX\% concentration of the gold mass on three sentences of one project let the standard \fone summarise a handful of large components rather than the recovery task.
+To put numbers on this finding and to fix the ruler going forward, we propose an architecture-driven evaluation suite of four complementary metrics --- per-component \fone, sentence coverage, noise rate, and the file-level \fone\ they triangulate --- each chosen to correct one source of structural inequality in the benchmark or to surface a property of trace-link quality that the standard \fone\ is structurally unable to expose.
+On the same benchmark, \approach improves the standard file-level \fone over the strongest published pipeline by $13.6$ percentage points, but on the size-blind per-component \fone\ the improvement widens to $17.0$ percentage points: the standard ruler underreports the gain.
 We motivate the suite from the structure of the benchmark, not from \approach's results, and we evaluate \approach and all baselines --- including the trivial substring-match baseline above --- under both the old and the new rulers.
+
+% ---------------------------------------------------------------
+% Para 6 -- scope recap + bridge to contributions list.
+% ---------------------------------------------------------------
+Together, the new pipeline and the new evaluation suite give the community both a stronger recovery method and a sharper instrument to measure it.
+The contribution of this work is fivefold:
 
 \subsection*{Contributions}
 \begin{itemize}[leftmargin=*]

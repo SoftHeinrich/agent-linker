@@ -492,8 +492,8 @@ JSON only:"""
 
         # ── Phase 5 ─────────────────────────────────────────────────────────
         t_p5 = time.time()
-        print("\n[Phase 5] Coreference (no pre-filter, alias-aware antecedent, "
-              "focused single-pass validator)")
+        print("\n[Phase 5] Coreference ("
+              ")")
         coref_raw, coref_metadata = self._run_coreference(
             sentences, components, name_to_id, sent_map)
         print(f"  Coref raw: {len(coref_raw)}")
@@ -866,7 +866,7 @@ JSON only:"""
                 ant_sent = sent_map.get(ant_snum)
                 if not ant_sent:
                     continue
-                # Structural alias-aware gate (replaces 17f's antecedent_via_alias bypass).
+                # Structural alias-aware gate.
                 if not self._antecedent_supports_resolution(comp, ant_sent.text):
                     continue
                 cid = name_to_id[comp]

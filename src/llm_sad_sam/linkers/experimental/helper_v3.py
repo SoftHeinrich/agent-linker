@@ -160,7 +160,7 @@ def parse_snum(val):
     except (ValueError, TypeError):
         return None
 
-
+#TODO functionality
 def has_standalone_mention(comp_name, text):
     """Check for non-generic, clean standalone mention of component name."""
     if not comp_name:

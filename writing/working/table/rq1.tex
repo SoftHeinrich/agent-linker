@@ -1,43 +1,36 @@
-% RQ1: merged per-project P/R/F1 for both link tasks.
-% Data sources:
-%   AALinker (s_linker17f) doc-to-model: ../../approach/results/ablation_results/ablation_20260603_173544.json
-%   SWATTR doc-to-model F1:              ../../evaluation/reports/SADSAM_S11_S13F_VS_TRANSARC.csv (transarc_link_f1 column)
-%   TransArc  doc-to-code  F1:           ../../evaluation/reports/SADCODE_S11_S13F_VS_TRANSARC.csv (transarc_file_f1 column)
-% Cells reported as 0.000 are not yet obtained:
-%   - SWATTR / TransArc P / R: CSVs only carry F1 columns.
-%   - LiSSA P / R / F1 on both tasks: not yet run.
-%   - AALinker doc-to-code: composition with the component-to-file mapping not yet re-evaluated.
-\begin{table*}[t]
-\caption{Per-project precision, recall, and \fone\ on both link tasks. Macro and micro averages computed over the five projects. Cells reported as $0.000$ are not yet obtained.}
+% RQ1: per-project link F1 on both tasks, compact format (.XX, 1.).
+% Data sources (all in evaluation/reports/):
+%   Doc-to-model
+%     SWATTR    : swattr_rq1_d2m.csv (P/R available, dropped for compactness)
+%     LiSSA     : lissa_rq1_d2m.csv
+%     AAlinker  : SADSAM_S11_S13F_VS_TRANSARC.csv, column s19_claude_link_f1
+%                 (regenerated 2026-06-05 from agent-linker/results/v2.6.3/claude/<proj>/sad-sam.csv)
+%   Doc-to-code
+%     TransArc  : transarc_rq1_d2c.csv (P/R available, dropped)
+%     LiSSA     : lissa_rq1_d2c.csv (teammates & jabref absent → "--")
+%     AAlinker  : SADCODE_S11_S13F_VS_TRANSARC.csv, column s19_claude_file_f1
+%                 (regenerated 2026-06-05 from agent-linker/results/v2.6.3/claude/<proj>/sad-code.csv)
+% AAlinker == s_linker19 (Claude backend, paper variant).
+% Macro = unweighted mean over the five projects (or "--" when any project is missing).
+% Compact format: ".XX" (two decimals, leading zero dropped); "1." for values that round to 1.00; "--" for missing.
+\begin{table}[t]
+\caption{Per-project link \fone\ on both tasks. \approach{} is \texttt{s\_linker19} on the Claude backend. Macro is the unweighted mean across the five projects; ``--'' marks values that were not produced. Compact format: ``.XX'' drops the leading zero; ``1.'' denotes a value that rounds to $1.00$.}
 \label{tab:rq1}
 \centering\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lrrrrrrrrr@{\hspace{1em}}rrrrrrrrr@{}}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}lccc@{\hspace{1.4em}}ccc@{}}
 \toprule
- & \multicolumn{9}{c}{\textbf{Doc-to-model}} & \multicolumn{9}{c}{\textbf{Doc-to-code}} \\
-\cmidrule(lr){2-10}\cmidrule(lr){11-19}
- & \multicolumn{3}{c}{SWATTR} & \multicolumn{3}{c}{LiSSA} & \multicolumn{3}{c}{\approach{}}
- & \multicolumn{3}{c}{TransArc} & \multicolumn{3}{c}{LiSSA} & \multicolumn{3}{c}{\approach{}} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
-\cmidrule(lr){11-13}\cmidrule(lr){14-16}\cmidrule(lr){17-19}
-Project        &     P &     R &  \fone &     P &     R &  \fone &     P &     R &  \fone
-               &     P &     R &  \fone &     P &     R &  \fone &     P &     R &  \fone \\
+ & \multicolumn{3}{c}{\textbf{Doc-to-model}} & \multicolumn{3}{c}{\textbf{Doc-to-code}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Project        & SWATTR & LiSSA & \approach{} & TransArc & LiSSA & \approach{} \\
 \midrule
-MediaStore     & 0.000 & 0.000 & 0.694 & 0.000 & 0.000 & 0.000 & \textbf{1.000} & 0.903 & \textbf{0.949}
-               & 0.000 & 0.000 & 0.588 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-TeaStore       & 0.000 & 0.000 & 0.851 & 0.000 & 0.000 & 0.000 & 0.931 & \textbf{1.000} & \textbf{0.964}
-               & 0.000 & 0.000 & 0.830 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-Teammates      & 0.000 & 0.000 & 0.710 & 0.000 & 0.000 & 0.000 & \textbf{0.914} & \textbf{0.930} & \textbf{0.922}
-               & 0.000 & 0.000 & 0.821 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-BigBlueButton  & 0.000 & 0.000 & \textbf{0.793} & 0.000 & 0.000 & 0.000 & 0.790 & 0.790 & 0.790
-               & 0.000 & 0.000 & 0.831 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-JabRef         & 0.000 & 0.000 & 0.947 & 0.000 & 0.000 & 0.000 & 0.947 & \textbf{1.000} & \textbf{0.973}
-               & 0.000 & 0.000 & 0.943 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+MediaStore     & .69 & .45 & \textbf{.93} & .59 & .14 & \textbf{.98} \\
+TeaStore       & .85 & .39 & \textbf{.98} & .83 & .33 & \textbf{1.}  \\
+TeaMmates      & .71 & .16 & \textbf{.91} & .82 & --  & \textbf{.86} \\
+BigBlueButton  & .79 & .26 & \textbf{.90} & .83 & .13 & \textbf{.87} \\
+JabRef         & .95 & .86 & \textbf{.97} & .94 & --  & \textbf{.99} \\
 \midrule
-Macro average  & 0.000 & 0.000 & 0.799 & 0.000 & 0.000 & 0.000 & \textbf{0.916} & \textbf{0.925} & \textbf{0.920}
-               & 0.000 & 0.000 & 0.803 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-Micro average  & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000
-               & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+Macro          & .80 & .42 & \textbf{.94} & .80 & --  & \textbf{.94} \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}

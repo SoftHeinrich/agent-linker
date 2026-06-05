@@ -83,29 +83,28 @@ For each task we use the same metrics \emph{TransArc} and \emph{LiSSA} use.
 We report link level precision, recall, and \fone per project and averaged across projects (both macro and micro).
 The outcome of \ref{RQ1 SOTA comparison} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-to-model) and on the downstream task that developers care about (doc-to-code).
 
-subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\subsubsection{Experiments for \ref{RQ2 metrics} -- Architecture-Driven Metrics}
 \label{sec:exp:rq2}
 
-The metric suite from \autoref{sec:metric:suite} is shwon in pre-study in \autoref{sec:metric:prestudy}, 
-where two naive baselines: Top-3 baselines (one per task) and a random baseline confirm that per-component \fone, sentence coverage, and noise rate carry information that standard \fone\ does not.
-Here we apply the validated suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and baselines (SWATTR, LiSSA) for the doc-to-model task.
+The metric suite from \autoref{sec:metric:suite} is validated in the pre-study in \autoref{sec:metric:prestudy},
+where two naive baselines (a Top-3 baseline per task and a random baseline) confirm that per-component \fone, sentence coverage, and noise rate each carry information the standard link-level \fone\ does not.
+Here we apply the validated suite to \approach{} and the doc-to-code baselines (TransArc, LiSSA) from \ref{RQ1 SOTA comparison}, and to \approach{} and the doc-to-model baselines (SWATTR, LiSSA).
 %TODO lissa rep not finished yet
 
-For each (system, project, task) cell we recompute the four primary metrics: file-level \fone, per-component \fone, sentence coverage, and noise rate---and report per-project values plus macro means.
-Per system we provide two diagnostic views:
+For each (system, project, task) cell we recompute the four primary metrics: file-level \fone, per-component \fone, sentence coverage, and noise rate. We report per-project values plus macro means. Per system we provide two diagnostic views:
 \begin{enumerate}[leftmargin=*]
     \item a \emph{per-component \fone\ distribution}, showing which components are fully covered, which are uncovered, and where false-positive and false-negative mass concentrates;
     \item a \emph{per-sentence coverage--noise scatter}, splitting gold sentences into served-cleanly, served-noisily, and unserved, with the share of each reported per system.
 \end{enumerate}
-Across systems and projects we report the rank correlation between standard file-level \fone\ and each new metric.
+Across systems and projects we report the rank correlation between file-level \fone\ and each other primary metric.
 A metric that reorders the systems carries information that file-level \fone\ does not.
-The appendix additionally reports per-sentence \fone, the coverage--purity composite, and the skill score together with a redundancy analysis showing they do not change the ranking conclusions.
+The appendix (\autoref{tab:rq2-redundancy}) additionally reports the coverage--purity composite (HUS) and the skill score (NDG); on our four-system, five-project grid both track metrics already in the main panel (HUS $\rho{=}{+}0.92$ with per-component \fone; NDG $\rho{=}{+}0.85$ with file \fone) and do not reorder any system pair beyond what the main panel already produces, so they are excluded from \autoref{tab:rq2-summary}.
 
 \emph{\textbf{Expected outcome.}}
 We commit to two falsifiable predictions:
 \begin{enumerate*}[label=(\roman*)]
-    \item per-component \fone\ reorders systems compared to file-level \fone, because file-level \fone\ is dominated by a few large components;
-    \item sentence coverage and noise rate vary independently of \fone---two systems with similar \fone\ can show markedly different coverage and noise profiles.
+    \item per-component \fone\ reorders systems compared to file-level \fone, because file-level \fone\ is dominated by enrolment-inflated large components;
+    \item noise rate varies independently of \fone---two systems with similar \fone\ can show markedly different per-sentence noise profiles.
 \end{enumerate*}
 The outcome of \ref{RQ2 metrics} is the table of (system, metric, project) values, the diagnostic plots, the rank correlations, and a verdict on each prediction.
 
@@ -124,8 +123,7 @@ We build three ablations of \approach{} that remove validators while keeping the
 Consensus voting in the entity extractor (the two-pass intersection at \autoref{sec:approach}) is kept inside \fullVariant{} as part of the extractor and is not ablated separately; reconstructing a no-consensus counterfactual would require new LLM calls and is out of scope.
 
 
-For each variant we measure \fone, per-component \fone, sentence coverage, and
-noise rate, and we contrast the difference with the cost in extra \ac{LLM} calls
+For each variant we measure the four primary metrics (file-level \fone, per-component \fone, sentence coverage, and noise rate) and we contrast the difference with the cost in extra \ac{LLM} calls
 (mean tokens per project), since the entity validator's two-pass p1 \ensuremath{\wedge} p2 evidence pattern roughly doubles entity-validation calls — not the entity-extraction calls themselves, which are a separate two-pass step inside the extractor and are included in the \fullVariant{} baseline cost.
 The outcome of \ref{RQ3 validators} shows how much the validators contribute beyond the raw retrieval power of the agents, and
 at what cost.
