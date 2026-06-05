@@ -12,11 +12,11 @@
   axn/.style={font=\tiny,gray!60},
   ax/.style={draw=black!50,thick},
 ]
-\def\H{0.7}\def\maxw{2.6}\def\bh{0.30}\def\maxct{154}
+\def\H{0.7}\def\maxw{2.6}\def\bh{0.30}\def\maxct{148}
 
 \foreach \row/\vname/\tpk/\fpk/\tpw/\fpw in {%
-  0/\entValidator{}/2/11/150/4,%
-  1/\corefValidator{}/1/3/48/5%
+  0/\entValidator{}/11/26/146/2,%
+  1/\corefValidator{}/2/23/49/12%
 } {
   \node[vlabel] at (-\maxw - 0.2, -\H*\row) {\vname};
   % left (killed): stack tpk above fpk, leftward from 0
@@ -43,6 +43,6 @@
   \node[anchor=west,font=\tiny] at (-\maxw + \i*1.6 + 0.05, -\H*2.6) {\lab};
 }
 \end{tikzpicture}
-\caption{Per-validator contribution measured from the \fullVariant{} \approach{} pipeline (Claude backend). Bars left of the centre line are links the validator \emph{rejected}; right of the centre are links it \emph{kept}. Green = correct decision, orange = wrong decision.}
-\label{fig:rq3-validator}
+\caption{Per-validator contribution measured from the \fullVariant{} \approach{} pipeline (GPT-5.4 backend, appendix mirror; see \autoref{fig:rq3-validator}). Bars left of the centre line are links the validator \emph{rejected}; right of the centre are links it \emph{kept}. Green = correct decision, orange = wrong decision.}
+\label{fig:rq3-validator-gpt}
 \end{figure}
