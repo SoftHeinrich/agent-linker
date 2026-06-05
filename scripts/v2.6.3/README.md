@@ -177,7 +177,7 @@ Derivation:
 
 Rows: exactly three, in the order `only_E, both, only_C`.
 
-**Consumed by:** `transarc-emp/src/paper/rq4_upset.py` (Plan 04, UpSet figure).
+**Consumed by:** `transarc-emp/src/paper/rq4_table.py:render_rq4_upset` (Plan 04, UpSet figure — rendered by the same script that emits the RQ4 table).
 
 ## File counts produced by `--all`
 
