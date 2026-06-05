@@ -32,6 +32,7 @@ Systems and slices:
     AALinker  -> parts[7:10] — not produced by this script
 """
 
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -59,6 +60,7 @@ D2C_PROJECTS = ["mediastore", "teastore", "bigbluebutton"]
 D2C_MISSING = ["teammates", "jabref"]
 
 REPORTS = Path("/mnt/hostshare/ardoco-home/transarc-emp/reports")
+TABLES = Path("/mnt/hostshare/ardoco-home/agent-linker/writing/gen/table")
 
 # Per-project display names match the leading `Project` cell in the .tex tables.
 PROJECT_DISPLAY = {
@@ -195,9 +197,65 @@ def print_block(title: str, target_table: str, slot_label: str,
         print(_row_display(row))
 
 
+# ── In-place .tex paste (opt-in via --write-tex) ──────────────────────────────
+# Each RQ1 table row has 10 cells after splitting on '&':
+#   parts[0] = "Project       "  ·  parts[1:4] = system 1 (SWATTR or TransArc)
+#   parts[4:7] = LiSSA            ·  parts[7:10] = AALinker (untouched by us)
+# `paste_systems` rewrites only the slices we own, preserving any \textbf{}
+# decoration on AALinker cells.
+
+def _name_to_row(rows: list[dict]) -> dict[str, dict]:
+    out = {}
+    for r in rows:
+        proj = r["project"]
+        out[PROJECT_DISPLAY.get(proj, proj)] = r
+    return out
+
+
+def paste_systems(table_path: Path,
+                  slice_to_rows: dict[tuple[int, int], list[dict]]) -> None:
+    """In-place rewrite of `table_path`. `slice_to_rows` maps a parts-slice
+    (start, end) onto the list of CSV-derived rows whose P/R/F1 should fill
+    the cells at that slice for every data row of the table."""
+    lookups = {sl: _name_to_row(rows) for sl, rows in slice_to_rows.items()}
+    valid_leads = set(PROJECT_DISPLAY.values()) | {"Macro average"}
+    out_lines = []
+    for line in table_path.read_text().splitlines(keepends=True):
+        stripped = line.lstrip()
+        leading = stripped.split("&", 1)[0].strip()
+        if leading not in valid_leads or "\\\\" not in line:
+            out_lines.append(line)
+            continue
+        body, _, tail = line.rpartition("\\\\")
+        parts = body.split("&")
+        if len(parts) < 10:
+            out_lines.append(line)
+            continue
+        for (start, end), name_to_row in lookups.items():
+            row = name_to_row.get(leading)
+            if row is None:
+                continue
+            cells = [_fmt_cell(row["precision"]),
+                     _fmt_cell(row["recall"]),
+                     _fmt_cell(row["f1"])]
+            for i, cell in enumerate(cells):
+                parts[start + i] = f" {cell} "
+        out_lines.append("&".join(parts) + "\\\\" + tail)
+    table_path.write_text("".join(out_lines))
+    print(f"Pasted cells into {table_path}")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--write-tex", action="store_true",
+                    help="In addition to printing paste-ready cells, write "
+                         "them into writing/gen/table/rq1-doc-to-*.tex in "
+                         "place (SWATTR + LiSSA for d2m, TransArc + LiSSA "
+                         "for d2c). AALinker cells are left untouched.")
+    args = ap.parse_args()
+
     # ----- d2m (rq1-doc-to-model.tex) -----
     swattr_rows = [prf_d2m(load_result_sad_sam_standalone, p)
                    for p in D2M_PROJECTS]
@@ -253,6 +311,17 @@ def main() -> None:
                  "transarc_rq1_d2c", "lissa_rq1_d2c",
                  "lissa_metrics_sad-sam", "lissa_metrics_sad-code"):
         print(f"  {REPORTS / (name + '.csv')}")
+
+    if args.write_tex:
+        print()
+        paste_systems(TABLES / "rq1-doc-to-model.tex", {
+            (1, 4): swattr_rows,    # SWATTR slice
+            (4, 7): lissa_d2m_rows,  # LiSSA slice
+        })
+        paste_systems(TABLES / "rq1-doc-to-code.tex", {
+            (1, 4): transarc_rows,   # TransArc slice
+            (4, 7): lissa_d2c_rows,  # LiSSA slice
+        })
 
 
 if __name__ == "__main__":
