@@ -46,6 +46,17 @@
 - [ ] **GATE-07** (carried) — `DEFAULT_BANK_PATH` updated to v2.6 trained bank; docstring updated with v2.6 results.
 - [ ] **GATE-08** — Total training budget ≤ $80 (Phases 34–36). Infrastructure phases = $0.
 
+## Active v2.6.3 Requirements
+
+- [ ] **REQ-V263-01** — Replay scripts in `approach/scripts/v2.6.3/` produce sad-sam / sad-code / rq3 / rq4 CSVs from `phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` for all 5 projects × 2 backends, with zero new LLM calls. Covers D-01, D-02 and success criterion #6.
+- [ ] **REQ-V263-02** — RQ1 sad-sam + sad-code TeX tables (Claude-first, both backends, 5 projects + Macro) populated in `writing/working/tables/metrics_sad-{sam,code}.tex` via existing `metrics_api.py`. Covers criteria #1, #2; D-03.
+- [ ] **REQ-V263-03** — RQ3 variants `{Full, NoEntityValid, NoCitation, NoValidator}` derived offline from `layer{2,3,4}.pkl` + `final.pkl`; P/R/F1 + per-validator gold-vs-spurious / killed-vs-kept counts tabulated. RQ3 figure + table reduced to 2 validator rows; main body = Claude, appendix = GPT-5.4 mirror. Covers revised criterion #3; D-04, D-07, D-08, D-09.
+- [ ] **REQ-V263-04** — RQ4 entity-vs-coref UpSet + per-linker table (2 rows: Entity, Coref) populated; main body = Claude, appendix = GPT-5.4 mirror. UpSet figure collapsed from 4-set/7-cell to 2-set/3-cell. Covers criterion #4; D-04, D-05, D-06.
+- [ ] **REQ-V263-05** — `writing/working/abbrev.tex` ships D-10 macros (`\entValidator`, `\corefValidator`, `\fullVariant`, `\noEntityValid`, `\noCitation`, `\noValidator`); every RQ3 prose / table header / figure label / `\autoref` target uses these macros; existing `\linkerB` / `\linkerC` reused for RQ4. Covers D-10.
+- [ ] **REQ-V263-06** — Paper text reconciled with code per D-11: (i) `eval.tex` §exp:rq3 drops NoConsensus + adds consensus-inside-`\fullVariant{}` note; (ii) `eval.tex` §exp:rq4 agent count 3 -> 2; (iii) `results.tex` §results:rq4 narrative 4 agents -> 2 linkers + UpSet reframed as `only_E` / `both` / `only_C`; (iv) `results.tex` §results:rq3 "~2× LLM calls" claim reconciled to entity-validator p1∧p2. Covers criterion #5; D-11.
+- [ ] **REQ-V263-07** — `.planning/ROADMAP.md` Phase 43 success criteria updated per D-12: criterion #3 replaced with 3 ablations + Full (NoConsensus dropped), criterion #5 reconciled per D-11 item 4, criterion #8 removed. Covers D-12.
+- [ ] **REQ-V263-08** — GATE-01 byte-equality verified at phase close: `s_linker13_min.py` and `s_linker19.py` SHA-256 unchanged from 2026-06-04 state recorded in `43-GATE01-BASELINE.txt`. Covers criterion #7; D-14.
+
 ## Future Requirements (deferred)
 
 - Flex tier integration (`260601-flex-tier-integration.md`) — cost optimization, v2.7+
@@ -78,3 +89,11 @@
 | GATE-01 | Throughout |
 | GATE-07 | Phase 37 |
 | GATE-08 | Phases 34–36 |
+| REQ-V263-01 | Phase 43 |
+| REQ-V263-02 | Phase 43 |
+| REQ-V263-03 | Phase 43 |
+| REQ-V263-04 | Phase 43 |
+| REQ-V263-05 | Phase 43 |
+| REQ-V263-06 | Phase 43 |
+| REQ-V263-07 | Phase 43 |
+| REQ-V263-08 | Phase 43 |
