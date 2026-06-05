@@ -12,9 +12,11 @@ Outputs per (backend, project):
        - tps_caught          = |linker ∩ gold|
        - unique_tps          = |(linker - other_linker) ∩ gold|
        - fps                 = |linker - gold|
-       - delta_f1_if_removed = f1(union) - f1(union without this linker)
-         (always non-negative when removal can only decrease F1; can be 0 if
-         the removed set is fully covered by the other linker)
+       - delta_f1_if_removed = f1(E ∪ C) - f1(other_linker alone)
+         True linker-ablation: removing one linker from the pipeline leaves
+         the *other linker's full prediction set* (not the literal set-diff
+         E ∪ C \ this_linker). When the two linkers share TPs, the surviving
+         linker still catches those shared TPs on its own.
 
   - rq4_upset.csv  columns: cell, count
                    (3 data rows: only_E, both, only_C — TP-share decomposition
@@ -98,21 +100,26 @@ def compute_overlap_decomposition(layers: Dict[str, dict], gold: Set[LinkKey]) \
 
     union = E | C
     f1_union = _f1(union, G)
-    f1_without_E = _f1(union - E, G)  # union with only-coref-validated kept
-    f1_without_C = _f1(union - C, G)  # union with only-entity-validated kept
+    # True linker-ablation (CONTEXT D-05): removing one linker from the
+    # pipeline leaves the *other linker's full predictions* — the surviving
+    # linker still catches the TPs the two linkers share. Compare against
+    # set-diff (union - linker), which would drop every shared TP and inflate
+    # the delta.
+    f1_only_C = _f1(C, G)  # Entity removed → only Coref survives
+    f1_only_E = _f1(E, G)  # Coref  removed → only Entity survives
 
     per_linker = {
         "Entity": (
             len(E & G),                # tps_caught
             len((E - C) & G),          # unique_tps (TPs only Entity caught)
             len(E - G),                # fps
-            round(f1_union - f1_without_E, 6),  # delta_f1_if_removed
+            round(f1_union - f1_only_C, 6),  # delta_f1_if_removed (true ablation)
         ),
         "Coref": (
             len(C & G),
             len((C - E) & G),
             len(C - G),
-            round(f1_union - f1_without_C, 6),
+            round(f1_union - f1_only_E, 6),
         ),
     }
     upset = {

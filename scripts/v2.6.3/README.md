@@ -152,7 +152,7 @@ One file per `(backend, project)` at
 | `tps_caught`          | int      | `|linker ∩ gold|` (TPs this linker contributed)                                        |
 | `unique_tps`          | int      | `|(linker - other_linker) ∩ gold|`                                                     |
 | `fps`                 | int      | `|linker - gold|`                                                                      |
-| `delta_f1_if_removed` | float    | `f1(E ∪ C) - f1((E ∪ C) - linker)` (always ≥ 0; 0 ⇒ this linker is fully covered)      |
+| `delta_f1_if_removed` | float    | `f1(E ∪ C) - f1(other_linker alone)` — true linker-ablation: removing this linker leaves the other linker's full predictions, including shared TPs. Typically ≥ 0; can be **negative** when the removed linker contributed no unique TPs but did contribute FPs (the other linker reproduces all the TPs and the union accrues only the removed linker's FPs). |
 
 Rows: exactly two, in the order `Entity, Coref`. Both linker sets are
 **post-validator** (`layer3.validated` for Entity, `layer4.coref_validated`
