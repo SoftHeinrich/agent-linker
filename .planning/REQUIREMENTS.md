@@ -1,99 +1,71 @@
-# Requirements: llm-sad-sam-v45 — Milestone v2.6
+# Requirements: llm-sad-sam-v45 — Milestone v2.6.4
 
-**Defined:** 2026-06-02
-**Milestone:** v2.6 — ILinker4 + LLM-Driven Training + Axiom Re-run
-**Core Value:** Replace the mechanical training gate with an LLM Assessor that reasons over the actual error set (remaining FP + FN sentences); build ILinker4 as a Voyager-native seed extractor; fix axiom gaps that account for the remaining 27 systematic errors. Target: exceed canonical (s_linker13_min gpt-5.4 90.69%).
+**Defined:** 2026-06-05
+**Milestone:** v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
+**Core Value:** Audit every LLM-call site in `s_linker19` with per-prompt golden-replay unit tests; ship `s_linker20.py` whose prompts are at the Pareto-best of size-cut × generality, without regressing the s17e-line macro F1 floor (gpt-5.4 92.3%, T=1.0pp → floor 91.3%). Backend: gpt-5.4 only. Zero new LLM calls for harness build.
 
-## Active v2.6 Requirements
+## Active v2.6.4 Requirements
 
-### ILINKER — Voyager-Native Seed Extractor
+### HARNESS — Per-prompt unit-test infrastructure
 
-- [ ] **REQ-V26-01** — `ilinker4.py` new standalone file. Voyager-native design: Pass A (extract) and Pass B (actor) prompts are structural scaffolding only — no inline rules. `SEED_EXTRACTION_RULES` and `SEED_ACTOR_RULES` are first-class bank slots injected at call time (empty string = baseline behavior identical to ILinker3). Does NOT inherit from `ilinker3.py`; standalone per user preference. `s_linker14_voyager.py` wires ILinker4 instead of ILinker3Injected.
+- [ ] **REQ-V264-01** — Golden-replay test harness loads v2.6.3 `phase_cache` pkls (`results/phase_cache/openai/<project>/{layer1..4,final}.pkl`) and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites × 5 projects. Zero new LLM calls. Backend scope: gpt-5.4 only. Lives under `tests/harness/` (or equivalent shared fixture module).
 
-- [ ] **REQ-V26-02** — Prompt hygiene audit: every static prompt in `s_linker14_voyager.py` and `ilinker4.py` audited and classified as (a) structural scaffolding (acceptable) or (b) inline rule (must migrate to bank slot). Audit report produced; all (b) items migrated. After migration: zero behavioral inline rules remain in static prompts.
+- [ ] **REQ-V264-02** — Pytest + snapshot harness (syrupy or pytest-regressions) ships one test module per s19 prompt builder: `tests/test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`. Each test rebuilds the prompt from the replay fixture, runs the replayed LLM response through the parser, and asserts snapshot equality on the **parsed structured output** (NOT raw LLM text — replayed LLM output is fixed). Initial snapshots captured from s19 byte-equal baseline; tests pass at REQ-V264-02 close.
 
-### TRAINING LOOP — LLM-Driven Architecture (voyager_train v5)
+### AUDIT — Identify generality + size cut candidates
 
-- [ ] **REQ-V26-03** — O+D merge: collapse Oracle (O) and Distillator (D) into a single text-aware LLM role `OD`. `OD` receives: current bank, per-project FP sentence list, per-project FN sentence list, gold standard. In one call it (a) identifies failure modes, (b) proposes new bank patterns to address them. Prompt enforces abstract/general vocabulary — proposed pattern text must use discourse/syntactic/functional terminology, not project component names. Hard anti-superficiality instruction in prompt: proposed pattern must be semantically novel and cover an error class not already addressed by existing bank rules.
+- [ ] **REQ-V264-03** — Per-constant audit report covers each imported PROMPT CONSTANT used by `s_linker19`: `AMBIGUITY_FEW_SHOT`, `AMBIGUITY_RULES`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`. One row per constant with columns: current LOC, generality verdict (`clean` / `domain-loaded` / `benchmark-leak`), size-cut candidates (line-level), drop-the-whole-block candidates.
 
-- [ ] **REQ-V26-04** — LLM Assessor role: replaces Gate A + Gate B entirely. One LLM call per proposal. Inputs: proposed pattern text + slot, full current bank (all existing patterns), remaining FP sentence list (with component context), remaining FN sentence list (with component context). Assessor decides: **accept / reject / revise** — with rationale identifying which specific FP or FN sentences the pattern would address. No hard vocabulary grep. Abstraction quality (abstract vs project-specific vocabulary in the proposed rule) is one of the Assessor's evaluation criteria. `revise` verdict returns a reformulated pattern for re-evaluation (max 1 revision cycle per proposal).
+- [ ] **REQ-V264-04** — Per-builder audit covers the 6 in-class f-string scaffolds: `_prompt_ambiguity`, `_prompt_doc_knowledge_extract`, `_prompt_doc_knowledge_judge`, `_prompt_extraction`, `_prompt_validation`, `_prompt_coref`. Same columns as REQ-V264-03 but for the scaffolding around the constants. Single combined artefact: `s_linker20-PROMPT-AUDIT.md`.
 
-- [ ] **REQ-V26-05** — Cross-split redesign: each split trains independently, evaluates its trained bank on its own held-out test set, and reports against an axiom-only baseline on the same test set. Verdict question per split: "does training on projects {train_set} improve F1 on {test_set} beyond axiom-only?" No cross-split aggregation or dedup. Final deployed bank = mainline (MS+TS+TM train). Cross-split result is a stability/generalization check, not an input to consensus.
+### MINIMIZE — Pareto-driven cuts
 
-- [ ] **REQ-V26-06** — Log structure: every training log must report [TRAIN] and [TEST] project metrics separately per pass. Format: `[TRAIN] MS: F1=x TS: F1=x TM: F1=x macro=x` and `[TEST] BBB: F1=x JAB: F1=x macro=x` (or equivalent for non-mainline splits). The delta used for commit decision uses [TRAIN] macro only. [TEST] is reported for tracking but does not gate commits.
+- [ ] **REQ-V264-05** — Per-prompt Pareto reduction loop: for each candidate cut identified in REQ-V264-03/04, apply the cut, run that prompt's golden tests (REQ-V264-02), and keep the cut iff **every parsed-output snapshot remains byte-equal** AND no benchmark-derived vocabulary is introduced. All decisions logged per candidate cut in `s_linker20-MINIMIZE-LOG.md` with verdict (kept / reverted / unsafe).
 
-- [ ] **REQ-V26-07** — GATE-01 regression test unchanged: `s_linker13_min` Claude macro ≥ 0.9506 AND gpt-5.4 macro ≥ 0.9069 throughout v2.6. `s_linker14_voyager` bound to 0.87 floor only (experimental=True policy).
+- [ ] **REQ-V264-06** — Few-shot block-drop: for each prompt with a few-shot block (initially `AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`), run the golden suite with the **entire block removed**. Drop the block iff every parsed-output snapshot is byte-equal. If not byte-equal, attempt a 1–3 example synthetic-domain replacement and re-run; ship whichever is smallest while passing.
 
-### AXIOM — Vocabulary Gap Fixes
+- [ ] **REQ-V264-07** — Lexical neutralization: where domain-loaded vocabulary appears (e.g., "software architecture component", "anaphoric references", "role-referential noun phrases"), attempt a neutral rewording (e.g., "entity", "pronouns and noun phrases that refer back"). Keep the rewording iff parsed-output snapshots are byte-equal. Target framing: "look general but still SAD/SAM-tuned" — behaviour stays tuned to SAD→SAM, only surface vocabulary changes.
 
-- [ ] **REQ-V26-08** — Axiom Gap 1 (section-context naming / SCN): extend `COREF_RULES` or `DOC_KNOWLEDGE_EXTRACTION_RULES` axiom to cover role-referential definite NPs ("the server", "the client") where the component was established earlier in the section. Rule framing must be semantic/intent-level (not surface pattern). Empirical safety check: zero regression on MS/TS/JAB gold links before deployment. Targets 14 systematic FNs across BBB+TM.
+### SHIP — New variant + regression
 
-- [ ] **REQ-V26-09** — Axiom Gap 2 (responsibility-list gerunds): extend `SEED_DISAMBIGUATION_RULES` axiom to reject bare gerund/nominal fragments describing a component's own capabilities without referencing an external participant. Must not reject legitimate cross-component gerund references. Empirical check: zero regression on MS/TS gold links. Targets 7 systematic FPs in TM.
+- [ ] **REQ-V264-08** — `src/llm_sad_sam/linkers/experimental/s_linker20.py`: standalone file (no inheritance from `s_linker19`), `experimental=True`, `canonical=False`. Inlines the minimized PROMPT CONSTANTS so the audit is self-contained per the user's "duplicated standalone files over inheritance" preference. `s_linker19.py` and any prompt constants `s_linker19` imports are preserved **byte-equal** (paper RQ1–RQ4 replay determinism). `run_ablation.py` learns `--variants s_linker20`.
 
-- [ ] **REQ-V26-10** — Axiom Gap 3 (coref alias): extend `COREF_RULES` or `ANTECEDENT_ALIAS_RULES` axiom to instruct the LLM to set `antecedent_via_alias=True` when the antecedent sentence contains a known alias of the component (not just full canonical name). Uses existing code path at `s_linker14_voyager.py:1004`. Axiom change only, no code change. Safety check: BBB pronoun sentences must stay FP-free.
-
-### TRAIN — Evaluation Tiers
-
-- [ ] **REQ-V26-11** — Probe tier: 2-pass mainline run with new v5 loop. [TRAIN] and [TEST] F1 reported separately. Cheap-kill: [TEST] macro < 0.87 after pass 2 → KILL. Budget ≤ $10.
-
-- [ ] **REQ-V26-12** — Range tier (conditional on Probe CONTINUE): convergence run, max 5 passes, mainline split. 5-dataset eval. 3-tier verdict. Budget ≤ $25.
-
-- [ ] **REQ-V26-13** — Confirmation tier (conditional on Range ≥ 0.87): 3-split cross-validation with axiom-only baseline per held-out. Each split reports axiom-only vs trained-bank test F1. Final table vs v2.5 (89.1%) and canonical (90.69%). Budget ≤ $60.
+- [ ] **REQ-V264-09** — End-to-end GPT-5.4 5-dataset macro F1 on `s_linker20` ≥ **91.3%** (= s17e 92.3% − T 1.0pp). Per-dataset constraint: no dataset drops more than 2pp vs s17e's per-dataset numbers (MediaStore 94.9%, TeaStore 96.3%, TeaMmates 89.8%, BigBlueButton 80.4%, JabRef 100.0%). Single sweep validates promotion. Log goes to `logs/v2.6.4_s_linker20_gpt.log`.
 
 ### CARRY-FORWARD — Standing Gates
 
-- [ ] **GATE-01** (carried) — `s_linker13_min` regression gate (Claude ≥ 0.9506, gpt-5.4 ≥ 0.9069) passes throughout v2.6. Code unmodified.
-- [ ] **GATE-07** (carried) — `DEFAULT_BANK_PATH` updated to v2.6 trained bank; docstring updated with v2.6 results.
-- [ ] **GATE-08** — Total training budget ≤ $80 (Phases 34–36). Infrastructure phases = $0.
-
-## Active v2.6.3 Requirements
-
-- [x] **REQ-V263-01** — Replay scripts in `approach/scripts/v2.6.3/` produce sad-sam / sad-code / rq3 / rq4 CSVs from `phase_cache/s_linker19/{claude,openai}/<project>/{layer1..4,final}.pkl` for all 5 projects × 2 backends, with zero new LLM calls. Covers D-01, D-02 and success criterion #6.
-- [x] **REQ-V263-02** — RQ1 sad-sam + sad-code TeX tables (Claude-first, both backends, 5 projects + Macro) populated in `writing/working/tables/metrics_sad-{sam,code}.tex` via existing `metrics_api.py`. Covers criteria #1, #2; D-03.
-- [x] **REQ-V263-03** — RQ3 variants `{Full, NoEntityValid, NoCitation, NoValidator}` derived offline from `layer{2,3,4}.pkl` + `final.pkl`; P/R/F1 + per-validator gold-vs-spurious / killed-vs-kept counts tabulated. RQ3 figure + table reduced to 2 validator rows; main body = Claude, appendix = GPT-5.4 mirror. Covers revised criterion #3; D-04, D-07, D-08, D-09.
-- [x] **REQ-V263-04** — RQ4 entity-vs-coref UpSet + per-linker table (2 rows: Entity, Coref) populated; main body = Claude, appendix = GPT-5.4 mirror. UpSet figure collapsed from 4-set/7-cell to 2-set/3-cell. Covers criterion #4; D-04, D-05, D-06.
-- [x] **REQ-V263-05** — `writing/working/abbrev.tex` ships D-10 macros (`\entValidator`, `\corefValidator`, `\fullVariant`, `\noEntityValid`, `\noCitation`, `\noValidator`); every RQ3 prose / table header / figure label / `\autoref` target uses these macros; existing `\linkerB` / `\linkerC` reused for RQ4. Covers D-10.
-- [x] **REQ-V263-06** — Paper text reconciled with code per D-11: (i) `eval.tex` §exp:rq3 drops NoConsensus + adds consensus-inside-`\fullVariant{}` note; (ii) `eval.tex` §exp:rq4 agent count 3 -> 2; (iii) `results.tex` §results:rq4 narrative 4 agents -> 2 linkers + UpSet reframed as `only_E` / `both` / `only_C`; (iv) `results.tex` §results:rq3 "~2× LLM calls" claim reconciled to entity-validator p1∧p2. Covers criterion #5; D-11.
-- [x] **REQ-V263-07** — `.planning/ROADMAP.md` Phase 43 success criteria updated per D-12: criterion #3 replaced with 3 ablations + Full (NoConsensus dropped), criterion #5 reconciled per D-11 item 4, criterion #8 removed. Covers D-12.
-- [x] **REQ-V263-08** — GATE-01 byte-equality verified at phase close: `s_linker13_min.py` and `s_linker19.py` SHA-256 unchanged from 2026-06-04 state recorded in `43-GATE01-BASELINE.txt`. Covers criterion #7; D-14.
+- [ ] **GATE-01** (carried) — `s_linker13_min.py` AND `s_linker19.py` SHA-256 byte-equal at milestone close (paper baseline + canonical untouched). Verified via `git diff` against the v2.6.3 close hashes.
+- [ ] **GATE-06** (re-verified) — Zero benchmark-derived vocabulary in any `s_linker20` prompt constant or f-string scaffold. Audit method: v2.1 cross-dataset vocabulary isolation methodology.
+- [ ] **GATE-08** (budget) — Sweep budget cap ≤ **$20** for the macro F1 regression validation (5-dataset gpt-5.4 single run); zero LLM calls for golden-test build.
 
 ## Future Requirements (deferred)
 
-- Flex tier integration (`260601-flex-tier-integration.md`) — cost optimization, v2.7+
-- AMBIGUITY_FEW_SHOT calibration — defer unless Assessor flags it
+- Cross-backend (Claude) confirmation sweep on `s_linker20` — v2.6.5 candidate if v2.6.4 promotes.
+- Per-prompt minimization extended to `s_linker17e` family — only if 17e remains the published champion and reviewers ask for prompt-defensibility.
+- Flex tier integration (`260601-flex-tier-integration.md`) — cost optimization, v2.7+.
 
-## Out of Scope for v2.6
+## Out of Scope for v2.6.4
 
-- Cross-model Claude validation — gpt-5.4 only (per standing policy)
-- `s_linker13_min` prompt changes — canonical frozen
-- New benchmark datasets — 5-dataset benchmark unchanged
-- GATE-06 mechanical vocab grep — replaced by Assessor abstraction-quality criterion + OD prompt enforcement
+- Logic changes to `s_linker19` or `s_linker13_min` (canonical/paper frozen).
+- Resumption of v2.7 (BBB recall closure, Phases 38–42) — FROZEN.
+- v2.6 close (Phase 37 GATE-06 'Persistence' taboo fix) — DEFERRED.
+- Cross-model Claude validation — gpt-5.4 only (per v2.3 standing policy).
+- New benchmark datasets — 5-dataset benchmark unchanged.
+- Aggressive behavior changes / new few-shots that aren't byte-equal on parsed outputs.
 
 ## Requirement Traceability
 
 | REQ-ID | Phase |
 |--------|-------|
-| REQ-V26-01 | Phase 31 |
-| REQ-V26-02 | Phase 31 |
-| REQ-V26-03 | Phase 32 |
-| REQ-V26-04 | Phase 32 |
-| REQ-V26-05 | Phase 32 |
-| REQ-V26-06 | Phase 32 |
-| REQ-V26-07 | Throughout |
-| REQ-V26-08 | Phase 33 |
-| REQ-V26-09 | Phase 33 |
-| REQ-V26-10 | Phase 33 |
-| REQ-V26-11 | Phase 34 |
-| REQ-V26-12 | Phase 35 |
-| REQ-V26-13 | Phase 36 |
+| REQ-V264-01 | TBD (set by roadmapper) |
+| REQ-V264-02 | TBD |
+| REQ-V264-03 | TBD |
+| REQ-V264-04 | TBD |
+| REQ-V264-05 | TBD |
+| REQ-V264-06 | TBD |
+| REQ-V264-07 | TBD |
+| REQ-V264-08 | TBD |
+| REQ-V264-09 | TBD |
 | GATE-01 | Throughout |
-| GATE-07 | Phase 37 |
-| GATE-08 | Phases 34–36 |
-| REQ-V263-01 | Phase 43 |
-| REQ-V263-02 | Phase 43 |
-| REQ-V263-03 | Phase 43 |
-| REQ-V263-04 | Phase 43 |
-| REQ-V263-05 | Phase 43 |
-| REQ-V263-06 | Phase 43 |
-| REQ-V263-07 | Phase 43 |
-| REQ-V263-08 | Phase 43 |
+| GATE-06 | Throughout (close-gated) |
+| GATE-08 | Sweep phase |
