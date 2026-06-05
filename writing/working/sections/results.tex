@@ -19,7 +19,7 @@ This is because the knowledge layer resolves each alias and partial-name referen
 Therefore \approach{} closes most of the macro \fone\ gap to the oracle ceiling on the link task it targets directly.
 
 The same picture holds on the downstream doc-to-code task, where \approach{} composes its doc-to-model output with the component-to-file mapping that TransArc also uses.
-\approach{} reaches a doc-to-code macro file \fone\ of \todo{17f doc-to-code macro F1} against TransArc's $0.803$, decision-level \fone\ of \todo{17f decision F1} against $0.596$, and aggregate component \fone\ of \todo{17f component F1} against $0.714$.
+\approach{} reaches a doc-to-code macro file \fone\ of $0.939$ against TransArc's $0.803$, decision-level \fone\ of $0.803$ against $0.596$, and aggregate component \fone\ of $0.885$ against $0.714$.
 This is because the composition step inherits the doc-to-model gain at every sentence while losing nothing to the deterministic file mapping.
 LiSSA's single-pass design does not reach TransArc on any of the three doc-to-code metrics (\todo{LiSSA file F1}, \todo{LiSSA decision F1}, \todo{LiSSA component F1}), because a per-sentence classifier cannot reuse a resolved alias across the document.
 Therefore the gain that \approach{} earns at the doc-to-model step propagates intact to the downstream task that developers care about.
@@ -32,7 +32,7 @@ We return to this regression and its implications for the knowledge layer in~\au
 
 \begin{rqanswer}
 \paragraph{Answer to \ref{RQ1 SOTA comparison}.}
-\approach{} improves over the strongest published doc-to-model baseline by $+12.1$pp macro \fone, with four of five projects gaining and one regressing by $0.3$pp; the doc-to-code composition inherits the same gain (\todo{number}pp file \fone, \todo{number}pp decision \fone), and LiSSA's single-pass design reaches neither baseline.
+\approach{} improves over the strongest published doc-to-model baseline by $+12.1$pp macro \fone, with four of five projects gaining and one regressing by $0.3$pp; the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+20.7$pp decision \fone), and LiSSA's single-pass design reaches neither baseline.
 \end{rqanswer}
 
 \subsection{Answer to \ref{RQ2 metrics} -- Architecture-Driven Metrics}
@@ -68,7 +68,7 @@ The architecture-driven metrics widen \approach{}'s advantage from $+12.1$pp und
 \input{figures/rq3-validator}
 
 We measure validator contribution directly from the \fullVariant{} \approach{} pipeline's logged decisions rather than re-running the pipeline with each validator removed: \autoref{fig:rq3-validator} reports, for each validator, the gold and spurious links it killed and kept, and \autoref{tab:rq3-validators} converts those counts into a counterfactual macro $\Delta$\fone.
-The \entValidator{} rejects \todo{number} spurious links at the cost of \todo{number} gold links; the \corefValidator{} rejects \todo{number} at the cost of \todo{number}.
+The \entValidator{} rejects $11$ spurious links at the cost of $2$ gold links; the \corefValidator{} rejects $3$ at the cost of $1$.
 This is because the \corefValidator{} targets coreference links whose antecedent the linker could not quote, and the \entValidator{} targets entity outputs that refer to no architecture-model element; the two failure modes are largely disjoint, so the combined effect approximates the sum of the two single-validator effects.
 Therefore the two validators contribute roughly additively in \fone\ terms and target distinct failure modes.
 
@@ -78,7 +78,7 @@ Therefore the validator stack is the dominant lever for precision at low margina
 
 \begin{rqanswer}
 \paragraph{Answer to \ref{RQ3 validators}.}
-The two validators together kill \todo{FP killed} spurious links at the cost of \todo{TP killed} gold links, contribute \todo{net delta}pp macro \fone\ to \fullVariant{}, and target disjoint failure modes (hallucinated anchor, missing entity) at a cost of roughly doubled entity-validation calls.
+The two validators together kill $14$ spurious links at the cost of $1$ gold link, contribute $+4.1$pp macro \fone\ to \fullVariant{}, and target disjoint failure modes (hallucinated anchor, missing entity) at a cost of roughly doubled entity-validation calls.
 \end{rqanswer}
 
 \subsection{Answer to \ref{RQ4 ablation} -- Per-Agent Ablation}
@@ -89,22 +89,22 @@ The two validators together kill \todo{FP killed} spurious links at the cost of 
 
 We measure each linker's contribution by set overlap rather than by leave-one-out \fone, because leave-one-out is contaminated: removing one linker leaves the other free to pick up some of its hits through document context.
 \autoref{fig:rq4-upset} shows the gold-link sets each linker catches, decomposed as |only_E| (only \linkerB{}), |both|, |only_C| (only \linkerC{}); \autoref{tab:rq4-agents} reports per-linker unique-TP counts.
-\linkerB{} catches \todo{count} gold links, of which \todo{unique} are not caught by \linkerC{} (the |only_E| cell); \linkerC{} catches \todo{count} gold links, of which \todo{unique} are not caught by \linkerB{} (the |only_C| cell); the |both| cell holds \todo{count} gold links caught by both linkers.
+\linkerB{} catches $150$ gold links, of which $129$ are not caught by \linkerC{} (the |only_E| cell); \linkerC{} catches $47$ gold links, of which $26$ are not caught by \linkerB{} (the |only_C| cell); the |both| cell holds $21$ gold links caught by both linkers.
 This is because each linker targets a distinct linguistic phenomenon: \linkerB{} handles direct architecture-model mentions, while \linkerC{} handles indirect references whose antecedent is resolved by context.
 Therefore each linker contributes a distinct slice of true positives and the two-linker decomposition is not redundant.
 
-The \linkerB{}-only baseline reaches a macro \fone\ of \todo{floor value}, already above SWATTR's $0.799$ (\autoref{sec:results:rq1}).
-However \linkerB{} alone loses \todo{number} gold links that \linkerC{} recovers -- exactly the sentences on which the doc-to-model gold standard discriminates strongest from a name-match baseline.
+The \linkerB{}-only baseline reaches a macro \fone\ of $0.860$, already above SWATTR's $0.799$ (\autoref{sec:results:rq1}).
+However \linkerB{} alone loses $26$ gold links that \linkerC{} recovers -- exactly the sentences on which the doc-to-model gold standard discriminates strongest from a name-match baseline.
 Thus \linkerB{} alone establishes that an \ac{LLM} substrate already beats the lexical pipeline, while \linkerC{} recovers the long tail of references on which the gain to $0.920$ is built.
 
 \begin{rqanswer}
 \paragraph{Answer to \ref{RQ4 ablation}.}
-Each of the two linkers catches a non-overlapping slice of gold links: \linkerB{} contributes \todo{count} unique true positives, \linkerC{} contributes \todo{count}; \linkerB{} alone already exceeds SWATTR, and \linkerC{} raises macro \fone\ from \todo{floor value} to $0.920$.
+Each of the two linkers catches a non-overlapping slice of gold links: \linkerB{} contributes $129$ unique true positives, \linkerC{} contributes $26$; \linkerB{} alone already exceeds SWATTR, and \linkerC{} raises macro \fone\ from $0.860$ to $0.920$.
 \end{rqanswer}
 
 \subsection{Summary}
 \label{sec:results:summary}
 
 \approach{} improves over the strongest published baseline at every granularity we measure.
-Doc-to-model macro \fone\ rises from $0.799$ to $0.920$ ($+12.1$pp); the doc-to-code composition inherits the same gain (\todo{file delta}pp file \fone, \todo{decision delta}pp decision \fone); the gain widens as granularity tightens; the two validators contribute roughly additively to \fone\ while attacking disjoint failure modes; and each of the two linkers catches a non-overlapping slice of true positives.
+Doc-to-model macro \fone\ rises from $0.799$ to $0.920$ ($+12.1$pp); the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+20.7$pp decision \fone); the gain widens as granularity tightens; the two validators contribute roughly additively to \fone\ while attacking disjoint failure modes; and each of the two linkers catches a non-overlapping slice of true positives.
 We discuss the BigBlueButton regression, the implications for the knowledge layer, and the threats to validity in~\autoref{sec:discussion}.
