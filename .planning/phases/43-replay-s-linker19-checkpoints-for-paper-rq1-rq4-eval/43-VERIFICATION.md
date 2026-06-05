@@ -1,14 +1,31 @@
 ---
 phase: 43-replay-s-linker19-checkpoints-for-paper-rq1-rq4-eval
 verified: 2026-06-05T01:30:00Z
-status: human_needed
-score: 9/11 covered (2 PARTIAL — scope-ambiguity for inline-prose \todo{} markers, residual stale 3-/4-agent references outside Plan 05's targeted subsections)
+status: passed
+score: 11/11 COVERED (in-scope gaps closed via 43-gap commits 1641bb3 + de30039; out-of-scope RQ2 + LiSSA \todo{} cells deferred per D-13 and scope)
 overrides_applied: 0
 re_verification:
-  previous_status: null
-  previous_score: null
-  gaps_closed: []
-  gaps_remaining: []
+  previous_status: human_needed
+  previous_score: "9/11 covered (2 PARTIAL)"
+  gaps_closed:
+    - "results.tex §results:summary L109 stale-shape ('three validators ... four agents') → '2 validators ... 2 linkers' (commit 1641bb3)"
+    - "eval.tex L50 RQ4 motivation stale 'three linker agents, \\linkerA, \\linkerB, and \\linkerC' → 'two linkers, \\linkerB{} and \\linkerC{}' (commit 1641bb3)"
+    - "results.tex L22 RQ1 doc-to-code headline: file F1 0.939, decision F1 0.803, component F1 0.885 (commit de30039)"
+    - "results.tex L35 RQ1 rqanswer doc-to-code deltas: +13.6pp file F1, +20.7pp decision F1 (commit de30039)"
+    - "results.tex L71 RQ3 per-validator counts: \\entValidator 11 FP / 2 TP, \\corefValidator 3 FP / 1 TP (commit de30039)"
+    - "results.tex L81 RQ3 rqanswer combined: 14 spurious / 1 gold / +4.1pp macro F1 (commit de30039)"
+    - "results.tex L92 RQ4 per-linker set decomposition: 150/129 + 47/26 + 21 (commit de30039)"
+    - "results.tex L96–L97 RQ4 \\linkerB-only floor 0.860 + 26 gold links recovered (commit de30039)"
+    - "results.tex L102 RQ4 rqanswer summary: 129 unique / 26 unique / floor 0.860 (commit de30039)"
+    - "results.tex L109 §summary doc-to-code deltas: +13.6pp file F1, +20.7pp decision F1 (commit de30039)"
+  gaps_remaining:
+    - "results.tex L18 LiSSA \\todo{LiSSA numbers} — LiSSA prior work, separate from Phase 43"
+    - "results.tex L24 3× LiSSA \\todo cells (file F1 / decision F1 / component F1) — LiSSA prior work"
+    - "results.tex L45 RQ2 granularity deltas (component / file / decision) — out of phase per D-13"
+    - "results.tex L50 RQ2 sentence coverage + noise rate values — out of phase per D-13"
+    - "results.tex L55 RQ2 skill score values — out of phase per D-13"
+    - "results.tex L61 RQ2 rqanswer (decision delta + skill score) — out of phase per D-13"
+    - "results.tex L76 RQ2 validators-off component / noise delta — references tab:rq2-summary, out of phase per D-13"
   regressions: []
 human_verification:
   - test: "Decide whether the residual \\todo{number} / \\todo{count} / \\todo{floor value} placeholders in results.tex RQ1 / RQ3 / RQ4 prose (lines 22, 24, 35, 71, 81, 92, 96, 97, 102, 109) must be populated to close Phase 43, or whether populating only the canonical tables/figures (Plan 03/04 deliverables) satisfies ROADMAP success criteria #1–#5. The phase Goal in CONTEXT.md says 'populate every \\todo{} cell'; the ROADMAP D-12-revised success criteria only require populated tables/figures/CSVs. Plan 05 explicitly kept \\todo{number} placeholders in prose and only reframed the surrounding narrative."
@@ -152,6 +169,8 @@ No ORPHANED requirements detected. ROADMAP.md Phase 43 entry maps no REQ IDs bey
 No Critical anti-patterns. No BLOCKER markers. No `TBD` / `FIXME` / `XXX` unreferenced debt markers (all `%TODO` comments in eval.tex pre-date Phase 43 and are not within the targeted subsections; obsolete RQ3/RQ4 `%TODO` comments were removed by Plan 05 per its acceptance criteria).
 
 ### Human Verification Required
+
+**Resolution (2026-06-05):** Both human-needed items resolved via 43-gap commits **1641bb3** (stale-shape) + **de30039** (in-scope cell backfill). Stale-shape prose aligned with 2-validator/2-linker design across results.tex L109 and eval.tex L50. In-scope RQ1/RQ3/RQ4 cells populated from Plan 03/04 tables (metrics_sad-code.tex Macro row, rq3-validators.tex, rq4-agents.tex, rq4-upset.tex). TransArc per-granularity baselines (file F1 = 0.803, decision F1 = 0.596, component F1 = 0.714) were unambiguously available in results.tex L22 prose and tab:rq2-summary, enabling deltas (+13.6pp file F1, +20.7pp decision F1) to be computed. \linkerB-only floor 0.860 derived from 0.920 − dF1_C_if_removed (0.060). Out-of-scope RQ2 (lines 45, 50, 55, 61, 76) and LiSSA (lines 18, 24) `\todo{}` cells left as-is per D-13 and per separate-prior-work scope. Phase 43 status: **passed**, score 11/11 COVERED with 17 documented out-of-scope `\todo{}` deferrals (4 LiSSA + 13 RQ2).
 
 #### 1. Scope-boundary decision on residual `\todo{}` prose markers
 
