@@ -109,12 +109,23 @@ def compute_validator_audit_counts(layers: Dict[str, dict], gold: Set[LinkKey]) 
     layer3 = layers["layer3"]
     layer4 = layers["layer4"]
 
-    def _audit(cand_items, decisions: dict) -> Tuple[int, int, int, int]:
+    def _audit(cand_items, decisions: dict, validator_name: str) -> Tuple[int, int, int, int]:
         killed_gold = killed_spurious = kept_gold = kept_spurious = 0
         for item in cand_items:
             key: LinkKey = (item.sentence_number, item.component_id)
             dec = decisions.get(key)
-            approved = bool(dec and dec.get("approved", False))
+            if dec is None:
+                # s_linker19 contract: every candidate reaching the validator
+                # gets a decision dict written. A missing decision used to be
+                # silently coerced to "rejected", which hid schema regressions
+                # (a future change that yielded decisions only for the
+                # validated subset would silently corrupt audit counts).
+                raise KeyError(
+                    f"missing {validator_name} validator decision for "
+                    f"candidate {key}; s_linker19 contract expects a decision "
+                    f"dict per candidate (see Phase 43 WR-04)"
+                )
+            approved = bool(dec.get("approved", False))
             in_gold = key in gold
             if approved:
                 if in_gold:
@@ -128,8 +139,8 @@ def compute_validator_audit_counts(layers: Dict[str, dict], gold: Set[LinkKey]) 
                     killed_spurious += 1
         return killed_gold, killed_spurious, kept_gold, kept_spurious
 
-    entity = _audit(layer3["candidates"], layer3["decisions"])
-    coref  = _audit(layer4["coref_raw"], layer4["coref_decisions"])
+    entity = _audit(layer3["candidates"], layer3["decisions"], "entity")
+    coref  = _audit(layer4["coref_raw"], layer4["coref_decisions"], "coref")
     return {"entity": entity, "coref": coref}
 
 
