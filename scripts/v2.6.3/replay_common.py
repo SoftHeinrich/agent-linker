@@ -44,8 +44,10 @@ if str(_SRC) not in sys.path:
 
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 BACKENDS = ["claude", "openai"]
-# D-03: display label for "openai" pickles is "GPT-5.4".
-BACKEND_DISPLAY = {"claude": "Claude", "openai": "GPT-5.4"}
+# Note: D-03's display labels ("openai" -> "GPT-5.4") are duplicated locally
+# in each transarc-emp formatter (rq{1,3,4}_table.py) to honour that
+# project's stdlib-only / no-cross-repo-import constraint. We deliberately
+# do NOT export a `BACKEND_DISPLAY` here.
 
 # Phase cache: respects $PHASE_CACHE_DIR (same env var s_linker19 uses) and
 # defaults to <repo>/results/phase_cache.
@@ -60,8 +62,15 @@ OUTPUT_ROOT = _REPO_ROOT / "results" / "v2.6.3"
 
 # Gold-standard CSV paths per project. Naming matches transarc-emp's
 # transarc_error_analysis.GS_SAD_SAM table.
+#
+# The default path is the canonical docker-mount location for this project; set
+# $ARDOCO_BENCHMARK_ROOT to override for hosts / clones with a different layout
+# (reviewers / CI / non-container checkouts).
 _BENCHMARK = Path(
-    "/mnt/hostshare/ardoco-home/ardoco/core/tests-base/src/main/resources/benchmark"
+    os.environ.get(
+        "ARDOCO_BENCHMARK_ROOT",
+        "/mnt/hostshare/ardoco-home/ardoco/core/tests-base/src/main/resources/benchmark",
+    )
 )
 GS_SAD_SAM_PATHS = {
     "mediastore":    _BENCHMARK / "mediastore/goldstandards/goldstandard_sad_2016-sam_2016.csv",
@@ -166,7 +175,6 @@ def load_gold_links(project: str) -> Set[Tuple[int, str]]:
 __all__ = [
     "PROJECTS",
     "BACKENDS",
-    "BACKEND_DISPLAY",
     "PHASE_CACHE_ROOT",
     "OUTPUT_ROOT",
     "GS_SAD_SAM_PATHS",
