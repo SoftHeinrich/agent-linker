@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
-status: planning
+status: executing
 stopped_at: Phase 44 context gathered
-last_updated: "2026-06-05T14:31:47.502Z"
-last_activity: 2026-06-05 — v2.6.4 roadmap created (Phases 44–49)
+last_updated: "2026-06-06T03:09:27.351Z"
+last_activity: 2026-06-06 -- Phase 44 execution started
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
+  total_plans: 2
   completed_plans: 0
   percent: 0
 ---
@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19 → s_linker20. Phases 44–49.
+**Current focus:** Phase 44 — harness
 
 ## v2.6.3 — SHIPPED 2026-06-05
 
@@ -57,10 +57,10 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 44 (not started — roadmap written, ready for `/gsd-plan-phase 44`)
-Plan: —
-Status: Roadmap defined; awaiting Phase 44 planning
-Last activity: 2026-06-05 — v2.6.4 roadmap created (Phases 44–49)
+Phase: 44 (harness) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 44
+Last activity: 2026-06-06 -- Phase 44 execution started
 
 ```
 Progress: v2.6.4 [                              ] 0/6 phases

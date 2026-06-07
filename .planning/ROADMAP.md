@@ -140,7 +140,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 44. HARNESS | 0/2 | Planned | — |
+| 44. HARNESS | 1/2 | In Progress|  |
 | 45. AUDIT | 0/TBD | Not started | — |
 | 46. MINIMIZE | 0/TBD | Not started | — |
 | 47. SHIP | 0/TBD | Not started | — |
@@ -163,7 +163,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 
 **Wave 1**
 
-- [ ] 44-01-fixture-infrastructure-PLAN.md — Build tests/harness/ package (manifest, loader, ReplayClient, D-03 adapter map) + add syrupy + pytest-socket dev deps
+- [x] 44-01-fixture-infrastructure-PLAN.md — Build tests/harness/ package (manifest, loader, ReplayClient, D-03 adapter map) + add syrupy + pytest-socket dev deps
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
