@@ -81,7 +81,7 @@ Key requirements:
 
 ## Current State
 
-**Status:** v2.6 in progress — started 2026-06-02.
+**Status:** v2.6.4 in progress — Phase 44 (harness) complete 2026-06-07: golden-replay snapshot harness for all 6 s19 prompt sites operational (149 tests pass, 97 snapshots committed, zero LLM calls). REQ-V264-01 + REQ-V264-02 satisfied.
 
 **Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`, unchanged). Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
@@ -197,4 +197,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-05 — v2.6.4 milestone kickoff (per-prompt unit-tested minimization + generality pass on s_linker19 → s_linker20)*
+*Last updated: 2026-06-07 — Phase 44 (golden-replay harness for 6 s19 prompt sites) complete; REQ-V264-01 + REQ-V264-02 validated.*
