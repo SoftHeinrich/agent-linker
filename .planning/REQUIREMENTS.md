@@ -8,9 +8,9 @@
 
 ### HARNESS — Per-prompt unit-test infrastructure
 
-- [ ] **REQ-V264-01** — Golden-replay test harness loads v2.6.3 `phase_cache` pkls (`results/phase_cache/openai/<project>/{layer1..4,final}.pkl`) and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites × 5 projects. Zero new LLM calls. Backend scope: gpt-5.4 only. Lives under `tests/harness/` (or equivalent shared fixture module).
+- [x] **REQ-V264-01** — Golden-replay test harness loads v2.6.3 `phase_cache` pkls (`results/phase_cache/openai/<project>/{layer1..4,final}.pkl`) and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites × 5 projects. Zero new LLM calls. Backend scope: gpt-5.4 only. Lives under `tests/harness/` (or equivalent shared fixture module).
 
-- [ ] **REQ-V264-02** — Pytest + snapshot harness (syrupy or pytest-regressions) ships one test module per s19 prompt builder: `tests/test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`. Each test rebuilds the prompt from the replay fixture, runs the replayed LLM response through the parser, and asserts snapshot equality on the **parsed structured output** (NOT raw LLM text — replayed LLM output is fixed). Initial snapshots captured from s19 byte-equal baseline; tests pass at REQ-V264-02 close.
+- [x] **REQ-V264-02** — Pytest + snapshot harness (syrupy or pytest-regressions) ships one test module per s19 prompt builder: `tests/test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`. Each test rebuilds the prompt from the replay fixture, runs the replayed LLM response through the parser, and asserts snapshot equality on the **parsed structured output** (NOT raw LLM text — replayed LLM output is fixed). Initial snapshots captured from s19 byte-equal baseline; tests pass at REQ-V264-02 close.
 
 ### AUDIT — Identify generality + size cut candidates
 

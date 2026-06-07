@@ -140,7 +140,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 44. HARNESS | 2/2 | Complete   | 2026-06-07 |
+| 44. HARNESS | 2/2 | Complete    | 2026-06-07 |
 | 45. AUDIT | 0/TBD | Not started | — |
 | 46. MINIMIZE | 0/TBD | Not started | — |
 | 47. SHIP | 0/TBD | Not started | — |
