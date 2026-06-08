@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
 status: executing
-stopped_at: Phase 45 context gathered
-last_updated: "2026-06-07T15:20:11.312Z"
-last_activity: 2026-06-07
+stopped_at: Phase 45 complete (audit doc shipped, GATE-01 byte-equal)
+last_updated: "2026-06-08T14:06:34.314Z"
+last_activity: 2026-06-08
 progress:
   total_phases: 6
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 17
+  completed_phases: 2
+  total_plans: 10
+  completed_plans: 10
+  percent: 33
 ---
 
 # Project State
@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 44 — harness
+**Current focus:** Phase 46 — minimize (Phase 45 audit shipped 2026-06-08)
 
 ## v2.6.3 — SHIPPED 2026-06-05
 
@@ -57,15 +57,15 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 45
+Phase: 46
 Plan: Not started
-Status: Executing Phase 44
-Last activity: 2026-06-07
+Status: Phase 45 audit shipped (GATE-01 byte-equal). Ready for Phase 46 minimize.
+Last activity: 2026-06-08
 
 ```
-Progress: v2.6.4 [                              ] 0/6 phases
-          Phase 44 HARNESS  [ ] not started
-          Phase 45 AUDIT    [ ] not started
+Progress: v2.6.4 [██████████░░░░░░░░░░░░░░░░░░░░] 2/6 phases
+          Phase 44 HARNESS  [x] complete (2026-06-07)
+          Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
           Phase 46 MINIMIZE [ ] not started
           Phase 47 SHIP     [ ] not started
           Phase 48 SWEEP    [ ] not started
