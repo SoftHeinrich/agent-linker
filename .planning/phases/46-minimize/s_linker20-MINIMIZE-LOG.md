@@ -65,7 +65,20 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## DKX — Phase 1 Doc-Knowledge Extract
 
 <!-- SECTION:DKX:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-03-PLAN.md (Wave 2). Zero cuts in audit. Single `no cuts attempted` log line for section symmetry. -->
+
+| cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
+|---|---|---|---|---|---|---|
+| (none) | no-cuts-attempted | n/a | n/a | 0 | (this commit) | Phase 45 audit assigned `clean` verdict to all 3 DKX items; no benchmark-leak or domain-loaded findings to trial. |
+
+> **DKX section: 0 cut rows.** All 3 DKX items — `DOC_KNOWLEDGE_EXTRACTION_RULES` (prompts_v5.py:40),
+> `ALIAS_SCOPE_RULES` (prompts_v5.py:42-45), and `_prompt_doc_knowledge_extract` (s_linker19.py:294-310 prose) —
+> received verdict `clean` at audit time per `.planning/phases/45-audit/45-03-SUMMARY.md` (no benchmark-leak tokens
+> across all 5 dataset sections + Universal Taboo + Safe SE Textbook; no domain-loaded spans flagged after D-01
+> pragmatic review). The audit emitted zero cut rows for the section per D-05 (`domain-loaded` rewordings are
+> deferred to Phase 46 only when an audit row exists; no row, no cut). Phase 46 therefore attempts zero trials
+> on DKX and logs this single completeness row to preserve section symmetry AMB → DKX → DKJ → EXT → VAL → COR
+> per 46-RESEARCH §7.1. Phase 47 (SHIP) needs no DKX inlining beyond what was byte-equal at phase open.
+
 <!-- SECTION:DKX:END -->
 
 ## DKJ — Phase 1 Doc-Knowledge Judge
