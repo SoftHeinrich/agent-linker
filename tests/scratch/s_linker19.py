@@ -328,7 +328,7 @@ JSON only:"""
 
     @staticmethod
     def _prompt_extraction(comp_names, mappings, batch) -> str:
-        return f"""Extract ALL references to software architecture components from this document.
+        return f"""Extract ALL references to components from this document.
 
 COMPONENTS: {', '.join(comp_names)}
 {f'KNOWN ALIASES: {", ".join(mappings)}' if mappings else ''}

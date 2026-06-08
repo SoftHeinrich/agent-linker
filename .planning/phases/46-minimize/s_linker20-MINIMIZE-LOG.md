@@ -102,7 +102,11 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## EXT — Phase 2 Extraction
 
 <!-- SECTION:EXT:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-05-PLAN.md (Wave 2). 1 cut: CUT-EXT-01 pleonasm (part of cross-section pleonasm batch). -->
+
+| cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
+|---|---|---|---|---|---|---|
+| CUT-EXT-01 | kept | 0/18 | clean | 0 | (sha) | Pleonasm `Extract ALL references to software architecture components from this document.` -> `Extract ALL references to components from this document.` at `tests/scratch/s_linker19.py:331` (`_prompt_extraction` opener; drifted from audit-time line 323 because upstream Wave-2 plan 46-02 mutated nearby AMB lines). Pre-decided batch vocab (46-01 MINIMIZE-LOG header) is `components` bare — collapses to the noun the `COMPONENTS:` slot already names downstream. `reconstruct_extraction_inputs` (`tests/harness/inputs.py`) anchors on `^COMPONENTS:` and `\nDOCUMENT:\n` — opener change is harness-safe per 46-RESEARCH §6.2 (kept HIGH confidence). 18/18 snapshots pass under `SAD_SAM_LINKER_SOURCE=scratch` (largest single-cut gating in the audit: `phase_2_framing_c_pass1` + `phase_2_framing_c_pass2` × 5 projects + extra parametrize axes = 18 collected). GATE-06 re-grep `grep -niwE 'extract\|references\|components\|document' BENCHMARK_TABOO.md`: `extract`/`references` 0 hits; `components` 5 hits all in per-dataset `Components:` schema-section column headers (lines 7/12/17/22/27 — generic SE noun anaphor cleared per Phase 45 v2.1 isolation precedent / CUT-AMB-02 reasoning); `document` 1 hit at line 100 in methodology prose (`document the inspection`, not dataset vocab). LOC saved = 0 (substring rewording within a single line). Cross-section batch member: 2 of 3 — paired with CUT-AMB-02 (kept, 46-02, sha `0710510`) and CUT-VAL-02 (pending in 46-06); all three share the `components` bare replacement vocabulary. Behavioral caveat per 46-RESEARCH §4.4: harness verdict reflects harness compatibility only (cached-replay); Phase 48 sweep validates behavioral safety on live LLM calls. |
+
 <!-- SECTION:EXT:END -->
 
 ## VAL — Phase 4 Validation
