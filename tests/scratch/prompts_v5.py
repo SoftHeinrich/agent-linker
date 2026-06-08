@@ -93,7 +93,7 @@ VALIDATION_RULES = """Approve when the sentence treats the component as an archi
 # showed entity twopass leaks ~4 FPs on bigbluebutton coref).
 COREF_VALIDATION_FOCUS = (
     "Check coref resolution: does the pronoun, 'it', 'they', 'the service', "
-    "or similar role-referential phrase in this sentence actually refer to "
+    "or similar noun phrase that refers back in this sentence actually refer to "
     "the named component as an architectural participant — performing "
     "operations, providing services, or being the grammatical topic of the "
     "sentence?"
