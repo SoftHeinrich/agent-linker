@@ -67,9 +67,9 @@ Per REQ-V264-06, `AMBIGUITY_FEW_SHOT` and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` each re
 
 | Item | Type | LOC | Verdict | Cut Rows | Audited By |
 |---|---|---|---|---|---|
-| `AMBIGUITY_FEW_SHOT` | constant | 7 | TBD | TBD | 45-02 (AMB) |
-| `AMBIGUITY_RULES` | constant | 1 | TBD | TBD | 45-02 (AMB) |
-| `_prompt_ambiguity` | builder | 19 | TBD | TBD | 45-02 (AMB) |
+| `AMBIGUITY_FEW_SHOT` | constant | 7 | clean | 1 | 45-02 (AMB) |
+| `AMBIGUITY_RULES` | constant | 1 | clean | 0 | 45-02 (AMB) |
+| `_prompt_ambiguity` | builder | 19 | domain-loaded | 1 | 45-02 (AMB) |
 | `DOC_KNOWLEDGE_EXTRACTION_RULES` | constant | 1 | TBD | TBD | 45-03 (DKX) |
 | `ALIAS_SCOPE_RULES` | constant | 4 | TBD | TBD | 45-03 (DKX) |
 | `_prompt_doc_knowledge_extract` | builder | 19 | TBD | TBD | 45-03 (DKX) |
@@ -88,7 +88,30 @@ LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 
 ## Phase 1 — Ambiguity (AMB)
 
 <!-- SECTION:AMB:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-02-PLAN.md (Wave 1) — header table for AMBIGUITY_FEW_SHOT + AMBIGUITY_RULES + _prompt_ambiguity, then cut table CUT-AMB-NN. -->
+
+### Items
+
+| Item | Type | Verdict | LOC | Notes |
+|---|---|---|---|---|
+| `AMBIGUITY_FEW_SHOT` | constant | clean | 7 | Drop-block candidate per REQ-V264-06 regardless of verdict. Mechanical grep of every token (`Scheduler`, `queues`, `jobs`, `dispatches`, `worker`, `threads`, `scheduler-based`, `nodes`) against `BENCHMARK_TABOO.md` yields ZERO per-dataset hits; `Scheduler` is in the Safe SE Textbook Examples list (BENCHMARK_TABOO.md:63). |
+| `AMBIGUITY_RULES` | constant | clean | 1 | One sentence. Manual token review confirms no per-dataset hits. The only Universal-Taboo overlap is `component`, which appears as the generic SE noun ("naming a specific component") — passes the v2.1 GATE-06 cross-dataset isolation check (does not identify any one project's component). No cut row. |
+| `_prompt_ambiguity` (prose) | builder | domain-loaded | 19 total (3 prose lines: 266, 268, 272) | Line 266 opener `software architecture component names` is the domain-loaded candidate per D-01 — the COMPONENTS slot at line 268 already constrains universe; `component names` carries equivalent instruction. Lines 274–282 are JSON-schema and `JSON only:` suffix, excluded per D-03. |
+
+> **AMB inventory note:** LOC counts confirmed against frozen source — `AMBIGUITY_FEW_SHOT` spans `prompts_v5.py:30–36` (7 lines), `AMBIGUITY_RULES` is `prompts_v5.py:38` (1 line), `_prompt_ambiguity` spans `s_linker19.py:264–282` (19 lines, of which lines 266, 268, 272 are prose and 274–282 are JSON-schema). No discrepancies vs the inspection priors copied into the top-of-doc Verdict Summary by 45-01.
+
+### Cut Candidates
+
+| cut_id | file:lines | trigger | before | after | risk | gated_by |
+|---|---|---|---|---|---|---|
+| CUT-AMB-01 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:30-36 | drop-block (REQ-V264-06, not benchmark-leak) | `AMBIGUITY_FEW_SHOT` entire block (Examples 1+2 using `"Scheduler"`) | `""` | high — 5 snapshots; ambiguity classification is the leading Phase-1 prompt; removing the only few-shot is the most behavior-changing edit possible (per CD-5) | tests/test_s_linker20_prompt_ambiguity.py @ phase_1_model |
+| CUT-AMB-02 | src/llm_sad_sam/linkers/experimental/s_linker19.py:266 | domain-loaded (`"software architecture component names"`) | `Classify these software architecture component names.` | `[Phase 46 empirical loop]` | low — the `NAMES: …` slot at line 268 already constrains scope; `software architecture` is pleonastic per D-01 | tests/test_s_linker20_prompt_ambiguity.py @ phase_1_model |
+
+> AMBIGUITY_RULES: no cut rows (verdict: clean — Universal-Taboo grep plus manual review of the single sentence yields zero leaks; the only Universal-Taboo overlap, `component`, passes the v2.1 GATE-06 cross-dataset isolation check as a generic SE noun).
+
+> AMBIGUITY_FEW_SHOT verdict is `clean` (no per-dataset taboo hits on any token, `Scheduler` is in the Safe SE Textbook Examples list). Per D-04/D-06 the rewording families (Family A synthetic-neutral, Family B concept-only) are emitted only when a constant escalates to `benchmark-leak` — that condition does not fire here, so no `CUT-AMB-03+` Family A/B rows are emitted. The drop-block CUT-AMB-01 is still mandated by REQ-V264-06 regardless of verdict and is the only AMBIGUITY_FEW_SHOT cut row.
+
+> **Reviewer judgment (AMB).** CUT-AMB-01 risk is `high` because the entire Phase-1 ambiguity stage gates on exactly 5 snapshots and a single in-prompt example pair — removing the example flips the prompt from few-shot to zero-shot, which is the largest semantic delta available in this section. CUT-AMB-02 risk is `low` because the four-token prefix `software architecture` is provably non-load-bearing: the `NAMES:` slot scopes the task on the next prose line; the prefix only restates that scope. No `benchmark-leak` verdict was assigned (mechanical grep cleared every token against all 5 dataset sections), so the Phase-46 Family-A/B rewording slot stays empty for this section.
+
 <!-- SECTION:AMB:END -->
 
 ## Phase 1 — Doc-Knowledge Extract (DKX)
