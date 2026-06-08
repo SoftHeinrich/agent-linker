@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
-status: executing
-stopped_at: Phase 45 complete (audit doc shipped, GATE-01 byte-equal)
-last_updated: "2026-06-08T14:06:34.314Z"
+status: Phase 46 plan 01 (bootstrap) shipped — tests/scratch + harness toggle live. Wave 2 (46-02..07) ready.
+stopped_at: Phase 46 plan 01 complete (commit c2d9329)
+last_updated: "2026-06-08T15:40:04.773Z"
 last_activity: 2026-06-08
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 18
+  completed_plans: 12
   percent: 33
 ---
 
@@ -66,7 +66,7 @@ Last activity: 2026-06-08
 Progress: v2.6.4 [██████████░░░░░░░░░░░░░░░░░░░░] 2/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
-          Phase 46 MINIMIZE [ ] not started
+          Phase 46 MINIMIZE [~] in progress — plan 01 bootstrap complete (c2d9329, 2026-06-08)
           Phase 47 SHIP     [ ] not started
           Phase 48 SWEEP    [ ] not started
           Phase 49 CLOSE    [ ] not started
