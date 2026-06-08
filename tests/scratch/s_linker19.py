@@ -359,15 +359,14 @@ JSON only:"""
 
     @staticmethod
     def _prompt_coref(comp_names, cases) -> str:
-        prompt = f"""Resolve anaphoric references (pronouns and role-referential noun phrases) to architecture components.
+        prompt = f"""Resolve references (pronouns and noun phrases that refer back) to components.
 
 COMPONENTS: {', '.join(comp_names)}
 
-For each TARGET sentence below, identify any pronoun or role-referential
-noun phrase that refers back to a component listed above. If a target
-sentence has no anaphoric reference to a listed component, return no
-resolution for it. Be conservative — only include resolutions you are
-CERTAIN about.
+For each TARGET sentence below, identify any pronoun or noun phrase that
+refers back to a component listed above. If a target sentence has no such
+reference to a listed component, return no resolution for it. Be
+conservative — only include resolutions you are CERTAIN about.
 
 """
         for i, case in enumerate(cases):
