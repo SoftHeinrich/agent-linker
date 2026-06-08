@@ -128,7 +128,10 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## COR — Phase 5 Coref
 
 <!-- SECTION:COR:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-07-PLAN.md (Wave 2). 5 cuts: CUT-COR-02 (section-established topic), CUT-COR-01 (role-referential — reads VAL-03's vocabulary), (CUT-COR-03 + CUT-COR-04 batched per audit lockstep). CUT-COR-05 conservatism tombstone — protected row only, populated below. -->
+
+| cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
+|---|---|---|---|---|---|---|
+| CUT-COR-02 | kept | 0/40 | clean | 0 | (sha) | Domain-loaded jargon swap in `COREF_RULES` (`tests/scratch/prompts_v5.py:102`): `treat it as the section-established topic` -> `treat it as the topic of the surrounding section` per 46-RESEARCH §6.2 audit-suggested vocabulary. Surrounding context: full clause now reads `…only one component has been introduced in the immediately preceding sentences — treat it as the topic of the surrounding section and resolve role-referential phrases ("it", "the module", "the service", "the component", "the system") to that topic even without a direct name repetition.` The "no direct name repetition" exemption and the quoted role-referential placeholders (`"it"`, `"the module"`, `"the service"`, `"the component"`, `"the system"`) stay intact per audit row 337 + Phase 45 v2.1 isolation precedent. `COREF_RULES` is body content (not opener), so `reconstruct_coref_inputs` is unaffected. 40/40 snapshots pass under `SAD_SAM_LINKER_SOURCE=scratch` (the highest-diversity gating in the audit). GATE-06 re-grep `grep -niwE 'topic\|surrounding\|section' BENCHMARK_TABOO.md` -> 0 hits across all per-dataset sections + Universal Taboo + Safe SE Textbook. LOC saved = 0 (substring rewording within a single dense line). Behavioral caveat per 46-RESEARCH §4.4: harness verdict reflects harness compatibility only (cached-replay); Phase 48 sweep validates behavioral safety on live LLM calls. |
 <!-- SECTION:COR:END -->
 
 ## Protected Tombstones (visibility-only — not trialled per CONTEXT in-scope §)
