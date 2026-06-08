@@ -9,6 +9,8 @@ For each project in DATASETS:
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 from tests.harness.loader import load_records, fixture_missing_reason
 from tests.harness.adapters import BUILDERS, BUILDER_PHASE_TAGS
@@ -40,12 +42,16 @@ def test_doc_judge_parsed_snapshot(project, snapshot):
     args = reconstruct_inputs(_BUILDER, record, _PHASE_TAG)
 
     rebuilt_prompt = BUILDERS[_BUILDER](*args)
-    assert rebuilt_prompt == record["prompt"], (
-        f"Prompt rebuild mismatch for builder={_BUILDER!r} "
-        f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
-        f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
-        f"vs logged={record['prompt'][:200]!r}"
-    )
+    # Phase 46 D-01 gate: production-mode runs assert prompt-equality (no CI
+    # regression); scratch-mode runs skip it so prompt cuts to tests/scratch/
+    # don't trivially fail. Parsed-output snapshot below remains the active gate.
+    if os.environ.get("SAD_SAM_LINKER_SOURCE", "production") != "scratch":
+        assert rebuilt_prompt == record["prompt"], (
+            f"Prompt rebuild mismatch for builder={_BUILDER!r} "
+            f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
+            f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
+            f"vs logged={record['prompt'][:200]!r}"
+        )
 
     parsed = replay_parse(record["response_text"])
     assert parsed == snapshot

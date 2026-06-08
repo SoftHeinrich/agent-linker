@@ -2,6 +2,18 @@
 
 Encodes the D-03 mapping verbatim (locked from code scout of s_linker19.py).
 
+Phase 46 extension — SAD_SAM_LINKER_SOURCE toggle (per 46-CONTEXT D-01):
+    Reads the ``SAD_SAM_LINKER_SOURCE`` environment variable once at module
+    load. Allowed values:
+        - ``production`` (default) — import SLinker19 from the frozen source
+          at ``llm_sad_sam.linkers.experimental.s_linker19``. Bare-env CI runs
+          and existing harness invocations are unaffected.
+        - ``scratch`` — import SLinker19 from ``tests.scratch.s_linker19``,
+          which is the Phase 46 mutable working copy whose ``prompts_v5``
+          import is rewired to ``tests.scratch.prompts_v5``. Cuts to scratch
+          are exercised by the harness only when this toggle is set.
+    Any other value raises RuntimeError.
+
 Exports:
 - BUILDER_PHASE_TAGS : dict[str, tuple[str, ...]]
     Maps each builder name to the set of phase_tag values that appear in
@@ -23,9 +35,23 @@ Do NOT modify sys.path in this module.
 """
 from __future__ import annotations
 
+import os
 from typing import Callable
 
-from llm_sad_sam.linkers.experimental.s_linker19 import SLinker19
+# ---------------------------------------------------------------------------
+# Phase 46 D-01 source toggle — SAD_SAM_LINKER_SOURCE (production | scratch)
+# ---------------------------------------------------------------------------
+
+_SOURCE = os.environ.get("SAD_SAM_LINKER_SOURCE", "production")
+
+if _SOURCE == "scratch":
+    from tests.scratch.s_linker19 import SLinker19
+elif _SOURCE == "production":
+    from llm_sad_sam.linkers.experimental.s_linker19 import SLinker19
+else:
+    raise RuntimeError(
+        f"SAD_SAM_LINKER_SOURCE must be 'production' or 'scratch', got: {_SOURCE!r}"
+    )
 
 
 # ---------------------------------------------------------------------------

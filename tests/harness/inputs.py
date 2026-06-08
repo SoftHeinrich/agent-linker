@@ -271,13 +271,26 @@ def reconstruct_validation_inputs(
 
     # --- focus: everything on the first line after the fixed prefix ---
     first_line = prompt.split("\n")[0]
-    fixed_prefix = "Validate component references in a software architecture document."
-    if not first_line.startswith(fixed_prefix):
+    # Phase 46 plan-01 harness extension (NOT a cut row):
+    # accept either the production opener OR the pre-decided CUT-VAL-02
+    # replacement opener (per 46-01 pleonasm-batch decision: bare `components`).
+    # Plan 46-06 trials CUT-VAL-02; if reverted, the second entry stays
+    # harmless because no record will ever start with it.
+    ACCEPTED_PREFIXES = (
+        "Validate component references in a software architecture document.",
+        "Validate components in a document.",  # CUT-VAL-02 replacement (per 46-01 batch decision)
+    )
+    matched = None
+    for fixed_prefix in ACCEPTED_PREFIXES:
+        if first_line.startswith(fixed_prefix):
+            matched = fixed_prefix
+            break
+    if matched is None:
         raise ValueError(
             f"reconstruct_validation_inputs: unexpected first line: {first_line[:80]!r} "
-            f"(phase={phase_tag!r})"
+            f"(phase={phase_tag!r}); expected one of: {ACCEPTED_PREFIXES!r}"
         )
-    focus = first_line[len(fixed_prefix):].strip()
+    focus = first_line[len(matched):].strip()
 
     # --- comp_names ---
     m = re.search(r"^COMPONENTS:\s+(.+)$", prompt, re.MULTILINE)

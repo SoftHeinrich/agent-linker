@@ -15,6 +15,8 @@ Prompt version drift note (Phase 44):
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 from tests.harness.loader import load_records, fixture_missing_reason
 from tests.harness.adapters import BUILDERS, BUILDER_PHASE_TAGS
@@ -48,29 +50,33 @@ def test_doc_extract_parsed_snapshot(project, snapshot):
     rebuilt_prompt = BUILDERS[_BUILDER](*args)
 
     # Step 6: byte-equality sanity gate.
-    # For teastore/teammates/bigbluebutton the _calls.json was captured before the
-    # "Dotted-path fragments" -> "Qualified-name fragments" rename in prompts_v5.py
-    # ALIAS_SCOPE_RULES (20260604 run predates current byte-equal baseline).
-    # We assert byte-equality for projects whose fixtures match the current code, and
-    # emit a soft failure (recorded in the test output but still snapshots the parser).
-    prompt_equal = rebuilt_prompt == record["prompt"]
-    if not prompt_equal:
-        import warnings
-        warnings.warn(
-            f"[prompt-version-drift] {project!r}/{_PHASE_TAG!r}: "
-            f"fixture was captured from an older prompts_v5.py. "
-            f"Re-run s_linker19 --backend openai for {project!r} to refresh fixtures. "
-            f"Snapshot will still be captured/asserted for the parser path.",
-            UserWarning,
-            stacklevel=1,
-        )
-    else:
-        assert rebuilt_prompt == record["prompt"], (
-            f"Prompt rebuild mismatch for builder={_BUILDER!r} "
-            f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
-            f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
-            f"vs logged={record['prompt'][:200]!r}"
-        )
+    # Phase 46 D-01 gate: production-mode runs assert prompt-equality (no CI
+    # regression); scratch-mode runs skip it so prompt cuts to tests/scratch/
+    # don't trivially fail. Parsed-output snapshot below remains the active gate.
+    if os.environ.get("SAD_SAM_LINKER_SOURCE", "production") != "scratch":
+        # For teastore/teammates/bigbluebutton the _calls.json was captured before the
+        # "Dotted-path fragments" -> "Qualified-name fragments" rename in prompts_v5.py
+        # ALIAS_SCOPE_RULES (20260604 run predates current byte-equal baseline).
+        # We assert byte-equality for projects whose fixtures match the current code, and
+        # emit a soft failure (recorded in the test output but still snapshots the parser).
+        prompt_equal = rebuilt_prompt == record["prompt"]
+        if not prompt_equal:
+            import warnings
+            warnings.warn(
+                f"[prompt-version-drift] {project!r}/{_PHASE_TAG!r}: "
+                f"fixture was captured from an older prompts_v5.py. "
+                f"Re-run s_linker19 --backend openai for {project!r} to refresh fixtures. "
+                f"Snapshot will still be captured/asserted for the parser path.",
+                UserWarning,
+                stacklevel=1,
+            )
+        else:
+            assert rebuilt_prompt == record["prompt"], (
+                f"Prompt rebuild mismatch for builder={_BUILDER!r} "
+                f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
+                f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
+                f"vs logged={record['prompt'][:200]!r}"
+            )
 
     parsed = replay_parse(record["response_text"])
     assert parsed == snapshot

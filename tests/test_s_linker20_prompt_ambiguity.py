@@ -12,6 +12,8 @@ fixture data is absent, so partial fixture sets keep CI green.
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 from tests.harness.loader import load_records, fixture_missing_reason
 from tests.harness.adapters import BUILDERS, BUILDER_PHASE_TAGS
@@ -51,12 +53,16 @@ def test_ambiguity_parsed_snapshot(project, snapshot):
 
     # Step 6: byte-equality sanity gate.
     rebuilt_prompt = BUILDERS[_BUILDER](*args)
-    assert rebuilt_prompt == record["prompt"], (
-        f"Prompt rebuild mismatch for builder={_BUILDER!r} "
-        f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
-        f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
-        f"vs logged={record['prompt'][:200]!r}"
-    )
+    # Phase 46 D-01 gate: production-mode runs assert prompt-equality (no CI
+    # regression); scratch-mode runs skip it so prompt cuts to tests/scratch/
+    # don't trivially fail. Parsed-output snapshot below remains the active gate.
+    if os.environ.get("SAD_SAM_LINKER_SOURCE", "production") != "scratch":
+        assert rebuilt_prompt == record["prompt"], (
+            f"Prompt rebuild mismatch for builder={_BUILDER!r} "
+            f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
+            f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
+            f"vs logged={record['prompt'][:200]!r}"
+        )
 
     # Steps 7–8: replay parse + snapshot assertion.
     parsed = replay_parse(record["response_text"])
