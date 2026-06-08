@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
 status: executing
-stopped_at: Phase 46 plan 04 complete (DKJ drop-block)
-last_updated: "2026-06-08T16:32:32.028Z"
+stopped_at: Phase 46 complete — minimized prompt set frozen in tests/scratch
+last_updated: "2026-06-08T17:00:00.000Z"
 last_activity: 2026-06-08
 progress:
   total_phases: 6
@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 46 — minimize (Phase 45 audit shipped 2026-06-08)
+**Current focus:** Phase 47 — ship (Phase 46 minimize shipped 2026-06-08: 12 cuts kept, 14 LOC saved, 1 benchmark-leak eliminated)
 
 ## v2.6.3 — SHIPPED 2026-06-05
 
@@ -57,18 +57,18 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 46
-Plan: 04 complete (DKJ section: drop-block CUT-DKJ-01 won on first attempt + CUT-DKJ-07 lexical kept; 7 LOC saved; sole audit benchmark-leak removed)
-Status: Phase 46 in progress (5/8 plans done: 01 bootstrap + 02 AMB + 03 DKX completeness + 04 DKJ drop-block). GATE-01 byte-equal preserved continuously.
+Phase: 47
+Plan: Not started
+Status: Phase 46 complete (8/8 plans). Minimized prompt set frozen in tests/scratch/{s_linker19.py, prompts_v5.py}. 12 cuts kept, 5 superseded-by-drop, 2 protected tombstones. 14 LOC saved. Benchmark-leak eliminated. GATE-01 byte-equal preserved.
 Last activity: 2026-06-08
 
 ```
-Progress: v2.6.4 [██████████░░░░░░░░░░░░░░░░░░░░] 2/6 phases
+Progress: v2.6.4 [███████████████░░░░░░░░░░░░░░░] 3/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
-          Phase 46 MINIMIZE [~] in progress — plan 04 DKJ drop-block (74ec3bd CUT-DKJ-01, 8a83bda CUT-DKJ-07; 2026-06-08)
+          Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
           Phase 47 SHIP     [ ] not started
-          Phase 48 SWEEP    [ ] not started
+          Phase 48 SWEEP    [ ] not started (autonomous halts before exec per user direction)
           Phase 49 CLOSE    [ ] not started
 ```
 
