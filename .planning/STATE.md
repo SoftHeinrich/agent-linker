@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
-status: Phase 45 audit shipped (GATE-01 byte-equal). Ready for Phase 46 minimize.
-stopped_at: Phase 45 context gathered
-last_updated: "2026-06-08T15:47:55.813Z"
+status: executing
+stopped_at: Phase 46 plan 04 complete (DKJ section: drop-block winner = CUT-DKJ-01 drop + CUT-DKJ-07 lexical kept)
+last_updated: "2026-06-08T15:58:22Z"
 last_activity: 2026-06-08
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 18
-  completed_plans: 12
-  percent: 33
+  completed_plans: 16
+  percent: 39
 ---
 
 # Project State
@@ -58,15 +58,15 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 ## Current Position
 
 Phase: 46
-Plan: 02 complete (AMB section: 2 cuts kept — CUT-AMB-02 + CUT-AMB-01 drop-by-empty)
-Status: Phase 46 in progress (3/8 plans done: 01 bootstrap + 02 AMB cuts). GATE-01 byte-equal preserved.
+Plan: 04 complete (DKJ section: drop-block CUT-DKJ-01 won on first attempt + CUT-DKJ-07 lexical kept; 7 LOC saved; sole audit benchmark-leak removed)
+Status: Phase 46 in progress (5/8 plans done: 01 bootstrap + 02 AMB + 03 DKX completeness + 04 DKJ drop-block). GATE-01 byte-equal preserved continuously.
 Last activity: 2026-06-08
 
 ```
 Progress: v2.6.4 [██████████░░░░░░░░░░░░░░░░░░░░] 2/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
-          Phase 46 MINIMIZE [~] in progress — plan 02 AMB cuts kept (0710510, dfad56a, 2026-06-08)
+          Phase 46 MINIMIZE [~] in progress — plan 04 DKJ drop-block (74ec3bd CUT-DKJ-01, 8a83bda CUT-DKJ-07; 2026-06-08)
           Phase 47 SHIP     [ ] not started
           Phase 48 SWEEP    [ ] not started
           Phase 49 CLOSE    [ ] not started
@@ -119,7 +119,7 @@ Progress: v2.6.4 [██████████░░░░░░░░░░�
 
 ## Session Continuity
 
-Last session: 2026-06-08T15:50:00Z
-Stopped at: Phase 46 plan 02 complete (AMB cuts)
-Resume file: .planning/phases/46-minimize/46-02-SUMMARY.md
-Next action: `/gsd-execute-plan 46 03` — DKX section (zero cuts in audit, single 'no cuts attempted' log line for section symmetry)
+Last session: 2026-06-08T15:58:22Z
+Stopped at: Phase 46 plan 04 complete (DKJ drop-block)
+Resume file: .planning/phases/46-minimize/46-04-SUMMARY.md
+Next action: `/gsd-execute-plan 46 05` — EXT section (1 cut: CUT-EXT-01 cross-section pleonasm; uses pre-decided `components` bare vocabulary per 46-01 batch)
