@@ -70,9 +70,9 @@ Per REQ-V264-06, `AMBIGUITY_FEW_SHOT` and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` each re
 | `AMBIGUITY_FEW_SHOT` | constant | 7 | clean | 1 | 45-02 (AMB) |
 | `AMBIGUITY_RULES` | constant | 1 | clean | 0 | 45-02 (AMB) |
 | `_prompt_ambiguity` | builder | 19 | domain-loaded | 1 | 45-02 (AMB) |
-| `DOC_KNOWLEDGE_EXTRACTION_RULES` | constant | 1 | TBD | TBD | 45-03 (DKX) |
-| `ALIAS_SCOPE_RULES` | constant | 4 | TBD | TBD | 45-03 (DKX) |
-| `_prompt_doc_knowledge_extract` | builder | 19 | TBD | TBD | 45-03 (DKX) |
+| `DOC_KNOWLEDGE_EXTRACTION_RULES` | constant | 1 | clean | 0 | 45-03 (DKX) |
+| `ALIAS_SCOPE_RULES` | constant | 4 | clean | 0 | 45-03 (DKX) |
+| `_prompt_doc_knowledge_extract` | builder | 19 | clean | 0 | 45-03 (DKX) |
 | `DOC_KNOWLEDGE_JUDGE_EXAMPLES` | constant | 7 | TBD | TBD | 45-04 (DKJ) |
 | `DOC_KNOWLEDGE_JUDGE_RULES` | constant | 1 | TBD | TBD | 45-04 (DKJ) |
 | `_prompt_doc_knowledge_judge` | builder | 16 | TBD | TBD | 45-04 (DKJ) |
@@ -117,7 +117,28 @@ LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 
 ## Phase 1 — Doc-Knowledge Extract (DKX)
 
 <!-- SECTION:DKX:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-03-PLAN.md (Wave 1) — header table for DOC_KNOWLEDGE_EXTRACTION_RULES + ALIAS_SCOPE_RULES + _prompt_doc_knowledge_extract, then cut table CUT-DKX-NN. -->
+
+### Items
+
+| Item | Type | Verdict | LOC | Notes |
+|---|---|---|---|---|
+| `DOC_KNOWLEDGE_EXTRACTION_RULES` | constant | clean | 1 | Single sentence (`prompts_v5.py:45`). Mechanical Universal-Taboo grep on the body returns one hit: `component` ("a single named component"). The v2.1 GATE-06 cross-dataset isolation check passes — `component` is used as a generic SE noun here, not identifying any specific dataset's component (same precedent as `AMBIGUITY_RULES` per 45-02). Load-bearing per D-01: `introduced short forms`, `alternate names`, `words of multi-word names`, and `ordinary English use dominates` are the task semantics (alias discovery cannot be re-stated without them). Per-dataset taboo hits: zero. |
+| `ALIAS_SCOPE_RULES` | constant | clean | 4 | Four lines (`prompts_v5.py:57–60`). Universal-Taboo grep returns one hit: `component` (in `name the component` and `which component is being discussed`) — passes v2.1 GATE-06 isolation as a generic SE noun. The remaining vocabulary is structural/typographic (`CamelCase`, `all-caps abbreviations`, `hyphenated`, `qualified-name fragments`, `X.Y or X.Y.Z`) — none appears in any per-dataset taboo section. The `X.Y.Z` clause is empirically load-bearing for the code-path FP suppression (see `prompts_v5.py` module docstring lines 9–18, `experiment_dotted_path_rename.py`). Per-dataset taboo hits: zero. |
+| `_prompt_doc_knowledge_extract` (prose) | builder | clean | 19 total (1 audit-relevant prose line: 286) | Opener at `s_linker19.py:286`: `Find all alternative names used for these components in the document.` The plural `components` does not match the Universal-Taboo `\bcomponent\b` token, but reviewer judgment treats it equivalently — generic SE noun, passes v2.1 GATE-06 isolation. `alternative names` is the actual task (universal nouns already in use per D-01 — no `domain-loaded` candidate available). Lines 297–302 are JSON-schema (`Return JSON: {…}` + `JSON only:` suffix) excluded per D-03. Per-dataset taboo hits: zero. |
+
+> **DKX inventory note:** LOC counts confirmed against frozen source — `DOC_KNOWLEDGE_EXTRACTION_RULES` is `prompts_v5.py:45` (1 line), `ALIAS_SCOPE_RULES` spans `prompts_v5.py:57–60` (4 lines), `_prompt_doc_knowledge_extract` spans `s_linker19.py:284–302` (19 lines, of which line 286 is the only audit-relevant prose under D-03; line 288 is the `COMPONENTS:` slot, lines 290 and 292 are constant interpolations of the rows audited above, lines 294–295 are the `DOCUMENT:` slot, lines 297–302 are JSON-schema). No discrepancies vs the inspection priors copied into the top-of-doc Verdict Summary by 45-01.
+
+### Cut Candidates
+
+| cut_id | file:lines | trigger | before | after | risk | gated_by |
+|---|---|---|---|---|---|---|
+
+> DKX: no cut rows emitted (all three items `clean` per D-01/D-02). `DOC_KNOWLEDGE_EXTRACTION_RULES` and `ALIAS_SCOPE_RULES` carry no per-dataset taboo body-text hits; the single Universal-Taboo overlap (`component`) passes the v2.1 GATE-06 cross-dataset isolation check as a generic SE noun in both constants (same precedent as `AMBIGUITY_RULES` per 45-02). `_prompt_doc_knowledge_extract`'s opener at line 286 uses universal nouns (`components`, `alternative names`, `document`) and the JSON-schema lines 297–302 are out of scope per D-03. Phase 46 may skip DKX entirely.
+
+> **ALIAS_SCOPE_RULES cross-section note:** This constant is audited HERE under DKX as its canonical home per 45-RESEARCH.md §6.1. `ALIAS_SCOPE_RULES` is imported by `_prompt_doc_knowledge_extract` (interpolated at `s_linker19.py:292`) and is NOT imported by `_prompt_coref`. The COR section (45-07-PLAN) will carry only a back-reference to this DKX row — no duplicate cut_ids will be issued under `CUT-COR-NN` for this constant.
+
+> **Reviewer judgment (DKX).** All three items received `clean` verdicts with no cut rows — the lowest-yield section per 45-RESEARCH.md §5.3's prior estimate (0–2 cut rows) holds. Risk-tier discussion is therefore not applicable (no cut rows to score per CD-5). Phase 46 implication: the `phase_1_doc_extract` gate (5 snapshots in `tests/test_s_linker20_prompt_doc_extract.py`, 3 of which carry known prompt-version-drift `UserWarning`s per 44-CONTEXT §D-03) does not need to be exercised against any DKX-originated cut. Phase 46 may still touch this gate transitively if a cut in another section (e.g. EXT or COR) changes shared scaffolding, but no DKX cut drives Phase 46 work directly.
+
 <!-- SECTION:DKX:END -->
 
 ## Phase 1 — Doc-Knowledge Judge (DKJ)
