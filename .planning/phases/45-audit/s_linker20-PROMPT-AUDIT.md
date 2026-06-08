@@ -76,8 +76,8 @@ Per REQ-V264-06, `AMBIGUITY_FEW_SHOT` and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` each re
 | `DOC_KNOWLEDGE_JUDGE_EXAMPLES` | constant | 7 | benchmark-leak | 6 | 45-04 (DKJ) |
 | `DOC_KNOWLEDGE_JUDGE_RULES` | constant | 1 | domain-loaded | 1 | 45-04 (DKJ) |
 | `_prompt_doc_knowledge_judge` | builder | 16 | clean | 0 | 45-04 (DKJ) |
-| `ENTITY_EXTRACTION_RULES` | constant | 1 | TBD | TBD | 45-05 (EXT) |
-| `_prompt_extraction` | builder | 15 | TBD | TBD | 45-05 (EXT) |
+| `ENTITY_EXTRACTION_RULES` | constant | 1 | clean | 0 | 45-05 (EXT) |
+| `_prompt_extraction` | builder | 15 | domain-loaded | 1 | 45-05 (EXT) |
 | `VALIDATION_RULES` | constant | 1 | TBD | TBD | 45-06 (VAL) |
 | `_prompt_validation` | builder | 14 | TBD | TBD | 45-06 (VAL) |
 | `COREF_RULES` | constant | 1 | TBD | TBD | 45-07 (COR) |
@@ -227,7 +227,33 @@ LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 
 ## Phase 2 — Extraction (EXT)
 
 <!-- SECTION:EXT:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-05-PLAN.md (Wave 1) — header table for ENTITY_EXTRACTION_RULES + _prompt_extraction, then cut table CUT-EXT-NN. -->
+
+### Items
+
+| Item | Type | Verdict | LOC | Notes |
+|---|---|---|---|---|
+| `ENTITY_EXTRACTION_RULES` | constant | clean | 1 | Single sentence (`prompts_v5.py:67`). Mechanical Universal-Taboo grep on body returns one hit: `component` ("refers to the component by name"). The v2.1 GATE-06 cross-dataset isolation check passes — `component` is used as the generic SE noun, not identifying any specific dataset's component (same precedent as `AMBIGUITY_RULES` per 45-02, `DOC_KNOWLEDGE_EXTRACTION_RULES` per 45-03, `DOC_KNOWLEDGE_JUDGE_RULES` per 45-04). Load-bearing terms per D-01: `code-level path`, `compound identifier`, `architectural intent`, and `Favor inclusion` are the task semantics (the dotted-path FP-exclusion behavior empirically validated by `experiment_dotted_path_rename.py` and recorded in `prompts_v5.py` module docstring lines 9–18; the v1.0/v2.0 Spike-003 dotted-path finding logged in PROJECT.md key decisions). Per-dataset taboo hits: zero. |
+| `_prompt_extraction` (prose) | builder | domain-loaded ("software architecture components") | 15 total (1 audit-relevant prose line: 323) | Opener at `s_linker19.py:323`: `Extract ALL references to software architecture components from this document.` Per D-01 pragmatic rubric: the qualifier `software architecture` is pleonastic — the `COMPONENTS:` slot at line 325 (interpolating `comp_names`) already constrains the universe to the component list passed in; `components` alone (or `entities`/`named elements`) would carry the same instruction. Same `software architecture` pleonasm pattern as `_prompt_ambiguity` opener at line 266 (per 45-02). Mechanical Universal-Taboo grep on this opener returns zero whole-word hits (`components` plural does not match `\bcomponent\b`; `architecture` is not in Universal Taboo). Line 325 (`COMPONENTS:` slot), line 326 (conditional `KNOWN ALIASES` interpolation — structural per D-03), line 328 (`ENTITY_EXTRACTION_RULES` interpolation audited above), lines 330–331 (`DOCUMENT:` slot), and lines 333–335 (JSON-schema `Return JSON: {…}` + `JSON only:` suffix) are excluded from rewrite per D-03. |
+
+> **EXT inventory note:** LOC counts confirmed against frozen source — `ENTITY_EXTRACTION_RULES` is `prompts_v5.py:67` (1 line), `_prompt_extraction` spans `s_linker19.py:321–335` (15 lines, of which line 323 is the only audit-relevant prose under D-03). No discrepancies vs the inspection priors copied into the top-of-doc Verdict Summary by 45-01.
+
+> **EXT benchmark-leak audit (mechanical grep results, verbatim):**
+> - `sed -n '67p' prompts_v5.py | grep -iwoE 'logic|client|storage|server|cache|model|component|adapter|processor|event|socket|layer|database|registry|auth|persistence|facade|recording|cascade|conversion|validation|dedicated|preferences|config|internal|order|common|UI|DB'` → 1 hit: `component`. Passes v2.1 GATE-06 isolation as generic SE noun (same precedent as `AMBIGUITY_RULES` per 45-02).
+> - `sed -n '323p' s_linker19.py | grep -iwoE …` (same pattern) → 0 hits. The plural `components` does not whole-word-match `\bcomponent\b`; `architecture` / `references` / `software` / `document` are not in Universal Taboo or any per-dataset section.
+> - `grep -niwE 'code-level|compound|architectural|favor' BENCHMARK_TABOO.md` → 0 hits. The `ENTITY_EXTRACTION_RULES` exclusion-clause vocabulary is leak-free; the terms are load-bearing per the dotted-path FP behavior recorded in `prompts_v5.py` module docstring and PROJECT.md key decisions.
+
+### Cut Candidates
+
+| cut_id | file:lines | trigger | before | after | risk | gated_by |
+|---|---|---|---|---|---|---|
+| CUT-EXT-01 | src/llm_sad_sam/linkers/experimental/s_linker19.py:323 | domain-loaded ("software architecture components") | `Extract ALL references to software architecture components from this document.` | `[Phase 46 empirical loop]` | low-med — the `COMPONENTS:` slot at line 325 already scopes the task to the passed-in component list, so the `software architecture` qualifier is pleonastic per D-01; impact is bounded because the qualifier is opener-only (one prose line out of 15 total in the builder); however, `_prompt_extraction` is the MOST snapshot-diverse builder in this section (18 snapshots across two phase tags `phase_2_framing_c_pass1` and `phase_2_framing_c_pass2`), so byte-equality is harder to preserve than for lower-snapshot sections — Phase 46 may collapse to `components`, `named elements`, or `entities` | tests/test_s_linker20_prompt_extraction.py @ phase_2_framing_c_pass1, phase_2_framing_c_pass2 |
+
+> ENTITY_EXTRACTION_RULES: no cut rows (verdict: clean — body text load-bearing per PROJECT.md key decisions; `code-level path`, `compound identifier`, `architectural intent` encode the v1.0/v2.0 Spike-003 dotted-path FP-exclusion behavior and the `Favor inclusion` tiebreaker is empirically tuned; Phase 46 should not propose cuts here).
+
+> **Reviewer judgment (EXT).** CUT-EXT-01 risk is `low-med`. The `low` side: the qualifier is provably non-load-bearing once the COMPONENTS slot is read (the slot enumerates the exact component vocabulary the model should extract; the opener qualifier only restates that scope in domain words). The `med` side: `_prompt_extraction` carries 18 snapshots across two phase tags — more snapshot diversity than any other Phase-1/Phase-2 builder audited so far (AMB has 5, DKX has 5, DKJ has 5; only VAL with 24 and COR with 40 are higher), so a rewording that the model treats as semantically equivalent must still survive 18 byte-equal replays. No `benchmark-leak` verdict was assigned for either EXT item (mechanical grep cleared all body tokens against the 5 per-dataset sections; the standing `component` Universal-Taboo overlap passes v2.1 GATE-06 isolation as a generic SE noun), so the Phase-46 Family-A/B rewording slot stays empty for this section.
+
+> **EXT cross-section observation.** The `software architecture components` opener pattern recurs in three builders so far — `_prompt_ambiguity` line 266 (CUT-AMB-02), `_prompt_extraction` line 323 (CUT-EXT-01), and is anticipated for `_prompt_validation` (45-06) — making it the strongest **Phase-46 batching opportunity** in the audit: a single approved replacement vocabulary (e.g. `components` alone, or `named elements`) could resolve all three `domain-loaded` flags with one harness run per affected gate. Phase 46 should evaluate the three opener cuts as a coordinated batch rather than independently.
+
 <!-- SECTION:EXT:END -->
 
 ## Phase 4 — Validation (VAL)
