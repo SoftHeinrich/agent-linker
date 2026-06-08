@@ -27,13 +27,7 @@ from __future__ import annotations
 # Phase 1 — Ambiguity classification (model_knowledge)
 # ─────────────────────────────────────────────────────────────────────────────
 
-AMBIGUITY_FEW_SHOT = """Example 1: Name = "Scheduler"
-Sentence: "The Scheduler queues jobs and dispatches them to worker threads."
-Classification: ARCHITECTURAL — "Scheduler" is the grammatical subject with a named role (queuing, dispatching). It identifies a specific mechanism, not a generic scheduling concept.
-
-Example 2: Name = "Scheduler"
-Sentence: "The system uses a scheduler-based approach to balance load across nodes."
-Classification: AMBIGUOUS — "scheduler-based approach" describes a technique. Ordinary technical writing about any system would use "scheduler" here without naming a specific component."""
+AMBIGUITY_FEW_SHOT = ""
 
 AMBIGUITY_RULES = """A name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component."""
 
