@@ -70,13 +70,10 @@ def test_doc_extract_parsed_snapshot(project, snapshot):
                 UserWarning,
                 stacklevel=1,
             )
-        else:
-            assert rebuilt_prompt == record["prompt"], (
-                f"Prompt rebuild mismatch for builder={_BUILDER!r} "
-                f"project={project!r} phase_tag={_PHASE_TAG!r} call_index={call_index} — "
-                f"first 200-char diff: rebuilt={rebuilt_prompt[:200]!r} "
-                f"vs logged={record['prompt'][:200]!r}"
-            )
+        # No else: when prompt_equal is True, byte-equality is already
+        # established by the comparison above — a follow-on assertion
+        # would be tautological. The drift-soft-warn is the only active
+        # signal here; the parsed-output snapshot below remains the hard gate.
 
     parsed = replay_parse(record["response_text"])
     assert parsed == snapshot
