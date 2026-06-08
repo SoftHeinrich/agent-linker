@@ -80,10 +80,14 @@ Per REQ-V264-06, `AMBIGUITY_FEW_SHOT` and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` each re
 | `_prompt_extraction` | builder | 15 | domain-loaded | 1 | 45-05 (EXT) |
 | `VALIDATION_RULES` | constant | 1 | domain-loaded | 1 | 45-06 (VAL) |
 | `_prompt_validation` | builder | 14 | domain-loaded | 1 | 45-06 (VAL) |
+| `P1_FOCUS` *(folded into VAL per CD-6)* | constant | 7 | behavioral-protected | 1 | 45-06 (VAL) |
+| `P2_FOCUS` *(folded into VAL per CD-6)* | constant | 6 | clean | 0 | 45-06 (VAL) |
+| `COREF_VALIDATION_FOCUS` *(folded into VAL per CD-6)* | constant | 7 | domain-loaded | 1 | 45-06 (VAL) |
 | `COREF_RULES` | constant | 1 | domain-loaded | 2 | 45-07 (COR) |
 | `_prompt_coref` | builder | 27 | domain-loaded | 3 | 45-07 (COR) |
+| **Total (18 items)** | — | — | clean: 8 / domain-loaded: 8 / benchmark-leak: 1 / behavioral-protected: 1 | cut rows: 19 | — |
 
-LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 plans confirm or correct each via their own read of the frozen source.
+LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 plans confirm or correct each via their own read of the frozen source. The 3 CD-6 fold-in rows (P1_FOCUS, P2_FOCUS, COREF_VALIDATION_FOCUS) are imported by `_prompt_validation` and audited inside section VAL; they are not part of the REQ-V264-03 enumerated 9 PROMPT CONSTANTS but are recorded here for Phase 46 input fidelity per 45-CONTEXT.md decision CD-6. The `behavioral-protected` verdict on P1_FOCUS reflects the `prompts_v5.py` module-docstring-protected X.Y.Z clause (CUT-VAL-04 tombstone) — Phase 46 MUST NOT cut this clause; see §VAL.
 
 ## Phase 1 — Ambiguity (AMB)
 
@@ -355,9 +359,80 @@ LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 
 ## Phase Close Notes
 
 <!-- FINAL:SUMMARY:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-08-PLAN.md (Wave 2) -->
+
+### REQ-V264-03 Coverage Tick-Off (9 PROMPT CONSTANTS, in REQUIREMENTS.md order)
+
+- [x] REQ-V264-03 / AMBIGUITY_FEW_SHOT — section AMB, verdict `clean`, 1 cut row (CUT-AMB-01 drop-block per REQ-V264-06)
+- [x] REQ-V264-03 / AMBIGUITY_RULES — section AMB, verdict `clean`, 0 cut rows
+- [x] REQ-V264-03 / DOC_KNOWLEDGE_EXTRACTION_RULES — section DKX, verdict `clean`, 0 cut rows
+- [x] REQ-V264-03 / ALIAS_SCOPE_RULES — section DKX (canonical row; back-reference from COR per 45-RESEARCH.md §6.1), verdict `clean`, 0 cut rows
+- [x] REQ-V264-03 / DOC_KNOWLEDGE_JUDGE_EXAMPLES — section DKJ, verdict `benchmark-leak`, 6 cut rows (CUT-DKJ-01 drop-block + CUT-DKJ-02/03/04 Family A + CUT-DKJ-05/06 Family B)
+- [x] REQ-V264-03 / DOC_KNOWLEDGE_JUDGE_RULES — section DKJ, verdict `domain-loaded`, 1 cut row (CUT-DKJ-07)
+- [x] REQ-V264-03 / ENTITY_EXTRACTION_RULES — section EXT, verdict `clean`, 0 cut rows
+- [x] REQ-V264-03 / VALIDATION_RULES — section VAL, verdict `domain-loaded`, 1 cut row (CUT-VAL-01)
+- [x] REQ-V264-03 / COREF_RULES — section COR, verdict `domain-loaded`, 2 cut rows (CUT-COR-01, CUT-COR-02)
+
+### REQ-V264-04 Coverage Tick-Off (6 in-class f-string scaffold builders)
+
+- [x] REQ-V264-04 / _prompt_ambiguity — section AMB, verdict `domain-loaded`, 1 cut row (CUT-AMB-02)
+- [x] REQ-V264-04 / _prompt_doc_knowledge_extract — section DKX, verdict `clean`, 0 cut rows
+- [x] REQ-V264-04 / _prompt_doc_knowledge_judge — section DKJ, verdict `clean`, 0 cut rows
+- [x] REQ-V264-04 / _prompt_extraction — section EXT, verdict `domain-loaded`, 1 cut row (CUT-EXT-01)
+- [x] REQ-V264-04 / _prompt_validation — section VAL, verdict `domain-loaded`, 1 cut row (CUT-VAL-02)
+- [x] REQ-V264-04 / _prompt_coref — section COR, verdict `domain-loaded`, 3 cut rows (CUT-COR-03, CUT-COR-04, CUT-COR-05 behavioral-protected tombstone)
+
+### CD-6 Fold-In Coverage Tick-Off (informational; not enumerated in REQ-V264-03/04)
+
+- [x] CD-6 / P1_FOCUS — folded into section VAL, verdict `behavioral-protected` (qualified-name X.Y.Z clause), 1 cut row (CUT-VAL-04 — DO NOT CUT tombstone)
+- [x] CD-6 / P2_FOCUS — folded into section VAL, verdict `clean`, 0 cut rows
+- [x] CD-6 / COREF_VALIDATION_FOCUS — folded into section VAL, verdict `domain-loaded` ("role-referential phrase"), 1 cut row (CUT-VAL-03)
+
+### Cross-Check Verifications
+
+- [x] **D-06: every `benchmark-leak` verdict has at least one Family A AND one Family B rewording row.**
+  Evidence: DKJ is the only section with a `benchmark-leak` verdict (`DOC_KNOWLEDGE_JUDGE_EXAMPLES`, line 152). Family A rows present: CUT-DKJ-02, CUT-DKJ-03, CUT-DKJ-04 (3 synthetic-neutral swap variants). Family B rows present: CUT-DKJ-05, CUT-DKJ-06 (2 concept-only variants). Both families ≥1 row. CUT-DKJ-01 is the drop-block row (REQ-V264-06) and CUT-DKJ-07 covers the sibling `DOC_KNOWLEDGE_JUDGE_RULES` domain-loaded clause. Confirmed.
+- [x] **D-05: no `after` rewording text for any `domain-loaded` row (each domain-loaded `after` = `[Phase 46 empirical loop]`).**
+  Evidence: grep over the audit doc for `\| domain-loaded ` cut rows → 9 hits: CUT-AMB-02, CUT-DKJ-07, CUT-EXT-01, CUT-VAL-01, CUT-VAL-02, CUT-VAL-03, CUT-COR-01, CUT-COR-02, CUT-COR-03, CUT-COR-04. Each row's `after` cell literally reads `[Phase 46 empirical loop]`. Confirmed.
+- [x] **D-07: every cut row has non-empty `gated_by`, `risk`, and risk-justification cells.**
+  Evidence: 19 cut rows total (AMB:2 + DKX:0 + DKJ:7 + EXT:1 + VAL:4 + COR:5). Per-row scan: every `risk` cell carries a tier (`low` / `low-med` / `med` / `med-high` / `high`) PLUS an inline justification after the em-dash (the schema collapses risk and justification into one cell per D-07/D-08); every `gated_by` cell lists the test module path + phase tag(s). Confirmed.
+- [x] **REQ-V264-06 drop-block applied to `AMBIGUITY_FEW_SHOT` (CUT-AMB-01) and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` (CUT-DKJ-01).**
+  Evidence: CUT-AMB-01 trigger is `drop-block (REQ-V264-06, not benchmark-leak)`, `after = ""`. CUT-DKJ-01 trigger is `benchmark-leak (drop-block, REQ-V264-06)`, `after = ""`. Both rows are the FIRST cut row of their section's cut table per the Drop-block convention recorded in §"Cut ID Scheme". Confirmed.
+
+### ROADMAP.md Phase 45 Success Criteria Tick-Off
+
+- [x] **SC1:** `s_linker20-PROMPT-AUDIT.md` exists at `.planning/phases/45-audit/s_linker20-PROMPT-AUDIT.md` and covers all 9 imported PROMPT CONSTANTS with LOC + verdict + line-level cut candidates per §Verdict Summary above (rows 1–4 cover AMB+DKX constants; rows 7–8 cover DKJ constants; rows 10, 12, 16 cover EXT/VAL/COR constants).
+- [x] **SC2:** All 6 in-class f-string scaffolds (`_prompt_ambiguity`, `_prompt_doc_knowledge_extract`, `_prompt_doc_knowledge_judge`, `_prompt_extraction`, `_prompt_validation`, `_prompt_coref`) covered with same columns (rows 3, 6, 9, 11, 13, 17 of §Verdict Summary).
+- [x] **SC3:** Every `benchmark-leak` finding has a proposed neutral rewording included. The only `benchmark-leak` verdict in the doc is `DOC_KNOWLEDGE_JUDGE_EXAMPLES` (section DKJ); it carries Family A (CUT-DKJ-02/03/04) and Family B (CUT-DKJ-05/06) rewordings inline with per-cut detail blocks giving the full proposed rewrite text.
+- [x] **SC4:** Zero code changes to `s_linker19`, `s_linker13_min`, or any imported prompt module — verified empirically in the FINAL:GATE01 anchor below (`git diff --stat` returns empty, exit code 0).
+
+### Section Verdict Tally (post Wave-2)
+
+| Section | Items | clean | domain-loaded | benchmark-leak | behavioral-protected | Cut rows |
+|---|---|---|---|---|---|---|
+| AMB | 3 | 2 | 1 | 0 | 0 | 2 |
+| DKX | 3 | 3 | 0 | 0 | 0 | 0 |
+| DKJ | 3 | 1 | 1 | 1 | 0 | 7 |
+| EXT | 2 | 1 | 1 | 0 | 0 | 1 |
+| VAL (incl. 3 CD-6 fold-ins) | 5 | 1 | 3 | 0 | 1 | 4 |
+| COR | 2 | 0 | 2 | 0 | 0 | 5 |
+| **Total** | **18** | **8** | **8** | **1** | **1** | **19** |
+
 <!-- FINAL:SUMMARY:END -->
 
 <!-- FINAL:GATE01:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-08-PLAN.md (Wave 2) -->
+
+## GATE-01 Byte-Equal Verification
+
+**Date:** 2026-06-08
+**Command:**
+```
+git diff --stat src/llm_sad_sam/linkers/experimental/s_linker19.py src/llm_sad_sam/linkers/experimental/prompts_v5.py src/llm_sad_sam/linkers/experimental/s_linker13_min.py
+```
+**Exit code:** 0
+**Output:** (empty)
+**Verdict:** PASS
+**Phase 45 close requires:** PASS (empty git-diff). Any non-empty diff is a phase failure.
+
+GATE-01 source files (`s_linker19.py`, `prompts_v5.py`, `s_linker13_min.py`) are byte-equal vs HEAD at phase close. No code edits occurred during Phase 45 — the audit is a read-only planning artefact per the phase scope boundary in 45-CONTEXT.md §<domain>.
+
 <!-- FINAL:GATE01:END -->
