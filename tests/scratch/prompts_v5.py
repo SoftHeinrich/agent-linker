@@ -38,13 +38,7 @@ AMBIGUITY_RULES = """A name is ARCHITECTURAL when it identifies a specific role 
 
 DOC_KNOWLEDGE_EXTRACTION_RULES = """Find surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates."""
 
-DOC_KNOWLEDGE_JUDGE_EXAMPLES = """Example 1: Candidate = "Handler", Component = "RequestHandler"
-Evidence: "The RequestHandler (hereafter Handler) processes incoming requests from clients."
-Judgment: VALID — The document explicitly establishes "Handler" as an alternate name for RequestHandler via parenthetical definition. The alias is distinctive and scoped to one component.
-
-Example 2: Candidate = "the system", Component = "CacheLayer"
-Evidence: "The system stores frequently accessed records in the CacheLayer."
-Judgment: INVALID — "the system" refers to the overall application, not to CacheLayer specifically. It names a different entity (the whole system) rather than establishing CacheLayer as an alias."""
+DOC_KNOWLEDGE_JUDGE_EXAMPLES = ""
 
 DOC_KNOWLEDGE_JUDGE_RULES = """An alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names an architectural tier or technology platform that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE."""
 
