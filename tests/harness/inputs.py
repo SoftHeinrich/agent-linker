@@ -32,7 +32,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from llm_sad_sam.core.data_types_v2 import ModelKnowledge, DocumentKnowledge
-from llm_sad_sam.linkers.experimental.prompts_v5 import COREF_VALIDATION_FOCUS
 
 
 # ---------------------------------------------------------------------------
