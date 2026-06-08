@@ -73,9 +73,9 @@ Per REQ-V264-06, `AMBIGUITY_FEW_SHOT` and `DOC_KNOWLEDGE_JUDGE_EXAMPLES` each re
 | `DOC_KNOWLEDGE_EXTRACTION_RULES` | constant | 1 | clean | 0 | 45-03 (DKX) |
 | `ALIAS_SCOPE_RULES` | constant | 4 | clean | 0 | 45-03 (DKX) |
 | `_prompt_doc_knowledge_extract` | builder | 19 | clean | 0 | 45-03 (DKX) |
-| `DOC_KNOWLEDGE_JUDGE_EXAMPLES` | constant | 7 | TBD | TBD | 45-04 (DKJ) |
-| `DOC_KNOWLEDGE_JUDGE_RULES` | constant | 1 | TBD | TBD | 45-04 (DKJ) |
-| `_prompt_doc_knowledge_judge` | builder | 16 | TBD | TBD | 45-04 (DKJ) |
+| `DOC_KNOWLEDGE_JUDGE_EXAMPLES` | constant | 7 | benchmark-leak | 6 | 45-04 (DKJ) |
+| `DOC_KNOWLEDGE_JUDGE_RULES` | constant | 1 | domain-loaded | 1 | 45-04 (DKJ) |
+| `_prompt_doc_knowledge_judge` | builder | 16 | clean | 0 | 45-04 (DKJ) |
 | `ENTITY_EXTRACTION_RULES` | constant | 1 | TBD | TBD | 45-05 (EXT) |
 | `_prompt_extraction` | builder | 15 | TBD | TBD | 45-05 (EXT) |
 | `VALIDATION_RULES` | constant | 1 | TBD | TBD | 45-06 (VAL) |
@@ -144,7 +144,84 @@ LOC values are inspection priors copied from 45-RESEARCH.md §1 and §2; Wave-1 
 ## Phase 1 — Doc-Knowledge Judge (DKJ)
 
 <!-- SECTION:DKJ:START -->
-<!-- TBD: filled by .planning/phases/45-audit/45-04-PLAN.md (Wave 1) — header table for DOC_KNOWLEDGE_JUDGE_EXAMPLES + DOC_KNOWLEDGE_JUDGE_RULES + _prompt_doc_knowledge_judge, then cut table CUT-DKJ-NN. -->
+
+### Items
+
+| Item | Type | Verdict | LOC | Notes |
+|---|---|---|---|---|
+| `DOC_KNOWLEDGE_JUDGE_EXAMPLES` | constant | benchmark-leak | 7 | Two few-shot examples at `prompts_v5.py:47–53`. Example 2 component `CacheLayer` contains the head noun `cache`, which appears in MediaStore §Components (`Cache`), MediaStore §Keywords (`cache`), AND the Universal Taboo list ("cache (MediaStore)"). Per D-02 per-dataset rule, this auto-classifies as `benchmark-leak` without manual review. Example 1's `RequestHandler`/`Handler` clear all 5 per-dataset sections by mechanical grep (zero whole-word hits in MediaStore / TeaStore / Teammates / BigBlueButton / JabRef) and `Handler` is not in the Universal Taboo list — so those names are individually clean, but the constant as a whole still triggers `benchmark-leak` via the `CacheLayer` hit alone. Per D-04 strict few-shot interpretation + REQ-V264-06, the block also receives a drop-block row. Per D-06, Family A (synthetic-neutral name swap) + Family B (concept-only) rewordings are emitted. |
+| `DOC_KNOWLEDGE_JUDGE_RULES` | constant | domain-loaded ("architectural tier or technology platform") | 1 | Single dense sentence at `prompts_v5.py:55`. Mechanical grep on body tokens: `tier`, `platform`, `grouping`, `entity`, `equivalence`, `phrase`, `vocabulary`, `system`, `component`, `alias`, `APPROVE` — zero per-dataset hits; `component` is the only Universal Taboo overlap and passes v2.1 GATE-06 cross-dataset isolation as a generic SE noun (same precedent as `AMBIGUITY_RULES` per 45-02 and `DOC_KNOWLEDGE_EXTRACTION_RULES` per 45-03). The "architectural tier or technology platform that encompasses multiple elements" clause is `domain-loaded` per D-01 — a universal noun like "grouping that encompasses multiple elements" would carry the same instruction, since the load-bearing semantic is "names a multi-element collection, not a single component," not the specific words `tier`/`platform`. Per D-05, no rewording proposed; flagged for Phase 46 empirical loop (REQ-V264-07). |
+| `_prompt_doc_knowledge_judge` (prose) | builder | clean | 16 total (1 audit-relevant prose line: 306) | Opener at `s_linker19.py:306`: `JUDGE: Review these component name mappings for correctness.` Per D-01 pragmatic rubric: `component`, `name`, `mappings`, `correctness` are all generic universal nouns; mechanical Universal-Taboo grep returns only the `component` overlap, which passes v2.1 GATE-06 isolation as a generic SE noun (same precedent as the DKX opener at line 286). Line 308 (`COMPONENTS:` slot), line 310 (`PROPOSED MAPPINGS:` slot), lines 313/315 (constant interpolations audited above), and lines 317–319 (JSON-schema `Return JSON: {…}` + `JSON only:` suffix) are excluded from rewrite per D-03. No cut row for the builder opener. |
+
+> **DKJ inventory note:** LOC counts confirmed against frozen source — `DOC_KNOWLEDGE_JUDGE_EXAMPLES` spans `prompts_v5.py:47–53` (7 lines), `DOC_KNOWLEDGE_JUDGE_RULES` is `prompts_v5.py:55` (1 line), `_prompt_doc_knowledge_judge` spans `s_linker19.py:304–319` (16 lines, of which line 306 is the only audit-relevant prose under D-03; lines 308, 310 are input slots, lines 313, 315 are constant interpolations of the rows audited above, lines 317–319 are JSON-schema). No discrepancies vs the inspection priors copied into the top-of-doc Verdict Summary by 45-01.
+
+> **DKJ benchmark-leak audit (mechanical grep results, verbatim):**
+> - `grep -niw 'cache' BENCHMARK_TABOO.md` → 3 hits (line 7 MediaStore §Components `Cache`; line 9 MediaStore §Keywords `cache`; line 39 Universal Taboo `cache (MediaStore)`). **Confirms auto-classify** per D-02.
+> - `grep -niwE 'Handler|RequestHandler|CacheLayer' BENCHMARK_TABOO.md` → 0 hits (whole-word match). Substring containment: `CacheLayer` contains `cache` → still a hit. `RequestHandler` / `Handler` contain no taboo substrings.
+> - `grep -nw 'system' BENCHMARK_TABOO.md` → 0 hits. The few-shot prose `"the system"` is clean.
+> - `grep -niwE 'platform|tier|entity|grouping' BENCHMARK_TABOO.md` → 0 hits. The DOC_KNOWLEDGE_JUDGE_RULES "architectural tier or technology platform" clause is not a leak — it is `domain-loaded` per D-01.
+> - `grep -niwE 'component|name|mapping' BENCHMARK_TABOO.md` → only the standing `component` Universal-Taboo references; `name` and `mapping` zero whole-word hits. The `_prompt_doc_knowledge_judge` opener is clean (same generic-SE-noun precedent as `_prompt_doc_knowledge_extract`).
+
+### Cut Candidates
+
+| cut_id | file:lines | trigger | before | after | risk | gated_by |
+|---|---|---|---|---|---|---|
+| CUT-DKJ-01 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:47-53 | benchmark-leak (drop-block, REQ-V264-06) | `DOC_KNOWLEDGE_JUDGE_EXAMPLES` entire block (Examples 1+2 using `RequestHandler`/`Handler`/`CacheLayer`) | `""` | high — 5 snapshots; the judge stage decides which alias proposals survive into Phase 2 extraction; the few-shot drives judge calibration (VALID/INVALID rationale shape); full removal is the most behavior-changing edit and per the v2.1 frontier-map finding proposer/judge boundaries are load-bearing | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-02 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:47-50 | benchmark-leak (Family A: synthetic-neutral swap, Example 1) | `Candidate = "Handler", Component = "RequestHandler" …` | `[detail block CUT-DKJ-02 below — replaces RequestHandler→BookManager, Handler→Mgr]` | med — name-only swap preserves judge calibration shape (VALID rationale on parenthetical alias-definition still tested); synthetic candidate `BookManager`/`Mgr` grep-clears against all 5 per-dataset sections AND Universal Taboo AND Safe SE Textbook | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-03 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:51-53 | benchmark-leak (Family A: synthetic-neutral swap, Example 2 — directly removes `CacheLayer` leak) | `Candidate = "the system", Component = "CacheLayer" …` | `[detail block CUT-DKJ-03 below — replaces CacheLayer→MailSender]` | med — name-only swap; INVALID rationale shape ("the system" overshoots referent) preserved; replacement `MailSender` grep-clears against all 5 per-dataset sections AND Universal Taboo AND Safe SE Textbook | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-04 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:47-53 | benchmark-leak (Family A: synthetic-neutral swap, both examples — combined rewrite) | `Examples 1+2 (RequestHandler/Handler/CacheLayer/"the system")` | `[detail block CUT-DKJ-04 below — replaces with BookManager/Mgr + MailSender; single coherent component domain]` | med — same per-token risk shape as CUT-DKJ-02 and CUT-DKJ-03, but Phase 46 may prefer a single batch swap to test "judge survives name domain rotation"; one combined cut is cheaper to validate than two separate ones | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-05 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:47-50 | benchmark-leak (Family B: concept-only, Example 1) | `Candidate = "Handler", Component = "RequestHandler" …` | `[detail block CUT-DKJ-05 below — name-stripped abstract rule shape]` | med-high — name-stripped form may break judge calibration (no concrete VALID anchor); lower fidelity than Family A; the parenthetical-definition pattern is still encoded but without a worked example | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-06 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:51-53 | benchmark-leak (Family B: concept-only, Example 2) | `Candidate = "the system", Component = "CacheLayer" …` | `[detail block CUT-DKJ-06 below — name-stripped INVALID-shape rule]` | med-high — same shape as CUT-DKJ-05; the "names whole-system / different referent" failure mode is described abstractly without `CacheLayer` or `the system` as anchors | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+| CUT-DKJ-07 | src/llm_sad_sam/linkers/experimental/prompts_v5.py:55 | domain-loaded ("architectural tier or technology platform") | `…An alias is also invalid when it names an architectural tier or technology platform that encompasses multiple elements…` | `[Phase 46 empirical loop]` | med — the clause carries multi-element exclusion behavior (it's what catches a judge approving "the storage layer" as an alias for one specific component when the document uses it as a tier label); rewording risks losing this exclusion, but the rule-shape is universal-noun-replaceable per D-01 ("grouping that encompasses multiple elements") | tests/test_s_linker20_prompt_doc_judge.py @ phase_1_doc_judge |
+
+> DOC_KNOWLEDGE_JUDGE_RULES otherwise clean: the rest of the sentence (`equivalence between a phrase and a single named component`, `generic vocabulary, names the whole system, or names a different entity`, `When uncertain, prefer APPROVE`) uses universal nouns and the standing-`component` overlap that passes v2.1 GATE-06 isolation. Only the tier/platform span carries the `domain-loaded` flag.
+
+> _prompt_doc_knowledge_judge opener at `s_linker19.py:306` is `clean` (`component name mappings` is generic, same precedent as the DKX opener line 286). No cut row for the builder.
+
+> **CUT-DKJ-02 detail (Family A, Example 1 swap).** Replaces `RequestHandler` with `BookManager` and `Handler` with `Mgr`. Grep clearance: `grep -niw 'BookManager\|Mgr' BENCHMARK_TABOO.md` → 0 hits; substring `book` → 0 hits (clean per substring audit); substring `manager` → only Safe SE Textbook references (lines 63, 66 — explicitly safe per BENCHMARK_TABOO.md §"confirmed not in benchmark", but planner prefers fresh names so the `Mgr` abbreviation is chosen instead of `BookManager`/`Manager` in the candidate alias slot). Proposed Example 1 rewrite:
+> ```
+> Example 1: Candidate = "Mgr", Component = "BookManager"
+> Evidence: "The BookManager (hereafter Mgr) coordinates lookups against the catalog."
+> Judgment: VALID — The document explicitly establishes "Mgr" as an alternate name for BookManager via parenthetical definition. The alias is distinctive and scoped to one component.
+> ```
+> Rationale-shape parity with the original: parenthetical-definition pattern → VALID; distinctive scoped alias preserved; no benchmark token introduced.
+
+> **CUT-DKJ-03 detail (Family A, Example 2 swap — primary leak removal).** Replaces `CacheLayer` with `MailSender`. Grep clearance: `grep -niw 'MailSender' BENCHMARK_TABOO.md` → 0 hits; substring `mail` → 0 hits; substring `sender` → 0 hits (clean per substring audit). `MailSender` does NOT appear in the Safe SE Textbook Examples list (line 60–68) — fresh fully-novel synthetic name. Proposed Example 2 rewrite:
+> ```
+> Example 2: Candidate = "the system", Component = "MailSender"
+> Evidence: "The system queues outgoing messages in the MailSender."
+> Judgment: INVALID — "the system" refers to the overall application, not to MailSender specifically. It names a different entity (the whole system) rather than establishing MailSender as an alias.
+> ```
+> Rationale-shape parity with the original: INVALID because the candidate phrase overshoots the referent. The leak (`cache` substring via `CacheLayer`) is removed; the calibration shape is preserved.
+
+> **CUT-DKJ-04 detail (Family A, combined both-example rewrite).** Single coherent rewrite using one component domain (a synthetic mail/catalog system). Grep-clearance per CUT-DKJ-02 and CUT-DKJ-03 already established for `BookManager`/`Mgr`/`MailSender`. Proposed combined rewrite:
+> ```
+> Example 1: Candidate = "Mgr", Component = "BookManager"
+> Evidence: "The BookManager (hereafter Mgr) coordinates lookups against the catalog."
+> Judgment: VALID — The document explicitly establishes "Mgr" as an alternate name for BookManager via parenthetical definition. The alias is distinctive and scoped to one component.
+>
+> Example 2: Candidate = "the system", Component = "MailSender"
+> Evidence: "The system queues outgoing messages in the MailSender."
+> Judgment: INVALID — "the system" refers to the overall application, not to MailSender specifically. It names a different entity (the whole system) rather than establishing MailSender as an alias.
+> ```
+> Variant rationale: tests whether the judge generalizes alias-validity from the (parenthetical-definition → VALID, whole-system overshoot → INVALID) rule-shape without rotation across two component domains. If Phase 46 byte-equality on this variant succeeds, downstream cuts can prefer it over CUT-DKJ-02 + CUT-DKJ-03 (one cut, two pattern coverages).
+
+> **CUT-DKJ-05 detail (Family B, concept-only Example 1).** Name-stripped abstract restatement of the parenthetical-definition VALID pattern. Proposed:
+> ```
+> Pattern (VALID): When a short term in the document is bound to a longer component name via an explicit parenthetical introduction such as "(hereafter X)" — and X uniquely refers to one named component — treat the short term as a valid alias for that component. The equivalence must be anchored in the document; do not infer it from prose context alone.
+> ```
+> Variant rationale: removes ALL component names from the VALID anchor; tests whether the judge can apply the parenthetical-definition rule from rule prose alone, without a worked few-shot. If Phase 46 confirms byte-equality survives, the prompt loses zero benchmark surface area but also loses the worked example — risk tier reflects this.
+
+> **CUT-DKJ-06 detail (Family B, concept-only Example 2).** Name-stripped abstract restatement of the whole-system / different-referent INVALID pattern. Proposed:
+> ```
+> Pattern (INVALID): When the candidate phrase refers to the overall application (e.g. "the system", "the application", "the platform" used as a wrap-all referent) rather than to one named component, reject the alias. The candidate is invalid because it names a different entity (the whole) rather than establishing the named component as having an alternate surface form.
+> ```
+> Variant rationale: removes `CacheLayer` and all benchmark-adjacent component names from the INVALID anchor; the failure mode is described abstractly. CUT-DKJ-05 and CUT-DKJ-06 may be applied together (full Family B rewrite of the constant) or separately, at Phase 46's discretion.
+
+> **Reviewer judgment (DKJ).** CUT-DKJ-01 risk is `high` for the same reason CUT-AMB-01 was `high` plus an additional consideration: the judge stage has higher leverage than ambiguity classification on the end-to-end pipeline (it gates which proposed aliases reach extraction), so a calibration shift here propagates further. CUT-DKJ-02 / CUT-DKJ-03 / CUT-DKJ-04 are `med` because name-only swaps preserve the worked few-shot's calibration shape and the synthetic candidates have been grep-cleared against the full taboo list. CUT-DKJ-05 / CUT-DKJ-06 are `med-high` because removing the concrete anchor makes the judge fall back to rule prose alone — this is a larger semantic delta than Family A but smaller than CUT-DKJ-01 (the rule still references the pattern, just without an example). CUT-DKJ-07 is `med`: the "architectural tier or technology platform" span is the only specific failure mode the rule constant calls out beyond the generic equivalence/whole-system/different-entity triad, so a rewording must preserve "multi-element grouping" semantics — Phase 46 empirical loop handles this per REQ-V264-07.
+
+> **DKJ Phase 46 implication.** DKJ is the highest-yield section in the audit per 45-RESEARCH.md §3.3 ("Of 29 Universal Taboo terms, only `cache` produces a confirmed body-text hit"). Phase 46 should prioritize the DKJ cut set ahead of other sections — the benchmark-leak verdict is empirically confirmed (not just inferred), and the candidate rewordings are pre-grep-cleared. Cheap-then-coverage ordering: CUT-DKJ-04 (combined Family A, one snapshot batch covers both examples) → CUT-DKJ-02 → CUT-DKJ-03 → CUT-DKJ-05/06 (Family B, higher semantic risk) → CUT-DKJ-01 (drop-block, last resort) → CUT-DKJ-07 (domain-loaded, separate empirical loop). Phase 46 may stop at the first family that survives byte-equality.
+
 <!-- SECTION:DKJ:END -->
 
 ## Phase 2 — Extraction (EXT)
