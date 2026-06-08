@@ -47,7 +47,93 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## Pareto Summary
 
 <!-- FINAL:PARETO:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-08-PLAN.md (Wave 3) — totals (kept/reverted/unsafe/protected), per-section LOC totals, drop-block smallest-passing identifiers (CUT-AMB-01, CUT-DKJ-01), cross-section pleonasm batch cross-references (CUT-AMB-02 + CUT-EXT-01 + CUT-VAL-02), VAL-03 ↔ COR-01 lexical-share note. -->
+## Pareto Summary
+
+### Section Verdict Tally
+
+| Section | Trial-eligible cuts | kept | reverted | unsafe | superseded-by-drop | superseded-by-A | superseded-by-B | kept-original | protected | LOC saved |
+|---|---|---|---|---|---|---|---|---|---|---|
+| AMB | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 7 |
+| DKX | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| DKJ | 7 | 2 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 7 |
+| EXT | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| VAL | 3 + 1 tombstone | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| COR | 4 + 1 tombstone | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| **Total** | **17 + 2 tombstones** | **12** | **0** | **0** | **5** | **0** | **0** | **0** | **2** | **14** |
+
+DKX intentionally contributes 0 trial cuts: the Phase 45 audit assigned `clean` verdict to all three DKX items (`DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `_prompt_doc_knowledge_extract`) and emitted zero cut rows per D-05. The MINIMIZE-LOG carries a single `no-cuts-attempted` completeness row in the DKX section anchor to preserve the AMB→DKX→DKJ→EXT→VAL→COR symmetry — it is NOT a CUT-id row and is excluded from the 17-trial-eligible / 19-total counts above.
+
+### Drop-Block Smallest-Passing Identifiers
+
+| Parent cut | Verdict | Smallest-passing | Commit SHA |
+|---|---|---|---|
+| CUT-AMB-01 (AMBIGUITY_FEW_SHOT) | kept | **drop** (drop-by-empty per 46-RESEARCH §9 Q9 (a); no Family A/B emitted at audit time per D-06 — block verdict was `clean`, not `benchmark-leak`) | dfad56a |
+| CUT-DKJ-01 (DOC_KNOWLEDGE_JUDGE_EXAMPLES) | kept | **drop** (drop-by-empty per D-03 short-circuit; Family A rows CUT-DKJ-02/03/04 + Family B rows CUT-DKJ-05/06 all log as `superseded-by-drop` and were never trialled) | 74ec3bd |
+
+Both drop-block parents reduced to `""` (empty constant body) — constant binding preserved so the `from tests.scratch.prompts_v5 import (..., AMBIGUITY_FEW_SHOT, ..., DOC_KNOWLEDGE_JUDGE_EXAMPLES, ...)` statements at the scratch s_linker19.py import site still resolve. GATE-06 trivially clean for both (after-text is empty string).
+
+### Benchmark-Leak Elimination
+
+| Audit finding | Section | Elimination mechanism | Commit SHA |
+|---|---|---|---|
+| `CacheLayer` → `cache` substring (sole confirmed body-text Universal Taboo hit in entire audit, per 45-04-SUMMARY) | DKJ | Drop-by-empty of DOC_KNOWLEDGE_JUDGE_EXAMPLES (CUT-DKJ-01) — the leak is removed by deletion rather than by name substitution; Family A/B name swaps (BookManager/Mgr/MailSender) became moot under `superseded-by-drop`. | 74ec3bd |
+
+**Benchmark-leak findings: 1/1 eliminated.** The audit identified exactly one confirmed benchmark-derived vocabulary hit (DKJ Family A `CacheLayer` token); the drop-block win on CUT-DKJ-01 removed it directly. All 12 kept cuts carry `gate06_isolation = clean` (or `clean (no after-text)` for the two drop-by-empty cases) — no `unsafe` verdicts emitted in Phase 46.
+
+### Cross-Section Pleonasm Batch (`software architecture …` opener) — CLOSED 3/3
+
+| Site | Cut | Verdict | Commit SHA | Replacement vocabulary applied |
+|---|---|---|---|---|
+| `_prompt_ambiguity` (tests/scratch/s_linker19.py:274) | CUT-AMB-02 | kept | 0710510 | `Classify these component names.` |
+| `_prompt_extraction` (tests/scratch/s_linker19.py:331) | CUT-EXT-01 | kept | fbfbcb9 | `Extract ALL references to components from this document.` |
+| `_prompt_validation` (tests/scratch/s_linker19.py:347) | CUT-VAL-02 | kept | d82e5a9 | `Validate components in a document. {focus}` |
+
+Shared rationale: per Phase 45 D-01 pragmatic rubric, the `software architecture` qualifier is pleonastic at each site — each builder has a `COMPONENTS:` slot that already constrains scope. **One replacement vocabulary (`components`, bare) across all three sites** — pre-decided in 46-01 MINIMIZE-LOG header and applied verbatim by 46-02 / 46-05 / 46-06. CUT-VAL-02 specifically required the `tests/harness/inputs.py` `ACCEPTED_PREFIXES` pre-wire (46-01) so the new opener `Validate components in a document.` survives `reconstruct_validation_inputs` parsing. All three commits are separate per D-04; this Pareto Summary rolls them together as one conceptual batch.
+
+### VAL-03 ↔ COR-01 Shared Lexicon (LOCKSTEP HONORED)
+
+| Site | Cut | Verdict | Commit SHA | Replacement vocabulary applied |
+|---|---|---|---|---|
+| `COREF_VALIDATION_FOCUS` (tests/scratch/prompts_v5.py:94-100) | CUT-VAL-03 | kept | 8c195bc | `…or similar noun phrase that refers back in this sentence…` |
+| `COREF_RULES` (tests/scratch/prompts_v5.py:102) | CUT-COR-01 | kept | d320c03 | `…pronoun or noun phrase that refers back in the target sentence…` |
+
+Lockstep outcome: **both kept**. CUT-VAL-03 trialled first (46-06), picked replacement string `noun phrase that refers back`, committed it to its MINIMIZE-LOG reasoning cell + VAL closing blockquote; CUT-COR-01 (46-07) read that string and applied it verbatim to `COREF_RULES`. CUT-COR-03 + CUT-COR-04 (batched, 46-07) extended the same lexicon (`pronoun or noun phrase that refers back`) into the `_prompt_coref` opener + inline restatement — the shared lexicon now spans **three constants** (COREF_VALIDATION_FOCUS, COREF_RULES, _prompt_coref opener+inline) across **four kept cuts**.
+
+### CUT-COR-03 + CUT-COR-04 Batched Trial (audit-mandated lockstep, audit-doc line 348)
+
+Both sites of the same `_prompt_coref` jargon (opener at tests/scratch/s_linker19.py:362 + inline restatement at lines 366-369) rewritten in one Edit-tool invocation; verdict applies to both.
+
+| Cut | Verdict | Commit SHA |
+|---|---|---|
+| CUT-COR-03 (_prompt_coref opener) | kept | f8f873f |
+| CUT-COR-04 (_prompt_coref inline) | kept | f8f873f (SAME as COR-03 per D-04 batched-trial rule) |
+
+The CUT-COR-05 conservatism dial (`Be conservative — only include resolutions you are CERTAIN about.`) immediately following the rewritten inline clause is **preserved verbatim** (line-wrapped to lines 368-369 due to natural f-string reflow; content byte-identical).
+
+### Phase 47 Inline Locations (per-cut next-action pointer, per 46-RESEARCH §9 Q7)
+
+For each `kept` cut, the Phase 47 inline location is the same `file:lines` as the audit's `before` row; the `after` text comes from `tests/scratch/{s_linker19.py, prompts_v5.py}` at Phase 46 close. Phase 47 reads this LOG to know which cuts to apply and reads the scratch files to get the after-text.
+
+| Cut | Verdict | Phase 47 inline location |
+|---|---|---|
+| CUT-AMB-01 | kept | prompts_v5.py: AMBIGUITY_FEW_SHOT body (drop-by-empty) |
+| CUT-AMB-02 | kept | s_linker19.py: _prompt_ambiguity opener (`Classify these component names.`) |
+| CUT-DKJ-01 | kept | prompts_v5.py: DOC_KNOWLEDGE_JUDGE_EXAMPLES body (drop-by-empty) |
+| CUT-DKJ-07 | kept | prompts_v5.py: DOC_KNOWLEDGE_JUDGE_RULES clause (`grouping that encompasses multiple elements`) |
+| CUT-EXT-01 | kept | s_linker19.py: _prompt_extraction opener (`Extract ALL references to components from this document.`) |
+| CUT-VAL-01 | kept | prompts_v5.py: VALIDATION_RULES (`counterparts` → `matching entities`) |
+| CUT-VAL-02 | kept | s_linker19.py: _prompt_validation opener (`Validate components in a document. {focus}`) — requires keeping `Validate components in a document.` in tests/harness/inputs.py ACCEPTED_PREFIXES OR migrating production to accept the new opener |
+| CUT-VAL-03 | kept | prompts_v5.py: COREF_VALIDATION_FOCUS (`noun phrase that refers back`) |
+| CUT-COR-01 | kept | prompts_v5.py: COREF_RULES (`pronoun or noun phrase that refers back`) |
+| CUT-COR-02 | kept | prompts_v5.py: COREF_RULES (`topic of the surrounding section`) |
+| CUT-COR-03 | kept | s_linker19.py: _prompt_coref opener (`Resolve references (pronouns and noun phrases that refer back) to components.`) |
+| CUT-COR-04 | kept | s_linker19.py: _prompt_coref inline restatement (`pronoun or noun phrase that refers back` + `such reference`) |
+
+Only `kept`-verdict rows above are actionable for Phase 47; the two protected tombstones (CUT-VAL-04, CUT-COR-05) mean Phase 47 inlines the original text from the frozen source for those clauses. All 12 kept cuts are mutually compatible — no cross-cut interference observed during sequential application (46-02 → 46-07).
+
+### Sweep Readiness
+
+**Minimized prompt set frozen in `tests/scratch/{s_linker19.py, prompts_v5.py}` at Phase 46 close.** Phase 47 (SHIP) reads this LOG + the scratch files to produce `src/llm_sad_sam/linkers/experimental/s_linker20.py`; Phase 48 sweeps the resulting variant on gpt-5.4 5-dataset macro F1 (≥ 91.3% floor per REQ-V264-09). Phase 46 caveat per 46-RESEARCH §4.4: parsed-output snapshots are invariant under prompt cuts because replay parsing depends only on cached `response_text`; the 12 kept verdicts validate **harness compatibility + GATE-06 vocabulary cleanliness**, NOT model behavior on live LLM calls. Phase 48 sweep is authoritative for behavioral safety.
 <!-- FINAL:PARETO:END -->
 
 ## AMB — Phase 1 Ambiguity
@@ -149,9 +235,51 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## Phase Close Notes
 
 <!-- FINAL:GATE01:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-08-PLAN.md (Wave 3) — final GATE-01 byte-equal git-diff record on s_linker19.py + prompts_v5.py + s_linker13_min.py at phase close. -->
+## GATE-01 Byte-Equal Verification at Phase 46 Close
+
+**Date:** 2026-06-08
+**Command:**
+
+    git diff --stat src/llm_sad_sam/linkers/experimental/s_linker19.py \
+                    src/llm_sad_sam/linkers/experimental/prompts_v5.py \
+                    src/llm_sad_sam/linkers/experimental/s_linker13_min.py
+
+**Output:**
+
+    (empty — `git diff --stat` on an unchanged file set returns no output)
+
+**Exit code:** 0
+**Verdict:** PASS (exit 0 AND output empty)
+
+**Byte-equal proof (sha256sum at phase close):**
+
+    05c413d0f7fa38f46359c22a2207a6b05f82e50019388550f18f426eb6c9996d  src/llm_sad_sam/linkers/experimental/s_linker19.py
+    2f8b9968fd35e6a9c9e5e01bc16c8081b2bd80eb0efa4ab669f16975f8440689  src/llm_sad_sam/linkers/experimental/prompts_v5.py
+    083d92ae39747e1f98bdb6c0f9254d3368150ef78c614385e2ea97b58a018b33  src/llm_sad_sam/linkers/experimental/s_linker13_min.py
+
+**Git blob hashes at HEAD (corroborating):**
+
+    100644 4ef26b392506da3ca208d7639a6cb2c32debb3ef 0  src/llm_sad_sam/linkers/experimental/s_linker19.py
+    100644 165f0c156b3444748660120c6a4711c11aee51f4 0  src/llm_sad_sam/linkers/experimental/prompts_v5.py
+    100644 830b60156ab7899a878b5863e385be727d04ce02 0  src/llm_sad_sam/linkers/experimental/s_linker13_min.py
+
+**Continuous GATE-01 record across Phase 46:** every per-cut commit (plans 46-02..07) ran the same `git diff --stat` immediately after committing and confirmed empty output. Phase 46 close inherits this continuous record. The scratch-mode protocol (D-01) ensured GATE-01 holds **by construction** — Phase 46 cuts mutated `tests/scratch/{s_linker19.py, prompts_v5.py}` only; the frozen sources at `src/llm_sad_sam/linkers/experimental/` were never written to during the phase. Any non-empty output during the phase would have triggered a `chore(46-NN): GATE-01 violation halt` commit before further work; no such commit exists in the Phase 46 log range.
 <!-- FINAL:GATE01:END -->
 
 <!-- FINAL:REQ:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-08-PLAN.md — REQ-V264-05/06/07 tick-off bullets + ROADMAP Phase 46 SC1..SC5 tick-off. -->
+### REQ-V264 Coverage Tick-Off
+
+- [x] REQ-V264-05 — Per-prompt Pareto reduction loop executed: **17 trial-eligible cuts** from `s_linker20-PROMPT-AUDIT.md` trialled; each verdict logged with snapshot_delta, gate06_isolation, loc_saved, commit_sha, reasoning. Verdicts: **12 kept / 0 reverted / 0 unsafe / 5 superseded-by-drop / 0 kept-original / 2 protected**. See `## Section Verdict Tally` above. One atomic commit per cut decision per D-04 (superseded-by-drop rows fold into the parent CUT-DKJ-01 commit sha `74ec3bd`; CUT-COR-03 + CUT-COR-04 share commit sha `f8f873f` per audit-mandated batched-trial rule, audit-doc line 348).
+
+- [x] REQ-V264-06 — Few-shot block-drop tested per D-03 protocol: `AMBIGUITY_FEW_SHOT` via CUT-AMB-01 (smallest-passing: **drop**, sha `dfad56a`; no Family A/B emitted at audit time per D-06 — block verdict was `clean`); `DOC_KNOWLEDGE_JUDGE_EXAMPLES` via CUT-DKJ-01 with full D-03 protocol available (smallest-passing: **drop**, sha `74ec3bd`; D-03 short-circuit — drop passed on first attempt, so Family A rows CUT-DKJ-02/03/04 + Family B rows CUT-DKJ-05/06 logged as `superseded-by-drop` and never trialled). Both block-drop wins eliminate the only `benchmark-leak` audit finding (`CacheLayer` in DKJ Family A). See `## Drop-Block Smallest-Passing Identifiers` above.
+
+- [x] REQ-V264-07 — Lexical neutralization trialled across all `domain-loaded` audit rows: **CUT-AMB-02, CUT-DKJ-07, CUT-EXT-01, CUT-VAL-01, CUT-VAL-02, CUT-VAL-03, CUT-COR-01, CUT-COR-02, CUT-COR-03, CUT-COR-04** (10 cuts targeting domain-loaded spans — all kept). Replacement vocabulary documented per row in the section bodies above; cross-section coordination per `## Cross-Section Pleonasm Batch` (CLOSED 3/3 with `components` bare) + `## VAL-03 ↔ COR-01 Shared Lexicon` (lockstep honored with `noun phrase that refers back` spanning COREF_VALIDATION_FOCUS / COREF_RULES / _prompt_coref opener+inline across 4 kept cuts).
+
+### ROADMAP Phase 46 Success Criteria
+
+- [x] **SC1:** `s_linker20-MINIMIZE-LOG.md` exists with one row per candidate cut listing prompt/constant + change attempted + verdict + golden snapshot(s) checked. All 19 audit-doc cut_ids have a row (17 trialled + 2 tombstones — CUT-AMB-01..02, CUT-DKJ-01..07, CUT-EXT-01, CUT-VAL-01..04, CUT-COR-01..05). Verified by `grep -oE 'CUT-(AMB|DKX|DKJ|EXT|VAL|COR)-[0-9]{2}' .planning/phases/46-minimize/s_linker20-MINIMIZE-LOG.md | sort -u | wc -l` = 19.
+- [x] **SC2:** For every kept cut, the golden test suite passes byte-equal on parsed structured outputs after the cut is applied. Each kept row's `snapshot_delta` cell is `0/N` for the section's gating snapshot count (AMB 0/5, DKJ 0/5, EXT 0/18, VAL 0/24, COR 0/40).
+- [x] **SC3:** Few-shot blocks (AMBIGUITY_FEW_SHOT, DOC_KNOWLEDGE_JUDGE_EXAMPLES) tested with full-block removal first per REQ-V264-06; smallest-passing replacement documented in `## Drop-Block Smallest-Passing Identifiers` — both blocks shipped as `drop` (drop-by-empty per 46-RESEARCH §9 Q9 (a)).
+- [x] **SC4:** All surviving vocabulary in `kept`-cut after-texts is free of benchmark-derived terms — each kept row's `gate06_isolation` cell is `clean` (or `clean (no after-text)` for the two drop-by-empty cases CUT-AMB-01 and CUT-DKJ-01). GATE-06 re-grep methodology = v2.1 cross-dataset isolation (per-token grep against `BENCHMARK_TABOO.md`).
+- [x] **SC5:** Zero new LLM calls during Phase 46 — all decisions driven by cached fixtures replayed through the Phase 44 harness under `SAD_SAM_LINKER_SOURCE=scratch`. No `LLM_BACKEND` activity in `results/llm_logs/` during the Phase 46 commit range; harness ran from `tests/harness/replay_client.py` exclusively.
 <!-- FINAL:REQ:END -->
