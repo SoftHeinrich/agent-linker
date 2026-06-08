@@ -29,7 +29,7 @@ The design that follows is a two-layer separation: Layer~1 builds the knowledge 
 The two sub-problems ask different epistemic questions --- the named side asks whether a surface span refers to a component, the pronominal side asks whether a pronoun resolves to a sentence that itself refers to one --- and merit different evidence models and different validators.
 The design that follows is a pair of reference-form-specialised linkers (\linkerB for named mentions, \linkerC for pronominal references) in Layer~2, rather than a single monolithic \ac{LLM} call.
 
-\approach is therefore organised as a three-layer directed acyclic graph (\autoref{fig:pipeline}):
+\approach is therefore organised as a three-layer directed acyclic graph:
 
 \begin{enumerate}
   \item \textbf{Project knowledge discovery} (\autoref{sec:knowledge}). Two analyses run in parallel --- one over the component set, one over the document --- to produce the \emph{ambiguity map} (which component names are ordinary English) and the \emph{alias table} (which document phrases refer to which component).

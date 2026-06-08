@@ -14,7 +14,7 @@
 Software systems pair tens of thousands of source files with architecture documentation written by people, and the two artefacts drift apart as soon as the code starts to evolve.
 As much as this documentation has long guided design, review, and onboarding, keeping it aligned with the evolving code has become one of the central bottlenecks for change-impact analysis, compliance audit, and any traceability-driven maintenance task~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
 I.e., when the document and the code drift, every downstream task that consumes the pairing degrades, and recovering the missing trace links by hand does not scale to industrial repositories.
-For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of XX, leaving roughly XX of gold-standard decisions unrecovered or mis-recovered~\cite{transarc,replication}.
+For example, on the five projects of the established trace-link benchmark, the strongest published recovery pipeline reports a corpus-level file-level \fone of XX, leaving roughly XX of gold-standard decisions unrecovered or mis-recovered~\cite{keim_recovering_2024,replication}.
 
 % ---------------------------------------------------------------
 % Para 2 -- gap: pieces (3) prior approaches + (4) fatal problem.
@@ -23,9 +23,9 @@ For example, on the five projects of the established trace-link benchmark, the s
 % left for the opener of Para 3.
 % ---------------------------------------------------------------
 Existing automated recovery pipelines fall into two lines of work.
-Lexical pipelines such as SWATTR score sentence--component pairs against canonical component names and curated linguistic patterns~\cite{swattr}.
+Lexical pipelines such as SWATTR score sentence--component pairs against canonical component names and curated linguistic patterns~\cite{keim_trace_2021}.
 While effective at recovering links that surface the component name directly, they inherently rely on that name appearing on the surface, and they miss every trace link that is carried by a project-specific alias or by a pronominal reference.
-A more recent line uses a single-pass \ac{LLM} classifier per sentence, treating recovery as zero-shot reading comprehension~\cite{lissa}.
+A more recent line uses a single-pass \ac{LLM} classifier per sentence, treating recovery as zero-shot reading comprehension~\cite{fuchs_lissa_2025}.
 Despite their stronger raw \fone on the benchmark, they enter the document without any structured knowledge of which component names are ambiguous English and which document phrases are aliases for which component, leaving the \ac{LLM} to invent that knowledge per call.
 
 % ---------------------------------------------------------------
@@ -51,7 +51,7 @@ However, building this knowledge layer is non-trivial: project-specific aliases 
 Layer~1 runs two knowledge analyses in parallel --- one over the component set, one over the document --- to produce the ambiguity map and the alias table; Layer~2 feeds both artefacts into \linkerB, an alias-aware entity linker that recovers every named reference form in a single framing, and \linkerC, a pronoun-resolving linker that enforces the structural antecedent constraint deterministically against the same alias table.
 Each linker exposes the evidence it relied on --- the matched span, the form of the reference, and the antecedent sentence when applicable --- to its own asymmetric \ac{LLM} validator: \linkerB by a two-pass conjunction over architectural participation and referential specificity, \linkerC by a single focused pass on a narrower epistemic question, since the structural antecedent check has already removed every alias-failing candidate.
 Running \approach is as simple as supplying the document and the component set: no fine-tuning, no labelled trace links, and no benchmark-specific tuning.
-On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of XX, thereby improving the strongest published pipeline by XX percentage points~\cite{transarc,replication}.
+On the five projects of the established benchmark, \approach reaches a corpus-level file-level \fone of XX, thereby improving the strongest published pipeline by XX percentage points~\cite{keim_recovering_2024,replication}.
 
 % ---------------------------------------------------------------
 % Para 5 -- co-equal second finding: the ruler is wrong.

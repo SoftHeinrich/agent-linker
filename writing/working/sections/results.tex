@@ -1,12 +1,12 @@
 \section{Results}
 \label{sec:results}
 
-We answer the four research questions on the five-project benchmark; \approach{} uses the configuration of \autoref{sec:hyperparameters} and all baselines are run with their authors' released configurations.
+We answer the four research questions on the five-project benchmark; \approach{} uses the current configuration and all baselines are run with their authors' released configurations.
 
 \input{table/rq1}
 \input{figures/rq1-dumbbell}
 
-\subsection{Answer to \ref{RQ1 SOTA comparison} -- SOTA Comparison}
+\subsection{Answer to RQ1 -- SOTA Comparison}
 \label{sec:results:rq1}
 
 \input{tables/metrics_sad-sam}
@@ -29,11 +29,11 @@ JabRef is the project on which \approach{} gains the least: doc-to-model \fone\ 
 The other four projects show gains of $+10.4$pp to $+23.7$pp; the macro gain of $+14.0$pp is therefore driven by the projects whose architecture documents use the most alias-heavy and indirect references, exactly the shape the knowledge layer was designed for.
 
 \begin{rqanswer}
-\paragraph{Answer to \ref{RQ1 SOTA comparison}.}
+\paragraph{Answer to RQ1.}
 \approach{} improves over the strongest published doc-to-model baseline by $+14.0$pp macro \fone, with all five projects gaining (smallest $+2.6$pp on JabRef where SWATTR is already near-ceiling); the doc-to-code composition inherits the same gain ($+13.6$pp file \fone, $+17.0$pp per-component \fone), and LiSSA's single-pass design reaches neither baseline.
 \end{rqanswer}
 
-\subsection{Answer to \ref{RQ2 metrics} -- Architecture-Driven Metrics}
+\subsection{Answer to RQ2 -- Architecture-Driven Metrics}
 \label{sec:results:rq2}
 
 \input{table/rq2-summary}
@@ -54,11 +54,11 @@ As a sanity check that the gain is not an artefact of an inflated baseline, the 
 Therefore the absolute \fone\ gap of $+13.6$pp covers a large share of the resolvable signal once the trivial-baseline floor and the enrolled-gold ceiling are removed.
 
 \begin{rqanswer}
-\paragraph{Answer to \ref{RQ2 metrics}.}
+\paragraph{Answer to RQ2.}
 The architecture-driven metrics widen \approach{}'s advantage from $+13.6$pp under file \fone\ to $+17.0$pp at the size-blind per-component aggregation, confirm the gain on coverage ($+11.8$pp) and noise rate ($-8.1$pp), and place \approach{} at $0.964$ on the rescaled skill axis -- the standard \fone\ understates the advantage on every dimension we measure.
 \end{rqanswer}
 
-\subsection{Answer to \ref{RQ3 validators} -- Validator Contribution}
+\subsection{Answer to RQ3 -- Validator Contribution}
 \label{sec:results:rq3}
 
 \input{table/rq3-validators}
@@ -74,11 +74,11 @@ However the per-component \fone\ and noise-rate columns of \autoref{tab:rq2-summ
 Therefore the validator stack is the dominant lever for precision at low marginal cost.
 
 \begin{rqanswer}
-\paragraph{Answer to \ref{RQ3 validators}.}
+\paragraph{Answer to RQ3.}
 The two validators together kill $14$ spurious links at the cost of $1$ gold link, contribute $+4.1$pp macro \fone\ to \fullVariant{}, and target disjoint failure modes (hallucinated anchor, missing entity) at a cost of roughly doubled entity-validation calls.
 \end{rqanswer}
 
-\subsection{Answer to \ref{RQ4 ablation} -- Per-Agent Ablation}
+\subsection{Answer to RQ4 -- Per-Agent Ablation}
 \label{sec:results:rq4}
 
 \input{table/rq4-agents}
@@ -95,7 +95,7 @@ However \linkerB{} alone loses $26$ gold links that \linkerC{} recovers -- exact
 Thus \linkerB{} alone establishes that an \ac{LLM} substrate already beats the lexical pipeline, while \linkerC{} recovers the long tail of references on which the gain to $0.920$ is built.
 
 \begin{rqanswer}
-\paragraph{Answer to \ref{RQ4 ablation}.}
+\paragraph{Answer to RQ4.}
 Each of the two linkers catches a non-overlapping slice of gold links: \linkerB{} contributes $129$ unique true positives, \linkerC{} contributes $26$; \linkerB{} alone already exceeds SWATTR, and \linkerC{} raises macro \fone\ from $0.860$ to $0.920$.
 \end{rqanswer}
 
