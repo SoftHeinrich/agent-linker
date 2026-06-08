@@ -68,7 +68,7 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 
 | cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
 |---|---|---|---|---|---|---|
-| (none) | no-cuts-attempted | n/a | n/a | 0 | (this commit) | Phase 45 audit assigned `clean` verdict to all 3 DKX items; no benchmark-leak or domain-loaded findings to trial. |
+| (none) | no-cuts-attempted | n/a | n/a | 0 | 27bc025 | Phase 45 audit assigned `clean` verdict to all 3 DKX items; no benchmark-leak or domain-loaded findings to trial. |
 
 > **DKX section: 0 cut rows.** All 3 DKX items — `DOC_KNOWLEDGE_EXTRACTION_RULES` (prompts_v5.py:40),
 > `ALIAS_SCOPE_RULES` (prompts_v5.py:42-45), and `_prompt_doc_knowledge_extract` (s_linker19.py:294-310 prose) —
