@@ -114,7 +114,11 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## VAL — Phase 4 Validation
 
 <!-- SECTION:VAL:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-06-PLAN.md (Wave 2). 4 cuts: CUT-VAL-02 pleonasm (part of batch), CUT-VAL-01 (counterparts), CUT-VAL-03 (role-referential — picks vocabulary shared with COR-01). CUT-VAL-04 is the P1_FOCUS X.Y.Z tombstone — protected row only, populated below. -->
+
+| cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
+|---|---|---|---|---|---|---|
+| CUT-VAL-02 | kept | 0/24 | clean | 0 | (assigned by 46-06) | Pleonasm `Validate component references in a software architecture document. {focus}` -> `Validate components in a document. {focus}` at `tests/scratch/s_linker19.py:347` (`_prompt_validation` opener; drifted from audit-time line 339 because upstream Wave-2 plans 46-02/46-04/46-05 mutated nearby lines). Pre-decided batch vocab (46-01 MINIMIZE-LOG header) is `components` bare. `reconstruct_validation_inputs` (`tests/harness/inputs.py:279-291`) consumes the new opener via the `ACCEPTED_PREFIXES` tuple pre-wired by 46-01 (entry 2: `Validate components in a document.`) so the harness accepts both pre/post opener variants. 24/24 snapshots passed under `SAD_SAM_LINKER_SOURCE=scratch` (phase_4_twopass_p1 + phase_4_twopass_p2 + phase_5_coref_validation — the most conservative gating in the audit per Phase 45 §VAL). GATE-06 re-grep `grep -niwE 'validate\|components\|document' BENCHMARK_TABOO.md`: `validate` 0 hits; `components` 5 hits, all in per-dataset `Components:` schema-section column headers (lines 7/12/17/22/27 — generic SE noun anaphor cleared per Phase 45 v2.1 isolation precedent / CUT-AMB-02 + CUT-EXT-01 reasoning); `document` 1 hit at line 100 methodology prose (`document the inspection`, not dataset vocab). LOC saved = 0 (substring rewording within a single line). Cross-section batch member: **3 of 3** — paired with CUT-AMB-02 (kept, 46-02, sha `0710510`) and CUT-EXT-01 (kept, 46-05, sha `fbfbcb9`); all three share the `components` bare replacement vocabulary. Batch closes the recurring `software architecture …` opener pleonasm across AMB/EXT/VAL. Behavioral caveat per 46-RESEARCH §4.4: harness verdict reflects harness compatibility only (cached-replay); Phase 48 sweep validates behavioral safety on live LLM calls. |
+
 <!-- SECTION:VAL:END -->
 
 ## COR — Phase 5 Coref

@@ -344,7 +344,7 @@ JSON only:"""
 
     @staticmethod
     def _prompt_validation(comp_names, cases, focus) -> str:
-        return f"""Validate component references in a software architecture document. {focus}
+        return f"""Validate components in a document. {focus}
 
 COMPONENTS: {', '.join(comp_names)}
 
