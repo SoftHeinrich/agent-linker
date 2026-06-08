@@ -83,6 +83,7 @@ import pickle
 import re
 import threading
 import time
+import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass
 from enum import Enum
@@ -898,8 +899,29 @@ JSON only:"""
                 key = (lk.sentence_number, lk.component_id)
                 sent = sent_map.get(lk.sentence_number)
                 if not sent:
+                    # Invariant violation: a coref link points at a sentence
+                    # we don't have. Phase 4 built links from sent_map, so this
+                    # means the map was mutated or the link was forged. Surface
+                    # loudly — silently keeping it hides a real bug.
+                    msg = (
+                        f"!!! COREF VALIDATION INVARIANT VIOLATED !!! "
+                        f"sentence_number=S{lk.sentence_number} missing from "
+                        f"sent_map (component={lk.component_name}, "
+                        f"component_id={lk.component_id}). "
+                        f"sent_map keys present: {sorted(sent_map.keys())[:10]}"
+                        f"{'…' if len(sent_map) > 10 else ''}. "
+                        f"Keeping the link to preserve recall, but this should "
+                        f"never happen — investigate Phase 4 extraction / "
+                        f"sent_map construction."
+                    )
+                    print(f"\n{'!' * 80}\n{msg}\n{'!' * 80}\n", flush=True)
+                    warnings.warn(msg, RuntimeWarning, stacklevel=2)
                     validated.append(lk)
-                    decisions[key] = {"approved": True, "path": "coref_no_sentence_keep"}
+                    decisions[key] = {
+                        "approved": True,
+                        "path": "coref_no_sentence_keep",
+                        "invariant_violation": True,
+                    }
                     continue
                 p = self._prev_prefix(lk.sentence_number, sent_map)
                 cases.append((

@@ -12,8 +12,8 @@ ref=RQ\arabic*, series=researchQuestions] \item \label{RQ1 SOTA comparison}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 Existing approaches use lexical similarity~\cite{swattr} or a single \ac{LLM}
-classification pass~\cite{lissa}. \approach first builds runtime knowledge about
-the architecture (alias table, ambiguous names) and then runs several focused
+classification pass~\cite{artemis}. \approach first builds runtime knowledge about
+the architecture (alias table, ambiguous names) and then runs two focused
 linker agents. We want to know whether this extra structure pays off in both
 link tasks: doc-to-model and doc-to-code.
 
@@ -24,7 +24,9 @@ link tasks: doc-to-model and doc-to-code.
 The standard evaluation reports link level metrics, XXX over all file-level links.
 On this benchmark, one human decision about a directory can expand into hundreds of file-level data points, 
 %TODO, refactor, not human decision, but package strtcure of link distribution or the longtail distribution of trace links...
-so a few large components decide the score~\cite{replication}.
+% because this should be appliedto both 2 tasks.
+%the text below should be highly coupled to our new metrics  
+so a few large components decide the score.
 A single number can therefore hide whether a system covers all sentences, 
 whether errors fall on small components, or whether developers would see noisy results.
 We check if the metrics from \autoref{sec:metric} reveal these properties and reorder the systems.
@@ -37,8 +39,9 @@ We check if the metrics from \autoref{sec:metric} reveal these properties and re
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 \acp{LLM} are not deterministic and can produce links that look plausible but wrong if investigate carefully. %todo, reframe
-\approach wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): voting between two \ac{LLM} passes for extraction agents, and asking for a quoted antecedent for the pronoun agent.
-We measure how much these validators help, in \fone and in the new metrics.
+% something more related to hallucination, not non deterministic
+\approach wraps each linker agent in one of two validation patterns (\autoref{tab:strategies}): xxx aware rules for juding trace links, and asking for a quoted antecedent for the pronoun agent.
+We measure how much these validators help, in killed tp , fp rate. %Todo, reform , 
 
 % RQ4 ablation, whas the contribution of each sub-linker module?
 % \emph{\textbf{Motivation:}}
@@ -138,7 +141,7 @@ For each variant we report:
 five projects, \item the change in sentence coverage and noise rate, which tells
 us whether the removed agent added recall or only filtered false positives, and
 \item how many true positives are lost that no other agent recovers.
-\end{enumerate*} Set overlap is reported via the UpSet decomposition |only_E|, |both|, |only_C| in \autoref{fig:rq4-upset}; per-linker unique-TP counts in \autoref{tab:rq4-agents}.
+\end{enumerate*} Set overlap is reported via the UpSet decomposition \texttt{|only\_E|}, \texttt{|both|}, \texttt{|only\_C|} in \autoref{fig:rq4-upset}; per-linker unique-TP counts in \autoref{tab:rq4-agents}.
 
 
 \subsection{Dataset}

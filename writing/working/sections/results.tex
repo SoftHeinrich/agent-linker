@@ -85,8 +85,8 @@ The two validators together kill $14$ spurious links at the cost of $1$ gold lin
 \input{figures/rq4-upset}
 
 We measure each linker's contribution by set overlap rather than by leave-one-out \fone, because leave-one-out is contaminated: removing one linker leaves the other free to pick up some of its hits through document context.
-\autoref{fig:rq4-upset} shows the gold-link sets each linker catches, decomposed as |only_E| (only \linkerB{}), |both|, |only_C| (only \linkerC{}); \autoref{tab:rq4-agents} reports per-linker unique-TP counts.
-\linkerB{} catches $150$ gold links, of which $129$ are not caught by \linkerC{} (the |only_E| cell); \linkerC{} catches $47$ gold links, of which $26$ are not caught by \linkerB{} (the |only_C| cell); the |both| cell holds $21$ gold links caught by both linkers.
+\autoref{fig:rq4-upset} shows the gold-link sets each linker catches, decomposed as \texttt{|only\_E|} (only \linkerB{}), \texttt{|both|}, \texttt{|only\_C|} (only \linkerC{}); \autoref{tab:rq4-agents} reports per-linker unique-TP counts.
+\linkerB{} catches $150$ gold links, of which $129$ are not caught by \linkerC{} (the \texttt{|only\_E|} cell); \linkerC{} catches $47$ gold links, of which $26$ are not caught by \linkerB{} (the \texttt{|only\_C|} cell); the \texttt{|both|} cell holds $21$ gold links caught by both linkers.
 This is because each linker targets a distinct linguistic phenomenon: \linkerB{} handles direct architecture-model mentions, while \linkerC{} handles indirect references whose antecedent is resolved by context.
 Therefore each linker contributes a distinct slice of true positives and the two-linker decomposition is not redundant.
 
