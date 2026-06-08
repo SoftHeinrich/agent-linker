@@ -79,7 +79,7 @@ P2_FOCUS = (
     "technical term in this sentence?"
 )
 
-VALIDATION_RULES = """Approve when the sentence treats the component as an architectural participant, including counterparts. Reject when the matching word is generic, names a different entity, or describes a technique that merely shares the component's name."""
+VALIDATION_RULES = """Approve when the sentence treats the component as an architectural participant, including matching entities. Reject when the matching word is generic, names a different entity, or describes a technique that merely shares the component's name."""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
