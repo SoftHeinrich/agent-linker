@@ -142,7 +142,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 |-------|----------------|--------|-----------|
 | 44. HARNESS | 2/2 | Complete    | 2026-06-07 |
 | 45. AUDIT | 8/8 | Complete    | 2026-06-08 |
-| 46. MINIMIZE | 0/TBD | Not started | — |
+| 46. MINIMIZE | 2/8 | In Progress|  |
 | 47. SHIP | 0/TBD | Not started | — |
 | 48. SWEEP | 0/TBD | Not started | — |
 | 49. MILESTONE CLOSE | 0/TBD | Not started | — |
@@ -186,6 +186,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 **Plans**: 8 plans
 
 Plans:
+
 - [x] 45-01-PLAN.md — Wave 1 — Bootstrap audit doc skeleton (anchors, rubric recap, gating reference table, cut_id legend, placeholder Verdict Summary table)
 - [x] 45-02-PLAN.md — Wave 2 — Audit AMB section (AMBIGUITY_FEW_SHOT + AMBIGUITY_RULES + _prompt_ambiguity; CUT-AMB-NN incl. drop-block per REQ-V264-06)
 - [x] 45-03-PLAN.md — Wave 2 — Audit DKX section (DOC_KNOWLEDGE_EXTRACTION_RULES + ALIAS_SCOPE_RULES canonical row + _prompt_doc_knowledge_extract; CUT-DKX-NN)
@@ -194,6 +195,7 @@ Plans:
 - [x] 45-06-PLAN.md — Wave 2 — Audit VAL section (VALIDATION_RULES + _prompt_validation + folded P1_FOCUS/P2_FOCUS/COREF_VALIDATION_FOCUS per CD-6; CUT-VAL-NN, 3 phase tags incl. phase_5_coref_validation)
 - [x] 45-07-PLAN.md — Wave 2 — Audit COR section (COREF_RULES + ANTECEDENT_ALIAS_RULES + _prompt_coref + ALIAS_SCOPE_RULES back-reference; CUT-COR-NN)
 - [x] 45-08-PLAN.md — Wave 3 — Finalize summary table + REQ-V264-03/04 tick-off + GATE-01 byte-equal verification + commit
+
 **UI hint**: no
 
 ### Phase 46: MINIMIZE

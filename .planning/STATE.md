@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
-status: Phase 46 plan 01 (bootstrap) shipped — tests/scratch + harness toggle live. Wave 2 (46-02..07) ready.
-stopped_at: Phase 46 plan 01 complete (commit c2d9329)
-last_updated: "2026-06-08T15:40:04.773Z"
+status: Phase 45 audit shipped (GATE-01 byte-equal). Ready for Phase 46 minimize.
+stopped_at: Phase 45 context gathered
+last_updated: "2026-06-08T15:47:55.813Z"
 last_activity: 2026-06-08
 progress:
   total_phases: 6
@@ -58,15 +58,15 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 ## Current Position
 
 Phase: 46
-Plan: Not started
-Status: Phase 45 audit shipped (GATE-01 byte-equal). Ready for Phase 46 minimize.
+Plan: 02 complete (AMB section: 2 cuts kept — CUT-AMB-02 + CUT-AMB-01 drop-by-empty)
+Status: Phase 46 in progress (3/8 plans done: 01 bootstrap + 02 AMB cuts). GATE-01 byte-equal preserved.
 Last activity: 2026-06-08
 
 ```
 Progress: v2.6.4 [██████████░░░░░░░░░░░░░░░░░░░░] 2/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
-          Phase 46 MINIMIZE [~] in progress — plan 01 bootstrap complete (c2d9329, 2026-06-08)
+          Phase 46 MINIMIZE [~] in progress — plan 02 AMB cuts kept (0710510, dfad56a, 2026-06-08)
           Phase 47 SHIP     [ ] not started
           Phase 48 SWEEP    [ ] not started
           Phase 49 CLOSE    [ ] not started
@@ -119,7 +119,7 @@ Progress: v2.6.4 [██████████░░░░░░░░░░�
 
 ## Session Continuity
 
-Last session: 2026-06-07T15:20:11.308Z
-Stopped at: Phase 45 context gathered
-Resume file: .planning/phases/45-audit/45-CONTEXT.md
-Next action: `/gsd-plan-phase 44` — build golden-replay harness from phase_cache pkls
+Last session: 2026-06-08T15:50:00Z
+Stopped at: Phase 46 plan 02 complete (AMB cuts)
+Resume file: .planning/phases/46-minimize/46-02-SUMMARY.md
+Next action: `/gsd-execute-plan 46 03` — DKX section (zero cuts in audit, single 'no cuts attempted' log line for section symmetry)
