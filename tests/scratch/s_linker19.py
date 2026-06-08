@@ -271,7 +271,7 @@ class SLinker19:
 
     @staticmethod
     def _prompt_ambiguity(names) -> str:
-        return f"""Classify these software architecture component names.
+        return f"""Classify these component names.
 
 NAMES: {', '.join(names)}
 

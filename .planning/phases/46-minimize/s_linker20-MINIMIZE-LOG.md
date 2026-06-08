@@ -53,7 +53,10 @@ The import-line rewrite in `tests/scratch/s_linker19.py` (`from llm_sad_sam.link
 ## AMB — Phase 1 Ambiguity
 
 <!-- SECTION:AMB:START -->
-<!-- TBD: filled by .planning/phases/46-minimize/46-02-PLAN.md (Wave 2). Cuts: CUT-AMB-02 (pleonasm, low risk, runs first per D-02), CUT-AMB-01 (drop-block, high risk, runs second per D-02 + D-03 protocol). -->
+
+| cut_id | verdict | snapshot_delta | gate06_isolation | loc_saved | commit_sha | reasoning |
+|---|---|---|---|---|---|---|
+| CUT-AMB-02 | kept | 0/5 | clean | 0 | (sha-after-commit) | Pleonasm `Classify these software architecture component names.` → `Classify these component names.` at `tests/scratch/s_linker19.py:274` (`_prompt_ambiguity` opener). Pre-decided batch vocab (46-01) is `components` bare. `reconstruct_ambiguity_inputs` anchors on `^NAMES:` so opener change is harness-safe; 5/5 snapshots passed under `SAD_SAM_LINKER_SOURCE=scratch`. GATE-06 grep on `classify\|these\|component\|names` against `BENCHMARK_TABOO.md`: only hits are bare `component` as generic SE noun anaphor in per-dataset sections (e.g. "Teammates component"), cleared per Phase 45 v2.1 isolation precedent (CUT-VAL-03 / CUT-COR-01); `classify`, `these`, `names` have zero per-dataset hits. Cross-section batch member: 1 of 3 with CUT-EXT-01 (46-05) and CUT-VAL-02 (46-06), all targeting the recurring `software architecture …` opener pleonasm with the same shared replacement vocabulary. |
 <!-- SECTION:AMB:END -->
 
 ## DKX — Phase 1 Doc-Knowledge Extract
