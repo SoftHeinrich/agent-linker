@@ -144,7 +144,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 | 45. AUDIT | 8/8 | Complete    | 2026-06-08 |
 | 46. MINIMIZE | 8/8 | Complete   | 2026-06-08 |
 | 47. SHIP | 2/2 | Complete    | 2026-06-09 |
-| 48. SWEEP | 0/TBD | Not started | — |
+| 48. SWEEP | 1/2 | In progress (P01 done — MARGINAL FAIL macro 88.9%) | 2026-06-09 |
 | 49. MILESTONE CLOSE | 0/TBD | Not started | — |
 
 ## Phase Details
@@ -252,7 +252,7 @@ Plans:
 
 Plans:
 
-- [ ] 48-01-PLAN.md — Wave 1 — Pre-flight (API key + backend/model wiring + cost estimate) then run the paid 5-dataset gpt-5.4 sweep on s_linker20 → logs/v2.6.4_s_linker20_gpt.log
+- [x] 48-01-PLAN.md — Wave 1 — Pre-flight (API key + backend/model wiring + cost estimate) then run the paid 5-dataset gpt-5.4 sweep on s_linker20 → logs/v2.6.4_s_linker20_gpt.log (DONE 2026-06-09; macro 88.9% MARGINAL FAIL; GATE-08 $7.71 PASS)
 - [ ] 48-02-PLAN.md — Wave 2 — Extract per-dataset F1 + macro, render PASS/FAIL verdict vs s17e (floor 91.3%, −2pp fence), re-verify GATE-06, reconstruct GATE-08 cost ≤ $20 → 48-02-SUMMARY.md for Phase 49
 **UI hint**: no
 

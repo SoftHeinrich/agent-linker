@@ -3,15 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
 status: executing
-stopped_at: Phase 47 (SHIP) complete — s_linker20 shipped + registered; GATE-01/06 clean. Awaiting explicit go-ahead before Phase 48 SWEEP (spends LLM budget ≤$20).
-last_updated: "2026-06-09T10:31:34.035Z"
-last_activity: 2026-06-09
+stopped_at: Phase 48 plan 01 complete (s_linker20 gpt-5.4 sweep — MARGINAL FAIL 88.9% < 91.3%)
+last_updated: "2026-06-09T13:08:38Z"
+last_activity: 2026-06-09 -- Phase 48 plan 01 complete
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 20
-  completed_plans: 20
-  percent: 67
+  total_plans: 22
+  completed_plans: 21
 ---
 
 # Project State
@@ -21,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 47 — ship
+**Current focus:** Phase 48 — sweep
 
 ## v2.6.3 — SHIPPED 2026-06-05
 
@@ -57,10 +56,10 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 47
-Plan: Not started
-Status: Phase 47 complete — GATE-01/06 verified, registration guard test passing, CLAUDE.md updated
-Last activity: 2026-06-09
+Phase: 48 (sweep) — Plan 01 complete, Plan 02 pending
+Plan: 2 of 2
+Status: Phase 48 plan 01 complete — sweep executed, MARGINAL FAIL verdict captured
+Last activity: 2026-06-09 -- Phase 48 plan 01 complete (s_linker20 macro 88.9% < 91.3%)
 
 ```
 Progress: v2.6.4 [████████████████████████░░░░░░] 4/6 phases
@@ -68,7 +67,7 @@ Progress: v2.6.4 [████████████████████�
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
           Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
           Phase 47 SHIP     [x] complete (2026-06-09) — s_linker20 shipped, GATE-01/06 pass
-          Phase 48 SWEEP    [ ] not started (autonomous halts before exec per user direction)
+          Phase 48 SWEEP    [~] plan 01 complete — MARGINAL FAIL (macro 88.9%, BBB -5.4pp, TM -6.5pp, JAB -8.6pp)
           Phase 49 CLOSE    [ ] not started
 ```
 
@@ -117,12 +116,26 @@ Progress: v2.6.4 [████████████████████�
 | 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
 | 20260604-lissa-rq1-eval | Clone lissa-replication into sota/; re-evaluate gpt-5-mini d2m/d2c tracelinks via metrics_api.py; fill RQ1 LiSSA cells | 2026-06-04 | — | [20260604-lissa-rq1-eval](./quick/20260604-lissa-rq1-eval/) |
 
+## s_linker20 Sweep Results (Phase 48 Plan 01)
+
+| Dataset | s20 F1 | s17e F1 | Delta | Status |
+|---------|--------|---------|-------|--------|
+| MediaStore | 96.7% | 94.9% | +1.8pp | PASS |
+| TeaStore | 98.1% | 96.3% | +1.8pp | PASS |
+| TeaMmates | 83.3% | 89.8% | -6.5pp | FAIL |
+| BigBlueButton | 75.0% | 80.4% | -5.4pp | FAIL |
+| JabRef | 91.4% | 100.0% | -8.6pp | FAIL |
+| **Macro** | **88.9%** | **92.3%** | **-3.4pp** | **FAIL** |
+
+REQ-V264-09: FAIL (macro 88.9% < floor 91.3%). GATE-08: PASS ($7.71 < $20).
+Log: `logs/v2.6.4_s_linker20_gpt.log`
+
 ## Session Continuity
 
-Last session: 2026-06-09T10:22:30Z
-Stopped at: Phase 47 plan 02 complete (GATE-01/06 verify + registration test + CLAUDE.md update)
+Last session: 2026-06-09T13:08:38Z
+Stopped at: Phase 48 plan 01 complete (s_linker20 gpt-5.4 sweep — MARGINAL FAIL 88.9% < 91.3%)
 Resume file: None
-Next action: `/gsd-execute-plan 48` — Phase 48 SWEEP (5-dataset gpt-5.4 macro F1 sweep; user go-ahead required)
+Next action: Phase 48 plan 02 (verdict + GATE-08 summary) — then Phase 49 CLOSE
 
 ## Performance Metrics
 
@@ -131,3 +144,4 @@ Next action: `/gsd-execute-plan 48` — Phase 48 SWEEP (5-dataset gpt-5.4 macro 
 | Phase 46 P08 | 25 | - tasks | - files |
 | Phase 47 | P01 | 8 min | 2 tasks, 2 files (1 created, 1 modified) |
 | Phase 47 | P02 | 2 min | 2 tasks, 2 files (1 created, 1 modified) |
+| Phase 48 | P01 | 24 min | 2 tasks, 1 file committed (log); sweep 99 calls, macro 88.9% MARGINAL FAIL |
