@@ -143,7 +143,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 | 44. HARNESS | 2/2 | Complete    | 2026-06-07 |
 | 45. AUDIT | 8/8 | Complete    | 2026-06-08 |
 | 46. MINIMIZE | 8/8 | Complete   | 2026-06-08 |
-| 47. SHIP | 0/TBD | Not started | — |
+| 47. SHIP | 0/2 | Planned     | — |
 | 48. SWEEP | 0/TBD | Not started | — |
 | 49. MILESTONE CLOSE | 0/TBD | Not started | — |
 
@@ -226,7 +226,13 @@ Plans:
   3. `git diff` on `s_linker19.py` and `s_linker13_min.py` (against their v2.6.3 close hashes) is empty — GATE-01 verified.
   4. The constants imported by `s_linker19` are unchanged on disk (byte-equal) — paper RQ1–RQ4 replay determinism preserved.
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+
+- [ ] 47-01-PLAN.md — Wave 1 — Create standalone s_linker20.py (copy s19 + remove prompts_v5 import + inline 13 minimized constants + 5 builder text edits + class/_VARIANT_NAME rename, no inheritance) + register in run_ablation.py (CANONICAL_VARIANTS + VARIANT_SPECS)
+- [ ] 47-02-PLAN.md — Wave 2 — Verify: dry-run load (LLM_BACKEND=checkpoint + --list-variants, zero LLM calls) + GATE-01 byte-equal (git diff + sha256sum) + GATE-06 taboo re-grep + s_linker20 registration guard test + CLAUDE.md Active Surface update
+
 **UI hint**: no
 
 ### Phase 48: SWEEP
