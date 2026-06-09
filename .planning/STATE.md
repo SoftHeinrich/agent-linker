@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
-status: executing
-stopped_at: Phase 48 plan 02 complete (verdict formalization — REQ-V264-09 FAIL 88.9%, GATE-06 clean, GATE-08 PASS $7.71)
+status: paused
+stopped_at: Phase 48 complete with NEGATIVE verdict (REQ-V264-09 FAIL 88.9% < 91.3% floor). v2.6.4 PAUSED for v2.6.5 remediation per user decision 2026-06-09 — Phase 49 CLOSE intentionally NOT run.
 last_updated: "2026-06-09T13:30:00Z"
-last_activity: 2026-06-09 -- Phase 48 plan 02 complete (verdict + gate records)
+last_activity: 2026-06-09 -- Phase 48 verdict recorded; autonomous stopped for remediation planning
 progress:
   total_phases: 6
   completed_phases: 5
@@ -56,20 +56,30 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 48 (sweep) — ALL PLANS COMPLETE; Phase 49 next
+Phase: 48 (sweep) — COMPLETE with NEGATIVE verdict. v2.6.4 PAUSED for v2.6.5 remediation (user decision 2026-06-09). Phase 49 CLOSE intentionally NOT run.
 Plan: 2 of 2 (complete)
-Status: Phase 48 complete — verdict formalized; REQ-V264-09 FAIL, GATE-06 clean, GATE-08 PASS
-Last activity: 2026-06-09 -- Phase 48 plan 02 complete (verdict + gate records; Phase 49 ready)
+Status: NEGATIVE result — s_linker20 minimized prompts regressed gpt-5.4 macro to 88.9% < 91.3% floor (minimization not behavior-preserving). REQ-V264-09 FAIL; GATE-06 clean; GATE-08 PASS ($7.71). Milestone NOT closed; remediation (v2.6.5) to be scoped.
+Last activity: 2026-06-09 -- Phase 48 verdict recorded; autonomous stopped for remediation planning
 
 ```
-Progress: v2.6.4 [█████████████████████████████░] 5/6 phases
+Progress: v2.6.4 [█████████████████████████████░] 5/6 phases — PAUSED (negative result)
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
           Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
           Phase 47 SHIP     [x] complete (2026-06-09) — s_linker20 shipped, GATE-01/06 pass
-          Phase 48 SWEEP    [x] complete (2026-06-09) — MARGINAL FAIL (macro 88.9%; GATE-06 clean; GATE-08 $7.71 PASS)
-          Phase 49 CLOSE    [ ] not started
+          Phase 48 SWEEP    [x] complete (2026-06-09) — NEGATIVE: macro 88.9% < 91.3% floor (TM/BBB/JAB regressed); GATE-06/08 pass
+          Phase 49 CLOSE    [ ] BLOCKED — v2.6.4 paused for v2.6.5 remediation
 ```
+
+## v2.6.5 Remediation (next — to scope)
+
+Phase 48 falsified the minimization hypothesis. Next milestone (v2.6.5) should bisect which Phase-46
+cuts caused the per-dataset regressions and partially revert:
+- **TeaMmates −6.5pp** — +13 coref FP (coref-rule trims CUT-COR-03/04/05 + VAL/COR jargon neutralizations are prime suspects).
+- **BigBlueButton −5.4pp** — recall deficit (FN 23, Recall 62.9%).
+- **JabRef −8.6pp** — single-link dataset, high variance; investigate the one FP/FN swing.
+- **Process gap to fix:** Phase 46 golden tests only checked cached parsed-output byte-equality (no live calls) → blind to behavioral regression. v2.6.5 should add a live-call canary on ≥1 regression-prone dataset before declaring a cut behavior-preserving.
+Start with: `/gsd:new-milestone` (v2.6.5) once remediation scope is agreed.
 
 ## v2.6.4 Roadmap Summary
 
@@ -133,9 +143,9 @@ Log: `logs/v2.6.4_s_linker20_gpt.log`
 ## Session Continuity
 
 Last session: 2026-06-09T13:30:00Z
-Stopped at: Phase 48 plan 02 complete (verdict formalization — REQ-V264-09 FAIL, GATE-06 clean, GATE-08 PASS $7.71)
+Stopped at: Phase 48 complete — NEGATIVE verdict (REQ-V264-09 FAIL 88.9%). v2.6.4 PAUSED for v2.6.5 remediation; Phase 49 CLOSE not run.
 Resume file: None
-Next action: Phase 49 CLOSE (milestone audit + MILESTONES.md + GATE-01/06/08 final)
+Next action: Scope + start v2.6.5 remediation (`/gsd:new-milestone`) — bisect Phase-46 cuts behind the TM/BBB/JAB regressions. Do NOT run Phase 49 CLOSE for v2.6.4 until remediation disposition is decided.
 
 ## Performance Metrics
 

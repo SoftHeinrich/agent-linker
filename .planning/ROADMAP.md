@@ -144,8 +144,10 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 | 45. AUDIT | 8/8 | Complete    | 2026-06-08 |
 | 46. MINIMIZE | 8/8 | Complete   | 2026-06-08 |
 | 47. SHIP | 2/2 | Complete    | 2026-06-09 |
-| 48. SWEEP | 2/2 | Complete (macro 88.9% MARGINAL FAIL; GATE-06 clean; GATE-08 $7.71 PASS) | 2026-06-09 |
-| 49. MILESTONE CLOSE | 0/TBD | Not started | — |
+| 48. SWEEP | 2/2 | Complete (macro 88.9% FAIL < 91.3% floor; GATE-06 clean; GATE-08 $7.71 PASS) | 2026-06-09 |
+| 49. MILESTONE CLOSE | 0/TBD | BLOCKED — v2.6.4 paused 2026-06-09 for v2.6.5 remediation (see note) | — |
+
+> **v2.6.4 disposition (2026-06-09):** Phase 48 falsified the milestone hypothesis — the Phase-46 Pareto-minimized prompts in `s_linker20` regressed gpt-5.4 macro to **88.9% < 91.3% floor** (TM −6.5pp, BBB −5.4pp, JAB −8.6pp; MS/TS +1.8pp each). Minimization was **not behavior-preserving**. Root-cause hint: Phase 46 golden tests asserted byte-equality on *cached parsed outputs* (zero live calls), so they could not detect behavioral regression. **User decision: do NOT close v2.6.4 as a negative result — pause and scope v2.6.5 remediation** (bisect which Phase-46 cuts drove the TM coref-FP / BBB-recall / JAB regressions and partially revert). Phase 49 CLOSE stays open until remediation scope is decided. `s_linker20` retained as-is; `s_linker19`/s17e remains the reference variant. Sweep log: `logs/v2.6.4_s_linker20_gpt.log`.
 
 ## Phase Details
 
