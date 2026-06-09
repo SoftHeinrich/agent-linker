@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: — FROZEN)
-status: ready_for_verification
-stopped_at: Phase 47 complete (plan 02 — GATE-01/06 verify + registration test + CLAUDE.md update)
-last_updated: "2026-06-09T10:22:30Z"
+status: verifying
+stopped_at: Phase 47 plan 02 complete (GATE-01/06 verify + registration test + CLAUDE.md update)
+last_updated: "2026-06-09T10:31:34.035Z"
 last_activity: 2026-06-09
 progress:
   total_phases: 4
@@ -56,8 +56,8 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 47 (ship) — COMPLETE (2/2 plans done)
-Plan: 2 of 2
+Phase: 47
+Plan: Not started
 Status: Phase 47 complete — GATE-01/06 verified, registration guard test passing, CLAUDE.md updated
 Last activity: 2026-06-09
 
