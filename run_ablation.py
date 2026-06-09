@@ -115,6 +115,7 @@ CANONICAL_VARIANTS = [
     "s_linker18c", # v2.6.3 18b + cleanup C (drop Phase 4b): no separate code-path filter LLM call; twopass p2 catches the FP class via mention_type signal; NOT canonical
     "s_linker18d", # v2.6.3 18c + cleanup B-refactor (alias-aware antecedent check, replaces antecedent_via_alias LLM-flag bypass); NOT canonical
     "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
+    "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -743,6 +744,23 @@ VARIANT_SPECS = {
             "Subclass of s_linker18d. Refactors _classify_mention to return a typed "
             "MentionType enum + structured info. Pure code readability — no behavior change "
             "vs 18d. Final clean variant; the unified design supporting the paper narrative."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20",
+        class_name="SLinker20",
+        description=(
+            "S-Linker20 — v2.6.4 minimized-prompt standalone variant "
+            "(experimental=True, NOT canonical). "
+            "Same logic as the preceding paper variant; all prompt constants inlined directly "
+            "(no import from prompts_v5). 12 Phase 46 cuts applied: "
+            "AMBIGUITY_FEW_SHOT drop, DOC_KNOWLEDGE_JUDGE_EXAMPLES drop, "
+            "5 cross-section pleonasm trims (AMB/EXT/VAL openers), "
+            "4 lexical-jargon neutralizations (DKJ/VAL/COR). "
+            "Target: gpt-5.4 macro F1 >= 91.3% (Phase 48 sweep)."
         ),
         canonical=False,
         experimental=True,
