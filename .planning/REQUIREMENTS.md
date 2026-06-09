@@ -28,13 +28,13 @@
 
 ### SHIP — New variant + regression
 
-- [ ] **REQ-V264-08** — `src/llm_sad_sam/linkers/experimental/s_linker20.py`: standalone file (no inheritance from `s_linker19`), `experimental=True`, `canonical=False`. Inlines the minimized PROMPT CONSTANTS so the audit is self-contained per the user's "duplicated standalone files over inheritance" preference. `s_linker19.py` and any prompt constants `s_linker19` imports are preserved **byte-equal** (paper RQ1–RQ4 replay determinism). `run_ablation.py` learns `--variants s_linker20`.
+- [x] **REQ-V264-08** — `src/llm_sad_sam/linkers/experimental/s_linker20.py`: standalone file (no inheritance from `s_linker19`), `experimental=True`, `canonical=False`. Inlines the minimized PROMPT CONSTANTS so the audit is self-contained per the user's "duplicated standalone files over inheritance" preference. `s_linker19.py` and any prompt constants `s_linker19` imports are preserved **byte-equal** (paper RQ1–RQ4 replay determinism). `run_ablation.py` learns `--variants s_linker20`.
 
 - [ ] **REQ-V264-09** — End-to-end GPT-5.4 5-dataset macro F1 on `s_linker20` ≥ **91.3%** (= s17e 92.3% − T 1.0pp). Per-dataset constraint: no dataset drops more than 2pp vs s17e's per-dataset numbers (MediaStore 94.9%, TeaStore 96.3%, TeaMmates 89.8%, BigBlueButton 80.4%, JabRef 100.0%). Single sweep validates promotion. Log goes to `logs/v2.6.4_s_linker20_gpt.log`.
 
 ### CARRY-FORWARD — Standing Gates
 
-- [ ] **GATE-01** (carried) — `s_linker13_min.py` AND `s_linker19.py` SHA-256 byte-equal at milestone close (paper baseline + canonical untouched). Verified via `git diff` against the v2.6.3 close hashes.
+- [x] **GATE-01** (carried) — `s_linker13_min.py` AND `s_linker19.py` SHA-256 byte-equal at milestone close (paper baseline + canonical untouched). Verified via `git diff` against the v2.6.3 close hashes.
 - [ ] **GATE-06** (re-verified) — Zero benchmark-derived vocabulary in any `s_linker20` prompt constant or f-string scaffold. Audit method: v2.1 cross-dataset vocabulary isolation methodology.
 - [ ] **GATE-08** (budget) — Sweep budget cap ≤ **$20** for the macro F1 regression validation (5-dataset gpt-5.4 single run); zero LLM calls for golden-test build.
 

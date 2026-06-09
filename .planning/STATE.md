@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: — FROZEN)
-status: executing
-stopped_at: Phase 47 plan 01 complete (s_linker20 ship)
-last_updated: "2026-06-09T10:16:12Z"
-last_activity: 2026-06-09 -- Phase 47 plan 01 complete
+status: ready_for_verification
+stopped_at: Phase 47 complete (plan 02 — GATE-01/06 verify + registration test + CLAUDE.md update)
+last_updated: "2026-06-09T10:22:30Z"
+last_activity: 2026-06-09
 progress:
-  total_phases: 6
-  completed_phases: 3
+  total_phases: 4
+  completed_phases: 4
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
 ---
 
 # Project State
@@ -56,17 +56,17 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 47 (ship) — EXECUTING (plan 1/2 done)
+Phase: 47 (ship) — COMPLETE (2/2 plans done)
 Plan: 2 of 2
-Status: Phase 47 plan 01 complete; plan 02 (GATE-01/06 verify + CLAUDE.md update) pending
-Last activity: 2026-06-09 -- Phase 47 plan 01 complete
+Status: Phase 47 complete — GATE-01/06 verified, registration guard test passing, CLAUDE.md updated
+Last activity: 2026-06-09
 
 ```
-Progress: v2.6.4 [████████████████░░░░░░░░░░░░░░] 3/6 phases
+Progress: v2.6.4 [████████████████████████░░░░░░] 4/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
           Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
-          Phase 47 SHIP     [~] executing — plan 01 complete (s_linker20 created + registered)
+          Phase 47 SHIP     [x] complete (2026-06-09) — s_linker20 shipped, GATE-01/06 pass
           Phase 48 SWEEP    [ ] not started (autonomous halts before exec per user direction)
           Phase 49 CLOSE    [ ] not started
 ```
@@ -118,10 +118,10 @@ Progress: v2.6.4 [████████████████░░░░�
 
 ## Session Continuity
 
-Last session: 2026-06-09T10:16:12Z
-Stopped at: Phase 47 plan 01 complete (s_linker20 ship)
-Resume file: .planning/phases/47-ship/47-01-SUMMARY.md
-Next action: `/gsd-execute-plan 47 02` — GATE-01/06 verification + CLAUDE.md active surface update
+Last session: 2026-06-09T10:22:30Z
+Stopped at: Phase 47 plan 02 complete (GATE-01/06 verify + registration test + CLAUDE.md update)
+Resume file: None
+Next action: `/gsd-execute-plan 48` — Phase 48 SWEEP (5-dataset gpt-5.4 macro F1 sweep; user go-ahead required)
 
 ## Performance Metrics
 
@@ -129,3 +129,4 @@ Next action: `/gsd-execute-plan 47 02` — GATE-01/06 verification + CLAUDE.md a
 |-------|------|----------|-------|
 | Phase 46 P08 | 25 | - tasks | - files |
 | Phase 47 | P01 | 8 min | 2 tasks, 2 files (1 created, 1 modified) |
+| Phase 47 | P02 | 2 min | 2 tasks, 2 files (1 created, 1 modified) |
