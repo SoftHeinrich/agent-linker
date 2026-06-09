@@ -67,3 +67,38 @@ Single-dataset re-sweeps on a scratch s20 with cuts selectively reverted (each ~
 GATE-06 must be re-checked on any restored text (the cuts were partly benchmark-generality trims; reverting may reintroduce flagged vocabulary — but COR/VAL cuts were "domain-loaded jargon swaps", block verdict `clean`, so reverting is GATE-06-safe per the minimize log).
 
 **Process fix for v2.6.5:** Phase 46 trusted cached-replay byte-equality as "behavior-preserving". It is not. Any future cut to a behavior-bearing prompt (coref/validation/extraction) needs a live-call canary on ≥1 sensitive dataset (TeaMmates for coref) before acceptance.
+
+---
+
+# Addendum (2026-06-09): paid bisection attempt — DISRUPTED + variance finding
+
+Ran targeted single-dataset ablation sweeps. Outcome: **inconclusive**, for two reasons.
+
+## 1. OpenAI 500 incident corrupted/blocked the batch
+A live OpenAI server-side incident (repeated `500 server_error` + `upstream connect reset`) hit during both jobs:
+- **TM coref bisect** (`ablcorefall, ablgate, ablrules, ablopener`): only `ablcorefall` completed (1412s, slowed by retries but all calls eventually succeeded → valid). `ablgate` crashed on an unrecoverable 500; `ablrules`/`ablopener` never ran.
+- **BBB drop-revert** (`abldrop` + s20 control): `abldrop` crashed on a 500; s20 control never ran.
+
+## 2. gpt-5.4 run-to-run variance dominates the effect size
+The one valid run is itself a warning. `ablcorefall` reverts **only coref prompts**, yet its TeaMmates **entity** results moved vs s20:
+
+| TeaMmates | s19 (orig) | s20 (cut) | ablcorefall (coref reverted) |
+|---|---|---|---|
+| TP | 50 | 50 (45 entity + 5 coref) | 44 (**38 entity** + 6 coref) |
+| FP | 9 | 13 (**all coref**) | 6 (2 entity + 4 coref) |
+| F1 | ~86.2 | 83.3 | 82.2 |
+
+Entity TP swung 45→38 (−7) on a phase whose prompts were **not** changed → pure gpt-5.4 non-determinism. This −7 entity swing is *larger* than the macro effect under investigation. **Single-run per-variant attribution is therefore not trustworthy.**
+
+## What can still be said
+- Directionally, the coref cuts make coref resolution **more aggressive**: s20 emits more coref links (13 FP, all coref) than the reverted version (4 coref FP + 6 coref TP). So the cuts shift the coref precision/recall tradeoff — consistent with the COR-01 "role-referential" qualifier removal broadening anaphora acceptance.
+- BUT reverting them does **not** cleanly recover TeaMmates F1 (82.2 ≈ 83.3) because recall co-moves and variance is large. The earlier "coref cuts caused the TM regression" must be **softened**: coref cuts change the FP/TP mix; the net macro effect is entangled with large run-to-run noise.
+
+## Correct experimental design for v2.6.5 (supersedes the cheap single-run plan)
+Single runs cannot resolve a ~3pp effect against a ±7-link (~15%) variance band. A valid bisection needs:
+1. **Stable API** (re-run after the OpenAI incident clears).
+2. **N≥3 runs per variant** per dataset to establish mean ± spread (or pin determinism via temperature/seed if the gpt-5.4 endpoint honors it — investigate first).
+3. Compare **distributions**, not point estimates; only call a cut "guilty" if its effect exceeds the variance band.
+4. Keep the per-link `source`-vs-gold tally (it cleanly separates coref vs entity contributions) — that part worked well.
+
+Spend on this disrupted attempt: ~39 successful calls, ≤ $3.58 upper-bound (real flex-tier ~$1). Total v2.6.4 LLM spend (sweep + ablation) remains well under the $20 cap.
