@@ -116,6 +116,11 @@ CANONICAL_VARIANTS = [
     "s_linker18d", # v2.6.3 18c + cleanup B-refactor (alias-aware antecedent check, replaces antecedent_via_alias LLM-flag bypass); NOT canonical
     "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
+    "s_linker20_ablcorefall",  # v2.6.5 ablation probe (experimental=True): s20 + full coref-family revert (COR-01/02/03/04 + VAL-03); NOT canonical
+    "s_linker20_ablgate",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_VALIDATION_FOCUS revert only (VAL-03); NOT canonical
+    "s_linker20_ablrules",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_RULES revert only (COR-01/02); NOT canonical
+    "s_linker20_ablopener",  # v2.6.5 ablation probe (experimental=True): s20 + _prompt_coref opener/inline revert only (COR-03/04); NOT canonical
+    "s_linker20_abldrop",  # v2.6.5 ablation probe (experimental=True): s20 + drop-by-empty few-shots restored (AMB-01 + DKJ-01); NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -761,6 +766,67 @@ VARIANT_SPECS = {
             "5 cross-section pleonasm trims (AMB/EXT/VAL openers), "
             "4 lexical-jargon neutralizations (DKJ/VAL/COR). "
             "Target: gpt-5.4 macro F1 >= 91.3% (Phase 48 sweep)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_ablcorefall": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_ablcorefall",
+        class_name="SLinker20AblCorefAll",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with the full coref-family revert "
+            "(COREF_RULES COR-01/02 + _prompt_coref opener/inline COR-03/04 + "
+            "COREF_VALIDATION_FOCUS VAL-03 restored to s19 text)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_ablgate": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_ablgate",
+        class_name="SLinker20AblGate",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with only COREF_VALIDATION_FOCUS "
+            "(VAL-03) reverted to s19 text."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_ablrules": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_ablrules",
+        class_name="SLinker20AblRules",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with only COREF_RULES (COR-01/02) "
+            "reverted to s19 text."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_ablopener": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_ablopener",
+        class_name="SLinker20AblOpener",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with only the _prompt_coref opener + "
+            "inline restatement (COR-03/04) reverted to s19 text."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_abldrop": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_abldrop",
+        class_name="SLinker20AblDrop",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with the drop-by-empty few-shots "
+            "restored (AMBIGUITY_FEW_SHOT AMB-01 + DOC_KNOWLEDGE_JUDGE_EXAMPLES DKJ-01)."
         ),
         canonical=False,
         experimental=True,
