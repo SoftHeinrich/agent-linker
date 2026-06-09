@@ -18,6 +18,7 @@ Retained runtime files:
 - [src/llm_sad_sam/linkers/experimental/s_linker17c.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17c.py) — v2.6.2 union merge variant (87.1% GPT, −2.0pp vs s15)
 - [src/llm_sad_sam/linkers/experimental/s_linker17d.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17d.py) — v2.6.2 validated-antecedent coref gate (86.8% GPT, wrong hypothesis)
 - [src/llm_sad_sam/linkers/experimental/s_linker17e.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker17e.py) — v2.6.2 validated coref (92.3% GPT, +3.2pp vs s15, **breakthrough**)
+- [src/llm_sad_sam/linkers/experimental/s_linker20.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/s_linker20.py) — v2.6.4 minimized-prompt standalone (experimental=True, no inheritance from s19; all constants inlined)
 - [src/llm_sad_sam/linkers/experimental/prompts.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts.py)
 - [src/llm_sad_sam/linkers/experimental/prompts_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/linkers/experimental/prompts_v2.py)
 - [src/llm_sad_sam/core/data_types_v2.py](/home/yu/project/adc/agent-linker/src/llm_sad_sam/core/data_types_v2.py)
