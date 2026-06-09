@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6
-milestone_name: — FROZEN)
-status: verifying
-stopped_at: Phase 47 plan 02 complete (GATE-01/06 verify + registration test + CLAUDE.md update)
+milestone: v2.6.4
+milestone_name: — IN PROGRESS)
+status: executing
+stopped_at: Phase 47 (SHIP) complete — s_linker20 shipped + registered; GATE-01/06 clean. Awaiting explicit go-ahead before Phase 48 SWEEP (spends LLM budget ≤$20).
 last_updated: "2026-06-09T10:31:34.035Z"
 last_activity: 2026-06-09
 progress:
-  total_phases: 4
+  total_phases: 6
   completed_phases: 4
   total_plans: 20
   completed_plans: 20
+  percent: 67
 ---
 
 # Project State
