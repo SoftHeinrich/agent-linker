@@ -248,7 +248,12 @@ Plans:
   4. GATE-06 re-verified on `s_linker20`: zero benchmark-derived vocabulary in any inlined constant or f-string scaffold (cross-dataset isolation methodology from v2.1).
   5. Total API cost for this sweep ≤ $20 (GATE-08); cost logged or estimated from token counts.
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+
+- [ ] 48-01-PLAN.md — Wave 1 — Pre-flight (API key + backend/model wiring + cost estimate) then run the paid 5-dataset gpt-5.4 sweep on s_linker20 → logs/v2.6.4_s_linker20_gpt.log
+- [ ] 48-02-PLAN.md — Wave 2 — Extract per-dataset F1 + macro, render PASS/FAIL verdict vs s17e (floor 91.3%, −2pp fence), re-verify GATE-06, reconstruct GATE-08 cost ≤ $20 → 48-02-SUMMARY.md for Phase 49
 **UI hint**: no
 
 ### Phase 49: MILESTONE CLOSE
