@@ -143,7 +143,7 @@ Archived → see [`milestones/v2.6.3-ROADMAP.md`](milestones/v2.6.3-ROADMAP.md),
 | 44. HARNESS | 2/2 | Complete    | 2026-06-07 |
 | 45. AUDIT | 8/8 | Complete    | 2026-06-08 |
 | 46. MINIMIZE | 8/8 | Complete   | 2026-06-08 |
-| 47. SHIP | 0/2 | Planned     | — |
+| 47. SHIP | 1/2 | In Progress | — |
 | 48. SWEEP | 0/TBD | Not started | — |
 | 49. MILESTONE CLOSE | 0/TBD | Not started | — |
 
@@ -230,7 +230,7 @@ Plans:
 
 Plans:
 
-- [ ] 47-01-PLAN.md — Wave 1 — Create standalone s_linker20.py (copy s19 + remove prompts_v5 import + inline 13 minimized constants + 5 builder text edits + class/_VARIANT_NAME rename, no inheritance) + register in run_ablation.py (CANONICAL_VARIANTS + VARIANT_SPECS)
+- [x] 47-01-PLAN.md — Wave 1 — Create standalone s_linker20.py (copy s19 + remove prompts_v5 import + inline 13 minimized constants + 5 builder text edits + class/_VARIANT_NAME rename, no inheritance) + register in run_ablation.py (CANONICAL_VARIANTS + VARIANT_SPECS) — COMPLETE 2026-06-09 (de3b48e, a267a96)
 - [ ] 47-02-PLAN.md — Wave 2 — Verify: dry-run load (LLM_BACKEND=checkpoint + --list-variants, zero LLM calls) + GATE-01 byte-equal (git diff + sha256sum) + GATE-06 taboo re-grep + s_linker20 registration guard test + CLAUDE.md Active Surface update
 
 **UI hint**: no

@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6.4
-milestone_name: — IN PROGRESS)
+milestone: v2.6
+milestone_name: — FROZEN)
 status: executing
-stopped_at: Phase 46 complete — minimized prompt set frozen in tests/scratch
-last_updated: "2026-06-08T17:00:00.000Z"
-last_activity: 2026-06-08
+stopped_at: Phase 47 plan 01 complete (s_linker20 ship)
+last_updated: "2026-06-09T10:16:12Z"
+last_activity: 2026-06-09 -- Phase 47 plan 01 complete
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 18
-  completed_plans: 18
-  percent: 50
+  total_plans: 20
+  completed_plans: 19
 ---
 
 # Project State
@@ -21,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
 
 **Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 47 — ship (Phase 46 minimize shipped 2026-06-08: 12 cuts kept, 14 LOC saved, 1 benchmark-leak eliminated)
+**Current focus:** Phase 47 — ship
 
 ## v2.6.3 — SHIPPED 2026-06-05
 
@@ -57,17 +56,17 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 
 ## Current Position
 
-Phase: 47
-Plan: Not started
-Status: Phase 46 complete (8/8 plans). Minimized prompt set frozen in tests/scratch/{s_linker19.py, prompts_v5.py}. 12 cuts kept, 5 superseded-by-drop, 2 protected tombstones. 14 LOC saved. Benchmark-leak eliminated. GATE-01 byte-equal preserved.
-Last activity: 2026-06-08
+Phase: 47 (ship) — EXECUTING (plan 1/2 done)
+Plan: 2 of 2
+Status: Phase 47 plan 01 complete; plan 02 (GATE-01/06 verify + CLAUDE.md update) pending
+Last activity: 2026-06-09 -- Phase 47 plan 01 complete
 
 ```
-Progress: v2.6.4 [███████████████░░░░░░░░░░░░░░░] 3/6 phases
+Progress: v2.6.4 [████████████████░░░░░░░░░░░░░░] 3/6 phases
           Phase 44 HARNESS  [x] complete (2026-06-07)
           Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
           Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
-          Phase 47 SHIP     [ ] not started
+          Phase 47 SHIP     [~] executing — plan 01 complete (s_linker20 created + registered)
           Phase 48 SWEEP    [ ] not started (autonomous halts before exec per user direction)
           Phase 49 CLOSE    [ ] not started
 ```
@@ -106,9 +105,9 @@ Progress: v2.6.4 [███████████████░░░░░�
 
 ## v2.6.4 Target Artifact
 
-- **`src/llm_sad_sam/linkers/experimental/s_linker20.py`** (to be created in Phase 47)
+- **`src/llm_sad_sam/linkers/experimental/s_linker20.py`** (CREATED Phase 47 plan 01, commit de3b48e)
 - Standalone (no inheritance from s19); minimized inlined constants; experimental=True, canonical=False.
-- Target: gpt-5.4 macro ≥ 91.3%.
+- Registered in run_ablation.py (commit a267a96). Target: gpt-5.4 macro ≥ 91.3%.
 
 ## Quick Tasks Completed
 
@@ -119,13 +118,14 @@ Progress: v2.6.4 [███████████████░░░░░�
 
 ## Session Continuity
 
-Last session: 2026-06-08T16:32:27.512Z
-Stopped at: Phase 46 plan 04 complete (DKJ drop-block)
-Resume file: .planning/phases/46-minimize/46-04-SUMMARY.md
-Next action: `/gsd-execute-plan 46 05` — EXT section (1 cut: CUT-EXT-01 cross-section pleonasm; uses pre-decided `components` bare vocabulary per 46-01 batch)
+Last session: 2026-06-09T10:16:12Z
+Stopped at: Phase 47 plan 01 complete (s_linker20 ship)
+Resume file: .planning/phases/47-ship/47-01-SUMMARY.md
+Next action: `/gsd-execute-plan 47 02` — GATE-01/06 verification + CLAUDE.md active surface update
 
 ## Performance Metrics
 
 | Phase | Plan | Duration | Notes |
 |-------|------|----------|-------|
 | Phase 46 P08 | 25 | - tasks | - files |
+| Phase 47 | P01 | 8 min | 2 tasks, 2 files (1 created, 1 modified) |
