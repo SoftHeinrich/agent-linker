@@ -234,3 +234,28 @@ User insight: the s17g UNION fix (Framing C 2-pass union > intersection; +~5 BBB
 - "Wrong parent" CONFIRMED: the paper line silently kept the intersection gate s17g had already beaten. The minimization (s20) was sound; the base it was applied to was missing a known recall fix.
 - **Recommended ship variant: `s_linker20_union`** (minimized prompts + union consensus). It is the Pareto-best AND clears the original floor.
 - Residual: JabRef 96.1 vs s17e 100.0 — s20_union still ~1 link short (the dropped Framings A/B, independent of union). Closing that (restore A/B framings for JabRef-type single-link cases) would push macro higher still — optional follow-up.
+
+---
+
+# CORRECTION (2026-06-10): s20_union N=6 — 0.918 was a favorable triple; true ≈ 0.906
+
+Ran s_linker20_union 3 more whole-dataset sweeps (N=6 total). The N=3 0.918 did NOT hold.
+
+| metric | N=3 (runs 1-3) | N=6 (all) |
+|---|---|---|
+| macro mean | 0.918 | **0.9058** |
+| macro range | 0.909-0.929 | **0.888-0.929** (stdev 1.44pp) |
+| per-run macro | 92.9/91.5/90.9 | +88.9/88.8/90.4 |
+| BBB TP/run (gold 62) | 46/48/45 | +41/43/46 (mean 44.8) |
+
+- The two triples differ by 2.4pp (91.8 vs 89.4) — N=3 was a favorable draw, same variance trap as the original Phase-48 sweep.
+- BBB union benefit is REAL but NOISY: mean +~3 TP vs s20 (44.8 vs ~42), but runs 4-5 fell back to 41/43.
+- **s20_union ≈ 0.906 (N=6) does NOT robustly clear the original 0.913 floor** (2/6 runs clear it). It clears the corrected N>=3 floor ~0.891 comfortably.
+
+## Corrected ranking (all within noise — statistically TIED)
+s20_union 0.906 > s20 0.903 > s17e 0.901 > s19 0.897. Spread 0.9pp vs per-variant stdev ~1.4pp ⇒ NOT separable.
+
+## Hardened meta-conclusion
+Even N=3 is unreliable here: between-triple macro swings reach ~2.4pp. To rank variants separated by <1pp you need N≫6 (likely 15-20+). The practical implication: **all these variants are equivalent within measurement error**; "which is best" is not answerable at feasible sample sizes. Union is a mild, defensible average improvement on BBB recall but not a floor-clearing breakthrough.
+
+Cost note: investigation total ~$67-71 realistic at this point.
