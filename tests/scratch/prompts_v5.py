@@ -106,7 +106,7 @@ ANTECEDENT_ALIAS_RULES = """For each resolution, set antecedent_via_alias:
 - false: the antecedent quote uses the canonical name verbatim as listed in COMPONENTS.
 
 Examples:
-- COMPONENTS contains "PowerSupplyUnit"; antecedent: "the unit regulates voltage" -> true (uses terminal "unit", not canonical "PowerSupplyUnit").
-- COMPONENTS contains "PowerSupplyUnit"; antecedent: "PowerSupplyUnit regulates voltage" -> false (canonical name verbatim).
+- COMPONENTS contains "TaskScheduler"; antecedent: "The scheduler queues jobs" -> true (uses terminal "scheduler", not canonical "TaskScheduler").
+- COMPONENTS contains "TaskScheduler"; antecedent: "TaskScheduler queues jobs" -> false (canonical name verbatim).
 
 Default to true when the antecedent form clearly differs from the canonical name but unambiguously identifies the component."""
