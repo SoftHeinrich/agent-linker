@@ -117,6 +117,7 @@ CANONICAL_VARIANTS = [
     "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
     "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
+    "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
     "s_linker20_ablcorefall",  # v2.6.5 ablation probe (experimental=True): s20 + full coref-family revert (COR-01/02/03/04 + VAL-03); NOT canonical
     "s_linker20_ablgate",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_VALIDATION_FOCUS revert only (VAL-03); NOT canonical
     "s_linker20_ablrules",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_RULES revert only (COR-01/02); NOT canonical
@@ -763,6 +764,19 @@ VARIANT_SPECS = {
             "S-Linker19 — paper reference variant (experimental=True, NOT canonical). "
             "s20's un-minimized parent; registered in v2.6.5 for live N=3 floor re-derivation. "
             "s_linker19.py is byte-equal frozen (GATE-01) — registration does not modify it."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_union": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_union",
+        class_name="SLinker20Union",
+        description=(
+            "S-Linker20Union ('s19U') — v2.6.5 (experimental=True, NOT canonical). "
+            "s20 (minimized) with the Framing C 2-pass consensus changed from INTERSECTION to UNION "
+            "(mirrors s17g). The s18->s19 paper line kept intersection, which s17g showed killed ~5 BBB "
+            "TPs for 0 FP saved. Tests whether union recovers BBB recall and yields the true-best parent."
         ),
         canonical=False,
         experimental=True,
