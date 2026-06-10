@@ -59,7 +59,7 @@ Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
 Phase: 48 (sweep) — COMPLETE with NEGATIVE verdict. v2.6.4 PAUSED for v2.6.5 remediation (user decision 2026-06-09). Phase 49 CLOSE intentionally NOT run.
 Plan: 2 of 2 (complete)
 Status: NEGATIVE result — s_linker20 minimized prompts regressed gpt-5.4 macro to 88.9% < 91.3% floor (minimization not behavior-preserving). REQ-V264-09 FAIL; GATE-06 clean; GATE-08 PASS ($7.71). Milestone NOT closed; remediation (v2.6.5) to be scoped.
-Last activity: 2026-06-09 -- Phase 48 verdict recorded; autonomous stopped for remediation planning
+Last activity: 2026-06-10 - Completed quick task 260610-lio: explore cut/non-SE rewrite of ANTECEDENT_ALIAS_RULES few-shot
 
 ```
 Progress: v2.6.4 [█████████████████████████████░] 5/6 phases — PAUSED (negative result)
@@ -131,6 +131,7 @@ Start with: `/gsd:new-milestone` (v2.6.5) once scope is agreed.
 |---|-------------|------|--------|-----------|
 | 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
 | 20260604-lissa-rq1-eval | Clone lissa-replication into sota/; re-evaluate gpt-5-mini d2m/d2c tracelinks via metrics_api.py; fill RQ1 LiSSA cells | 2026-06-04 | — | [20260604-lissa-rq1-eval](./quick/20260604-lissa-rq1-eval/) |
+| 260610-lio | Explore cut vs non-SE(hardware) rewrite of ANTECEDENT_ALIAS_RULES few-shot — both snapshot-safe + GATE-06-clean (free checks); behavior unconfirmed (deferred N≥3 TM sweep). Rec: Candidate B (hardware rewrite) | 2026-06-10 | 37dbf28 | [260610-lio-cut-or-non-se-rewrite-antecedent-alias-r](./quick/260610-lio-cut-or-non-se-rewrite-antecedent-alias-r/) |
 
 ## s_linker20 Sweep Results (Phase 48 Plan 01)
 
