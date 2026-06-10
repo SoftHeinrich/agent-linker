@@ -115,6 +115,7 @@ CANONICAL_VARIANTS = [
     "s_linker18c", # v2.6.3 18b + cleanup C (drop Phase 4b): no separate code-path filter LLM call; twopass p2 catches the FP class via mention_type signal; NOT canonical
     "s_linker18d", # v2.6.3 18c + cleanup B-refactor (alias-aware antecedent check, replaces antecedent_via_alias LLM-flag bypass); NOT canonical
     "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
+    "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker20_ablcorefall",  # v2.6.5 ablation probe (experimental=True): s20 + full coref-family revert (COR-01/02/03/04 + VAL-03); NOT canonical
     "s_linker20_ablgate",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_VALIDATION_FOCUS revert only (VAL-03); NOT canonical
@@ -750,6 +751,18 @@ VARIANT_SPECS = {
             "Subclass of s_linker18d. Refactors _classify_mention to return a typed "
             "MentionType enum + structured info. Pure code readability — no behavior change "
             "vs 18d. Final clean variant; the unified design supporting the paper narrative."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker19": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker19",
+        class_name="SLinker19",
+        description=(
+            "S-Linker19 — paper reference variant (experimental=True, NOT canonical). "
+            "s20's un-minimized parent; registered in v2.6.5 for live N=3 floor re-derivation. "
+            "s_linker19.py is byte-equal frozen (GATE-01) — registration does not modify it."
         ),
         canonical=False,
         experimental=True,
