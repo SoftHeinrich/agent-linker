@@ -105,4 +105,8 @@ ANTECEDENT_ALIAS_RULES = """For each resolution, set antecedent_via_alias:
 - true:  the antecedent quote refers to the component by an ALIAS — a terminal word of a multi-word name, an abbreviation, a hyphenated form, or any documented alternate name rather than the canonical name listed in COMPONENTS.
 - false: the antecedent quote uses the canonical name verbatim as listed in COMPONENTS.
 
+Examples:
+- COMPONENTS contains "PowerSupplyUnit"; antecedent: "the unit regulates voltage" -> true (uses terminal "unit", not canonical "PowerSupplyUnit").
+- COMPONENTS contains "PowerSupplyUnit"; antecedent: "PowerSupplyUnit regulates voltage" -> false (canonical name verbatim).
+
 Default to true when the antecedent form clearly differs from the canonical name but unambiguously identifies the component."""
