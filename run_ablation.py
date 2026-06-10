@@ -121,6 +121,7 @@ CANONICAL_VARIANTS = [
     "s_linker20_ablrules",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_RULES revert only (COR-01/02); NOT canonical
     "s_linker20_ablopener",  # v2.6.5 ablation probe (experimental=True): s20 + _prompt_coref opener/inline revert only (COR-03/04); NOT canonical
     "s_linker20_abldrop",  # v2.6.5 ablation probe (experimental=True): s20 + drop-by-empty few-shots restored (AMB-01 + DKJ-01); NOT canonical
+    "s_linker20_ablpleonasm",  # v2.6.5 ablation probe (experimental=True): s20 + 5 generality/jargon cuts reverted (AMB-02/EXT-01/VAL-01/VAL-02/DKJ-07); NOT canonical
 ]
 
 VARIANT_SPECS = {
@@ -827,6 +828,19 @@ VARIANT_SPECS = {
             "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
             "NOT canonical). Copy of s_linker20 with the drop-by-empty few-shots "
             "restored (AMBIGUITY_FEW_SHOT AMB-01 + DOC_KNOWLEDGE_JUDGE_EXAMPLES DKJ-01)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_ablpleonasm": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_ablpleonasm",
+        class_name="SLinker20AblPleonasm",
+        description=(
+            "S-Linker20 ablation probe (v2.6.5 regression bisection; experimental=True, "
+            "NOT canonical). Copy of s_linker20 with the 5 remaining generality/jargon "
+            "cuts reverted to s19 text (AMB-02 + EXT-01 + VAL-01 + VAL-02 + DKJ-07); "
+            "all coref + drop cuts left in s20 form."
         ),
         canonical=False,
         experimental=True,
