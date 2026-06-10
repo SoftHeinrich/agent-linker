@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
 status: paused
-stopped_at: Phase 48 verdict OVERTURNED 2026-06-10 by N=3 re-baseline — s20 PASSES corrected floor (macro 0.9026 >= 0.8914; edges s17e 0.9014 + s19 0.8974). Phase-48 FAIL was a double single-run variance artifact. v2.6.4 ready to CLOSE as PASS pending user go-ahead.
-last_updated: "2026-06-10T05:00:00Z"
-last_activity: 2026-06-10 -- N=3 floor re-baseline; FAIL->PASS; awaiting decision to close v2.6.4
+stopped_at: 2026-06-10 — N=3 analysis overturned Phase-48 FAIL AND found a better variant. (1) s20 PASSES corrected floor (0.9026 >= 0.8914). (2) BREAKTHROUGH: s_linker20_union ('s19U' = s20 + Framing C UNION, the s17g fix never carried into the paper line) hits macro 0.918 N=3 — best on record, clears even the original 0.913 floor; BBB +4.5pp via +5 recall TPs. 'Wrong parent' confirmed. Ship candidate = s_linker20_union. Awaiting user decision.
+last_updated: "2026-06-10T06:30:00Z"
+last_activity: 2026-06-10 -- s20_union breakthrough (0.918); awaiting ship/close decision
 progress:
   total_phases: 6
   completed_phases: 5
