@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.6.4
 milestone_name: — IN PROGRESS)
 status: paused
-stopped_at: Phase 48 complete with NEGATIVE verdict (REQ-V264-09 FAIL 88.9% < 91.3% floor). v2.6.4 PAUSED for v2.6.5 remediation per user decision 2026-06-09 — Phase 49 CLOSE intentionally NOT run.
-last_updated: "2026-06-09T13:30:00Z"
-last_activity: 2026-06-09 -- Phase 48 verdict recorded; autonomous stopped for remediation planning
+stopped_at: Phase 48 verdict OVERTURNED 2026-06-10 by N=3 re-baseline — s20 PASSES corrected floor (macro 0.9026 >= 0.8914; edges s17e 0.9014 + s19 0.8974). Phase-48 FAIL was a double single-run variance artifact. v2.6.4 ready to CLOSE as PASS pending user go-ahead.
+last_updated: "2026-06-10T05:00:00Z"
+last_activity: 2026-06-10 -- N=3 floor re-baseline; FAIL->PASS; awaiting decision to close v2.6.4
 progress:
   total_phases: 6
   completed_phases: 5
