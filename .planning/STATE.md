@@ -71,15 +71,21 @@ Progress: v2.6.4 [████████████████████�
           Phase 49 CLOSE    [ ] BLOCKED — v2.6.4 paused for v2.6.5 remediation
 ```
 
-## v2.6.5 Remediation (next — to scope)
+## v2.6.5 Remediation (next — to scope) — UPDATED 2026-06-10 after N=3 bisection
 
-Phase 48 falsified the minimization hypothesis. Next milestone (v2.6.5) should bisect which Phase-46
-cuts caused the per-dataset regressions and partially revert:
-- **TeaMmates −6.5pp** — +13 coref FP (coref-rule trims CUT-COR-03/04/05 + VAL/COR jargon neutralizations are prime suspects).
-- **BigBlueButton −5.4pp** — recall deficit (FN 23, Recall 62.9%).
-- **JabRef −8.6pp** — single-link dataset, high variance; investigate the one FP/FN swing.
-- **Process gap to fix:** Phase 46 golden tests only checked cached parsed-output byte-equality (no live calls) → blind to behavioral regression. v2.6.5 should add a live-call canary on ≥1 regression-prone dataset before declaring a cut behavior-preserving.
-Start with: `/gsd:new-milestone` (v2.6.5) once remediation scope is agreed.
+**Bisection done (N=3, ~$40). Result: NO single cut is guilty — and the regression is much smaller than the single sweep showed.** Full analysis: `.planning/phases/48-sweep/48-REGRESSION-ANALYSIS.md`.
+- **s20 TRUE macro = 0.903** (N=3 full sweeps), not 0.889. The Phase-48 single sweep drew low on its two highest-variance datasets simultaneously (TM + BBB), understating macro by ~1.4pp.
+- All 12 cuts probed individually (ablgate/ablrules/ablopener/abldrop/ablpleonasm): every group is within the variance band; reverting none recovers macro (ablrules is slightly *worse*).
+- Residual deficit vs floor (0.913) is ~1pp, diffuse (TM + JabRef, both noisy/small). Vs a like-for-like LIVE s19 (0.907) the gap is only ~0.4pp — within noise.
+- **The 0.913 floor is itself variance-inflated** (set as s17e 92.3% −1.0, from a single s17e run). s20's honest range already reaches 0.910.
+
+**v2.6.5 is therefore NOT a "revert cut X" exercise. Real options:**
+1. Re-derive the floor from an N≥3 mean of the reference variant (not a single draw), then re-judge s20 against it.
+2. If 0.913 is firm, the minimization can't reach it → don't promote s20 over s19.
+3. Bake N≥3 averaging into the eval protocol; add a live-call canary before accepting any behavior-bearing cut (Phase-46 cached-replay byte-equality was blind to behavior).
+
+Artifacts: 6 ablation probe variants + `results/v2.6.5/` + `logs/v2.6.5/` (keep for re-baseline, or remove in cleanup).
+Start with: `/gsd:new-milestone` (v2.6.5) once scope is agreed.
 
 ## v2.6.4 Roadmap Summary
 
