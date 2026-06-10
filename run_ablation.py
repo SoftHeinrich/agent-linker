@@ -118,6 +118,8 @@ CANONICAL_VARIANTS = [
     "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
+    "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
+    "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
     "s_linker20_ablcorefall",  # v2.6.5 ablation probe (experimental=True): s20 + full coref-family revert (COR-01/02/03/04 + VAL-03); NOT canonical
     "s_linker20_ablgate",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_VALIDATION_FOCUS revert only (VAL-03); NOT canonical
     "s_linker20_ablrules",  # v2.6.5 ablation probe (experimental=True): s20 + COREF_RULES revert only (COR-01/02); NOT canonical
@@ -764,6 +766,30 @@ VARIANT_SPECS = {
             "S-Linker19 — paper reference variant (experimental=True, NOT canonical). "
             "s20's un-minimized parent; registered in v2.6.5 for live N=3 floor re-derivation. "
             "s_linker19.py is byte-equal frozen (GATE-01) — registration does not modify it."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_aliasa": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_aliasa",
+        class_name="SLinker20AliasA",
+        description=(
+            "S-Linker20AliasA — v2.6.5 quick-260610-lio (experimental=True, NOT canonical). "
+            "s20 with the ANTECEDENT_ALIAS_RULES few-shot ('Examples:' block) CUT entirely. "
+            "Tests whether the coref antecedent_via_alias few-shot is load-bearing (live behavior)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_aliasb": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_aliasb",
+        class_name="SLinker20AliasB",
+        description=(
+            "S-Linker20AliasB — v2.6.5 quick-260610-lio (experimental=True, NOT canonical). "
+            "s20 with the ANTECEDENT_ALIAS_RULES few-shot rewritten to a non-SE hardware example "
+            "(PowerSupplyUnit/'the unit'/voltage). Tests generality-neutral rewrite vs live behavior."
         ),
         canonical=False,
         experimental=True,
