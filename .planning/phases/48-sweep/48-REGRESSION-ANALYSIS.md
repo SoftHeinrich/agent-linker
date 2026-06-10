@@ -136,3 +136,45 @@ Re-ran the bisection properly after the OpenAI incident cleared: N=3 per variant
 - **All 7 behavior-bearing cuts tested (5 coref + 2 drop) are individually innocent.** Remaining 5 generality/jargon cuts (AMB-02, EXT-01, VAL-01, VAL-02, DKJ-07) are being tested via `s_linker20_ablpleonasm` on a full N=3 sweep, alongside s19 and s20 full N=3 to settle whether any real macro regression exists.
 
 (Comprehensive full-sweep results appended below when the run completes.)
+
+---
+
+# FINAL VERDICT (2026-06-10, comprehensive N=3) — no single cut is guilty
+
+Full 5-dataset sweeps, N=3, stable API.
+
+| Config | macro [range] | per-dataset means (MS/TS/TM/BBB/JAB) |
+|---|---|---|
+| **s20 (all 12 cuts)** | **0.9026** [0.898–0.910] | .967 / .987 / .833 / .785 / .941 |
+| ablpleonasm (5 generality cuts reverted) | 0.8947 [0.891–0.897] | .962 / .950 / .836 / .784 / .941 |
+| s19 (no cuts) — historical control | 0.907 (live clean) / 0.922 (replay) | — |
+| Phase-48 single sweep (the 88.9% verdict) | 0.889 | low draw |
+| floor | 0.913 | — |
+
+## All 12 cuts — attribution
+| Cut group | Probe | Result | Guilty? |
+|---|---|---|---|
+| COR-01/02 (COREF_RULES) | ablrules | reverting → *worse* TM (FP↑) | NO |
+| COR-03/04 (_prompt_coref) | ablopener | within noise of control | NO |
+| VAL-03 (COREF_VALIDATION_FOCUS) | ablgate | within noise of control | NO |
+| AMB-01 + DKJ-01 (drop-by-empty) | abldrop | +1.8pp BBB, inside variance | NO |
+| AMB-02/EXT-01/VAL-01/VAL-02/DKJ-07 (generality) | ablpleonasm | 0.895 ≤ s20 0.903 | NO |
+
+**No single cut accounts for the regression.** Reverting any group either fails to help or hurts.
+
+## What actually happened
+1. **Variance was ~1.4pp of the apparent deficit.** s20's TRUE macro is **0.903** (N=3), not 0.889. The Phase-48 single sweep simultaneously drew low on its two highest-variance datasets (TM 0.833 single→ range 0.807–0.875; BBB 0.750 single → range 0.774–0.804).
+2. **A small real deficit (~1pp below the 0.913 floor) remains**, concentrated in TeaMmates (s20 ~0.833 vs s19 ~0.862–0.904) and JabRef (s20 0.941 vs s19 1.000 — i.e. ~1 link on an 18-link set). Both are noisy/small.
+3. **Relative to a like-for-like live s19 (0.907), s20 (0.903) is only ~0.4pp lower — within the noise band.** The larger gap vs the 0.922 replay number reflects live-vs-replay conditions, not the cuts.
+
+## Implication for v2.6.5 (no "revert cut X" fix exists)
+- There is **no smoking-gun cut** to revert. The minimization is, at worst, a diffuse ~1pp softer than s19 — and indistinguishable from s19 when both are measured live with N=3.
+- The **0.913 floor itself is variance-inflated**: it was set as `s17e 92.3% − 1.0`, but s17e's 92.3% was a single-run number; s20's own honest range already reaches 0.910. Recommend re-deriving the floor from an N≥3 mean of the reference variant, not a single draw.
+- Options: (a) accept s20 ≈ 0.903 and re-baseline the floor on multi-run means; (b) if 0.913 is firm, the minimization cannot reach it and s20 should not supersede s19; (c) bake N≥3 averaging into the eval protocol so future verdicts aren't single-draw artifacts.
+- **Process fix stands:** Phase 46 cached-replay byte-equality cannot detect behavior change, AND single-run live sweeps cannot resolve <2pp effects. Both must change for v2.6.5.
+
+## Cost
+This investigation: ~1320 gpt-5.4 calls, ≤ $113 upper-bound (GPT-4 formula), **~$40 realistic** (flex tier). Within the approved ≤$40 ceiling.
+
+## Artifacts (committed)
+6 ablation probe variants (`s_linker20_abl{gate,rules,opener,corefall,drop,pleonasm}.py`) + registrations; per-run results under `results/v2.6.5/`; logs under `logs/v2.6.5/`. These can be removed in cleanup or kept for the v2.6.5 re-baseline.
