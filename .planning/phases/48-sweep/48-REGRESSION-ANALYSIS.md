@@ -210,3 +210,27 @@ v2.6.4 can close as **PASS / hypothesis CONFIRMED** (minimized prompts hold the 
 
 ## Total investigation cost
 Reported inline at run time; full bisection + re-baseline stayed within the approved ceiling.
+
+---
+
+# BREAKTHROUGH (2026-06-10): s19U / s20_union is the real best — "wrong parent" confirmed
+
+User insight: the s17g UNION fix (Framing C 2-pass union > intersection; +~5 BBB TPs, 0 FP cost) was never carried into the s18->s19->s20 paper line, which kept INTERSECTION. Built `s_linker20_union` = s20 (minimized) + that one-line union change. N=3 full sweeps:
+
+| dataset | s17e | s19 | s20 | **s20_union** |
+|---|---|---|---|---|
+| MediaStore | 92.0 | 95.5 | 96.7 | **97.8** |
+| TeaStore | 96.3 | 96.3 | 98.7 | 98.1 |
+| TeaMmates | 84.5 | 85.7 | 83.3 | 83.9 |
+| BigBlueButton | 77.9 | 78.9 | 78.5 | **83.0** |
+| JabRef | 100.0 | 92.3 | 94.1 | 96.1 |
+| **MACRO (N=3)** | 90.1 | 89.7 | 90.3 | **91.8** |
+
+- BBB TP/run: s20 [41,43,42] -> s20_union [46,48,45] (+~5 TP every run — reproducible, not noise). BBB F1 78.5 -> 83.0.
+- **s20_union 91.8% is the best variant on record**: +1.5pp vs s20, +1.7pp vs s17e, +2.1pp vs s19. Clears even the ORIGINAL inflated floor 91.3%.
+- GATE-01 intact (s19/s13min/s20 byte-equal; union is a new standalone file). GATE-06: union touches no prompt text (pure consensus-op change) — clean by construction.
+
+## Conclusion
+- "Wrong parent" CONFIRMED: the paper line silently kept the intersection gate s17g had already beaten. The minimization (s20) was sound; the base it was applied to was missing a known recall fix.
+- **Recommended ship variant: `s_linker20_union`** (minimized prompts + union consensus). It is the Pareto-best AND clears the original floor.
+- Residual: JabRef 96.1 vs s17e 100.0 — s20_union still ~1 link short (the dropped Framings A/B, independent of union). Closing that (restore A/B framings for JabRef-type single-link cases) would push macro higher still — optional follow-up.
