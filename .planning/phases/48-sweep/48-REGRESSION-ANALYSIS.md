@@ -178,3 +178,35 @@ This investigation: ~1320 gpt-5.4 calls, ≤ $113 upper-bound (GPT-4 formula), *
 
 ## Artifacts (committed)
 6 ablation probe variants (`s_linker20_abl{gate,rules,opener,corefall,drop,pleonasm}.py`) + registrations; per-run results under `results/v2.6.5/`; logs under `logs/v2.6.5/`. These can be removed in cleanup or kept for the v2.6.5 re-baseline.
+
+---
+
+# FLOOR RE-BASELINE (2026-06-10, N=3) — Phase-48 FAIL was a DOUBLE variance artifact; s20 PASSES
+
+Measured the reference line live at N=3 (s17e was registered; s19 registered additively — frozen s19.py untouched, GATE-01 intact).
+
+| Variant | macro N=3 mean [range] | note |
+|---|---|---|
+| s17e | **0.9014** [0.890–0.908] | the floor's origin — claimed 0.923 was a single favorable draw |
+| s19 (parent) | **0.8974** [0.890–0.904] | s20's un-minimized parent |
+| **s20 (minimized)** | **0.9026** [0.898–0.910] | Phase-48 single sweep 0.889 was a low draw |
+| ablpleonasm | 0.8947 | reverting the 5 generality cuts → lowest |
+
+## Corrected floor + verdict
+- OLD floor: `s17e 0.923 (single run) − 0.010 = 0.913`.
+- **NEW floor: `s17e 0.9014 (N=3) − 0.010 = 0.8914`.**
+- **s20 N=3 = 0.9026 ≥ 0.8914 → PASS (+1.1pp).**
+- s20 (0.9026) ≥ s19 (0.8974) by +0.5pp and ≥ s17e (0.9014) by +0.1pp — minimization is a statistical tie / mild improvement, NOT a regression.
+
+## Conclusion (supersedes the Phase-48 FAIL)
+The Phase-48 "macro 88.9% < 91.3% → FAIL" was the product of **two compounding single-run variance artifacts**:
+1. The s20 sweep drew low on its two highest-variance datasets (TM + BBB) at once → 0.889 vs true 0.903.
+2. The 0.913 floor was anchored to s17e's single favorable draw (0.923) vs s17e's true 0.901.
+
+Re-judged with N=3 on both sides, **s20 PASSES** and the minimization preserves (slightly improves) macro. **No cut is guilty because there is no regression to attribute.**
+
+## Recommended disposition
+v2.6.4 can close as **PASS / hypothesis CONFIRMED** (minimized prompts hold the line), with the standing methodology fix: floors and verdicts must use N≥3 means, never single-run draws. s20 is a legitimate ship.
+
+## Total investigation cost
+Reported inline at run time; full bisection + re-baseline stayed within the approved ceiling.
