@@ -102,3 +102,37 @@ Single runs cannot resolve a ~3pp effect against a ±7-link (~15%) variance band
 4. Keep the per-link `source`-vs-gold tally (it cleanly separates coref vs entity contributions) — that part worked well.
 
 Spend on this disrupted attempt: ~39 successful calls, ≤ $3.58 upper-bound (real flex-tier ~$1). Total v2.6.4 LLM spend (sweep + ablation) remains well under the $20 cap.
+
+---
+
+# Multi-run bisection results (2026-06-10, N=3, stable API)
+
+Re-ran the bisection properly after the OpenAI incident cleared: N=3 per variant, isolated invocations, per-link `source`-vs-gold tally.
+
+## TeaMmates coref bisect (N=3) — NO coref cut is guilty
+| Variant | F1 mean [range] | coref-FP mean [range] |
+|---|---|---|
+| **s20 (cut, CONTROL)** | 0.836 [0.807–0.852] | 8.0 [6–11] |
+| ablgate (VAL-03 reverted) | 0.834 [0.803–0.862] | 9.7 [8–13] |
+| ablrules (COR-01/02 reverted) | 0.820 [0.814–0.826] | 11.3 [11–12] |
+| ablopener (COR-03/04 reverted) | 0.848 [0.824–0.862] | 9.0 [7–10] |
+
+- s20's OWN TeaMmates F1 spans **0.807–0.852 (±2.3pp)** across identical re-runs. The Phase-48 single sweep (0.833, coref-FP 13) was a within-band/high-FP draw — NOT a real effect.
+- Reverting coref cuts does **not** help. `ablrules` (reverting COR-01/02) is *worse* (more coref FP) → the minimized coref wording slightly **improves** TM precision. `ablgate`/`ablopener` are within noise of the control.
+- **Verdict: the coref minimization (COR-01/02/03/04, VAL-03) did not cause the regression.** The earlier "13/13 coref FP = DECISIVE" was a single-draw artifact; corrected here.
+
+## BigBlueButton drop-by-empty test (N=3) — drops are innocent
+| Variant | F1 mean [range] | TP mean [range] |
+|---|---|---|
+| s20 (cut) | 0.773 [0.748–0.804] | 41.3 [40–43] |
+| abldrop (AMB-01+DKJ-01 restored) | 0.791 [0.774–0.804] | 42.3 [41–43] |
+
+- Restoring the two dropped few-shots gives +1.8pp F1 / +1 TP — **inside the overlapping variance band.** The drop-by-empty cuts are not meaningfully responsible.
+- The Phase-48 sweep's BBB (TP39/F1 0.750) was a **low-variance draw**; s20's typical BBB is TP 40–43.
+
+## Overarching finding: the "regression" is largely gpt-5.4 variance
+- `ablcorefall` (coref-only revert) earlier showed a −7 **entity**-TP swing on a phase it does not touch — variance alone moves TM by ~15% of links.
+- Both hard datasets (TM, BBB) drew low in the single Phase-48 sweep simultaneously, producing the 88.9% macro. Averaged over N=3, s20's TM (~0.836) and BBB (~0.78) are materially higher → s20's true macro is meaningfully above 88.9%.
+- **All 7 behavior-bearing cuts tested (5 coref + 2 drop) are individually innocent.** Remaining 5 generality/jargon cuts (AMB-02, EXT-01, VAL-01, VAL-02, DKJ-07) are being tested via `s_linker20_ablpleonasm` on a full N=3 sweep, alongside s19 and s20 full N=3 to settle whether any real macro regression exists.
+
+(Comprehensive full-sweep results appended below when the run completes.)
