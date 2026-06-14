@@ -171,6 +171,15 @@ The plan also instructed an optional fallback: if `gsd-tools commit` was unavail
 - CUT-AMB-02, CUT-EXT-01, CUT-VAL-02 all use the pre-decided replacement vocabulary `components` (bare) per the MINIMIZE-LOG batch note.
 - CUT-VAL-03 trial (in 46-06) writes its chosen vocabulary into its MINIMIZE-LOG row reasoning cell; 46-07 reads that cell for CUT-COR-01.
 
-## Self-Check: PENDING
+## Self-Check: PASSED
 
-Self-check verification (file existence + commit hash) recorded below after the atomic commit.
+| Item | Result |
+|------|--------|
+| `tests/scratch/__init__.py` | FOUND |
+| `tests/scratch/s_linker19.py` | FOUND |
+| `tests/scratch/prompts_v5.py` | FOUND |
+| `.planning/phases/46-minimize/s_linker20-MINIMIZE-LOG.md` | FOUND |
+| `.planning/phases/46-minimize/46-01-SUMMARY.md` | FOUND |
+| Commit `c2d9329` | FOUND in `git log --oneline --all` |
+| GATE-01 post-commit `git diff --stat` on s_linker19.py + prompts_v5.py + s_linker13_min.py | empty (exit 0) |
+| Post-commit deletion check (`git diff --diff-filter=D HEAD~1 HEAD`) | empty (zero deletions) |
