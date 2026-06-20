@@ -132,6 +132,7 @@ Start with: `/gsd:new-milestone` (v2.6.5) once scope is agreed.
 | 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
 | 20260604-lissa-rq1-eval | Clone lissa-replication into sota/; re-evaluate gpt-5-mini d2m/d2c tracelinks via metrics_api.py; fill RQ1 LiSSA cells | 2026-06-04 | — | [20260604-lissa-rq1-eval](./quick/20260604-lissa-rq1-eval/) |
 | 260610-lio | Explore cut vs non-SE(hardware) rewrite of ANTECEDENT_ALIAS_RULES few-shot — both snapshot-safe + GATE-06-clean (free checks); behavior unconfirmed (deferred N≥3 TM sweep). Rec: Candidate B (hardware rewrite) | 2026-06-10 | 37dbf28 | [260610-lio-cut-or-non-se-rewrite-antecedent-alias-r](./quick/260610-lio-cut-or-non-se-rewrite-antecedent-alias-r/) |
+| 260620-s2r | Deep dive on s20-family v2.6.5 results (44 runs, all **gpt-5.4**). Family tied at macro 0.895–0.906 within ±1.4pp noise; union 0.906 best via BBB recall only (+3.1 TP, F1 0.785→0.811; code comment "+5 TP/0 FP" is really +3.1 TP/+0.4 FP). Phase-48 88.9% FAIL confirmed variance (N=3=0.903). Bisection: keep COREF_RULES + 5 generality cuts; only COR-03/04 opener cut may over-trim. **Gaps: no Sonnet re-validation in v2.6.5; 0.93 unmet on gpt-5.4.** | 2026-06-20 | — | [260620-s2r-s20-family-results-deep-dive](./quick/260620-s2r-s20-family-results-deep-dive/) |
 
 ## s_linker20 Sweep Results (Phase 48 Plan 01)
 
