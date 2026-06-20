@@ -118,6 +118,8 @@ CANONICAL_VARIANTS = [
     "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
+    "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
+
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
     "s_linker20_ablcorefall",  # v2.6.5 ablation probe (experimental=True): s20 + full coref-family revert (COR-01/02/03/04 + VAL-03); NOT canonical
@@ -803,6 +805,20 @@ VARIANT_SPECS = {
             "s20 (minimized) with the Framing C 2-pass consensus changed from INTERSECTION to UNION "
             "(mirrors s17g). The s18->s19 paper line kept intersection, which s17g showed killed ~5 BBB "
             "TPs for 0 FP saved. Tests whether union recovers BBB recall and yields the true-best parent."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker20_union_aliasb": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_union_aliasb",
+        class_name="SLinker20UnionAliasB",
+        description=(
+            "S-Linker20UnionAliasB — v2.6.5 combined variant (experimental=True, NOT canonical). "
+            "s_linker20_union (Framing C 2-pass UNION consensus) PLUS the aliasb 'prompt swap': "
+            "ANTECEDENT_ALIAS_RULES few-shot rewritten to a non-SE hardware example "
+            "(PowerSupplyUnit/'the unit'/voltage; lio Candidate B). Tests union's BBB-recall gain "
+            "stacked with the benchmark-distant, TM-stable alias prompt. Run on BOTH gpt-5.4 and Sonnet."
         ),
         canonical=False,
         experimental=True,
