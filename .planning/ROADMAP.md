@@ -35,6 +35,9 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 
 **Requirements:** EXTRACT-01, EXTRACT-02, EXTRACT-03
 
+**Plans:** 1 plan
+- [ ] 50-01-PLAN.md — pickle→neutral-JSON extractor for all 30 s20_union cells (2 backends × 3 runs × 5 projects) with built-in faithfulness + coverage gate (EXTRACT-01/02/03)
+
 **Success criteria:**
 1. Running the extraction script in `agent-linker` produces one JSON per (backend × run × project) covering all of gpt + sonnet, every N run, all 5 projects — no missing cells.
 2. Each JSON contains entity candidates/validated/decisions (with p1/p2), coref raw/validated/decisions, knowledge layer (model_knowledge + doc_knowledge), and final links + provenance/source.
@@ -135,4 +138,4 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 
 ---
 *Roadmap created: 2026-06-21*
-*Last updated: 2026-06-21 — v2.6.6 initial roadmap (6 phases, 50–55).*
+*Last updated: 2026-06-21 — Phase 50 planned (1 plan: 50-01-PLAN.md).*
