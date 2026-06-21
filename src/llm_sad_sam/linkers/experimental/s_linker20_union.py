@@ -268,6 +268,7 @@ class SLinker20Union:
         model: str | None = None,
         checkpoint_fallback: LLMBackend | str | None = None,
         checkpoint_fallback_model: str | None = None,
+        no_knowledge: bool = False,
     ):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
         os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.4")
@@ -279,6 +280,7 @@ class SLinker20Union:
         )
         self._llm_calls: list[dict] = []
         self.llm = _TracingLLMClient(real_llm, self._llm_calls)
+        self.no_knowledge = no_knowledge
         self.model_knowledge: ModelKnowledge | None = None
         self.doc_knowledge: DocumentKnowledge | None = None
         self._phase_log: list[dict] = []
@@ -499,12 +501,18 @@ JSON only:"""
         # ── Phase 1 ─────────────────────────────────────────────────────────
         t_p1 = time.time()
         print("\n[Phase 1] Knowledge acquisition (parallel)")
-        knowledge = self._run_parallel({
-            "model": lambda: self._analyze_model(components),
-            "doc": lambda: self._learn_document_knowledge(sentences, components),
-        })
-        self.model_knowledge = knowledge["model"]
-        self.doc_knowledge = knowledge["doc"]
+        if self.no_knowledge:
+            # NOKNOW path: skip all 3 layer1 LLM calls; set empty knowledge directly.
+            self.model_knowledge = ModelKnowledge()       # ambiguous_names = set()
+            self.doc_knowledge = DocumentKnowledge()      # aliases = {}
+            print("  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge")
+        else:
+            knowledge = self._run_parallel({
+                "model": lambda: self._analyze_model(components),
+                "doc": lambda: self._learn_document_knowledge(sentences, components),
+            })
+            self.model_knowledge = knowledge["model"]
+            self.doc_knowledge = knowledge["doc"]
         print(f"  Model: {len(self.model_knowledge.ambiguous_names)} ambiguous "
               f"of {len(components)} components")
         print(f"  Doc knowledge: {len(self.doc_knowledge.aliases)} aliases")
