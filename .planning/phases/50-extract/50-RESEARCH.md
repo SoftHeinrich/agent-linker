@@ -399,19 +399,22 @@ Not applicable — this is an internal, project-specific extraction task over a 
 | A2 | `<extract_root>` location is the planner's choice; recommended `results/v2.6.6_extracts/` in-repo, vendored to `../working/` in Phase 52. | Proposed JSON schema | Low — purely organizational; no requirement pins the path. |
 | A3 | layer2 (`framing_c*`) is optional for EXTRACT-02 (which names only candidates/validated/decisions). Recommend including it for audit completeness. | layer2 schema | Low — including extra data cannot violate a requirement; excluding it is also defensible. |
 
-## Open Questions
+## Open Questions (RESOLVED — settled in plan 50-01)
 
 1. **Extract output directory + whether Phase 50 writes directly into `../working/`'s vendored-extracts dir or a staging dir under `results/`.**
    - What we know: BUNDLE-01 (Phase 55) requires `../working/` to vendor the neutral extracts; Phase 52 stands up `../working/`.
    - What's unclear: whether Phase 50 emits straight into the (not-yet-existing) `../working/` tree or into a repo-local staging dir that Phase 52 copies from.
    - Recommendation: emit to a repo-local `results/v2.6.6_extracts/<backend>/<run>/<project>.json`; let Phase 52 vendor it. Keeps Phase 50 self-contained and GATE-01-clean.
+   - **RESOLVED:** plan 50-01 emits to `results/v2.6.6_extracts/` per the recommendation; Phase 52 vendors it.
 
 2. **Should `coref.metadata[*].raw_resolution` (the full LLM JSON) be retained?**
    - What we know: OUTPUT-01's per-link audit needs `reference`, antecedent fields, `p1/p2/approved` — all available without `raw_resolution`.
    - What's unclear: whether downstream wants the raw LLM blob.
    - Recommendation: omit `raw_resolution` by default (keeps files lean); add a `--with-raw` flag if ever needed.
+   - **RESOLVED:** plan 50-01 omits `raw_resolution` by default.
 
 3. **Model-name label in `meta`** (see Assumption A1) — confirm whether RQ summaries need the exact model string vs. the friendly `gpt`/`sonnet` tag. If exact, source it from `llm_logs/*_calls.json` `model` field.
+   - **RESOLVED:** plan 50-01 carries the friendly `gpt`/`sonnet` tag plus the backend subdir (`openai`/`claude`) in `meta`; the exact model string is deferred to a downstream phase if an RQ summary ever needs it.
 
 ## Sources
 

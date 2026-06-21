@@ -3,14 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.6.6
 milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: planning
-stopped_at: 2026-06-21 — v2.6.6 milestone initialized (requirements + roadmap). Ready to plan Phase 50 (EXTRACT).
-last_updated: "2026-06-21T00:00:00Z"
-last_activity: 2026-06-21 -- /gsd:new-milestone v2.6.6 — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written; 6 phases (50–55), 15 reqs
+stopped_at: 2026-06-21 — Phase 50 (EXTRACT) planned: 1 plan (50-01), plan-checker VERIFICATION PASSED. Ready to execute.
+last_updated: "2026-06-21T14:43:04.627Z"
+last_activity: 2026-06-21 -- Phase 50 planning complete (50-01, 3 tasks)
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
 ## Current Position
 
-Phase: 50 (EXTRACT) — Not started (defining/ready to plan)
-Plan: —
-Status: Milestone planning complete; ready for `/gsd:plan-phase 50`
-Last activity: 2026-06-21 — v2.6.6 requirements + roadmap created
+Phase: 50 (EXTRACT) — Planned (1 plan, verification PASSED)
+Plan: 50-01 — pickle→neutral-JSON extractor + faithfulness/coverage gate (3 tasks, not started)
+Status: Ready to execute
+Last activity: 2026-06-21 -- Phase 50 planning complete
 
 ```
 Progress: v2.6.6 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0/6 phases — planning
