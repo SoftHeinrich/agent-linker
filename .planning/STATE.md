@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.6.6
 milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
-status: planning
-stopped_at: 2026-06-21 — Phase 50 (EXTRACT) planned: 1 plan (50-01), plan-checker VERIFICATION PASSED. Ready to execute.
-last_updated: "2026-06-21T14:43:04.627Z"
-last_activity: 2026-06-21 -- Phase 50 planning complete (50-01, 3 tasks)
+status: executing
+stopped_at: 2026-06-21 — Phase 50 (EXTRACT) COMPLETE. Plan 50-01 executed: 30-cell pickle→neutral-JSON extractor, 30/30 PASS, deterministic.
+last_updated: "2026-06-21T16:00:00.000Z"
+last_activity: 2026-06-21 -- Phase 50 plan 50-01 complete (EXTRACT-01/02/03 satisfied)
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 17
 ---
 
 # Project State
@@ -21,24 +21,32 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
 **Core value:** A small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute paper RQ3 (validator contribution) and RQ4 (per-module + Full-vs-No-Knowledge) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
-**Current focus:** Phase 50 — EXTRACT (bridge frozen phase_caches → neutral JSON)
+**Current focus:** Phase 50 — extract
 
 ## Current Position
 
-Phase: 50 (EXTRACT) — Planned (1 plan, verification PASSED)
-Plan: 50-01 — pickle→neutral-JSON extractor + faithfulness/coverage gate (3 tasks, not started)
-Status: Ready to execute
-Last activity: 2026-06-21 -- Phase 50 planning complete
+Phase: 50 (extract) — COMPLETE
+Plan: 1 of 1 (DONE)
+Status: Ready for Phase 51 (NOKNOW)
+Last activity: 2026-06-21 -- Phase 50 plan 50-01 complete (EXTRACT-01/02/03 satisfied)
 
 ```
-Progress: v2.6.6 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0/6 phases — planning
-          Phase 50 EXTRACT      [ ] bridge s20_union caches → neutral JSON
+Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
+          Phase 50 EXTRACT      [x] bridge s20_union caches → neutral JSON — DONE
           Phase 51 NOKNOW       [ ] knowledge-disable path + No-Knowledge runs (bounded LLM)
           Phase 52 METRIC CORE  [ ] stdlib metric core + self-contained bundle scaffold
           Phase 53 RQ3          [ ] 4-config validator-contribution ablation
           Phase 54 RQ4          [ ] module decomposition + Full-vs-No-Knowledge A/B
           Phase 55 PACKAGE      [ ] audit CSV + SUMMARY.md + bundle + parity/determinism gate
 ```
+
+## Decisions (Phase 50)
+
+- coref.raw/validated serialized as lists (never dict-collapse); preserves dup-(s,c) entries in 8/30 cells
+- raw_resolution stripped from coref.metadata and final.provenance.coref_meta by default
+- doc_knowledge.aliases serialized as list-of-records [{term,component,scope}] (runtime AliasEntry, not str)
+- final.links read from final.pkl final list directly; never re-derived from coref_decisions dict (Landmine)
+- results/v2.6.6_extracts/ gitignored; Phase 52 vendors via script re-run or copy
 
 ## v2.6.6 Roadmap Summary
 
@@ -82,7 +90,7 @@ Progress: v2.6.6 [░░░░░░░░░░░░░░░░░░░░�
 
 ## Session Continuity
 
-Last session: 2026-06-21 (this session)
-Stopped at: v2.6.6 milestone initialized — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written and committed.
+Last session: 2026-06-21 (Phase 50 execution)
+Stopped at: Phase 50 COMPLETE. Plan 50-01 executed: 30/30 cells extracted + PASS, deterministic, GATE-01 clean.
 Resume file: None
-Next action: `/gsd:plan-phase 50` (EXTRACT). Consider kicking off Phase 51 (NOKNOW) live runs early since they are the only LLM-bound work.
+Next action: Phase 51 (NOKNOW) — knowledge-disable path in s_linker20_union + bounded live runs.

@@ -36,7 +36,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** EXTRACT-01, EXTRACT-02, EXTRACT-03
 
 **Plans:** 1 plan
-- [ ] 50-01-PLAN.md — pickle→neutral-JSON extractor for all 30 s20_union cells (2 backends × 3 runs × 5 projects) with built-in faithfulness + coverage gate (EXTRACT-01/02/03)
+- [x] 50-01-PLAN.md — pickle→neutral-JSON extractor for all 30 s20_union cells (2 backends × 3 runs × 5 projects) with built-in faithfulness + coverage gate (EXTRACT-01/02/03) — COMPLETE 2026-06-21 (30/30 PASS, deterministic)
 
 **Success criteria:**
 1. Running the extraction script in `agent-linker` produces one JSON per (backend × run × project) covering all of gpt + sonnet, every N run, all 5 projects — no missing cells.
