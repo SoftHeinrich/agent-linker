@@ -5,8 +5,10 @@ Emits one paper table (``cross_system.tex``) comparing \\approach{}
 (s_linker20_union, both backends, mean of N=3 runs) against the SOTA baselines
 on the non-redundant metric panel, for both tasks:
 
-  * SAD-SAM  (doc->model): link P/R/F1, sentence coverage, noise.
-  * SAD-Code (doc->code) : file P/R/F1, component F1, sentence coverage, noise.
+  * SAD-SAM  (doc->model): link P/R/F1, sentence coverage.
+  * SAD-Code (doc->code) : file P/R/F1, component F1, sentence coverage.
+
+  noise_rate was dropped from the panel (see _SS/_SC note below).
 
 Baselines (from sota/recovered-links/, the same recovered-link dumps the paper
 already uses):
@@ -131,10 +133,17 @@ def _all_panels():
 
 
 # Column order within each task block (the non-redundant panel).
-_SS = ["link_p", "link_r", "link_f1", "sentence_coverage", "noise_rate"]
-_SC = ["file_p", "file_r", "file_f1", "component_f1", "sentence_coverage", "noise_rate"]
-_HEAD_SS = ["P", "R", "Link \\fone", "Cov.", "Noise\\,$\\downarrow$"]
-_HEAD_SC = ["P", "R", "File \\fone", "Comp.\\ \\fone", "Cov.", "Noise\\,$\\downarrow$"]
+# NOTE (2026-06-21): noise_rate intentionally dropped throughout the paper. On
+# s20U its run-to-run variance (~0.017 macro on sad-code) exceeds the
+# between-system gap to Artemis (~0.011), so it cannot reliably rank systems;
+# and it is coverage-confounded — on the sentences both systems predict our
+# per-sentence noise is equal-or-lower, the aggregate gap is purely that we
+# answer more (harder) sentences. Re-add by restoring "noise_rate"/the Noise
+# header below if a future panel revisits this.
+_SS = ["link_p", "link_r", "link_f1", "sentence_coverage"]
+_SC = ["file_p", "file_r", "file_f1", "component_f1", "sentence_coverage"]
+_HEAD_SS = ["P", "R", "Link \\fone", "Cov."]
+_HEAD_SC = ["P", "R", "File \\fone", "Comp.\\ \\fone", "Cov."]
 
 
 def _fmt(v):
@@ -184,8 +193,7 @@ def _render(panels):
         "TransArC is SWATTR (its deterministic SAD--SAM stage); TransArC has no "
         "standalone doc-to-model system. \\approach{} SAD--Code composes the s20U "
         "links with recovered ArCoTL SAM--code (\\texttt{samCodeTlr}); for "
-        "Artemis/TransArC that composition is already in the recovered dumps. "
-        "Noise: lower is better.",
+        "Artemis/TransArC that composition is already in the recovered dumps.",
         r"\end{table*}",
     ]
     return "\n".join(lines) + "\n"
