@@ -116,6 +116,7 @@ CANONICAL_VARIANTS = [
     "s_linker18d", # v2.6.3 18c + cleanup B-refactor (alias-aware antecedent check, replaces antecedent_via_alias LLM-flag bypass); NOT canonical
     "s_linker18",  # v2.6.3 18d + cleanup A (enum-based mention classification): clean unified variant; NOT canonical
     "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
+    "s_linker19U",  # v2.6.5 s19 + Framing C 2-pass UNION (full un-minimized prompts incl. few-shots); the un-minimized counterpart of s_linker20_union, registered for the s19U-vs-s20_union few-shot head-to-head; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
     "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
@@ -768,6 +769,22 @@ VARIANT_SPECS = {
             "S-Linker19 — paper reference variant (experimental=True, NOT canonical). "
             "s20's un-minimized parent; registered in v2.6.5 for live N=3 floor re-derivation. "
             "s_linker19.py is byte-equal frozen (GATE-01) — registration does not modify it."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker19U": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker19U",
+        class_name="SLinker19U",
+        description=(
+            "S-Linker19U — v2.6.5 (experimental=True, NOT canonical). "
+            "s_linker19 (FULL un-minimized prompts, incl. the AMBIGUITY/DOC-KNOWLEDGE few-shots) "
+            "with the Framing C 2-pass consensus changed from INTERSECTION to UNION (the single "
+            "_run_framing_c change). It is the un-minimized counterpart of s_linker20_union: the two "
+            "differ ONLY by the 12 Phase-46 prompt cuts (of which the few-shot drops AMB-01/DKJ-01 are "
+            "two). Registered for the direct s19U-vs-s20_union head-to-head — does keeping the full "
+            "prompts/few-shots beat the minimized prompts under identical union logic?"
         ),
         canonical=False,
         experimental=True,
