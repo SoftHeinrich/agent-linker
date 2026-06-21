@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.6.6
 milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
-stopped_at: Phase 51 (NOKNOW) planned — 5 plans / 4 waves, plan-checker PASSED
+stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
 last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-06-21 -- Phase 51 execution started
+last_activity: 2026-06-21 -- Phase 51 waves 1-2 executed, GATE-01 passed, paused at 51-04 spend gate
 progress:
   total_phases: 6
   completed_phases: 1
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
 ## Current Position
 
-Phase: 51 (noknow) — EXECUTING
-Plan: 1 of 5
-Status: Executing Phase 51
-Last activity: 2026-06-21 -- Phase 51 execution started
+Phase: 51 (noknow) — EXECUTING (paused at 51-04 spend gate)
+Plan: 3 of 5 complete (51-01/02/03 done; 51-04/05 pending)
+Status: Prep waves 1-2 complete; GATE-01 EVIDENCE: PASS. Paused before the live ~$50-65 / ~7.5h No-Knowledge sweep (51-04) by user choice.
+Last activity: 2026-06-21 -- Phase 51 waves 1-2 executed, GATE-01 passed, paused at spend gate
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
@@ -91,6 +91,6 @@ Progress: v2.6.6 [█████░░░░░░░░░░░░░░░�
 ## Session Continuity
 
 Last session: 2026-06-21T19:44:14.618Z
-Stopped at: Phase 51 (NOKNOW) planned — 5 plans / 4 waves, plan-checker PASSED
-Resume file: .planning/phases/51-noknow/51-01-PLAN.md (wave 1)
-Next action: /clear then /gsd:execute-phase 51 — Note: 51-04 is a live-LLM checkpoint plan (~$50–65, ~7.5h unattended, resumable).
+Stopped at: Phase 51 prep complete — 51-01 (no_knowledge flag + variant), 51-02 (GATE-01 harness), 51-03 (sweep scripts) all done & committed; GATE-01 EVIDENCE: PASS (structural + frozen-cache 30/30). Paused before 51-04 live sweep by user choice (prep-waves-only).
+Resume file: .planning/phases/51-noknow/51-04-PLAN.md (wave 3 — live sweep, autonomous:false spend gate)
+Next action: /clear then /gsd:execute-phase 51 — resumes at the 51-04 spend gate. Before approving: ensure OPENAI_API_KEY is set (gpt sweep) and the claude/sonnet backend is configured (sonnet sweep). Cost ~$50–65, ~7.5h unattended, resumable via per-(run,dataset) .done markers. Launch scripts: run_s20union_noknow_gpt_n3.sh then run_s20union_noknow_sonnet_n3.sh. After both .ALL_DONE, run 51-05 (extractor extension).
