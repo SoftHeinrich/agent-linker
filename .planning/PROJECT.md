@@ -56,7 +56,29 @@ Key requirements:
 - **REQ-V25-07** — Training harness Oracle + Distillator updated to recognize and propose for all 15 slots
 - **REQ-V25-08** — Full 3-split Confirmation re-run with clean infrastructure; promotion verdict vs STRONG threshold ≥ 0.9173
 
-## Current Milestone: v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
+## Current Milestone: v2.6.6 — Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
+
+**Goal:** Build a small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute RQ3 (validator-contribution) and RQ4 (per-module + knowledge A/B) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
+
+**Target features:**
+- Source = frozen per-run `s_linker20_union` phase_caches (**NOT s19**): gpt `results/v2.6.5_s20union/gpt/run{1..N}/phase_cache` + sonnet `results/v2.6.5_s20union_sonnet/run{1..N}/phase_cache`.
+- Extraction bridge (agent-linker side): layer1–4 + final decision state → neutral, stdlib-loadable JSON (entity candidates/validated/decisions incl. p1/p2 gates; coref raw/validated/decisions; knowledge layer model_knowledge+doc_knowledge; final links + provenance/source).
+- RQ3: Full / NoEntityValid / NoCitation / NoValidator validator ablation by replay; per-validator TP-preserved vs FP-removed, ΔF1-if-removed, per-component distribution; N≥3 mean ± range.
+- RQ4 (redesigned, symmetric): (a) per-linker-module entity-only / coref-only / union → F1, unique TPs, UpSet overlap (|only_E|/|both|/|only_C|), coverage, noise; (b) **Full vs No-Knowledge** A/B from a new knowledge-disabled run.
+- No-Knowledge: add a knowledge-disable path to `s_linker20_union`; run 5 proj × {gpt, sonnet} × N≥1 (bounded live calls — the only non-replay scope).
+- Output: full-detailed per-run × per-config × per-project CSVs + per-link audit CSV + macro summaries + SUMMARY.md; both backends.
+- Bundle: `../working/` fully self-contained (vendored neutral extracts + sad→sam gold + ported stdlib metric core; one `run.py`; no sibling-repo path deps).
+
+**Standing gates:**
+- GATE-01: canonical/paper artifacts untouched — `s_linker13_min.py`, `s_linker19.py`, and `s_linker20_union.py` full-knowledge behavior byte-/snapshot-stable.
+- GATE-06: no benchmark-derived vocabulary introduced in any new code.
+- PARITY: standalone Full-config macro reproduces the frozen `s_linker20_union` run numbers within tolerance; `run.py` reruns bit-identical.
+
+**Scope note:** Deterministic replay for RQ3 + RQ4-modules (zero LLM); bounded live runs only for the No-Knowledge axis. Outputs are CSVs + SUMMARY.md (paper TeX untouched).
+
+---
+
+## Paused Milestone: v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
 
 **Goal:** Audit every LLM-call site in `s_linker19` (6 prompt builders + their imported PROMPT CONSTANTS) with per-prompt golden-replay unit tests; ship `s_linker20.py` whose prompts are at the Pareto-best of size-cut × generality, without regressing the 17e-line macro F1 floor (gpt-5.4 92.3%, T=1.0pp → floor 91.3%).
 
@@ -81,7 +103,7 @@ Key requirements:
 
 ## Current State
 
-**Status:** v2.6.4 in progress — Phases 44–47 complete. Phase 47 (SHIP) complete 2026-06-09: `s_linker20.py` shipped as a standalone variant (1086 lines) with all 13 Phase 46 minimized prompt constants inlined, no inheritance from s19, registered in `run_ablation.py` (`experimental=True`, `canonical=False`). GATE-01 byte-equal preserved (s19/s13_min/prompts_v5 unchanged), GATE-06 taboo-clean, 8 registration tests + 97 golden snapshots pass. REQ-V264-08 satisfied. Next: Phase 48 SWEEP (gpt-5.4 macro F1 floor ≥ 91.3%, ≤$20 — gated behind explicit user go-ahead).
+**Status:** v2.6.6 (Standalone RQ3/RQ4 Eval Infra) — defining requirements + roadmap (started 2026-06-21). Prior milestone **v2.6.4 PAUSED** after Phase 48 (negative s20 minimization result; Phase 49 CLOSE not run). v2.6.4 detail below: Phases 44–47 complete. Phase 47 (SHIP) complete 2026-06-09: `s_linker20.py` shipped as a standalone variant (1086 lines) with all 13 Phase 46 minimized prompt constants inlined, no inheritance from s19, registered in `run_ablation.py` (`experimental=True`, `canonical=False`). GATE-01 byte-equal preserved (s19/s13_min/prompts_v5 unchanged), GATE-06 taboo-clean, 8 registration tests + 97 golden snapshots pass. REQ-V264-08 satisfied. Next: Phase 48 SWEEP (gpt-5.4 macro F1 floor ≥ 91.3%, ≤$20 — gated behind explicit user go-ahead).
 
 **Canonical artifact:** `src/llm_sad_sam/linkers/experimental/s_linker13_min.py` (v2.1 promoted, `canonical=True`, unchanged). Claude macro F1 0.9506; gpt-5.4 macro F1 0.9069.
 
@@ -197,4 +219,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-09 — Phase 47 (SHIP) complete; s_linker20 standalone shipped + registered, GATE-01/06 clean, REQ-V264-08 validated.*
+*Last updated: 2026-06-21 — v2.6.6 milestone started (Standalone RQ3/RQ4 Eval Infra on s_linker20_union, under ../working); v2.6.4 paused.*

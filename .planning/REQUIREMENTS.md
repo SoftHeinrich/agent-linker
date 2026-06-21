@@ -1,71 +1,96 @@
-# Requirements: llm-sad-sam-v45 — Milestone v2.6.4
+# Requirements: llm-sad-sam-v45 — Milestone v2.6.6
 
-**Defined:** 2026-06-05
-**Milestone:** v2.6.4 — Per-Prompt Unit-Tested Minimization + Generality Pass on s_linker19
-**Core Value:** Audit every LLM-call site in `s_linker19` with per-prompt golden-replay unit tests; ship `s_linker20.py` whose prompts are at the Pareto-best of size-cut × generality, without regressing the s17e-line macro F1 floor (gpt-5.4 92.3%, T=1.0pp → floor 91.3%). Backend: gpt-5.4 only. Zero new LLM calls for harness build.
+**Defined:** 2026-06-21
+**Milestone:** v2.6.6 — Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
+**Core Value:** A small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute paper RQ3 (validator contribution) and RQ4 (per-module + knowledge A/B) ablation results as full-detailed CSVs + SUMMARY.md — reproducible by a reviewer from that directory alone.
 
-## Active v2.6.4 Requirements
+**Source of truth:** `s_linker20_union` (the v2.6.5 ship candidate), **not** s19. Frozen per-run phase_caches at
+`results/v2.6.5_s20union/gpt/run{1..N}/phase_cache` (gpt) and
+`results/v2.6.5_s20union_sonnet/run{1..N}/phase_cache` (sonnet).
 
-### HARNESS — Per-prompt unit-test infrastructure
+**Scope boundary:** Deterministic replay (zero LLM) for RQ3 + RQ4-modules. The **only** non-replay scope is a bounded live No-Knowledge run for the RQ4 knowledge A/B axis. Output is CSVs + SUMMARY.md; the paper `.tex` is untouched.
 
-- [x] **REQ-V264-01** — Golden-replay test harness loads v2.6.3 `phase_cache` pkls (`results/phase_cache/openai/<project>/{layer1..4,final}.pkl`) and exposes `(prompt_built, llm_response, parsed_output)` triples for each of the 6 s19 prompt sites × 5 projects. Zero new LLM calls. Backend scope: gpt-5.4 only. Lives under `tests/harness/` (or equivalent shared fixture module).
+## v2.6.6 Requirements
 
-- [x] **REQ-V264-02** — Pytest + snapshot harness (syrupy or pytest-regressions) ships one test module per s19 prompt builder: `tests/test_s_linker20_prompt_{ambiguity,doc_extract,doc_judge,extraction,validation,coref}.py`. Each test rebuilds the prompt from the replay fixture, runs the replayed LLM response through the parser, and asserts snapshot equality on the **parsed structured output** (NOT raw LLM text — replayed LLM output is fixed). Initial snapshots captured from s19 byte-equal baseline; tests pass at REQ-V264-02 close.
+### Extraction Bridge (EXTRACT)
 
-### AUDIT — Identify generality + size cut candidates
+- [ ] **EXTRACT-01**: An extraction script (run inside `agent-linker`, where the linker classes exist) dumps every `s_linker20_union` per-run phase_cache (`layer1`–`layer4` + `final`) into neutral, stdlib-loadable JSON — both backends (gpt + sonnet), all N runs, all 5 projects.
+- [ ] **EXTRACT-02**: The extracted JSON captures every ablation-relevant field: entity `candidates`/`validated`/`decisions` (incl. `p1`/`p2` evidence gates), coref `coref_raw`/`coref_validated`/`coref_decisions`, the knowledge layer (`model_knowledge` + `doc_knowledge`), and the `final` links with per-link `source`/provenance.
+- [ ] **EXTRACT-03**: Extraction faithfulness is verified — the final-link set re-derived from each extract equals that run's own `*_links.csv` / `ablation_*.json`, per project × run × backend.
 
-- [ ] **REQ-V264-03** — Per-constant audit report covers each imported PROMPT CONSTANT used by `s_linker19`: `AMBIGUITY_FEW_SHOT`, `AMBIGUITY_RULES`, `DOC_KNOWLEDGE_EXTRACTION_RULES`, `ALIAS_SCOPE_RULES`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`, `DOC_KNOWLEDGE_JUDGE_RULES`, `ENTITY_EXTRACTION_RULES`, `VALIDATION_RULES`, `COREF_RULES`. One row per constant with columns: current LOC, generality verdict (`clean` / `domain-loaded` / `benchmark-leak`), size-cut candidates (line-level), drop-the-whole-block candidates.
+### No-Knowledge Ablation (NOKNOW)
 
-- [ ] **REQ-V264-04** — Per-builder audit covers the 6 in-class f-string scaffolds: `_prompt_ambiguity`, `_prompt_doc_knowledge_extract`, `_prompt_doc_knowledge_judge`, `_prompt_extraction`, `_prompt_validation`, `_prompt_coref`. Same columns as REQ-V264-03 but for the scaffolding around the constants. Single combined artefact: `s_linker20-PROMPT-AUDIT.md`.
+- [ ] **NOKNOW-01**: `s_linker20_union` gains a knowledge-disable path (no alias table, no ambiguity map) behind a flag/variant; with the flag off, full-knowledge behavior is unchanged (snapshot-stable — GATE-01).
+- [ ] **NOKNOW-02**: A No-Knowledge run executes on 5 projects × {gpt, sonnet} × N≥1; its outputs + phase_cache are captured under `results/` and extracted into the same neutral JSON format used for the Full runs.
 
-### MINIMIZE — Pareto-driven cuts
+### Metric Core (METRIC)
 
-- [x] **REQ-V264-05** — Per-prompt Pareto reduction loop: for each candidate cut identified in REQ-V264-03/04, apply the cut, run that prompt's golden tests (REQ-V264-02), and keep the cut iff **every parsed-output snapshot remains byte-equal** AND no benchmark-derived vocabulary is introduced. All decisions logged per candidate cut in `s_linker20-MINIMIZE-LOG.md` with verdict (kept / reverted / unsafe). _Partial: AMB section closed by 46-02 (2/2 cuts kept); DKX section closed by 46-03 (0 cuts, audit-clean); DKJ section closed by 46-04 (CUT-DKJ-01 drop kept + CUT-DKJ-07 lexical kept; CUT-DKJ-02..06 superseded-by-drop per D-03); EXT/VAL/COR remain._
+- [ ] **METRIC-01**: A stdlib-only metric core computes link-level Precision / Recall / F1 + TP/FP/FN against the sad→sam gold standard, parity-checked against each run's own `ablation_*.json` F1 on the Full config (within a stated tolerance).
+- [ ] **METRIC-02**: Stdlib RQ-metric primitives are implemented: per-component F1 distribution, sentence coverage, noise rate, and set-overlap (UpSet `|only_E|` / `|both|` / `|only_C|`).
 
-- [x] **REQ-V264-06** — Few-shot block-drop: for each prompt with a few-shot block (initially `AMBIGUITY_FEW_SHOT`, `DOC_KNOWLEDGE_JUDGE_EXAMPLES`), run the golden suite with the **entire block removed**. Drop the block iff every parsed-output snapshot is byte-equal. If not byte-equal, attempt a 1–3 example synthetic-domain replacement and re-run; ship whichever is smallest while passing. _Complete (both blocks shipped as DROP): AMBIGUITY_FEW_SHOT drop kept by 46-02 (CUT-AMB-01, smallest-passing = drop); DOC_KNOWLEDGE_JUDGE_EXAMPLES drop kept by 46-04 (CUT-DKJ-01, smallest-passing = drop on first attempt — D-03 short-circuit; Family A/B never trialled)._
+### RQ3 — Validator Contribution (RQ3)
 
-- [x] **REQ-V264-07** — Lexical neutralization: where domain-loaded vocabulary appears (e.g., "software architecture component", "anaphoric references", "role-referential noun phrases"), attempt a neutral rewording (e.g., "entity", "pronouns and noun phrases that refer back"). Keep the rewording iff parsed-output snapshots are byte-equal. Target framing: "look general but still SAD/SAM-tuned" — behaviour stays tuned to SAD→SAM, only surface vocabulary changes. _Partial: CUT-AMB-02 site closed (1 of 3 in cross-section `software architecture …` pleonasm batch); CUT-DKJ-07 closed by 46-04 (`architectural tier or technology platform` → `grouping`, multi-element exclusion semantics preserved); CUT-EXT-01 / CUT-VAL-02 / CUT-VAL-01 / CUT-VAL-03 / CUT-COR-* remain._
+- [ ] **RQ3-01**: The four validator configs — Full / NoEntityValid / NoCitation / NoValidator — are computed by replay over the extracts, per project × run × backend.
+- [ ] **RQ3-02**: RQ3 reports per-validator TP-preserved vs FP-removed (entity two-pass; coref/citation), net ΔF1-if-removed, and per-component distribution — aggregated to N≥3 mean ± range (macro + per-project, both backends) in `rq3_detail.csv` + `rq3_summary.csv`.
 
-### SHIP — New variant + regression
+### RQ4 — Module Contribution (RQ4)
 
-- [x] **REQ-V264-08** — `src/llm_sad_sam/linkers/experimental/s_linker20.py`: standalone file (no inheritance from `s_linker19`), `experimental=True`, `canonical=False`. Inlines the minimized PROMPT CONSTANTS so the audit is self-contained per the user's "duplicated standalone files over inheritance" preference. `s_linker19.py` and any prompt constants `s_linker19` imports are preserved **byte-equal** (paper RQ1–RQ4 replay determinism). `run_ablation.py` learns `--variants s_linker20`.
+- [ ] **RQ4-01**: Per-linker-module decomposition — entity-only / coref-only / union(full) — reports F1, unique TPs, UpSet overlap (`|only_E|`/`|both|`/`|only_C|`), sentence coverage, and noise rate, per project × run × backend, with N≥3 mean ± range, in `rq4_detail.csv` + `rq4_summary.csv`.
+- [ ] **RQ4-02**: Knowledge A/B reports **Full vs No-Knowledge** ΔF1 (+ sentence-coverage and noise-rate deltas) from the NOKNOW runs, per project, both backends.
 
-- [~] **REQ-V264-09** — End-to-end GPT-5.4 5-dataset macro F1 on `s_linker20` ≥ **91.3%** (= s17e 92.3% − T 1.0pp). Per-dataset constraint: no dataset drops more than 2pp vs s17e's per-dataset numbers (MediaStore 94.9%, TeaStore 96.3%, TeaMmates 89.8%, BigBlueButton 80.4%, JabRef 100.0%). Single sweep validates promotion. Log goes to `logs/v2.6.4_s_linker20_gpt.log`. **MEASURED (Phase 48 Plan 01): macro 88.9% — FAIL. MS +1.8pp, TS +1.8pp, TM -6.5pp, BBB -5.4pp, JAB -8.6pp. Log committed fd93cd0.**
+### Output + Bundle (OUTPUT / BUNDLE)
 
-### CARRY-FORWARD — Standing Gates
+- [ ] **OUTPUT-01**: A per-link audit CSV is emitted — every link with `sentence`, `component`, `source-module`, validator decision (`p1`/`p2`/`approved`), gold-match, and which RQ3/RQ4 configs include it.
+- [ ] **OUTPUT-02**: `SUMMARY.md` presents human-readable RQ3 (validator contributions) and RQ4 (module contributions + knowledge A/B) headline tables for **both backends**, with N and variance noted.
+- [ ] **BUNDLE-01**: `../working/` is fully self-contained — vendored neutral extracts + vendored sad→sam gold (5 projects) + ported stdlib metric core, a single `run.py`, **no path dependency on sibling repos**, and a README documenting one-command reproduction.
+- [ ] **BUNDLE-02**: Determinism + parity gate — `run.py` reruns are bit-identical, and the Full-config macro reproduces the frozen `s_linker20_union` run numbers within the stated tolerance.
 
-- [x] **GATE-01** (carried) — `s_linker13_min.py` AND `s_linker19.py` SHA-256 byte-equal at milestone close (paper baseline + canonical untouched). Verified via `git diff` against the v2.6.3 close hashes.
-- [ ] **GATE-06** (re-verified) — Zero benchmark-derived vocabulary in any `s_linker20` prompt constant or f-string scaffold. Audit method: v2.1 cross-dataset vocabulary isolation methodology.
-- [x] **GATE-08** (budget) — Sweep budget cap ≤ **$20** for the macro F1 regression validation (5-dataset gpt-5.4 single run); zero LLM calls for golden-test build. **SATISFIED: 237,760 tokens, upper-bound cost $7.71 (codebase GPT-4 formula) < $20 (Phase 48 Plan 01).**
+## Future Requirements
 
-## Future Requirements (deferred)
+Deferred; not in this milestone's roadmap.
 
-- Cross-backend (Claude) confirmation sweep on `s_linker20` — v2.6.5 candidate if v2.6.4 promotes.
-- Per-prompt minimization extended to `s_linker17e` family — only if 17e remains the published champion and reviewers ask for prompt-defensibility.
-- Flex tier integration (`260601-flex-tier-integration.md`) — cost optimization, v2.7+.
+- **TEX-01**: Render the computed RQ3/RQ4 numbers into the paper `tables/`+`figures/` `.tex` (rq3-validators, rq4-agents, rq3-validator figure, rq4-upset). *(Explicitly out of this milestone — output is CSVs + SUMMARY.md only.)*
+- **NOKNOW-N**: Raise No-Knowledge to N≥3 per backend for variance bands on the knowledge axis (this milestone requires N≥1).
+- **RQ12-01**: Fold RQ1/RQ2 (sad→sam + sad→code link/architecture metrics) into the same self-contained bundle.
 
-## Out of Scope for v2.6.4
+## Out of Scope
 
-- Logic changes to `s_linker19` or `s_linker13_min` (canonical/paper frozen).
-- Resumption of v2.7 (BBB recall closure, Phases 38–42) — FROZEN.
-- v2.6 close (Phase 37 GATE-06 'Persistence' taboo fix) — DEFERRED.
-- Cross-model Claude validation — gpt-5.4 only (per v2.3 standing policy).
-- New benchmark datasets — 5-dataset benchmark unchanged.
-- Aggressive behavior changes / new few-shots that aren't byte-equal on parsed outputs.
+| Feature | Reason |
+|---------|--------|
+| Recomputing from s19 checkpoints | Source is the v2.6.5 ship candidate `s_linker20_union`, per user direction. |
+| Paper `.tex` table/figure rendering | This milestone outputs CSVs + SUMMARY.md; TeX rendering is a separate downstream step (TEX-01). |
+| doc-to-code (sad→code) RQ3/RQ4 | The validators/modules are framed on the SAD→SAM task; sad→code ablations are deferred. |
+| N≥3 live runs for No-Knowledge | Replay covers RQ3 + RQ4-modules at N≥3; No-Knowledge is a bounded N≥1 live ablation this milestone. |
+| Re-tuning / re-running Full s20_union | Full runs are frozen inputs; we replay them, not regenerate them. |
+| Modifying canonical/paper linkers' behavior | GATE-01 — `s_linker13_min`, `s_linker19`, full-knowledge `s_linker20_union` stay byte-/snapshot-stable. |
 
-## Requirement Traceability
+## Traceability
 
-| REQ-ID | Phase |
-|--------|-------|
-| REQ-V264-01 | Phase 44 |
-| REQ-V264-02 | Phase 44 |
-| REQ-V264-03 | Phase 45 |
-| REQ-V264-04 | Phase 45 |
-| REQ-V264-05 | Phase 46 |
-| REQ-V264-06 | Phase 46 |
-| REQ-V264-07 | Phase 46 |
-| REQ-V264-08 | Phase 47 |
-| REQ-V264-09 | Phase 48 |
-| GATE-01 | Phase 47 (interim); Phase 49 (final) |
-| GATE-06 | Phase 48 (re-verify); Phase 49 (final) |
-| GATE-08 | Phase 48 (budget cap); Phase 49 (final) |
+Which phases cover which requirements. Populated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| EXTRACT-01 | Phase 50 | Pending |
+| EXTRACT-02 | Phase 50 | Pending |
+| EXTRACT-03 | Phase 50 | Pending |
+| NOKNOW-01 | Phase 51 | Pending |
+| NOKNOW-02 | Phase 51 | Pending |
+| METRIC-01 | Phase 52 | Pending |
+| METRIC-02 | Phase 52 | Pending |
+| RQ3-01 | Phase 53 | Pending |
+| RQ3-02 | Phase 53 | Pending |
+| RQ4-01 | Phase 54 | Pending |
+| RQ4-02 | Phase 54 | Pending |
+| OUTPUT-01 | Phase 55 | Pending |
+| OUTPUT-02 | Phase 55 | Pending |
+| BUNDLE-01 | Phase 55 | Pending |
+| BUNDLE-02 | Phase 55 | Pending |
+
+**Coverage:**
+- v2.6.6 requirements: 15 total
+- Mapped to phases: 15
+- Unmapped: 0 ✓
+
+---
+*Requirements defined: 2026-06-21*
+*Last updated: 2026-06-21 after initial v2.6.6 definition*

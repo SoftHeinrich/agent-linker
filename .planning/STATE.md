@@ -1,167 +1,87 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6.4
-milestone_name: — IN PROGRESS)
-status: paused
-stopped_at: 2026-06-10 — N=3/N=6 analysis. Phase-48 FAIL was variance (s20 true macro 0.903, not 0.889). s_linker20_union ('s19U'=s20+Framing C UNION) is marginally best at N=6 macro 0.906 (the N=3 0.918 was a favorable triple) and helps BBB recall (+~3 TP avg, noisy). ALL variants (s17e 0.901/s19 0.897/s20 0.903/union 0.906) are statistically TIED within ±1.4pp. Corrected floor (N>=3 mean −1) ~0.891 — all PASS; original 0.913 was single-run-inflated. Ship candidate: s20_union (mild avg gain, GATE-clean) or s20. Awaiting decision.
-last_updated: "2026-06-10T07:30:00Z"
-last_activity: 2026-06-10 -- s20_union N=6 (0.906); variants tied within noise; awaiting ship/close decision
+milestone: v2.6.6
+milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
+status: planning
+stopped_at: 2026-06-21 — v2.6.6 milestone initialized (requirements + roadmap). Ready to plan Phase 50 (EXTRACT).
+last_updated: "2026-06-21T00:00:00Z"
+last_activity: 2026-06-21 -- /gsd:new-milestone v2.6.6 — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written; 6 phases (50–55), 15 reqs
 progress:
   total_phases: 6
-  completed_phases: 5
-  total_plans: 22
-  completed_plans: 22
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-05 for v2.6.4 kickoff)
+See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
-**Core value:** Every rule removed and every prompt-rule trimmed must hold macro F1 ≥ 0.93 on Claude Sonnet AND gpt-5.4 macro within tolerance of the v2.0 baseline (0.9077) — or be rejected. Generality first (GATE-06).
-**Current focus:** Phase 48 — sweep
-
-## v2.6.3 — SHIPPED 2026-06-05
-
-Paper RQ1–RQ4 cells populated via s_linker19 checkpoint replay. Phase 43 closed. Zero new LLM calls. GATE-01 byte-equal. See `.planning/milestones/v2.6.3-MILESTONE-AUDIT.md`.
-
-## v2.6.2 — SHIPPED 2026-06-03 + post-ship 17d/17e extension
-
-Multi-framing exploration complete. ICSE decision (FINAL): use s_linker17a naming.
-Post-ship: 17d (wrong hypothesis) + **17e breakthrough** (92.3% GPT, +3.2pp vs s15, FP 31→14).
-Unified validation concept validated: ALL links (framing + coref) pass the same quality gate.
-See `.planning/milestones/v2.6.2-MILESTONE-AUDIT.md`.
-
-### v2.6.2 results (reference) — GPT-5.4
-
-| Dataset | s15 | 17a | 17b (k=2) | 17c (union) | 17d | **17e** |
-|---------|-----|-----|-----------|-------------|-----|---------|
-| MediaStore | 91.8% | 90.3% | 92.1% | 92.1% | 90.3% | **94.9%** |
-| TeaStore | 96.4% | 94.7% | 94.5% | 96.4% | 98.2% | 96.3% |
-| TeaMmates | 82.5% | 82.3% | 78.3% | 80.0% | 80.3% | **89.8%** |
-| BigBlueButton | 77.6% | 74.1% | 70.2% | 77.0% | 75.0% | **80.4%** |
-| JabRef | 97.3% | 90.0% | 90.0% | 90.0% | 90.0% | **100.0%** |
-| **Macro** | **89.1%** | 86.3% | 85.0% | 87.1% | 86.8% | **92.3%** |
-| FP | 31 | 37 | 37 | 43 | 43 | **14** |
-
-Logs: `logs/v2.6.1_s17ab_claude.log` (17a/17b, GPT-5.4, misleading name);
-`logs/v2.6.2_s17c_gpt.log` (17c); `logs/v2.6.2_s17d_gpt.log` (17d);
-`logs/v2.6.2_s17e_gpt.log` (17e).
-
-## Frozen / pending
-
-- **v2.7 (Phases 38–42)** — FROZEN. Resume after v2.6.4. ⚠ Phases 40–41 predicated on keeping training — re-evaluate when v2.7 resumes.
-- **v2.6 close (Phase 37)** — GATE-06 'Persistence' taboo fix + v2.6 audit, deferred.
+**Core value:** A small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute paper RQ3 (validator contribution) and RQ4 (per-module + Full-vs-No-Knowledge) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
+**Current focus:** Phase 50 — EXTRACT (bridge frozen phase_caches → neutral JSON)
 
 ## Current Position
 
-Phase: 48 (sweep) — COMPLETE with NEGATIVE verdict. v2.6.4 PAUSED for v2.6.5 remediation (user decision 2026-06-09). Phase 49 CLOSE intentionally NOT run.
-Plan: 2 of 2 (complete)
-Status: NEGATIVE result — s_linker20 minimized prompts regressed gpt-5.4 macro to 88.9% < 91.3% floor (minimization not behavior-preserving). REQ-V264-09 FAIL; GATE-06 clean; GATE-08 PASS ($7.71). Milestone NOT closed; remediation (v2.6.5) to be scoped.
-Last activity: 2026-06-10 - Completed quick task 260610-lio: explore cut/non-SE rewrite of ANTECEDENT_ALIAS_RULES few-shot
+Phase: 50 (EXTRACT) — Not started (defining/ready to plan)
+Plan: —
+Status: Milestone planning complete; ready for `/gsd:plan-phase 50`
+Last activity: 2026-06-21 — v2.6.6 requirements + roadmap created
 
 ```
-Progress: v2.6.4 [█████████████████████████████░] 5/6 phases — PAUSED (negative result)
-          Phase 44 HARNESS  [x] complete (2026-06-07)
-          Phase 45 AUDIT    [x] complete (2026-06-08) — 19 cut candidates, 1 benchmark-leak
-          Phase 46 MINIMIZE [x] complete (2026-06-08) — 12 kept, 14 LOC saved, leak eliminated
-          Phase 47 SHIP     [x] complete (2026-06-09) — s_linker20 shipped, GATE-01/06 pass
-          Phase 48 SWEEP    [x] complete (2026-06-09) — NEGATIVE: macro 88.9% < 91.3% floor (TM/BBB/JAB regressed); GATE-06/08 pass
-          Phase 49 CLOSE    [ ] BLOCKED — v2.6.4 paused for v2.6.5 remediation
+Progress: v2.6.6 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0/6 phases — planning
+          Phase 50 EXTRACT      [ ] bridge s20_union caches → neutral JSON
+          Phase 51 NOKNOW       [ ] knowledge-disable path + No-Knowledge runs (bounded LLM)
+          Phase 52 METRIC CORE  [ ] stdlib metric core + self-contained bundle scaffold
+          Phase 53 RQ3          [ ] 4-config validator-contribution ablation
+          Phase 54 RQ4          [ ] module decomposition + Full-vs-No-Knowledge A/B
+          Phase 55 PACKAGE      [ ] audit CSV + SUMMARY.md + bundle + parity/determinism gate
 ```
 
-## v2.6.5 Remediation (next — to scope) — UPDATED 2026-06-10 after N=3 bisection
+## v2.6.6 Roadmap Summary
 
-**Bisection done (N=3, ~$40). Result: NO single cut is guilty — and the regression is much smaller than the single sweep showed.** Full analysis: `.planning/phases/48-sweep/48-REGRESSION-ANALYSIS.md`.
-- **s20 TRUE macro = 0.903** (N=3 full sweeps), not 0.889. The Phase-48 single sweep drew low on its two highest-variance datasets simultaneously (TM + BBB), understating macro by ~1.4pp.
-- All 12 cuts probed individually (ablgate/ablrules/ablopener/abldrop/ablpleonasm): every group is within the variance band; reverting none recovers macro (ablrules is slightly *worse*).
-- Residual deficit vs floor (0.913) is ~1pp, diffuse (TM + JabRef, both noisy/small). Vs a like-for-like LIVE s19 (0.907) the gap is only ~0.4pp — within noise.
-- **The 0.913 floor is itself variance-inflated** (set as s17e 92.3% −1.0, from a single s17e run). s20's honest range already reaches 0.910.
-
-**v2.6.5 is therefore NOT a "revert cut X" exercise. Real options:**
-1. Re-derive the floor from an N≥3 mean of the reference variant (not a single draw), then re-judge s20 against it.
-2. If 0.913 is firm, the minimization can't reach it → don't promote s20 over s19.
-3. Bake N≥3 averaging into the eval protocol; add a live-call canary before accepting any behavior-bearing cut (Phase-46 cached-replay byte-equality was blind to behavior).
-
-Artifacts: 6 ablation probe variants + `results/v2.6.5/` + `logs/v2.6.5/` (keep for re-baseline, or remove in cleanup).
-Start with: `/gsd:new-milestone` (v2.6.5) once scope is agreed.
-
-## v2.6.4 Roadmap Summary
-
-| Phase | Goal | Key REQs | Cost |
+| Phase | Goal | Key REQs | LLM? |
 |-------|------|----------|------|
-| 44 — HARNESS | Golden-replay fixture harness for all 6 s19 prompt sites | REQ-V264-01, REQ-V264-02 | $0 |
-| 45 — AUDIT | Per-constant + per-builder audit doc with generality verdicts + cut candidates | REQ-V264-03, REQ-V264-04 | $0 |
-| 46 — MINIMIZE | Pareto cut loop driven by golden tests + candidate list | REQ-V264-05, REQ-V264-06, REQ-V264-07 | $0 |
-| 47 — SHIP | `s_linker20.py` standalone + runner wired + GATE-01 verify | REQ-V264-08, GATE-01 | $0 |
-| 48 — SWEEP | 5-dataset gpt-5.4 macro F1 sweep on s_linker20; floor ≥ 91.3% | REQ-V264-09, GATE-06, GATE-08 | ≤ $20 |
-| 49 — CLOSE | Final gate audit, MILESTONES.md, archive | GATE-01/06/08 (final) | $0 |
+| 50 — EXTRACT | Frozen s20_union phase_caches → neutral stdlib JSON | EXTRACT-01/02/03 | No |
+| 51 — NOKNOW | Knowledge-disable path + No-Knowledge runs (5×{gpt,sonnet}×N≥1) | NOKNOW-01/02 | **Yes (bounded)** |
+| 52 — METRIC CORE | Stdlib metric core + self-contained bundle scaffold + parity | METRIC-01/02 | No |
+| 53 — RQ3 | Validator ablation (Full/NoEntityValid/NoCitation/NoValidator) | RQ3-01/02 | No |
+| 54 — RQ4 | Module decomposition (entity/coref/union + UpSet) + knowledge A/B | RQ4-01/02 | No |
+| 55 — PACKAGE | Per-link audit + SUMMARY.md + self-contained bundle + parity gate | OUTPUT-01/02, BUNDLE-01/02 | No |
 
-**Floor:** s_linker20 gpt-5.4 macro ≥ 91.3% (= s17e 92.3% − T 1.0pp)
-**Budget cap:** ≤ $20 total (all LLM calls; zero for harness + audit + minimize + ship)
-**s17e per-dataset reference:** MS 94.9%, TS 96.3%, TM 89.8%, BBB 80.4%, JAB 100.0%
+**Source of truth:** `s_linker20_union` per-run phase_caches — gpt `results/v2.6.5_s20union/gpt/run{1..N}/phase_cache`, sonnet `results/v2.6.5_s20union_sonnet/run{1..N}/phase_cache`. **Not s19.**
+**Output target:** `../working/out/` — rq3_detail.csv, rq3_summary.csv, rq4_detail.csv, rq4_summary.csv, per-link audit CSV, SUMMARY.md.
 
-## Standing Gates (into v2.6.4)
+## Standing Gates (into v2.6.6)
 
-- **GATE-01**: PASS (carried from v2.6.3). s_linker13_min.py + s_linker19.py byte-equal. ✅
-- **GATE-06**: PASS (carried). Zero benchmark-derived vocabulary in prompt constants. ✅
-- **GATE-08**: Active — budget cap ≤ $20 for Phase 48 macro F1 sweep. 🔄
+- **GATE-01**: canonical/paper artifacts untouched — `s_linker13_min.py`, `s_linker19.py`, and full-knowledge `s_linker20_union.py` byte-/snapshot-stable (the No-Knowledge path is flag-gated; off = unchanged). 🔄
+- **GATE-06**: no benchmark-derived vocabulary introduced in any new code. 🔄
+- **PARITY**: standalone Full-config macro reproduces the frozen `s_linker20_union` run numbers within tolerance; `run.py` reruns bit-identical. 🔄
 
-## Canonical Artifact (current)
+## Key Design Facts (verified 2026-06-21)
 
-- **`src/llm_sad_sam/linkers/experimental/s_linker13_min.py`** (v2.1 PROMOTED, `canonical=True`, unchanged)
-- Claude Sonnet macro F1: 0.9506 | gpt-5.4 macro F1: 0.9069
+- Both backends have per-run phase_cache (gpt + sonnet); gpt also has N=6 full runs (`results/v2.6.5/full_s_linker20_union_run{1..6}/`).
+- `layer3`: entity `candidates`→`validated` + `decisions{(s,c):{approved,p1,p2,path,stage}}` → entity two-pass validator replayable.
+- `layer4`: `coref_raw`→`coref_validated` + `coref_decisions{(s,c):{approved,path}}` → coref/citation validator replayable.
+- `layer1`: `model_knowledge` + `doc_knowledge` (knowledge layer, present but cannot be ablated by replay → Phase 51 live run).
+- `final`: `final` + `final_provenance`; `*_links.csv` carries a per-link `source` tag (`entity`/`coreference`).
+- Gold: `…/ardoco/core/tests-base/target/classes/benchmark/<proj>/goldstandards/goldstandard_sad_YYYY-sam_YYYY.csv` (doc-to-model).
 
-## Experimental Artifact (current — paper variant)
+## Prior Milestone Context (carried, not active)
 
-- **`src/llm_sad_sam/linkers/experimental/s_linker19.py`** (`experimental=True`, `canonical=False`)
-- Paper RQ1–RQ4 reference variant. BYTE-EQUAL FROZEN. Do not modify.
-- gpt-5.4 macro: see v2.6.3 RQ1 tables. Claude macro: 93.9% (doc-to-SAM).
+- **v2.6.4 — PAUSED** after Phase 48 (SWEEP). Negative result: `s_linker20` minimized prompts regressed gpt-5.4 macro to 88.9% (later shown to be variance; s20 TRUE macro ≈0.903). Phase 49 CLOSE intentionally NOT run. Archived docs: `.planning/milestones/v2.6.4-REQUIREMENTS.md` + `v2.6.4-ROADMAP.md`. Phase dirs `44–48` retained under `.planning/phases/`.
+- **v2.6.5 (variance remediation)** — informal track (quick tasks 260610-lio, 260620-s2r, 260620-u2s, 260620-ycl). Found the s20-family tied within ±1.4pp noise; `s_linker20_union` is the mild best (macro ≈0.906 via BBB recall) and the **ship candidate** — the source for this milestone's RQ3/RQ4. Artifacts under `results/v2.6.5*/` + `logs/v2.6.5*/`.
+- **v2.6.3 — SHIPPED** 2026-06-05. Paper RQ1–RQ4 cells populated via s19 checkpoint replay (now superseded for RQ3/RQ4 by s20_union per this milestone).
 
-## v2.6.4 Target Artifact
+## v2.7 / Frozen
 
-- **`src/llm_sad_sam/linkers/experimental/s_linker20.py`** (CREATED Phase 47 plan 01, commit de3b48e)
-- Standalone (no inheritance from s19); minimized inlined constants; experimental=True, canonical=False.
-- Registered in run_ablation.py (commit a267a96). Target: gpt-5.4 macro ≥ 91.3%.
-
-## Quick Tasks Completed
-
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260602-d1w | investigate latency implications of switching gpt backend to flex tier | 2026-06-02 | — | [260602-d1w-investigate-latency-implications-of-swit](./quick/260602-d1w-investigate-latency-implications-of-swit/) |
-| 20260604-lissa-rq1-eval | Clone lissa-replication into sota/; re-evaluate gpt-5-mini d2m/d2c tracelinks via metrics_api.py; fill RQ1 LiSSA cells | 2026-06-04 | — | [20260604-lissa-rq1-eval](./quick/20260604-lissa-rq1-eval/) |
-| 260610-lio | Explore cut vs non-SE(hardware) rewrite of ANTECEDENT_ALIAS_RULES few-shot — both snapshot-safe + GATE-06-clean (free checks); behavior unconfirmed (deferred N≥3 TM sweep). Rec: Candidate B (hardware rewrite) | 2026-06-10 | 37dbf28 | [260610-lio-cut-or-non-se-rewrite-antecedent-alias-r](./quick/260610-lio-cut-or-non-se-rewrite-antecedent-alias-r/) |
-| 260620-s2r | Deep dive on s20-family v2.6.5 results (44 runs, all **gpt-5.4**). Family tied at macro 0.895–0.906 within ±1.4pp noise; union 0.906 best via BBB recall only (+3.1 TP, F1 0.785→0.811; code comment "+5 TP/0 FP" is really +3.1 TP/+0.4 FP). Phase-48 88.9% FAIL confirmed variance (N=3=0.903). Bisection: keep COREF_RULES + 5 generality cuts; only COR-03/04 opener cut may over-trim. **Gaps: no Sonnet re-validation in v2.6.5; 0.93 unmet on gpt-5.4.** | 2026-06-20 | — | [260620-s2r-s20-family-results-deep-dive](./quick/260620-s2r-s20-family-results-deep-dive/) |
-| 260620-u2s | Built + ran **s_linker20_union_aliasb** (union + aliasb 'prompt swap') on BOTH backends. **NEGATIVE:** gpt-5.4 macro 0.8915 (N=3) = **−1.43pp below union (0.906)**, worst full variant; union's BBB recall survives but the hardware ANTECEDENT_ALIAS_RULES swap erodes MS/JAB/TM coref. Sonnet macro 0.8957 (N=1, reconstructed). Changes don't stack → **keep s_linker20_union, drop combo.** Env: claude CLI shares session quota → empty responses under sustained load; N≥3 Sonnet infeasible from session. Variant kept registered (experimental, NOT canonical). | 2026-06-20 | — | [260620-u2s-union-plus-prompt-swap-both-backends](./quick/260620-u2s-union-plus-prompt-swap-both-backends/) |
-
-## s_linker20 Sweep Results (Phase 48 Plan 01)
-
-| Dataset | s20 F1 | s17e F1 | Delta | Status |
-|---------|--------|---------|-------|--------|
-| MediaStore | 96.7% | 94.9% | +1.8pp | PASS |
-| TeaStore | 98.1% | 96.3% | +1.8pp | PASS |
-| TeaMmates | 83.3% | 89.8% | -6.5pp | FAIL |
-| BigBlueButton | 75.0% | 80.4% | -5.4pp | FAIL |
-| JabRef | 91.4% | 100.0% | -8.6pp | FAIL |
-| **Macro** | **88.9%** | **92.3%** | **-3.4pp** | **FAIL** |
-
-REQ-V264-09: FAIL (macro 88.9% < floor 91.3%). GATE-08: PASS ($7.71 < $20).
-Log: `logs/v2.6.4_s_linker20_gpt.log`
+- **v2.7 (Phases 38–42)** — FROZEN. Resume after the v2.6.x line settles.
+- **v2.6.4 close (Phase 49)** — deferred pending remediation disposition.
 
 ## Session Continuity
 
-Last session: 2026-06-09T13:30:00Z
-Stopped at: Phase 48 complete — NEGATIVE verdict (REQ-V264-09 FAIL 88.9%). v2.6.4 PAUSED for v2.6.5 remediation; Phase 49 CLOSE not run.
+Last session: 2026-06-21 (this session)
+Stopped at: v2.6.6 milestone initialized — PROJECT.md/REQUIREMENTS.md/ROADMAP.md written and committed.
 Resume file: None
-Next action: Scope + start v2.6.5 remediation (`/gsd:new-milestone`) — bisect Phase-46 cuts behind the TM/BBB/JAB regressions. Do NOT run Phase 49 CLOSE for v2.6.4 until remediation disposition is decided.
-
-## Performance Metrics
-
-| Phase | Plan | Duration | Notes |
-|-------|------|----------|-------|
-| Phase 46 P08 | 25 | - tasks | - files |
-| Phase 47 | P01 | 8 min | 2 tasks, 2 files (1 created, 1 modified) |
-| Phase 47 | P02 | 2 min | 2 tasks, 2 files (1 created, 1 modified) |
-| Phase 48 | P01 | 24 min | 2 tasks, 1 file committed (log); sweep 99 calls, macro 88.9% MARGINAL FAIL |
-| Phase 48 | P02 | 10 min | 2 tasks, 1 file created (48-02-SUMMARY.md); verdict + GATE-06/08 records |
+Next action: `/gsd:plan-phase 50` (EXTRACT). Consider kicking off Phase 51 (NOKNOW) live runs early since they are the only LLM-bound work.
