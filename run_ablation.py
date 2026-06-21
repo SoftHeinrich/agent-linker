@@ -120,6 +120,7 @@ CANONICAL_VARIANTS = [
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
     "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
+    "s_linker20_union_noknow",  # v2.6.6 NOKNOW: s20_union with knowledge-disable flag (no_knowledge=True); canonical-name-only matching; NOT canonical
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -840,6 +841,22 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "s_linker20_union_noknow": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_union",
+        class_name="SLinker20Union",
+        description=(
+            "S-Linker20Union NOKNOW — v2.6.6 (experimental=True, NOT canonical). "
+            "s_linker20_union with knowledge-disable flag (no_knowledge=True): skips "
+            "alias table + ambiguity map (layer1 LLM calls), sets empty ModelKnowledge "
+            "and DocumentKnowledge directly. All other phases (extraction, validation, "
+            "coref) run unchanged with canonical-name-only matching. "
+            "Source: RQ4-02 knowledge A/B ablation axis."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
+    ),
     "s_linker20": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker20",
@@ -1068,7 +1085,8 @@ def build_linker(variant_name: str, backend: LLMBackend | None = None):
     spec = VARIANT_SPECS[canonical]
     module = importlib.import_module(spec["module"])
     cls = getattr(module, spec["class_name"])
-    return cls(backend=backend or get_backend())
+    extra = spec.get("kwargs", {})
+    return cls(backend=backend or get_backend(), **extra)
 
 
 def load_gold_sam(gold_path: str) -> set[tuple[int, str]]:
