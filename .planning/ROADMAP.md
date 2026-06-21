@@ -55,6 +55,14 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 
 **Requirements:** NOKNOW-01, NOKNOW-02
 
+**Plans:** 5 plans
+
+- [ ] 51-01-PLAN.md — no_knowledge flag + strictly-additive Phase-1 guard in s_linker20_union.py; register s_linker20_union_noknow + thread kwargs through build_linker (W1+W2; NOKNOW-01)
+- [ ] 51-02-PLAN.md — GATE-01 evidence harness: structural git-diff guard + Phase-50 frozen-cache 30/30 re-run gate (W3; NOKNOW-01)
+- [ ] 51-03-PLAN.md — gpt + sonnet No-Knowledge N=3 sweep scripts into annotated _noknow roots, with cumulative call-count cost logging + cache isolation (W4; NOKNOW-02)
+- [ ] 51-04-PLAN.md — live 30-cell No-Knowledge sweep (GATE-01-gated, end-to-end, ~$50-65 / ~7.5h, log-and-continue) (W5; NOKNOW-02)
+- [ ] 51-05-PLAN.md — extractor extension (NOKNOW_MATRIX + parameterized run_matrix) + 30-cell No-Knowledge extraction with faithfulness gate (W6; NOKNOW-02)
+
 **Success criteria:**
 
 1. `s_linker20_union` runs with a knowledge-disable flag/variant that skips the alias table and ambiguity map; with the flag off, a snapshot/golden check confirms full-knowledge behavior is unchanged (GATE-01).
@@ -146,4 +154,4 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 
 ---
 *Roadmap created: 2026-06-21*
-*Last updated: 2026-06-21 — Phase 50 planned (1 plan: 50-01-PLAN.md).*
+*Last updated: 2026-06-21 — Phase 51 planned (5 plans: 51-01..51-05-PLAN.md, 4 waves).*
