@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.6.6
 milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
-stopped_at: 2026-06-21 — Phase 50 (EXTRACT) COMPLETE. Plan 50-01 executed: 30-cell pickle→neutral-JSON extractor, 30/30 PASS, deterministic.
-last_updated: "2026-06-21T16:00:00.000Z"
-last_activity: 2026-06-21 -- Phase 50 plan 50-01 complete (EXTRACT-01/02/03 satisfied)
+stopped_at: 2026-06-21 — Phase 50 (EXTRACT) COMPLETE & VERIFIED (6/6 must-haves). Plan 50-01: 30/30 cells extracted + PASS, deterministic, GATE-01 clean. Next: Phase 51 (NOKNOW).
+last_updated: "2026-06-21T15:31:41.295Z"
+last_activity: 2026-06-21 -- Phase 50 complete + verified (EXTRACT-01/02/03 satisfied)
 progress:
   total_phases: 6
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
 **Core value:** A small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute paper RQ3 (validator contribution) and RQ4 (per-module + Full-vs-No-Knowledge) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
-**Current focus:** Phase 50 — extract
+**Current focus:** Phase 51 — NOKNOW (next; Phase 50 EXTRACT complete)
 
 ## Current Position
 
-Phase: 50 (extract) — COMPLETE
-Plan: 1 of 1 (DONE)
+Phase: 50 (EXTRACT) — COMPLETE & VERIFIED
+Plan: 50-01 — 1 of 1 (DONE)
 Status: Ready for Phase 51 (NOKNOW)
-Last activity: 2026-06-21 -- Phase 50 plan 50-01 complete (EXTRACT-01/02/03 satisfied)
+Last activity: 2026-06-21 -- Phase 50 complete + verified (EXTRACT-01/02/03 satisfied)
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%

@@ -14,9 +14,9 @@
 
 ### Extraction Bridge (EXTRACT)
 
-- [ ] **EXTRACT-01**: An extraction script (run inside `agent-linker`, where the linker classes exist) dumps every `s_linker20_union` per-run phase_cache (`layer1`–`layer4` + `final`) into neutral, stdlib-loadable JSON — both backends (gpt + sonnet), all N runs, all 5 projects.
-- [ ] **EXTRACT-02**: The extracted JSON captures every ablation-relevant field: entity `candidates`/`validated`/`decisions` (incl. `p1`/`p2` evidence gates), coref `coref_raw`/`coref_validated`/`coref_decisions`, the knowledge layer (`model_knowledge` + `doc_knowledge`), and the `final` links with per-link `source`/provenance.
-- [ ] **EXTRACT-03**: Extraction faithfulness is verified — the final-link set re-derived from each extract equals that run's own `*_links.csv` / `ablation_*.json`, per project × run × backend.
+- [x] **EXTRACT-01**: An extraction script (run inside `agent-linker`, where the linker classes exist) dumps every `s_linker20_union` per-run phase_cache (`layer1`–`layer4` + `final`) into neutral, stdlib-loadable JSON — both backends (gpt + sonnet), all N runs, all 5 projects.
+- [x] **EXTRACT-02**: The extracted JSON captures every ablation-relevant field: entity `candidates`/`validated`/`decisions` (incl. `p1`/`p2` evidence gates), coref `coref_raw`/`coref_validated`/`coref_decisions`, the knowledge layer (`model_knowledge` + `doc_knowledge`), and the `final` links with per-link `source`/provenance.
+- [x] **EXTRACT-03**: Extraction faithfulness is verified — the final-link set re-derived from each extract equals that run's own `*_links.csv` / `ablation_*.json`, per project × run × backend.
 
 ### No-Knowledge Ablation (NOKNOW)
 
@@ -70,9 +70,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| EXTRACT-01 | Phase 50 | Pending |
-| EXTRACT-02 | Phase 50 | Pending |
-| EXTRACT-03 | Phase 50 | Pending |
+| EXTRACT-01 | Phase 50 | Complete |
+| EXTRACT-02 | Phase 50 | Complete |
+| EXTRACT-03 | Phase 50 | Complete |
 | NOKNOW-01 | Phase 51 | Pending |
 | NOKNOW-02 | Phase 51 | Pending |
 | METRIC-01 | Phase 52 | Pending |
@@ -87,6 +87,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | BUNDLE-02 | Phase 55 | Pending |
 
 **Coverage:**
+
 - v2.6.6 requirements: 15 total
 - Mapped to phases: 15
 - Unmapped: 0 ✓

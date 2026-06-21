@@ -9,6 +9,7 @@
 Build a small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute RQ3 (validator contribution) and RQ4 (per-module + Full-vs-No-Knowledge) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
 
 **Data reality (verified 2026-06-21):**
+
 - Per-run phase_caches exist for **both backends** — gpt `results/v2.6.5_s20union/gpt/run{1..N}/phase_cache`, sonnet `results/v2.6.5_s20union_sonnet/run{1..N}/phase_cache`; plus gpt N=6 full runs in `results/v2.6.5/full_s_linker20_union_run{1..6}/`.
 - `layer3` = entity `candidates`/`validated`/`decisions{(s,c):{approved,p1,p2,path,stage}}`; `layer4` = coref `coref_raw`/`coref_validated`/`coref_decisions{(s,c):{approved,path}}`; `layer1` = `model_knowledge`+`doc_knowledge`; `final` = `final`+`final_provenance`.
 - Gold standards: `…/ardoco/core/tests-base/target/classes/benchmark/<proj>/goldstandards/goldstandard_sad_YYYY-sam_YYYY.csv`.
@@ -35,10 +36,12 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 
 **Requirements:** EXTRACT-01, EXTRACT-02, EXTRACT-03
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
+
 - [x] 50-01-PLAN.md — pickle→neutral-JSON extractor for all 30 s20_union cells (2 backends × 3 runs × 5 projects) with built-in faithfulness + coverage gate (EXTRACT-01/02/03) — COMPLETE 2026-06-21 (30/30 PASS, deterministic)
 
 **Success criteria:**
+
 1. Running the extraction script in `agent-linker` produces one JSON per (backend × run × project) covering all of gpt + sonnet, every N run, all 5 projects — no missing cells.
 2. Each JSON contains entity candidates/validated/decisions (with p1/p2), coref raw/validated/decisions, knowledge layer (model_knowledge + doc_knowledge), and final links + provenance/source.
 3. The final-link set re-derived from each JSON is byte-equal (as a set) to that run's own `*_links.csv` / `ablation_*.json` — a printed per-run PASS/FAIL faithfulness check shows all PASS.
@@ -53,6 +56,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** NOKNOW-01, NOKNOW-02
 
 **Success criteria:**
+
 1. `s_linker20_union` runs with a knowledge-disable flag/variant that skips the alias table and ambiguity map; with the flag off, a snapshot/golden check confirms full-knowledge behavior is unchanged (GATE-01).
 2. A No-Knowledge run completes for 5 projects × {gpt, sonnet} × N≥1, with outputs + phase_cache captured under `results/` and the live-call cost logged.
 3. The No-Knowledge runs are extracted into neutral JSON identical in shape to the Phase-50 Full extracts (so the scorer treats them uniformly).
@@ -66,6 +70,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** METRIC-01, METRIC-02
 
 **Success criteria:**
+
 1. `../working/` exists with vendored sad→sam gold (5 projects), vendored neutral extracts, and a stdlib-only `src/` metric module — no imports from `agent-linker`/`transarc-emp`.
 2. Link-level P/R/F1 + TP/FP/FN computed by the metric core on the Full config matches each run's own `ablation_*.json` F1 within a stated tolerance (parity printout).
 3. RQ-metric primitives — per-component F1 distribution, sentence coverage, noise rate, UpSet set-overlap — are implemented and unit-exercised on at least one project.
@@ -80,6 +85,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** RQ3-01, RQ3-02
 
 **Success criteria:**
+
 1. Full / NoEntityValid / NoCitation / NoValidator are each scored per project × run × backend by toggling the cached validator decisions (no LLM).
 2. Per-validator TP-preserved vs FP-removed (entity two-pass; coref/citation) and net ΔF1-if-removed are reported, with a per-component distribution.
 3. `rq3_detail.csv` (per-run × per-config × per-project) and `rq3_summary.csv` (macro + per-project, N≥3 mean ± range, both backends) are written to `../working/out/`.
@@ -94,6 +100,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** RQ4-01, RQ4-02
 
 **Success criteria:**
+
 1. Entity-only / coref-only / union(full) are scored per project × run × backend, reporting F1, unique TPs, UpSet overlap (|only_E|/|both|/|only_C|), sentence coverage, and noise rate, with N≥3 mean ± range.
 2. Full vs No-Knowledge ΔF1 (+ coverage/noise deltas) is computed from the Phase-51 No-Knowledge extracts, per project, both backends.
 3. `rq4_detail.csv` and `rq4_summary.csv` are written to `../working/out/` with both the module-decomposition and knowledge-A/B blocks.
@@ -108,6 +115,7 @@ Build a small, fully self-contained eval bundle under `../working/` that determi
 **Requirements:** OUTPUT-01, OUTPUT-02, BUNDLE-01, BUNDLE-02
 
 **Success criteria:**
+
 1. A per-link audit CSV lists every link with sentence, component, source-module, validator decision (p1/p2/approved), gold-match, and RQ3/RQ4 config membership.
 2. `SUMMARY.md` shows RQ3 (validator contributions) and RQ4 (module contributions + knowledge A/B) headline tables for both backends, with N and variance noted.
 3. `../working/` runs end-to-end via a single `run.py` with **no path dependency on sibling repos**, and a README documents one-command reproduction.
