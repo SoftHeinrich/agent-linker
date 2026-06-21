@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.6.6
 milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
-stopped_at: 2026-06-21 — Phase 51 (NOKNOW) planned: 5 plans / 4 waves, plan-checker PASSED. Next: /gsd:execute-phase 51.
-last_updated: "2026-06-21T19:44:14.618Z"
-last_activity: 2026-06-21 -- Phase 51 planning complete (5 plans, 4 waves, verified)
+stopped_at: Phase 51 (NOKNOW) planned — 5 plans / 4 waves, plan-checker PASSED
+last_updated: "2026-06-21T21:08:45.539Z"
+last_activity: 2026-06-21 -- Phase 51 execution started
 progress:
   total_phases: 6
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 
 **Core value:** A small, fully self-contained eval bundle under `../working/` that deterministically replays the frozen `s_linker20_union` per-run checkpoints (both backends, N≥3) to compute paper RQ3 (validator contribution) and RQ4 (per-module + Full-vs-No-Knowledge) ablation results as full-detailed CSVs + SUMMARY.md, reproducible from that directory alone.
-**Current focus:** Phase 51 — NOKNOW (next; Phase 50 EXTRACT complete)
+**Current focus:** Phase 51 — noknow
 
 ## Current Position
 
-Phase: 50 (EXTRACT) — COMPLETE & VERIFIED
-Plan: 50-01 — 1 of 1 (DONE)
-Status: Ready to execute
-Last activity: 2026-06-21 -- Phase 51 planning complete
+Phase: 51 (noknow) — EXECUTING
+Plan: 1 of 5
+Status: Executing Phase 51
+Last activity: 2026-06-21 -- Phase 51 execution started
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
