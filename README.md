@@ -1,94 +1,62 @@
-# agent-linker
+# agent-linker — s20U branch
 
-LLM-driven SAD-SAM trace link recovery for the ARDoCo benchmark suite.
+Minimal slice of the experimental linker repo, trimmed to **only** what is
+needed to run the `s_linker20_union` ("s20U") SAD-SAM sweep against the ARDoCo
+benchmark suite. Everything unrelated (other linker families, planning docs,
+logs, results, archives, tests, analysis scripts) has been removed on this
+branch — see `git log master` for the full history.
 
-The active repo now keeps:
+## What `s20U` is
 
-- `ILinker1`, `ILinker2`, `ILinker3`
-- `SLinker` through `SLinker11a`
-- the prompt files and v2-stack modules those retained linkers need
-
-Archived families such as `agent_linker*`, `cnr*`, `alinker`, and the older `ilinker2_v*` line live under [archive/README.md](/home/yu/project/adc/agent-linker/archive/README.md).
+`s_linker20_union` (class `SLinker20Union`) is the v2.6.5 **minimized-prompt,
+standalone** SAD-SAM linker: Framing C two-pass UNION consensus, no inheritance
+from any other linker, all constants inlined. The `s_linker20_union_noknow`
+variant reuses the same module with a knowledge-disable flag.
 
 ## Prerequisites
 
 - Python 3.11+
-- [Claude CLI](https://github.com/anthropics/claude-code) installed and authenticated if you use the default backend
-- The [ardoco](https://github.com/ArDoCo/Core) repo cloned as a sibling directory:
+- The [ardoco](https://github.com/ArDoCo/Core) repo cloned as a sibling so the
+  benchmark inputs resolve at `../ardoco/core/tests-base/src/main/resources/benchmark`.
+- An OpenAI key (`OPENAI_API_KEY`) for the `gpt-5.4` backend, or a Claude CLI for
+  the Sonnet backend. `.env` selects the active backend (`LLM_BACKEND=openai`).
 
-```text
-adc/
-  agent-linker/
-  ardoco/
-```
-
-Install dependencies:
+Install:
 
 ```bash
-pip install -e ".[dev,openai]"
+pip install -e ".[openai]"
 ```
 
 ## Running
 
-[run_ablation.py](/home/yu/project/adc/agent-linker/run_ablation.py) is lightweight now and only supports the retained variants.
-
 ```bash
-# Default retained variant
-python run_ablation.py
+# single dataset, one run
+python run_ablation.py --variants s_linker20_union --datasets mediastore
 
-# Single dataset
-python run_ablation.py --datasets mediastore
-
-# Explicit retained variants
-python run_ablation.py --variants i1 i2 i3
-python run_ablation.py --variants s_linker s_linker7 s_linker11a --datasets teastore
-
-# Show supported variants
+# list registered variants
 python run_ablation.py --list-variants
 ```
 
-Supported dataset names: `mediastore`, `teastore`, `teammates`, `bigbluebutton`, `jabref`
+Supported datasets: `mediastore`, `teastore`, `teammates`, `bigbluebutton`, `jabref`.
 
-Variant naming notes:
+### N=3 sweep runners
 
-- `s_linker1` is accepted as an alias for `s_linker`
-- `ilinker1`, `ilinker2`, and `ilinker3` are accepted as aliases for `i1`, `i2`, and `i3`
+The retained shell scripts drive the strictly-sequential N=3 sweeps with
+cooldowns, retry-once, and per-`(run,dataset)` resume markers:
 
-## LLM Backend
-
-The default backend calls `claude` as a subprocess.
+| script | variant | backend |
+| --- | --- | --- |
+| `run_s20union_gpt_n3.sh` | `s_linker20_union` | gpt-5.4 |
+| `run_s20union_sonnet_n3.sh` | `s_linker20_union` | Sonnet |
+| `run_s20union_gpt_re_medium_n3.sh` | `s_linker20_union` | gpt-5.4 (reasoning=medium) |
+| `run_s20union_noknow_gpt_n3.sh` | `s_linker20_union_noknow` | gpt-5.4 |
+| `run_s20union_noknow_sonnet_n3.sh` | `s_linker20_union_noknow` | Sonnet |
 
 ```bash
-# Default
-python run_ablation.py --datasets mediastore
-
-# Checkpoint cache with fallback
-LLM_BACKEND=checkpoint python run_ablation.py --datasets mediastore
-
-# OpenAI
-LLM_BACKEND=openai OPENAI_API_KEY=sk-... python run_ablation.py --datasets mediastore
+OPENAI_API_KEY=sk-... ./run_s20union_gpt_n3.sh
 ```
-
-The retained workflow defaults to `CLAUDE_MODEL=sonnet` and `OPENAI_MODEL_NAME=gpt-5.2`.
 
 ## Outputs
 
-Results are written to:
-
-```text
-results/
-  ablation_results/   per-dataset link CSVs and summary JSON
-  phase_cache/        linker checkpoints
-  llm_logs/           per-run JSONL query logs
-  llm_checkpoint/     prompt cache for checkpoint backend
-```
-
-## Tests
-
-The active test suite is intentionally small and lives under `tests/`.
-
-```bash
-pytest
-```
-
-Historical experiment scripts remain archived under [archive/test_scripts](/home/yu/project/adc/agent-linker/archive/test_scripts).
+Each run writes link CSVs, summary JSON, and per-run caches/logs under the
+`results/` and `logs/` directories created by the runner (both are gitignored).
