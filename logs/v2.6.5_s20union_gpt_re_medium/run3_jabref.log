@@ -9,8 +9,8 @@ Variants: s_linker20_union
 DATASET: jabref
 ========================================================================================================================
   Components: 6, Sentences: 13
-  Gold links: 18, TransArc baseline: 0
-  TransArc baseline: (CSV not available)
+  Gold links: 18, TransArc baseline: 20
+  TransArc baseline: P=90.0% R=100.0% F1=94.7%
 
   --- Variant: s_linker20_union ---
 SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
@@ -24,7 +24,7 @@ Loaded 6 components, 13 sentences
   Checkpoint: layer1 saved
 
 [Phase 2] Entity extraction (Framing C, 2-pass UNION)
-    Consensus: P1=26 P2=26 ∪=26
+    Consensus: P1=20 P2=24 ∪=26
   Framing C: 26 candidates
   Checkpoint: layer2 saved
 
@@ -34,27 +34,28 @@ Loaded 6 components, 13 sentences
 
 [Phase 5] Coreference ()
   Coref raw: 4
-  Coref validated: 4 / 4
+    Coref reject: S3 -> model
+  Coref validated: 3 / 4
   Checkpoint: layer4 saved
 
 [Phase 6] Dedup merge
-  Final: 19 (from 22 raw)
-  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_jabref_20260621_225504.json
-  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_jabref_20260621_225504_calls.json (12 calls)
+  Final: 18 (from 21 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_jabref_20260622_160125.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_jabref_20260622_160125_calls.json (12 calls)
   Checkpoint: final saved
 
-Final: 19 links (143.1s, 12 LLM calls)
-  s_linker20_union: P=94.7% R=100.0% F1=97.3% TP=18 FP=1 FN=0 (143s)
-    Sources: {'entity': 18, 'coreference': 1}
-    FP by source: {'coreference': 1}
+Final: 18 links (188.8s, 12 LLM calls)
+  s_linker20_union: P=100.0% R=100.0% F1=100.0% TP=18 FP=0 FN=0 (189s)
+    Sources: {'entity': 18}
+    FP by source: {}
 
 ========================================================================================================================
 SUMMARY
 ========================================================================================================================
 Dataset          |  s_linker20_union 
 -----------------+-------------------
-jabref           | F1 97.3% FP   1
+jabref           | F1 100.0% FP   0
 -----------------+-------------------
-Macro avg        | F1 97.3% FP   1
+Macro avg        | F1 100.0% FP   0
 
-Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/jabref/ablation_20260621_225504.json
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/jabref/ablation_20260622_160125.json

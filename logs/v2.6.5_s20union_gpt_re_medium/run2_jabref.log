@@ -9,8 +9,8 @@ Variants: s_linker20_union
 DATASET: jabref
 ========================================================================================================================
   Components: 6, Sentences: 13
-  Gold links: 18, TransArc baseline: 0
-  TransArc baseline: (CSV not available)
+  Gold links: 18, TransArc baseline: 20
+  TransArc baseline: P=90.0% R=100.0% F1=94.7%
 
   --- Variant: s_linker20_union ---
 SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
@@ -18,20 +18,18 @@ SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
 Loaded 6 components, 13 sentences
 
 [Phase 1] Knowledge acquisition (parallel)
-    Alias: center -> model [local]
-    Alias: core -> model [local]
     Alias: command line interface -> cli [global]
   Model: 4 ambiguous of 6 components
-  Doc knowledge: 3 aliases
+  Doc knowledge: 1 aliases
   Checkpoint: layer1 saved
 
 [Phase 2] Entity extraction (Framing C, 2-pass UNION)
-    Consensus: P1=26 P2=26 ∪=26
+    Consensus: P1=26 P2=24 ∪=26
   Framing C: 26 candidates
   Checkpoint: layer2 saved
 
 [Phase 4] Twopass validation (V3 p1 + p2)
-  Entity validated: 20 / 26
+  Entity validated: 18 / 26
   Checkpoint: layer3 saved
 
 [Phase 5] Coreference ()
@@ -41,23 +39,23 @@ Loaded 6 components, 13 sentences
   Checkpoint: layer4 saved
 
 [Phase 6] Dedup merge
-  Final: 20 (from 23 raw)
-  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_jabref_20260621_220931.json
-  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_jabref_20260621_220931_calls.json (12 calls)
+  Final: 18 (from 21 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_jabref_20260622_150834.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_jabref_20260622_150834_calls.json (12 calls)
   Checkpoint: final saved
 
-Final: 20 links (164.2s, 12 LLM calls)
-  s_linker20_union: P=90.0% R=100.0% F1=94.7% TP=18 FP=2 FN=0 (164s)
-    Sources: {'entity': 20}
-    FP by source: {'entity': 2}
+Final: 18 links (163.3s, 12 LLM calls)
+  s_linker20_union: P=100.0% R=100.0% F1=100.0% TP=18 FP=0 FN=0 (163s)
+    Sources: {'entity': 18}
+    FP by source: {}
 
 ========================================================================================================================
 SUMMARY
 ========================================================================================================================
 Dataset          |  s_linker20_union 
 -----------------+-------------------
-jabref           | F1 94.7% FP   2
+jabref           | F1 100.0% FP   0
 -----------------+-------------------
-Macro avg        | F1 94.7% FP   2
+Macro avg        | F1 100.0% FP   0
 
-Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/jabref/ablation_20260621_220931.json
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/jabref/ablation_20260622_150834.json

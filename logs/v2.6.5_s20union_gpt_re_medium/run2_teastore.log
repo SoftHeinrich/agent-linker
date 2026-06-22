@@ -9,8 +9,8 @@ Variants: s_linker20_union
 DATASET: teastore
 ========================================================================================================================
   Components: 11, Sentences: 43
-  Gold links: 27, TransArc baseline: 0
-  TransArc baseline: (CSV not available)
+  Gold links: 27, TransArc baseline: 20
+  TransArc baseline: P=100.0% R=74.1% F1=85.1%
 
   --- Variant: s_linker20_union ---
 SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
@@ -20,6 +20,7 @@ Loaded 11 components, 43 sentences
 [Phase 1] Knowledge acquisition (parallel)
     Alias: WebUI service -> WebUI [global]
     Alias: WebUi -> WebUI [global]
+    Alias: Registry instance -> Registry [global]
     Alias: registry -> Registry [local]
     Alias: PersistenceProvider -> Persistence [global]
     Alias: Persistence service -> Persistence [global]
@@ -29,17 +30,19 @@ Loaded 11 components, 43 sentences
     Alias: Image Provider -> ImageProvider [global]
     Alias: Image Provider service -> ImageProvider [global]
     Alias: order-based nearest-neighbor approach -> OrderBasedRecommender [global]
+    Alias: fallback algorithm based on the general item popularity -> PopularityBasedRecommender [global]
   Model: 5 ambiguous of 11 components
-  Doc knowledge: 11 aliases
+  Doc knowledge: 13 aliases
   Checkpoint: layer1 saved
 
 [Phase 2] Entity extraction (Framing C, 2-pass UNION)
-    Consensus: P1=61 P2=50 ∪=76
-  Framing C: 76 candidates
+    [C2] batch: empty response, retrying...
+    Consensus: P1=32 P2=48 ∪=48
+  Framing C: 48 candidates
   Checkpoint: layer2 saved
 
 [Phase 4] Twopass validation (V3 p1 + p2)
-  Entity validated: 52 / 76
+  Entity validated: 27 / 48
   Checkpoint: layer3 saved
 
 [Phase 5] Coreference ()
@@ -50,23 +53,23 @@ Loaded 11 components, 43 sentences
   Checkpoint: layer4 saved
 
 [Phase 6] Dedup merge
-  Final: 55 (from 66 raw)
-  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260621_220516.json
-  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260621_220516_calls.json (19 calls)
+  Final: 31 (from 41 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260622_145948.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260622_145948_calls.json (16 calls)
   Checkpoint: final saved
 
-Final: 55 links (357.5s, 19 LLM calls)
-  s_linker20_union: P=49.1% R=100.0% F1=65.9% TP=27 FP=28 FN=0 (358s)
-    Sources: {'entity': 52, 'coreference': 3}
-    FP by source: {'entity': 28}
+Final: 31 links (491.0s, 16 LLM calls)
+  s_linker20_union: P=83.9% R=96.3% F1=89.7% TP=26 FP=5 FN=1 (491s)
+    Sources: {'entity': 27, 'coreference': 4}
+    FP by source: {'entity': 5}
 
 ========================================================================================================================
 SUMMARY
 ========================================================================================================================
 Dataset          |  s_linker20_union 
 -----------------+-------------------
-teastore         | F1 65.9% FP  28
+teastore         | F1 89.7% FP   5
 -----------------+-------------------
-Macro avg        | F1 65.9% FP  28
+Macro avg        | F1 89.7% FP   5
 
-Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/teastore/ablation_20260621_220516.json
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/teastore/ablation_20260622_145948.json

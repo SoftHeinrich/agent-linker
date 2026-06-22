@@ -9,8 +9,8 @@ Variants: s_linker20_union
 DATASET: teammates
 ========================================================================================================================
   Components: 8, Sentences: 198
-  Gold links: 57, TransArc baseline: 0
-  TransArc baseline: (CSV not available)
+  Gold links: 57, TransArc baseline: 81
+  TransArc baseline: P=60.5% R=86.0% F1=71.0%
 
   --- Variant: s_linker20_union ---
 SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
@@ -18,65 +18,54 @@ SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
 Loaded 8 components, 198 sentences
 
 [Phase 1] Knowledge acquisition (parallel)
-    Alias: Common Component -> Common [global]
-    Alias: Common component -> Common [global]
-    Alias: UI Component -> UI [global]
-    Alias: UI component -> UI [global]
-    Alias: Logic Component -> Logic [global]
-    Alias: Logic component -> Logic [global]
-    Alias: Storage Component -> Storage [global]
-    Alias: Storage component -> Storage [global]
-    Alias: Test Driver Component -> Test Driver [global]
-    Alias: E2E Component -> E2E [global]
-    Alias: E2E component -> E2E [global]
-    Alias: end-to-end component -> E2E [global]
-    Alias: Client Component -> Client [global]
-    Alias: Client component -> Client [global]
+    Alias: front-end -> UI [global]
+    Alias: end-to-end -> E2E [global]
+    Alias: datastore -> GAE Datastore [local]
     Alias: Google's distributed datastore -> GAE Datastore [global]
   Model: 6 ambiguous of 8 components
-  Doc knowledge: 15 aliases
+  Doc knowledge: 4 aliases
   Checkpoint: layer1 saved
 
 [Phase 2] Entity extraction (Framing C, 2-pass UNION)
     [C1] batch 1: S1-S50 (50 sents)
     [C2] batch 1: S1-S50 (50 sents)
-    [C2] batch 2: S51-S100 (50 sents)
     [C1] batch 2: S51-S100 (50 sents)
-    [C2] batch 3: S101-S150 (50 sents)
-    [C2] batch 4: S151-S198 (48 sents)
     [C1] batch 3: S101-S150 (50 sents)
     [C1] batch 4: S151-S198 (48 sents)
-    Consensus: P1=58 P2=70 ∪=71
-  Framing C: 71 candidates
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=71 P2=73 ∪=77
+  Framing C: 77 candidates
   Checkpoint: layer2 saved
 
 [Phase 4] Twopass validation (V3 p1 + p2)
-  Entity validated: 45 / 71
+  Entity validated: 53 / 77
   Checkpoint: layer3 saved
 
 [Phase 5] Coreference ()
-  Coref raw: 18
-  Coref validated: 18 / 18
+  Coref raw: 19
+  Coref validated: 19 / 19
   Checkpoint: layer4 saved
 
 [Phase 6] Dedup merge
-  Final: 51 (from 63 raw)
-  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_teammates_20260621_231820.json
-  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_teammates_20260621_231820_calls.json (38 calls)
+  Final: 59 (from 72 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_teammates_20260622_171422.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_teammates_20260622_171422_calls.json (40 calls)
   Checkpoint: final saved
 
-Final: 51 links (679.0s, 38 LLM calls)
-  s_linker20_union: P=96.1% R=86.0% F1=90.7% TP=49 FP=2 FN=8 (679s)
-    Sources: {'entity': 45, 'coreference': 6}
-    FP by source: {'coreference': 1, 'entity': 1}
+Final: 59 links (2876.7s, 40 LLM calls)
+  s_linker20_union: P=86.4% R=89.5% F1=87.9% TP=51 FP=8 FN=6 (2877s)
+    Sources: {'entity': 53, 'coreference': 6}
+    FP by source: {'entity': 8}
 
 ========================================================================================================================
 SUMMARY
 ========================================================================================================================
 Dataset          |  s_linker20_union 
 -----------------+-------------------
-teammates        | F1 90.7% FP   2
+teammates        | F1 87.9% FP   8
 -----------------+-------------------
-Macro avg        | F1 90.7% FP   2
+Macro avg        | F1 87.9% FP   8
 
-Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/teammates/ablation_20260621_231820.json
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/teammates/ablation_20260622_171422.json

@@ -9,8 +9,8 @@ Variants: s_linker20_union
 DATASET: bigbluebutton
 ========================================================================================================================
   Components: 12, Sentences: 87
-  Gold links: 62, TransArc baseline: 0
-  TransArc baseline: (CSV not available)
+  Gold links: 62, TransArc baseline: 49
+  TransArc baseline: P=89.8% R=71.0% F1=79.3%
 
   --- Variant: s_linker20_union ---
 SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
@@ -18,21 +18,20 @@ SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
 Loaded 12 components, 87 sentences
 
 [Phase 1] Knowledge acquisition (parallel)
+    Alias: KMS -> kurento [global]
     Alias: bbb-html5 -> HTML5 Server [global]
     Alias: bbb-web -> BBB web [global]
-    Alias: KMS -> kurento [global]
+    Alias: akka-apps -> Apps [global]
+    Alias: Kurento Media Server -> kurento [global]
     Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: BigBlueButton HTML5 client -> HTML5 Client [global]
     Alias: BigBlueButton web application -> BBB web [global]
-    Alias: Recording Processor -> Recording Service [global]
+    Alias: redis pubsub -> Redis PubSub [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
     Alias: BigBlueButton Apps -> Apps [global]
     Alias: Apps Akka -> Apps [global]
-    Alias: akka-apps -> Apps [global]
-    Alias: apps -> Apps [local]
-    Alias: FSESL akka -> FSESL [global]
-    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
-    Alias: Kurento Media Server -> kurento [global]
   Model: 1 ambiguous of 12 components
-  Doc knowledge: 13 aliases
+  Doc knowledge: 12 aliases
   Checkpoint: layer1 saved
 
 [Phase 2] Entity extraction (Framing C, 2-pass UNION)
@@ -40,7 +39,7 @@ Loaded 12 components, 87 sentences
     [C2] batch 1: S1-S50 (50 sents)
     [C1] batch 2: S51-S87 (37 sents)
     [C2] batch 2: S51-S87 (37 sents)
-    Consensus: P1=69 P2=70 ∪=72
+    Consensus: P1=54 P2=71 ∪=72
   Framing C: 72 candidates
   Checkpoint: layer2 saved
 
@@ -49,33 +48,32 @@ Loaded 12 components, 87 sentences
   Checkpoint: layer3 saved
 
 [Phase 5] Coreference ()
-  Coref raw: 33
-    Coref reject: S9 -> HTML5 Client
+  Coref raw: 27
+    Coref reject: S36 -> BBB web
     Coref reject: S54 -> Apps
-    Coref reject: S76 -> HTML5 Client
-    Coref reject: S79 -> HTML5 Client
+    Coref reject: S61 -> FreeSWITCH
     Coref reject: S81 -> Presentation Conversion
-  Coref validated: 28 / 33
+  Coref validated: 23 / 27
   Checkpoint: layer4 saved
 
 [Phase 6] Dedup merge
-  Final: 43 (from 63 raw)
-  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_bigbluebutton_20260621_230531.json
-  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_bigbluebutton_20260621_230531_calls.json (24 calls)
+  Final: 40 (from 58 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_162455.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_162455_calls.json (24 calls)
   Checkpoint: final saved
 
-Final: 43 links (537.0s, 24 LLM calls)
-  s_linker20_union: P=90.7% R=62.9% F1=74.3% TP=39 FP=4 FN=23 (537s)
-    Sources: {'entity': 35, 'coreference': 8}
-    FP by source: {'entity': 4}
+Final: 40 links (1319.2s, 24 LLM calls)
+  s_linker20_union: P=92.5% R=59.7% F1=72.5% TP=37 FP=3 FN=25 (1319s)
+    Sources: {'entity': 35, 'coreference': 5}
+    FP by source: {'entity': 3}
 
 ========================================================================================================================
 SUMMARY
 ========================================================================================================================
 Dataset          |  s_linker20_union 
 -----------------+-------------------
-bigbluebutton    | F1 74.3% FP   4
+bigbluebutton    | F1 72.5% FP   3
 -----------------+-------------------
-Macro avg        | F1 74.3% FP   4
+Macro avg        | F1 72.5% FP   3
 
-Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/bigbluebutton/ablation_20260621_230531.json
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run3/bigbluebutton/ablation_20260622_162455.json
