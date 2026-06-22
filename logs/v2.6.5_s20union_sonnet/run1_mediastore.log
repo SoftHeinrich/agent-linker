@@ -1,0 +1,64 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: AudioAccess -> MediaAccess [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: database -> DB [local]
+  Model: 6 ambiguous of 14 components
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=34 P2=28 ∪=34
+  Framing C: 34 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 28 / 34
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 9
+  Coref validated: 9 / 9
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 32 (from 37 raw)
+  Phase log saved: results/v2.6.5_s20union_sonnet/run1/llm_logs/s_linker20_union_claude_mediastore_20260620_171646.json
+  LLM call trace saved: results/v2.6.5_s20union_sonnet/run1/llm_logs/s_linker20_union_claude_mediastore_20260620_171646_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 32 links (691.6s, 14 LLM calls)
+  s_linker20_union: P=96.9% R=100.0% F1=98.4% TP=31 FP=1 FN=0 (692s)
+    Sources: {'entity': 28, 'coreference': 4}
+    FP by source: {'entity': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 98.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 98.4% FP   1
+
+Results saved to results/v2.6.5_s20union_sonnet/run1/mediastore/ablation_20260620_171646.json

@@ -1,0 +1,72 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: teastore
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: WebUI service -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [global]
+    Alias: Recommender service -> Recommender [global]
+    Alias: Auth service -> Auth [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender [global]
+  Model: 5 ambiguous of 11 components
+  Doc knowledge: 11 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=61 P2=50 ∪=76
+  Framing C: 76 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 52 / 76
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 16
+    Coref reject: S36 -> OrderBasedRecommender
+    Coref reject: S43 -> Registry
+  Coref validated: 14 / 16
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 55 (from 66 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260621_220516.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_teastore_20260621_220516_calls.json (19 calls)
+  Checkpoint: final saved
+
+Final: 55 links (357.5s, 19 LLM calls)
+  s_linker20_union: P=49.1% R=100.0% F1=65.9% TP=27 FP=28 FN=0 (358s)
+    Sources: {'entity': 52, 'coreference': 3}
+    FP by source: {'entity': 28}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+teastore         | F1 65.9% FP  28
+-----------------+-------------------
+Macro avg        | F1 65.9% FP  28
+
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/teastore/ablation_20260621_220516.json

@@ -1,0 +1,367 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker17e
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: ReEncoder component -> Reencoding [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+  Model: 5 ambiguous (of 14 components)
+  Doc knowledge: 9 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=28, Pass2=29, Intersect=28
+  Framing A: 25 links
+  Framing B: 29 links
+  Framing C: 28 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 31
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 31 candidates
+  Validated: 28 / 31
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 37 total)
+    Coref batch: empty response, retrying...
+  Coreference raw: 9 links
+    Coref val reject: S15 -> TagWatermarking
+  Coreference validated: 8 / 9
+
+[Phase 6] Final Merge
+  After dedup: 32 (from 36 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_mediastore_20260610_072511.json
+  Checkpoint: final saved
+
+Final: 32 links (35s)
+  s_linker17e: P=93.8% R=96.8% F1=95.2% TP=30 FP=2 FN=1 (35s)
+    Sources: {'multi_framing': 28, 'coreference': 4}
+    FP by source: {'multi_framing': 1, 'coreference': 1}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+  Model: 0 ambiguous (of 11 components)
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=27, Pass2=27, Intersect=27
+  Framing A: 22 links
+  Framing B: 20 links
+  Framing C: 27 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 28
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 28 candidates
+  Validated: 21 / 28
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (11 anaphoric sents / 43 total)
+  Coreference raw: 10 links
+    Coref val reject: S26 -> Persistence
+    Coref val reject: S30 -> Recommender
+    Coref val reject: S43 -> Registry
+  Coreference validated: 7 / 10
+
+[Phase 6] Final Merge
+  After dedup: 27 (from 28 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_teastore_20260610_072720.json
+  Checkpoint: final saved
+
+Final: 27 links (128s)
+  s_linker17e: P=96.3% R=96.3% F1=96.3% TP=26 FP=1 FN=1 (128s)
+    Sources: {'multi_framing': 21, 'coreference': 6}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: Common component -> Common [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: Test Driver component -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [global]
+    Alias: Client component -> Client [global]
+    Alias: Common utilities -> Common [global]
+    Alias: GAE Datastore -> GAE Datastore [global]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: Google's distributed datastore -> GAE Datastore [global]
+  Model: 5 ambiguous (of 8 components)
+  Doc knowledge: 21 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)
+    [C2] Framing C batch 1: S1-S50 (50 sents)
+      batch 1/5: +24 (total 24)
+      batch 1/5: +23 (total 23)
+    [C2] Framing C batch 2: S51-S100 (50 sents)
+    [C1] Framing C batch 2: S51-S100 (50 sents)
+      batch 2/5: +16 (total 38)
+    [C2] Framing C batch 3: S101-S150 (50 sents)
+      batch 3/5: +9 (total 46)
+    [C2] Framing C batch 4: S151-S198 (48 sents)
+      batch 4/5: +14 (total 59)
+      batch 5/5: +4 (total 61)
+    [C1] Framing C batch 3: S101-S150 (50 sents)
+    [C1] Framing C batch 4: S151-S198 (48 sents)
+    Framing C consensus: Pass1=71, Pass2=73, Intersect=69
+      batch 2/5: +14 (total 36)
+      batch 3/5: +13 (total 48)
+      batch 4/5: +17 (total 64)
+      batch 5/5: +4 (total 66)
+  Framing A: 61 links
+  Framing B: 66 links
+  Framing C: 69 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 83
+
+[Phase 4] Unified Validation
+    LLM generic reject: S8 -> Logic ("main logic of the application" describes business/application logic in general, not the named Logic component as an entity.)
+    LLM 2-pass validation (+evidence bundles): 82 candidates
+  Validated: 54 / 83
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (59 anaphoric sents / 198 total)
+  Coreference raw: 27 links
+    Coref val reject: S24 -> UI
+    Coref val reject: S27 -> UI
+    Coref val reject: S28 -> UI
+    Coref val reject: S50 -> UI
+    Coref val reject: S92 -> Logic
+    Coref val reject: S94 -> Logic
+    Coref val reject: S139 -> GAE Datastore
+    Coref val reject: S140 -> GAE Datastore
+    Coref val reject: S141 -> GAE Datastore
+    Coref val reject: S184 -> Test Driver
+  Coreference validated: 17 / 27
+
+[Phase 6] Final Merge
+  After dedup: 64 (from 71 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_teammates_20260610_073818.json
+  Checkpoint: final saved
+
+Final: 64 links (658s)
+  s_linker17e: P=79.7% R=89.5% F1=84.3% TP=51 FP=13 FN=6 (658s)
+    Sources: {'multi_framing': 54, 'coreference': 10}
+    FP by source: {'multi_framing': 7, 'coreference': 6}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: web application -> BBB web [local]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: apps -> Apps [local]
+    Alias: Kurento -> kurento [global]
+    Alias: presentation conversion -> Presentation Conversion [global]
+    Alias: conversion process -> Presentation Conversion [local]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+  Model: 0 ambiguous (of 12 components)
+  Doc knowledge: 22 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    [C1] Framing C batch 1: S1-S50 (50 sents)
+    [C2] Framing C batch 1: S1-S50 (50 sents)
+      batch 1/2: +18 (total 18)
+    [C1] Framing C batch 2: S51-S87 (37 sents)
+    [C2] Framing C batch 2: S51-S87 (37 sents)
+      batch 1/2: +17 (total 17)
+      batch 2/2: +26 (total 38)
+      batch 2/2: +27 (total 41)
+    Framing C consensus: Pass1=41, Pass2=46, Intersect=41
+  Framing A: 38 links
+  Framing B: 41 links
+  Framing C: 41 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 49
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 49 candidates
+  Validated: 39 / 49
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (24 anaphoric sents / 87 total)
+  Coreference raw: 18 links
+    Coref val reject: S7 -> HTML5 Client
+    Coref val reject: S17 -> HTML5 Server
+    Coref val reject: S22 -> HTML5 Server
+    Coref val reject: S56 -> Apps
+    Coref val reject: S59 -> FSESL
+    Coref val reject: S77 -> Presentation Conversion
+    Coref val reject: S84 -> Presentation Conversion
+  Coreference validated: 11 / 18
+
+[Phase 6] Final Merge
+  After dedup: 44 (from 50 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_bigbluebutton_20260610_074507.json
+  Checkpoint: final saved
+
+Final: 44 links (409s)
+  s_linker17e: P=93.2% R=66.1% F1=77.4% TP=41 FP=3 FN=21 (409s)
+    Sources: {'multi_framing': 39, 'coreference': 5}
+    FP by source: {'multi_framing': 2, 'coreference': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker17e ---
+SLinker17e (v2.6.2 multi-framing union + validated coref, experimental=True)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge Acquisition (sequential)
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> model [local]
+    Alias: center -> model [local]
+  Model: 6 ambiguous (of 6 components)
+  Doc knowledge: 4 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Multi-Framing Extraction (parallel, all alias-aware)
+    Framing C consensus: Pass1=20, Pass2=20, Intersect=20
+  Framing A: 19 links
+  Framing B: 18 links
+  Framing C: 20 links
+  Checkpoint: layer2 saved
+
+[Phase 3] Framing Union
+  Candidates after union: 20
+
+[Phase 4] Unified Validation
+    LLM 2-pass validation (+evidence bundles): 20 candidates
+  Validated: 18 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference
+    Coreference: cases-in-context (5 anaphoric sents / 13 total)
+  Coreference raw: 3 links
+    Coref val reject: S13 -> model
+  Coreference validated: 2 / 3
+
+[Phase 6] Final Merge
+  After dedup: 18 (from 20 raw)
+  Phase log saved: ./results/llm_logs/s_linker17e_jabref_20260610_074644.json
+  Checkpoint: final saved
+
+Final: 18 links (96s)
+  s_linker17e: P=100.0% R=100.0% F1=100.0% TP=18 FP=0 FN=0 (96s)
+    Sources: {'multi_framing': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |    s_linker17e    
+-----------------+-------------------
+mediastore       | F1 95.2% FP   2
+teastore         | F1 96.3% FP   1
+teammates        | F1 84.3% FP  13
+bigbluebutton    | F1 77.4% FP   3
+jabref           | F1 100.0% FP   0
+-----------------+-------------------
+Macro avg        | F1 90.6% FP  19
+
+Results saved to results/v2.6.5/ref_s_linker17e_run2/ablation_20260610_074644.json

@@ -403,12 +403,12 @@ class LLMClient:
             create_kwargs = dict(
                 model=self.openai_model,
                 messages=messages,
-                temperature=self.temperature,
                 seed=42,
-                max_completion_tokens=4096,
+                max_completion_tokens=self._openai_max_completion_tokens(),
                 timeout=timeout * 2 if service_tier == "flex" else timeout,
                 service_tier=service_tier,
             )
+            self._apply_openai_reasoning(create_kwargs)
             response = client.chat.completions.create(**create_kwargs)
 
             token_usage = None
@@ -888,6 +888,32 @@ class LLMClient:
         except Exception as e:
             return LLMResponse(text="", success=False, error=str(e))
 
+    @staticmethod
+    def _openai_max_completion_tokens() -> int:
+        """Completion-token cap for OpenAI requests (default 4096).
+
+        For reasoning models the hidden reasoning tokens count against this budget,
+        so a non-trivial reasoning_effort can starve/truncate the JSON answer. Raise
+        it via OPENAI_MAX_COMPLETION_TOKENS when using medium/high/xhigh effort."""
+        try:
+            return int(os.environ.get("OPENAI_MAX_COMPLETION_TOKENS", "4096"))
+        except ValueError:
+            return 4096
+
+    def _apply_openai_reasoning(self, create_kwargs: dict) -> None:
+        """Set reasoning_effort XOR temperature on a chat.completions request.
+
+        gpt-5.x: requesting any reasoning_effort engages reasoning mode, which on these
+        models rejects temperature != 1 (HTTP 400). So when OPENAI_REASONING_EFFORT is
+        set we send reasoning_effort and omit temperature; otherwise we keep the configured
+        temperature (unchanged default — no reasoning). Valid efforts for gpt-5.4:
+        none|low|medium|high|xhigh ('minimal' is rejected by this model)."""
+        effort = os.environ.get("OPENAI_REASONING_EFFORT")
+        if effort:
+            create_kwargs["reasoning_effort"] = effort
+        else:
+            create_kwargs["temperature"] = self.temperature
+
     def _get_openai_client(self):
         """Lazily initialize OpenAI client with connection pool management."""
         if self._openai_client is None:
@@ -935,12 +961,12 @@ class LLMClient:
                             "content": prompt
                         }
                     ],
-                    temperature=self.temperature,
                     seed=42,
-                    max_completion_tokens=4096,
+                    max_completion_tokens=self._openai_max_completion_tokens(),
                     timeout=timeout * 2 if service_tier == "flex" else timeout,
                     service_tier=service_tier,
                 )
+                self._apply_openai_reasoning(create_kwargs)
                 response = client.chat.completions.create(**create_kwargs)
 
                 # Extract token usage

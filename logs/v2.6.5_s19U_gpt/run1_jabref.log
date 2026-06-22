@@ -1,0 +1,62 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: jabref
+Variants: s_linker19U
+========================================================================================================================
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker19U ---
+SLinker19U (s_linker19 + Phase 2 union; prompts in prompts_v5)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: core -> logic [local]
+    Alias: command line interface -> cli [global]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass union)
+    Union: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 4
+    Coref reject: S13 -> model
+  Coref validated: 3 / 4
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 18 (from 19 raw)
+  Phase log saved: results/v2.6.5_s19U/gpt/run1/llm_logs/s_linker19U_openai_jabref_20260621_183313.json
+  LLM call trace saved: results/v2.6.5_s19U/gpt/run1/llm_logs/s_linker19U_openai_jabref_20260621_183313_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 18 links (24.7s, 10 LLM calls)
+  s_linker19U: P=88.9% R=88.9% F1=88.9% TP=16 FP=2 FN=2 (25s)
+    Sources: {'entity': 16, 'coreference': 2}
+    FP by source: {'coreference': 2}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |    s_linker19U    
+-----------------+-------------------
+jabref           | F1 88.9% FP   2
+-----------------+-------------------
+Macro avg        | F1 88.9% FP   2
+
+Results saved to results/v2.6.5_s19U/gpt/run1/jabref/ablation_20260621_183313.json

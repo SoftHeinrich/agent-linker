@@ -1,0 +1,311 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_aliasb
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Doc knowledge: empty response, retrying...
+    Ambiguity classification: empty response, retrying...
+  Model: 0 ambiguous of 14 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+    Coref batch 3: empty response, retrying...
+    Coref batch 4: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_mediastore_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_mediastore_20260620_104653_calls.json (16 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 16 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=31 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Doc knowledge: empty response, retrying...
+    Ambiguity classification: empty response, retrying...
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+    Coref batch 3: empty response, retrying...
+    Coref batch 4: empty response, retrying...
+    Coref batch 5: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teastore_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teastore_20260620_104653_calls.json (18 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 18 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=27 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Ambiguity classification: empty response, retrying...
+    Doc knowledge: empty response, retrying...
+  Model: 0 ambiguous of 8 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+    Coref batch 3: empty response, retrying...
+    Coref batch 4: empty response, retrying...
+    Coref batch 5: empty response, retrying...
+    Coref batch 6: empty response, retrying...
+    Coref batch 7: empty response, retrying...
+    Coref batch 8: empty response, retrying...
+    Coref batch 9: empty response, retrying...
+    Coref batch 10: empty response, retrying...
+    Coref batch 11: empty response, retrying...
+    Coref batch 12: empty response, retrying...
+    Coref batch 13: empty response, retrying...
+    Coref batch 14: empty response, retrying...
+    Coref batch 15: empty response, retrying...
+    Coref batch 16: empty response, retrying...
+    Coref batch 17: empty response, retrying...
+    Coref batch 18: empty response, retrying...
+    Coref batch 19: empty response, retrying...
+    Coref batch 20: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teammates_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teammates_20260620_104653_calls.json (60 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 60 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=57 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Doc knowledge: empty response, retrying...
+    Ambiguity classification: empty response, retrying...
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    [C2] batch 2: S51-S87 (37 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch: empty response, retrying...
+    [C1] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+    Coref batch 3: empty response, retrying...
+    Coref batch 4: empty response, retrying...
+    Coref batch 5: empty response, retrying...
+    Coref batch 6: empty response, retrying...
+    Coref batch 7: empty response, retrying...
+    Coref batch 8: empty response, retrying...
+    Coref batch 9: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_bigbluebutton_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_bigbluebutton_20260620_104653_calls.json (30 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 30 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=62 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Ambiguity classification: empty response, retrying...
+    Doc knowledge: empty response, retrying...
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_jabref_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_jabref_20260620_104653_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 12 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=18 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_aliasb
+-----------------+-------------------
+mediastore       | F1 0.0% FP   0
+teastore         | F1 0.0% FP   0
+teammates        | F1 0.0% FP   0
+bigbluebutton    | F1 0.0% FP   0
+jabref           | F1 0.0% FP   0
+-----------------+-------------------
+Macro avg        | F1 0.0% FP   0
+
+Results saved to results/v2.6.5_union_aliasb/sonnet_run3/ablation_20260620_104653.json

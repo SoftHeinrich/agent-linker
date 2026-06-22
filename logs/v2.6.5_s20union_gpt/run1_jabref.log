@@ -1,0 +1,68 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: jabref
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: command line interface -> cli [global]
+    Alias: core -> logic [local]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 10
+    Coref reject: S3 -> model
+    Coref reject: S5 -> logic
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> logic
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+    Coref reject: S13 -> model
+  Coref validated: 3 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 19 raw)
+  Phase log saved: results/v2.6.5_s20union/gpt/run1/llm_logs/s_linker20_union_openai_jabref_20260621_103134.json
+  LLM call trace saved: results/v2.6.5_s20union/gpt/run1/llm_logs/s_linker20_union_openai_jabref_20260621_103134_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 17 links (53.1s, 10 LLM calls)
+  s_linker20_union: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (53s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 91.4% FP   1
+
+Results saved to results/v2.6.5_s20union/gpt/run1/jabref/ablation_20260621_103134.json

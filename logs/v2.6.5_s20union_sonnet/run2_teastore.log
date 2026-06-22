@@ -1,0 +1,67 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: teastore
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Slope One -> SlopeOneRecommender [global]
+    Alias: registry -> Registry [local]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=35 P2=23 ∪=35
+  Framing C: 35 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 31 / 35
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 17
+    Coref reject: S33 -> SlopeOneRecommender
+    Coref reject: S43 -> Registry
+  Coref validated: 15 / 17
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 31 (from 46 raw)
+  Phase log saved: results/v2.6.5_s20union_sonnet/run2/llm_logs/s_linker20_union_claude_teastore_20260620_193446.json
+  LLM call trace saved: results/v2.6.5_s20union_sonnet/run2/llm_logs/s_linker20_union_claude_teastore_20260620_193446_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 31 links (896.0s, 15 LLM calls)
+  s_linker20_union: P=87.1% R=100.0% F1=93.1% TP=27 FP=4 FN=0 (896s)
+    Sources: {'entity': 31}
+    FP by source: {'entity': 4}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+teastore         | F1 93.1% FP   4
+-----------------+-------------------
+Macro avg        | F1 93.1% FP   4
+
+Results saved to results/v2.6.5_s20union_sonnet/run2/teastore/ablation_20260620_193446.json

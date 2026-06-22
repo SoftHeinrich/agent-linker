@@ -1,0 +1,70 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore
+Variants: s_linker19U
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker19U ---
+SLinker19U (s_linker19 + Phase 2 union; prompts in prompts_v5)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: MediaManagement component -> MediaManagement [global]
+    Alias: UserManagement component -> UserManagement [global]
+    Alias: UserDBAdapter component -> UserDBAdapter [global]
+    Alias: TagWatermarking component -> TagWatermarking [global]
+    Alias: Packaging component -> Packaging [global]
+    Alias: ReEncoder component -> Reencoding [global]
+    Alias: Database component -> DB [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: Facade component -> Facade [global]
+  Model: 5 ambiguous of 14 components
+  Doc knowledge: 10 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass union)
+    Union: P1=27 P2=27 ∪=27
+  Framing C: 27 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 24 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 7
+    Coref reject: S21 -> Reencoding
+  Coref validated: 6 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 28 (from 30 raw)
+  Phase log saved: results/v2.6.5_s19U/gpt/run3/llm_logs/s_linker19U_openai_mediastore_20260621_190230.json
+  LLM call trace saved: results/v2.6.5_s19U/gpt/run3/llm_logs/s_linker19U_openai_mediastore_20260621_190230_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 28 links (37.5s, 14 LLM calls)
+  s_linker19U: P=100.0% R=90.3% F1=94.9% TP=28 FP=0 FN=3 (38s)
+    Sources: {'entity': 24, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |    s_linker19U    
+-----------------+-------------------
+mediastore       | F1 94.9% FP   0
+-----------------+-------------------
+Macro avg        | F1 94.9% FP   0
+
+Results saved to results/v2.6.5_s19U/gpt/run3/mediastore/ablation_20260621_190230.json

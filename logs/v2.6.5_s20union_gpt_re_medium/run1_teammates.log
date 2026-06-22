@@ -1,0 +1,76 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: teammates
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: Common Component -> Common [global]
+    Alias: UI Component -> UI [global]
+    Alias: Logic Component -> Logic [global]
+    Alias: Storage Component -> Storage [global]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: E2E Component -> E2E [global]
+    Alias: end-to-end component -> E2E [global]
+    Alias: Client Component -> Client [global]
+    Alias: Google's distributed datastore -> GAE Datastore [global]
+  Model: 6 ambiguous of 8 components
+  Doc knowledge: 9 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=62 P2=57 ∪=63
+  Framing C: 63 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 55 / 63
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 18
+  Coref validated: 18 / 18
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 55 (from 73 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run1/llm_logs/s_linker20_union_openai_teammates_20260621_214744.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run1/llm_logs/s_linker20_union_openai_teammates_20260621_214744_calls.json (38 calls)
+  Checkpoint: final saved
+
+Final: 55 links (653.9s, 38 LLM calls)
+  s_linker20_union: P=90.9% R=87.7% F1=89.3% TP=50 FP=5 FN=7 (654s)
+    Sources: {'entity': 55}
+    FP by source: {'entity': 5}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+teammates        | F1 89.3% FP   5
+-----------------+-------------------
+Macro avg        | F1 89.3% FP   5
+
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run1/teammates/ablation_20260621_214744.json

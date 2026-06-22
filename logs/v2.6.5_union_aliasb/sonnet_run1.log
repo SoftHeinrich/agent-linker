@@ -1,0 +1,288 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_aliasb
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: Database -> DB [global]
+    Alias: ReEncoder -> Reencoding [global]
+  Model: 4 ambiguous of 14 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=27 P2=29 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 23 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 7
+  Coref validated: 7 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 27 (from 30 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_mediastore_20260620_094755.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_mediastore_20260620_094755_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 27 links (628.2s, 14 LLM calls)
+  s_linker20_union_aliasb: P=100.0% R=87.1% F1=93.1% TP=27 FP=0 FN=4 (628s)
+    Sources: {'entity': 23, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [global]
+    Alias: registry -> Registry [local]
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender [global]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=27 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 26 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 18
+    Coref reject: S43 -> Registry
+  Coref validated: 17 / 18
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 32 (from 43 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teastore_20260620_095939.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teastore_20260620_095939_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 32 links (704.4s, 15 LLM calls)
+  s_linker20_union_aliasb: P=84.4% R=100.0% F1=91.5% TP=27 FP=5 FN=0 (704s)
+    Sources: {'entity': 26, 'coreference': 6}
+    FP by source: {'entity': 5}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: datastore -> GAE Datastore [local]
+  Model: 3 ambiguous of 8 components
+  Doc knowledge: 1 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=53 P2=63 ∪=67
+  Framing C: 67 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 47 / 67
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 21
+  Coref validated: 21 / 21
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 57 (from 68 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teammates_20260620_104435.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_teammates_20260620_104435_calls.json (38 calls)
+  Checkpoint: final saved
+
+Final: 57 links (2695.7s, 38 LLM calls)
+  s_linker20_union_aliasb: P=91.2% R=91.2% F1=91.2% TP=52 FP=5 FN=5 (2696s)
+    Sources: {'entity': 47, 'coreference': 10}
+    FP by source: {'coreference': 3, 'entity': 2}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: KMS -> kurento [global]
+    Alias: fsels -> FSESL [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: akka-apps -> Apps [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: BigBlueButton HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 16 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+    Coref batch 3: empty response, retrying...
+    Coref batch 4: empty response, retrying...
+    Coref batch 5: empty response, retrying...
+    Coref batch 6: empty response, retrying...
+    Coref batch 7: empty response, retrying...
+    Coref batch 8: empty response, retrying...
+    Coref batch 9: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_bigbluebutton_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_bigbluebutton_20260620_104653_calls.json (29 calls)
+  Checkpoint: final saved
+
+Final: 0 links (137.6s, 29 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=62 (138s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_aliasb ---
+SLinker20UnionAliasB (s20_union + aliasb hardware-domain prompt swap)
+  Backend: claude (sonnet)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Ambiguity classification: empty response, retrying...
+    Doc knowledge: empty response, retrying...
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch: empty response, retrying...
+    [C2] batch: empty response, retrying...
+    Consensus: P1=0 P2=0 ∪=0
+  Framing C: 0 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 0 / 0
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref batch 1: empty response, retrying...
+    Coref batch 2: empty response, retrying...
+  Coref raw: 0
+  Coref validated: 0 / 0
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 0 (from 0 raw)
+  Phase log saved: ./results/llm_logs/s_linker20_union_aliasb_claude_jabref_20260620_104653.json
+  LLM call trace saved: ./results/llm_logs/s_linker20_union_aliasb_claude_jabref_20260620_104653_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 0 links (0.0s, 12 LLM calls)
+  s_linker20_union_aliasb: P=0.0% R=0.0% F1=0.0% TP=0 FP=0 FN=18 (0s)
+    Sources: {}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_aliasb
+-----------------+-------------------
+mediastore       | F1 93.1% FP   0
+teastore         | F1 91.5% FP   5
+teammates        | F1 91.2% FP   5
+bigbluebutton    | F1 0.0% FP   0
+jabref           | F1 0.0% FP   0
+-----------------+-------------------
+Macro avg        | F1 55.2% FP  10
+
+Results saved to results/v2.6.5_union_aliasb/sonnet_run1/ablation_20260620_104653.json

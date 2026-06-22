@@ -1,0 +1,66 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: server-side web front end -> Facade [global]
+    Alias: central business logic component -> MediaManagement [global]
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: AudioAccess -> MediaAccess [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+  Model: 9 ambiguous of 14 components
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=39 P2=37 ∪=39
+  Framing C: 39 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 27 / 39
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 13
+    Coref reject: S33 -> DB
+  Coref validated: 12 / 13
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 30 (from 39 raw)
+  Phase log saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_mediastore_20260621_215748.json
+  LLM call trace saved: results/v2.6.5_s20union_gpt_re_medium/run2/llm_logs/s_linker20_union_openai_mediastore_20260621_215748_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 30 links (274.2s, 14 LLM calls)
+  s_linker20_union: P=100.0% R=96.8% F1=98.4% TP=30 FP=0 FN=1 (274s)
+    Sources: {'entity': 27, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 98.4% FP   0
+-----------------+-------------------
+Macro avg        | F1 98.4% FP   0
+
+Results saved to results/v2.6.5_s20union_gpt_re_medium/run2/mediastore/ablation_20260621_215748.json

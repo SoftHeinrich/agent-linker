@@ -1,0 +1,60 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore
+Variants: s_linker19U
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker19U ---
+SLinker19U (s_linker19 + Phase 2 union; prompts in prompts_v5)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+  Model: 12 ambiguous of 14 components
+  Doc knowledge: 1 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass union)
+    Union: P1=29 P2=35 ∪=35
+  Framing C: 35 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 30 / 35
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 3
+  Coref validated: 3 / 3
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 30 (from 33 raw)
+  Phase log saved: results/v2.6.5_s19U_sonnet/run2/llm_logs/s_linker19U_claude_mediastore_20260621_201557.json
+  LLM call trace saved: results/v2.6.5_s19U_sonnet/run2/llm_logs/s_linker19U_claude_mediastore_20260621_201557_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 30 links (514.7s, 14 LLM calls)
+  s_linker19U: P=96.7% R=93.5% F1=95.1% TP=29 FP=1 FN=2 (515s)
+    Sources: {'entity': 30}
+    FP by source: {'entity': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |    s_linker19U    
+-----------------+-------------------
+mediastore       | F1 95.1% FP   1
+-----------------+-------------------
+Macro avg        | F1 95.1% FP   1
+
+Results saved to results/v2.6.5_s19U_sonnet/run2/mediastore/ablation_20260621_201557.json
