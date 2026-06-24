@@ -7,10 +7,8 @@ have been removed. The ablation runner imports these submodules by full path
 (via ``importlib``), so no namespace-level re-exports are required here.
 """
 
-from .ilinker3 import ILinker3
 from .s_linker20_union import SLinker20Union
 
 __all__ = [
-    "ILinker3",
     "SLinker20Union",
 ]

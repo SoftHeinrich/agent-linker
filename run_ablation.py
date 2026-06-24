@@ -40,7 +40,6 @@ from llm_sad_sam.pcm_parser import parse_pcm_repository
 CANONICAL_VARIANTS = [
     "i1",
     "i2",
-    "i3",
     "s_linker",
     "s_linker2",
     "s_linker3",
@@ -144,11 +143,6 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.ilinker2",
         class_name="ILinker2",
         description="ILinker2 two-pass explicit extractor",
-    ),
-    "i3": dict(
-        aliases=("ilinker3",),
-        adapter="ilinker3",
-        description="ILinker3 v2-stack extractor adapter",
     ),
     "s_linker": dict(
         aliases=("s_linker1",),
@@ -995,25 +989,6 @@ DATASETS = {
 }
 
 
-class ILinker3Adapter:
-    """Expose ILinker3's extract API via the runner's link interface."""
-
-    def __init__(self, backend: LLMBackend | None = None):
-        from llm_sad_sam.linkers.experimental.ilinker3 import ILinker3
-
-        self.llm = LLMClient(backend=backend or get_backend())
-        self._extractor = ILinker3(llm=self.llm)
-
-    def link(self, text_path: str, model_path: str, transarc_csv: str | None = None):
-        del transarc_csv
-        from llm_sad_sam.core.document_loader_v2 import load_sentences
-        from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository as parse_pcm_repository_v2
-
-        sentences = load_sentences(text_path)
-        components = parse_pcm_repository_v2(model_path)
-        return self._extractor.extract(sentences, components)
-
-
 def get_backend() -> LLMBackend:
     backend_name = os.environ.get("LLM_BACKEND", "claude").strip().lower()
     if backend_name == "openai":
@@ -1079,9 +1054,6 @@ def normalize_variants(names: list[str]) -> list[str]:
 
 def build_linker(variant_name: str, backend: LLMBackend | None = None):
     canonical = canonical_variant(variant_name)
-    if canonical == "i3":
-        return ILinker3Adapter(backend=backend or get_backend())
-
     spec = VARIANT_SPECS[canonical]
     module = importlib.import_module(spec["module"])
     cls = getattr(module, spec["class_name"])
