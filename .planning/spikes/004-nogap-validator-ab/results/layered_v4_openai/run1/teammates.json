@@ -1,0 +1,86 @@
+{
+  "run": "run1",
+  "dataset": "teammates",
+  "P": 0.96,
+  "R": 0.8421052631578947,
+  "F1": 0.8971962616822429,
+  "tp": 48,
+  "fp": 2,
+  "fn": 9,
+  "n_links": 50,
+  "fp_by_source": {
+    "entity": 1,
+    "coreference": 1
+  },
+  "fp_details": [
+    {
+      "sentence": 96,
+      "component": "Logic",
+      "source": "entity",
+      "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+    },
+    {
+      "sentence": 125,
+      "component": "Storage",
+      "source": "coreference",
+      "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 7,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 8,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 16,
+      "component": "E2E",
+      "name_in_text": true
+    },
+    {
+      "sentence": 88,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 101,
+      "component": "Storage",
+      "name_in_text": true
+    },
+    {
+      "sentence": 122,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 138,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 141,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 185,
+      "component": "Logic",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 72,
+  "n_coref_candidates": 49,
+  "n_llm_calls": 8,
+  "tokens": {
+    "prompt": 36319,
+    "completion": 4242
+  },
+  "entity_validated": 44,
+  "coref_validated": 11,
+  "elapsed_s": 280.4
+}

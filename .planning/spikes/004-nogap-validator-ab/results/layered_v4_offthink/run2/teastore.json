@@ -1,0 +1,51 @@
+{
+  "run": "run2",
+  "dataset": "teastore",
+  "P": 0.896551724137931,
+  "R": 0.9629629629629629,
+  "F1": 0.9285714285714286,
+  "tp": 26,
+  "fp": 3,
+  "fn": 1,
+  "n_links": 29,
+  "fp_by_source": {
+    "entity": 3
+  },
+  "fp_details": [
+    {
+      "sentence": 31,
+      "component": "PopularityBasedRecommender",
+      "source": "entity",
+      "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+    },
+    {
+      "sentence": 32,
+      "component": "SlopeOneRecommender",
+      "source": "entity",
+      "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+    },
+    {
+      "sentence": 35,
+      "component": "OrderBasedRecommender",
+      "source": "entity",
+      "text": "Furthermore, one order-based nearest-neighbor approach is available."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 8,
+      "component": "WebUI",
+      "name_in_text": false
+    }
+  ],
+  "n_entity_candidates": 25,
+  "n_coref_candidates": 21,
+  "n_llm_calls": 3,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 23,
+  "coref_validated": 6,
+  "elapsed_s": 48.0
+}

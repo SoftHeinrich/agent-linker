@@ -1,0 +1,87 @@
+{
+  "run": "run2",
+  "dataset": "teammates",
+  "P": 0.9259259259259259,
+  "R": 0.8771929824561403,
+  "F1": 0.9009009009009009,
+  "tp": 50,
+  "fp": 4,
+  "fn": 7,
+  "n_links": 54,
+  "fp_by_source": {
+    "coreference": 4
+  },
+  "fp_details": [
+    {
+      "sentence": 82,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Providing a mechanism for checking access control rights."
+    },
+    {
+      "sentence": 83,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+    },
+    {
+      "sentence": 121,
+      "component": "Storage",
+      "source": "coreference",
+      "text": "Validating data inside entities before creating/updating them, to ensure they are in a valid state."
+    },
+    {
+      "sentence": 124,
+      "component": "Storage",
+      "source": "coreference",
+      "text": "Hiding the persistable objects."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 7,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 8,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 9,
+      "component": "Storage",
+      "name_in_text": true
+    },
+    {
+      "sentence": 87,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 122,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 138,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 185,
+      "component": "Logic",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 72,
+  "n_coref_candidates": 57,
+  "n_llm_calls": 9,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 44,
+  "coref_validated": 43,
+  "elapsed_s": 128.2
+}

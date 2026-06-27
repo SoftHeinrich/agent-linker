@@ -1,0 +1,125 @@
+{
+  "run": "run1",
+  "dataset": "teammates",
+  "P": 0.8225806451612904,
+  "R": 0.8947368421052632,
+  "F1": 0.8571428571428571,
+  "tp": 51,
+  "fp": 11,
+  "fn": 6,
+  "n_links": 62,
+  "fp_by_source": {
+    "entity": 3,
+    "coreference": 8
+  },
+  "fp_details": [
+    {
+      "sentence": 24,
+      "component": "UI",
+      "source": "entity",
+      "text": "It is a conceptual package representing the front-end of the application."
+    },
+    {
+      "sentence": 27,
+      "component": "UI",
+      "source": "coreference",
+      "text": "It is written in Angular framework and consists of HTML, SCSS, and TypeScript files."
+    },
+    {
+      "sentence": 50,
+      "component": "UI",
+      "source": "entity",
+      "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+    },
+    {
+      "sentence": 85,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "logic.api provides the API of the component to be accessed by the UI."
+    },
+    {
+      "sentence": 96,
+      "component": "Logic",
+      "source": "entity",
+      "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+    },
+    {
+      "sentence": 125,
+      "component": "Storage",
+      "source": "coreference",
+      "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+    },
+    {
+      "sentence": 127,
+      "component": "Common",
+      "source": "coreference",
+      "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+    },
+    {
+      "sentence": 131,
+      "component": "Storage",
+      "source": "coreference",
+      "text": "storage.api provides the API of the component to be accessed by the logic component."
+    },
+    {
+      "sentence": 142,
+      "component": "GAE Datastore",
+      "source": "coreference",
+      "text": "As a result, the data may be in an inconsistent states for short periods of time although things should become consisten"
+    },
+    {
+      "sentence": 156,
+      "component": "Common",
+      "source": "coreference",
+      "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+    },
+    {
+      "sentence": 196,
+      "component": "Client",
+      "source": "coreference",
+      "text": "client.util contains helpers needed for client scripts."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 7,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 8,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 88,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 122,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 138,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 185,
+      "component": "Logic",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 72,
+  "n_coref_candidates": 49,
+  "n_llm_calls": 8,
+  "tokens": {
+    "prompt": 34969,
+    "completion": 1616
+  },
+  "entity_validated": 47,
+  "coref_validated": 35,
+  "elapsed_s": 133.0
+}

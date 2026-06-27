@@ -1,7 +1,18 @@
 ---
 date: "2026-06-27 15:45"
-promoted: false
+promoted: true
+spiked: "004-nogap-validator-ab"
 ---
+
+> **SPIKED 2026-06-27 → PARTIAL.** Built a validator-layer ablation (replay only the
+> entity+coref gates on the frozen nothink candidates). Findings vs the modes proposed
+> below: **Mode 5 + Mode 1 work** (effort-0 layered validator = macro 90.8, +1.1; matches
+> thinking-on's FP profile entity 25/coref 7 exactly; guardrail held). **Mode 2 (rule
+> traps) and Mode 4 (coref skeptic) both net-NEGATIVE** — rejected. The gap does NOT fully
+> close at effort 0 (target was ~92): a control shows the no-reasoning gap lives at the
+> validation GATES and is recoverable WITH thinking there (it both removes FPs *and*
+> re-approves wrongly-rejected true links); the effort-0 prompt only banks the FP-filter
+> third. Full writeup: `spikes/004-nogap-validator-ab/RESULTS.md`.
 
 ## Next-gen validator modes: closing the no-reasoning gap
 

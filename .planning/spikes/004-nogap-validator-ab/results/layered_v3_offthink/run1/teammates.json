@@ -1,0 +1,89 @@
+{
+  "run": "run1",
+  "dataset": "teammates",
+  "P": 0.9107142857142857,
+  "R": 0.8947368421052632,
+  "F1": 0.9026548672566371,
+  "tp": 51,
+  "fp": 5,
+  "fn": 6,
+  "n_links": 56,
+  "fp_by_source": {
+    "coreference": 2,
+    "entity": 3
+  },
+  "fp_details": [
+    {
+      "sentence": 96,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+    },
+    {
+      "sentence": 125,
+      "component": "Storage",
+      "source": "entity",
+      "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+    },
+    {
+      "sentence": 156,
+      "component": "Common",
+      "source": "coreference",
+      "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+    },
+    {
+      "sentence": 188,
+      "component": "E2E",
+      "source": "entity",
+      "text": "e2e.util contains helpers needed for running E2E tests."
+    },
+    {
+      "sentence": 192,
+      "component": "E2E",
+      "source": "entity",
+      "text": "x.e2e contains system test cases for testing the application as a whole."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 7,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 8,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 9,
+      "component": "Storage",
+      "name_in_text": true
+    },
+    {
+      "sentence": 87,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 122,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 185,
+      "component": "Logic",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 76,
+  "n_coref_candidates": 52,
+  "n_llm_calls": 11,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 47,
+  "coref_validated": 35,
+  "elapsed_s": 155.6
+}

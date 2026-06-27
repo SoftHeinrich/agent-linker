@@ -120,6 +120,7 @@ CANONICAL_VARIANTS = [
     "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
     "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
     "s_linker20_union_noknow",  # v2.6.6 NOKNOW: s20_union with knowledge-disable flag (no_knowledge=True); canonical-name-only matching; NOT canonical
+    "s_linker20_union_layered",  # v2.6.6 spike-004: s20_union + layered no-reasoning validation prompt (Mode 5 justification + Mode 1 entity-lenient/coref-strict rubric); opt-in effort-0 precision variant; NOT canonical
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -850,6 +851,22 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
         kwargs=dict(no_knowledge=True),
+    ),
+    "s_linker20_union_layered": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker20_union_layered",
+        class_name="SLinker20UnionLayered",
+        description=(
+            "S-Linker20Union LAYERED — v2.6.6 (experimental=True, NOT canonical). "
+            "s_linker20_union with the layered no-reasoning validation prompt (spike 004): "
+            "Mode 5 forced per-candidate justification + Mode 1 architectural-claim rubric, "
+            "asymmetric (entity gate lenient / coref gate strict). Recovers the false-positive "
+            "half of the effort-0 (no-thinking) regression at zero implicit-recall cost. "
+            "Opt-in; run with reasoning disabled (CLAUDE_DISABLE_THINKING=1 / "
+            "OPENAI_REASONING_EFFORT=none). Source: spike 004-nogap-validator-ab."
+        ),
+        canonical=False,
+        experimental=True,
     ),
     "s_linker20": dict(
         aliases=(),

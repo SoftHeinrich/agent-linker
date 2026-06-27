@@ -445,7 +445,8 @@ class LLMClient:
             cmd.append(prompt)
 
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout,
-                                    cwd=self._subprocess_cwd)
+                                    cwd=self._subprocess_cwd,
+                                    env=self._claude_subprocess_env())
 
             response_text = ""
             conversation_id = None
@@ -826,6 +827,47 @@ class LLMClient:
         except Exception as e:
             return LLMResponse(text="", success=False, error=str(e))
 
+    @staticmethod
+    def _apply_claude_thinking(env: dict) -> None:
+        """Configure Claude Code CLI extended thinking on a subprocess env.
+
+        The 'claude' backend shells out to the Claude Code CLI, so thinking is
+        controlled via environment variables on the child process, not an API
+        parameter. Two optional knobs; both default unset = prior behavior
+        (the CLI's normal adaptive thinking stays on):
+
+          CLAUDE_DISABLE_THINKING=1|true|yes|on
+              Fully disable thinking. Sets MAX_THINKING_TOKENS=0 and
+              CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1 so the adaptive per-step
+              decision can't reintroduce thinking (verified on sonnet / CLI
+              2.1.186: thinking blocks drop from 1 to 0, no quality loss).
+
+          CLAUDE_MAX_THINKING_TOKENS=<int>
+              Pin a fixed thinking budget (also forces adaptive-off so the
+              budget is honored). Ignored when CLAUDE_DISABLE_THINKING is set.
+
+        A raw MAX_THINKING_TOKENS exported by the caller is left untouched
+        unless one of these knobs overrides it."""
+        truthy = {"1", "true", "yes", "on"}
+        if os.environ.get("CLAUDE_DISABLE_THINKING", "").strip().lower() in truthy:
+            env["CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING"] = "1"
+            env["MAX_THINKING_TOKENS"] = "0"
+            return
+        budget = os.environ.get("CLAUDE_MAX_THINKING_TOKENS")
+        if budget is not None and budget.strip():
+            env["CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING"] = "1"
+            env["MAX_THINKING_TOKENS"] = budget.strip()
+
+    def _claude_subprocess_env(self) -> dict:
+        """Environment for a `claude` CLI subprocess.
+
+        Copies the current environment minus CLAUDECODE (so nested CLI calls
+        work) and applies optional thinking configuration. With no thinking
+        knobs set this is identical to the prior behavior."""
+        env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+        self._apply_claude_thinking(env)
+        return env
+
     def _query_claude(self, prompt: str, timeout: int) -> LLMResponse:
         """Query using Claude Code CLI."""
         try:
@@ -833,8 +875,8 @@ class LLMClient:
             if self.claude_model:
                 cmd.extend(["--model", self.claude_model])
             cmd.append(prompt)
-            # Strip CLAUDECODE env var so nested CLI calls work
-            env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+            # Strip CLAUDECODE so nested CLI calls work; apply thinking config.
+            env = self._claude_subprocess_env()
             result = subprocess.run(
                 cmd,
                 capture_output=True, text=True, timeout=timeout,

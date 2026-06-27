@@ -1,0 +1,64 @@
+{
+  "run": "run2",
+  "dataset": "teastore",
+  "P": 0.8387096774193549,
+  "R": 0.9629629629629629,
+  "F1": 0.896551724137931,
+  "tp": 26,
+  "fp": 5,
+  "fn": 1,
+  "n_links": 31,
+  "fp_by_source": {
+    "entity": 3,
+    "coreference": 2
+  },
+  "fp_details": [
+    {
+      "sentence": 31,
+      "component": "PopularityBasedRecommender",
+      "source": "entity",
+      "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+    },
+    {
+      "sentence": 32,
+      "component": "SlopeOneRecommender",
+      "source": "entity",
+      "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+    },
+    {
+      "sentence": 35,
+      "component": "OrderBasedRecommender",
+      "source": "entity",
+      "text": "Furthermore, one order-based nearest-neighbor approach is available."
+    },
+    {
+      "sentence": 39,
+      "component": "Registry",
+      "source": "coreference",
+      "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+    },
+    {
+      "sentence": 40,
+      "component": "Registry",
+      "source": "coreference",
+      "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called agai"
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 8,
+      "component": "WebUI",
+      "name_in_text": false
+    }
+  ],
+  "n_entity_candidates": 25,
+  "n_coref_candidates": 21,
+  "n_llm_calls": 3,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 23,
+  "coref_validated": 21,
+  "elapsed_s": 54.6
+}

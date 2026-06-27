@@ -918,7 +918,7 @@ JSON only:"""
 
             prompt = self._prompt_coref(comp_names, cases)
 
-            data = self._ask(prompt, timeout=300,
+            data = self._ask(prompt, timeout=600,
                              label=f"Coref batch {batch_num}",
                              require_present="resolutions")
             if not data:

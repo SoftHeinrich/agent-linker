@@ -2,12 +2,33 @@
 spike: 004
 name: nogap-validator-ab
 validates: "Given s_linker20_union at reasoning effort 0 (CLAUDE_DISABLE_THINKING=1), when the validation gates use a layered validator (Mode 5 justification scaffold + Mode 1 claim-rubric + Mode 2 taboo-audited trap-list, Mode 4 skeptic on coref survivors only), then macro-F1 recovers toward the thinking-on baseline (~92.8) without spending the ~10 implicit (name_in_text=False) true links"
-verdict: PROPOSED
+verdict: PARTIAL
+verdict_date: "2026-06-27"
+result: "effort-0 layered validator (Mode 5 justification + Mode 1 claim-rubric, entity-lenient/coref-strict) reaches macro 90.8, recovering +1.1 of the 3.1-pt gap (nothink 89.7 -> thinking-on 92.8). Matches thinking-on's FP profile EXACTLY (entity 25 / coref 7); implicit-link guardrail held. Does NOT reach the ~92.0 target. Mode 2 (rule traps) and Mode 4 (coref skeptic) both rejected. Control proves the gap lives at the validation gates and is recoverable WITH thinking there (mediastore 93.9->96.0, teastore ->100 on the same candidates); the effort-0 prompt substitutes for the FP-filter half only (~1/3 of the benefit)."
 related: [003-llm-mention-classifier]
 tags: [validator, no-reasoning, false-positive-filter, ab-test, prompt-schema]
 ---
 
 # Spike 004: No-reasoning validator A/B (close the gap)
+
+## Verdict (2026-06-27): PARTIAL — see `RESULTS.md` for the full run
+
+Effort-0 + layered validator recovers **+1.1 macro** (89.7 → **90.8**), reaching
+**exact FP parity with thinking-on** (entity 25 / coref 7) at zero implicit-recall cost,
+but falls short of the ~92.0 target. A control (re-validate the SAME nothink candidates
+WITH thinking) lands at macro **91.7**, decomposing the 3.1-pt gap as **~2.0 at the
+validation gates** (thinking both removes FPs *and* re-approves wrongly-rejected true
+candidates) **+ ~1.1 genuinely upstream** (better extraction). The effort-0 prompt banks
+1.1 of the 2.0 gate-recoverable points. Winning config = **v4** (Mode 5 + Mode 1,
+entity-lenient/coref-strict); Modes 2 and 4 rejected. bbb is the exception — its gold
+rewards bare-heading leniency that even a thinking validator penalizes (75.7 < 79.2), so
+its gap is purely upstream. Harness + per-cell results under `harness/` and `results/`.
+
+**Cross-backend + shipped:** promoted to `src/.../experimental/s_linker20_union_layered.py`
+(registered; GATE-01 holds). Regression-checked on gpt-5.4 — no regression, a **+4.4 macro
+gain** (89.4→93.8, every dataset up, coref FP 13→2). Dual-backend: Sonnet +1.1, gpt-5.4
++4.4, both at zero implicit-recall cost. Follow-up spike `005-upstream-candidate-gap`
+quantifies the unreachable upstream residual (~36 links, 6.2% of gold, bbb-dominated).
 
 ## What This Validates
 

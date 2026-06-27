@@ -1,0 +1,65 @@
+{
+  "run": "run3",
+  "dataset": "mediastore",
+  "P": 0.9285714285714286,
+  "R": 0.8387096774193549,
+  "F1": 0.8813559322033899,
+  "tp": 26,
+  "fp": 2,
+  "fn": 5,
+  "n_links": 28,
+  "fp_by_source": {
+    "entity": 2
+  },
+  "fp_details": [
+    {
+      "sentence": 15,
+      "component": "Reencoding",
+      "source": "entity",
+      "text": "To this end, the requested files are first reencoded."
+    },
+    {
+      "sentence": 37,
+      "component": "Reencoding",
+      "source": "entity",
+      "text": "However, a download can cause re-encoding of the audio file."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 25,
+      "component": "MediaAccess",
+      "name_in_text": false
+    },
+    {
+      "sentence": 33,
+      "component": "DB",
+      "name_in_text": false
+    },
+    {
+      "sentence": 33,
+      "component": "FileStorage",
+      "name_in_text": false
+    },
+    {
+      "sentence": 35,
+      "component": "FileStorage",
+      "name_in_text": false
+    },
+    {
+      "sentence": 36,
+      "component": "FileStorage",
+      "name_in_text": false
+    }
+  ],
+  "n_entity_candidates": 25,
+  "n_coref_candidates": 14,
+  "n_llm_calls": 3,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 25,
+  "coref_validated": 12,
+  "elapsed_s": 52.1
+}
