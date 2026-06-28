@@ -64,6 +64,20 @@ NOKNOW_MATRIX = [
 ]
 NOKNOW_EXTRACT_ROOT = "results/v2.6.6_extracts_noknow"
 
+# S21 (canonical Full) matrices — gpt-5.4 ONLY (the sweep the quick-task 260628-dnl runs).
+# S21's phase_cache subdir is "s_linker21" for BOTH Full and No-Knowledge (the noknow
+# variant keeps _VARIANT_NAME="s_linker21"; only the *_links.csv prefix differs), so the
+# cell pkl dir is …/phase_cache/s_linker21/<subdir>/<project>/ in both. total = 15
+# (1 backend x 3 runs x 5 projects).
+S21_MATRIX = [
+    ("results/v2.6.6_s21_gpt", "openai", "gpt"),
+]
+S21_EXTRACT_ROOT = "results/v2.6.6_extracts_s21"
+S21_NOKNOW_MATRIX = [
+    ("results/v2.6.6_s21_noknow_gpt", "openai", "gpt"),
+]
+S21_NOKNOW_EXTRACT_ROOT = "results/v2.6.6_extracts_s21_noknow"
+
 # ── Load ──────────────────────────────────────────────────────────────────────
 
 def load_cell(cell_dir: str) -> dict:
@@ -346,7 +360,8 @@ def rederive_final(neutral: dict) -> set:
 # ── Main driver ───────────────────────────────────────────────────────────────
 
 def run_matrix(matrix: list, extract_root: str, csv_prefix: str,
-               ablation_key: str, variant_label: str, total: int = 30) -> int:
+               ablation_key: str, variant_label: str, total: int = 30,
+               variant_subdir: str = "s_linker20_union") -> int:
     """Walk one matrix, extract each cell, run the faithfulness oracle.
 
     Shared by the Full and No-Knowledge paths so the proven
@@ -382,7 +397,7 @@ def run_matrix(matrix: list, extract_root: str, csv_prefix: str,
         for run in RUNS:
             for project in PROJECTS:
                 cell_dir = (
-                    f"{root}/{run}/phase_cache/s_linker20_union/{subdir}/{project}"
+                    f"{root}/{run}/phase_cache/{variant_subdir}/{subdir}/{project}"
                 )
                 csv_path = (
                     f"{root}/{run}/{project}/{csv_prefix}_{project}_links.csv"
@@ -485,7 +500,29 @@ def main_noknow() -> int:
     )
 
 
+def main_s21() -> int:
+    """S21 Full path (gpt-5.4): extract the 15 s_linker21 Full cells (RQ1/RQ2 source)."""
+    return run_matrix(
+        S21_MATRIX, S21_EXTRACT_ROOT,
+        "s_linker21", "s_linker21", "s_linker21", 15,
+        variant_subdir="s_linker21",
+    )
+
+
+def main_s21_noknow() -> int:
+    """S21 No-Knowledge path (gpt-5.4): extract the 15 s_linker21_noknow cells (RQ4 A/B)."""
+    return run_matrix(
+        S21_NOKNOW_MATRIX, S21_NOKNOW_EXTRACT_ROOT,
+        "s_linker21_noknow", "s_linker21_noknow", "s_linker21_noknow", 15,
+        variant_subdir="s_linker21",
+    )
+
+
 if __name__ == "__main__":
+    if "--s21-noknow" in sys.argv[1:]:
+        raise SystemExit(main_s21_noknow())
+    if "--s21" in sys.argv[1:]:
+        raise SystemExit(main_s21())
     if "--noknow" in sys.argv[1:]:
         raise SystemExit(main_noknow())
     raise SystemExit(main())
