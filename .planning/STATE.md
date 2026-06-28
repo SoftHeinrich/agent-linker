@@ -5,7 +5,7 @@ milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
 stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
 last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-06-21 -- Phase 51 waves 1-2 executed, GATE-01 passed, paused at 51-04 spend gate
+last_activity: 2026-06-28 -- Quick 260628-dnl: promoted s_linker21 (canonical Full); S21 gpt-5.4 RQ sweeps launched (bg bdjs32klu, in-progress)
 progress:
   total_phases: 6
   completed_phases: 1
@@ -28,7 +28,14 @@ See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 Phase: 51 (noknow) — EXECUTING (paused at 51-04 spend gate)
 Plan: 3 of 5 complete (51-01/02/03 done; 51-04/05 pending)
 Status: Prep waves 1-2 complete; GATE-01 EVIDENCE: PASS. Paused before the live ~$50-65 / ~7.5h No-Knowledge sweep (51-04) by user choice.
-Last activity: 2026-06-21 -- Phase 51 waves 1-2 executed, GATE-01 passed, paused at spend gate
+Last activity: 2026-06-28 -- Quick 260628-dnl in progress (see below)
+
+> **Quick 260628-dnl (in progress):** Promoted `s_linker20_union_layered` → canonical
+> **`s_linker21`** (paper Full, supersedes s13_min in reported results). Built S21 gpt-5.4
+> run harness + extract/scoring wiring; smoke PASS (jabref 100%). Live sweeps running
+> (bg `bdjs32klu`: Full + No-Knowledge, gpt-5.4, N=3, ~3–5h). Post-sweep scoring commands
+> in `quick/260628-dnl-…/260628-dnl-SUMMARY.md`. Commits: 34b3239, d8f3508, bd163a3
+> (agent-linker), 8a6ef4b (transarc-emp).
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
