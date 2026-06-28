@@ -5,7 +5,7 @@ milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
 stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
 last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-06-28 -- Quick 260628-dnl COMPLETE: s_linker21 canonical Full + RQ1-4 gpt-5.4 results (macro 0.936, +4.2pp)
+last_activity: 2026-06-28 -- D-04 REVISED (GPT-5.4 = main backend, Claude = appendix mirror); launched Claude/Sonnet s21 N=3 sweep (Full + No-Knowledge)
 progress:
   total_phases: 6
   completed_phases: 1
@@ -36,6 +36,25 @@ Last activity: 2026-06-28 -- Quick 260628-dnl COMPLETE (see below)
 > RQs. S21 gpt-5.4 **macro-F1 0.936** (+4.2pp over s20_union no-reasoning); top doc→model
 > system; best on every RQ2 size-aware metric (worst 0.753 / harmonic 0.884); RQ3 validators
 > +9.3pp; RQ4 knowledge +5.79pp. Tables: `quick/260628-dnl-…/260628-dnl-RESULTS.md`.
+
+> **Decision — D-04 REVISED (2026-06-28): GPT-5.4 is now the MAIN backend.**
+> Supersedes the original D-04 ("main body Claude, appendix GPT-5.4 mirror",
+> `.planning/milestones/v2.6.3-ROADMAP.md:57`). New rule: the paper reports **GPT-5.4**
+> in the body for every RQ; **Claude Sonnet** moves to the appendix mirror (RQ3/RQ4) and the
+> second RQ1 row. Rationale: S21 was scored on gpt-5.4 first and gpt is the primary reported
+> system; per-project breakdowns + all sonnet results go to the appendix (space). Paper edits:
+> `working/appendix/rq3-rq4-mirror.tex` reframed (Claude mirror of a GPT-5.4 body) + the
+> author's own note at the top of `working/sections/results.tex`. **Pending:** the float
+> CONTENT swap (GPT s21 → body, Claude s21 → appendix) is the numbers pass, blocked on the
+> sonnet run below.
+>
+> **In flight — Claude/Sonnet s21 sweep (launched 2026-06-28, harness job `bs6ne5nc7`):**
+> `run_s21_sonnet_n3.sh && run_s21_noknow_sonnet_n3.sh` (backend=claude/sonnet,
+> `CLAUDE_DISABLE_THINKING=1` = reasoning-off, the layered-validator requirement). Writes
+> `results/v2.6.6_s21_sonnet/run{1,2,3}/` (Full) + `results/v2.6.6_s21_noknow_sonnet/run{1,2,3}/`
+> (No-Knowledge); progress `logs/v2.6.6_s21_sonnet/PROGRESS.log`, completion `logs/*/.ALL_DONE`.
+> Post-sweep: extract → score exactly like the gpt s21 path (260628-dnl SUMMARY steps 1–5,
+> swap the `_sonnet` slots) to populate the Claude appendix mirror + RQ1 Claude row.
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
