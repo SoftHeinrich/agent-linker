@@ -5,7 +5,7 @@ milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
 stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
 last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-06-28 -- Quick 260628-dnl: promoted s_linker21 (canonical Full); S21 gpt-5.4 RQ sweeps launched (bg bdjs32klu, in-progress)
+last_activity: 2026-06-28 -- Quick 260628-dnl COMPLETE: s_linker21 canonical Full + RQ1-4 gpt-5.4 results (macro 0.936, +4.2pp)
 progress:
   total_phases: 6
   completed_phases: 1
@@ -28,14 +28,14 @@ See: .planning/PROJECT.md (updated 2026-06-21 for v2.6.6 kickoff)
 Phase: 51 (noknow) — EXECUTING (paused at 51-04 spend gate)
 Plan: 3 of 5 complete (51-01/02/03 done; 51-04/05 pending)
 Status: Prep waves 1-2 complete; GATE-01 EVIDENCE: PASS. Paused before the live ~$50-65 / ~7.5h No-Knowledge sweep (51-04) by user choice.
-Last activity: 2026-06-28 -- Quick 260628-dnl in progress (see below)
+Last activity: 2026-06-28 -- Quick 260628-dnl COMPLETE (see below)
 
-> **Quick 260628-dnl (in progress):** Promoted `s_linker20_union_layered` → canonical
-> **`s_linker21`** (paper Full, supersedes s13_min in reported results). Built S21 gpt-5.4
-> run harness + extract/scoring wiring; smoke PASS (jabref 100%). Live sweeps running
-> (bg `bdjs32klu`: Full + No-Knowledge, gpt-5.4, N=3, ~3–5h). Post-sweep scoring commands
-> in `quick/260628-dnl-…/260628-dnl-SUMMARY.md`. Commits: 34b3239, d8f3508, bd163a3
-> (agent-linker), 8a6ef4b (transarc-emp).
+> **Quick 260628-dnl (COMPLETE):** Promoted `s_linker20_union_layered` → canonical
+> **`s_linker21`** (paper Full, supersedes s13_min in reported results). Ran live gpt-5.4
+> N=3 sweeps (Full + No-Knowledge, 0 GIVEUP, extract 15/15 PASS each) and scored all four
+> RQs. S21 gpt-5.4 **macro-F1 0.936** (+4.2pp over s20_union no-reasoning); top doc→model
+> system; best on every RQ2 size-aware metric (worst 0.753 / harmonic 0.884); RQ3 validators
+> +9.3pp; RQ4 knowledge +5.79pp. Tables: `quick/260628-dnl-…/260628-dnl-RESULTS.md`.
 
 ```
 Progress: v2.6.6 [█████░░░░░░░░░░░░░░░░░░░░░░░░░] 1/6 phases — 17%
@@ -52,6 +52,9 @@ Progress: v2.6.6 [█████░░░░░░░░░░░░░░░�
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260627-mot | Investigate whether paper RQ3/RQ4 should report RQ2 size-aware metrics (grounded on real runs) | 2026-06-27 | `8388472` | [260627-mot-investigate-whether-paper-rq3-rq4-should](./quick/260627-mot-investigate-whether-paper-rq3-rq4-should/) |
+| 260628-dnl | Promote s20U_layered → canonical `s_linker21` (Full) + run RQ1–4 results (gpt-5.4, N=3 live) | 2026-06-28 | `34b3239` | [260628-dnl-promote-s20u-layered-to-s-linker21-canon](./quick/260628-dnl-promote-s20u-layered-to-s-linker21-canon/) |
+
+**260628-dnl verdict:** S21 (layered no-reasoning validator) promoted to canonical Full. Live gpt-5.4 N=3 sweeps (Full + No-Knowledge) → S21 macro-F1 **0.936** (+4.2pp over s20_union no-reasoning 0.894): top doc→model system, best on all RQ2 size-aware metrics (worst 0.753 / harmonic 0.884), RQ3 validators +9.3pp combined, RQ4 knowledge module +5.79pp. Tables: `quick/260628-dnl-…/260628-dnl-RESULTS.md`.
 
 **260627-mot verdict:** RQ4 — yes (size-aware deltas amplify each linker 2.5–3× over file-F1, consistent across both backends/all 3 runs). RQ3 — no (retained RQ2 metrics move against the validators or flip sign across backends; only noise rate captures the benefit and it was dropped from the suite). Surfaced a non-robust `results.tex` worst-component claim to cut. Deliverable: `../transarc-emp/mini-rq34/RQ2_LENS_DECISION.md`.
 

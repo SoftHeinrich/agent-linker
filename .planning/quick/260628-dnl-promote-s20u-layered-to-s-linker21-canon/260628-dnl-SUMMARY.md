@@ -2,10 +2,17 @@
 quick_id: 260628-dnl
 slug: promote-s20u-layered-to-s-linker21-canon
 date: 2026-06-28
-status: in-progress
+status: complete
 ---
 
 # Quick Task 260628-dnl — SUMMARY
+
+> **COMPLETE (2026-06-28).** S21 promoted to canonical Full; live gpt-5.4 N=3 sweeps
+> (Full + No-Knowledge) ran clean (0 GIVEUP, extract 15/15 PASS each, ~554 calls); all four
+> RQs scored. **Headline:** S21 gpt-5.4 macro-F1 **0.936** (+4.2pp over s20_union no-reasoning
+> 0.894) — top doc→model system; best on every RQ2 size-aware metric (worst-component 0.753,
+> harmonic 0.884). RQ3 validators +9.3pp combined; RQ4 knowledge module +5.79pp. Full tables:
+> `260628-dnl-RESULTS.md`.
 
 Promote `s_linker20_union_layered` → canonical **`s_linker21`** (paper Full) + run RQ1–4
 results on **gpt-5.4** (no-reasoning). User decisions: canonical=True; launch live sweeps
