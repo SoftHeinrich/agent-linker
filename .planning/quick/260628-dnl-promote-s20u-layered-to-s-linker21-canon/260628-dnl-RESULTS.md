@@ -57,7 +57,8 @@ Knowledge module (alias table + ambiguity map): Full **0.9360** vs No-Knowledge 
 
 - RQ1/RQ2: `transarc-emp/reports/s21/RQ12_BIGTABLE_s21.csv`, `transarc-emp/reports/s21/RQ2_PANEL.csv`
   (S21 dump: `sota/recovered-links/model-doc/aalinker/gpt-5.4_s21/` +
-  `doc-code/aalinker-composed/gpt-5.4_s21/`, built by `sota/recovered-links/build_s21.py`).
+  `doc-code/aalinker-composed/gpt-5.4_s21/`, built by `transarc-emp/mini-src/build_s21_dump.py`
+  — self-contained, tracked; sota/ itself is not a git repo so the dump is regenerable, not tracked).
 - RQ3/RQ4: `transarc-emp/mini-rq34/reports_s21/` (Full) + `reports_s21_noknow/` (No-Knowledge).
 - Raw runs (gitignored): `agent-linker/results/v2.6.6_s21_gpt/`,
   `results/v2.6.6_s21_noknow_gpt/`; neutral extracts `results/v2.6.6_extracts_s21[_noknow]/`.
@@ -75,7 +76,6 @@ cd ../transarc-emp/mini-rq34 && \
     python3 rq34_rq2.py --backends openai --csv-root reports_s21 && \
   RQ34_VARIANT=s_linker21 RQ34_OPENAI_SLOT=../../agent-linker/results/v2.6.6_s21_noknow_gpt \
     python3 rq34.py --backends openai --csv-root reports_s21_noknow --no-validate
-cd ../../sota/recovered-links && python3 build_s21.py
-cd ../../transarc-emp && mkdir -p reports/s21 && \
+cd ../../transarc-emp && python3 mini-src/build_s21_dump.py && mkdir -p reports/s21 && \
   python3 mini-src/rq12.py --csv reports/s21/RQ12_BIGTABLE_s21.csv
 ```
