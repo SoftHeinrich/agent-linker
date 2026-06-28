@@ -121,6 +121,8 @@ CANONICAL_VARIANTS = [
     "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
     "s_linker20_union_noknow",  # v2.6.6 NOKNOW: s20_union with knowledge-disable flag (no_knowledge=True); canonical-name-only matching; NOT canonical
     "s_linker20_union_layered",  # v2.6.6 spike-004: s20_union + layered no-reasoning validation prompt (Mode 5 justification + Mode 1 entity-lenient/coref-strict rubric); opt-in effort-0 precision variant; NOT canonical
+    "s_linker21",  # v2.6.6 CANONICAL: promotion of s_linker20_union_layered to the paper's Full variant (supersedes s_linker13_min in reported RQ results); run no-reasoning
+    "s_linker21_noknow",  # v2.6.6 RQ4 knowledge A/B: s_linker21 with no_knowledge=True; NOT canonical
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -867,6 +869,39 @@ VARIANT_SPECS = {
         ),
         canonical=False,
         experimental=True,
+    ),
+    "s_linker21": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker21",
+        class_name="SLinker21",
+        description=(
+            "S-Linker21 — v2.6.6 CANONICAL Full variant (canonical=True). "
+            "Canonical promotion of s_linker20_union_layered (spike-004 'v4'): s_linker20_union "
+            "with the layered no-reasoning validation prompt (Mode 5 forced per-candidate "
+            "justification + Mode 1 architectural-claim rubric, asymmetric entity-lenient / "
+            "coref-strict). Behaviourally byte-identical to s_linker20_union_layered. The new "
+            "paper Full variant, superseding s_linker13_min in reported RQ results. "
+            "Run no-reasoning (Sonnet: CLAUDE_DISABLE_THINKING=1; OpenAI: OPENAI_REASONING_EFFORT "
+            "unset / none). gpt-5.4 macro 93.2 (+3.8 vs s20_union no-reasoning baseline), every "
+            "dataset up, zero implicit-recall cost. Source: spike 004-nogap-validator-ab."
+        ),
+        canonical=True,
+        experimental=False,
+    ),
+    "s_linker21_noknow": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker21",
+        class_name="SLinker21",
+        description=(
+            "S-Linker21 NO-KNOWLEDGE — v2.6.6 RQ4 knowledge A/B (experimental=True, NOT "
+            "canonical). s_linker21 with no_knowledge=True: skips the alias table + ambiguity "
+            "map (layer1 LLM calls), sets empty ModelKnowledge / DocumentKnowledge directly; "
+            "canonical-name-only matching. All other phases run unchanged. Source: RQ4-02 "
+            "knowledge A/B ablation axis."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
     ),
     "s_linker20": dict(
         aliases=(),
