@@ -78,6 +78,19 @@ S21_NOKNOW_MATRIX = [
 ]
 S21_NOKNOW_EXTRACT_ROOT = "results/v2.6.6_extracts_s21_noknow"
 
+# S21 Claude/Sonnet matrices — the appendix-mirror twin of the gpt-5.4 S21 path
+# (D-04 REVISED: gpt = body, Sonnet = appendix). Same 15-cell shape; the sonnet root
+# has NO extra backend level and the phase_cache subdir is "claude" (Pitfall 2+3),
+# while variant_subdir stays "s_linker21" for both Full and No-Knowledge.
+S21_SONNET_MATRIX = [
+    ("results/v2.6.6_s21_sonnet", "claude", "sonnet"),
+]
+S21_SONNET_EXTRACT_ROOT = "results/v2.6.6_extracts_s21_sonnet"
+S21_NOKNOW_SONNET_MATRIX = [
+    ("results/v2.6.6_s21_noknow_sonnet", "claude", "sonnet"),
+]
+S21_NOKNOW_SONNET_EXTRACT_ROOT = "results/v2.6.6_extracts_s21_noknow_sonnet"
+
 # ── Load ──────────────────────────────────────────────────────────────────────
 
 def load_cell(cell_dir: str) -> dict:
@@ -518,7 +531,29 @@ def main_s21_noknow() -> int:
     )
 
 
+def main_s21_sonnet() -> int:
+    """S21 Full path (Claude/Sonnet): extract the 15 s_linker21 Full cells (appendix RQ1/RQ2)."""
+    return run_matrix(
+        S21_SONNET_MATRIX, S21_SONNET_EXTRACT_ROOT,
+        "s_linker21", "s_linker21", "s_linker21", 15,
+        variant_subdir="s_linker21",
+    )
+
+
+def main_s21_noknow_sonnet() -> int:
+    """S21 No-Knowledge path (Claude/Sonnet): extract the 15 s_linker21_noknow cells (appendix RQ4 A/B)."""
+    return run_matrix(
+        S21_NOKNOW_SONNET_MATRIX, S21_NOKNOW_SONNET_EXTRACT_ROOT,
+        "s_linker21_noknow", "s_linker21_noknow", "s_linker21_noknow", 15,
+        variant_subdir="s_linker21",
+    )
+
+
 if __name__ == "__main__":
+    if "--s21-noknow-sonnet" in sys.argv[1:]:
+        raise SystemExit(main_s21_noknow_sonnet())
+    if "--s21-sonnet" in sys.argv[1:]:
+        raise SystemExit(main_s21_sonnet())
     if "--s21-noknow" in sys.argv[1:]:
         raise SystemExit(main_s21_noknow())
     if "--s21" in sys.argv[1:]:
