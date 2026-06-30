@@ -121,13 +121,49 @@ residual imprecision is **bounded by the gold standard, not the method** — the
 package "FP" are genuine trace links the benchmark under-annotates. This is the
 same enrolment/annotation bias the evaluation pillar (`transarc-emp`) documents.
 
+## Remaining recall gaps, categorized (`pilot/remaining_recall.py`)
+
+After the best config (transitive ∪ direct-judged), 39 gold (sentence, component)
+links remain fully missed. Attributed by stage (ids align across all three):
+
+| stage | (sent,comp) misses |
+|---|---|
+| ArCoTL bridge (component→code) | **0** |
+| model-doc (sentence→component) | **39 (100%)** |
+
+The bridge is **not** a recall bottleneck — whatever model-doc resolves, ArCoTL
+delivers. The entire residual gap is the sentence→component step. By linguistic
+mode:
+
+| mode | n | example |
+|---|---|---|
+| code-structure (names code, not architecture) | 17 | s172 *"Sub-packages contains x.testdriver, x.datatransfer, …"* |
+| implicit / functional (no lexical anchor) | 10 | mediastore s33 *"…stored in a specific location (e.g. a file server or database)"* |
+| generic common-noun (component name lower-cased) | 7 | teammates s7/s8 *"…application back end logic…"* → Logic |
+| negation / contrastive | 3 | teastore s7 *"…not provided by the WebUi, but…"* → WebUI |
+| anaphora / coreference | 2 | teastore s26 *"As such, it also acts as a caching layer."* → Persistence |
+
+Addressability:
+- The **17 code-structure** misses are the direct route's target but slip through
+  on fixable issues: the doc's `x.` root-package placeholder (`x.logic`, `x.search`,
+  `x.webapi` — 8 of the 17 don't resolve), the judge over-rejecting a real link
+  (s32 `OriginCheckFilter`), and class names absent from the code index. Headroom
+  for the direct route: `x.`-root normalisation + a softer judge.
+- The **22 others** (implicit/generic/negation/anaphora) are model-doc linguistic
+  failures with **no code identifier** — the direct route cannot help; they need
+  model-doc-side work (coreference, generic-term grounding, negation handling).
+- Concentration: teammates carries the code-structure misses; bigbluebutton the
+  implicit/generic/sibling-ambiguity ones (HTML5 Client↔Server, FreeSWITCH↔FSESL,
+  often missed as a multi-component pair).
+
 ## Open / next
 
-- Optional narrow win: singular/plural normalisation of the last package segment
-  (`scripts`→`script`) could convert ~68 naming-drift FP toward TP. Project-specific.
-- Replicate on the Claude backend.
-- Wire `augment_doc_code` + `DirectLinkJudge` into the real composition step
-  (`build_unified.py`'s `build_aalinker`).
+- Direct-route headroom: `x.`-placeholder root normalisation; soften the judge to
+  recover its 1 over-rejection (s32). Both target the 17 code-structure misses.
+- Model-doc-side: the 22 implicit/generic/negation/anaphora misses need coref and
+  generic-term grounding, not the direct route.
+- Singular/plural package-segment normalisation (`scripts`→`script`); Claude
+  replication; wire `augment_doc_code` + `DirectLinkJudge` into `build_unified.py`.
 - Replicate on the Claude backend.
 - Wire `augment_doc_code` into the real composition step (`build_unified.py`'s
   `build_aalinker`) rather than the offline eval harness.
