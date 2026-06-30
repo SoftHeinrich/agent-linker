@@ -65,11 +65,41 @@ the gap the full-document row closes.
 - **The precision lever is the direct linker** (standalone precision ~0.81–0.83),
   not the router.
 
+## Adding a judge (`DirectLinkJudge`, `pilot/router_eval_judge.py`)
+
+The model-doc side gets its 0.99 precision from an LLM validation pass. The same
+mechanism ports to the direct route: a claim-before-verdict judge over each
+`(sentence, identifier)` candidate (quote the words asserting the link, else
+reject). Result (gpt-5.4_s21, 90 candidates judged, 19 rejected):
+
+| config | P | R | F1 | direct prec |
+|---|---|---|---|---|
+| + direct (no judge) | 0.9564 | 0.8814 | 0.9163 | 0.812 |
+| + direct + judge | 0.9582 | 0.8814 | 0.9171 | 0.823 |
+
+The judge does exactly what a validity gate should — all 19 rejections are
+`class` candidates, ~17 of them the **product-name-as-class collision** (the
+literal token `BigBlueButton` matching a class named `BigBlueButton`), plus
+negations/asides — at a cost of only 2 lost TP. But the aggregate lift is small,
+and the FP breakdown by candidate kind says why:
+
+| kind | emitted | FP | precision |
+|---|---|---|---|
+| class | 78 | 36 | 0.538 |
+| package | 1048 | 178 | 0.830 |
+
+`class` precision is what the judge repairs (0.54 → ~0.7+). But **178 of the 214
+FP are `package` candidates** whose reference *is* valid — the judge keeps them
+correctly. Their FP is **enrolment granularity** (a package token expands to every
+file under it, but gold includes only some), not validity. A judge cannot fix
+that; only tighter linker granularity can.
+
 ## Open / next
 
-- **Tighten the direct linker** — the dominant FP source. Candidates: drop bare
-  package-token enrolment (link only named classes/files), or validate each
-  emitted link. This, not the router, is where precision is recoverable.
+- **Tighten package granularity** — the real precision lever now: don't enrol a
+  named package to *all* its files (e.g. emit package files only when no finer
+  class/file identifier is present, or cap/penalise broad package emission).
+  Pair this with the judge (which already handles class-collision validity).
 - Replicate on the Claude backend.
 - Wire `augment_doc_code` into the real composition step (`build_unified.py`'s
   `build_aalinker`) rather than the offline eval harness.

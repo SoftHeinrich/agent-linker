@@ -170,22 +170,39 @@ class DirectCodeLinker:
     # token (e.g. a top-level package) dragging in hundreds of files. None = no cap.
     max_files_per_package: Optional[int] = None
 
-    def link_sentence(self, text: str) -> set[str]:
-        """Return the set of code file paths this sentence directly names."""
+    def candidates(self, text: str) -> list[tuple[str, str, frozenset]]:
+        """Per-identifier candidates: (identifier, kind, resolved_paths).
+
+        kind in {file, class, package}. This is the unit a judge validates -- one
+        verdict per named identifier, not per resolved file.
+        """
         ment = extract_mentions(text)
-        out: set[str] = set()
+        out: list[tuple[str, str, frozenset]] = []
         for tok in ment["file"]:
-            out |= self.index.match_file(tok)
+            hit = self.index.match_file(tok)
+            if hit:
+                out.append((tok, "file", frozenset(hit)))
         for tok in ment["camel"]:
-            out |= self.index.match_class(tok, self.include_test)
+            hit = self.index.match_class(tok, self.include_test)
+            if hit:
+                out.append((tok, "class", frozenset(hit)))
         for tok in ment["dotted"]:
-            # try class-by-last-segment first (e.g. a.b.ClassName), else package
             hit = self.index.match_class(tok.split(".")[-1], self.include_test)
+            kind = "class"
             if not hit:
                 hit = self.index.match_package(tok)
+                kind = "package"
                 if self.max_files_per_package and len(hit) > self.max_files_per_package:
                     continue
-            out |= hit
+            if hit:
+                out.append((tok, kind, frozenset(hit)))
+        return out
+
+    def link_sentence(self, text: str) -> set[str]:
+        """Return the set of code file paths this sentence directly names."""
+        out: set[str] = set()
+        for _ident, _kind, paths in self.candidates(text):
+            out |= paths
         return out
 
 
@@ -262,6 +279,79 @@ class SentenceRouter:
             try:
                 r = str(o["route"]).upper().strip()
                 res[int(o["id"])] = CODE if r == CODE else ARCH
+            except Exception:
+                pass
+        return res
+
+
+# ── direct-link judge ────────────────────────────────────────────────────────
+
+# Mirrors s_linker21's validation pass: claim-before-verdict. The template is
+# generic (no benchmark terms); the code identifier is a runtime input, exactly
+# as the model-doc validator passes runtime component names.
+_JUDGE_PROMPT = (
+    "You validate candidate trace links between a documentation sentence and a "
+    "named code element. A link is valid only if the sentence genuinely states "
+    "the element is used, provided, implemented, contained, or described. It is "
+    "NOT valid if the element appears only as a counter-example, a negation, a "
+    "dependency it must NOT have, or an incidental aside.\n"
+    "For each case, FIRST quote the exact words from the sentence that assert the "
+    'link (or write "none" if there is no such assertion), THEN decide keep '
+    "true/false based only on that quote.\n\n"
+    "CASES:\n{cases}\n\n"
+    'Return JSON: {{"validations":[{{"case":1,"claim":"<exact quote or none>",'
+    '"keep":true}}]}}\nJSON only:')
+
+
+class DirectLinkJudge:
+    """LLM keep/reject judge over (sentence, identifier) direct-link candidates."""
+
+    def __init__(self, client=None, model: str = "gpt-5.4", batch: int = 10,
+                 timeout: int = 120):
+        self.client = client
+        self.model = model
+        self.batch = batch
+        self.timeout = timeout
+
+    def _client(self):
+        if self.client is None:
+            from llm_sad_sam.llm_client import LLMClient, LLMBackend
+            self.client = LLMClient(backend=LLMBackend.OPENAI, model=self.model,
+                                    enable_logging=False)
+        return self.client
+
+    def judge(self, cases: list[dict]) -> dict[int, bool]:
+        """cases: [{text, identifier, kind}]; returns {case_index: keep_bool}.
+
+        Default on parse failure / missing verdict is True (keep) so the judge
+        only ever *removes* links it actively rejects.
+        """
+        client = self._client()
+        out: dict[int, bool] = {}
+        for k in range(0, len(cases), self.batch):
+            chunk = cases[k:k + self.batch]
+            body = "\n".join(
+                f'{i}. SENTENCE: "{c["text"]}"  CODE ELEMENT: {c["identifier"]} '
+                f'({c["kind"]})' for i, c in enumerate(chunk))
+            resp = client.query(_JUDGE_PROMPT.format(cases=body), timeout=self.timeout)
+            verdicts = self._parse(resp.text if resp.success else "")
+            for i in range(len(chunk)):
+                out[k + i] = verdicts.get(i, True)
+        return out
+
+    @staticmethod
+    def _parse(txt: str) -> dict[int, bool]:
+        a, b = txt.find("{"), txt.rfind("}")
+        if a < 0 or b < 0:
+            return {}
+        try:
+            obj = json.loads(txt[a:b + 1])
+        except Exception:
+            return {}
+        res = {}
+        for v in obj.get("validations", []):
+            try:
+                res[int(v["case"])] = bool(v["keep"])
             except Exception:
                 pass
         return res
