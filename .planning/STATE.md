@@ -43,7 +43,8 @@ Last activity: 2026-06-28 -- Quick 260628-dnl COMPLETE (see below)
 > in the body for every RQ; **Claude Sonnet** moves to the appendix mirror (RQ3/RQ4) and the
 > second RQ1 row. Rationale: S21 was scored on gpt-5.4 first and gpt is the primary reported
 > system; per-project breakdowns + all sonnet results go to the appendix (space). Paper edits:
-> `working/appendix/rq3-rq4-mirror.tex` reframed (Claude mirror of a GPT-5.4 body) + the
+> `working/appendix/detailed-results.tex` (the Claude/per-project appendix; formerly
+> `rq3-rq4-mirror.tex`) reframed for a GPT-5.4 body + the
 > author's own note at the top of `working/sections/results.tex`. **Pending:** the float
 > CONTENT swap (GPT s21 → body, Claude s21 → appendix) is the numbers pass, blocked on the
 > sonnet run below.

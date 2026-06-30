@@ -117,11 +117,7 @@ CANONICAL_VARIANTS = [
     "s_linker19",  # v2.6.5 re-baseline: s20's un-minimized parent (paper variant), registered for live N=3 floor re-derivation; NOT canonical
     "s_linker19U",  # v2.6.5 s19 + Framing C 2-pass UNION (full un-minimized prompts incl. few-shots); the un-minimized counterpart of s_linker20_union, registered for the s19U-vs-s20_union few-shot head-to-head; NOT canonical
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
-    "s_linker20_union",  # v2.6.5 's19U': s20 + Framing C 2-pass UNION (replaces intersection, mirrors s17g) to recover BBB recall; NOT canonical
-    "s_linker20_union_aliasb",  # v2.6.5 combined: s20_union + aliasb prompt swap (non-SE hardware ANTECEDENT_ALIAS_RULES few-shot); run on gpt-5.4 + Sonnet; NOT canonical
-    "s_linker20_union_noknow",  # v2.6.6 NOKNOW: s20_union with knowledge-disable flag (no_knowledge=True); canonical-name-only matching; NOT canonical
-    "s_linker20_union_layered",  # v2.6.6 spike-004: s20_union + layered no-reasoning validation prompt (Mode 5 justification + Mode 1 entity-lenient/coref-strict rubric); opt-in effort-0 precision variant; NOT canonical
-    "s_linker21",  # v2.6.6 CANONICAL: promotion of s_linker20_union_layered to the paper's Full variant (supersedes s_linker13_min in reported RQ results); run no-reasoning
+    "s_linker21",  # v2.6.6 CANONICAL Full variant: standalone (s20U union pipeline inlined) + layered no-reasoning validator; supersedes s_linker13_min in reported RQ results; run no-reasoning
     "s_linker21_noknow",  # v2.6.6 RQ4 knowledge A/B: s_linker21 with no_knowledge=True; NOT canonical
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
@@ -811,78 +807,19 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
-    "s_linker20_union": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker20_union",
-        class_name="SLinker20Union",
-        description=(
-            "S-Linker20Union ('s19U') — v2.6.5 (experimental=True, NOT canonical). "
-            "s20 (minimized) with the Framing C 2-pass consensus changed from INTERSECTION to UNION "
-            "(mirrors s17g). The s18->s19 paper line kept intersection, which s17g showed killed ~5 BBB "
-            "TPs for 0 FP saved. Tests whether union recovers BBB recall and yields the true-best parent."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker20_union_aliasb": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker20_union_aliasb",
-        class_name="SLinker20UnionAliasB",
-        description=(
-            "S-Linker20UnionAliasB — v2.6.5 combined variant (experimental=True, NOT canonical). "
-            "s_linker20_union (Framing C 2-pass UNION consensus) PLUS the aliasb 'prompt swap': "
-            "ANTECEDENT_ALIAS_RULES few-shot rewritten to a non-SE hardware example "
-            "(PowerSupplyUnit/'the unit'/voltage; lio Candidate B). Tests union's BBB-recall gain "
-            "stacked with the benchmark-distant, TM-stable alias prompt. Run on BOTH gpt-5.4 and Sonnet."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker20_union_noknow": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker20_union",
-        class_name="SLinker20Union",
-        description=(
-            "S-Linker20Union NOKNOW — v2.6.6 (experimental=True, NOT canonical). "
-            "s_linker20_union with knowledge-disable flag (no_knowledge=True): skips "
-            "alias table + ambiguity map (layer1 LLM calls), sets empty ModelKnowledge "
-            "and DocumentKnowledge directly. All other phases (extraction, validation, "
-            "coref) run unchanged with canonical-name-only matching. "
-            "Source: RQ4-02 knowledge A/B ablation axis."
-        ),
-        canonical=False,
-        experimental=True,
-        kwargs=dict(no_knowledge=True),
-    ),
-    "s_linker20_union_layered": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker20_union_layered",
-        class_name="SLinker20UnionLayered",
-        description=(
-            "S-Linker20Union LAYERED — v2.6.6 (experimental=True, NOT canonical). "
-            "s_linker20_union with the layered no-reasoning validation prompt (spike 004): "
-            "Mode 5 forced per-candidate justification + Mode 1 architectural-claim rubric, "
-            "asymmetric (entity gate lenient / coref gate strict). Recovers the false-positive "
-            "half of the effort-0 (no-thinking) regression at zero implicit-recall cost. "
-            "Opt-in; run with reasoning disabled (CLAUDE_DISABLE_THINKING=1 / "
-            "OPENAI_REASONING_EFFORT=none). Source: spike 004-nogap-validator-ab."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
     "s_linker21": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker21",
         class_name="SLinker21",
         description=(
-            "S-Linker21 — v2.6.6 CANONICAL Full variant (canonical=True). "
-            "Canonical promotion of s_linker20_union_layered (spike-004 'v4'): s_linker20_union "
-            "with the layered no-reasoning validation prompt (Mode 5 forced per-candidate "
-            "justification + Mode 1 architectural-claim rubric, asymmetric entity-lenient / "
-            "coref-strict). Behaviourally byte-identical to s_linker20_union_layered. The new "
+            "S-Linker21 — v2.6.6 CANONICAL Full variant (canonical=True), STANDALONE. "
+            "The former s20U ('s_linker20_union') union pipeline inlined verbatim (s20U now "
+            "removed) plus the spike-004 'v4' layered no-reasoning validation prompt (Mode 5 "
+            "forced per-candidate justification + Mode 1 architectural-claim rubric, asymmetric "
+            "entity-lenient / coref-strict). Behaviour identical to the prior subclass form. The "
             "paper Full variant, superseding s_linker13_min in reported RQ results. "
             "Run no-reasoning (Sonnet: CLAUDE_DISABLE_THINKING=1; OpenAI: OPENAI_REASONING_EFFORT "
-            "unset / none). gpt-5.4 macro 93.2 (+3.8 vs s20_union no-reasoning baseline), every "
+            "unset / none). gpt-5.4 macro 93.2 (+3.8 vs the no-reasoning union baseline), every "
             "dataset up, zero implicit-recall cost. Source: spike 004-nogap-validator-ab."
         ),
         canonical=True,

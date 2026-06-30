@@ -1,14 +1,14 @@
-"""Retained experimental linker exports (s20U-trimmed branch).
+"""Retained experimental linker exports (s21-only branch).
 
-This branch keeps only what is needed to run the ``s_linker20_union`` ("s20U")
-sweep. ``SLinker20Union`` is standalone — it does not inherit from any other
-linker — so the historical eager imports of the full s_linker/ilinker family
-have been removed. The ablation runner imports these submodules by full path
-(via ``importlib``), so no namespace-level re-exports are required here.
+This branch keeps only the canonical ``s_linker21`` ("s21") linker. ``SLinker21``
+is standalone — the former ``s_linker20_union`` ("s20U") pipeline was inlined into
+it and s20U removed, so it does not inherit from any other linker. The ablation
+runner imports submodules by full path (via ``importlib``), so no namespace-level
+re-exports are required here.
 """
 
-from .s_linker20_union import SLinker20Union
+from .s_linker21 import SLinker21
 
 __all__ = [
-    "SLinker20Union",
+    "SLinker21",
 ]

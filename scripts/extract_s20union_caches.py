@@ -29,9 +29,16 @@ sys.path.insert(0, str(_ROOT / "src"))
 os.chdir(_ROOT)
 
 # Single registration import: registers AliasEntry and transitively pulls data_types_v2.
-# Bare module import has no side effects — do NOT instantiate SLinker20Union
+# s20U was folded into s_linker21 (standalone) and removed; s21 carries AliasEntry now.
+# Bare module import has no side effects — do NOT instantiate SLinker21
 # (its __init__ builds an LLMClient; no network occurs on import).
-import llm_sad_sam.linkers.experimental.s_linker20_union  # noqa: F401
+import llm_sad_sam.linkers.experimental.s_linker21 as _s21  # noqa: F401
+
+# Back-compat shim for frozen s20U-Full phase_cache pickles. Those .pkl files embed a
+# global reference to `llm_sad_sam.linkers.experimental.s_linker20_union.AliasEntry`,
+# which was removed when s20U was folded into s_linker21. Map the old dotted name onto
+# s21 so pickle.load can still resolve it — AliasEntry is byte-identical across the two.
+sys.modules.setdefault("llm_sad_sam.linkers.experimental.s_linker20_union", _s21)
 
 # ── Matrix ────────────────────────────────────────────────────────────────────
 # Directory identifiers — structural path components, NOT benchmark vocabulary (GATE-06).
