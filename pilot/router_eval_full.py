@@ -23,10 +23,9 @@ from llm_sad_sam.linkers.experimental.router_direct import (
 
 REC = ARDOCO_HOME / "sota/recovered-links"; BENCH = M.BENCHMARK
 PROJECTS = M.PROJECTS; RUNS = ["run1", "run2", "run3"]; SLOT = "gpt-5.4_s21"
-SCRATCH = Path("/tmp/claude-1001/-mnt-hostshare-ardoco-home-mono/"
-               "137c09cf-a9bc-44df-87a7-a81672c330e4/scratchpad")
-GOLD_CACHE = SCRATCH / "router_cache.json"
-FULL_CACHE = SCRATCH / "router_cache_full.json"
+CACHE_DIR = Path(__file__).resolve().parent / "cache"
+GOLD_CACHE = CACHE_DIR / "router_cache.json"
+FULL_CACHE = CACHE_DIR / "router_cache_full.json"
 ACM = {p: BENCH / M.ACM_FILES[p] for p in PROJECTS}
 
 

@@ -1,5 +1,9 @@
 # Router + direct sentence→code linking (pilot, `router` branch)
 
+> Quick reference. For the full investigation narrative, reproduction guide, and
+> file index see **[FINDINGS.md](FINDINGS.md)**. Analysis scripts live in
+> `analysis/`; cached gpt-5.4 decisions in `cache/` (evals re-run offline).
+
 ## Problem
 
 The canonical doc-to-code result is **composed**:

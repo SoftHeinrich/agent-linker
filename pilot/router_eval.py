@@ -35,8 +35,7 @@ BENCH = M.BENCHMARK
 PROJECTS = M.PROJECTS
 RUNS = ["run1", "run2", "run3"]
 SLOT = "gpt-5.4_s21"
-ROUTER_CACHE = Path("/tmp/claude-1001/-mnt-hostshare-ardoco-home-mono/"
-                    "137c09cf-a9bc-44df-87a7-a81672c330e4/scratchpad/router_cache.json")
+ROUTER_CACHE = Path(__file__).resolve().parent / "cache" / "router_cache.json"
 
 ACM = {p: BENCH / M.ACM_FILES[p] for p in PROJECTS}
 
