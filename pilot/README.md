@@ -94,12 +94,40 @@ correctly. Their FP is **enrolment granularity** (a package token expands to eve
 file under it, but gold includes only some), not validity. A judge cannot fix
 that; only tighter linker granularity can.
 
+## FP provenance — the remaining "FP" are mostly gold artifacts, not errors
+
+Before tightening package granularity we traced every package FP. All 178 come
+from **4 (sentence, token) pairs**, none of them over-enrolment:
+
+| source | FP | example |
+|---|---|---|
+| gold incompleteness | 110 | `e2e.cases`@s190 *"e2e.cases contains test cases."* — a real reference; gold annotates the overview sentence s187 instead and leaves s190 empty. The judge keeps it (correctly). |
+| doc↔code naming drift | 68 | `client.scripts` (doc, plural) vs `client/script/` (code, singular). |
+
+A size cap cannot separate these from correct links — they are 2-segment,
+correctly-scoped packages whose files are *right*. Measured directly:
+
+| package-size cap | direct TP | direct FP |
+|---|---|---|
+| ≤30 (kills all FP) | 268 | 0 |
+| none | 870 | 178 |
+
+Killing the 178 FP costs **602 TP** (~3.4 TP lost per FP removed), because the
+big genuine packages (`common.datatransfer`=107 TP, `e2e.cases`@s187=74 TP, …)
+die with the artifacts. **A granularity gate is net-harmful and was not added.**
+
+Conclusion: after the judge handles class-collision validity, the direct route's
+residual imprecision is **bounded by the gold standard, not the method** — the
+package "FP" are genuine trace links the benchmark under-annotates. This is the
+same enrolment/annotation bias the evaluation pillar (`transarc-emp`) documents.
+
 ## Open / next
 
-- **Tighten package granularity** — the real precision lever now: don't enrol a
-  named package to *all* its files (e.g. emit package files only when no finer
-  class/file identifier is present, or cap/penalise broad package emission).
-  Pair this with the judge (which already handles class-collision validity).
+- Optional narrow win: singular/plural normalisation of the last package segment
+  (`scripts`→`script`) could convert ~68 naming-drift FP toward TP. Project-specific.
+- Replicate on the Claude backend.
+- Wire `augment_doc_code` + `DirectLinkJudge` into the real composition step
+  (`build_unified.py`'s `build_aalinker`).
 - Replicate on the Claude backend.
 - Wire `augment_doc_code` into the real composition step (`build_unified.py`'s
   `build_aalinker`) rather than the offline eval harness.
