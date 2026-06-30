@@ -34,7 +34,7 @@ REC = ARD/"sota/recovered-links"; BENCH = M.BENCHMARK
 PROJECTS = M.PROJECTS; RUNS = ["run1", "run2", "run3"]; SLOT = "gpt-5.4_s21"
 SCRATCH = Path("/tmp/claude-1001/-mnt-hostshare-ardoco-home-mono/"
                "137c09cf-a9bc-44df-87a7-a81672c330e4/scratchpad")
-judge_cache = json.loads((SCRATCH/"judge_cache.json").read_text())
+judge_cache = json.loads((SCRATCH/"judge_cache_v2.json").read_text())
 ACM = {p: BENCH/M.ACM_FILES[p] for p in PROJECTS}
 
 

@@ -156,14 +156,37 @@ Addressability:
   implicit/generic/sibling-ambiguity ones (HTML5 Client↔Server, FreeSWITCH↔FSESL,
   often missed as a multi-component pair).
 
+## Direct-route fixes — implemented & measured
+
+Two fixes targeting the 17 code-structure misses (gpt-5.4_s21, macro 5×3):
+
+| config | P | R | F1 | (s,comp) misses |
+|---|---|---|---|---|
+| + direct + judge (strict, prior) | 0.9582 | 0.8814 | 0.9171 | 39 |
+| + direct + judge (**softened — default**) | **0.9592** | 0.8814 | **0.9176** | 38 |
+| + `x.`-root placeholder (**opt-in**) | 0.9458 | 0.8893 | 0.9149 | 33 |
+
+1. **Judge softening (default).** The prompt now keeps an element named as a
+   concrete example (`"such as X"`, `"e.g. X"`) and rejects only exclusions
+   (negation/contrast) or product/brand-name collisions. Strict win: recovers the
+   over-rejected `OriginCheckFilter`@s32, still rejects 22/24 `BigBlueButton`
+   product-name hits, FP 196→188, F1 +0.0005.
+
+2. **`x.`-root placeholder normalisation (`DirectCodeLinker(root_placeholder=True)`,
+   off by default).** Treats a leading single-char package segment as the project
+   root (`x.logic`→`logic`), so the doc's placeholder packages resolve. Recovers 5
+   more code-structure misses (38→33; R +0.0079) but the 1-segment suffix match
+   (`x.util`→every `util` package) over-fires, costing file-level precision
+   (F1 −0.0027). A root-anchored match (suffix only at the project root) is the
+   proper fix; left as future work. teammates-specific.
+
 ## Open / next
 
-- Direct-route headroom: `x.`-placeholder root normalisation; soften the judge to
-  recover its 1 over-rejection (s32). Both target the 17 code-structure misses.
+- Root-anchor the `x.` fallback so it resolves without the precision hit.
 - Model-doc-side: the 22 implicit/generic/negation/anaphora misses need coref and
   generic-term grounding, not the direct route.
-- Singular/plural package-segment normalisation (`scripts`→`script`); Claude
-  replication; wire `augment_doc_code` + `DirectLinkJudge` into `build_unified.py`.
+- Claude replication; wire `augment_doc_code` + `DirectLinkJudge` into
+  `build_unified.py`'s `build_aalinker`.
 - Replicate on the Claude backend.
 - Wire `augment_doc_code` into the real composition step (`build_unified.py`'s
   `build_aalinker`) rather than the offline eval harness.

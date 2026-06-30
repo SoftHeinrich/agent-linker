@@ -114,19 +114,35 @@ class CodeIndex:
     def match_file(self, token: str) -> set[str]:
         return set(self.by_file.get(token.lower(), ()))
 
-    def match_package(self, dotted: str) -> set[str]:
-        """A dotted token (e.g. 'logic.api') matches units whose logical package
-        contains those segments contiguously."""
-        segs = tuple(s.lower() for s in dotted.split(".") if s)
-        if not segs:
-            return set()
+    def _match_segs(self, segs: tuple) -> set[str]:
         out: set[str] = set()
         n = len(segs)
+        if not n:
+            return out
         for logical, path in self._pkg_segments:
             for i in range(len(logical) - n + 1):
                 if logical[i:i + n] == segs:
                     out.add(path)
                     break
+        return out
+
+    def match_package(self, dotted: str, root_placeholder: bool = False) -> set[str]:
+        """A dotted token (e.g. 'logic.api') matches units whose logical package
+        contains those segments contiguously.
+
+        Root-placeholder fallback (opt-in): if the literal token does not resolve
+        and its first segment is a single character, retry on the suffix. Handles a
+        doc that writes a single-letter placeholder for the project root (e.g.
+        'x.logic', 'x.search'). OFF by default: it recovers recall on such docs but
+        a 1-segment suffix ('x.util' -> 'util') matches every same-named package,
+        so it trades file-level precision for recall (see pilot/README.md).
+        """
+        segs = tuple(s.lower() for s in dotted.split(".") if s)
+        if not segs:
+            return set()
+        out = self._match_segs(segs)
+        if root_placeholder and not out and len(segs) > 1 and len(segs[0]) == 1:
+            out = self._match_segs(segs[1:])
         return out
 
 
@@ -169,6 +185,9 @@ class DirectCodeLinker:
     # a single package token can enrol an entire package; cap to avoid a vague
     # token (e.g. a top-level package) dragging in hundreds of files. None = no cap.
     max_files_per_package: Optional[int] = None
+    # treat a leading single-char package segment as a project-root placeholder
+    # ('x.logic' -> 'logic'). Recall+/precision- tradeoff; off by default.
+    root_placeholder: bool = False
 
     def candidates(self, text: str) -> list[tuple[str, str, frozenset]]:
         """Per-identifier candidates: (identifier, kind, resolved_paths).
@@ -190,7 +209,7 @@ class DirectCodeLinker:
             hit = self.index.match_class(tok.split(".")[-1], self.include_test)
             kind = "class"
             if not hit:
-                hit = self.index.match_package(tok)
+                hit = self.index.match_package(tok, self.root_placeholder)
                 kind = "package"
                 if self.max_files_per_package and len(hit) > self.max_files_per_package:
                     continue
@@ -291,13 +310,16 @@ class SentenceRouter:
 # as the model-doc validator passes runtime component names.
 _JUDGE_PROMPT = (
     "You validate candidate trace links between a documentation sentence and a "
-    "named code element. A link is valid only if the sentence genuinely states "
-    "the element is used, provided, implemented, contained, or described. It is "
-    "NOT valid if the element appears only as a counter-example, a negation, a "
-    "dependency it must NOT have, or an incidental aside.\n"
-    "For each case, FIRST quote the exact words from the sentence that assert the "
-    'link (or write "none" if there is no such assertion), THEN decide keep '
-    "true/false based only on that quote.\n\n"
+    "named code element. A link is VALID if the sentence states the element is "
+    "used, provided, implemented, contained, or described -- INCLUDING when it is "
+    'named as a concrete example or instance of what is described ("such as X", '
+    '"e.g. X", "including X"). A link is INVALID only if the element appears in an '
+    'exclusion -- a negation ("not X", "no X"), a contrast or counter-example '
+    '("other than X", "unlike X", "rather than X") -- OR if the token is used as a '
+    "product, system, or brand name rather than a reference to that code unit.\n"
+    "For each case, FIRST quote the exact words from the sentence that assert (or "
+    'exclude) the link, or "none", THEN decide keep true/false based only on that '
+    "quote.\n\n"
     "CASES:\n{cases}\n\n"
     'Return JSON: {{"validations":[{{"case":1,"claim":"<exact quote or none>",'
     '"keep":true}}]}}\nJSON only:')
