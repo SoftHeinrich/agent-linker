@@ -8,7 +8,9 @@ re-exports are required here.
 """
 
 from .s_linker21 import SLinker21
+from .s_linker21_agentrouter import SLinker21AgentRouter
 
 __all__ = [
     "SLinker21",
+    "SLinker21AgentRouter",
 ]

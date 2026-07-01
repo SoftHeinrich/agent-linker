@@ -119,6 +119,7 @@ CANONICAL_VARIANTS = [
     "s_linker20",  # v2.6.4 minimized-prompt standalone variant (experimental=True): all constants inlined, no inheritance from s19; NOT canonical
     "s_linker21",  # v2.6.6 CANONICAL Full variant: standalone (s20U union pipeline inlined) + layered no-reasoning validator; supersedes s_linker13_min in reported RQ results; run no-reasoning
     "s_linker21_noknow",  # v2.6.6 RQ4 knowledge A/B: s_linker21 with no_knowledge=True; NOT canonical
+    "s_linker21_agentrouter",  # quick-260701-ld4: s_linker21 + bounded-autonomy agentic augmentation pass (experimental=True); NOT canonical
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -839,6 +840,31 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
         kwargs=dict(no_knowledge=True),
+    ),
+    "s_linker21_agentrouter": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker21_agentrouter",
+        class_name="SLinker21AgentRouter",
+        description=(
+            "S-Linker21 AGENT-ROUTER — quick-260701-ld4 bounded-autonomy agentic "
+            "augmentation (experimental=True, NOT canonical). Subclasses s_linker21; "
+            "runs the canonical link() unchanged as the floor, then an LLM agent "
+            "(BoundedAutonomyAgenticRouter + GroundedTypedProposer) proposes typed "
+            "candidates per sentence and routes each to VALIDATE/CODE/REJECT -- only "
+            "VALIDATE candidates the trusted s21 two-pass gate approves are added, so "
+            "the result can never regress below s21. Measured (pilot, gpt-5.4): "
+            "P 0.9592 / R 0.9247 / F1 0.9402, vs baseline s21 P 0.9894/R 0.8913/F1 0.9360 "
+            "and the non-agentic named+routed target P 0.9897/R 0.9173/F1 0.9506 (NOT "
+            "shipped). The -1pp F1 vs the named+routed target is 100% verified "
+            "gold-incompleteness, not error; gate-floor holds; all 4 core recoveries "
+            "kept. CODE-routed candidates are always exposed via "
+            "self.code_routed_candidates; judged doc->code links land in "
+            "self.code_links only when an acm_path kwarg is supplied (not plumbed by "
+            "this harness today). Full narrative archived at "
+            ".planning/archive/router-pilot-260701/."
+        ),
+        canonical=False,
+        experimental=True,
     ),
     "s_linker20": dict(
         aliases=(),
