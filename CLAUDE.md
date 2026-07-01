@@ -5,6 +5,18 @@ prior s20U trim with a second-route (doc->code) infra and a bounded-autonomy
 agentic augmentation variant. The full history (all other linker families,
 planning docs, logs, results, archives, tests) lives on `master`.
 
+**Branch relationships (verified by `git ls-tree`, not assumed):**
+
+| Branch | Diverges from `router` at | Has `s_linker21.py`? | Has `router_direct.py` / `agentic_router.py` / `proposer.py` / `s_linker21_agentrouter.py`? |
+|---|---|---|---|
+| `master` | `58d0d7f` (full history, pre-s20U-trim) | No — still on `s_linker20_union.py` | No |
+| `s20U` | `9e40ac3` (s_linker21 inlined as canonical, s20U trim point) | Yes | No |
+| `router` (this branch) | — | Yes | **Yes — only here** |
+
+The entire code-routing surface (direct sentence→code linking + the bounded-autonomy
+agentic router) is **`router`-branch-only**. It has not been merged/ported to `s20U`
+or `master` — do not assume it is reachable by checking out either of those branches.
+
 ## Active Surface
 
 Runtime files retained on this branch:
