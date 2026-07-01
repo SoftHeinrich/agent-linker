@@ -1,4 +1,15 @@
-"""Router + direct sentence->code linking (router branch, pilot).
+"""DocCodeSentenceRouter + direct sentence->code linking (router branch, pilot).
+
+NAMING — two distinct "router" concepts exist in this package; do not conflate them:
+  * ``DocCodeSentenceRouter`` (this module) triages at the SENTENCE level for the
+    DOC->CODE task: ARCH vs CODE, i.e. "should this sentence also go through the
+    direct code-linking route at all".
+  * ``DocModelAgenticRouter`` (``agentic_router.py``) decides at the CANDIDATE level
+    for the DOC->MODEL (sentence->component) task: VALIDATE / CODE / REJECT per
+    proposed (sentence, component) pair, with CODE as an escape hatch into this
+    module's ``DirectCodeLinker``/``DirectLinkJudge``. It supersedes this module's
+    router for ``s_linker21_agentrouter.py``'s pipeline (see that module's
+    docstring) -- ``DocCodeSentenceRouter`` remains standalone reusable infra.
 
 Motivation
 ----------
@@ -31,9 +42,9 @@ Only identifiers that RESOLVE to a real compilation unit are emitted, so the
 precision gate lives on the linker output -- exactly where the pilot showed it
 belongs (router over-fire is free; a conservative direct linker is what bounds FP).
 
-The router (``SentenceRouter``) is a thin LLM classifier (taboo-safe, no component
-names, sentence text only) or the free ``rule_route`` (CODE iff the direct linker
-finds any resolvable identifier).
+The router (``DocCodeSentenceRouter``) is a thin LLM classifier (taboo-safe, no
+component names, sentence text only) or the free ``rule_route`` (CODE iff the
+direct linker finds any resolvable identifier).
 """
 
 from __future__ import annotations
@@ -252,8 +263,10 @@ def rule_route(text: str, direct_linker: DirectCodeLinker) -> str:
     return CODE if direct_linker.link_sentence(text) else ARCH
 
 
-class SentenceRouter:
-    """LLM router (zero-shot, batched). Falls back to rule_route if no client."""
+class DocCodeSentenceRouter:
+    """LLM router (zero-shot, batched) for the DOC->CODE task: per-sentence ARCH/CODE
+    triage. Falls back to rule_route if no client. Not to be confused with
+    ``DocModelAgenticRouter`` (agentic_router.py), which routes DOC->MODEL candidates."""
 
     def __init__(self, client=None, model: str = "gpt-5.4", batch: int = 12,
                  timeout: int = 120):

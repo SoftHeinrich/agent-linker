@@ -17,6 +17,18 @@ The entire code-routing surface (direct sentence→code linking + the bounded-au
 agentic router) is **`router`-branch-only**. It has not been merged/ported to `s20U`
 or `master` — do not assume it is reachable by checking out either of those branches.
 
+**Two distinct "router" concepts — do not conflate them:**
+
+| | `DocCodeSentenceRouter` (`router_direct.py`) | `DocModelAgenticRouter` (`agentic_router.py`) |
+|---|---|---|
+| Task | DOC→CODE | DOC→MODEL (sentence→component) |
+| Granularity | Per SENTENCE | Per CANDIDATE (sentence, component) |
+| Decision | ARCH vs CODE — should this sentence go through direct code-linking at all | VALIDATE / CODE / REJECT — is this candidate a real link, a code-path mention, or neither |
+| Used by `s_linker21_agentrouter.py`? | No — superseded there | Yes — its CODE action is the escape hatch into `DirectCodeLinker`/`DirectLinkJudge` |
+
+`DocCodeSentenceRouter` remains standalone reusable infra (not currently wired into
+any linker); `DocModelAgenticRouter` is what `SLinker21AgentRouter` actually uses.
+
 ## Active Surface
 
 Runtime files retained on this branch:
@@ -31,13 +43,14 @@ Runtime files retained on this branch:
 - `src/llm_sad_sam/linkers/experimental/router_direct.py` — direct
   sentence->code linking infra: `CodeUnit`/`load_code_units`/`CodeIndex` (parses
   a `.acm` code model), `DirectCodeLinker` (identifier resolution ->
-  file/class/package candidates), `SentenceRouter` (ARCH/CODE triage),
-  `DirectLinkJudge` (claim-before-verdict keep/reject judge). Reusable infra,
-  not a linker itself.
+  file/class/package candidates), `DocCodeSentenceRouter` (per-sentence ARCH/CODE
+  triage for the doc->code task), `DirectLinkJudge` (claim-before-verdict
+  keep/reject judge). Reusable infra, not a linker itself.
 - `src/llm_sad_sam/linkers/experimental/{agentic_router,proposer}.py` —
   promoted GTP (`GroundedTypedProposer`, grounded/context-augmented/typed
-  candidate generation) + agentic router (`BoundedAutonomyAgenticRouter`,
-  `StrictGate`) infra. Also reusable infra, imported by the wiring linker below.
+  candidate generation) + agentic router (`DocModelAgenticRouter`, per-candidate
+  VALIDATE/CODE/REJECT for the doc->model task, `StrictGate`) infra. Also
+  reusable infra, imported by the wiring linker below.
 - `src/llm_sad_sam/linkers/experimental/s_linker21_agentrouter.py` —
   `SLinker21AgentRouter`, the agentic augmentation variant (experimental=True,
   NOT canonical). Subclasses `SLinker21`; reuses its `link()` pipeline

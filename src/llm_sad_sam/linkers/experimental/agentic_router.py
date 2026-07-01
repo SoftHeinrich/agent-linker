@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Bounded-autonomy agentic router — STANDALONE, reusable module.
+"""DocModelAgenticRouter — bounded-autonomy agentic router for the DOC->MODEL task.
+STANDALONE, reusable module.
+
+NAMING — do not confuse this with ``DocCodeSentenceRouter`` (``router_direct.py``):
+that one triages SENTENCES for the DOC->CODE task (ARCH vs CODE, should this sentence
+even go through direct code-linking). This one decides per-CANDIDATE for the DOC->MODEL
+(sentence->component) task — it operates on candidates a proposer already generated,
+and its own CODE action is the escape hatch that hands a candidate to the doc->code
+route (`router_direct.DirectCodeLinker`/`DirectLinkJudge`), not a replacement for it.
 
 The router that makes the doc-to-architecture linker *agentic* without losing value:
 an LLM decides one ACTION per candidate — VALIDATE / CODE / REJECT — replacing the
@@ -20,7 +28,7 @@ never hidden chain-of-thought — same discipline as s21's claim-before-verdict.
 This is the linker component (cf. `router_direct.py`); it has NO dependency on caches,
 gold standards, or the scoring harness (that is `agent_router.py`, the experiment).
 
-    router = BoundedAutonomyAgenticRouter()          # default gate = s21 two-pass
+    router = DocModelAgenticRouter()                 # default gate = s21 two-pass
     decisions = router.route([Candidate(...), ...])
     accepted  = [d.candidate for d in decisions if d.accepted]
     to_code   = [d.candidate for d in decisions if d.action == CODE]
@@ -210,8 +218,9 @@ def _parse_actions(txt: str) -> dict:
     return out
 
 
-class BoundedAutonomyAgenticRouter:
-    """Agentic router with a gate-floored accept invariant.
+class DocModelAgenticRouter:
+    """DOC->MODEL agentic router with a gate-floored accept invariant. (Not the
+    DOC->CODE sentence triage — see ``router_direct.DocCodeSentenceRouter``.)
 
     Parameters
     ----------
@@ -299,8 +308,8 @@ def _demo():
                   sentence="If the user is not logged in, a fallback ranking is used.",
                   quote="logged in"),
     ]
-    router = BoundedAutonomyAgenticRouter()
-    print("Bounded-autonomy agentic router — live self-test (gpt-5.4, reasoning-off)\n")
+    router = DocModelAgenticRouter()
+    print("DocModelAgenticRouter — live self-test (gpt-5.4, reasoning-off)\n")
     decisions = router.route(cands)
     for d in decisions:
         print(f"  {d.candidate.id:<11} action={d.action:<9} "

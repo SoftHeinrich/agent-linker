@@ -4,12 +4,19 @@ EXPERIMENTAL (canonical=False). `SLinker21AgentRouter` SUBCLASSES `SLinker21` an
 never edits it (GATE-01): `link()` first runs the canonical `SLinker21.link()`
 pipeline UNCHANGED, then runs an AUGMENTATION pass — the GTP proposer
 (`GroundedTypedProposer`) generates typed candidates per sentence, and the
-`BoundedAutonomyAgenticRouter` decides one ACTION per candidate (VALIDATE / CODE /
-REJECT). Only candidates the agent sends to VALIDATE **and** the trusted gate
-(s21's own unchanged two-pass entity validator) approves are added — the gate is
-the floor, so the augmentation can never regress below the canonical result. The
-whole augmentation pass is wrapped in try/except: any proposer/router failure
-falls back to the base result untouched.
+`DocModelAgenticRouter` (agentic_router.py) decides one ACTION per candidate
+(VALIDATE / CODE / REJECT). Only candidates the agent sends to VALIDATE **and**
+the trusted gate (s21's own unchanged two-pass entity validator) approves are
+added — the gate is the floor, so the augmentation can never regress below the
+canonical result. The whole augmentation pass is wrapped in try/except: any
+proposer/router failure falls back to the base result untouched.
+
+NAMING — `DocModelAgenticRouter` decides per-CANDIDATE for THIS (doc->model) task;
+its CODE action hands a candidate to the doc->code side, implemented separately by
+`router_direct.DocCodeSentenceRouter` (per-SENTENCE ARCH/CODE triage) +
+`DirectCodeLinker`/`DirectLinkJudge`, invoked below. These are two distinct
+routers at two distinct granularities — see `router_direct.py`'s module docstring
+for the full comparison.
 
 Measured numbers (pilot, live gpt-5.4 run; full narrative archived at
 `.planning/archive/router-pilot-260701/`, see `gtp/FINDINGS.md` §7 and
@@ -49,7 +56,7 @@ from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 
 from llm_sad_sam.linkers.experimental.s_linker21 import SLinker21
 from llm_sad_sam.linkers.experimental.agentic_router import (
-    BoundedAutonomyAgenticRouter, Candidate,
+    DocModelAgenticRouter, Candidate,
 )
 from llm_sad_sam.linkers.experimental.proposer import GroundedTypedProposer
 from llm_sad_sam.linkers.experimental.router_direct import (
@@ -104,7 +111,7 @@ class SLinker21AgentRouter(SLinker21):
                         quote=r.get("quote", ""),
                     ))
 
-            router = BoundedAutonomyAgenticRouter()   # default StrictGate = s21 two-pass
+            router = DocModelAgenticRouter()   # default StrictGate = s21 two-pass
             decisions = router.route(candidates)
 
             existing_keys = {(l.sentence_number, l.component_id) for l in base_final}

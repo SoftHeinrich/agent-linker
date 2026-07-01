@@ -849,7 +849,7 @@ VARIANT_SPECS = {
             "S-Linker21 AGENT-ROUTER — quick-260701-ld4 bounded-autonomy agentic "
             "augmentation (experimental=True, NOT canonical). Subclasses s_linker21; "
             "runs the canonical link() unchanged as the floor, then an LLM agent "
-            "(BoundedAutonomyAgenticRouter + GroundedTypedProposer) proposes typed "
+            "(DocModelAgenticRouter + GroundedTypedProposer) proposes typed "
             "candidates per sentence and routes each to VALIDATE/CODE/REJECT -- only "
             "VALIDATE candidates the trusted s21 two-pass gate approves are added, so "
             "the result can never regress below s21. Measured (pilot, gpt-5.4): "
