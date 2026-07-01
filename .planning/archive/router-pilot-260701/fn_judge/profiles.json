@@ -1,0 +1,50 @@
+{
+ "mediastore": {
+  "DB": "Database component: actual database storing user data, password hashes, and audio-file metadata; ordinary \u201cdb\u201d means database.",
+  "Facade": "Server-side web front end delivering websites, registration/login pages, session management, and browse/download/upload access.",
+  "FileStorage": "DataStorage/FileStorage: separate file location storing uploaded audio files and serving retrieval; ordinary \u201cstorage\u201d means keeping files.",
+  "MediaAccess": "Stores uploaded audio at a predefined location and encapsulates audio metadata database access and listing/fetching.",
+  "Packaging": "Archives multiple audio files into one compressed file for multi-file downloads; ordinary \u201cpackaging\u201d means packing items together.",
+  "Reencoding": "ReEncoder/Reencoding component converts audio bit rates before watermarking, often reducing file size; ordinary \u201creencoding\u201d means encoding again.",
+  "TagWatermarking": "Digitally and individually watermarks re-encoded downloaded audio files to link each file to a user."
+ },
+ "teastore": {
+  "ImageProvider": "Service delivering WebUI images as base64, matching product/UI names and sizes, with cache and scaling.",
+  "OrderBasedRecommender": "Recommender variant using an order-based nearest-neighbor approach; recommendation time depends on cart items and stored orders.",
+  "Persistence": "Service providing relational-database access, mapping entities to JSON, and exposing CRUD endpoints with caching.",
+  "Registry": "Single service registry tracking online service instances and locations via startup registration and periodic heartbeats; ordinary registry means a register list.",
+  "SlopeOneRecommender": "Known-user recommender variant applying Slope One item-based collaborative filtering to calculate recommendations.",
+  "WebUI": "Frontend service using Servlets and JSPs, handling cookies, status page, and retrieving images from Image Provider."
+ },
+ "teammates": {
+  "Client": "Administrative scripts connecting directly to the back end; \u201cclient\u201d ordinarily means a user program.",
+  "Common": "Shared utilities, exceptions, and data-transfer objects used across the application; \u201ccommon\u201d ordinarily means shared.",
+  "E2E": "End-to-end testing component interacting with the whole application via browsers or REST API calls.",
+  "GAE Datastore": "Google App Engine NoSQL datastore persistence framework used by Storage for application data operations.",
+  "Logic": "Business-logic component managing relationships, transactions, sanitization, access control, and API integrations.",
+  "Storage": "CRUD-focused data layer hiding datastore complexity and persistable entities behind storage APIs.",
+  "Test Driver": "Testing infrastructure and helpers automating regression tests across components and system actions.",
+  "UI": "Angular-generated single-page web front end handling most requests and browser interactions; \u201cUI\u201d means user interface."
+ },
+ "bigbluebutton": {
+  "Apps": "Main real-time collaboration application providing users, chat, whiteboard, and presentations; \u201capps\u201d ordinarily means software programs.",
+  "BBB web": "Java/Scala web application implementing the BigBlueButton API and holding a copy of meeting state.",
+  "FSESL": "Separate application integrating with FreeSWITCH via its Event Socket Layer using Redis PubSub messages.",
+  "FreeSWITCH": "Audio-handling software providing voice conferencing, WebRTC audio, and phone/VoIP call-in capability.",
+  "HTML5 Client": "Single-page responsive web application for the user interface and WebRTC audio/video connections.",
+  "HTML5 Server": "Meteor.js server behind nginx, communicating with clients and keeping client state consistent via MongoDB.",
+  "Presentation Conversion": "Process converting uploaded presentations, including Office files to PDF and PDF to SVG, for client display.",
+  "Recording Service": "Recording processor that, after meetings end, processes stored Redis events and raw media files.",
+  "Redis DB": "Redis database storing all meeting events when a meeting is recorded; \u201cDB\u201d means database.",
+  "Redis PubSub": "Redis publish/subscribe channel for communication between BigBlueButton applications and for conversion progress messages.",
+  "WebRTC-SFU": "Media controller handling negotiations and managing media streams; \u201cSFU\u201d means selective forwarding unit.",
+  "kurento": "Kurento Media Server, responsible for streaming webcams, listen-only audio, and screensharing."
+ },
+ "jabref": {
+  "cli": "Command-line interface package; ordinary \u201cCLI\u201d means text-based terminal interaction.",
+  "gui": "Outer shell API layer that interacts with users and knows their preferences.",
+  "logic": "Intermediate layer that manipulates the model and handles reading, writing, import, and export.",
+  "model": "Central core holding key data structures and only a small amount of logic.",
+  "preferences": "Utility package representing user-customizable settings; ordinary \u201cpreferences\u201d means personal choices."
+ }
+}

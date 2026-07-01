@@ -1,0 +1,70 @@
+==========================================================================================
+FN-RECOVERY EXPERIMENT — judge approval by label (gpt-5.4 s21 slot)
+==========================================================================================
+gold(model-doc)=195  per-run FN=[27, 28, 29] (mean 28.0)  consistent FN (missed all 3 runs)=22
+
+Distinct judge cases by label:
+  R-TP     50
+  R-TN     83
+  NP-FN    16
+  NP-CTRL  42
+
+------------------------------------------------------------------------------------------
+APPROVAL RATE per judge structure  (want HIGH on R-TP/NP-FN [recall],
+                                    LOW on R-TN/NP-CTRL [precision cost])
+------------------------------------------------------------------------------------------
+judge                     R-TP(recall)    R-TN(leak)   NP-FN(ceil)   NP-CTRL(over)
+J0_s21                    45/50    90%   15/83   18%    1/16    6%     0/42    0%
+J0_amb                    45/50    90%    6/83    7%    1/16    6%     0/42    0%
+J1_soft                   47/50    94%   20/83   24%    7/16   44%     2/42    5%
+J2_recover                50/50   100%   63/83   76%   12/16   75%     4/42   10%
+J3_vote:any               50/50   100%   64/83   77%   13/16   81%     5/42   12%
+J3_vote:majority          50/50   100%   63/83   76%   12/16   75%     4/42   10%
+
+------------------------------------------------------------------------------------------
+REMAINING-FN SLICE — approval on the 22 CONSISTENT FN (missed in all 3 runs)
+  these are the real recall gap; R-TP/NP-FN cases whose (proj,s,cid) is a consistent FN
+------------------------------------------------------------------------------------------
+  (matched 22/22 consistent FN as judge cases)
+  judge                      approved / 22    rate
+  J0_s21                         6            27%
+  J0_amb                         4            18%
+  J1_soft                       10            45%
+  J2_recover                    18            82%
+  J3_vote:any                   19            86%
+  J3_vote:majority              18            82%
+
+  per-consistent-FN verdicts (E=entity-rej C=coref-rej .=never-proposed):
+    proj s#           component       m     J0    J0    J1    J2    J3
+    bigblueb s59      FreeSWITCH      E      Y     ·     ·     Y     Y
+    bigblueb s79      HTML5 Client    E      ·     Y     Y     Y     Y
+    bigblueb s6       HTML5 Server    .      ·     ·     ·     ·     ·
+    bigblueb s10      HTML5 Client    .      ·     ·     Y     Y     Y
+    bigblueb s10      HTML5 Server    .      ·     ·     ·     ·     ·
+    bigblueb s19      HTML5 Client    .      ·     ·     ·     Y     Y
+    bigblueb s39      HTML5 Server    .      ·     ·     ·     ·     ·
+    bigblueb s47      HTML5 Server    .      ·     ·     ·     ·     ·
+    bigblueb s65      WebRTC-SFU      .      ·     ·     Y     Y     Y
+    bigblueb s66      FreeSWITCH      .      Y     Y     Y     Y     Y
+    bigblueb s73      WebRTC-SFU      .      ·     ·     Y     Y     Y
+    bigblueb s73      HTML5 Server    .      ·     ·     ·     Y     Y
+    mediasto s33      FileStorage     E      Y     ·     Y     Y     Y
+    mediasto s33      DB              .      ·     ·     Y     Y     Y
+    teammate s88      Logic           E      Y     ·     Y     Y     Y
+    teammate s7       Logic           .      ·     ·     Y     Y     Y
+    teammate s8       Logic           .      ·     ·     Y     Y     Y
+    teammate s122     GAE Datastore   .      ·     ·     ·     Y     Y
+    teammate s138     GAE Datastore   .      ·     ·     ·     Y     Y
+    teammate s185     Logic           .      ·     ·     ·     Y     Y
+    teastore s7       WebUI           E      Y     Y     ·     Y     Y
+    teastore s26      Persistence     C      Y     Y     ·     Y     Y
+
+------------------------------------------------------------------------------------------
+ESTIMATED RECALL IMPACT if the judge structure re-scores s21's REJECT pool
+  (reject-pool only; NP-FN needs a proposer and is a separate ceiling)
+------------------------------------------------------------------------------------------
+  J0_s21       re-approves 45/50 rejected-TP (recall+)  and leaks 15/83 rejected-TN (precision-)
+  J0_amb       re-approves 45/50 rejected-TP (recall+)  and leaks 6/83 rejected-TN (precision-)
+  J1_soft      re-approves 47/50 rejected-TP (recall+)  and leaks 20/83 rejected-TN (precision-)
+  J2_recover   re-approves 50/50 rejected-TP (recall+)  and leaks 63/83 rejected-TN (precision-)
+  J3_vote      re-approves 50/50 rejected-TP (recall+)  and leaks 63/83 rejected-TN (precision-)
