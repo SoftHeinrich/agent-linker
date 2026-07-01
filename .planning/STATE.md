@@ -5,7 +5,7 @@ milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
 status: executing
 stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
 last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-06-28 -- D-04 REVISED (GPT-5.4 = main backend, Claude = appendix mirror); launched Claude/Sonnet s21 N=3 sweep (Full + No-Knowledge)
+last_activity: 2026-07-01 -- Quick 260701-ld4 COMPLETE: promoted agent_router chain to s_linker21_agentrouter (src/), archived pilot/, rewrote CLAUDE.md
 progress:
   total_phases: 6
   completed_phases: 1
@@ -69,10 +69,13 @@ Progress: v2.6.6 [█████░░░░░░░░░░░░░░░�
 
 ## Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260627-mot | Investigate whether paper RQ3/RQ4 should report RQ2 size-aware metrics (grounded on real runs) | 2026-06-27 | `8388472` | [260627-mot-investigate-whether-paper-rq3-rq4-should](./quick/260627-mot-investigate-whether-paper-rq3-rq4-should/) |
-| 260628-dnl | Promote s20U_layered → canonical `s_linker21` (Full) + run RQ1–4 results (gpt-5.4, N=3 live) | 2026-06-28 | `34b3239` | [260628-dnl-promote-s20u-layered-to-s-linker21-canon](./quick/260628-dnl-promote-s20u-layered-to-s-linker21-canon/) |
+| # | Description | Date | Commit | Status | Directory |
+|---|-------------|------|--------|--------|-----------|
+| 260627-mot | Investigate whether paper RQ3/RQ4 should report RQ2 size-aware metrics (grounded on real runs) | 2026-06-27 | `8388472` | | [260627-mot-investigate-whether-paper-rq3-rq4-should](./quick/260627-mot-investigate-whether-paper-rq3-rq4-should/) |
+| 260628-dnl | Promote s20U_layered → canonical `s_linker21` (Full) + run RQ1–4 results (gpt-5.4, N=3 live) | 2026-06-28 | `34b3239` | | [260628-dnl-promote-s20u-layered-to-s-linker21-canon](./quick/260628-dnl-promote-s20u-layered-to-s-linker21-canon/) |
+| 260701-ld4 | Promote agent_router chain (agentic_router.py + GTP proposer) → `s_linker21_agentrouter`; register run_ablation variant; archive pilot/ → `.planning/archive/`; rewrite CLAUDE.md | 2026-07-01 | `3a06248` | Verified | [260701-ld4-promote-the-finalized-agent-router-based](./quick/260701-ld4-promote-the-finalized-agent-router-based/) |
+
+**260701-ld4 verdict:** Promoted the bounded-autonomy agentic router (not the higher-scoring non-agentic named+routed config — user's explicit choice) as `SLinker21AgentRouter`, subclassing `s_linker21` with a gate-floored augmentation pass (can never regress below s21) plus CODE-routed candidates wired through `DirectCodeLinker`/`DirectLinkJudge` behind an optional `acm_path` kwarg (not yet plumbed by `run_ablation.py`'s harness — future work). GATE-01 held (s_linker21.py byte-identical). `pilot/` fully archived to `.planning/archive/router-pilot-260701/`; `CLAUDE.md` rewritten for the `router` branch. Plan-checked + verified (6/6 must-haves independently re-checked against live repo state).
 
 **260628-dnl verdict:** S21 (layered no-reasoning validator) promoted to canonical Full. Live gpt-5.4 N=3 sweeps (Full + No-Knowledge) → S21 macro-F1 **0.936** (+4.2pp over s20_union no-reasoning 0.894): top doc→model system, best on all RQ2 size-aware metrics (worst 0.753 / harmonic 0.884), RQ3 validators +9.3pp combined, RQ4 knowledge module +5.79pp. Tables: `quick/260628-dnl-…/260628-dnl-RESULTS.md`.
 
