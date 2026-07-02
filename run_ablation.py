@@ -120,6 +120,7 @@ CANONICAL_VARIANTS = [
     "s_linker21",  # v2.6.6 CANONICAL Full variant: standalone (s20U union pipeline inlined) + layered no-reasoning validator; supersedes s_linker13_min in reported RQ results; run no-reasoning
     "s_linker21_noknow",  # v2.6.6 RQ4 knowledge A/B: s_linker21 with no_knowledge=True; NOT canonical
     "s_linker21_agentrouter",  # quick-260701-ld4: s_linker21 + bounded-autonomy agentic augmentation pass (experimental=True); NOT canonical
+    "s_linker22",  # typed extraction + exact/terminal/no-code validation policy inline in s21 workflow; F2-oriented experimental variant
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -866,6 +867,23 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "s_linker22": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker22",
+        class_name="SLinker22",
+        description=(
+            "S-Linker22 — experimental F2-oriented successor to s21. Runs the same live "
+            "six-phase workflow as s21 (no frozen-output postprocessing). Phase 2 preserves "
+            "s21 Framing-C extraction as the live floor, then adds typed references for "
+            "floor-missed candidates. Phase 4 applies the pilot's exact/terminal/no-code "
+            "policy only to typed-only candidates: AFFIRMATIVE uses s21 P1/P2 after a "
+            "generic evidence filter; CONTRAST uses a contrast-specific validator; "
+            "IMPLICIT/ANAPHORA/CODEPATH are not accepted as model-doc links. Measured "
+            "gpt-5.4 full run: P 0.9779 / R 0.9232 / F1 0.9494 / F2 0.9334."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
     "s_linker20": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker20",
@@ -1005,7 +1023,7 @@ DATASETS = {
 
 
 def get_backend() -> LLMBackend:
-    backend_name = os.environ.get("LLM_BACKEND", "claude").strip().lower()
+    backend_name = os.environ.get("LLM_BACKEND", "openai").strip().lower()
     if backend_name == "openai":
         return LLMBackend.OPENAI
     if backend_name == "checkpoint":
@@ -1015,7 +1033,7 @@ def get_backend() -> LLMBackend:
     return LLMBackend.CLAUDE
 
 
-os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.2")
+os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.4")
 os.environ.setdefault("CLAUDE_MODEL", "sonnet")
 
 
@@ -1024,11 +1042,11 @@ def describe_backend_target(backend: LLMBackend | None = None) -> str:
     if backend == LLMBackend.CLAUDE:
         return f"claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"
     if backend == LLMBackend.OPENAI:
-        return f"openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.2')})"
+        return f"openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.4')})"
     if backend == LLMBackend.CHECKPOINT:
         fallback_model = os.environ.get("CHECKPOINT_FALLBACK_MODEL", "").strip().lower()
         if fallback_model in {"gpt", "openai"} or fallback_model.startswith("gpt"):
-            model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+            model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
             if fallback_model.startswith("gpt"):
                 model = fallback_model
             return f"checkpoint -> openai ({model})"
@@ -1039,7 +1057,7 @@ def describe_backend_target(backend: LLMBackend | None = None) -> str:
             return f"checkpoint -> claude ({model})"
         fallback_backend = os.environ.get("CHECKPOINT_FALLBACK", "claude").strip().lower() or "claude"
         if fallback_backend == "openai":
-            return f"checkpoint -> openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.2')})"
+            return f"checkpoint -> openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.4')})"
         if fallback_backend == "codex":
             return "checkpoint -> codex"
         return f"checkpoint -> claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"

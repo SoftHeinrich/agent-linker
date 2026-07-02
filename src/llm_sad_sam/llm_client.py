@@ -62,7 +62,7 @@ class LLMClient:
     """
 
     # Default backend - can be overridden via environment variable
-    _default_backend: LLMBackend = LLMBackend.CLAUDE
+    _default_backend: LLMBackend = LLMBackend.OPENAI
 
     # Cumulative token usage across all instances (class-level)
     _cumulative_usage: TokenUsage = TokenUsage()
@@ -78,7 +78,7 @@ class LLMClient:
 
         Args:
             backend: LLM backend to use. If None, uses LLM_BACKEND env var or default.
-            model: Model name. For OpenAI: defaults to OPENAI_MODEL_NAME env var or "gpt-5.2".
+            model: Model name. For OpenAI: defaults to OPENAI_MODEL_NAME env var or "gpt-5.4".
                    For Claude CLI: passed as --model flag. Defaults to CLAUDE_MODEL env var (unset = CLI default).
             log_dir: Directory to save logs. Defaults to LLM_LOG_DIR env var or "./results/llm_logs".
             enable_logging: Whether to enable file logging. Defaults to True.
@@ -87,7 +87,7 @@ class LLMClient:
             checkpoint_fallback: Backend used for checkpoint cache misses.
                                  Defaults to CHECKPOINT_FALLBACK env var or "claude".
             checkpoint_fallback_model: Model used on checkpoint cache misses.
-                                       Examples: "sonnet", "gpt", "gpt-5.2".
+                                       Examples: "sonnet", "gpt", "gpt-5.4".
         """
         if backend is not None:
             self.backend = backend
@@ -109,7 +109,7 @@ class LLMClient:
         self._log_file_handle = None
 
         # Model configuration
-        self.openai_model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+        self.openai_model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
         self.claude_model = os.environ.get("CLAUDE_MODEL", "sonnet")
         if model is not None:
             if self.backend == LLMBackend.OPENAI:
@@ -197,9 +197,9 @@ class LLMClient:
         normalized = model_name.strip()
         lowered = normalized.lower()
         if lowered == "gpt":
-            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
         if lowered == "openai":
-            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.2")
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
         if lowered.startswith("gpt"):
             return LLMBackend.OPENAI, normalized
 
