@@ -155,6 +155,48 @@ mechanism). **Not all aliases are safe: broad generic global aliases inflate FP.
   the ±numbers are soft; the clean signal is the `llmrouter`-source FP/TP, and it
   says the current unfiltered alias set is roughly break-even end-to-end.
 
+## Generic-alias filter — implemented, but the teastore-leak hypothesis was WRONG
+
+`filter_generic_aliases` (proposer.py) was added and wired in (max_df=5): multi-word
+alias terms kept, single-word terms kept only if they occur as a standalone token in
+≤ max_df sentences. Verified on synthetic data it drops genuinely-generic terms
+(`UI`/`front-end` at df≥6) and keeps specific/rare ones (`KMS`, `HTML5 server`).
+
+**But the diagnostic on the ACTUAL teastore alias set shows the filter drops
+nothing there**, so the hypothesis that generic aliases caused the teastore FP leak
+is **not supported**:
+
+| teastore global alias | words | doc-freq | filter |
+|---|---:|---:|---|
+| `UI → WebUI` | 1 | **5** | KEEP (== threshold) |
+| `WebUi → WebUI` | 1 | 4 | KEEP |
+| `PersistenceProvider → Persistence` | 1 | 1 | KEEP |
+| `WebUI service`, `Image Provider`, `Auth service`, … | 2–3 | 1–4 | KEEP (multi-word) |
+
+Two corrections to the earlier e2e read:
+1. `front-end → WebUI` was **not in this run's alias set at all** — Phase-1 aliases
+   are LLM-discovered and stochastic; the set differs run to run. The "UI/front-end
+   over-linking" mechanism was *probable, not confirmed*, and is now **falsified for
+   teastore**: the discovered aliases there are mostly specific/multi-word.
+2. The filtered re-run moved teastore `llmrouter` FP only 4→3 (bbb: 0 FP, but on a
+   low-recall floor sample) — a within-noise move on a floor that itself resampled.
+   With the filter dropping nothing on teastore, that delta is floor/sample noise,
+   not the filter.
+
+**Revised conclusion.** The teastore FP leak is **not a generic-alias problem** — it
+is the augmentation over-proposing on a precision-sensitive dataset and a few
+candidates slipping past the gate regardless of aliases (the same teastore
+sensitivity seen with `s23_union`, RESULTS.md). The frequency filter is kept as a
+harmless, principled safety net (it *will* drop generic aliases where they occur, and
+is GATE-06 safe) but it is **low-impact on these benchmarks** and does **not** fix
+the teastore leak. Lowering max_df to 4 to force `UI` out would be threshold-fitting
+to one dataset (rejected).
+
+Net: alias injection remains an extraction-ceiling recall win that is **~break-even
+end-to-end** (gain absorbed by the fresh floor / filtered by the gate); the residual
+teastore precision cost is an augmentation-over-proposal issue, addressable only by a
+stronger per-candidate precision control on that dataset — not by alias filtering.
+
 ## Concrete next steps
 
 - [ ] Promote alias injection into the shipped proposer as an additive opt-in:
