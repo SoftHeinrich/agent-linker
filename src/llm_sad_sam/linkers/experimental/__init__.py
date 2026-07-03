@@ -10,9 +10,18 @@ re-exports are required here.
 from .s_linker21 import SLinker21
 from .s_linker21_agentrouter import SLinker21AgentRouter
 from .s_linker22 import SLinker22
+from .s_linker23 import SLinker23
+from .s_linker23_extract import SLinker23Replace, SLinker23Union
+from .s_linker23_verify import SLinker23Verify
+from .s_linker23_ctx import SLinker23Ctx
 
 __all__ = [
     "SLinker21",
     "SLinker21AgentRouter",
     "SLinker22",
+    "SLinker23",
+    "SLinker23Replace",
+    "SLinker23Union",
+    "SLinker23Verify",
+    "SLinker23Ctx",
 ]

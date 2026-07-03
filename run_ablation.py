@@ -121,6 +121,11 @@ CANONICAL_VARIANTS = [
     "s_linker21_noknow",  # v2.6.6 RQ4 knowledge A/B: s_linker21 with no_knowledge=True; NOT canonical
     "s_linker21_agentrouter",  # quick-260701-ld4: s_linker21 + bounded-autonomy agentic augmentation pass (experimental=True); NOT canonical
     "s_linker22",  # typed extraction + exact/terminal/no-code validation policy inline in s21 workflow; F2-oriented experimental variant
+    "s_linker23",  # LLM-decision-driven augmentation of s21: generic-prompt proposer + agentic router (VALIDATE/CODE/REJECT) floored by s21's real two-pass gate; no structural if/else policy
+    "s_linker23_replace",  # s21 pipeline with Phase-2 extraction REPLACED by the batched blocks proposer (through s21's real gate); extraction-integration experiment
+    "s_linker23_union",  # s21 pipeline with Phase-2 = Framing-C UNION blocks proposer (integrate all extractors, one gate); extraction-integration experiment
+    "s_linker23_verify",  # s23 proposer+router with the VALIDATE floor = s21's REAL evidence-bundle validator (combine s23 recall with s21 precision)
+    "s_linker23_ctx",  # s23_verify + proposer conditioned on s21's per-sentence links as LLM context (residual extraction, no coded heuristics)
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -880,6 +885,80 @@ VARIANT_SPECS = {
             "generic evidence filter; CONTRAST uses a contrast-specific validator; "
             "IMPLICIT/ANAPHORA/CODEPATH are not accepted as model-doc links. Measured "
             "gpt-5.4 full run: P 0.9779 / R 0.9232 / F1 0.9494 / F2 0.9334."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23",
+        class_name="SLinker23",
+        description=(
+            "S-Linker23 — LLM-decision-driven augmentation of s21. Subclasses SLinker21 "
+            "(never edits it), runs the canonical s21 pipeline as the floor, then augments: "
+            "a generic-prompt GroundedTypedProposer surfaces floor-missed candidates and the "
+            "agentic DocModelAgenticRouter lets the LLM choose VALIDATE/CODE/REJECT per "
+            "candidate from general guidelines. No structural regex filters, no mode->policy "
+            "if/elif: the only non-LLM step is grounding a proposal to a real catalog name. "
+            "Bounded autonomy — an accepted link must also pass s21's OWN two-pass entity "
+            "gate (injected as the router gate), so it can never regress below the s21 floor."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_replace": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_extract",
+        class_name="SLinker23Replace",
+        description=(
+            "S-Linker23Replace — s21 pipeline with Phase-2 extraction REPLACED by the "
+            "batched `blocks` proposer (per-sentence-shaped context, batch 20), then run "
+            "through s21's UNCHANGED two-pass gate / coref / merge. Measures whether the "
+            "blocks extractor can stand in for Framing-C end-to-end. Subclass of SLinker21 "
+            "(GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_union": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_extract",
+        class_name="SLinker23Union",
+        description=(
+            "S-Linker23Union — s21 pipeline with Phase-2 = s21 Framing-C UNION the batched "
+            "`blocks` proposer, all validated by s21's UNCHANGED gate (one gate, integrate "
+            "all extractors). Measures the 'keep both' extraction integration end-to-end. "
+            "Subclass of SLinker21 (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_verify": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_verify",
+        class_name="SLinker23Verify",
+        description=(
+            "S-Linker23Verify — s23's blocks proposer + agentic router, but the router's "
+            "VALIDATE decisions are floored by s21's REAL Phase-4 evidence-bundle two-pass "
+            "validator (claim-before-verdict) instead of s23's lightweight case-text gate. "
+            "Combines s23's recall augmentation with s21's precision mechanism; tests "
+            "whether routing the proposed candidates through full s21 verification fixes the "
+            "false-positive leak. Subclass of SLinker23 (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_ctx": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_ctx",
+        class_name="SLinker23Ctx",
+        description=(
+            "S-Linker23Ctx — SLinker23Verify but the proposer is CONDITIONED on s21's own "
+            "output: each sentence is shown with the components s21 already linked "
+            "(ALREADY LINKED: ...) and the model is asked for what the base MISSED (residual "
+            "extraction). Pure LLM-side context conditioning — no coded thresholds/heuristics. "
+            "Tests whether feeding the base decisions as context improves the augmentation. "
+            "Subclass of SLinker23Verify (GATE-01 safe)."
         ),
         canonical=False,
         experimental=True,

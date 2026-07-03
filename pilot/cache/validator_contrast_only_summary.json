@@ -1,0 +1,248 @@
+{
+ "variant": "validator_contrast_only",
+ "description": "no extraction calls; revalidates s21 rejected contrast-like candidates",
+ "baseline": {
+  "P": 0.989407429638522,
+  "R": 0.8913349682449851,
+  "F1": 0.9360446340832227,
+  "F2": 0.908349708956894
+ },
+ "augmented": {
+  "P": 0.9881296518607443,
+  "R": 0.9084197950072314,
+  "F1": 0.944879454803114,
+  "F2": 0.922318388512089
+ },
+ "delta": {
+  "P": -0.001277777777777711,
+  "R": 0.017084826762246208,
+  "F1": 0.008834820719891279,
+  "F2": 0.013968679555194985
+ },
+ "new_TP": 3,
+ "new_FP": 1,
+ "proposal_counts": {
+  "mediastore": 1,
+  "teastore": 1,
+  "teammates": 1,
+  "bigbluebutton": 1,
+  "jabref": 0
+ },
+ "kept_new_counts": {
+  "mediastore": 1,
+  "teastore": 1,
+  "teammates": 1,
+  "bigbluebutton": 1,
+  "jabref": 0
+ },
+ "kept_new_links": [
+  {
+   "project": "mediastore",
+   "sentence": 33,
+   "component_id": "_qxAiILg7EeSNPorBlo7x9g",
+   "component": "FileStorage",
+   "mode": "CONTRAST",
+   "quote": "DataStorage",
+   "gold": true,
+   "sentence_text": "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+  },
+  {
+   "project": "teastore",
+   "sentence": 7,
+   "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+   "component": "WebUI",
+   "mode": "CONTRAST",
+   "quote": "WebUi",
+   "gold": true,
+   "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead."
+  },
+  {
+   "project": "teammates",
+   "sentence": 96,
+   "component_id": "_3LCnIKESEeu-mYqkDskRow",
+   "component": "Logic",
+   "mode": "CONTRAST",
+   "quote": "this component",
+   "gold": false,
+   "sentence_text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+  },
+  {
+   "project": "bigbluebutton",
+   "sentence": 59,
+   "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+   "component": "FreeSWITCH",
+   "mode": "CONTRAST",
+   "quote": "FreeSWITCH",
+   "gold": true,
+   "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+  }
+ ],
+ "mode_counts": {
+  "mediastore": {
+   "CONTRAST": 1
+  },
+  "teastore": {
+   "CONTRAST": 1
+  },
+  "teammates": {
+   "CONTRAST": 1
+  },
+  "bigbluebutton": {
+   "CONTRAST": 1
+  },
+  "jabref": {}
+ },
+ "extraction_diagnostics": {
+  "mediastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 1,
+   "proposal_gold": 1,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 1,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 1,
+   "proposal_gold": 1,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 1,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teammates": {
+   "base_missed_gold": 6,
+   "proposal_total": 1,
+   "proposal_gold": 0,
+   "proposal_fp_vs_gold": 1,
+   "marginal_proposal_total": 0,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  },
+  "bigbluebutton": {
+   "base_missed_gold": 12,
+   "proposal_total": 1,
+   "proposal_gold": 1,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 1,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "jabref": {
+   "base_missed_gold": 0,
+   "proposal_total": 0,
+   "proposal_gold": 0,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 0,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  }
+ },
+ "validation_diagnostics": {
+  "mediastore": {
+   "kept_total": 1,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teastore": {
+   "kept_total": 1,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teammates": {
+   "kept_total": 1,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 1,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "bigbluebutton": {
+   "kept_total": 1,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "jabref": {
+   "kept_total": 0,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {}
+  }
+ },
+ "per_run_baseline": [
+  [
+   0.9958333333333333,
+   0.8958246871659435,
+   0.941455776927475,
+   0.9131914991151504
+  ],
+  [
+   0.9841536614645857,
+   0.889090108784506,
+   0.9328889515330193,
+   0.9058396234966694
+  ],
+  [
+   0.9882352941176471,
+   0.889090108784506,
+   0.9337891737891738,
+   0.9060180042588625
+  ]
+ ],
+ "per_run_augmented": [
+  [
+   0.9919183673469387,
+   0.9129095139281895,
+   0.9490982696361805,
+   0.9267101999733806
+  ],
+  [
+   0.984235294117647,
+   0.9061749355467521,
+   0.9423375262054506,
+   0.9200448753604299
+  ],
+  [
+   0.9882352941176471,
+   0.9061749355467521,
+   0.9432025685677108,
+   0.9202000902024567
+  ]
+ ]
+}

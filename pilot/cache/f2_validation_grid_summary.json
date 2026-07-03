@@ -1,0 +1,3114 @@
+[
+ {
+  "variant": "grid_exact_or_terminal_no_code",
+  "description": "F2 validation grid policy: exact_or_terminal_no_code",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.981315884208966,
+   "R": 0.923058542413381,
+   "F1": 0.9507076160523021,
+   "F2": 0.9337967782454425
+  },
+  "delta": {
+   "P": -0.008091545429556035,
+   "R": 0.031723574168395885,
+   "F1": 0.014662981969079447,
+   "F2": 0.025447069288548452
+  },
+  "new_TP": 5,
+  "new_FP": 0,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 1,
+   "teammates": 1,
+   "bigbluebutton": 3,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 79,
+    "component": "HTML5 Client",
+    "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+    "mode": "AFFIRMATIVE",
+    "quote": "the client",
+    "gold": true,
+    "sentence_text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+    "proposal_count_same_sentence": 3
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 3,
+    "kept_gold": 3,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 3,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9812718378756115,
+    0.92286989876124,
+    0.9506882750734409,
+    0.9336937079304738
+   ],
+   [
+    0.9815437392795884,
+    0.9266616361692762,
+    0.9526653384897846,
+    0.9367531333921125
+   ],
+   [
+    0.9811320754716981,
+    0.9196440923096271,
+    0.9487692345936809,
+    0.9309434934137414
+   ]
+  ],
+  "policy": "exact_or_terminal_no_code",
+  "fp_categories": {}
+ },
+ {
+  "variant": "grid_quote_present_no_code",
+  "description": "F2 validation grid policy: quote_present_no_code",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9739084768015586,
+   "R": 0.923058542413381,
+   "F1": 0.9470737935505551,
+   "F2": 0.9323595200917664
+  },
+  "delta": {
+   "P": -0.015498952836963453,
+   "R": 0.031723574168395885,
+   "F1": 0.011029159467332406,
+   "F2": 0.024009811134872328
+  },
+  "new_TP": 5,
+  "new_FP": 1,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 2,
+   "teammates": 1,
+   "bigbluebutton": 3,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 32,
+    "component": "SlopeOneRecommender",
+    "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "Slope One",
+    "gold": false,
+    "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 79,
+    "component": "HTML5 Client",
+    "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+    "mode": "AFFIRMATIVE",
+    "quote": "the client",
+    "gold": true,
+    "sentence_text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+    "proposal_count_same_sentence": 3
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 3,
+    "kept_gold": 3,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 3,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.973864430468204,
+    0.92286989876124,
+    0.9470544525716938,
+    0.9322564497767976
+   ],
+   [
+    0.974136331872181,
+    0.9266616361692762,
+    0.9490315159880376,
+    0.9353158752384363
+   ],
+   [
+    0.9737246680642906,
+    0.9196440923096271,
+    0.9451354120919337,
+    0.9295062352600653
+   ]
+  ],
+  "policy": "quote_present_no_code",
+  "fp_categories": {
+   "lower_generic": 1
+  }
+ },
+ {
+  "variant": "grid_no_code",
+  "description": "F2 validation grid policy: no_code",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9704535622774616,
+   "R": 0.923058542413381,
+   "F1": 0.9454339627071845,
+   "F2": 0.9317232039142479
+  },
+  "delta": {
+   "P": -0.018953867361060417,
+   "R": 0.031723574168395885,
+   "F1": 0.009389328623961801,
+   "F2": 0.023373494957353858
+  },
+  "new_TP": 5,
+  "new_FP": 2,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 2,
+   "teammates": 2,
+   "bigbluebutton": 3,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 32,
+    "component": "SlopeOneRecommender",
+    "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "Slope One",
+    "gold": false,
+    "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 79,
+    "component": "HTML5 Client",
+    "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+    "mode": "AFFIRMATIVE",
+    "quote": "the client",
+    "gold": true,
+    "sentence_text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+    "proposal_count_same_sentence": 3
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 3,
+    "kept_gold": 3,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 3,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9703703703703704,
+    0.92286989876124,
+    0.9454164509336923,
+    0.9316254712553065
+   ],
+   [
+    0.9707597084955575,
+    0.9266616361692762,
+    0.947388026733929,
+    0.9346688837488628
+   ],
+   [
+    0.970230607966457,
+    0.9196440923096271,
+    0.9434974104539322,
+    0.9288752567385743
+   ]
+  ],
+  "policy": "no_code",
+  "fp_categories": {
+   "lower_generic": 1,
+   "other": 1
+  }
+ },
+ {
+  "variant": "grid_contrast_plus_subjectish",
+  "description": "F2 validation grid policy: contrast_plus_subjectish",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9811725381536703,
+   "R": 0.9198327359617683,
+   "F1": 0.9487661306546501,
+   "F2": 0.9310343405530803
+  },
+  "delta": {
+   "P": -0.00823489148485168,
+   "R": 0.02849776771678314,
+   "F1": 0.012721496571427404,
+   "F2": 0.022684631596186278
+  },
+  "new_TP": 4,
+  "new_FP": 0,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 1,
+   "teammates": 1,
+   "bigbluebutton": 2,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 2,
+    "kept_gold": 2,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 2,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9811320754716981,
+    0.9196440923096271,
+    0.9487692345936809,
+    0.9309434934137414
+   ],
+   [
+    0.9813986013986014,
+    0.9234358297176634,
+    0.9507126306331866,
+    0.9339845841119352
+   ],
+   [
+    0.9809869375907112,
+    0.9164182858580142,
+    0.9468165267370828,
+    0.9281749441335642
+   ]
+  ],
+  "policy": "contrast_plus_subjectish",
+  "fp_categories": {}
+ },
+ {
+  "variant": "grid_current_modes",
+  "description": "F2 validation grid policy: current_modes",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9639097442393907,
+   "R": 0.923058542413381,
+   "F1": 0.9422408658011211,
+   "F2": 0.9304639829966511
+  },
+  "delta": {
+   "P": -0.02549768539913133,
+   "R": 0.031723574168395885,
+   "F1": 0.006196231717898404,
+   "F2": 0.022114274039757076
+  },
+  "new_TP": 5,
+  "new_FP": 4,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 2,
+   "teammates": 4,
+   "bigbluebutton": 3,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 32,
+    "component": "SlopeOneRecommender",
+    "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "Slope One",
+    "gold": false,
+    "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 22,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic component",
+    "gold": false,
+    "sentence_text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern.",
+    "proposal_count_same_sentence": 3
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 188,
+    "component": "E2E",
+    "component_id": "_EIoe8KETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "E2E tests",
+    "gold": false,
+    "sentence_text": "e2e.util contains helpers needed for running E2E tests.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 79,
+    "component": "HTML5 Client",
+    "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+    "mode": "AFFIRMATIVE",
+    "quote": "the client",
+    "gold": true,
+    "sentence_text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+    "proposal_count_same_sentence": 3
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 4,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 3,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CODEPATH": 2,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 3,
+    "kept_gold": 3,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 3,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9637566137566138,
+    0.92286989876124,
+    0.94222742119599,
+    0.9303768447444684
+   ],
+   [
+    0.964355767608858,
+    0.9266616361692762,
+    0.9441867954911434,
+    0.9333884740177488
+   ],
+   [
+    0.9636168513527004,
+    0.9196440923096271,
+    0.9403083807162298,
+    0.9276266302277362
+   ]
+  ],
+  "policy": "current_modes",
+  "fp_categories": {
+   "lower_generic": 1,
+   "code_like": 2,
+   "other": 1
+  }
+ },
+ {
+  "variant": "grid_named_quote_no_code",
+  "description": "F2 validation grid policy: named_quote_no_code",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9777176236295734,
+   "R": 0.9198327359617683,
+   "F1": 0.9471262998112794,
+   "F2": 0.9303980243755617
+  },
+  "delta": {
+   "P": -0.011689806008948644,
+   "R": 0.02849776771678314,
+   "F1": 0.011081665728056689,
+   "F2": 0.022048315418667697
+  },
+  "new_TP": 4,
+  "new_FP": 1,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 1,
+   "teammates": 2,
+   "bigbluebutton": 2,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 2,
+    "kept_gold": 2,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 2,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9776380153738644,
+    0.9196440923096271,
+    0.9471312329556791,
+    0.9303125148922502
+   ],
+   [
+    0.9780219780219781,
+    0.9234358297176634,
+    0.9490691413790779,
+    0.9333375926223617
+   ],
+   [
+    0.9774928774928775,
+    0.9164182858580142,
+    0.9451785250990812,
+    0.9275439656120732
+   ]
+  ],
+  "policy": "named_quote_no_code",
+  "fp_categories": {
+   "other": 1
+  }
+ },
+ {
+  "variant": "grid_named_quote",
+  "description": "F2 validation grid policy: named_quote",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9711738055915023,
+   "R": 0.9198327359617683,
+   "F1": 0.943933202905216,
+   "F2": 0.9291388034579651
+  },
+  "delta": {
+   "P": -0.01823362404701967,
+   "R": 0.02849776771678314,
+   "F1": 0.007888568821993291,
+   "F2": 0.020789094501071026
+  },
+  "new_TP": 4,
+  "new_FP": 3,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 1,
+   "teammates": 4,
+   "bigbluebutton": 2,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 22,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic component",
+    "gold": false,
+    "sentence_text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern.",
+    "proposal_count_same_sentence": 3
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 188,
+    "component": "E2E",
+    "component_id": "_EIoe8KETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "E2E tests",
+    "gold": false,
+    "sentence_text": "e2e.util contains helpers needed for running E2E tests.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 4,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 3,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CODEPATH": 2,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 2,
+    "kept_gold": 2,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 2,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9710242587601078,
+    0.9196440923096271,
+    0.9439422032179768,
+    0.9290638883814122
+   ],
+   [
+    0.9716180371352785,
+    0.9234358297176634,
+    0.9458679101362923,
+    0.9320571828912477
+   ],
+   [
+    0.9708791208791208,
+    0.9164182858580142,
+    0.9419894953613788,
+    0.9262953391012351
+   ]
+  ],
+  "policy": "named_quote",
+  "fp_categories": {
+   "code_like": 2,
+   "other": 1
+  }
+ },
+ {
+  "variant": "grid_context_modes_no_code",
+  "description": "F2 validation grid policy: context_modes_no_code",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9472982036932235,
+   "R": 0.923058542413381,
+   "F1": 0.934683961669918,
+   "F2": 0.9275982466846316
+  },
+  "delta": {
+   "P": -0.042109225945298534,
+   "R": 0.031723574168395885,
+   "F1": -0.001360672413304731,
+   "F2": 0.019248537727737602
+  },
+  "new_TP": 5,
+  "new_FP": 7,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 2,
+   "teastore": 2,
+   "teammates": 2,
+   "bigbluebutton": 6,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "mediastore",
+    "sentence": 14,
+    "component": "TagWatermarking",
+    "component_id": "_h_QpkLhEEeSNPorBlo7x9g",
+    "mode": "IMPLICIT",
+    "quote": "watermarked",
+    "gold": false,
+    "sentence_text": "To reduce the risk of copyright infringements, all downloaded files are watermarked.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "mediastore",
+    "sentence": 22,
+    "component": "MediaAccess",
+    "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+    "mode": "IMPLICIT",
+    "quote": "components that are concerned with the storage of audio files and their meta-data",
+    "gold": false,
+    "sentence_text": "The persistence tier contains components that are concerned with the storage of audio files and their meta-data.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 32,
+    "component": "SlopeOneRecommender",
+    "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "Slope One",
+    "gold": false,
+    "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 55,
+    "component": "Apps",
+    "component_id": "_XuNf4FkJEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "MeetingActor",
+    "gold": false,
+    "sentence_text": "The meeting business logic is in the MeetingActor.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 58,
+    "component": "FSESL",
+    "component_id": "_9wZIcFkHEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "the component that integrates with FreeSWITCH",
+    "gold": false,
+    "sentence_text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 76,
+    "component": "Presentation Conversion",
+    "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "a conversion process",
+    "gold": false,
+    "sentence_text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 79,
+    "component": "HTML5 Client",
+    "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+    "mode": "AFFIRMATIVE",
+    "quote": "the client",
+    "gold": true,
+    "sentence_text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+    "proposal_count_same_sentence": 3
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 2,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 2,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "IMPLICIT": 2
+    }
+   },
+   "teastore": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 6,
+    "kept_gold": 3,
+    "kept_fp_vs_gold": 3,
+    "surfaced_gold_kept": 3,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "IMPLICIT": 3,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9473306923222033,
+    0.92286989876124,
+    0.9346594629327077,
+    0.9274861346038366
+   ],
+   [
+    0.9475465096432838,
+    0.9266616361692762,
+    0.9366415191785213,
+    0.9305511162301736
+   ],
+   [
+    0.9470174091141832,
+    0.9196440923096271,
+    0.9327509028985246,
+    0.9247574892198849
+   ]
+  ],
+  "policy": "context_modes_no_code",
+  "fp_categories": {
+   "other": 6,
+   "lower_generic": 1
+  }
+ },
+ {
+  "variant": "grid_drop_lower_generic",
+  "description": "F2 validation grid policy: drop_lower_generic",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.9774446936711088,
+   "R": 0.9163239640319437,
+   "F1": 0.9451514120399315,
+   "F2": 0.9274840050107424
+  },
+  "delta": {
+   "P": -0.011962735967413263,
+   "R": 0.024988995786958568,
+   "F1": 0.009106777956708778,
+   "F2": 0.01913429605384831
+  },
+  "new_TP": 3,
+  "new_FP": 1,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 0,
+   "teastore": 1,
+   "teammates": 1,
+   "bigbluebutton": 2,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {}
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 1,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 2,
+    "kept_gold": 2,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 2,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9773584905660379,
+    0.9161353203798026,
+    0.9451328709573172,
+    0.9273847745525314
+   ],
+   [
+    0.9777622377622377,
+    0.9199270577878387,
+    0.9471412020617581,
+    0.9304510152073415
+   ],
+   [
+    0.9772133526850508,
+    0.9129095139281895,
+    0.9431801631007192,
+    0.9246162252723543
+   ]
+  ],
+  "policy": "drop_lower_generic",
+  "fp_categories": {
+   "other": 1
+  }
+ },
+ {
+  "variant": "grid_f2_implicit_anchor",
+  "description": "F2 validation grid policy: f2_implicit_anchor",
+  "baseline": {
+   "P": 0.989407429638522,
+   "R": 0.8913349682449851,
+   "F1": 0.9360446340832227,
+   "F2": 0.908349708956894
+  },
+  "augmented": {
+   "P": 0.954384733148174,
+   "R": 0.9198327359617683,
+   "F1": 0.9363874741655822,
+   "F2": 0.9262948522139426
+  },
+  "delta": {
+   "P": -0.03502269649034806,
+   "R": 0.02849776771678314,
+   "F1": 0.000342840082359519,
+   "F2": 0.017945143257048546
+  },
+  "new_TP": 4,
+  "new_FP": 6,
+  "proposal_counts": {
+   "mediastore": 38,
+   "teastore": 35,
+   "teammates": 111,
+   "bigbluebutton": 54,
+   "jabref": 22
+  },
+  "kept_new_counts": {
+   "mediastore": 2,
+   "teastore": 1,
+   "teammates": 2,
+   "bigbluebutton": 5,
+   "jabref": 0
+  },
+  "kept_new_links": [
+   {
+    "project": "mediastore",
+    "sentence": 14,
+    "component": "TagWatermarking",
+    "component_id": "_h_QpkLhEEeSNPorBlo7x9g",
+    "mode": "IMPLICIT",
+    "quote": "watermarked",
+    "gold": false,
+    "sentence_text": "To reduce the risk of copyright infringements, all downloaded files are watermarked.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "mediastore",
+    "sentence": 22,
+    "component": "MediaAccess",
+    "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+    "mode": "IMPLICIT",
+    "quote": "components that are concerned with the storage of audio files and their meta-data",
+    "gold": false,
+    "sentence_text": "The persistence tier contains components that are concerned with the storage of audio files and their meta-data.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teastore",
+    "sentence": 7,
+    "component": "WebUI",
+    "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+    "mode": "CONTRAST",
+    "quote": "WebUi",
+    "gold": true,
+    "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 88,
+    "component": "Logic",
+    "component_id": "_3LCnIKESEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "Logic",
+    "gold": true,
+    "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "teammates",
+    "sentence": 37,
+    "component": "GAE Datastore",
+    "component_id": "_KGVMcKETEeu-mYqkDskRow",
+    "mode": "AFFIRMATIVE",
+    "quote": "GAE Datastore",
+    "gold": false,
+    "sentence_text": "The request will be processed as in the image.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 55,
+    "component": "Apps",
+    "component_id": "_XuNf4FkJEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "MeetingActor",
+    "gold": false,
+    "sentence_text": "The meeting business logic is in the MeetingActor.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 58,
+    "component": "FSESL",
+    "component_id": "_9wZIcFkHEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "the component that integrates with FreeSWITCH",
+    "gold": false,
+    "sentence_text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+    "proposal_count_same_sentence": 2
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 59,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "CONTRAST",
+    "quote": "other than FreeSWITCH",
+    "gold": true,
+    "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 66,
+    "component": "FreeSWITCH",
+    "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+    "mode": "AFFIRMATIVE",
+    "quote": "FreeSWITCH",
+    "gold": true,
+    "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+    "proposal_count_same_sentence": 1
+   },
+   {
+    "project": "bigbluebutton",
+    "sentence": 76,
+    "component": "Presentation Conversion",
+    "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+    "mode": "IMPLICIT",
+    "quote": "a conversion process",
+    "gold": false,
+    "sentence_text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+    "proposal_count_same_sentence": 2
+   }
+  ],
+  "mode_counts": {
+   "mediastore": {
+    "AFFIRMATIVE": 24,
+    "ANAPHORA": 4,
+    "IMPLICIT": 10
+   },
+   "teastore": {
+    "AFFIRMATIVE": 20,
+    "ANAPHORA": 7,
+    "CONTRAST": 1,
+    "IMPLICIT": 7
+   },
+   "teammates": {
+    "AFFIRMATIVE": 42,
+    "ANAPHORA": 25,
+    "IMPLICIT": 16,
+    "CODEPATH": 39
+   },
+   "bigbluebutton": {
+    "AFFIRMATIVE": 37,
+    "CODEPATH": 5,
+    "IMPLICIT": 5,
+    "ANAPHORA": 7,
+    "CONTRAST": 1
+   },
+   "jabref": {
+    "AFFIRMATIVE": 18,
+    "CONTRAST": 2,
+    "IMPLICIT": 1,
+    "ANAPHORA": 2
+   }
+  },
+  "extraction_diagnostics": {
+   "mediastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 38,
+    "proposal_gold": 30,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 9,
+    "marginal_proposal_gold": 1,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 1,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1
+    }
+   },
+   "teastore": {
+    "base_missed_gold": 2,
+    "proposal_total": 35,
+    "proposal_gold": 27,
+    "proposal_fp_vs_gold": 8,
+    "marginal_proposal_total": 10,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 8,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "CONTRAST": 1,
+     "ANAPHORA": 1
+    }
+   },
+   "teammates": {
+    "base_missed_gold": 6,
+    "proposal_total": 111,
+    "proposal_gold": 42,
+    "proposal_fp_vs_gold": 69,
+    "marginal_proposal_total": 68,
+    "marginal_proposal_gold": 2,
+    "marginal_proposal_fp_vs_gold": 66,
+    "base_missed_gold_surfaced": 2,
+    "base_missed_gold_surfaced_by_mode": {
+     "IMPLICIT": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "bigbluebutton": {
+    "base_missed_gold": 12,
+    "proposal_total": 54,
+    "proposal_gold": 43,
+    "proposal_fp_vs_gold": 11,
+    "marginal_proposal_total": 13,
+    "marginal_proposal_gold": 4,
+    "marginal_proposal_fp_vs_gold": 9,
+    "base_missed_gold_surfaced": 4,
+    "base_missed_gold_surfaced_by_mode": {
+     "CODEPATH": 1,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 2
+    }
+   },
+   "jabref": {
+    "base_missed_gold": 0,
+    "proposal_total": 22,
+    "proposal_gold": 18,
+    "proposal_fp_vs_gold": 4,
+    "marginal_proposal_total": 4,
+    "marginal_proposal_gold": 0,
+    "marginal_proposal_fp_vs_gold": 4,
+    "base_missed_gold_surfaced": 0,
+    "base_missed_gold_surfaced_by_mode": {}
+   }
+  },
+  "validation_diagnostics": {
+   "mediastore": {
+    "kept_total": 2,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 2,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "IMPLICIT": 2
+    }
+   },
+   "teastore": {
+    "kept_total": 1,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "CONTRAST": 1
+    }
+   },
+   "teammates": {
+    "kept_total": 2,
+    "kept_gold": 1,
+    "kept_fp_vs_gold": 1,
+    "surfaced_gold_kept": 1,
+    "surfaced_gold_rejected_or_filtered": 1,
+    "kept_by_mode": {
+     "AFFIRMATIVE": 2
+    }
+   },
+   "bigbluebutton": {
+    "kept_total": 5,
+    "kept_gold": 2,
+    "kept_fp_vs_gold": 3,
+    "surfaced_gold_kept": 2,
+    "surfaced_gold_rejected_or_filtered": 2,
+    "kept_by_mode": {
+     "IMPLICIT": 3,
+     "CONTRAST": 1,
+     "AFFIRMATIVE": 1
+    }
+   },
+   "jabref": {
+    "kept_total": 0,
+    "kept_gold": 0,
+    "kept_fp_vs_gold": 0,
+    "surfaced_gold_kept": 0,
+    "surfaced_gold_rejected_or_filtered": 0,
+    "kept_by_mode": {}
+   }
+  },
+  "per_run_baseline": [
+   [
+    0.9958333333333333,
+    0.8958246871659435,
+    0.941455776927475,
+    0.9131914991151504
+   ],
+   [
+    0.9841536614645857,
+    0.889090108784506,
+    0.9328889515330193,
+    0.9058396234966694
+   ],
+   [
+    0.9882352941176471,
+    0.889090108784506,
+    0.9337891737891738,
+    0.9060180042588625
+   ]
+  ],
+  "per_run_augmented": [
+   [
+    0.9544248165215906,
+    0.9196440923096271,
+    0.9363847254002715,
+    0.926194747373561
+   ],
+   [
+    0.9546292417260158,
+    0.9234358297176634,
+    0.9383341566882359,
+    0.9292417181392778
+   ],
+   [
+    0.9541001411969153,
+    0.9164182858580142,
+    0.9344435404082392,
+    0.9234480911289891
+   ]
+  ],
+  "policy": "f2_implicit_anchor",
+  "fp_categories": {
+   "other": 6
+  }
+ }
+]

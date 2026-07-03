@@ -1,0 +1,296 @@
+{
+ "variant": "scratchpad_named",
+ "description": "named-only extraction with signal-before-mode scratchpad",
+ "baseline": {
+  "P": 0.989407429638522,
+  "R": 0.8913349682449851,
+  "F1": 0.9360446340832227,
+  "F2": 0.908349708956894
+ },
+ "augmented": {
+  "P": 0.9668244008300032,
+  "R": 0.9143620700496761,
+  "F1": 0.9383149666752346,
+  "F2": 0.923469232311615
+ },
+ "delta": {
+  "P": -0.022583028808518812,
+  "R": 0.02302710180469092,
+  "F1": 0.0022703325920119255,
+  "F2": 0.015119523354720998
+ },
+ "new_TP": 4,
+ "new_FP": 4,
+ "proposal_counts": {
+  "mediastore": 23,
+  "teastore": 22,
+  "teammates": 41,
+  "bigbluebutton": 39,
+  "jabref": 20
+ },
+ "kept_new_counts": {
+  "mediastore": 0,
+  "teastore": 3,
+  "teammates": 2,
+  "bigbluebutton": 3,
+  "jabref": 0
+ },
+ "kept_new_links": [
+  {
+   "project": "teastore",
+   "sentence": 7,
+   "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+   "component": "WebUI",
+   "mode": "CONTRAST",
+   "quote": "not provides by the WebUi",
+   "gold": true,
+   "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead."
+  },
+  {
+   "project": "teastore",
+   "sentence": 32,
+   "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+   "component": "SlopeOneRecommender",
+   "mode": "AFFIRMATIVE",
+   "quote": "Slope One",
+   "gold": false,
+   "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+  },
+  {
+   "project": "teastore",
+   "sentence": 35,
+   "component_id": "_kgbngDVgEeqPG_FgW3bi6Q",
+   "component": "OrderBasedRecommender",
+   "mode": "AFFIRMATIVE",
+   "quote": "order-based nearest-neighbor approach",
+   "gold": false,
+   "sentence_text": "Furthermore, one order-based nearest-neighbor approach is available."
+  },
+  {
+   "project": "teammates",
+   "sentence": 22,
+   "component_id": "_3LCnIKESEeu-mYqkDskRow",
+   "component": "Logic",
+   "mode": "AFFIRMATIVE",
+   "quote": "Logic component",
+   "gold": false,
+   "sentence_text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+  },
+  {
+   "project": "teammates",
+   "sentence": 88,
+   "component_id": "_3LCnIKESEeu-mYqkDskRow",
+   "component": "Logic",
+   "mode": "AFFIRMATIVE",
+   "quote": "Logic",
+   "gold": true,
+   "sentence_text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component."
+  },
+  {
+   "project": "bigbluebutton",
+   "sentence": 59,
+   "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+   "component": "FreeSWITCH",
+   "mode": "CONTRAST",
+   "quote": "other than FreeSWITCH",
+   "gold": true,
+   "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+  },
+  {
+   "project": "bigbluebutton",
+   "sentence": 60,
+   "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+   "component": "FreeSWITCH",
+   "mode": "AFFIRMATIVE",
+   "quote": "FreeSWITCH",
+   "gold": false,
+   "sentence_text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+  },
+  {
+   "project": "bigbluebutton",
+   "sentence": 66,
+   "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+   "component": "FreeSWITCH",
+   "mode": "AFFIRMATIVE",
+   "quote": "FreeSWITCH",
+   "gold": true,
+   "sentence_text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone."
+  }
+ ],
+ "mode_counts": {
+  "mediastore": {
+   "AFFIRMATIVE": 22,
+   "CONTRAST": 1
+  },
+  "teastore": {
+   "AFFIRMATIVE": 21,
+   "CONTRAST": 1
+  },
+  "teammates": {
+   "AFFIRMATIVE": 40,
+   "CONTRAST": 2
+  },
+  "bigbluebutton": {
+   "AFFIRMATIVE": 38,
+   "CONTRAST": 1
+  },
+  "jabref": {
+   "AFFIRMATIVE": 18,
+   "CONTRAST": 2
+  }
+ },
+ "extraction_diagnostics": {
+  "mediastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 23,
+   "proposal_gold": 23,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 0,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  },
+  "teastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 22,
+   "proposal_gold": 20,
+   "proposal_fp_vs_gold": 2,
+   "marginal_proposal_total": 3,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 2,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teammates": {
+   "base_missed_gold": 6,
+   "proposal_total": 41,
+   "proposal_gold": 34,
+   "proposal_fp_vs_gold": 7,
+   "marginal_proposal_total": 7,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 6,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "AFFIRMATIVE": 1
+   }
+  },
+  "bigbluebutton": {
+   "base_missed_gold": 12,
+   "proposal_total": 39,
+   "proposal_gold": 37,
+   "proposal_fp_vs_gold": 2,
+   "marginal_proposal_total": 4,
+   "marginal_proposal_gold": 2,
+   "marginal_proposal_fp_vs_gold": 2,
+   "base_missed_gold_surfaced": 2,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1,
+    "AFFIRMATIVE": 1
+   }
+  },
+  "jabref": {
+   "base_missed_gold": 0,
+   "proposal_total": 20,
+   "proposal_gold": 18,
+   "proposal_fp_vs_gold": 2,
+   "marginal_proposal_total": 2,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 2,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  }
+ },
+ "validation_diagnostics": {
+  "mediastore": {
+   "kept_total": 0,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {}
+  },
+  "teastore": {
+   "kept_total": 3,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 2,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1,
+    "AFFIRMATIVE": 2
+   }
+  },
+  "teammates": {
+   "kept_total": 2,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 1,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "AFFIRMATIVE": 2
+   }
+  },
+  "bigbluebutton": {
+   "kept_total": 3,
+   "kept_gold": 2,
+   "kept_fp_vs_gold": 1,
+   "surfaced_gold_kept": 2,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1,
+    "AFFIRMATIVE": 2
+   }
+  },
+  "jabref": {
+   "kept_total": 0,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {}
+  }
+ },
+ "per_run_baseline": [
+  [
+   0.9958333333333333,
+   0.8958246871659435,
+   0.941455776927475,
+   0.9131914991151504
+  ],
+  [
+   0.9841536614645857,
+   0.889090108784506,
+   0.9328889515330193,
+   0.9058396234966694
+  ],
+  [
+   0.9882352941176471,
+   0.889090108784506,
+   0.9337891737891738,
+   0.9060180042588625
+  ]
+ ],
+ "per_run_augmented": [
+  [
+   0.9701788407670762,
+   0.9131924794064012,
+   0.9393618083899808,
+   0.9231699814820018
+  ],
+  [
+   0.9634765234765235,
+   0.9199270577878387,
+   0.9400056960583276,
+   0.9275976350493084
+  ],
+  [
+   0.9668178382464097,
+   0.9099666729547884,
+   0.9355773955773955,
+   0.9196400804035347
+  ]
+ ]
+}
