@@ -15,7 +15,9 @@ from __future__ import annotations
 
 from llm_sad_sam.core.data_types_v2 import CandidateLink
 from llm_sad_sam.linkers.experimental.s_linker21 import SLinker21
-from llm_sad_sam.linkers.experimental.proposer import GroundedTypedProposer
+from llm_sad_sam.linkers.experimental.proposer import (
+    GroundedTypedProposer, filter_generic_aliases,
+)
 
 
 class _BlocksExtractBase(SLinker21):
@@ -33,8 +35,9 @@ class _BlocksExtractBase(SLinker21):
         dk = getattr(self, "doc_knowledge", None)
         aliases = None
         if dk and getattr(dk, "aliases", None):
-            aliases = [(t, getattr(e, "component", e)) for t, e in dk.aliases.items()
-                       if getattr(e, "scope", "global") == "global"] or None
+            pairs = [(t, getattr(e, "component", e)) for t, e in dk.aliases.items()
+                     if getattr(e, "scope", "global") == "global"]
+            aliases = filter_generic_aliases(pairs, sentences, 5) or None
         proposer = GroundedTypedProposer(catalog_mode="name")
         proposals = proposer.propose_batch(
             sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,

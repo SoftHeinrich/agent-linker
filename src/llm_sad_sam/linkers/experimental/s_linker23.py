@@ -45,13 +45,16 @@ from llm_sad_sam.linkers.experimental.s_linker21 import SLinker21, P1_FOCUS, P2_
 from llm_sad_sam.linkers.experimental.agentic_router import (
     DocModelAgenticRouter, Candidate,
 )
-from llm_sad_sam.linkers.experimental.proposer import GroundedTypedProposer
+from llm_sad_sam.linkers.experimental.proposer import (
+    GroundedTypedProposer, filter_generic_aliases,
+)
 
 
 class SLinker23(SLinker21):
     """s21 floor + an LLM-decided, gate-floored augmentation pass (experimental)."""
 
     _VARIANT_NAME = "s_linker23"
+    _ALIAS_MAX_DF = 5          # single-word alias dropped if it occurs in > this many sentences
 
     def link(self, text_path, model_path, **kwargs):
         base_final = super().link(text_path, model_path, **kwargs)
@@ -123,30 +126,32 @@ class SLinker23(SLinker21):
               f"{len(augment)} gate-approved additions over the s21 floor.")
         return base_final + augment
 
-    def _global_aliases(self):
+    def _global_aliases(self, sentences=None):
         """s21's Phase-1 global doc aliases as ``[(term, component), ...]`` — the same
         alias map s21 Framing-C injects into its extraction prompt. Feeding it to the
         blocks proposer recovers alias-mediated mentions the blind read misses, making
         the proposal set a recall superset of Framing-C (pilot/KNOWLEDGE_PROPOSER_RESULTS.md).
-        ``self.doc_knowledge`` is populated by the s21 floor's Phase 1, which runs first."""
+        Generic single-word aliases are filtered by document frequency (see
+        ``filter_generic_aliases``) — they caused the e2e teastore FP leak. ``sentences``
+        supplies the frequency counts; ``self.doc_knowledge`` is set by the floor's Phase 1."""
         dk = getattr(self, "doc_knowledge", None)
         if not dk or not getattr(dk, "aliases", None):
             return None
-        out = []
-        for term, entry in dk.aliases.items():
-            comp = getattr(entry, "component", entry)
-            if getattr(entry, "scope", "global") == "global":
-                out.append((term, comp))
-        return out or None
+        pairs = [(term, getattr(entry, "component", entry))
+                 for term, entry in dk.aliases.items()
+                 if getattr(entry, "scope", "global") == "global"]
+        pairs = filter_generic_aliases(pairs, sentences, self._ALIAS_MAX_DF)
+        return pairs or None
 
     def _propose(self, sentences, names, prev_of, base_final):
         """Hook: surface floor-missed candidates. Default = the batched `blocks`
-        proposer, alias-informed with s21's Phase-1 global aliases. SLinker23Ctx
-        overrides this to condition on s21's per-sentence links (LLM-side context)."""
+        proposer, alias-informed with s21's Phase-1 global aliases (generic single-word
+        aliases frequency-filtered). SLinker23Ctx overrides this to condition on s21's
+        per-sentence links (LLM-side context)."""
         proposer = GroundedTypedProposer(catalog_mode="name")
         return proposer.propose_batch(
             sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,
-            aliases=self._global_aliases())
+            aliases=self._global_aliases(sentences))
 
     def _router_gate(self, components, comp_names, sent_map):
         """Hook: the verifier that floors the router's VALIDATE decisions. Default is

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 
 MODEL = "gpt-5.4"
@@ -92,6 +93,28 @@ _FORCE_CLAUSE = (
     "and list every catalog component it references as if it were the only sentence "
     "given. Do not let earlier sentences make you skim later ones.\n"
 )
+
+
+def filter_generic_aliases(pairs, sentences, max_df: int = 5):
+    """Drop generic single-word aliases that inflate false positives by over-linking
+    every incidental mention (the e2e teastore leak: ``UI``/``front-end`` -> WebUI;
+    see pilot/KNOWLEDGE_PROPOSER_RESULTS.md). Rule: a MULTI-word term is specific ->
+    always kept; a SINGLE-word term is kept only if it occurs (as a standalone token)
+    in at most ``max_df`` sentences — rare single words are real handles (``KMS`` ->
+    kurento), frequent ones are generic. Frequency-only, no vocabulary => GATE-06 safe.
+    ``pairs`` is ``[(term, component), ...]``; returns the filtered list."""
+    if not pairs:
+        return pairs
+    texts = [getattr(s, "text", str(s)).lower() for s in (sentences or [])]
+    kept = []
+    for term, comp in pairs:
+        if len(term.split()) >= 2 or not texts:
+            kept.append((term, comp))
+            continue
+        pat = re.compile(r"\b" + re.escape(term.lower()) + r"\b")
+        if sum(1 for t in texts if pat.search(t)) <= max_df:
+            kept.append((term, comp))
+    return kept
 
 
 def _alias_block(aliases) -> str:
