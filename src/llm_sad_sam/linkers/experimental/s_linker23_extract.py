@@ -28,9 +28,17 @@ class _BlocksExtractBase(SLinker21):
         prev_of = {s.number: (sent_map.get(s.number - 1).text
                               if sent_map.get(s.number - 1) else "")
                    for s in sentences}
+        # s21's Phase-1 global aliases (populated before Phase 2) — same map s21
+        # Framing-C uses; makes the blocks extractor alias-informed (recall superset).
+        dk = getattr(self, "doc_knowledge", None)
+        aliases = None
+        if dk and getattr(dk, "aliases", None):
+            aliases = [(t, getattr(e, "component", e)) for t, e in dk.aliases.items()
+                       if getattr(e, "scope", "global") == "global"] or None
         proposer = GroundedTypedProposer(catalog_mode="name")
         proposals = proposer.propose_batch(
-            sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of)
+            sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,
+            aliases=aliases)
         out: dict = {}
         for r in proposals:
             cid = name_to_id.get(r["component"])

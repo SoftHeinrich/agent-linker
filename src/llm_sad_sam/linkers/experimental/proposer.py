@@ -94,15 +94,32 @@ _FORCE_CLAUSE = (
 )
 
 
+def _alias_block(aliases) -> str:
+    """Render runtime doc-derived aliases (``[(term, component), ...]``) as a prompt
+    block. Empirically (pilot/KNOWLEDGE_PROPOSER_RESULTS.md) this is the single lever
+    that turns the blind blocks proposer into a recall SUPERSET of s21's alias-injected
+    Framing-C pass — it recovers alias-mediated mentions (e.g. "bbb-html5" -> HTML5
+    Server) the knowledge-blind read misses. Generic English; the alias pairs are the
+    same runtime input s21 Framing-C already consumes (GATE-06 safe)."""
+    if not aliases:
+        return ""
+    lines = "\n".join(f'  - "{t}" -> {c}' for t, c in aliases)
+    return ("\nKnown alternative terms used in THIS document — if a SENTENCE uses the "
+            "term (or its wording), it refers to the mapped catalog component (quote "
+            "the term as the words):\n" + lines + "\n")
+
+
 def build_batch_prompt(sentences, names, roles=None, strategy="coverage",
-                       prev_of=None, base_of=None) -> str:
+                       prev_of=None, base_of=None, aliases=None) -> str:
     """Build a one-call prompt over ``sentences`` using ``strategy`` (see
     BATCH_STRATEGIES). ``prev_of`` maps sentence number -> previous-sentence text
     (blocks/residual). ``base_of`` maps sentence number -> list of component names
     a base system already linked to it; the ``residual`` strategy shows this as
     context and asks the model for what the base MISSED (LLM-side conditioning, no
-    coded thresholds)."""
+    coded thresholds). ``aliases`` is an optional ``[(term, component), ...]`` list of
+    runtime doc aliases injected into the blocks/residual read (see ``_alias_block``)."""
     catalog = _catalog_block(names, roles)
+    alias_txt = _alias_block(aliases)
     if strategy in ("plain", "forced"):
         body = "\n".join(f"S{s.number}: {s.text}" for s in sentences)
         clause = _FORCE_CLAUSE if strategy == "forced" else ""
@@ -137,8 +154,8 @@ def build_batch_prompt(sentences, names, roles=None, strategy="coverage",
             "Below are independent ITEMS. Treat each ITEM as a self-contained task: "
             "decide which catalog components its SENTENCE refers to, using its PREVIOUS "
             "line only as context. Give every item the same independent attention.\n\n"
-            f"Choose components ONLY from this catalog (copy the exact name):\n{catalog}\n\n"
-            f"{_COMMON_REF_RULE}\n\n{blocks}\n\n"
+            f"Choose components ONLY from this catalog (copy the exact name):\n{catalog}\n"
+            f"{alias_txt}\n{_COMMON_REF_RULE}\n\n{blocks}\n\n"
             'Return JSON: {"items":[{"item":<int>,"refs":[{"component":"<name>",'
             '"quote":"<words>"}]}]}\nJSON only:'
         )
@@ -158,8 +175,8 @@ def build_batch_prompt(sentences, names, roles=None, strategy="coverage",
             "NOT already in ALREADY LINKED. If the base already captured every component "
             "the sentence refers to, return an empty list for that item. Treat each item "
             "independently and use its PREVIOUS line only as context.\n\n"
-            f"Choose components ONLY from this catalog (copy the exact name):\n{catalog}\n\n"
-            f"{_COMMON_REF_RULE}\n\n{blocks}\n\n"
+            f"Choose components ONLY from this catalog (copy the exact name):\n{catalog}\n"
+            f"{alias_txt}\n{_COMMON_REF_RULE}\n\n{blocks}\n\n"
             'Return JSON: {"items":[{"item":<int>,"refs":[{"component":"<name>",'
             '"quote":"<words>"}]}]}\nJSON only:'
         )
@@ -283,7 +300,7 @@ class GroundedTypedProposer:
 
     def propose_batch(self, sentences, names, roles=None, batch_size: int = 20,
                       strategy: str = "blocks", prev_of=None, base_of=None,
-                      key_prefix: str = "") -> list[dict]:
+                      key_prefix: str = "", aliases=None) -> list[dict]:
         """Batched grounded read — ONE call per ``batch_size`` numbered sentences
         (never one per sentence). Returns grounded ``{sentence, component, quote}``.
 
@@ -297,16 +314,17 @@ class GroundedTypedProposer:
         """
         roles_in = roles if self.catalog_mode == "role" else None
         out: list[dict] = []
+        alias_tag = f"a{len(aliases)}" if aliases else ""
         for i in range(0, len(sentences), batch_size):
             chunk = sentences[i:i + batch_size]
-            ck = (f"{self.catalog_mode}|{strategy}|b{batch_size}|{key_prefix}|"
+            ck = (f"{self.catalog_mode}|{strategy}|b{batch_size}|{key_prefix}{alias_tag}|"
                   f"{chunk[0].number}-{chunk[-1].number}")
             if ck in self.cache:
                 raw = self.cache[ck]
             else:
                 prompt = build_batch_prompt(chunk, names, roles_in,
                                             strategy=strategy, prev_of=prev_of,
-                                            base_of=base_of)
+                                            base_of=base_of, aliases=aliases)
                 resp = self._client().query(prompt, timeout=240)
                 raw = _parse_batch(resp.text if resp.success else "", strategy)
                 self.cache[ck] = raw

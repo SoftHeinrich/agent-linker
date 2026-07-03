@@ -123,13 +123,30 @@ class SLinker23(SLinker21):
               f"{len(augment)} gate-approved additions over the s21 floor.")
         return base_final + augment
 
+    def _global_aliases(self):
+        """s21's Phase-1 global doc aliases as ``[(term, component), ...]`` — the same
+        alias map s21 Framing-C injects into its extraction prompt. Feeding it to the
+        blocks proposer recovers alias-mediated mentions the blind read misses, making
+        the proposal set a recall superset of Framing-C (pilot/KNOWLEDGE_PROPOSER_RESULTS.md).
+        ``self.doc_knowledge`` is populated by the s21 floor's Phase 1, which runs first."""
+        dk = getattr(self, "doc_knowledge", None)
+        if not dk or not getattr(dk, "aliases", None):
+            return None
+        out = []
+        for term, entry in dk.aliases.items():
+            comp = getattr(entry, "component", entry)
+            if getattr(entry, "scope", "global") == "global":
+                out.append((term, comp))
+        return out or None
+
     def _propose(self, sentences, names, prev_of, base_final):
         """Hook: surface floor-missed candidates. Default = the batched `blocks`
-        proposer with no knowledge of the base output. SLinker23Ctx overrides this to
-        condition on s21's per-sentence links (LLM-side context, no coded thresholds)."""
+        proposer, alias-informed with s21's Phase-1 global aliases. SLinker23Ctx
+        overrides this to condition on s21's per-sentence links (LLM-side context)."""
         proposer = GroundedTypedProposer(catalog_mode="name")
         return proposer.propose_batch(
-            sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of)
+            sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,
+            aliases=self._global_aliases())
 
     def _router_gate(self, components, comp_names, sent_map):
         """Hook: the verifier that floors the router's VALIDATE decisions. Default is

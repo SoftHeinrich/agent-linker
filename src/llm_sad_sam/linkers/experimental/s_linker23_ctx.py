@@ -36,4 +36,4 @@ class SLinker23Ctx(SLinker23Verify):
         proposer = GroundedTypedProposer(catalog_mode="name")
         return proposer.propose_batch(
             sentences, names, batch_size=20, strategy="residual",
-            prev_of=prev_of, base_of=base_of)
+            prev_of=prev_of, base_of=base_of, aliases=self._global_aliases())
