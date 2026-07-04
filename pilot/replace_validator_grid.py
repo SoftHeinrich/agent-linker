@@ -33,8 +33,24 @@ from llm_sad_sam.core.document_loader_v2 import load_sentences, build_sent_map
 from llm_sad_sam.core.data_types_v2 import CandidateLink
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names
+from llm_sad_sam.linkers.experimental.s_linker21 import P1_FOCUS, P2_FOCUS
 from llm_sad_sam.linkers.experimental.s_linker23_verify import SLinker23Verify
 from llm_sad_sam.linkers.experimental.agentic_router import DocModelAgenticRouter, Candidate
+
+# A 3rd, precision-biased pass complementary to s21's P1 (architectural participation)
+# and P2 (referential specificity): it targets the FP mode those miss — the candidate
+# IS a real, participating, specific component, but this sentence's actual referent is a
+# DIFFERENT/adjacent element, or the mention is incidental/hypothetical. Generic English,
+# no benchmark vocabulary (GATE-06 safe). Stronger-but-not-blunt: unlike the router it
+# never routes/rejects on its own, it only AND-gates candidates that already passed P1∧P2.
+P3_FOCUS = (
+    "Check referent identity: quote the exact words in the sentence that assert THIS "
+    "component (not a related, adjacent, or containing element) is used, provides or "
+    "consumes a service, is implemented, contains or is contained, or stores/routes "
+    "data. Approve only if such words exist and unambiguously point to THIS component; "
+    "reject incidental mentions, hypotheticals, contrasts that deny membership, and "
+    "references whose most likely referent is a different component."
+)
 
 BASE = Path("../ardoco/core/tests-base/src/main/resources/benchmark")
 DS = {
@@ -134,7 +150,25 @@ def main():
         return {(c.sentence_number, c.component_id) for c in cands
                 if f"{c.sentence_number}|{c.component_id}" in acc}
 
-    validators = {"g_s21": g_s21, "g_router": g_router}
+    def g_s21_3pass(cands):
+        """s21's P1∧P2 gate PLUS a 3rd precision pass (P3_FOCUS) on the survivors —
+        a stronger, non-blunt validator: it only removes FP that slipped past two
+        passes, never triages/rejects like the router."""
+        keep2 = g_s21(cands)
+        survivors = [c for c in cands if (c.sentence_number, c.component_id) in keep2]
+        if not survivors:
+            return set()
+        cases = []
+        for c in survivors:
+            p = v._prev_prefix(c.sentence_number, sent_map)
+            ev = v._format_evidence(v._build_evidence_bundle(c, sent_map))
+            cases.append(f'Case {len(cases)+1}: "{c.matched_text}" -> {c.component_name}\n'
+                         f'  {p}"{c.sentence_text}"\n{ev}')
+        r3 = v._run_validation_pass(comp_names, cases, P3_FOCUS, "grid_p3")
+        return {(c.sentence_number, c.component_id)
+                for i, c in enumerate(survivors) if r3.get(i, False)}
+
+    validators = {"g_s21": g_s21, "g_router": g_router, "g_3pass": g_s21_3pass}
 
     # ── run grid ─────────────────────────────────────────────────────────────
     fc_keys = {(c.sentence_number, c.component_id) for c in fc}
