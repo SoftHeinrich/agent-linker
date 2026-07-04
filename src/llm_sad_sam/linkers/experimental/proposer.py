@@ -117,6 +117,54 @@ def filter_generic_aliases(pairs, sentences, max_df: int = 5):
     return kept
 
 
+# Generic architectural suffixes — shared across many component names, so NOT the
+# distinctive token that defines a sibling family. Structural, not benchmark vocabulary.
+_GENERIC_TOKENS = {
+    "service", "server", "client", "manager", "component", "components", "system",
+    "module", "provider", "engine", "adapter", "controller", "handler", "db",
+    "database", "layer", "api", "app", "apps", "core", "web", "ui", "gui",
+}
+
+
+def _sibling_families(names):
+    """Group catalog components that share a DISTINCTIVE (non-generic) token — e.g.
+    {HTML5 Client, HTML5 Server} share "HTML5"; {Redis PubSub, Redis DB} share "Redis".
+    Purely structural over the catalog names (no vocabulary), so GATE-06 safe."""
+    from collections import defaultdict
+    tok2names = defaultdict(set)
+    for n in names:
+        for w in n.split():
+            wl = w.lower()
+            if wl not in _GENERIC_TOKENS and len(wl) > 1:
+                tok2names[wl].add(n)
+    fams, seen = [], set()
+    for ns in tok2names.values():
+        if len(ns) >= 2:
+            key = frozenset(ns)
+            if key not in seen:
+                seen.add(key)
+                fams.append(sorted(ns))
+    return fams
+
+
+def _sibling_hint(names) -> str:
+    """Prompt block that makes extraction sibling-aware. Root-cause fix for the
+    dominant recall miss (pilot/ERROR_MODES.md): components sharing a base name
+    (HTML5 Client vs HTML5 Server) referenced by a role word ("the client"/"the
+    server") are never extracted because the reader won't commit to which sibling.
+    This tells it to resolve the role/base reference to the specific sibling(s) from
+    the sentence's cues. Generic English + structural families → GATE-06 safe."""
+    fams = _sibling_families(names)
+    if not fams:
+        return ""
+    lines = "\n".join("  - " + " / ".join(f) for f in fams)
+    return ("\nSome catalog components share a base name and differ only by a "
+            "qualifier:\n" + lines + "\nWhen a sentence refers to one of these by the "
+            "shared base name or by a role word (e.g. \"the client\", \"the server\", "
+            "\"the database\"), decide which specific qualified component it means from "
+            "the sentence's cues; if it refers to more than one of them, list each.\n")
+
+
 def _alias_block(aliases) -> str:
     """Render runtime doc-derived aliases (``[(term, component), ...]``) as a prompt
     block. Empirically (pilot/KNOWLEDGE_PROPOSER_RESULTS.md) this is the single lever
@@ -133,7 +181,8 @@ def _alias_block(aliases) -> str:
 
 
 def build_batch_prompt(sentences, names, roles=None, strategy="coverage",
-                       prev_of=None, base_of=None, aliases=None) -> str:
+                       prev_of=None, base_of=None, aliases=None,
+                       sibling_disambig=False) -> str:
     """Build a one-call prompt over ``sentences`` using ``strategy`` (see
     BATCH_STRATEGIES). ``prev_of`` maps sentence number -> previous-sentence text
     (blocks/residual). ``base_of`` maps sentence number -> list of component names
@@ -142,7 +191,7 @@ def build_batch_prompt(sentences, names, roles=None, strategy="coverage",
     coded thresholds). ``aliases`` is an optional ``[(term, component), ...]`` list of
     runtime doc aliases injected into the blocks/residual read (see ``_alias_block``)."""
     catalog = _catalog_block(names, roles)
-    alias_txt = _alias_block(aliases)
+    alias_txt = _alias_block(aliases) + (_sibling_hint(names) if sibling_disambig else "")
     if strategy in ("plain", "forced"):
         body = "\n".join(f"S{s.number}: {s.text}" for s in sentences)
         clause = _FORCE_CLAUSE if strategy == "forced" else ""
@@ -323,7 +372,8 @@ class GroundedTypedProposer:
 
     def propose_batch(self, sentences, names, roles=None, batch_size: int = 20,
                       strategy: str = "blocks", prev_of=None, base_of=None,
-                      key_prefix: str = "", aliases=None) -> list[dict]:
+                      key_prefix: str = "", aliases=None,
+                      sibling_disambig: bool = False) -> list[dict]:
         """Batched grounded read — ONE call per ``batch_size`` numbered sentences
         (never one per sentence). Returns grounded ``{sentence, component, quote}``.
 
@@ -337,7 +387,7 @@ class GroundedTypedProposer:
         """
         roles_in = roles if self.catalog_mode == "role" else None
         out: list[dict] = []
-        alias_tag = f"a{len(aliases)}" if aliases else ""
+        alias_tag = (f"a{len(aliases)}" if aliases else "") + ("s" if sibling_disambig else "")
         for i in range(0, len(sentences), batch_size):
             chunk = sentences[i:i + batch_size]
             ck = (f"{self.catalog_mode}|{strategy}|b{batch_size}|{key_prefix}{alias_tag}|"
@@ -347,7 +397,8 @@ class GroundedTypedProposer:
             else:
                 prompt = build_batch_prompt(chunk, names, roles_in,
                                             strategy=strategy, prev_of=prev_of,
-                                            base_of=base_of, aliases=aliases)
+                                            base_of=base_of, aliases=aliases,
+                                            sibling_disambig=sibling_disambig)
                 resp = self._client().query(prompt, timeout=240)
                 raw = _parse_batch(resp.text if resp.success else "", strategy)
                 self.cache[ck] = raw

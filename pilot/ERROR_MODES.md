@@ -71,3 +71,49 @@ filter*, not a stronger LLM validator.
 So: replace/union are parity-not-win because every variant shares one recall ceiling;
 no validator fixes it. The productive next direction is client/server-style
 disambiguated extraction for role-term references, not a stronger gate.
+
+---
+
+## Iteration 1 — sibling-disambiguation extraction (elegant change, error-driven)
+
+Root cause targeted: bbb's 13 FN were 100% extraction misses (0 reached any gate),
+concentrated on the HTML5 Client/Server sibling family referenced by role words.
+Change (`proposer._sibling_hint`, opt-in `sibling_disambig`, wired into
+`SLinker23._propose`): detect catalog components sharing a distinctive base token
+(HTML5 Client/Server, Redis DB/PubSub — purely structural, GATE-06 safe) and instruct
+the reader to resolve role/base references to the specific sibling(s). Not a filter/
+fallback — a change to how references are resolved.
+
+**Extraction-ceiling test** (`pilot/sibling_extract_probe.py`, the error-mode metric,
+no gate): bbb recall 47/62=0.758 → **55/62=0.887** (+13pp); sibling-family gold
+20/33 → **29/33** (+9), 0 lost. Recovered exactly the targeted HTML5 Client/Server
+misses (S10 client+server dual-ref, S11–13, S19, S76).
+
+**E2E + error RE-ANALYSIS on bbb** (the loop's confirm step):
+- s23_verify (router path): the HTML5-family links come through as TP (S9/12/13/19/
+  20/21 Server, S76/79 Client recovered). FP stayed the pre-existing modes
+  (S50 Recording-Processor referent, S58 FSESL, S79 coref) — **none sibling-caused**.
+  → clean win via the augmentation path.
+- s23_union (raw-gate path): recall highest but FP blew up to 16, exposing TWO modes
+  the router absorbs but the raw gate does not:
+  - **sibling over-reach**: S14 names only "HTML5 client" but the "list each" clause
+    also emitted HTML5 Server (FP).
+  - **diagram-caption dump**: S2/S87 ("the following diagram shows the various
+    components…") → the whole catalog linked to one meta-sentence (11 FP on S87).
+
+**Verdict for iteration 1:** the elegant change fixes the target mode at its root and
+is safe *through the router* (s23_verify), not through the raw gate (union/replace) —
+consistent with the standing finding that union dumps into the gate. Keep
+`sibling_disambig` on for the augmentation path.
+
+**New residual modes surfaced for the next iteration (error-driven, not F1-chasing):**
+1. **WebRTC-SFU via "WebRTC"** (S65, S73) — a *single* component named by a technology
+   word that isn't its catalog name; sibling logic doesn't apply. Needs alias
+   discovery ("WebRTC" → WebRTC-SFU).
+2. **Diagram-caption / "the various components" dump** (S2, S87) — meta-sentences that
+   refer to components collectively; an elegant fix recognizes collective/meta
+   reference and declines per-component links, rather than a per-sentence FP filter.
+
+(F1 deltas this run are NOT reported as evidence: the s21 floor sampled low
+R=62.9; the reliable signal is the structural recovery of the specific HTML5-family
+links, which is noise-robust. F1 effect needs a repeated-run harness.)

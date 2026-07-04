@@ -41,7 +41,7 @@ class _BlocksExtractBase(SLinker21):
         proposer = GroundedTypedProposer(catalog_mode="name")
         proposals = proposer.propose_batch(
             sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,
-            aliases=aliases)
+            aliases=aliases, sibling_disambig=True)
         out: dict = {}
         for r in proposals:
             cid = name_to_id.get(r["component"])

@@ -55,6 +55,7 @@ class SLinker23(SLinker21):
 
     _VARIANT_NAME = "s_linker23"
     _ALIAS_MAX_DF = 5          # single-word alias dropped if it occurs in > this many sentences
+    _SIBLING_DISAMBIG = True   # resolve role/base refs to the right sibling (HTML5 Client vs Server)
 
     def link(self, text_path, model_path, **kwargs):
         base_final = super().link(text_path, model_path, **kwargs)
@@ -151,7 +152,8 @@ class SLinker23(SLinker21):
         proposer = GroundedTypedProposer(catalog_mode="name")
         return proposer.propose_batch(
             sentences, names, batch_size=20, strategy="blocks", prev_of=prev_of,
-            aliases=self._global_aliases(sentences))
+            aliases=self._global_aliases(sentences),
+            sibling_disambig=self._SIBLING_DISAMBIG)
 
     def _router_gate(self, components, comp_names, sent_map):
         """Hook: the verifier that floors the router's VALIDATE decisions. Default is
