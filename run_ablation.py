@@ -126,6 +126,8 @@ CANONICAL_VARIANTS = [
     "s_linker23_union",  # s21 pipeline with Phase-2 = Framing-C UNION blocks proposer (integrate all extractors, one gate); extraction-integration experiment
     "s_linker23_verify",  # s23 proposer+router with the VALIDATE floor = s21's REAL evidence-bundle validator (combine s23 recall with s21 precision)
     "s_linker23_ctx",  # s23_verify + proposer conditioned on s21's per-sentence links as LLM context (residual extraction, no coded heuristics)
+    "s_linker23_tier_f1",  # tiered ranking (not binary gate): emit FIRM+PROBABLE tiers; F1 operating point
+    "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -944,6 +946,31 @@ VARIANT_SPECS = {
             "Combines s23's recall augmentation with s21's precision mechanism; tests "
             "whether routing the proposed candidates through full s21 verification fixes the "
             "false-positive leak. Subclass of SLinker23 (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_tier_f1": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_tiered",
+        class_name="SLinker23Tiered",
+        description=(
+            "S-Linker23Tiered — trace-linking as TIERED RANKING, not binary keep/reject. "
+            "Union extraction (Framing-C + alias/sibling blocks proposer) is assigned an "
+            "evidence tier from (name-match x gate-votes x source); emits FIRM+PROBABLE "
+            "(precision/F1 operating point). Coref + merge inherited. Subclass of "
+            "SLinker23Union (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_tier_f2": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_tiered",
+        class_name="SLinker23TieredF2",
+        description=(
+            "S-Linker23TieredF2 — same tiered linker at the recall/F2 operating point "
+            "(FIRM+PROBABLE+WEAK). Subclass of SLinker23Tiered (GATE-01 safe)."
         ),
         canonical=False,
         experimental=True,

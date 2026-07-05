@@ -14,6 +14,7 @@ from .s_linker23 import SLinker23
 from .s_linker23_extract import SLinker23Replace, SLinker23Union
 from .s_linker23_verify import SLinker23Verify
 from .s_linker23_ctx import SLinker23Ctx
+from .s_linker23_tiered import SLinker23Tiered, SLinker23TieredF2
 
 __all__ = [
     "SLinker21",
@@ -24,4 +25,6 @@ __all__ = [
     "SLinker23Union",
     "SLinker23Verify",
     "SLinker23Ctx",
+    "SLinker23Tiered",
+    "SLinker23TieredF2",
 ]
