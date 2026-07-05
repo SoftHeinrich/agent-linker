@@ -13,6 +13,8 @@ from .s_linker22 import SLinker22
 from .s_linker23 import SLinker23
 from .s_linker23_extract import SLinker23Replace, SLinker23Union
 from .s_linker23_verify import SLinker23Verify
+from .s_linker23_verify1p import SLinker23Verify1P
+from .s_linker23_verify1p_all import SLinker23Verify1PAll
 from .s_linker23_ctx import SLinker23Ctx
 from .s_linker23_tiered import SLinker23Tiered, SLinker23TieredF2
 
@@ -24,6 +26,8 @@ __all__ = [
     "SLinker23Replace",
     "SLinker23Union",
     "SLinker23Verify",
+    "SLinker23Verify1P",
+    "SLinker23Verify1PAll",
     "SLinker23Ctx",
     "SLinker23Tiered",
     "SLinker23TieredF2",

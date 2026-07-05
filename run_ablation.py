@@ -125,6 +125,8 @@ CANONICAL_VARIANTS = [
     "s_linker23_replace",  # s21 pipeline with Phase-2 extraction REPLACED by the batched blocks proposer (through s21's real gate); extraction-integration experiment
     "s_linker23_union",  # s21 pipeline with Phase-2 = Framing-C UNION blocks proposer (integrate all extractors, one gate); extraction-integration experiment
     "s_linker23_verify",  # s23 proposer+router with the VALIDATE floor = s21's REAL evidence-bundle validator (combine s23 recall with s21 precision)
+    "s_linker23_verify1p",  # S1: s23_verify with a SINGLE evidence pass (drop P2) — offline +0.024 F1, half the gate API
+    "s_linker23_verify1p_all",  # S1 extended: drop P2 also in s21's Framing-C Phase-4 floor (single-pass everywhere)
     "s_linker23_ctx",  # s23_verify + proposer conditioned on s21's per-sentence links as LLM context (residual extraction, no coded heuristics)
     "s_linker23_tier_f1",  # tiered ranking (not binary gate): emit FIRM+PROBABLE tiers; F1 operating point
     "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
@@ -946,6 +948,35 @@ VARIANT_SPECS = {
             "Combines s23's recall augmentation with s21's precision mechanism; tests "
             "whether routing the proposed candidates through full s21 verification fixes the "
             "false-positive leak. Subclass of SLinker23 (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_verify1p": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_verify1p",
+        class_name="SLinker23Verify1P",
+        description=(
+            "S-Linker23Verify1P (S1) — s23_verify with a SINGLE evidence pass. The "
+            "augmentation gate keeps s21's evidence bundles and claim-before-verdict "
+            "prompt but runs only P1, not P1 AND P2. Offline pilot: +0.024 F1 pooled "
+            "(the 2nd pass removed ~2x more gold than non-gold on the aug population) "
+            "at half the gate API cost. Subclass of SLinker23Verify (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker23_verify1p_all": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker23_verify1p_all",
+        class_name="SLinker23Verify1PAll",
+        description=(
+            "S-Linker23Verify1PAll — the single-pass simplification extended UNIVERSALLY: "
+            "drop s21's Phase-4 second validation pass on the Framing-C floor too, not "
+            "only on the augmentation gate. Tests whether the 2nd pass earns its keep on "
+            "the base FC candidates. Unlike s_linker23_verify1p this moves the s21 floor "
+            "off two-pass, so it is not a pure augmentation. Subclass of SLinker23Verify1P "
+            "(GATE-01 safe: overrides the hook, s21 file byte-stable)."
         ),
         canonical=False,
         experimental=True,

@@ -32,26 +32,32 @@ class SLinker23Verify(SLinker23):
             if not cands:
                 return {}
             # router Candidate -> s21 CandidateLink (id is "sentenceNumber|componentId")
-            links, order = [], []
+            links = []
             for c in cands:
                 snum_str, cid = c.id.split("|", 1)
                 links.append(CandidateLink(
                     int(snum_str), c.sentence, c.component, cid,
                     c.quote or "", source="entity"))
-                order.append(c.id)
-            # s21's real Phase-4: build evidence bundles, then two-pass claim-before-verdict
+            # s21's real Phase-4: build evidence bundles, then validate over them.
             bundles = {
                 (l.sentence_number, l.component_id): self._build_evidence_bundle(l, sent_map)
                 for l in links
             }
-            validated, _decisions = self._validate_with_evidence(
-                links, bundles, components, sent_map,
-                p1_tag="phase_aug_evidence_p1", p2_tag="phase_aug_evidence_p2",
-                stage_label="augment")
-            kept = {(v.sentence_number, v.component_id) for v in validated}
+            kept = self._evidence_validate(links, bundles, components, comp_names, sent_map)
             out = {}
             for c in cands:
                 snum_str, cid = c.id.split("|", 1)
                 out[c.id] = (int(snum_str), cid) in kept
             return out
         return gate
+
+    def _evidence_validate(self, links, bundles, components, comp_names, sent_map):
+        """Seam: validate the evidence-bundled links, returning the kept
+        ``(sentence_number, component_id)`` set. Default = s21's real two-pass
+        claim-before-verdict (P1 architectural-participation AND P2 referential-
+        specificity). ``SLinker23Verify1P`` overrides this with a single pass."""
+        validated, _decisions = self._validate_with_evidence(
+            links, bundles, components, sent_map,
+            p1_tag="phase_aug_evidence_p1", p2_tag="phase_aug_evidence_p2",
+            stage_label="augment")
+        return {(v.sentence_number, v.component_id) for v in validated}
