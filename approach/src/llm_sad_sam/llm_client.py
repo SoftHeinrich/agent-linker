@@ -703,6 +703,10 @@ class LLMClient:
             is_transient = any(keyword in error_lower for keyword in [
                 "timed out", "timeout", "connection", "503", "502", "504",
                 "overloaded", "rate_limit", "rate limit", "server_error",
+                # Flex capacity exhaustion is transient. Treating it as a
+                # prompt/auth error causes callers to receive an empty response
+                # and risks silently dropping an extraction/validation batch.
+                "429", "resource_unavailable", "flex_unavailable",
             ])
 
             if not is_transient:

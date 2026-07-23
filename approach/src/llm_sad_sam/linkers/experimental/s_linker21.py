@@ -206,7 +206,23 @@ class _TracingLLMClient:
     def query(self, prompt: str, timeout: int = 180, max_retries: int = 3) -> LLMResponse:
         phase = _current_phase()
         t0 = time.time()
-        resp = self._inner.query(prompt, timeout=timeout, max_retries=max_retries)
+        try:
+            resp = self._inner.query(prompt, timeout=timeout, max_retries=max_retries)
+        except Exception as exc:
+            record = {
+                "phase": phase, "ts": t0,
+                "elapsed_s": round(time.time() - t0, 3),
+                "timeout": timeout, "max_retries": max_retries,
+                "prompt": prompt,
+                "response_text": None,
+                "success": False,
+                "error": f"FATAL: {exc}",
+                "latency_ms": None,
+                "model": None,
+            }
+            with self._sink_lock:
+                self._sink.append(record)
+            raise
         record = {
             "phase": phase, "ts": t0,
             "elapsed_s": round(time.time() - t0, 3),
@@ -227,6 +243,11 @@ class _TracingLLMClient:
             }
         with self._sink_lock:
             self._sink.append(record)
+        # A phase result may only be interpreted after every required request
+        # succeeds. Returning a failed response lets extract_json() turn it into
+        # None and silently omit an entire batch (the BBB 2026-07-23 collapse).
+        if not resp.success:
+            raise RuntimeError(f"LLM request failed in {phase}: {resp.error}")
         return resp
 
     def __getattr__(self, name):

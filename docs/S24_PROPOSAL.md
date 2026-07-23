@@ -111,6 +111,20 @@ sampled S21 floor, especially BBB, was much lower. The complete evidence is in
 The next required step is two more identically configured runs: promotion requires
 at least one clean TP in two of three runs and no more than one marginal FP per run.
 
+## Invalid BBB floor in the first dedicated-validator run
+
+The full-run BBB score recorded with the dedicated-validator experiment is invalid
+as a model-comparison datum. Its trace contains 11 exhausted Flex-capacity 429
+failures: three Framing-C extraction calls, three entity-validation calls, and five
+coreference calls. At that time, a failed `LLMResponse` was converted by `_ask()`
+into an empty JSON result, silently omitting those batches and collapsing the BBB
+floor to 27 links. The three marginal S24 additions remain independently gold, but
+the full BBB and macro scores must not be compared.
+
+The runtime is now fail-closed: Flex capacity failures are retryable, and any
+exhausted request is recorded as `FATAL` in the phase trace then aborts the project
+instead of returning partial predictions.
+
 ## Evaluation sequence
 
 1. **Deterministic eligibility audit.** On the frozen benchmark, report eligible
