@@ -19,6 +19,8 @@ checkouts or Git submodules.
 The exact upstream revisions and vendoring policy are recorded in
 [`docs/SOURCE_MANIFEST.md`](docs/SOURCE_MANIFEST.md). For a complete, runnable
 workflow and its limits, see [`docs/REPLICATION.md`](docs/REPLICATION.md).
+For the distinction between S21, the router, and the S23 verification variants,
+see [`docs/VARIANT_COMPARISON.md`](docs/VARIANT_COMPARISON.md).
 
 ## Quick start
 

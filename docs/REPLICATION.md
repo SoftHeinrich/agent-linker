@@ -41,7 +41,10 @@ the approach dependencies and, if `approach/.env` does not already exist,
 creates it with an absolute `ALINKER_BENCHMARK` setting pointing to this
 repository's vendored `benchmark/`. Existing `.env` files are never overwritten.
 Override that setting with `ALINKER_BENCHMARK=/path/to/benchmark` if needed.
-Results and logs are written under `approach/` and are ignored by Git.
+New approach outputs are written under `approach/results/`; request provenance is
+written under `results/llm_logs/`. The package's released records and the
+explicitly labelled, partial live-run provenance are Git-tracked; transient binary
+phase caches remain ignored.
 
 ## Live experiment caveat
 
