@@ -1,0 +1,31 @@
+% RQ1 macro reference (appendix): the exact precision/recall/F1 behind the body table
+% (\autoref{tab:rq1}), for BOTH backends and BOTH tasks. GPT-5.4 is the main backend
+% (top row of each block); Claude Sonnet is the cross-backend mirror.
+% Repurposed from the former body tables tables/rq1_sadsam.tex + tables/rq1_sadcode.tex.
+%
+% Numbers: latest s21 -- evaluation/reports/s21/RQ12_BIGTABLE_s21.csv
+%   ("approach S21 (GPT-5.4)" / "approach S21 (Claude)" / "Artemis (GPT-5.4)" / "TransArC"
+%   average rows). SWATTR = TransArc's deterministic doc-to-model stage.
+\begin{table}[t]
+\caption{RQ1 macro precision, recall, and \fone\ across the five projects, both backends. \approach{} is \texttt{s\_linker21} (mean of three runs); GPT-5.4 is the main backend reported in the body, Claude Sonnet is the cross-backend mirror. Each system runs with its authors' released configuration. SWATTR$^{\dagger}$ is the deterministic doc-to-model stage of \TransArc{}. Best \fone\ per task in bold.}
+\label{tab:rq1-macro}
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+System & P & R & \fone \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{doc-to-model (link \fone)}}\\
+\approach{} (GPT-5.4) & .99 & .89 & \textbf{.936} \\
+\approach{} (Claude)  & .96 & .90 & .927 \\
+\Artemis{} (GPT-5.4)  & .93 & .76 & .836 \\
+SWATTR$^{\dagger}$    & .87 & .77 & .799 \\
+\addlinespace[3pt]
+\multicolumn{4}{@{}l}{\emph{doc-to-code (file \fone)}}\\
+\approach{} (GPT-5.4) & .96 & .86 & .906 \\
+\approach{} (Claude)  & .97 & .86 & \textbf{.908} \\
+\Artemis{} (GPT-5.4)  & .94 & .78 & .849 \\
+\TransArc{}           & .89 & .78 & .803 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize $^{\dagger}$SWATTR, the deterministic doc-to-model stage of \TransArc{} (no standalone doc-to-model system).
+\end{table}

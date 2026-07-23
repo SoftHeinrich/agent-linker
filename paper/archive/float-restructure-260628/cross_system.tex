@@ -1,0 +1,18 @@
+\begin{table*}[t]
+  \centering
+  \caption{Cross-system comparison of \approach{} (\texttt{s\_linker20\_union}, mean of three runs) against the SOTA baselines on the non-redundant metric panel, for doc-to-model (SAD--SAM) and doc-to-code (SAD--Code). Every system's SAD--Code is recovered SAD--SAM composed with recovered ArCoTL SAM--code, so the comparison is on equal footing. Best \fone{} per task in bold.}
+  \label{tab:cross-system}
+  \begin{tabular}{lrrrrrrrrr}
+    \toprule
+    & \multicolumn{4}{c}{SAD--SAM (doc$\to$model)} & \multicolumn{5}{c}{SAD--Code (doc$\to$code)} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-10}
+    System & P & R & Link \fone & Cov. & P & R & File \fone & Comp.\ \fone & Cov. \\
+    \midrule
+    \approach{} (Claude) & 0.949 & 0.915 & \textbf{0.928} & 0.950 & 0.957 & 0.866 & \textbf{0.906} & 0.884 & 0.847 \\
+    \approach{} (GPT-5.4) & 0.940 & 0.858 & 0.894 & 0.905 & 0.913 & 0.842 & 0.875 & 0.862 & 0.811 \\
+    Artemis (GPT-5.4) & 0.930 & 0.763 & 0.835 & 0.788 & 0.941 & 0.778 & 0.849 & 0.799 & 0.709 \\
+    TransArC$^{\dagger}$ & 0.869 & 0.772 & 0.799 & 0.789 & 0.886 & 0.775 & 0.803 & 0.795 & 0.751 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\footnotesize $^{\dagger}$The SAD--SAM column for TransArC is SWATTR (its deterministic SAD--SAM stage); TransArC has no standalone doc-to-model system. \approach{} SAD--Code composes the s20U links with recovered ArCoTL SAM--code (\texttt{samCodeTlr}); for Artemis/TransArC that composition is already in the recovered dumps.
+\end{table*}

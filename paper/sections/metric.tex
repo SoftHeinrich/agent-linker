@@ -1,0 +1,78 @@
+\section{Architecture-Driven Evaluation}
+\label{sec:metric}
+
+The link distribution is long-tailed, so link-level averaged metrics hide whether a system covers every documented component.
+This section quantifies that long tail across all five projects and builds a metric suite that exposes silent component failures.
+
+\subsection{Link Concentration in the Benchmark}
+\label{sec:metric:prestudy}
+
+The directory expansion that expands one doc-code directory link to multiple doc-code file links spans from $1.0\times$ on MediaStore to $217.6\times$ on JabRef.
+Within each project the expanded links concentrate in a few components.
+\autoref{tab:gold_concentration} quantifies this with the Gini coefficient, which measures inequality in the per-component link counts ($0$ = uniform, $1$ = all links in one component).
+Gini ranges from $0.474$ on TeaStore to $0.591$ on JabRef.
+The median-to-maximum distribution also shows the concentration: 
+on Teammates the median component owns $861$ expanded links while the largest owns $3{,}622$; on JabRef the ratio is $768$ to $3{,}888$.
+Overall, the three largest components hold between $69.3\%$ (BBB) and $99.3\%$ (JabRef) of all expanded links.
+Link-level metrics therefore mainly reflect these few large components, hiding whether the system recovers the rest.
+This motivates us to define a suite that weights each component equally exposes what the link-level average buries.
+\input{table/gold_concentration}
+
+\subsection{The Metric Suite}
+\label{sec:metric:suite}
+
+we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, the \cmrname{}, and sentence coverage, each giving every component the same weight.
+Our suite also keeps link-level $F_\beta$ as the reference metric. 
+We define the family over the $F_\beta$ score,
+\begin{equation}
+F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
+\label{eq:fbeta}
+\end{equation}
+where $F_1$ ($\beta = 1$) weights precision and recall equally, and $F_2$ ($\beta = 2$) weights recall twice as heavily.
+Previous study has suggested that both are essential in trace-link recovery task/ %TODO cite paper
+
+\paragraph{Doc-code: worst-component and harmonic-mean \texorpdfstring{$F_\beta$}{F-beta}.}
+On the doc-code task, directory expansion maps each directory annotation into file-level links, creating the long-tailed distribution that lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
+Therefore, we propose finer-grained metric on component level.
+Each component~$k$ owns a set of code files; 
+$F_\beta(k)$ denotes $F_\beta$ computed over only the links whose target belongs to~$k$.
+The worst-component $F_\beta$ is the minimum over the gold components:
+\begin{equation}
+F_\beta^{\min} = \min_{k \in \mathcal{K}} F_\beta(k).
+\label{eq:worst}
+\end{equation}
+A single missed component drives it to zero, even when link-level $F_\beta$ stays high.
+Because a single minimum can be noisy, we also report the harmonic mean of the per-component $F_\beta$:
+
+\begin{equation}
+F_\beta^{H} = \frac{|\mathcal{K}|}{\sum_{k \in \mathcal{K}} 1/F_\beta(k)}.
+\label{eq:harm}
+\end{equation}
+It down-weights every low-scoring component, not just the worst.
+%TODO small sum + promotion sent
+
+\paragraph{Doc-model: \cmrname.}
+Doc-model links are sentence-to-component links, which are with no directory expansion. 
+The per-component distribution is not long-tailed, so the worst-component and harmonic $F_\beta$ are redundant.
+But a system can still miss a component entirely, leaving its documented sentences with no correct link.
+The \cmrname{} (\cmr) measures the share of documented sentences belonging to such components:
+\begin{equation}
+\cmr = \frac{\bigl|\bigcup_{k:\,R_k=0}\, \mathcal{S}_k\bigr|}{\bigl|\bigcup_{k \in \mathcal{K}}\, \mathcal{S}_k\bigr|} \in [0,1],
+\label{eq:sfm}
+\end{equation}
+\cmr{} = 0 means every documented component is linked at least onece, so no component's documentation is silently lost.
+
+\paragraph{Sentence coverage.}
+Sentence coverage is the fraction of sentences for which the system recovers at least one correct link:
+It measures developer-facing reach: whether the system finds something for each documented sentence, regardless of how many links that sentence carries.
+Sentence coverage applies to both tasks. 
+
+\begin{equation}
+\mathrm{cov} = \frac{1}{|\mathcal{S}|}\sum_{s \in \mathcal{S}} \mathbf{1}\!\left[\text{the system recovers a correct link for } s\right],
+\label{eq:cov}
+\end{equation}
+
+
+On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$, plus sentence coverage.
+On doc-model it reports the \cmrname{} and sentence coverage.
+\autoref{sec:exp:rq2} applies this suite to all systems on the benchmark.

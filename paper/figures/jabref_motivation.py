@@ -1,0 +1,372 @@
+#!/usr/bin/env python3
+"""Reproducible generator for the JabRef motivation figure (\\autoref{fig:motivation}).
+
+Two stacked panels over JabRef's gold components, ordered by link-pair share:
+
+  TOP    The doc-link distribution that file-level \\fone implicitly weights ---
+         each component's share of all gold sentence--file link pairs (grey bars).
+         Overlaid are two size-independent importance axes: each component's share
+         of the *documented sentences* (orange markers) and its share of the code's
+         *cross-component dependencies* (purple markers; from jabref_depshare.csv).
+         The gap is the point: the small components (preferences/cli/globals) own
+         almost none of the link pairs, yet the architecture document describes each
+         of them with a sizeable fraction of its sentences AND much of the code
+         depends on them. The link-level metric under-weights them by orders of
+         magnitude relative to both importance axes.
+
+  BOTTOM Per-component F1 for two real, strong recovery tools (TransArc, Artemis).
+         Artemis drops the small `preferences` component to 0 while its file-level
+         \\fone still edges TransArc's, because preferences owns only 0.44% of the
+         link pairs the link-level metric counts.
+
+Every number is COMPUTED from the ARDoCo benchmark gold standard and the two
+systems' recovered sad-code links -- nothing is hardcoded. The per-component F1
+matches the component suite's scoring (set-overlap F1 over the mapped-only
+sentence universe). Paths derive from the repo layout (siblings under
+ardoco-home) and may be overridden:
+
+    TRANSARC_BENCHMARK   benchmark/ root (.../tests-base/src/main/resources/benchmark)
+    RECOVERED_LINKS      doc-code recovered-links store (default sota/recovered-links/doc-code;
+                         transarc-jabref.csv + artemis-jabref-gpt-5.4.csv, schema sentence_id,target_id)
+
+    python3 figures/jabref_motivation.py        # writes jabref_motivation{,_linear,_log}.{pdf,png}
+
+Requires matplotlib (figure tooling only; not a dependency of the paper build).
+"""
+import csv
+import json
+import os
+import tempfile
+from collections import defaultdict
+from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir() + "/mpl-jabref-motiv")
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+# ── Repo layout ───────────────────────────────────────────────────────────────
+HERE = Path(__file__).resolve().parent                 # …/alinker-paper/figures
+ARDOCO_HOME = HERE.parents[1]                           # …/ardoco-home
+BENCHMARK = Path(os.environ.get(
+    "TRANSARC_BENCHMARK",
+    ARDOCO_HOME / "ardoco/core/tests-base/src/main/resources/benchmark"))
+# Recovered doc-code links for the two reference systems live in the unified sota store
+# (sota/recovered-links/doc-code, schema: sentence_id,target_id). Earlier runs read them from
+# transarc-emp/{results,results_artemis_gpt54}/...; that layout is gone, so default to the store.
+RECOVERED = Path(os.environ.get("RECOVERED_LINKS", ARDOCO_HOME / "sota/recovered-links/doc-code"))
+# Per-component code-dependency share (share of all cross-component afferent coupling).
+# Provenanced static-analysis result — see jabref_depshare.csv header and the replication
+# package transarc-emp/mini-depimport. Cannot be recomputed from the benchmark alone.
+DEPSHARE_CSV = HERE / "jabref_depshare.csv"
+
+PROJECT = "jabref"
+GS_SAM_CODE = f"{PROJECT}/goldstandards/goldstandard_sam_2021-code_2023.csv"
+GS_SAD_CODE = f"{PROJECT}/goldstandards/goldstandard_sad_2021-code_2023.csv"
+ACM_FILE = f"{PROJECT}/model_2023/code/codeModel.acm"
+
+# (label, recovered sad-code links csv) — order = plotting order in the legend
+SYSTEMS = [
+    ("TransArc", RECOVERED / "transarc-jabref.csv"),
+    ("Artemis", RECOVERED / "artemis-jabref-gpt-5.4.csv"),
+]
+SYS_STYLE = {
+    "TransArc": dict(color="#159e8c", marker="o"),
+    "Artemis":  dict(color="#9b2226", marker="s"),
+}
+DROPPED = "preferences"                                  # the component Artemis misses
+
+# ── Loaders (copied verbatim from mini-inequality/inequality.py — same semantics) ──
+def normalize_path(path):
+    prefix = "Implementation/"
+    return path[len(prefix):] if path.startswith(prefix) else path
+
+
+def enroll(gold, code_files):
+    """Expand directory-level gold entries (trailing '/') to individual files."""
+    enrolled = set()
+    for gid, gpath in gold:
+        if gpath.endswith("/"):
+            enrolled.update((gid, fp) for fp in code_files if fp.startswith(gpath))
+        else:
+            enrolled.add((gid, gpath))
+    return enrolled
+
+
+def load_code_model_files():
+    with open(BENCHMARK / ACM_FILE) as f:
+        repo = json.load(f).get("codeItemRepository", {}).get("repository", {})
+    files = set()
+    for item in repo.values():
+        if item.get("type") != "CodeCompilationUnit":
+            continue
+        parts, name, ext = (item.get("pathElements", []),
+                            item.get("name", ""), item.get("extension", ""))
+        if parts and name:
+            files.add(normalize_path(
+                "/".join(parts) + "/" + name + (f".{ext}" if ext else "")))
+    return files
+
+
+def _short(c):
+    return c.replace("Component: ", "").replace("Interface: ", "")
+
+
+def load_file_to_comps(code_files):
+    """SAM-CODE gold -> {file: {component}} (enrolled, mapped-only)."""
+    names, raw = {}, set()
+    with open(BENCHMARK / GS_SAM_CODE) as f:
+        for r in csv.DictReader(f):
+            names[r["ae_id"]] = _short(r["ae_name"])
+            raw.add((r["ae_id"], normalize_path(r.get("ce_ids") or r.get("ce_id"))))
+    file_to_comps = defaultdict(set)
+    for ae, fp in enroll(raw, code_files):
+        file_to_comps[fp].add(names[ae])
+    return file_to_comps
+
+
+def load_gold_sad_code(code_files):
+    with open(BENCHMARK / GS_SAD_CODE) as f:
+        raw = {(r["sentenceID"], normalize_path(r["codeID"])) for r in csv.DictReader(f)}
+    return enroll(raw, code_files)                       # set[(sentence, file)]
+
+
+def load_links(path, code_files):
+    raw = set()
+    with open(path) as f:
+        for r in csv.DictReader(f):
+            s = r.get("sentenceID") or r.get("modelElementID") or r.get("sentence_id")
+            cid = r.get("codeID") or r.get("codeId") or r.get("target_id")
+            if s and cid:
+                raw.add((s, normalize_path(cid)))
+    return enroll(raw, code_files)
+
+
+def load_dep_share():
+    """component -> share (%) of the code's cross-component dependencies (optional series)."""
+    out = {}
+    if not DEPSHARE_CSV.exists():
+        return out
+    with open(DEPSHARE_CSV) as f:
+        for line in f:
+            if line.startswith("#") or not line.strip():
+                continue
+            parts = [p.strip() for p in line.split(",")]
+            if parts[0] == "component":
+                continue
+            out[parts[0]] = float(parts[2])
+    return out
+
+
+# ── Metric: per-component F1 (set-overlap over the component's sentence set) ───
+def f1(gold_sents, pred_sents):
+    if not gold_sents and not pred_sents:
+        return 1.0
+    tp = len(gold_sents & pred_sents)
+    if not pred_sents or not gold_sents:
+        return 0.0
+    p, r = tp / len(pred_sents), tp / len(gold_sents)
+    return 2 * p * r / (p + r) if p + r else 0.0
+
+
+def collapse(pairs, file_to_comps):
+    """(sentence, file) -> {(sentence, component)} (mapped-only)."""
+    out = set()
+    for s, fp in pairs:
+        for c in file_to_comps.get(fp, ()):
+            out.add((s, c))
+    return out
+
+
+def compute():
+    code = load_code_model_files()
+    file_to_comps = load_file_to_comps(code)
+    gold_pairs = load_gold_sad_code(code)                # (sentence, file)
+    gold_sc = collapse(gold_pairs, file_to_comps)        # (sentence, component)
+
+    # link-pair share (the file-level metric's implicit weight)
+    linkpairs = defaultdict(int)
+    for s, fp in gold_pairs:
+        for c in file_to_comps.get(fp, ()):
+            linkpairs[c] += 1
+    tot_lp = sum(linkpairs.values()) or 1
+
+    # documented-sentence share (a component's footprint in the architecture doc)
+    gold_by_c = defaultdict(set)
+    for s, c in gold_sc:
+        gold_by_c[c].add(s)
+    tot_sent = len({s for s, _ in gold_sc}) or 1
+
+    # per-system per-component F1
+    sys_f1 = {}
+    for label, path in SYSTEMS:
+        pred_by_c = defaultdict(set)
+        for s, c in collapse(load_links(path, code), file_to_comps):
+            pred_by_c[c].add(s)
+        sys_f1[label] = {c: f1(gold_by_c.get(c, set()), pred_by_c.get(c, set()))
+                         for c in gold_by_c}
+
+    dep = load_dep_share()                                # component -> code-dependency share %
+    comps = sorted(gold_by_c, key=lambda c: -linkpairs[c])  # by link-pair share desc
+    rows = []
+    for c in comps:
+        rows.append({
+            "component": c,
+            "linkpair_pct": 100 * linkpairs[c] / tot_lp,
+            "sent_n": len(gold_by_c[c]),
+            "sent_pct": 100 * len(gold_by_c[c]) / tot_sent,
+            "dep_share": dep.get(c),
+            **{label: sys_f1[label][c] for label, _ in SYSTEMS},
+        })
+    return rows
+
+
+# ── Figure ────────────────────────────────────────────────────────────────────
+def draw(rows, logscale):
+    comps = [r["component"] for r in rows]
+    x = list(range(len(comps)))
+    lp = [r["linkpair_pct"] for r in rows]
+    sp = [r["sent_pct"] for r in rows]
+    ds = [r.get("dep_share") for r in rows]
+    have_ds = all(v is not None for v in ds)
+    drop_i = comps.index(DROPPED) if DROPPED in comps else None
+
+    fig, (ax0, ax1) = plt.subplots(
+        2, 1, figsize=(6.6, 5.0), sharex=True,
+        gridspec_kw=dict(height_ratios=[1.05, 1.0], hspace=0.12))
+
+    # ── top: link-pair share (bars) + documented-sentence share (markers) ──
+    bar_bottom = 0.03 if logscale else 0
+    bars = ax0.bar(x, lp, width=0.6, bottom=bar_bottom, color="#bdbdbd",
+                   edgecolor="#7d7d7d", linewidth=0.7, zorder=2)
+    line, = ax0.plot(x, sp, linestyle="--", linewidth=1.3, color="#d9822b",
+                     marker="D", markersize=6, markeredgecolor="white",
+                     markeredgewidth=0.6, zorder=4)
+    depline = None
+    if have_ds:
+        depline, = ax0.plot(x, ds, linestyle=":", linewidth=1.3, color="#6A4C93",
+                            marker="^", markersize=7, markeredgecolor="white",
+                            markeredgewidth=0.6, zorder=4)
+
+    def _fmt_lp(v):
+        # sub-1% shares get 2 decimals so preferences reads 0.44 (matches the
+        # motivation prose: 20 / 0.4352 = 46x; 0.4 would invite the wrong 20/0.4=50).
+        return f"{v:.2f}" if v < 1 else f"{v:.1f}"
+    for xi, v in zip(x, lp):
+        ax0.annotate(_fmt_lp(v), (xi, v + bar_bottom), textcoords="offset points",
+                     xytext=(0, 2), ha="center", va="bottom", fontsize=8,
+                     color="#555555")
+    for xi, v in zip(x, sp):
+        ax0.annotate(f"{v:.0f}", (xi, v), textcoords="offset points",
+                     xytext=(7, 4), ha="left", va="bottom", fontsize=8,
+                     color="#b5651d", fontweight="bold")
+    if have_ds:
+        for xi, v in zip(x, ds):
+            ax0.annotate(f"{v:.0f}", (xi, v), textcoords="offset points",
+                         xytext=(-7, 4), ha="right", va="bottom", fontsize=8,
+                         color="#6A4C93", fontweight="bold")
+
+    if logscale:
+        ax0.set_yscale("log")
+        ax0.set_ylim(0.03, 400)
+        ax0.set_ylabel("share (%, log)")
+    else:
+        ax0.set_ylim(0, max(max(lp), max(sp), max(ds) if have_ds else 0) * 1.55)
+        ax0.set_ylabel("share (%)")
+    handles = [bars, line] + ([depline] if have_ds else [])
+    labels = (["share of gold link pairs", "share of documented sentences"]
+              + (["share of code dependencies"] if have_ds else []))
+    ax0.legend(handles, labels,
+               loc="upper center" if logscale else "upper right",
+               fontsize=8, framealpha=0.92, handlelength=1.6)
+
+    # under-weighting callout on the dropped component
+    if drop_i is not None:
+        r = rows[drop_i]
+        if have_ds:
+            txt = (f"{_fmt_lp(r['linkpair_pct'])}% of links, but\n{r['sent_pct']:.0f}% of doc"
+                   f" sentences and\n{r['dep_share']:.0f}% of code deps\n→ under-weighted")
+        else:
+            txt = (f"{_fmt_lp(r['linkpair_pct'])}% of links\nbut {r['sent_pct']:.0f}% of"
+                   " doc sentences\n→ under-weighted")
+        if logscale:
+            # text in the empty mid-band; arrow up to the sentence marker
+            ax0.annotate(txt, xy=(drop_i, r["sent_pct"]), xycoords="data",
+                         xytext=(drop_i - 0.45, 1.1), textcoords="data",
+                         fontsize=8.0, color="#9b2226", ha="left", va="center",
+                         arrowprops=dict(arrowstyle="->", color="#9b2226", lw=1.0))
+        else:
+            ax0.annotate(txt, xy=(drop_i, r["sent_pct"]), xycoords="data",
+                         xytext=(drop_i + 0.30, max(max(lp), max(sp)) * 0.78),
+                         textcoords="data", fontsize=8.0, color="#9b2226",
+                         ha="left", va="center",
+                         arrowprops=dict(arrowstyle="->", color="#9b2226", lw=1.0))
+
+    # ── bottom: per-component F1 for the two tools ──
+    for label, _ in SYSTEMS:
+        st = SYS_STYLE[label]
+        ax1.plot(x, [rw[label] for rw in rows], linewidth=1.8, markersize=7,
+                 marker=st["marker"], color=st["color"], label=label, zorder=3)
+    ax1.set_ylim(-0.06, 1.10)
+    ax1.set_yticks([0, 0.5, 1.0])
+    ax1.set_ylabel("per-component F1")
+    ax1.axhline(0, color="#cccccc", linewidth=0.8, zorder=1)
+    ax1.legend(loc="lower left", fontsize=9, framealpha=0.9)
+    if drop_i is not None:
+        ax1.annotate(
+            f"entire component missed\n({_fmt_lp(rows[drop_i]['linkpair_pct'])}% of links,"
+            f" {rows[drop_i]['sent_pct']:.0f}% of doc sentences)",
+            xy=(drop_i, 0.0), xycoords="data", xytext=(drop_i - 1.9, 0.34),
+            textcoords="data", fontsize=8.0, color="#9b2226", ha="left",
+            arrowprops=dict(arrowstyle="->", color="#9b2226", lw=1.0))
+
+    # shared highlight band on the dropped component
+    if drop_i is not None:
+        for ax in (ax0, ax1):
+            ax.axvspan(drop_i - 0.5, drop_i + 0.5, color="#f6d3d1", alpha=0.45,
+                       zorder=0)
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(comps, rotation=20, ha="right")
+    for ax in (ax0, ax1):
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+    fig.subplots_adjust(left=0.11, right=0.985, top=0.985, bottom=0.12, hspace=0.12)
+    return fig
+
+
+def main():
+    rows = compute()
+    print(f"{'component':12}{'link%':>8}{'sent_n':>8}{'sent%':>8}"
+          + "".join(f"{lbl:>10}" for lbl, _ in SYSTEMS))
+    for r in rows:
+        print(f"{r['component']:12}{r['linkpair_pct']:>8.2f}{r['sent_n']:>8}"
+              f"{r['sent_pct']:>8.1f}"
+              + "".join(f"{r[lbl]:>10.3f}" for lbl, _ in SYSTEMS))
+
+    # data dump for provenance
+    with open(HERE / "jabref_motivation_data.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        cols = ["component", "linkpair_pct", "sent_n", "sent_pct", "dep_share"] + [l for l, _ in SYSTEMS]
+        w.writerow(cols)
+        for r in rows:
+            ds = "" if r.get("dep_share") is None else f"{r['dep_share']:.4f}"
+            w.writerow([r["component"], f"{r['linkpair_pct']:.4f}", r["sent_n"],
+                        f"{r['sent_pct']:.4f}", ds] + [f"{r[l]:.4f}" for l, _ in SYSTEMS])
+
+    for stem, logscale in [("jabref_motivation_linear", False),
+                           ("jabref_motivation_log", True)]:
+        fig = draw(rows, logscale)
+        for ext in ("pdf", "png"):
+            fig.savefig(HERE / f"{stem}.{ext}", dpi=150, bbox_inches="tight")
+        plt.close(fig)
+    # generic name = the linear variant the paper \includegraphics
+    fig = draw(rows, logscale=False)
+    for ext in ("pdf", "png"):
+        fig.savefig(HERE / f"jabref_motivation.{ext}", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"\n[jabref_motivation] wrote figures + jabref_motivation_data.csv to {HERE}")
+
+
+if __name__ == "__main__":
+    main()

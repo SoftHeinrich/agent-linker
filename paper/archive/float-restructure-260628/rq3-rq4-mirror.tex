@@ -1,0 +1,20 @@
+\section{Claude Sonnet Backend Mirror for RQ3 and RQ4}
+% Label kept as -gpt-mirror for cross-ref stability; the mirror backend is now Claude Sonnet.
+\label{sec:appendix:gpt-mirror}
+
+% DECISION [D-04 revised 2026-06-28]: GPT-5.4 is now the MAIN backend (was Claude Sonnet).
+%   The RQ3/RQ4 body floats report GPT-5.4; this appendix mirrors them for Claude Sonnet.
+% TODO [backend-flip 2026-06-28]: the float CONTENT swap is pending the Claude/Sonnet
+%   s_linker21 run (launched 2026-06-28 -> results/v2.6.6_s21_sonnet + _noknow_sonnet).
+%   Numbers pass must, as one coherent edit:
+%     (a) put GPT-5.4 s21 numbers in the RQ3/RQ4 BODY floats
+%         (figures/rq3-validator.tex, table/rq4-agents.tex, figures/rq4-upset.tex);
+%     (b) put Claude/Sonnet s21 numbers in this APPENDIX mirror
+%         (rename the -gpt float files to -claude once swapped);
+%     (c) flip the "backend" word in every affected caption to match.
+%   Until then the \input files below still carry the OLD v2.6.3 GPT-5.4 numbers, and the
+%   body floats still carry the OLD Claude numbers -- captions/values are pre-flip.
+Per the revised D-04, the RQ3 and RQ4 body floats (\autoref{fig:rq3-validator}, \autoref{tab:rq4-agents}) report the GPT-5.4 backend, now the main backend. This appendix mirrors them for the Claude Sonnet backend as a cross-backend robustness check; the structure and macros are identical.
+
+\input{appendix/rq3-validator-gpt}
+\input{appendix/rq4-agents-gpt}

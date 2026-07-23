@@ -1,0 +1,50 @@
+{
+  "run": "run3",
+  "dataset": "teastore",
+  "P": 0.9259259259259259,
+  "R": 0.9259259259259259,
+  "F1": 0.9259259259259259,
+  "tp": 25,
+  "fp": 2,
+  "fn": 2,
+  "n_links": 27,
+  "fp_by_source": {
+    "coreference": 2
+  },
+  "fp_details": [
+    {
+      "sentence": 39,
+      "component": "Registry",
+      "source": "coreference",
+      "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+    },
+    {
+      "sentence": 40,
+      "component": "Registry",
+      "source": "coreference",
+      "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called agai"
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 8,
+      "component": "WebUI",
+      "name_in_text": false
+    },
+    {
+      "sentence": 26,
+      "component": "Persistence",
+      "name_in_text": false
+    }
+  ],
+  "n_entity_candidates": 23,
+  "n_coref_candidates": 25,
+  "n_llm_calls": 4,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 20,
+  "coref_validated": 21,
+  "elapsed_s": 57.5
+}

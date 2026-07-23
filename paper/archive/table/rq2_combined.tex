@@ -1,0 +1,112 @@
+\begin{table}
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{1.5pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Results of the Top-2 Configuration of Each Classifier on the Smells Recovered With \ARCADE.
+    %ffNN = feedforward neural network,
+    %kNN = k-nearest neighbors,
+    LR = logistic regression,
+    NB = Na\"ive Bayes,
+    RF = random forest,
+    %SVM = support vector machine,
+    XGB = XGBoost;
+    SB = Sentence-BERT
+    }
+    \label{tab:rq2_arcade}
+    \begin{tabularx}{\columnwidth}{@{}llcccccccccccc}
+        \toprule
+                                       &                          & \multicolumn{3}{c}{Inkscape} & \multicolumn{3}{c}{StackGres} & \multicolumn{3}{c}{Shepard} & \multicolumn{3}{c}{Avg.}                                                                                                           \\
+        \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11} \cmidrule(lr){12-14}
+        Class.                     & Emb.                & \multicolumn{1}{c}{P}                        & \multicolumn{1}{c}{R}                        & \multicolumn{1}{c}{F\textsubscript{1}}          & \multicolumn{1}{c}{P}                    & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} \\
+        \midrule
+\multirow{2}{*}{ffNN} & OpenAI & .198 & .589 & .282 & .292 & .638 & .396 & .216 & .767 & .294 & .236 & .665 & .324 \\
+ & SB\textsubscript{max} & .140 & .676 & .231 & .262 & .722 & .381 & .169 & \textBF{.889} & .283 & .190 & \textBF{.762} & .298 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{kNN} & OpenAI & .172 & .640 & .270 & .270 & .767 & .399 & .188 & .848 & .307 & .210 & .751 & .325 \\
+ & TF-IDF & .143 & .579 & .229 & .268 & .751 & .395 & .175 & .703 & .280 & .196 & .678 & .301 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{LR} & OpenAI & .163 & .599 & .256 & .272 & .776 & .403 & .215 & .751 & .332 & .217 & .709 & .330 \\
+ & TF-IDF & .182 & .527 & .270 & .315 & .760 & .445 & .216 & .650 & .324 & .238 & .646 & .346 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{NB} & OpenAI & .164 & .595 & .256 & .270 & .758 & .398 & .256 & .639 & .361 & .230 & .664 & .338 \\
+ & TF-IDF & .158 & \textBF{.727} & .260 & .303 & .796 & .439 & .173 & .684 & .275 & .212 & .736 & .325 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{RF} & OpenAI & .172 & .628 & .270 & .277 & .747 & .404 & .235 & .748 & .357 & .228 & .708 & .344 \\
+ & SB\textsubscript{max} & .142 & .599 & .229 & .276 & .713 & .398 & .219 & .693 & .330 & .212 & .669 & .319 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{SVM} & OpenAI & .190 & .622 & \textBF{.290} & .280 & \textBF{.812} & .416 & .253 & .729 & \textBF{.373} & .241 & .721 & \textBF{.360} \\
+ & TF-IDF & \textBF{.206} & .477 & .286 & \textBF{.318} & .776 & \textBF{.450} & \textBF{.311} & .460 & .326 & \textBF{.278} & .571 & .354 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{XGB} & OpenAI & .168 & .606 & .263 & .287 & .703 & .407 & .235 & .672 & .345 & .230 & .660 & .338 \\
+ & SB\textsubscript{max} & .144 & .606 & .233 & .281 & .704 & .402 & .213 & .598 & .311 & .213 & .636 & .315 \\
+
+
+
+
+
+
+
+
+ \arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+ \multicolumn{2}{l}{RoBERTa\textsubscript{fine-t.}} & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multicolumn{2}{l}{GPT-5-mini}   & .143 & .020 & .035 & .318 & .050 & .087 & .176 & .065 & .095 & .213 & .045 & .072 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{table}
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{1.5pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Results of the Top-2 Configuration of Each Classifier on the Smells Recovered With \Arcan.
+    %ffNN = feedforward neural network,
+    %kNN = k-nearest neighbors,
+    LR = logistic regression,
+    NB = Na\"ive Bayes,
+    RF = random forest,
+    %SVM = support vector machine,
+    XGB = XGBoost
+    ; SB = Sentence-BERT
+    }
+    \label{tab:rq2_arcan}
+    \begin{tabularx}{\columnwidth}{@{}llZZZZZZZZZ@{}}
+        \toprule
+                                       &                             & \multicolumn{3}{c}{StackGres} & \multicolumn{3}{c}{Shepard} & \multicolumn{3}{c}{Avg.}                                                                             \\
+        \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11}
+        Class.                     & Emb.                   & \multicolumn{1}{c}{P}                         & \multicolumn{1}{c}{R}                      & \multicolumn{1}{c}{F\textsubscript{1}}       & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} & \multicolumn{1}{c}{P} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{F\textsubscript{1}} \\
+        \midrule
+\multirow{2}{*}{ffNN} & OpenAI & .248 & .755 & .373 & .479 & .700 & .566 & .364 & .728 & .469 \\
+ & SB\textsubscript{max} & .254 & .639 & .362 & .491 & .679 & .567 & .372 & .659 & .464 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{kNN} & OpenAI & .226 & \textBF{.823} & .354 & .503 & \textBF{.767} & .605 & .364 & \textBF{.795} & .480 \\
+ & TF-IDF & .236 & .785 & .362 & .460 & .662 & .540 & .348 & .724 & .451 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{LR} & OpenAI & .250 & .751 & .375 & .501 & .654 & .566 & .376 & .703 & .470 \\
+ & TF-IDF & .266 & .724 & .388 & .540 & .700 & .606 & .403 & .712 & .497 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{NB} & OpenAI & .259 & .713 & .380 & .513 & .671 & .580 & .386 & .692 & .480 \\
+ & TF-IDF & .240 & .848 & .373 & .513 & .679 & .582 & .376 & .764 & .478 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{RF} & OpenAI & .271 & .705 & .391 & .519 & .713 & .599 & .395 & .709 & .495 \\
+ & SB\textsubscript{max} & .268 & .654 & .380 & .506 & .642 & .565 & .387 & .648 & .472 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{SVM} & OpenAI & .266 & .749 & .392 & \textBF{.546} & .725 & \textBF{.619} & .406 & .737 & \textBF{.505} \\
+ & TF-IDF & \textBF{.279} & .719 & \textBF{.400} & .540 & .637 & .576 & \textBF{.410} & .678 & .488 \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multirow{2}{*}{XGB} & OpenAI & .273 & .711 & .394 & .493 & .654 & .560 & .383 & .683 & .477 \\
+ & SB\textsubscript{max} & .248 & .639 & .357 & .504 & .675 & .575 & .376 & .657 & .466 \\
+
+
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+ \multicolumn{2}{l}{RoBERTa\textsubscript{fine-t.}} & --- & --- & --- & --- & --- & --- & --- & --- & ---  \\
+\arrayrulecolor{kit-gray30}\hline\arrayrulecolor{black}
+\multicolumn{2}{l}{GPT-5-mini}  & .233 & .042 & .071 & .636 & .059 & .108 & .434 & .051 & .090 \\
+
+
+
+        \bottomrule
+    \end{tabularx}
+\end{table}

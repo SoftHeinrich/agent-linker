@@ -1,0 +1,32 @@
+% RQ2 size-aware suite as grouped bars -- BAKE-OFF variant 2 of 3.
+% Four metric groups, three bars each (one per system), GPT-5.4 macro. Zero baseline (honest).
+%   \approach=darkblue, Artemis=darkorange, TransArc=darkgreen.
+% !!! PLACEHOLDER VALUES !!! taken from the current rq2-summary; refresh in the numbers pass.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1.7cm,y=4.2cm]
+  % y axis 0..0.9
+  \draw[black!55,thick] (-0.55,0) -- (-0.55,0.95);
+  \foreach \y in {0,0.25,0.5,0.75}{
+    \draw[black!55] (-0.55,\y)--(-0.62,\y) node[left,font=\tiny]{\y};
+    \draw[black!12] (-0.55,\y)--(3.5,\y);
+  }
+  \node[rotate=90,anchor=south,font=\small] at (-0.9,0.45) {value};
+  % groups: \i / ArchLinker / Artemis / TransArc
+  \foreach \i/\a/\r/\t in {0/0.87/0.85/0.80, 1/0.80/0.71/0.75, 2/0.62/0.35/0.54, 3/0.71/0.46/0.67}{
+    \fill[darkblue]   ({\i-0.34},0) rectangle ({\i-0.14},\a);
+    \fill[darkorange] ({\i-0.10},0) rectangle ({\i+0.10},\r);
+    \fill[darkgreen]  ({\i+0.14},0) rectangle ({\i+0.34},\t);
+  }
+  % x metric labels
+  \foreach \i/\m in {0/{File \fone},1/{Sent.\ cov.},2/{Worst-comp.},3/{Harmonic}}{
+    \node[font=\tiny,anchor=north,align=center] at (\i,-0.02) {\m};
+  }
+  % legend (top-right)
+  \node[darkblue,font=\tiny\bfseries,anchor=west] at (2.25,0.92) {\approach{}};
+  \node[darkorange,font=\tiny,anchor=west]        at (2.25,0.86) {Artemis};
+  \node[darkgreen,font=\tiny,anchor=west]         at (2.25,0.80) {TransArc};
+\end{tikzpicture}
+\caption{RQ2 (bake-off, grouped bars): the size-aware suite for the three systems on the GPT-5.4 backend. \approach{} pulls away on the worst-component and harmonic tail metrics. Placeholder values.}
+\label{fig:rq2-bars}
+\end{figure}

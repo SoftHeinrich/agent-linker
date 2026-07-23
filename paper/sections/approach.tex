@@ -1,0 +1,299 @@
+\section{\approach}\label{sec:approach}
+% =====================================================================
+% REVISION SPEC — global / section-wide directives only.
+% Localized fixes stay scattered inline as the %TODO / %HL notes below,
+% at the passage they touch (no line numbers here — they drift).
+% =====================================================================
+% STATUS LEGEND (each G-item carries a >> status line):
+%   [DONE]     applied and verified; nothing open. Inspect adjacent prose.
+%   [PARTIAL]  some sub-tasks done; the OPEN: line lists what remains.
+%   inline marks at the passage: %DONE <ask>-><change>, %FLAG <ask>
+%   (needs your decision), %TODO <ask> (localized work still pending).
+% Last reconciled against the prose + inline todos: 2026-06-28.
+% ---------------------------------------------------------------------
+% G1. Terminology & readability sweep (whole section):
+%     workflow = framing noun; drop "surface"; "canonical name" ->
+%     "verbatim/exact name"; "overshoot" -> simpler; "LLM pass" ->
+%     "LLM step"; no "---" (em dash); reuse intro wording, no new claims.
+%   >> [DONE] Verified by grep: "surface", "canonical", "overshoot", and
+%      "---" occur ONLY in comments, never in live prose. "workflow" is the
+%      framing noun throughout; "exact name" and "LLM step" are in use; the
+%      validator keeps "pass" as its defined term. Nothing open.
+% G2. Three challenges framed as problems OUR workflow solves, with each
+%     design choice justified by the insight that removes its challenge.
+%   >> [DONE] Restructured to a 1:1 map (option A "Knowledge / Forms /
+%      Reliability"): C1 project-knowledge gap -> D1 knowledge module;
+%      C2 reference forms -> D2 two linkers; C3 LLM reliability -> D3 judges.
+%      Challenges paragraph, nutshell, and the three sec:arch decision leads
+%      all rewritten to match; overview figure unchanged.
+% G3. Validators as LLM-as-judge (evidence-checkers, not re-classifiers).
+%   >> [DONE] "validator" -> "judge" renamed paper-wide in prose (approach,
+%      intro, motivation, rw, eval, results) plus abbrev.tex
+%      (\entValidator/\corefValidator now render "named/implicit judge").
+%      Subsection is now "Evidence-Backed Judges"; contribution renamed to
+%      "evidence-backed judging"; "asymmetry" dropped. KEPT (to avoid
+%      breaking refs / desyncing figure images): labels sec:validators,
+%      rq:validators, fig:rq3-validator and ablation IDs NoValidator/
+%      NoEntity/NoCitation.
+% G4. Knowledge module: scope down AND de-emphasize.
+%   >> [DONE] Over-selling removed (no "failure mode we observed", no load-
+%      bearing claim; optional RQ cite left as an inline %TODO at sec:arch).
+%      Nutshell no longer leads with the two-table description, and the first
+%      sec:arch decision is reframed as the project-knowledge challenge
+%      (aliases + ambiguous names), not a name-specific lookup.
+% ---------------------------------------------------------------------
+% OUTSTANDING LOCALIZED FIXES (stay inline as %TODO; indexed by section):
+%   sec:arch              [OPEN] position prior work by mechanism (regex / string
+%                         similarity / neural embedding), not the generic glossary/
+%                         IR citations -> inline %TODO (overlaps rw.tex). The cite
+%                         set itself is fact-checked: 5/5 SUPPORT [DONE].
+%   sec:model-understanding  [DONE] swapped in the JabRef 'preferences'
+%                         example from the motivation chapter.
+%   sec:doc-understanding [OPEN] simplify + cut ~half: drop the "trailing word"
+%                         machinery, keep the ambiguity link -> inline %TODO.
+%   sec:entity-linker     [DONE] worked example added (S11 -> preferences,
+%                         plus the S7 false positive) reusing the motivation.
+%   sec:coref-linker      [PARTIAL] illustrative pronoun example + two-step framing
+%                         present; OPEN: polish wording + reconcile the alias gate's
+%                         home with sec:validators -> inline %TODO.
+%   sec:validators        [OPEN] two sub-asks: (a) make the alias gate step 1 of the
+%                         judge, (b) add a small prompt-structure sketch -> inline
+%                         %TODO. tab:strategies reconcile is moot (table removed).
+% =====================================================================
+We propose \approach, a training-free \ac{LLM} workflow that recovers trace links between an architecture document and an architectural model.
+Its input is a document $D$ with sentences $S = \{s_1, \ldots, s_n\}$ and a component set $C = \{c_1, \ldots, c_m\}$.
+Its output is a link set $L \subseteq S \times C$.
+Each link $(s_i, c_j) \in L$ asserts that sentence $s_i$ discusses the architectural responsibilities of component $c_j$.
+
+Recovering these links has three challenges, and the workflow answers each with one design decision.
+First, the project's vocabulary is not given in advance: a component appears under aliases the document coins as it goes, and some component names are ordinary English words that can't be simply matched. The workflow must build this knowledge before it links.
+Second, links are carried by different reference forms. 
+A named reference puts a component's name or an alias in the sentence; 
+an implicit reference names nothing and leans on a pronoun resolved to an earlier sentence. 
+One linker cannot serve both well.
+Third, an \ac{LLM} can return a link that reads as plausible but has no support in the sentence, 
+so each link must be checked against its own evidence.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/approach-overview.pdf}
+  \caption{Overview of \approach: a knowledge module feeds two reference-form
+  linkers, each checked by a judge, then merged.}
+  \Description{A workflow diagram with three stages. First, a knowledge module builds an alias table and ambiguity map from the document and component set. Second, two linkers run in parallel, one for named references and one for implicit references. Third, each linker output is filtered by a judge and the surviving links are merged into the final trace-link set.}
+  \label{fig:approach-overview}
+\end{figure*}
+
+\textbf{\approach in a nutshell.}
+\approach answers the three challenges in three steps (\autoref{fig:approach-overview}).
+It first builds a runtime \emph{knowledge module}, an alias table and an ambiguity map computed once from the components and the document.
+It then runs two linkers, one for named references and one for implicit ones, enhanced by the knowledge.
+Each proposed link is checked by an \evidenceBacked judge, and the surviving links are merged into the output.
+By recovering the implicit references other tools silently drop, \approach{} aims to leave no documented component abandoned---the silent component failure that the doc-model silent-failure mass (SFM) of \autoref{sec:metric} measures.
+% Because the knowledge is built once, \approach resolves each alias the same way for every sentence instead of re-deciding it on every call.
+
+% -----------------------------------------------------------------
+% 2.1 Architecture: the knowledge-layer decision + the
+% reference-form decision jointly justify the 2-layer + 2-linker shape.
+% -----------------------------------------------------------------
+\subsection{Design of \approach}\label{sec:arch}
+
+Three decisions fix the shape of the workflow.
+
+The first decision answers the project-knowledge challenge: the workflow gathers what it needs to know about a project once, up front, rather than leaving each linker to work it out on its own.
+The underlying difficulty is the vocabulary problem~\cite{furnas1987vocabulary}: one component can appear under many names, and some of those names are ordinary English, so plain lexical matching is unreliable.
+\approach builds this knowledge before linking, as a separate stage, in the spirit of glossary mining for requirements~\cite{arora2017automated,gemkow2018automatic} and software-side synonym networks~\cite{howard2013automatically,falleri2010automatic}.
+%TODO [sec:arch] position prior work by LINKING MECHANISM (regex/lexical, string-similarity,
+%   neural-embedding), not the current generic glossary/IR cites. Overlaps rw.tex -- decide at
+%   execution whether the mechanism taxonomy lives in sec:arch or related work. Specs-only here.
+%DONE fact-check (2026-06-28): all 5 cites SUPPORT their claims (papers fetched + read).
+%   furnas1987 = the vocabulary problem (1 referent, many names; ~80-90% single-word-match
+%     failure) -> backs the "ordinary English / lexical matching unreliable" line.
+%   arora2017 (full PDF) + gemkow2018 (verbatim abstract) = automated glossary-term extraction
+%     from requirements -> backs "glossary mining for requirements".
+%   howard2013 (software-specific similar-word PAIRS from comment-code) + falleri2010
+%     (WordNet-like identifier network: synonymy/hypernymy/hyponymy) -> back "software-side
+%     synonym networks". howard outputs pairs, so falleri is the stronger "network" cite;
+%     current "in the spirit of ..." phrasing is fine.
+%   Residual (low pri): falleri primary abstract anti-bot walled; verdict via HAL record +
+%     aggregated snippets. OA PDF at hal-lirmm.ccsd.cnrs.fr/lirmm-00531807/file/icpc.pdf for
+%     optional primary-source confirmation.
+The knowledge module holds two tables, an alias table and an ambiguity map. 
+% , so a linker decides each link over a candidate set the module has already narrowed instead of discovering names and judging the link in one step.
+
+The second decision answers the reference-form challenge: how to split the linking work.
+A trace link $(s,c)$ between a sentence $s$ and a component $c$ takes one of two families.
+In the \emph{named family}, a sentence in $s$ matches the exact name $\mathrm{name}(c)$ or one of the project-specific aliases $A(c)$ found for $c$: its abbreviations and synonyms.
+In the \emph{implicit family}, $s$ carries no such direct mention, but a pronoun in $s$ resolves to an earlier sentence that does; we call this the \emph{structural antecedent constraint}.
+The two families ask different questions, whether a text names a component, or whether a pronoun points to a sentence that names one, so they need different evidence and different judges.
+The workflow therefore uses two linkers, one per family (\linkerB for the named family, \linkerC for the implicit family), rather than one large \ac{LLM} call that previous works used.
+
+The third decision answers the reliability challenge: how to handle the non-determinism of the \ac{LLM}.
+An \ac{LLM} linker can return a wrong link that still reads as plausible, with nothing in the sentence to support it.
+\approach therefore makes each linker report the text evidence it used in a structured \emph{evidence bundle} and 
+has each judge check the candidate link against that. 
+A hallucinated link is caught by a mismatch between bundle and sentence.
+% A judge sits after each linker, and the number of checking passes matches how hard the decision is (\autoref{sec:validators}).
+
+% Together these decisions give the three-stage workflow of \autoref{fig:approach-overview}: knowledge discovery, the two reference-form linkers, and LLM based judges.
+
+% -----------------------------------------------------------------
+% 2.3 Knowledge discovery. The two modules address the
+% ordinary-English ambiguity and the alias-discovery problem.
+% -----------------------------------------------------------------
+\subsection{Project Knowledge Discovery}\label{sec:knowledge}
+Stage~1 runs two modules in parallel: a \emph{model-understanding module} analyzes the component set to find ambiguous components that can be seen as ordinary-English words,
+and a \emph{document-understanding module} analyzes the document to find aliases.
+
+\subsubsection{Architectural Model Understanding}\label{sec:model-understanding}
+
+Most component names, multi-word names, CamelCase compounds, and acronyms, are clear architectural identifiers.
+The hard case is the single common-English word: in JabRef (\autoref{fig:example}) the component \texttt{preferences} shares its name with the everyday word ``preferences,'' so matching on it directly links sentences that merely use the word, producing false positives.
+\approach builds the \emph{ambiguity map} with a hybrid rule: prompting an \ac{LLM} on the suspicious cases, i.e., lowercase words.
+
+\begin{promptL}{Ambiguity Classification (Model Understanding)}{ambiguity}\\
+{\scriptsize\ttfamily\raggedright
+Classify these component names.\\
+NAMES: \{comp\_names\}\\
+\{AMBIGUITY\_RULE\}\\
+Return JSON:\\
+~~\{"architectural": [...], "ambiguous": [...]\}
+}
+\end{promptL}
+
+\subsubsection{Architectural Document Understanding}\label{sec:doc-understanding}
+An alias lets a linker match a document phrase to a component even when the phrase is not the component's exact name.
+%TODO [sec:doc-understanding] simplify (this subsection), cut ~half: DROP the "trailing word"
+%   term + machinery. Describe aliases abstractly as two kinds -- (1) explicit renamings the doc
+%   defines (parenthetical abbrev / clear synonym), (2) shorthand/partial references -- no
+%   last-word mechanics. KEEP the ambiguity link: risky shorthand aliases checked against the
+%   model-understanding ambiguity map before entering the alias table (where the 2 modules meet). 
+\approach discovers these aliases from the document at runtime, and they come in two kinds.
+The first is an explicit renaming, where the document itself ties a short form to a name: an abbreviation in a parenthetical definition, or a synonym in a clear restatement.
+The second is a partial reference, a bare \emph{trailing word}: the last word of a multi-word component name used on its own.
+Trailing-word shorthands are common, but many trailing words are also generic English whose meaning depends on context, so this is the hard kind.
+\approach extracts both kinds, and for each risky trailing-word candidate it checks the word against the ambiguity map and has an \ac{LLM} judge confirm the mapping before it enters the alias table.
+This is where the two modules meet: without the ambiguity map, generic English would leak into the alias table through the trailing-word kind.
+
+\begin{promptL}{Alias Extraction (Document Understanding)}{alias}\\
+{\scriptsize\ttfamily\raggedright
+Find alternative names used for the components.\\
+COMPONENTS: \{comp\_names\}\\
+\{EXTRACTION\_RULE\}\\
+\{SCOPE\_RULE\}\\
+DOCUMENT: \{doc\_lines\}\\
+Return JSON:\\
+~~\{"aliases": [\{term, component, scope\}]\}
+}
+\end{promptL}
+
+% -----------------------------------------------------------------
+% 2.4 LinkerB: the four named forms collapse into one extraction
+% step once the knowledge layer iss available.
+% -----------------------------------------------------------------
+\subsection{\linkerB}\label{sec:entity-linker}
+
+% Without the knowledge module, a named-mention linker would handle the all named mention forms from scratch.
+% The alias table removes this need: once it exists, every named form is just a sentence in $s$ that matches the exact name or one of the recorded aliases, so a single extraction step covers them all.
+\linkerB reads each sentence together with the two tables and asks the \ac{LLM} to mark the sentences that describe a component, 
+returning a candidate link $(s,c)$.
+Each candidate is tagged with the matched sentence, the reference form, and a short reason, forming the candidate's evidence bundle.
+Candidates and their evidence bundles will be the input for the link judge.
+For example, in \autoref{fig:example} Sentence~11 names the \texttt{preferences} component, so \linkerB returns the candidate $(s_{11}, \texttt{preferences})$ with an evidence bundle recording the matched name ``preferences'' and the reference form as the reason.
+Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}.
+Although we prompt the \ac{LLM} to propose a link only when the topic is the matched component, the \ac{LLM} may not follow the rule or may be unable to understand architectural roles.
+If \linkerB also proposes the false link $(s_{7}, \texttt{preferences})$, it will be the judge's responsibility to reject it.
+
+\begin{promptL}{\linkerB: Named-Reference Extraction}{entity}\\
+{\scriptsize\ttfamily\raggedright
+Extract ALL references to components.\\
+COMPONENTS: \{comp\_names\}\\
+KNOWN ALIASES: \{aliases\}\\
+\{EXTRACTION\_RULE\}\\
+DOCUMENT: \{Sn: text\}\\
+Return JSON:\\
+~~\{"references": [\{sentence, component,\\
+~~~~matched\_text\}]\}
+}
+\end{promptL}
+
+% -----------------------------------------------------------------
+% 2.5 LinkerC: the structural antecedent check removes
+% alias-failing candidates without LLM judgment.
+% -----------------------------------------------------------------
+\subsection{\linkerC}\label{sec:coref-linker}
+
+\linkerC recovers the implicit references that carry no explicit mention of any component.
+For each sentence with a pronoun like 'it',  an \ac{LLM} step resolves the pronoun to an earlier sentence and a candidate component as evidence.
+This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
+For illustration, suppose a later sentence reads ``It stores the user's settings,'' naming no component: \linkerC resolves ``It'' to an earlier sentence that named \texttt{preferences} and proposes the implicit link to \texttt{preferences}, reporting that earlier sentence as its evidence.
+%NOTE: the simplified motivation figure has no pronoun case, so this one sentence is illustrative, not a benchmark quote -- swap in a real coreference example if one is available.
+%TODO [sec:coref-linker] two-step framing already present below (1) alias gate, (2) implicit
+%   judge). OPEN: (a) polish wording; (b) reconcile with the sec:validators reframe -- if the
+%   alias gate becomes "step 1 of the judge" (see sec:validators %TODO), present it there, not
+%   as a separate linker step. Pick ONE home for the gate.
+That check has two steps: 1) \approach keeps a resolution only when the earlier sentence actually contains the component's exact name or one of its discovered aliases.
+2) After the filter, candidates are then judged by the implicit-reference judge.
+
+\begin{promptL}{\linkerC: Implicit-Reference Resolution}{coref}\\
+{\scriptsize\ttfamily\raggedright
+Resolve refer-back references (pronoun or\\
+noun phrase) to components.\\
+COMPONENTS: \{comp\_names\}\\
+\{per case: CONTEXT lines + TARGET Sn (marked)\}\\
+\{COREF\_RULE\}\\
+\{ANTECEDENT\_RULE\}\\
+Return JSON:\\
+~~\{"resolutions": [\{case, sent, ref,\\
+~~~~component, ant\_sent, ant\_text,\\
+~~~~via\_alias\}]\}
+}
+\end{promptL}
+
+% -----------------------------------------------------------------
+% 2.6 Validators: evidence over re-classification + epistemic
+% asymmetry jointly justify asymmetric pass counts.
+% -----------------------------------------------------------------
+\subsection{Evidence-Backed Judges}\label{sec:validators}
+
+\acp{LLM} bring rich semantic understanding but are non-deterministic and can hallucinate.
+Left unchecked, this would bring false positive links.
+Two observations shape the judge design.
+
+First, a judge should rule on a candidate from its evidence, not guess at it again.
+Instead of re-classifying the link from scratch, each judge checks the candidate against the evidence bundle the linker reported.
+This keeps the judge and the linker working from the same text.
+Where a plain \ac{LLM}-as-a-judge sees only the candidate link, we augment the judge's input with that evidence bundle---the matched span, the reference form, and, for an implicit reference, the antecedent sentence---which is what makes each judge \emph{context-augmented}.
+
+Second, the two linkers pose different questions, so their judges do different work.
+A named mention has to clear two bars: the sentence must be \emph{relevant}, an architectural action that belongs to the component, and it must be \emph{unique}, pointing to that component rather than another or to a generic use of the word.
+An implicit reference is simpler, because the alias lookup in \linkerC has already dropped every candidate whose earlier sentence does not name the component, so one question remains: whether the resolution fits the content of that earlier sentence.
+
+%TODO [sec:validators] (a) reframe the coref alias-gate (now sec:coref-linker "step 1") as
+%   STEP 1 of the implicit-reference judge, so the judge reads gate -> check (unifies with
+%   sec:coref-linker; mirrors the eval.tex "consolidate check / judge" note). (b) add a small
+%   prompt structure: a compact sketch of the judge prompt -- inputs (candidate link +
+%   evidence-bundle fields), the \linkerB p1 relevance and p2 uniqueness questions, and the
+%   \linkerC single question. Specs-only: describe what the sketch shows, do not draft final
+%   prompt text.
+%DONE (b) 2026-06-29: added \begin{promptL}{Evidence-Backed Judge}{judge} sketch + a one-line
+%   note that {FOCUS}/{VALIDATION_RULE} instantiate as p1 relevance, p2 uniqueness (\linkerB),
+%   and the \linkerC single implicit-fit pass. (a) alias-gate reframe still OPEN.
+%   Companion prompt sketches also added: {ambiguity}, {alias}, {entity}, {coref}.
+The \entValidator{} therefore runs two passes, a relevance pass $p_1$ and a uniqueness pass $p_2$, and accepts a candidate only when both hold ($p_1 \land p_2$), since a trace link needs both.
+The \corefValidator{} runs a single pass on its one remaining question, since the alias lookup has already done what a second pass would repeat.
+We call this design \emph{\evidenceBacked judging}: each judge rules on a candidate from the evidence bundle the linker reported, with the number of passes matched to how hard the decision is. We treat it as a method contribution.
+
+\begin{promptL}{Evidence-Backed Judge}{judge}\\
+{\scriptsize\ttfamily\raggedright
+Validate components. \{FOCUS\}\\
+COMPONENTS: \{comp\_names\}\\
+\{VALIDATION\_RULE\}\\
+CASES: \{cases\}\\
+Return JSON:\\
+~~\{"validations": [\{case,\\
+~~~~claim: "quote|none", approve\}]\}
+}
+\end{promptL}
+
+\noindent All judges share this prompt; \texttt{\{FOCUS\}} and \texttt{\{VALIDATION\_RULE\}} are instantiated three times: the \linkerB relevance pass $p_1$ and uniqueness pass $p_2$, and the \linkerC single implicit-fit pass.
+The checked links are then output as final recovered links.

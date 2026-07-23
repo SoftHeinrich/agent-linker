@@ -1,0 +1,86 @@
+\section{Discussion}
+\label{s:discussion}
+\subsection{Implications}
+
+%Our findings have important implications for both research and practice in software architecture management.
+
+\textbf{For practitioners}, our approach enables proactive architectural quality assurance.
+By predicting smell-inducing issues at creation time, development teams can receive early warnings about potential architectural risks during the planning phase.
+This allows teams to consider architectural implications before implementation begins, when design alternatives are easier to explore, and changes are less costly.
+The fact that predictions can be made using only issue titles and descriptions means that architectural awareness can be raised immediately, without waiting for lengthy discussions or code implementation.
+Furthermore, the high recall rates achieved by our models suggest that most architectural risks can be flagged, enabling teams to prioritize architectural reviews for flagged issues while maintaining development velocity for others.
+
+\textbf{For researchers}, our work establishes a new direction for studying architectural decay.
+By focusing on smell-inducing issues rather than smell-impacted issues, we shift attention from the consequences of decay to its root causes.
+This opens opportunities to understand which types of development activities tend to introduce smells and how architectural knowledge can be better integrated into development workflows.
+The traceability approach we developed provides a methodology for constructing datasets that link implementation decisions to architectural outcomes, thereby supporting future studies on architecture evolution and technical debt management.
+Moreover, our findings show that pre-trained language model embeddings, combined with classical ML approaches, outperform zero-shot LLM predictions, suggesting that the challenge lies in learning project-specific patterns rather than in general architectural reasoning.
+
+\subsection{Threats to Validity}
+Following the guidelines of Runeson and Höst~\cite{runeson_guidelines_2008}, we outline and address potential threats to the validity of our research and experiments.
+
+\textbf{External Validity.}
+The generalizability of our findings is limited by the characteristics of the analyzed systems.
+We conducted our study on three open-source projects that, while actively maintained and representing different domains, may not represent the full spectrum of software development contexts.
+Our results may not fully transfer to projects with substantially different characteristics:
+\begin{enumerate*}[label=(\roman*)]
+    \item very large-scale systems with complex organizational structures,
+    \item proprietary or industrial systems with different development workflows and architectural governance practices, or
+    \item projects using different issue-tracking conventions or development processes.
+\end{enumerate*}
+To mitigate this threat, we selected projects across diverse domains and sizes, applied two different smell-detection tools, and documented our process to facilitate replication.
+
+
+\textbf{Internal Validity.}
+A primary threat to internal validity concerns the accuracy of the temporal information used to associate issues with architectural smells.
+We rely on platform timestamps (e.g., merge request creation and merge dates) to approximate when changes were implemented.
+However, these timestamps may not precisely reflect actual dates: developers may implement changes locally before opening an MR, or commit history may be squashed.
+Additionally, our traceability approach depends on explicit issue-commit links, which may be incomplete due to non-standard workflows (e.g., direct pushes or cherry-picking).
+
+\textbf{Construct Validity.}
+%Construct validity threats relate to how well our operationalization captures the concepts under study.
+We use architectural smells detected by \ARCADE and \Arcan as proxies for instances of architectural decay.
+This assumes that the smells identified by these tools are valid indicators of architecture-level quality issues. 
+% and sufficiently representative. % of the architectural problems developers encounter.
+While prior studies have evaluated the precision and usefulness of these detectors\cite{sas_2022_evolution,le_2018} no automated tool is perfect.
+% False positives or false negatives in the smell reports may affect the labeled dataset used for prediction, thereby influencing model performance and interpretation.
+To mitigate this threat, we used two validated smell detectors and manually inspected a sample of detections to reduce the impact of false positives or negatives.
+
+
+\subsection{Limitations}
+
+\textbf{Incomplete traceability coverage.}
+We were unable to track all growing smells back to issues due to changes outside issues.
+Git workflows such as cherry-picking or direct pushes can make cause such changes\cite{businge_reuse_2022}.
+% Our approach uses only explicit trace links provided by the platform. 
+Future work can combine the traceability recovery approach\cite{businge_reuse_2022} to improve coverage.
+
+\textbf{Limited cross-project variety.} 
+Our cross-project evaluation explores generalizability, but in a simple setting.
+Future work could explore more complex settings, like considering the relationship between training/test projects.
+For example, potential hypotheses include that "similar projects" like projects from the same team or in the same domain are more transferable.
+% Further investigations could examine how transfer learning approaches or domain adaptation techniques can improve generalizability.
+
+
+% cross project evaluation is limited, 
+% they are non-related projects -> for more realistic evaluations, we can also consider new project from same group or 
+% related projects from different group. 
+% Also, we can look at past issues of the same projects and train using them only. 
+
+\textbf{Limited characterization of smell-inducing issues.}
+While we identified which issues induce smells, we have a limited understanding of their characteristics.
+Future work could investigate correlations with issue metadata (e.g., labels, assignees, complexity metrics) to understand what distinguishes smell-inducing issues from others.
+% Additionally, analyzing whether certain issues are prone to introducing multiple smells or specific smell types could provide deeper insights.
+
+\textbf{Single-model predictions.}
+We evaluated individual classifiers and embeddings independently.
+Ensemble approaches that combine multiple models or leverage both semantic embeddings and traditional features could improve predictions.
+
+\textbf{Intentional architectural decisions.}
+Some smells may be introduced intentionally as pragmatic trade-offs \cite{sas_investigating_2019}.
+Our approach does not distinguish between deliberate and accidental architectural degradation, which could lead to false positives where developers consciously accept technical debt.
+
+\textbf{Limited prompt engineering.}
+We use \acp{LLM} as zero-shot classifiers, without prompt engineering or other LLM-specific optimization techniques (e.g., retrieval augmentation, chain-of-thought), which might underestimates their performance.
+However, \ac{LLM}-based tools have been widely and successfully adopted for coding tasks in zero-shot settings.
+This difference suggests that further investigation is needed to understand why software-architecture-related tasks are particularly more challenging for \acp{LLM} than code-centric tasks.

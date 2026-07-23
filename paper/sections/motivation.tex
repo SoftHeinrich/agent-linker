@@ -1,0 +1,123 @@
+\section{Background and Motivation}
+\label{sec:motivation}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/jabref_trace_example}
+% \caption{A simplified documentation-to-model-to-code trace link example.
+% % Sentence~6 introduces the \texttt{gui} component under the alias ``UI''; Sentence~7
+% % then refers to the same component by the pronoun ``it'' while mentioning ``preferences'' as
+% % an ordinary word. Sentence~11 describes the \texttt{preferences} component, implemented under
+% % \texttt{org/jabref/preferences/}. Each component maps to a code package (model-code); the purple
+% % edges are the resulting direct doc-code links, and the dashed red edge is the false positive a
+% % judge must reject.
+% }
+\Description{An example with documentation sentences on the left, architecture components in the middle, and code packages on the right. It shows correct trace links from the documentation to the gui and preferences components and to their code packages, plus one false positive link from a sentence mentioning preferences as an ordinary word.}
+\label{fig:example}
+\end{figure}
+
+%SPEC style: short declaratives, one claim per sentence, low clause depth.
+%SPEC framing: challenge-first -> consequence -> required capability / evaluation implication.
+%SPEC thread: keep the JabRef running example across all subsections; reuse S6/S7/S11 consistently.
+%SPEC scope: kp+jd merged = missed true link AND false positive from the same sentence; ev = misleading aggregate score from long-tailed link distribution.
+%SPEC wording: prefer mention/refer/link/support; avoid surface; avoid inflated LLM language unless the text evidence supports it.
+%SPEC metrics: do not call link-level \fone invalid; frame it as answering a different, size-weighted question that can hide component abandonment.
+%SPEC numbers: keep only argument-carrying figures inline in motivation; trim secondary numbers from the rhetorical foreground.
+%SPEC levels: distinguish doc-model from doc-code explicitly; reserve component for architecture level and package/file links for expansion level.
+%SPEC solution-boundary: motivation = the disease, approach = the cure. Light capability hints allowed (what the task demands); no module names, no approach framing.
+
+\subsection{Motivating Example}
+A trace link connects a documentation sentence to an architecture component (doc-model) or to code (doc-code).
+\autoref{fig:example} shows this setup on JabRef, a reference manager software.
+Sentence~11 describes the \texttt{preferences} component, which maps to the code package \texttt{org/jabref/preferences/}.
+Sentence~7 describes the \texttt{gui} component, but it also contains the word ``preferences.''
+That one sentence shows two problems that make automatic recovery hard.
+A reference uses no component name, and a word matches the wrong component.
+The next two subsections develop these problems in detail.
+
+%SPEC [merged kp+jd] job: show that name matching structurally fails both ways on the same sentence (S7): missed true link from cross-sentence reference AND false positive from ambiguous word. One root cause, two faces.
+\subsection{Challenges of Trace-Link Recovery}
+%SPEC [merged-open] role: state the root cause -- the gap between what the document says and what a name match catches.
+Lexical similarity approaches catch a link only when the sentence contains the component's name.
+Documentation does not always work that way.
+After a component is introduced, later sentences can refer to it by aliases and pronouns, not by its full name.
+This gap between how a document refers and how a name match works cuts both ways: it misses true links and it admits false ones.
+
+%TODO the doc is batched as a whole to be sent, so here is not no see, but not understand the context6+. 
+\autoref{fig:example} shows the miss.
+Sentence~6 introduces the \texttt{gui} component under the alias ``the UI.''
+Sentence~7 then refers to it only through the pronoun ``it.''
+A tool that reads Sentence~7 alone finds no component name, because neither \texttt{gui} nor ``UI'' appears.
+The trace link to \texttt{gui} is missed.
+
+%SPEC [fp] role: the false-positive face, grounded in the same S7.
+The same sentence shows the false positive links.
+Sentence~7 uses the word ``preferences'' as ordinary language: the UI knows the user and his preferences.
+A name match proposes a link to the \texttt{preferences} component, because the word matches.
+But the sentence is actually about the \texttt{gui} component, not about \texttt{preferences} component.
+% Nothing in the sentence supports that link.
+Without a check against the sentence's own evidence, the false link stands.
+
+%SPEC [capability-hint] role: light hint at what the task demands, no module names, no solution framing.
+A recovery method must therefore (i)~carry references across sentences and (ii)~check each proposed link against its sentence evidence.
+
+%SPEC [ev] job: show why aggregate link-level scoring hides architecturally important misses; open with the task property (long-tailed distribution), not a paradox.
+\subsection{Architecture-Driven Evaluation}
+%TODO, make explicit this is our empirical study finding that previous work ignored 
+
+%SPEC [ev-open] role: open with the long-tailed distribution as a task property intrinsic to the architecture.
+Trace links follow a long-tailed distribution across components.
+A few large components hold most of the links, while a long tail of small components hold only a few links.
+% This shape comes from the architecture itself, not from any tool.
+
+%SPEC [ev-mechanism] role: explain the source -- doc-code expansion from component to files.
+% A documentation sentence is annotated against a component.
+% For the doc-code task, that annotation expands to one link for every file in the component's package.
+The standard metrics, averaged Precision, Recall and F-measure weight all links equally.
+This expansion differs widely across components, and the long-tailed shape is what the standard metric hides.
+
+%SPEC [ev-evidence] role: give only the core JabRef evidence; keep number load controlled.
+On JabRef, packages map to files ranging from a single file to hundreds.
+Three large components expand into $99.3\%$ of the gold links, while
+\texttt{preferences} component expands into only $0.44\%$ (\autoref{fig:motivation}, top).
+Link-level \fone\ is therefore settled by those three.
+Yet \texttt{preferences} is described by $20\%$ of the documented sentences, $46\times$ its
+share of links.
+A component a reader meets in one sentence out of five is nearly invisible to the score.
+%TODO also state from other metrics. 
+
+% NOTE: $46\times$ = 20 / 0.4352 (exact preferences link-pair share). Displayed value is now
+% $0.44\%$ (was $0.4\%$), so the page reads consistently: 20 / 0.44 = 45.5 ~= 46. Do NOT revert
+% to 0.4 (that invites 20/0.4 = 50). See REVIEW [data-verification DONE] above.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/jabref_motivation_linear}
+\caption{doc-code links: small components own almost none of the links (grey bars),
+but the documentation describes each of them equally (orange) and several are
+depended on by much of the code (purple): two importance axes the link-level metric ignores.}
+\Description{A two-panel chart for JabRef component importance. 
+The top panel shows that three large components dominate the number of doc-code links, 
+while small components contribute almost none. 
+The bottom panel shows that documentation sentence share and dependency importance are much more evenly spread across components, so link-count-weighted evaluation hides important small components.}
+\label{fig:motivation}
+\end{figure}
+
+%SPEC [ev-tools] role: ground in the Artemis/TransArc contrast; minimum figures needed.
+The long-tailed distribution affects published tools.
+\Artemis, an \ac{LLM} pipeline, recovers the three large components almost perfectly and reaches $0.998$ link-level \fone, above \TransArc's $0.943$.
+Yet \Artemis{} never links a \texttt{preferences} sentence, scoring zero on that component.
+20\% of of JabRef's document sentences describe it, and XXX dependency. 
+\TransArc, by contrast, recovers every component, its weakest at $0.800$ (\autoref{fig:motivation}, bottom).
+Link-level \fone{} therefore ranks the tool Artemis that covers less of the architecture above TransArc, the one that covers more.
+% %SPEC [ev-docmodel] role: separate the doc-model consequence; show the same silent-failure principle without conflating task granularity.
+% The same principle reappears on the doc-model task.
+% A system can score well on link-level \fone\ yet abandon a documented component's
+% sentences entirely.
+% We measure that abandonment directly with the silent-failure mass (SFM) of \autoref{sec:metric:suite}.
+% On doc-model, \approach{} abandons no documented component on any project (SFM $0\%$).
+% \Artemis{} and SWATTR each abandon at least one (macro SFM $7.1\%$ and $7.4\%$).
+% \Artemis{} abandons the \texttt{preferences} component on JabRef, the very component this section highlights.
+% SWATTR drops three MediaStore components.
+%SPEC [ev-close] role: close with the paper move; introduce size-aware metrics that expose dropped components.
+This motivates us to quantify the long-tailed distribution across all five projects and introduce size-aware metrics
+that expose dropped components.

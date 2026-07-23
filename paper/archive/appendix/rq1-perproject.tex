@@ -1,0 +1,26 @@
+% RQ1 per-project breakdown (appendix), exact numbers behind \autoref{fig:rq1-perproject}.
+% GPT-5.4 backend (main), s_linker21, mean of three runs. Minimal metric set (P/R/F1) on
+% both tasks -- the older wide tables (NDG/HUS/ACF1/MAP/MCC) are dropped paper-wide.
+%
+% !!! PLACEHOLDERS !!! $0.xx$ pending the numbers pass (per-project scored CSVs).
+% TODO: optional Claude-Sonnet per-project twin table for full backend coverage.
+\begin{table}[t]
+\caption{RQ1 per-project precision, recall, and \fone\ on the GPT-5.4 backend (\approach{} is \texttt{s\_linker21}, mean of three runs). Macro is the unweighted mean across the five projects (the value reported in \autoref{tab:rq1}).}
+\label{tab:rq1-perproject}
+\centering\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+& \multicolumn{3}{c}{doc-to-model} & \multicolumn{3}{c}{doc-to-code} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Project & P & R & \fone & P & R & \fone \\
+\midrule
+MediaStore    & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ \\
+TeaStore      & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ \\
+Teammates     & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ \\
+BigBlueButton & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ \\
+JabRef        & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ & $0.xx$ \\
+\midrule
+Macro         & $0.xx$ & $0.xx$ & \textbf{$0.xxx$} & $0.xx$ & $0.xx$ & \textbf{$0.xxx$} \\
+\bottomrule
+\end{tabular}
+\end{table}

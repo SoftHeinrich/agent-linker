@@ -1,0 +1,40 @@
+% RQ2 per-(system, project) cell panel (doc-to-code): file \fone beside the size-aware metrics.
+% Replaces the retired fig:rq2-grid; backs the per-project worst-component claims in
+% results.tex sec:results:rq2. NO correlation row -- the rank-correlation analysis was dropped
+% (under canonical s21 the size-aware metrics correlate too strongly with file \fone to read as
+% "adds info F1 doesn't"; see rq2_corr.py / reports/RQ2_CORR.csv for the diagnostic). The point
+% the panel makes is qualitative: a high file \fone does not imply the tail is covered.
+%
+% 15 cells = TransArc / Artemis / \approach x five projects, doc-to-code, GPT-5.4 backend;
+% \approach = canonical Full s_linker21 (S21), mean of run1/2/3. Cells re-aggregate exactly to
+% the \approach (GPT-5.4) row of reports/s21/RQ2_PANEL.csv (file .91 / cov .84 / worst .75 / harm .88).
+% Grounding + regeneration: transarc-emp/mini-src/rq2_corr.py -> reports/RQ2_CELLS.csv.
+% Companion data (machine-readable, full precision): appendix/rq2-tail.csv
+\begin{table}[t]
+\caption{RQ2 per-(system, project) cell panel on doc-to-code (GPT-5.4 backend; \approach{} is the canonical \texttt{s\_linker21}, mean of three runs, the two baselines single-shot). A high file \fone\ does not mean the tail is covered: Artemis reaches file \fone\ $.79$--$1.00$ on BigBlueButton and JabRef yet a worst-component \fone\ of $0$, missing whole components, whereas \approach{} keeps every component above zero.}
+\label{tab:rq2-tail}
+\centering\small
+\begin{tabularx}{\columnwidth}{@{}l l *{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+System & Project & File \fone & Sent.\ cov. & Worst\ \fone & Harm.\ \fone \\
+\midrule
+TransArc    & MediaStore     & $.59$ & $.64$ & $.00$ & $.00$ \\
+            & TeaStore       & $.83$ & $.70$ & $.67$ & $.84$ \\
+            & Teammates      & $.82$ & $.60$ & $.51$ & $.71$ \\
+            & BigBlueButton  & $.83$ & $.82$ & $.74$ & $.87$ \\
+            & JabRef         & $.94$ & $1.00$ & $.80$ & $.94$ \\
+\addlinespace[2pt]
+Artemis     & MediaStore     & $.88$ & $.88$ & $.73$ & $.94$ \\
+            & TeaStore       & $.83$ & $.70$ & $.67$ & $.83$ \\
+            & Teammates      & $.75$ & $.36$ & $.33$ & $.55$ \\
+            & BigBlueButton  & $.79$ & $.71$ & $.00$ & $.00$ \\
+            & JabRef         & $1.00$ & $.90$ & $.00$ & $.00$ \\
+\addlinespace[2pt]
+\approach{} & MediaStore     & $.90$ & $.95$ & $.91$ & $.99$ \\
+            & TeaStore       & $.96$ & $.96$ & $.91$ & $.97$ \\
+            & Teammates      & $.82$ & $.42$ & $.33$ & $.59$ \\
+            & BigBlueButton  & $.85$ & $.88$ & $.61$ & $.87$ \\
+            & JabRef         & $1.00$ & $1.00$ & $1.00$ & $1.00$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

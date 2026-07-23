@@ -1,0 +1,44 @@
+{
+  "run": "run1",
+  "dataset": "jabref",
+  "P": 0.9411764705882353,
+  "R": 0.8888888888888888,
+  "F1": 0.9142857142857143,
+  "tp": 16,
+  "fp": 1,
+  "fn": 2,
+  "n_links": 17,
+  "fp_by_source": {
+    "coreference": 1
+  },
+  "fp_details": [
+    {
+      "sentence": 7,
+      "component": "preferences",
+      "source": "coreference",
+      "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 2,
+      "component": "cli",
+      "name_in_text": true
+    },
+    {
+      "sentence": 2,
+      "component": "preferences",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 20,
+  "n_coref_candidates": 10,
+  "n_llm_calls": 3,
+  "tokens": {
+    "prompt": 10443,
+    "completion": 427
+  },
+  "entity_validated": 16,
+  "coref_validated": 3,
+  "elapsed_s": 7.1
+}

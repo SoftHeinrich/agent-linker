@@ -1,0 +1,36 @@
+% RQ2 size-aware suite as a profile / slope chart -- BAKE-OFF variant 1 of 3.
+% x = the four metrics ordered standard->tail, y = value; one polyline per system.
+% The lines fan apart toward the tail metrics = the RQ2 story. GPT-5.4 macro.
+%   \approach=darkblue, Artemis=darkorange, TransArc=darkgreen.
+% Values: latest s21 doc-to-code macro -- evaluation/reports/s21/RQ2_PANEL.csv
+%   ("approach S21 (GPT-5.4)" / "Artemis (GPT-5.4)" / "TransArC" average rows).
+% Companion data (machine-readable, full precision): figures/rq2-profile.csv
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=2.1cm,y=7cm]
+  % y axis 0.3..0.95 (ArchLinker File F1 = .906 sits above the 0.9 tick)
+  \draw[black!55,thick] (-0.3,0.3) -- (-0.3,0.95);
+  \foreach \y in {0.3,0.5,0.7,0.9}{
+    \draw[black!55] (-0.3,\y)--(-0.37,\y) node[left,font=\footnotesize]{\y};
+    \draw[black!12] (-0.3,\y)--(3.3,\y);
+  }
+  \node[rotate=90,anchor=south,font=\small] at (-0.66,0.625) {value};
+  % x metric labels
+  \foreach \i/\m in {0/{File \fone},1/{Sent.\ cov.},2/{Worst-comp.},3/{Harmonic}}{
+    \node[font=\footnotesize,anchor=north,align=center] at (\i,0.285) {\m};
+  }
+  % lines (s21 doc-to-code macro -- evaluation/reports/s21/RQ2_PANEL.csv, "* S21 (GPT-5.4)" rows)
+  \draw[darkblue,thick]   (0,0.906)--(1,0.842)--(2,0.753)--(3,0.884);
+  \draw[darkorange,thick] (0,0.849)--(1,0.709)--(2,0.346)--(3,0.466);
+  \draw[darkgreen,thick]  (0,0.803)--(1,0.751)--(2,0.545)--(3,0.673);
+  \foreach \x/\y in {0/0.906,1/0.842,2/0.753,3/0.884}{\fill[darkblue]  (\x,\y) circle(1.8pt);}
+  \foreach \x/\y in {0/0.849,1/0.709,2/0.346,3/0.466}{\fill[darkorange](\x,\y) circle(1.8pt);}
+  \foreach \x/\y in {0/0.803,1/0.751,2/0.545,3/0.673}{\fill[darkgreen] (\x,\y) circle(1.8pt);}
+  % legend (lower-left empty region: all lines run high here until the tail metrics)
+  \node[darkblue,font=\footnotesize\bfseries,anchor=west] at (0.1,0.47) {\approach{}};
+  \node[darkorange,font=\footnotesize,anchor=west]        at (0.1,0.41) {Artemis};
+  \node[darkgreen,font=\footnotesize,anchor=west]         at (0.1,0.35) {TransArc};
+\end{tikzpicture}
+\caption{RQ2 (bake-off, profile): the size-aware suite for the three systems on the GPT-5.4 backend, metrics ordered standard$\rightarrow$tail. The lines fan apart on the tail metrics, where \approach{} keeps its lead.}
+\label{fig:rq2-profile}
+\end{figure}

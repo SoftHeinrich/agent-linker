@@ -1,0 +1,21 @@
+% RQ2 size-aware panel -- Claude Sonnet backend mirror of the body table tab:rq2-summary.
+% Same four metrics (file F1 reference + sentence coverage + worst/harmonic component F1),
+% doc-to-code, macro over the five projects, \approach{} on the Claude backend.
+%
+% !!! PLACEHOLDERS !!! $.xx$ pending the numbers pass (Claude s_linker21, v2.6.6_s21_sonnet).
+\begin{table}[t]
+\caption{RQ2 architecture-driven panel on the Claude Sonnet backend (cross-backend mirror of \autoref{tab:rq2-summary}). \approach{} is \texttt{s\_linker21} (mean of three runs); the baselines are unchanged. $\Delta = \text{\approach} - \text{Artemis}$. Best per row in bold.}
+\label{tab:rq2-claude}
+\centering\small
+\begin{tabularx}{\columnwidth}{@{}lYYYY@{}}
+\toprule
+Metric                              & TransArc & Artemis & \approach{} & $\Delta$ \\
+\midrule
+File \fone\ (reference)             & $.xx$ & $.xx$ & \textbf{$.xx$} & $+.xx$ \\
+\addlinespace[2pt]
+Sentence coverage                   & $.xx$ & $.xx$ & \textbf{$.xx$} & $+.xx$ \\
+Worst-component \fone               & $.xx$ & $.xx$ & \textbf{$.xx$} & $+.xx$ \\
+Harmonic-mean comp.\ \fone          & $.xx$ & $.xx$ & \textbf{$.xx$} & $+.xx$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

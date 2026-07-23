@@ -1,0 +1,39 @@
+% RQ1: per-project link F1 on both tasks, compact format (.XX, 1.).
+% Data sources (all in evaluation/reports/):
+%   Doc-to-model
+%     SWATTR    : swattr_rq1_d2m.csv (P/R available, dropped for compactness)
+%     LiSSA     : lissa_rq1_d2m.csv
+%     Artemis   : PENDING -- strongest baseline on both tasks; values are placeholders (.xx).
+%     AAlinker  : SADSAM_S11_S13F_VS_TRANSARC.csv, column s19_claude_link_f1
+%                 (regenerated 2026-06-05 from agent-linker/results/v2.6.3/claude/<proj>/sad-sam.csv)
+%   Doc-to-code
+%     TransArc  : transarc_rq1_d2c.csv (P/R available, dropped)
+%     LiSSA     : lissa_rq1_d2c.csv (teammates & jabref absent -> "--")
+%     Artemis   : PENDING -- strongest baseline, composed via the TransArc file mapping; values are placeholders (.xx).
+%     AAlinker  : SADCODE_S11_S13F_VS_TRANSARC.csv, column s19_claude_file_f1
+%                 (regenerated 2026-06-05 from agent-linker/results/v2.6.3/claude/<proj>/sad-code.csv)
+% AAlinker == s_linker19 (Claude backend, paper variant).
+% Macro = unweighted mean over the five projects (or "--" when any project is missing).
+% Compact format: ".XX" (two decimals, leading zero dropped); "1." for values that round to 1.00;
+% "--" for missing; ".xx" for an Artemis placeholder pending its run.
+\begin{table}[t]
+\caption{Per-project link \fone\ on both tasks. \approach{} is \texttt{s\_linker19} on the Claude backend; Artemis is the strongest baseline on both tasks. Macro is the unweighted mean across the five projects; ``--'' marks values that were not produced and ``.xx'' marks Artemis placeholders pending its run. Compact format: ``.XX'' drops the leading zero; ``1.'' denotes a value that rounds to $1.00$.}
+\label{tab:rq1}
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccc@{\hspace{1.0em}}cccc@{}}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Doc-to-model}} & \multicolumn{4}{c}{\textbf{Doc-to-code}} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Project        & SWATTR & LiSSA & Artemis & \approach{} & TransArc & LiSSA & Artemis & \approach{} \\
+\midrule
+MediaStore     & .69 & .45 & .xx & \textbf{.93} & .59 & .14 & .xx & \textbf{.98} \\
+TeaStore       & .85 & .39 & .xx & \textbf{.98} & .83 & .33 & .xx & \textbf{1.}  \\
+TeaMmates      & .71 & .16 & .xx & \textbf{.91} & .82 & --  & .xx & \textbf{.86} \\
+BigBlueButton  & .79 & .26 & .xx & \textbf{.90} & .83 & .13 & .xx & \textbf{.87} \\
+JabRef         & .95 & .86 & .xx & \textbf{.97} & .94 & --  & .xx & \textbf{.99} \\
+\midrule
+Macro          & .80 & .42 & .xx & \textbf{.94} & .80 & --  & .xx & \textbf{.94} \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,893 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] Using the MultiThreadedBuilder implementation with a thread count of 12
+[INFO] 
+[INFO] ------------------< io.github.ardoco.core:tests-tlr >-------------------
+[INFO] Building tests-tlr 0.18.0-ICSE24-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ tests-tlr ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:tests-tlr:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ tests-tlr ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ tests-tlr ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ tests-tlr ---
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ tests-tlr ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ tests-tlr ---
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:integration-test (default) @ tests-tlr ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running edu.kit.kastel.mcse.ardoco.core.tests.integration.RawLinkDumpIT
+2026-06-21 11:10:08:644 +0000 [main] INFO ArDoCo - Starting mediastore
+2026-06-21 11:10:08:645 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:08:646 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:08:646 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:08:646 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:08:663 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:08:668 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:09:017 +0000 [main] INFO MaxentTagger - Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [0.3 sec].
+2026-06-21 11:10:09:018 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:09:399 +0000 [main] INFO ParserGrammar - Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [0.4 sec].
+2026-06-21 11:10:09:411 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:10:095 +0000 [main] INFO DependencyParser - Loading depparse model: edu/stanford/nlp/models/parser/nndep/english_UD.gz ... Time elapsed: 0.7 sec
+2026-06-21 11:10:10:540 +0000 [main] INFO Classifier - PreComputed 20000 vectors, elapsed Time: 0.444 sec
+2026-06-21 11:10:10:541 +0000 [main] INFO DependencyParser - Initializing dependency parser ... done [1.1 sec].
+2026-06-21 11:10:10:541 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:13:449 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 4.802 s
+2026-06-21 11:10:13:449 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 4.803 s
+2026-06-21 11:10:13:449 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:13:449 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _7zbcYHDhEeSqnN80MQ2uGw
+2026-06-21 11:10:13:530 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:13:530 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _7zbcYHDhEeSqnN80MQ2uGw in 0.080 s
+2026-06-21 11:10:13:530 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.080 s
+2026-06-21 11:10:13:530 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:13:531 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:13:537 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:13:538 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:13:914 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.376 s
+2026-06-21 11:10:13:914 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:14:016 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.101 s
+2026-06-21 11:10:14:016 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:14:056 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.040 s
+2026-06-21 11:10:14:057 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:14:057 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:10:14:057 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.519 s
+2026-06-21 11:10:14:057 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:14:058 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:14:115 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.057 s
+2026-06-21 11:10:14:115 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.057 s
+2026-06-21 11:10:14:115 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.584 s
+2026-06-21 11:10:14:115 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:14:116 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:14:117 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:14:198 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.081 s
+2026-06-21 11:10:14:198 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.081 s
+2026-06-21 11:10:14:198 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:14:198 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:14:230 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.031 s
+2026-06-21 11:10:14:230 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.031 s
+2026-06-21 11:10:14:230 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.114 s
+2026-06-21 11:10:14:230 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:14:231 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:14:231 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:14:298 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.066 s
+2026-06-21 11:10:14:298 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:14:350 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.051 s
+2026-06-21 11:10:14:350 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.119 s
+2026-06-21 11:10:14:350 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:14:350 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:14:360 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.009 s
+2026-06-21 11:10:14:360 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.010 s
+2026-06-21 11:10:14:360 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:14:360 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:14:369 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.008 s
+2026-06-21 11:10:14:369 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.008 s
+2026-06-21 11:10:14:369 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:14:369 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:14:410 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.040 s
+2026-06-21 11:10:14:410 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.041 s
+2026-06-21 11:10:14:411 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.180 s
+2026-06-21 11:10:14:412 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:10:14:424 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:14:424 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:14:424 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:14:424 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:14:424 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:14:425 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:14:426 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:14:426 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:14:427 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:10:14:427 +0000 [main] INFO ArDoCo - 00:05.765
+2026-06-21 11:10:14:464 +0000 [main] INFO ArDoCo - Starting mediastore
+2026-06-21 11:10:14:464 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:14:464 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:14:464 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:14:464 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:14:465 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:14:465 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:14:465 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:14:465 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:14:465 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:16:674 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 2.209 s
+2026-06-21 11:10:16:674 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 2.209 s
+2026-06-21 11:10:16:674 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:16:674 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _7zbcYHDhEeSqnN80MQ2uGw
+2026-06-21 11:10:16:674 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:16:674 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _7zbcYHDhEeSqnN80MQ2uGw in 0.000 s
+2026-06-21 11:10:16:674 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:10:16:674 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:16:674 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:16:675 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:16:675 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:16:739 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.064 s
+2026-06-21 11:10:16:739 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:16:789 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.049 s
+2026-06-21 11:10:16:789 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:16:817 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.027 s
+2026-06-21 11:10:16:817 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:16:817 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:10:16:817 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.142 s
+2026-06-21 11:10:16:818 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:16:818 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:16:844 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.026 s
+2026-06-21 11:10:16:844 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.026 s
+2026-06-21 11:10:16:844 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.169 s
+2026-06-21 11:10:16:844 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:16:845 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:16:845 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:16:881 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.036 s
+2026-06-21 11:10:16:881 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.036 s
+2026-06-21 11:10:16:881 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:16:881 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:16:897 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.015 s
+2026-06-21 11:10:16:897 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.015 s
+2026-06-21 11:10:16:897 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.052 s
+2026-06-21 11:10:16:897 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:16:897 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:16:897 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:16:937 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.039 s
+2026-06-21 11:10:16:937 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:16:977 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.040 s
+2026-06-21 11:10:16:978 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.080 s
+2026-06-21 11:10:16:978 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:16:978 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:16:983 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.005 s
+2026-06-21 11:10:16:983 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.005 s
+2026-06-21 11:10:16:984 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:16:984 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:16:984 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:10:16:984 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:10:16:984 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:16:984 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:17:007 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.022 s
+2026-06-21 11:10:17:007 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.022 s
+2026-06-21 11:10:17:007 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.109 s
+2026-06-21 11:10:17:007 +0000 [main] INFO ArDoCo - Starting ArDoCo - ArCoTLModelProviderAgent
+2026-06-21 11:10:17:007 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor PcmExtractor
+2026-06-21 11:10:17:007 +0000 [main] INFO ArCoTLModelProviderInformant - Extracting code model.
+2026-06-21 11:10:17:013 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor PcmExtractor in 0.005 s
+2026-06-21 11:10:17:013 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor
+2026-06-21 11:10:17:013 +0000 [main] INFO CodeExtractor - Reading in existing code model.
+2026-06-21 11:10:17:143 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor in 0.130 s
+2026-06-21 11:10:17:143 +0000 [main] INFO ArDoCo - Finished ArDoCo - ArCoTLModelProviderAgent in 0.136 s
+2026-06-21 11:10:17:143 +0000 [main] INFO ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+2026-06-21 11:10:17:143 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:17:144 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+2026-06-21 11:10:17:144 +0000 [main] INFO InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+2026-06-21 11:10:17:842 +0000 [main] INFO InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 0.697 s
+2026-06-21 11:10:17:842 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 0.698 s
+2026-06-21 11:10:17:842 +0000 [main] INFO ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 0.698 s
+2026-06-21 11:10:17:842 +0000 [main] INFO ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+2026-06-21 11:10:17:842 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+2026-06-21 11:10:17:842 +0000 [main] INFO TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+2026-06-21 11:10:17:843 +0000 [main] INFO TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.001 s
+2026-06-21 11:10:17:844 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.001 s
+2026-06-21 11:10:17:844 +0000 [main] INFO ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.001 s
+2026-06-21 11:10:17:844 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:10:17:847 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:17:847 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:17:847 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:17:847 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:17:848 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:10:17:848 +0000 [main] INFO ArDoCo - 00:03.379
+2026-06-21 11:10:17:856 +0000 [main] INFO ArDoCo - Starting teastore
+2026-06-21 11:10:17:856 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:17:857 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:17:857 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:17:857 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:17:857 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:17:857 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:17:857 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:17:857 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:17:857 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:20:363 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 2.506 s
+2026-06-21 11:10:20:363 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 2.506 s
+2026-06-21 11:10:20:363 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:20:363 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _VdKBIDVWEeqPG_FgW3bi6Q
+2026-06-21 11:10:20:363 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:20:363 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _VdKBIDVWEeqPG_FgW3bi6Q in 0.000 s
+2026-06-21 11:10:20:363 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:10:20:363 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:20:363 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:20:363 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:20:363 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:20:438 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.074 s
+2026-06-21 11:10:20:438 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:20:491 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.052 s
+2026-06-21 11:10:20:491 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:20:512 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.021 s
+2026-06-21 11:10:20:512 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:20:513 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:10:20:513 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.149 s
+2026-06-21 11:10:20:513 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:20:513 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:20:532 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.018 s
+2026-06-21 11:10:20:532 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.018 s
+2026-06-21 11:10:20:532 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.168 s
+2026-06-21 11:10:20:532 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:20:532 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:20:532 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:20:554 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.021 s
+2026-06-21 11:10:20:554 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.021 s
+2026-06-21 11:10:20:554 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:20:554 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:20:566 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.012 s
+2026-06-21 11:10:20:566 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.012 s
+2026-06-21 11:10:20:566 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.034 s
+2026-06-21 11:10:20:566 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:20:567 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:20:567 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:20:588 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.020 s
+2026-06-21 11:10:20:588 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:20:620 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.032 s
+2026-06-21 11:10:20:621 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.053 s
+2026-06-21 11:10:20:621 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:20:621 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:20:628 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.006 s
+2026-06-21 11:10:20:628 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.007 s
+2026-06-21 11:10:20:628 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:20:628 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:20:628 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:10:20:629 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:10:20:629 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:20:629 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:20:652 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.023 s
+2026-06-21 11:10:20:653 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.024 s
+2026-06-21 11:10:20:653 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.086 s
+2026-06-21 11:10:20:653 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:10:20:654 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:20:654 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:20:654 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:20:654 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:20:654 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:20:654 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:20:654 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:20:654 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:20:654 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:10:20:654 +0000 [main] INFO ArDoCo - 00:02.796
+2026-06-21 11:10:20:660 +0000 [main] INFO ArDoCo - Starting teastore
+2026-06-21 11:10:20:660 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:20:660 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:20:660 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:20:660 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:20:661 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:20:661 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:20:661 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:20:661 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:20:661 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:23:081 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 2.420 s
+2026-06-21 11:10:23:081 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 2.420 s
+2026-06-21 11:10:23:081 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:23:081 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _VdKBIDVWEeqPG_FgW3bi6Q
+2026-06-21 11:10:23:081 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:23:081 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _VdKBIDVWEeqPG_FgW3bi6Q in 0.000 s
+2026-06-21 11:10:23:081 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:10:23:081 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:23:081 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:23:081 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:23:081 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:23:153 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.071 s
+2026-06-21 11:10:23:153 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:23:204 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.051 s
+2026-06-21 11:10:23:204 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:23:223 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.018 s
+2026-06-21 11:10:23:223 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:23:223 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:10:23:223 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.141 s
+2026-06-21 11:10:23:223 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:23:223 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:23:242 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.018 s
+2026-06-21 11:10:23:242 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.019 s
+2026-06-21 11:10:23:242 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.161 s
+2026-06-21 11:10:23:242 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:23:242 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:23:242 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:23:262 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.019 s
+2026-06-21 11:10:23:263 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.020 s
+2026-06-21 11:10:23:263 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:23:263 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:23:276 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.013 s
+2026-06-21 11:10:23:276 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.013 s
+2026-06-21 11:10:23:276 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.033 s
+2026-06-21 11:10:23:276 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:23:276 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:23:277 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:23:298 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.021 s
+2026-06-21 11:10:23:298 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:23:335 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.036 s
+2026-06-21 11:10:23:335 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.058 s
+2026-06-21 11:10:23:335 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:23:335 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:23:343 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.007 s
+2026-06-21 11:10:23:343 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.007 s
+2026-06-21 11:10:23:343 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:23:343 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:23:343 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:10:23:343 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:10:23:344 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:23:344 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:23:369 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.025 s
+2026-06-21 11:10:23:369 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.025 s
+2026-06-21 11:10:23:369 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.092 s
+2026-06-21 11:10:23:369 +0000 [main] INFO ArDoCo - Starting ArDoCo - ArCoTLModelProviderAgent
+2026-06-21 11:10:23:369 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor PcmExtractor
+2026-06-21 11:10:23:369 +0000 [main] INFO ArCoTLModelProviderInformant - Extracting code model.
+2026-06-21 11:10:23:372 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor PcmExtractor in 0.003 s
+2026-06-21 11:10:23:373 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor
+2026-06-21 11:10:23:373 +0000 [main] INFO CodeExtractor - Reading in existing code model.
+2026-06-21 11:10:23:391 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor in 0.017 s
+2026-06-21 11:10:23:391 +0000 [main] INFO ArDoCo - Finished ArDoCo - ArCoTLModelProviderAgent in 0.021 s
+2026-06-21 11:10:23:391 +0000 [main] INFO ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+2026-06-21 11:10:23:391 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:23:391 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+2026-06-21 11:10:23:391 +0000 [main] INFO InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+2026-06-21 11:10:24:752 +0000 [main] INFO InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 1.361 s
+2026-06-21 11:10:24:752 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 1.361 s
+2026-06-21 11:10:24:752 +0000 [main] INFO ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 1.361 s
+2026-06-21 11:10:24:752 +0000 [main] INFO ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+2026-06-21 11:10:24:752 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+2026-06-21 11:10:24:752 +0000 [main] INFO TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+2026-06-21 11:10:24:754 +0000 [main] INFO TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.001 s
+2026-06-21 11:10:24:754 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.001 s
+2026-06-21 11:10:24:754 +0000 [main] INFO ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.001 s
+2026-06-21 11:10:24:754 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:10:24:763 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:24:763 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:24:763 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:24:763 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:24:763 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:10:24:764 +0000 [main] INFO ArDoCo - 00:04.093
+2026-06-21 11:10:24:768 +0000 [main] INFO ArDoCo - Starting teammates
+2026-06-21 11:10:24:769 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:24:769 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:24:769 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:24:769 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:24:769 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:24:769 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:24:769 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:24:769 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:24:769 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:33:587 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 8.818 s
+2026-06-21 11:10:33:587 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 8.818 s
+2026-06-21 11:10:33:587 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:33:587 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _tRJJ0KESEeu-mYqkDskRow
+2026-06-21 11:10:33:587 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:33:587 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _tRJJ0KESEeu-mYqkDskRow in 0.000 s
+2026-06-21 11:10:33:587 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:10:33:587 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:33:587 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:33:588 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:33:588 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:34:122 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.534 s
+2026-06-21 11:10:34:122 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:34:507 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.384 s
+2026-06-21 11:10:34:507 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:34:572 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.065 s
+2026-06-21 11:10:34:572 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:34:594 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.021 s
+2026-06-21 11:10:34:594 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 1.006 s
+2026-06-21 11:10:34:594 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:34:594 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:34:967 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.373 s
+2026-06-21 11:10:34:968 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.373 s
+2026-06-21 11:10:34:968 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 1.380 s
+2026-06-21 11:10:34:968 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:34:968 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:34:968 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:35:106 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.137 s
+2026-06-21 11:10:35:106 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.137 s
+2026-06-21 11:10:35:106 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:35:106 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:35:174 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.068 s
+2026-06-21 11:10:35:175 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.068 s
+2026-06-21 11:10:35:175 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.206 s
+2026-06-21 11:10:35:175 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:35:175 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:35:175 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:35:330 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.154 s
+2026-06-21 11:10:35:330 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:35:438 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.108 s
+2026-06-21 11:10:35:438 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.263 s
+2026-06-21 11:10:35:438 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:35:438 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:35:447 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.008 s
+2026-06-21 11:10:35:447 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.009 s
+2026-06-21 11:10:35:447 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:35:447 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:35:448 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:10:35:448 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:10:35:448 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:35:448 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:35:496 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.048 s
+2026-06-21 11:10:35:496 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.048 s
+2026-06-21 11:10:35:496 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.321 s
+2026-06-21 11:10:35:496 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:10:35:498 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:35:499 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:35:499 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:35:499 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:10:35:499 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:35:499 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:35:499 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:10:35:499 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:10:35:499 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:10:35:499 +0000 [main] INFO ArDoCo - 00:10.727
+2026-06-21 11:10:35:510 +0000 [main] INFO ArDoCo - Starting teammates
+2026-06-21 11:10:35:510 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:10:35:510 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:10:35:510 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:35:510 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:10:35:511 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:10:35:511 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:10:35:511 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:10:35:511 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:10:35:511 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:10:44:021 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 8.510 s
+2026-06-21 11:10:44:021 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 8.510 s
+2026-06-21 11:10:44:021 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:10:44:021 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _tRJJ0KESEeu-mYqkDskRow
+2026-06-21 11:10:44:021 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:10:44:021 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _tRJJ0KESEeu-mYqkDskRow in 0.000 s
+2026-06-21 11:10:44:021 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:10:44:021 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:10:44:021 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:10:44:021 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:10:44:021 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:10:44:543 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.522 s
+2026-06-21 11:10:44:544 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:10:44:921 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.377 s
+2026-06-21 11:10:44:921 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:10:44:985 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.064 s
+2026-06-21 11:10:44:985 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:10:45:006 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.020 s
+2026-06-21 11:10:45:006 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.984 s
+2026-06-21 11:10:45:006 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:10:45:006 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:10:45:348 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.342 s
+2026-06-21 11:10:45:348 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.342 s
+2026-06-21 11:10:45:348 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 1.327 s
+2026-06-21 11:10:45:348 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:10:45:349 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:10:45:349 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:10:45:482 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.132 s
+2026-06-21 11:10:45:482 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.133 s
+2026-06-21 11:10:45:482 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:10:45:482 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:10:45:551 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.069 s
+2026-06-21 11:10:45:551 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.069 s
+2026-06-21 11:10:45:551 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.202 s
+2026-06-21 11:10:45:551 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:10:45:551 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:10:45:551 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:10:45:697 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.145 s
+2026-06-21 11:10:45:697 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:10:45:796 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.098 s
+2026-06-21 11:10:45:796 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.244 s
+2026-06-21 11:10:45:796 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:10:45:796 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:10:45:804 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.007 s
+2026-06-21 11:10:45:804 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.008 s
+2026-06-21 11:10:45:804 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:10:45:804 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:10:45:804 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:10:45:804 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:10:45:804 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:10:45:804 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:10:45:844 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.039 s
+2026-06-21 11:10:45:844 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.039 s
+2026-06-21 11:10:45:844 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.292 s
+2026-06-21 11:10:45:844 +0000 [main] INFO ArDoCo - Starting ArDoCo - ArCoTLModelProviderAgent
+2026-06-21 11:10:45:844 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor PcmExtractor
+2026-06-21 11:10:45:844 +0000 [main] INFO ArCoTLModelProviderInformant - Extracting code model.
+2026-06-21 11:10:45:845 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor PcmExtractor in 0.000 s
+2026-06-21 11:10:45:845 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor
+2026-06-21 11:10:45:845 +0000 [main] INFO CodeExtractor - Reading in existing code model.
+2026-06-21 11:10:45:887 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor in 0.042 s
+2026-06-21 11:10:45:887 +0000 [main] INFO ArDoCo - Finished ArDoCo - ArCoTLModelProviderAgent in 0.043 s
+2026-06-21 11:10:45:887 +0000 [main] INFO ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+2026-06-21 11:10:45:887 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:10:45:887 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+2026-06-21 11:10:45:887 +0000 [main] INFO InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+2026-06-21 11:11:06:189 +0000 [main] INFO InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 20.301 s
+2026-06-21 11:11:06:189 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 20.301 s
+2026-06-21 11:11:06:189 +0000 [main] INFO ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 20.301 s
+2026-06-21 11:11:06:189 +0000 [main] INFO ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+2026-06-21 11:11:06:189 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+2026-06-21 11:11:06:189 +0000 [main] INFO TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+2026-06-21 11:11:06:205 +0000 [main] INFO TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.015 s
+2026-06-21 11:11:06:205 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.015 s
+2026-06-21 11:11:06:205 +0000 [main] INFO ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.015 s
+2026-06-21 11:11:06:205 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:11:06:257 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:06:257 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:06:257 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:06:257 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:06:257 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:11:06:257 +0000 [main] INFO ArDoCo - 00:30.694
+2026-06-21 11:11:06:274 +0000 [main] INFO ArDoCo - Starting bigbluebutton
+2026-06-21 11:11:06:274 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:11:06:274 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:11:06:274 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:06:274 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:06:275 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:11:06:275 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:11:06:275 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:11:06:275 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:11:06:275 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:11:11:040 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 4.765 s
+2026-06-21 11:11:11:040 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 4.765 s
+2026-06-21 11:11:11:040 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:11:11:040 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _kMF5sFkFEeyewPSmlgszyA
+2026-06-21 11:11:11:040 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:11:11:040 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _kMF5sFkFEeyewPSmlgszyA in 0.000 s
+2026-06-21 11:11:11:040 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:11:11:040 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:11:11:040 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:11:11:040 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:11:11:040 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:11:11:278 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.238 s
+2026-06-21 11:11:11:278 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:11:11:428 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.149 s
+2026-06-21 11:11:11:428 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:11:11:464 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.036 s
+2026-06-21 11:11:11:464 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:11:11:468 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.003 s
+2026-06-21 11:11:11:468 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.427 s
+2026-06-21 11:11:11:468 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:11:11:468 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:11:11:563 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.095 s
+2026-06-21 11:11:11:563 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.095 s
+2026-06-21 11:11:11:563 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.523 s
+2026-06-21 11:11:11:563 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:11:11:564 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:11:11:564 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:11:11:610 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.046 s
+2026-06-21 11:11:11:610 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.046 s
+2026-06-21 11:11:11:610 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:11:11:610 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:11:11:638 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.027 s
+2026-06-21 11:11:11:638 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.027 s
+2026-06-21 11:11:11:638 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.074 s
+2026-06-21 11:11:11:638 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:11:11:638 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:11:11:638 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:11:11:682 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.044 s
+2026-06-21 11:11:11:682 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:11:11:761 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.078 s
+2026-06-21 11:11:11:761 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.123 s
+2026-06-21 11:11:11:761 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:11:11:761 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:11:11:772 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.010 s
+2026-06-21 11:11:11:772 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.011 s
+2026-06-21 11:11:11:772 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:11:11:772 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:11:11:774 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.001 s
+2026-06-21 11:11:11:774 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.001 s
+2026-06-21 11:11:11:774 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:11:11:774 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:11:11:816 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.042 s
+2026-06-21 11:11:11:816 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.042 s
+2026-06-21 11:11:11:816 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.178 s
+2026-06-21 11:11:11:816 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:11:11:817 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:11:817 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:11:11:817 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:11:817 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:11:11:817 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:11:817 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:11:817 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:11:817 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:11:817 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:11:11:817 +0000 [main] INFO ArDoCo - 00:05.542
+2026-06-21 11:11:11:823 +0000 [main] INFO ArDoCo - Starting bigbluebutton
+2026-06-21 11:11:11:823 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:11:11:823 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:11:11:823 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:11:823 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:11:824 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:11:11:824 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:11:11:824 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:11:11:824 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:11:11:824 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:11:16:494 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 4.671 s
+2026-06-21 11:11:16:494 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 4.671 s
+2026-06-21 11:11:16:494 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:11:16:494 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider _kMF5sFkFEeyewPSmlgszyA
+2026-06-21 11:11:16:495 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:11:16:495 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider _kMF5sFkFEeyewPSmlgszyA in 0.000 s
+2026-06-21 11:11:16:495 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:11:16:495 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:11:16:495 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:11:16:495 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:11:16:495 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:11:16:737 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.241 s
+2026-06-21 11:11:16:737 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:11:16:890 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.153 s
+2026-06-21 11:11:16:890 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:11:16:932 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.041 s
+2026-06-21 11:11:16:932 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:11:16:935 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.003 s
+2026-06-21 11:11:16:935 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.440 s
+2026-06-21 11:11:16:935 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:11:16:936 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:11:17:031 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.095 s
+2026-06-21 11:11:17:031 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.095 s
+2026-06-21 11:11:17:031 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.536 s
+2026-06-21 11:11:17:031 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:11:17:031 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:11:17:031 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:11:17:074 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.042 s
+2026-06-21 11:11:17:074 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.042 s
+2026-06-21 11:11:17:074 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:11:17:074 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:11:17:103 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.028 s
+2026-06-21 11:11:17:103 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.028 s
+2026-06-21 11:11:17:103 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.071 s
+2026-06-21 11:11:17:103 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:11:17:103 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:11:17:103 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:11:17:146 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.043 s
+2026-06-21 11:11:17:147 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:11:17:222 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.075 s
+2026-06-21 11:11:17:222 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.118 s
+2026-06-21 11:11:17:222 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:11:17:222 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:11:17:232 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.010 s
+2026-06-21 11:11:17:232 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.010 s
+2026-06-21 11:11:17:232 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:11:17:233 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:11:17:234 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.001 s
+2026-06-21 11:11:17:234 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.001 s
+2026-06-21 11:11:17:234 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:11:17:234 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:11:17:275 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.040 s
+2026-06-21 11:11:17:275 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.041 s
+2026-06-21 11:11:17:275 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.171 s
+2026-06-21 11:11:17:275 +0000 [main] INFO ArDoCo - Starting ArDoCo - ArCoTLModelProviderAgent
+2026-06-21 11:11:17:275 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor PcmExtractor
+2026-06-21 11:11:17:275 +0000 [main] INFO ArCoTLModelProviderInformant - Extracting code model.
+2026-06-21 11:11:17:276 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor PcmExtractor in 0.001 s
+2026-06-21 11:11:17:276 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor
+2026-06-21 11:11:17:277 +0000 [main] INFO CodeExtractor - Reading in existing code model.
+2026-06-21 11:11:17:293 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor in 0.016 s
+2026-06-21 11:11:17:293 +0000 [main] INFO ArDoCo - Finished ArDoCo - ArCoTLModelProviderAgent in 0.017 s
+2026-06-21 11:11:17:293 +0000 [main] INFO ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+2026-06-21 11:11:17:293 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:17:293 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+2026-06-21 11:11:17:293 +0000 [main] INFO InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+2026-06-21 11:11:31:682 +0000 [main] INFO InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 14.388 s
+2026-06-21 11:11:31:682 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 14.389 s
+2026-06-21 11:11:31:682 +0000 [main] INFO ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 14.389 s
+2026-06-21 11:11:31:682 +0000 [main] INFO ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+2026-06-21 11:11:31:682 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+2026-06-21 11:11:31:682 +0000 [main] INFO TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+2026-06-21 11:11:31:684 +0000 [main] INFO TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.001 s
+2026-06-21 11:11:31:684 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.002 s
+2026-06-21 11:11:31:684 +0000 [main] INFO ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.002 s
+2026-06-21 11:11:31:684 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:11:31:693 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:31:693 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:31:693 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:31:693 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:31:693 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:11:31:693 +0000 [main] INFO ArDoCo - 00:19.860
+2026-06-21 11:11:31:697 +0000 [main] INFO ArDoCo - Starting jabref
+2026-06-21 11:11:31:697 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:11:31:697 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:11:31:697 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:31:697 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:31:697 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:11:31:697 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:11:31:697 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:11:31:697 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:11:31:697 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:11:32:704 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 1.006 s
+2026-06-21 11:11:32:704 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 1.006 s
+2026-06-21 11:11:32:704 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:11:32:704 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider __nu3UEl3Ee243f2e4VWs6w
+2026-06-21 11:11:32:704 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:11:32:704 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider __nu3UEl3Ee243f2e4VWs6w in 0.000 s
+2026-06-21 11:11:32:704 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:11:32:704 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:11:32:704 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:11:32:704 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:11:32:704 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:11:32:722 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.017 s
+2026-06-21 11:11:32:722 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:11:32:737 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.015 s
+2026-06-21 11:11:32:737 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:11:32:745 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.007 s
+2026-06-21 11:11:32:745 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:11:32:745 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:11:32:745 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.040 s
+2026-06-21 11:11:32:745 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:11:32:745 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:11:32:747 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.002 s
+2026-06-21 11:11:32:747 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.002 s
+2026-06-21 11:11:32:747 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.042 s
+2026-06-21 11:11:32:747 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:11:32:747 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:11:32:747 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:11:32:754 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.006 s
+2026-06-21 11:11:32:754 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.007 s
+2026-06-21 11:11:32:754 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:11:32:754 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:11:32:756 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.002 s
+2026-06-21 11:11:32:756 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.002 s
+2026-06-21 11:11:32:756 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.009 s
+2026-06-21 11:11:32:756 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:11:32:756 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:11:32:756 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:11:32:763 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.006 s
+2026-06-21 11:11:32:763 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:11:32:769 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.005 s
+2026-06-21 11:11:32:769 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.012 s
+2026-06-21 11:11:32:769 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:11:32:769 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:11:32:770 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.000 s
+2026-06-21 11:11:32:770 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.000 s
+2026-06-21 11:11:32:770 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:11:32:770 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:11:32:770 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:11:32:770 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:11:32:770 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:11:32:770 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:11:32:772 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.002 s
+2026-06-21 11:11:32:772 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.002 s
+2026-06-21 11:11:32:772 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.016 s
+2026-06-21 11:11:32:772 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:11:32:773 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:32:773 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:11:32:773 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:32:773 +0000 [main] WARN ArDoCoResult - No SamCodeTraceabilityState found.
+2026-06-21 11:11:32:773 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:32:773 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:32:773 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:11:32:773 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:11:32:773 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:11:32:773 +0000 [main] INFO ArDoCo - 00:01.075
+2026-06-21 11:11:32:795 +0000 [main] INFO ArDoCo - Starting jabref
+2026-06-21 11:11:32:795 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextPreprocessingAgent
+2026-06-21 11:11:32:795 +0000 [main] INFO TextPreprocessingAgent - Starting TextPreprocessingAgent - CoreNLPProvider
+2026-06-21 11:11:32:795 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:32:795 +0000 [main] WARN DataRepository - Could not find data for id 'PreprocessingData'
+2026-06-21 11:11:32:795 +0000 [main] INFO StanfordCoreNLP - Adding annotator tokenize
+2026-06-21 11:11:32:795 +0000 [main] INFO StanfordCoreNLP - Adding annotator pos
+2026-06-21 11:11:32:795 +0000 [main] INFO StanfordCoreNLP - Adding annotator parse
+2026-06-21 11:11:32:795 +0000 [main] INFO StanfordCoreNLP - Adding annotator depparse
+2026-06-21 11:11:32:795 +0000 [main] INFO StanfordCoreNLP - Adding annotator lemma
+2026-06-21 11:11:33:787 +0000 [main] INFO TextPreprocessingAgent - Finished TextPreprocessingAgent - CoreNLPProvider in 0.992 s
+2026-06-21 11:11:33:788 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextPreprocessingAgent in 0.992 s
+2026-06-21 11:11:33:788 +0000 [main] INFO ArDoCo - Starting ArDoCo - ModelProviderAgent
+2026-06-21 11:11:33:788 +0000 [main] INFO ModelProviderAgent - Starting ModelProviderAgent - ModelProvider __nu3UEl3Ee243f2e4VWs6w
+2026-06-21 11:11:33:788 +0000 [main] WARN DataRepository - Could not find data for id 'ModelStatesData'
+2026-06-21 11:11:33:788 +0000 [main] INFO ModelProviderAgent - Finished ModelProviderAgent - ModelProvider __nu3UEl3Ee243f2e4VWs6w in 0.000 s
+2026-06-21 11:11:33:788 +0000 [main] INFO ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.000 s
+2026-06-21 11:11:33:788 +0000 [main] INFO ArDoCo - Starting ArDoCo - TextExtraction
+2026-06-21 11:11:33:788 +0000 [main] WARN DataRepository - Could not find data for id 'TextState'
+2026-06-21 11:11:33:788 +0000 [main] INFO TextExtraction - Starting TextExtraction - InitialTextAgent
+2026-06-21 11:11:33:788 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - NounInformant
+2026-06-21 11:11:33:808 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - NounInformant in 0.019 s
+2026-06-21 11:11:33:808 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - InDepArcsInformant
+2026-06-21 11:11:33:825 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - InDepArcsInformant in 0.016 s
+2026-06-21 11:11:33:825 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - OutDepArcsInformant
+2026-06-21 11:11:33:833 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - OutDepArcsInformant in 0.008 s
+2026-06-21 11:11:33:833 +0000 [main] INFO InitialTextAgent - Starting InitialTextAgent - SeparatedNamesInformant
+2026-06-21 11:11:33:833 +0000 [main] INFO InitialTextAgent - Finished InitialTextAgent - SeparatedNamesInformant in 0.000 s
+2026-06-21 11:11:33:833 +0000 [main] INFO TextExtraction - Finished TextExtraction - InitialTextAgent in 0.045 s
+2026-06-21 11:11:33:833 +0000 [main] INFO TextExtraction - Starting TextExtraction - PhraseAgent
+2026-06-21 11:11:33:833 +0000 [main] INFO PhraseAgent - Starting PhraseAgent - CompoundAgentInformant
+2026-06-21 11:11:33:835 +0000 [main] INFO PhraseAgent - Finished PhraseAgent - CompoundAgentInformant in 0.002 s
+2026-06-21 11:11:33:835 +0000 [main] INFO TextExtraction - Finished TextExtraction - PhraseAgent in 0.002 s
+2026-06-21 11:11:33:835 +0000 [main] INFO ArDoCo - Finished ArDoCo - TextExtraction in 0.047 s
+2026-06-21 11:11:33:835 +0000 [main] INFO ArDoCo - Starting ArDoCo - RecommendationGenerator
+2026-06-21 11:11:33:835 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - InitialRecommendationAgent
+2026-06-21 11:11:33:835 +0000 [main] INFO InitialRecommendationAgent - Starting InitialRecommendationAgent - NameTypeInformant
+2026-06-21 11:11:33:843 +0000 [main] INFO InitialRecommendationAgent - Finished InitialRecommendationAgent - NameTypeInformant in 0.007 s
+2026-06-21 11:11:33:843 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - InitialRecommendationAgent in 0.007 s
+2026-06-21 11:11:33:843 +0000 [main] INFO RecommendationGenerator - Starting RecommendationGenerator - PhraseRecommendationAgent
+2026-06-21 11:11:33:843 +0000 [main] INFO PhraseRecommendationAgent - Starting PhraseRecommendationAgent - CompoundRecommendationInformant
+2026-06-21 11:11:33:846 +0000 [main] INFO PhraseRecommendationAgent - Finished PhraseRecommendationAgent - CompoundRecommendationInformant in 0.002 s
+2026-06-21 11:11:33:846 +0000 [main] INFO RecommendationGenerator - Finished RecommendationGenerator - PhraseRecommendationAgent in 0.002 s
+2026-06-21 11:11:33:846 +0000 [main] INFO ArDoCo - Finished ArDoCo - RecommendationGenerator in 0.010 s
+2026-06-21 11:11:33:846 +0000 [main] INFO ArDoCo - Starting ArDoCo - ConnectionGenerator
+2026-06-21 11:11:33:846 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InitialConnectionAgent
+2026-06-21 11:11:33:846 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - NameTypeConnectionInformant
+2026-06-21 11:11:33:853 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - NameTypeConnectionInformant in 0.007 s
+2026-06-21 11:11:33:853 +0000 [main] INFO InitialConnectionAgent - Starting InitialConnectionAgent - ExtractionDependentOccurrenceInformant
+2026-06-21 11:11:33:858 +0000 [main] INFO InitialConnectionAgent - Finished InitialConnectionAgent - ExtractionDependentOccurrenceInformant in 0.005 s
+2026-06-21 11:11:33:859 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InitialConnectionAgent in 0.012 s
+2026-06-21 11:11:33:859 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ReferenceAgent
+2026-06-21 11:11:33:859 +0000 [main] INFO ReferenceAgent - Starting ReferenceAgent - ReferenceInformant
+2026-06-21 11:11:33:860 +0000 [main] INFO ReferenceAgent - Finished ReferenceAgent - ReferenceInformant in 0.000 s
+2026-06-21 11:11:33:860 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ReferenceAgent in 0.000 s
+2026-06-21 11:11:33:860 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - ProjectNameFilterAgent
+2026-06-21 11:11:33:860 +0000 [main] INFO ProjectNameFilterAgent - Starting ProjectNameFilterAgent - ProjectNameExtractor
+2026-06-21 11:11:33:860 +0000 [main] INFO ProjectNameFilterAgent - Finished ProjectNameFilterAgent - ProjectNameExtractor in 0.000 s
+2026-06-21 11:11:33:860 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - ProjectNameFilterAgent in 0.000 s
+2026-06-21 11:11:33:860 +0000 [main] INFO ConnectionGenerator - Starting ConnectionGenerator - InstanceConnectionAgent
+2026-06-21 11:11:33:860 +0000 [main] INFO InstanceConnectionAgent - Starting InstanceConnectionAgent - InstantConnectionInformant
+2026-06-21 11:11:33:862 +0000 [main] INFO InstanceConnectionAgent - Finished InstanceConnectionAgent - InstantConnectionInformant in 0.002 s
+2026-06-21 11:11:33:862 +0000 [main] INFO ConnectionGenerator - Finished ConnectionGenerator - InstanceConnectionAgent in 0.002 s
+2026-06-21 11:11:33:862 +0000 [main] INFO ArDoCo - Finished ArDoCo - ConnectionGenerator in 0.016 s
+2026-06-21 11:11:33:862 +0000 [main] INFO ArDoCo - Starting ArDoCo - ArCoTLModelProviderAgent
+2026-06-21 11:11:33:862 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor PcmExtractor
+2026-06-21 11:11:33:862 +0000 [main] INFO ArCoTLModelProviderInformant - Extracting code model.
+2026-06-21 11:11:33:863 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor PcmExtractor in 0.000 s
+2026-06-21 11:11:33:863 +0000 [main] INFO ArCoTLModelProviderAgent - Starting ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor
+2026-06-21 11:11:33:863 +0000 [main] INFO CodeExtractor - Reading in existing code model.
+2026-06-21 11:11:33:946 +0000 [main] INFO ArCoTLModelProviderAgent - Finished ArCoTLModelProviderAgent - Extractor AllLanguagesExtractor in 0.082 s
+2026-06-21 11:11:33:946 +0000 [main] INFO ArDoCo - Finished ArDoCo - ArCoTLModelProviderAgent in 0.083 s
+2026-06-21 11:11:33:946 +0000 [main] INFO ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+2026-06-21 11:11:33:946 +0000 [main] WARN DataRepository - Could not find data for id 'CodeTraceabilityState'
+2026-06-21 11:11:33:946 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+2026-06-21 11:11:33:946 +0000 [main] INFO InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+2026-06-21 11:12:26:474 +0000 [main] INFO InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 52.528 s
+2026-06-21 11:12:26:475 +0000 [main] INFO SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 52.528 s
+2026-06-21 11:12:26:475 +0000 [main] INFO ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 52.528 s
+2026-06-21 11:12:26:475 +0000 [main] INFO ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+2026-06-21 11:12:26:475 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+2026-06-21 11:12:26:475 +0000 [main] INFO TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+2026-06-21 11:12:26:479 +0000 [main] INFO TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.004 s
+2026-06-21 11:12:26:479 +0000 [main] INFO SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.004 s
+2026-06-21 11:12:26:479 +0000 [main] INFO ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.004 s
+2026-06-21 11:12:26:479 +0000 [main] INFO ArDoCo - Starting to write output...
+2026-06-21 11:12:26:512 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:12:26:512 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:12:26:512 +0000 [main] WARN DataRepository - Could not find data for id 'InconsistencyStates'
+2026-06-21 11:12:26:512 +0000 [main] WARN ArDoCoResult - No InconsistencyState found.
+2026-06-21 11:12:26:512 +0000 [main] INFO ArDoCo - Finished to write output.
+2026-06-21 11:12:26:512 +0000 [main] INFO ArDoCo - 00:53.684
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 138.2 s -- in edu.kit.kastel.mcse.ardoco.core.tests.integration.RawLinkDumpIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:verify (default) @ tests-tlr ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:23 min (Wall Clock)
+[INFO] Finished at: 2026-06-21T11:12:26Z
+[INFO] ------------------------------------------------------------------------

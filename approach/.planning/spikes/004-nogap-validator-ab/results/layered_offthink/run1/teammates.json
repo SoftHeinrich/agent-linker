@@ -1,0 +1,141 @@
+{
+  "run": "run1",
+  "dataset": "teammates",
+  "P": 0.86,
+  "R": 0.7543859649122807,
+  "F1": 0.8037383177570094,
+  "tp": 43,
+  "fp": 7,
+  "fn": 14,
+  "n_links": 50,
+  "fp_by_source": {
+    "coreference": 3,
+    "entity": 4
+  },
+  "fp_details": [
+    {
+      "sentence": 82,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Providing a mechanism for checking access control rights."
+    },
+    {
+      "sentence": 83,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+    },
+    {
+      "sentence": 96,
+      "component": "Logic",
+      "source": "coreference",
+      "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+    },
+    {
+      "sentence": 125,
+      "component": "Storage",
+      "source": "entity",
+      "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+    },
+    {
+      "sentence": 131,
+      "component": "Storage",
+      "source": "entity",
+      "text": "storage.api provides the API of the component to be accessed by the logic component."
+    },
+    {
+      "sentence": 188,
+      "component": "E2E",
+      "source": "entity",
+      "text": "e2e.util contains helpers needed for running E2E tests."
+    },
+    {
+      "sentence": 192,
+      "component": "E2E",
+      "source": "entity",
+      "text": "x.e2e contains system test cases for testing the application as a whole."
+    }
+  ],
+  "fn_details": [
+    {
+      "sentence": 1,
+      "component": "UI",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "Storage",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "Test Driver",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "E2E",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "Client",
+      "name_in_text": true
+    },
+    {
+      "sentence": 1,
+      "component": "Common",
+      "name_in_text": true
+    },
+    {
+      "sentence": 7,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 8,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 9,
+      "component": "Storage",
+      "name_in_text": true
+    },
+    {
+      "sentence": 25,
+      "component": "UI",
+      "name_in_text": true
+    },
+    {
+      "sentence": 87,
+      "component": "Logic",
+      "name_in_text": true
+    },
+    {
+      "sentence": 122,
+      "component": "GAE Datastore",
+      "name_in_text": false
+    },
+    {
+      "sentence": 185,
+      "component": "Logic",
+      "name_in_text": true
+    }
+  ],
+  "n_entity_candidates": 76,
+  "n_coref_candidates": 52,
+  "n_llm_calls": 11,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 37,
+  "coref_validated": 41,
+  "elapsed_s": 118.1
+}

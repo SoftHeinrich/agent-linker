@@ -1,0 +1,17 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+% Wang T10 shape (CLAIM -> METHODOLOGY -> EVIDENCE -> CONSEQUENCE), one tight
+% paragraph. Numbers mirror results.tex Summary (sec:results:summary) and the
+% abstract; keep in sync.
+This paper presents \approach, the first training-free, multi-stage \ac{LLM} workflow for architecture document to model traceability link recovery.
+\approach derives an alias table and an ambiguity map once, then reuses them in two linkers
+for named mentions and  implicit references, respectively. 
+Each linker behind an \ac{LLM}-based judge that rejects links with no supporting evidence.
+Alongside it we introduce an architecture-driven evaluation suite that adds sentence coverage and a per-component tail to the standard link-level metric on doc-code, and the silent-failure mass (SFM) on doc-model.
+On the established ARDoCo benchmark, \approach{} reaches a doc-model \avgfone of $0.936$, $10.0$pp above the strongest published pipeline,
+ and carries this gain through to a doc-code \avgfone of $0.906$.
+The standard metric is where this lead is smallest. 
+Under the size-aware suite it widens to $+13$pp sentence coverage, $+41$pp worst-component \fone, and $+42$pp harmonic-mean per-component \fone.
+\approach{} worst component still sits at \fone\ $0.75$, well below the link-level \fone.
+So the suite earns its place by keeping this headroom visible, where the standard metric would call the task solved.

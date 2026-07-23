@@ -1,0 +1,20 @@
+% RQ1 doc-to-code (SAD--Code) SOTA comparison, macro across the five projects.
+% Numbers from tables/cross_system.tex (s_linker20_union, mean of three runs);
+% coverage column dropped per float-design 2026-06-22.
+\begin{table}[t]
+\caption{RQ1 doc-to-code (SAD--Code): macro precision, recall, and file \fone\ across the five projects. Every system composes its doc-to-model links with recovered ArCoTL SAM--code links, so the comparison is on equal footing. \approach{} is \texttt{s\_linker20\_union} (mean of three runs). Best file \fone\ in bold. (Per-component \fone\ is deferred to the RQ2 panel, \autoref{tab:rq2-summary}.)}
+\label{tab:rq1-sadcode}
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+System & P & R & File \fone \\
+\midrule
+\approach{} (Claude)  & 0.957 & 0.866 & \textbf{0.906} \\
+\approach{} (GPT-5.4) & 0.913 & 0.842 & 0.875 \\
+Artemis (GPT-5.4)     & 0.941 & 0.778 & 0.849 \\
+TransArC              & 0.886 & 0.775 & 0.803 \\
+\bottomrule
+\end{tabular}
+% All values universe-independent and match ../sota-recovered-links/eval/
+% sad-code_{artemis,transarc}.csv (Artemis .9412/.7779/.8488; TransArc .886/.775/.803).
+\end{table}

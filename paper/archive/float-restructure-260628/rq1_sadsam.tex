@@ -1,0 +1,19 @@
+% RQ1 doc-to-model (SAD--SAM) SOTA comparison, macro across the five projects.
+% Numbers from tables/cross_system.tex (s_linker20_union, mean of three runs);
+% coverage column dropped per float-design 2026-06-22.
+\begin{table}[t]
+\caption{RQ1 doc-to-model (SAD--SAM): macro precision, recall, and link \fone\ across the five projects. \approach{} is \texttt{s\_linker20\_union} (mean of three runs); each system is run with its authors' released configuration. TransArC$^{\dagger}$ uses SWATTR, its deterministic doc-to-model stage. Best \fone\ in bold.}
+\label{tab:rq1-sadsam}
+\centering\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+System & P & R & Link \fone \\
+\midrule
+\approach{} (Claude)  & 0.949 & 0.915 & \textbf{0.928} \\
+\approach{} (GPT-5.4) & 0.940 & 0.858 & 0.894 \\
+Artemis (GPT-5.4)     & 0.930 & 0.763 & 0.835 \\
+TransArC$^{\dagger}$  & 0.869 & 0.772 & 0.799 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize $^{\dagger}$SWATTR, the deterministic doc-to-model stage of TransArC (no standalone doc-to-model system).
+\end{table}

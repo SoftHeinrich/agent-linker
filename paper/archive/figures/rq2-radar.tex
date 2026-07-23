@@ -1,0 +1,32 @@
+% RQ2 size-aware suite as a radar / spider chart -- BAKE-OFF variant 3 of 3.
+% Four cardinal spokes: N=File F1, E=Sentence coverage, S=Worst-component, W=Harmonic.
+% One closed polygon per system; ArchLinker outermost. Centre=0, edge=1. GPT-5.4 macro.
+%   \approach=darkblue, Artemis=darkorange, TransArc=darkgreen.
+% !!! PLACEHOLDER VALUES !!! taken from the current rq2-summary; refresh in the numbers pass.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=2.8]
+  % grid rings + radial labels
+  \foreach \rr in {0.25,0.5,0.75,1.0}{\draw[black!12] (0,0) circle (\rr);}
+  \draw[black!40] (0,-1)--(0,1) (-1,0)--(1,0);
+  \foreach \rr in {0.5,1.0}{\node[font=\tiny,gray,anchor=south west] at (0.02,\rr) {\rr};}
+  % spoke (metric) labels
+  \node[font=\tiny,anchor=south] at (0,1)  {File \fone};
+  \node[font=\tiny,anchor=west]  at (1,0)  {Sent.\ cov.};
+  \node[font=\tiny,anchor=north] at (0,-1) {Worst-comp.};
+  \node[font=\tiny,anchor=east]  at (-1,0) {Harmonic};
+  % polygons: N(File)->E(Sent)->S(Worst)->W(Harm)
+  \draw[darkgreen,thick,fill=darkgreen,fill opacity=0.10]
+    (0,0.80)--(0.75,0)--(0,-0.54)--(-0.67,0)--cycle;          % TransArc
+  \draw[darkorange,thick,fill=darkorange,fill opacity=0.10]
+    (0,0.85)--(0.71,0)--(0,-0.35)--(-0.46,0)--cycle;          % Artemis
+  \draw[darkblue,thick,fill=darkblue,fill opacity=0.10]
+    (0,0.87)--(0.80,0)--(0,-0.62)--(-0.71,0)--cycle;          % ArchLinker (outermost, drawn last)
+  % legend (below)
+  \node[darkblue,font=\tiny\bfseries,anchor=east] at (-0.15,-1.28) {\approach{}};
+  \node[darkorange,font=\tiny,anchor=west]        at ( 0.15,-1.28) {Artemis};
+  \node[darkgreen,font=\tiny,anchor=north]        at ( 0,-1.42)    {TransArc};
+\end{tikzpicture}
+\caption{RQ2 (bake-off, radar): the size-aware suite for the three systems on the GPT-5.4 backend; each system is a closed polygon over the four metrics. \approach{}'s polygon encloses both baselines, with the largest margin on the tail spokes. Placeholder values.}
+\label{fig:rq2-radar}
+\end{figure}

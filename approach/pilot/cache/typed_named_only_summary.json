@@ -1,0 +1,278 @@
+{
+ "variant": "typed_named_only",
+ "description": "extract only AFFIRMATIVE/CONTRAST plus CODEPATH rejection signal",
+ "baseline": {
+  "P": 0.989407429638522,
+  "R": 0.8913349682449851,
+  "F1": 0.9360446340832227,
+  "F2": 0.908349708956894
+ },
+ "augmented": {
+  "P": 0.9600534465998125,
+  "R": 0.9099666729547883,
+  "F1": 0.9317843823807127,
+  "F2": 0.9180375131723144
+ },
+ "delta": {
+  "P": -0.029353983038709508,
+  "R": 0.018631704709803132,
+  "F1": -0.004260251702509987,
+  "F2": 0.00968780421542037
+ },
+ "new_TP": 2,
+ "new_FP": 4,
+ "proposal_counts": {
+  "mediastore": 22,
+  "teastore": 21,
+  "teammates": 85,
+  "bigbluebutton": 41,
+  "jabref": 19
+ },
+ "kept_new_counts": {
+  "mediastore": 0,
+  "teastore": 3,
+  "teammates": 1,
+  "bigbluebutton": 1,
+  "jabref": 1
+ },
+ "kept_new_links": [
+  {
+   "project": "teastore",
+   "sentence": 7,
+   "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+   "component": "WebUI",
+   "mode": "CONTRAST",
+   "quote": "WebUi",
+   "gold": true,
+   "sentence_text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead."
+  },
+  {
+   "project": "teastore",
+   "sentence": 32,
+   "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+   "component": "SlopeOneRecommender",
+   "mode": "AFFIRMATIVE",
+   "quote": "Slope One",
+   "gold": false,
+   "sentence_text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+  },
+  {
+   "project": "teastore",
+   "sentence": 35,
+   "component_id": "_kgbngDVgEeqPG_FgW3bi6Q",
+   "component": "OrderBasedRecommender",
+   "mode": "AFFIRMATIVE",
+   "quote": "order-based nearest-neighbor approach",
+   "gold": false,
+   "sentence_text": "Furthermore, one order-based nearest-neighbor approach is available."
+  },
+  {
+   "project": "teammates",
+   "sentence": 125,
+   "component_id": "_9JlCIKESEeu-mYqkDskRow",
+   "component": "Storage",
+   "mode": "CONTRAST",
+   "quote": "this component",
+   "gold": false,
+   "sentence_text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persistence."
+  },
+  {
+   "project": "bigbluebutton",
+   "sentence": 59,
+   "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+   "component": "FreeSWITCH",
+   "mode": "CONTRAST",
+   "quote": "other than FreeSWITCH",
+   "gold": true,
+   "sentence_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+  },
+  {
+   "project": "jabref",
+   "sentence": 7,
+   "component_id": "_NUdtEEl4Ee243f2e4VWs6w",
+   "component": "preferences",
+   "mode": "AFFIRMATIVE",
+   "quote": "preferences",
+   "gold": false,
+   "sentence_text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+  }
+ ],
+ "mode_counts": {
+  "mediastore": {
+   "AFFIRMATIVE": 20,
+   "CONTRAST": 2
+  },
+  "teastore": {
+   "AFFIRMATIVE": 20,
+   "CONTRAST": 1
+  },
+  "teammates": {
+   "AFFIRMATIVE": 50,
+   "CODEPATH": 32,
+   "CONTRAST": 4
+  },
+  "bigbluebutton": {
+   "AFFIRMATIVE": 40,
+   "CONTRAST": 1
+  },
+  "jabref": {
+   "AFFIRMATIVE": 18,
+   "CONTRAST": 1,
+   "CODEPATH": 1
+  }
+ },
+ "extraction_diagnostics": {
+  "mediastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 22,
+   "proposal_gold": 22,
+   "proposal_fp_vs_gold": 0,
+   "marginal_proposal_total": 0,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 0,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  },
+  "teastore": {
+   "base_missed_gold": 2,
+   "proposal_total": 21,
+   "proposal_gold": 19,
+   "proposal_fp_vs_gold": 2,
+   "marginal_proposal_total": 3,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 2,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "teammates": {
+   "base_missed_gold": 6,
+   "proposal_total": 85,
+   "proposal_gold": 44,
+   "proposal_fp_vs_gold": 41,
+   "marginal_proposal_total": 41,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 40,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "AFFIRMATIVE": 1
+   }
+  },
+  "bigbluebutton": {
+   "base_missed_gold": 12,
+   "proposal_total": 41,
+   "proposal_gold": 39,
+   "proposal_fp_vs_gold": 2,
+   "marginal_proposal_total": 3,
+   "marginal_proposal_gold": 1,
+   "marginal_proposal_fp_vs_gold": 2,
+   "base_missed_gold_surfaced": 1,
+   "base_missed_gold_surfaced_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "jabref": {
+   "base_missed_gold": 0,
+   "proposal_total": 19,
+   "proposal_gold": 18,
+   "proposal_fp_vs_gold": 1,
+   "marginal_proposal_total": 1,
+   "marginal_proposal_gold": 0,
+   "marginal_proposal_fp_vs_gold": 1,
+   "base_missed_gold_surfaced": 0,
+   "base_missed_gold_surfaced_by_mode": {}
+  }
+ },
+ "validation_diagnostics": {
+  "mediastore": {
+   "kept_total": 0,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {}
+  },
+  "teastore": {
+   "kept_total": 3,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 2,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1,
+    "AFFIRMATIVE": 2
+   }
+  },
+  "teammates": {
+   "kept_total": 1,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 1,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 1,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "bigbluebutton": {
+   "kept_total": 1,
+   "kept_gold": 1,
+   "kept_fp_vs_gold": 0,
+   "surfaced_gold_kept": 1,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "CONTRAST": 1
+   }
+  },
+  "jabref": {
+   "kept_total": 1,
+   "kept_gold": 0,
+   "kept_fp_vs_gold": 1,
+   "surfaced_gold_kept": 0,
+   "surfaced_gold_rejected_or_filtered": 0,
+   "kept_by_mode": {
+    "AFFIRMATIVE": 1
+   }
+  }
+ },
+ "per_run_baseline": [
+  [
+   0.9958333333333333,
+   0.8958246871659435,
+   0.941455776927475,
+   0.9131914991151504
+  ],
+  [
+   0.9841536614645857,
+   0.889090108784506,
+   0.9328889515330193,
+   0.9058396234966694
+  ],
+  [
+   0.9882352941176471,
+   0.889090108784506,
+   0.9337891737891738,
+   0.9060180042588625
+  ]
+ ],
+ "per_run_augmented": [
+  [
+   0.9634140295794431,
+   0.9099666729547884,
+   0.93347804852392,
+   0.9187087422381539
+  ],
+  [
+   0.9563731551099972,
+   0.9131924794064012,
+   0.9321990171990171,
+   0.9202556467909131
+  ],
+  [
+   0.9603731551099972,
+   0.9067408665031754,
+   0.9296760814192007,
+   0.915148150487876
+  ]
+ ]
+}

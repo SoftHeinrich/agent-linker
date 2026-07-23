@@ -1,0 +1,71 @@
+% RQ1 SOTA comparison as a precision--recall scatter (replaces the two rq1_sad* tables).
+% BODY float, GPT-5.4 backend, macro over the five projects. Best system = upper right.
+%   colour  = system family (high contrast): \approach=darkblue, Artemis=darkorange,
+%             TransArc=darkgreen;
+%   marker  = task: filled = doc-to-model, open = doc-to-code;
+%   thin connector joins each family's two task points;
+%   dashed grey curves = iso-\fone contours  ( P = F R / (2R - F) ).
+% Window is 0.7--1.0 on both axes. Size = \rqonewidth (0.6\columnwidth, Variant A selected).
+% TODO (less-empty, do in the NUMBERS PASS): tighten this window to the true data spread
+%   (all points currently cluster upper-right, so the lower-left third is dead space). When
+%   the real coords land, shrink the 0.7 lower bound toward the lowest point, drop the F1=0.85
+%   contour label if it falls outside, and move the doc-to-model/code key into whatever corner
+%   stays empty. Fonts were bumped one step (scriptsize/normalsize) for the compact width.
+% The label guard lets only the FIRST input define fig:rq1-scatter (so a double-input compare
+% build does not warn on a duplicate label).
+%
+% !!! PLACEHOLDER COORDINATES !!!  The (R,P) pairs below are approximate, chosen to sit on
+% the known macro \fone (Approach .936/.906, Artemis .836/.849, TransArc .799/.803).
+% NUMBERS PASS: replace each coordinate with the EXACT macro recall/precision of
+% s_linker21 (gpt-5.4) and the gpt-5.4 baselines, read from the scored CSVs.
+\providecommand{\rqonewidth}{0.6\columnwidth}
+\begin{figure}[t]
+\centering
+\resizebox{\rqonewidth}{!}{%
+\begin{tikzpicture}[x=13.5cm,y=13.5cm]
+  % --- iso-F1 contours (clipped to the data window) ---
+  \begin{scope}
+    \clip (0.7,0.7) rectangle (1.0,1.0);
+    \foreach \F in {0.75,0.80,0.85,0.90,0.95}{
+      \draw[gray!45,dashed,thin,domain=0.7:1.0,samples=60,smooth]
+            plot (\x,{\F*\x/(2*\x-\F)});
+    }
+  \end{scope}
+  % contour value labels along the right edge (P = F/(2-F) at R=1, only those >= 0.7)
+  \foreach \F/\Py in {0.85/0.739,0.90/0.818}{
+    \node[gray!60,font=\scriptsize,anchor=east] at (0.995,\Py) {\fone=\F};
+  }
+  % --- axes box + ticks ---
+  \draw[black!55,thick] (0.7,0.7) rectangle (1.0,1.0);
+  \foreach \t in {0.7,0.8,0.9,1.0}{
+    \draw[black!55] (\t,0.7) -- (\t,0.692) node[below,font=\scriptsize,black]{\t};
+    \draw[black!55] (0.7,\t) -- (0.692,\t) node[left,font=\scriptsize,black]{\t};
+  }
+  \node[font=\normalsize,anchor=north] at (0.85,0.675) {Recall};
+  \node[font=\normalsize,rotate=90,anchor=south] at (0.675,0.85) {Precision};
+  % --- connectors (drawn first, markers sit on top) ---
+  \draw[darkblue!70,thin]   (0.92,0.95)  -- (0.88,0.93);   % Approach  model--code
+  \draw[darkorange!70,thin] (0.763,0.93) -- (0.82,0.88);   % Artemis   model--code
+  \draw[darkgreen!70,thin]  (0.772,0.869)-- (0.77,0.84);   % TransArc  model--code
+  % --- markers: filled = doc-to-model, open = doc-to-code ---
+  \fill[darkblue]   (0.92,0.95)   circle (2.6pt);          % Approach model
+  \filldraw[fill=white,draw=darkblue,line width=1pt]   (0.88,0.93) circle (2.6pt); % Approach code
+  \fill[darkorange] (0.763,0.93)  circle (2.6pt);          % Artemis model
+  \filldraw[fill=white,draw=darkorange,line width=1pt] (0.82,0.88) circle (2.6pt); % Artemis code
+  \fill[darkgreen]  (0.772,0.869) circle (2.6pt);          % TransArc model
+  \filldraw[fill=white,draw=darkgreen,line width=1pt]  (0.77,0.84) circle (2.6pt); % TransArc code
+  % --- family labels ---
+  \node[darkblue,font=\normalsize\bfseries,anchor=south east] at (0.915,0.955) {\approach{}};
+  \node[darkorange,font=\normalsize,anchor=south east]        at (0.758,0.935) {Artemis};
+  \node[darkgreen,font=\normalsize,anchor=north east]         at (0.768,0.835) {TransArc};
+  % --- task key (lower-right corner, inside the 0.7--1.0 window) ---
+  \fill[black] (0.86,0.725) circle (2.2pt);
+  \node[anchor=west,font=\scriptsize] at (0.87,0.725) {doc-to-model};
+  \filldraw[fill=white,draw=black,line width=0.8pt] (0.86,0.708) circle (2.2pt);
+  \node[anchor=west,font=\scriptsize] at (0.87,0.708) {doc-to-code};
+\end{tikzpicture}}
+\caption{RQ1: precision--recall of \approach{} and the baselines, macro over the five projects, on the GPT-5.4 backend. Filled markers are the doc-to-model task and open markers the doc-to-code task; each system's two markers are joined. Dashed curves are equal-\fone\ contours, so a point further to the upper right scores higher. \approach{} sits above and to the right of both baselines on both tasks. Exact precision, recall, and \fone, the per-project breakdown, and the Claude Sonnet backend are in \autoref{app:detailed}.}
+\ifdefined\rqoneLabelDone\else
+  \label{fig:rq1-scatter}\global\let\rqoneLabelDone\relax
+\fi
+\end{figure}

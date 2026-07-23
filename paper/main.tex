@@ -1,0 +1,195 @@
+\documentclass[acmsmall,screen,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\setcopyright{none}
+\citestyle{acmnumeric}
+
+\usepackage{orcidlink}
+\usepackage{amsmath,amsfonts}
+\usepackage{algorithmic}
+\usepackage{nicefrac}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{KIT_colors}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\usepackage{comment}
+\usepackage{csquotes}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,backgrounds,arrows,shapes,fit,shadows,arrows.meta,patterns,patterns.meta}
+
+\pgfdeclarelayer{midground}
+\pgfsetlayers{background,midground,main}
+\usepackage{adjustbox}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage[inline]{enumitem}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage[theorems, skins, breakable, listings]{tcolorbox}
+\usepackage{footnote}
+\usepackage{makecell}
+\usepackage[nohyperlinks,nolist]{acronym}
+
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{Z}{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}X}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+% Define a new column type R with right alignment and fixed width
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newsavebox\CBox
+\def\textBF#1{\sbox\CBox{#1}\resizebox{\wd\CBox}{\ht\CBox}{\textbf{#1}}}
+
+\definecolor{darkgreen}{HTML}{3C8031}
+\definecolor{darkblue}{HTML}{002982}
+\definecolor{mulberry}{HTML}{A93C93}
+\definecolor{darkorange}{HTML}{C44601}
+
+\newcounter{prompt}
+\newtcbtheorem[use counter=prompt]{promptL}{Prompt}{%
+	attach title to upper,%
+	after title={\ },%
+	colback=white,%
+	colframe=kit-green,%
+	fonttitle={\bfseries\color{black}},%
+        sharp corners=east,%
+        leftrule=3mm,
+	subtitle style={%
+		boxrule=0.4pt,%
+		colback=kit-blue70,%
+		fonttitle={\bfseries\color{white}}%
+	}%
+}{prompt}
+\newcommand{\promptautorefname}{Prompt}
+\def\promptautorefname{Prompt}%
+\BeforeBeginEnvironment{promptL}{\savenotes}
+\AfterEndEnvironment{promptL}{\spewnotes}
+
+\newtcbtheorem[use counter=prompt]{promptR}{Prompt}{%
+	attach title to upper,%
+	after title={\ },%
+	colback=white,%
+	colframe=kit-green,%
+	fonttitle={\bfseries\color{black}},%
+        sharp corners=west,%
+        rightrule=3mm,%
+	subtitle style={%
+		boxrule=0.4pt,%
+		colback=kit-blue70,%
+		fonttitle={\bfseries\color{white}}%
+	}%
+}{prompt}
+%\newcommand{\promptRautorefname}{Prompt}
+%\def\promptRautorefname{Prompt}%
+\BeforeBeginEnvironment{promptR}{\savenotes}
+\AfterEndEnvironment{promptR}{\spewnotes}
+
+\usepackage{mdframed}
+\newmdenv[
+  backgroundcolor=black!8, % slight gray
+  linecolor=black!20,
+  skipabove=6pt,
+  skipbelow=6pt,
+  innerleftmargin=4pt,
+  innerrightmargin=4pt,
+  innertopmargin=4pt,
+  innerbottommargin=4pt
+]{rqanswer}    
+
+% Appendix toggle: keep this false for the FSE submission build.
+\newif\ifshowappendix
+\showappendixfalse
+
+\begin{document}
+\input{abbrev.tex}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\newcommand{\fone}{F\textsubscript{1}\xspace}
+\newcommand{\avgfone}{average \fone}% headline aggregate (macro-averaged across projects); NOT for the standard-vs-size-aware contrast, which stays "link-level \fone".
+\newcommand{\cmrname}{component miss rate}
+\newcommand{\cmr}{\ensuremath{\mathrm{CMR}}}
+
+\title{\approach: An LLM Workflow for Software Architectural Traceability}
+
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution}
+  \city{Anonymous City}
+  \country{Anonymous Country}
+}
+
+% \author{\IEEEauthorblockN{
+% 	  Haoyu Liu\orcidlink{0009-0002-7676-5010},
+%     Dominik Fuchß\orcidlink{0000-0001-6410-6769},
+%     Sophie Corallo\orcidlink{0000-0002-1531-2977},
+% 	  Jan Keim\orcidlink{0000-0002-8899-7081},
+%     Tobias Hey\orcidlink{0000-0003-0381-1020}}
+% \IEEEauthorblockA{\textit{KASTEL - Institute of Information Security and Dependability} \\
+% \textit{Karlsruhe Institute of Technology (KIT)}, \\
+% Karlsruhe, Germany\\
+% \{haoyu.liu, dominik.fuchss, sophie.corallo, maximilian.hummel, jan.keim, hey\}@kit.edu}
+% }
+
+% Compiled from sections/intro.tex via writing-kb ABSTRACT_PLAYBOOK (Wang A1-A9 skeleton).
+% NOTE: headline gains are over \Artemis, the strongest published baseline. Lead = doc-model
+% macro \fone\ +10.0pp (.936-.836); then doc-code link \fone\ +5.7pp (.906-.849); size-aware
+% deltas 13/41/42pp (coverage / worst-component / harmonic per-component), matching results.tex
+% and tab:rq2. Units: spell out "percentage points" on first use, "pp" after. Keep intro.tex l.48 in sync.
+\begin{abstract}
+Trace links between software architecture artifacts and code support impact analysis, change propagation, and compliance review, yet they are the hardest to recover: the artifacts describe the system on a higher level of abstraction and rarely directly match the names in the code.
+Lexical recovery overlooks aliases and implicit references, while a per-sentence \ac{LLM} rebuilds that knowledge on every call and accepts plausible-but-wrong links.
+We present \approach, the first training-free, multi-stage \ac{LLM} workflow for architecture-to-code traceability link recovery that keeps the runtime knowledge module separate from the linker.
+A first stage derives an ambiguity map and an alias table over the document and component set; a second runs two linkers specialized by reference form, one for named mentions and one for implicit references checked against earlier sentences, each with a judge that rejects hallucinated links.
+On five open-source benchmark projects, we evaluate \approach against the state of the art. %under both the standard metric and a new one.
+\approach improves performance in comparison to the strongest published approach by 10.0 percentage points in architecture doc-model \avgfone.
+This gain carries through to 5.7\,pp of \avgfone on the downstream doc-code task.
+%The doc-code \avgfone is the metric on which the advantage is \emph{smallest}.
+Under an architecture-driven suite that adds sentence coverage and a per-component tail, the gap widens to 13, 41, and 42\,pp.
+%A replication package provides prompts, module code, raw \ac{LLM} responses, and per-project results.
+\end{abstract}
+
+\keywords{Documentation, large language models, natural language processing, software architecture, software maintenance, traceability}
+\ccsdesc[500]{Software and its engineering~Software maintenance tools}
+\ccsdesc[300]{Software and its engineering~Software architectures}
+\ccsdesc[300]{Computing methodologies~Natural language processing}
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\input{sections/intro}
+\input{sections/motivation}
+\input{sections/approach}
+\input{sections/metric.tex}
+\input{sections/eval}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/rw}
+\input{sections/conclusion.tex}
+
+\section*{Data Availability Statement}
+Code, data, and results are in the replication package~\cite{replication}.
+
+%\section*{Acknowledgments}
+%Omitted for Review.
+%This work was funded by Core Informatics at KIT (KiKIT) of the Helmholtz Assoc. (HGF) and the German Research Foundation (DFG) - SFB 1608 - 501798263 and supported by KASTEL Security Research Labs.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{agent-linker}
+
+% --- Appendix: a separate part, placed AFTER the references. Everything here (Tab 7+:
+% per-project breakdowns + the Claude Sonnet results, both backends per table) is supplementary
+% and not part of the main-paper body. Flip \showappendixfalse in the preamble to drop it from a
+% page-limited build (body cross-refs to app:detailed / tab:detailed-perproject / tab:rq3-perrun
+% will then print as "??" -- remove those pointers in results.tex if you submit without the appendix).
+\ifshowappendix
+  \clearpage
+  \appendix
+  % \input{archive/appendix/rq2-redundancy} % dropped + archived: its only ref (metric.tex, commented) is also dropped; re-enable both together if reinstating (rho values need s21 re-verification).
+  \input{appendix/detailed-results}
+\fi
+
+\end{document}

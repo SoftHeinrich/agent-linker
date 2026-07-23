@@ -1,0 +1,40 @@
+{
+  "run": "run3",
+  "dataset": "teastore",
+  "P": 0.9310344827586207,
+  "R": 1.0,
+  "F1": 0.9642857142857143,
+  "tp": 27,
+  "fp": 2,
+  "fn": 0,
+  "n_links": 29,
+  "fp_by_source": {
+    "entity": 1,
+    "coreference": 1
+  },
+  "fp_details": [
+    {
+      "sentence": 32,
+      "component": "SlopeOneRecommender",
+      "source": "entity",
+      "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+    },
+    {
+      "sentence": 40,
+      "component": "Registry",
+      "source": "coreference",
+      "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called agai"
+    }
+  ],
+  "fn_details": [],
+  "n_entity_candidates": 23,
+  "n_coref_candidates": 25,
+  "n_llm_calls": 3,
+  "tokens": {
+    "prompt": 0,
+    "completion": 0
+  },
+  "entity_validated": 21,
+  "coref_validated": 23,
+  "elapsed_s": 47.8
+}

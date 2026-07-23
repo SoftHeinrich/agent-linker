@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+  \centering
+  \caption{Doc-to-code metrics for \approach{} (\texttt{s\_linker20\_union}): each SAD--SAM link is composed with ArCoTL's \emph{recovered} SAM--code links (the same footing as the TransArC and Artemis baselines), across two backends; each cell is the mean of three independent runs. Macro row is the unweighted mean across the five projects.}
+  \label{tab:metrics-sad-code}
+  \begin{tabular}{lrrrrrrrrrrrrrrrrrrrrrr}
+    \toprule
+    Project & \multicolumn{11}{c}{Claude} & \multicolumn{11}{c}{GPT-5.4} \\
+    \cmidrule(lr){2-12} \cmidrule(lr){13-23}
+    {} & Link \fone & Sentence \fone & Decision \fone & Component \fone & File \fone & Weighted \fone & MCC & MAP & ACF1 & NDG & HUS & Link \fone & Sentence \fone & Decision \fone & Component \fone & File \fone & Weighted \fone & MCC & MAP & ACF1 & NDG & HUS \\
+    \midrule
+    MediaStore & -- & -- & 0.889 & 0.956 & 0.893 & 0.889 & 0.893 & -- & 0.942 & 0.874 & 0.973 & -- & -- & 0.884 & 0.951 & 0.888 & 0.884 & 0.889 & -- & 0.928 & 0.869 & 0.967 \\
+    TeaStore & -- & -- & 0.972 & 0.980 & 0.997 & 0.972 & 0.996 & -- & 0.959 & 0.996 & 0.959 & -- & -- & 0.986 & 0.982 & 0.978 & 0.986 & 0.973 & -- & 0.981 & 0.975 & 0.978 \\
+    TeaMmates & -- & -- & 0.546 & 0.626 & 0.858 & 0.544 & 0.849 & -- & 0.628 & 0.972 & 0.606 & -- & -- & 0.515 & 0.629 & 0.787 & 0.513 & 0.764 & -- & 0.610 & 0.886 & 0.598 \\
+    BigBlueButton & -- & -- & 0.646 & 0.863 & 0.788 & 0.642 & 0.765 & -- & 0.361 & 0.803 & 0.438 & -- & -- & 0.599 & 0.802 & 0.722 & 0.595 & 0.684 & -- & 0.368 & 0.731 & 0.431 \\
+    JabRef & -- & -- & 0.836 & 0.993 & 0.995 & 0.836 & 0.991 & -- & 0.893 & 0.992 & 0.735 & -- & -- & 0.905 & 0.945 & 0.998 & 0.905 & 0.996 & -- & 0.835 & 0.997 & 0.687 \\
+    Macro & -- & -- & 0.778 & 0.884 & 0.906 & 0.777 & 0.899 & -- & 0.757 & 0.928 & 0.742 & -- & -- & 0.778 & 0.862 & 0.875 & 0.776 & 0.861 & -- & 0.745 & 0.891 & 0.732 \\
+    \bottomrule
+  \end{tabular}
+  \par\smallskip\footnotesize Source: s20U SAD--SAM links (N=3 mean) composed with recovered ArCoTL \texttt{transarc-emp/results/<project>/sam-code/samCodeTlr\_<project>.csv}.
+\end{table}

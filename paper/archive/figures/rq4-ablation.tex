@@ -1,0 +1,41 @@
+% RQ4 module ablation as a profile / slope chart -- mirrors the RQ2 profile (fig:rq2-profile).
+% x = the four size-aware metrics ordered standard->tail, y = value; one polyline per
+% ablation variant. Removing a linker (or the knowledge module) barely moves the standard
+% File F1 but collapses the tail metrics -- the RQ2 story seen from inside the approach.
+% doc-to-code, GPT-5.4 backend (s21), macro = openai,average rows of:
+%   mini-rq34/reports_s21/rq34_rq2_linkers.csv         Full / EntityOnly=Direct / CorefOnly=Indirect
+%   mini-rq34/reports_s21_noknow/rq34_rq2_linkers.csv  Full = both linkers, knowledge module removed
+% Colours: Full=darkblue, Direct only=darkorange, No knowledge=mulberry, Indirect only=darkgreen.
+% Companion data (machine-readable): figures/rq4-ablation.csv
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=2.1cm,y=4.5cm]
+  % y axis 0..1
+  \draw[black!55,thick] (-0.35,0) -- (-0.35,1.0);
+  \foreach \y in {0,0.2,0.4,0.6,0.8,1.0}{
+    \draw[black!55] (-0.35,\y)--(-0.42,\y) node[left,font=\footnotesize]{\y};
+    \draw[black!12] (-0.35,\y)--(3.35,\y);
+  }
+  \node[rotate=90,anchor=south,font=\small] at (-0.78,0.5) {value};
+  % x metric labels
+  \foreach \i/\m in {0/{File \fone},1/{Sent.\ cov.},2/{Worst-comp.},3/{Harmonic}}{
+    \node[font=\footnotesize,anchor=north,align=center] at (\i,-0.03) {\m};
+  }
+  % lines
+  \draw[darkblue,thick]   (0,0.906)--(1,0.842)--(2,0.753)--(3,0.884);
+  \draw[darkorange,thick] (0,0.860)--(1,0.738)--(2,0.694)--(3,0.834);
+  \draw[mulberry,thick]   (0,0.851)--(1,0.767)--(2,0.533)--(3,0.661);
+  \draw[darkgreen,thick]  (0,0.238)--(1,0.145)--(2,0.000)--(3,0.000);
+  \foreach \x/\y in {0/0.906,1/0.842,2/0.753,3/0.884}{\fill[darkblue]  (\x,\y) circle(1.8pt);}
+  \foreach \x/\y in {0/0.860,1/0.738,2/0.694,3/0.834}{\fill[darkorange](\x,\y) circle(1.8pt);}
+  \foreach \x/\y in {0/0.851,1/0.767,2/0.533,3/0.661}{\fill[mulberry] (\x,\y) circle(1.8pt);}
+  \foreach \x/\y in {0/0.238,1/0.145,2/0.000,3/0.000}{\fill[darkgreen] (\x,\y) circle(1.8pt);}
+  % legend (lower-right empty region: only the collapsed Indirect line sits this low here)
+  \node[darkblue,font=\footnotesize\bfseries,anchor=west] at (2.25,0.42) {Full};
+  \node[darkorange,font=\footnotesize,anchor=west]        at (2.25,0.34) {Direct only};
+  \node[mulberry,font=\footnotesize,anchor=west]          at (2.25,0.26) {No knowledge};
+  \node[darkgreen,font=\footnotesize,anchor=west]         at (2.25,0.18) {Indirect only};
+\end{tikzpicture}
+\caption{RQ4 (module ablation): the size-aware suite on doc-to-code, GPT-5.4 backend, for the full approach and for each module removed, metrics ordered standard$\rightarrow$tail. Removing a linker or the knowledge module barely moves the standard File \fone\ but collapses the tail: dropping the \linkerC{} linker erases the worst-component and harmonic scores, and the no-knowledge variant loses most of the tail. The RQ2 thesis seen from inside the approach.}
+\label{fig:rq4-ablation}
+\end{figure}

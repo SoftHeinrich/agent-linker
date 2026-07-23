@@ -1,0 +1,146 @@
+\section{Experiment}
+%==================== SPEC (section-wide) ====================
+%SPEC style: drop the literal "RQ" before \ref{rq:*} -- \ref already prints "RQ".
+%DONE [refs 2026-06-29] swept paper-wide: removed all 11 "RQ"/"RQ~" prefixes before
+%  \ref{rq:*}, and trimmed prose \autoref{sec:*} to <=1 per target (40 -> 11), keeping
+%  only cross-chapter bridges; all tab/fig/eq refs untouched.
+%SPEC reporting: surface the LLM backend + per-project results somewhere (manual, later).
+%consolidate check / judge
+%============================================================
+
+We study four research questions:
+\subsection{Research Questions}
+
+% RQ1 Can the multi-stage LLM workflow outperform SOTA approach?
+% \emph{\textbf{Motivation:}}
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:,
+ref=RQ\arabic*, series=researchQuestions] \item \label{rq:sota}
+\emph{Does \approach recover trace links better than existing approaches?} 
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+Existing approaches either match component names lexically~\cite{keim_trace_2021} or classify with a single \ac{LLM} call~\cite{fuchs_whos_2025}. 
+\approach first builds runtime knowledge about the architecture and then runs two focused linker modules with \evidenceBacked judges.
+We want to know whether this extra structure helps in both link recovery tasks: doc-model, and its downstream task doc-code.
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{rq:metrics} \emph{What do architecture-driven metrics tell us about the recovered links that the standard link-level metrics do not?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+The standard evaluation averages precision, recall, and \fone\ over all benchmark links.
+This average is dominated by a few large components, hiding whether a system covers every sentence or drops small components.
+We check whether the architecture-driven metrics expose these properties and reorder the systems.
+
+% RQ3 whats the contribution of validators in our approach?
+% \emph{\textbf{Motivation:}}
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{rq:validators} \emph{How much do the judges inside \approach contribute to the final result?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+\acp{LLM} hallucinate: a linker can return a link that looks plausible but does not hold up under inspection.
+\approach{} wraps each linker in its corresponding \evidenceBacked judge.
+We measure how much each check helps by calculating the confusion matrix.
+
+% RQ4 ablation, whas the contribution of each sub-linker module?
+% \emph{\textbf{Motivation:}}
+
+\begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
+    \item \label{rq:ablation} \emph{What does each linker module of \approach{} contribute on its own?}
+\end{enumerate}
+\emph{\textbf{Motivation:}}
+\approach{} is built from three modules: the knowledge module and the two linker modules \linkerB{} and \linkerC{}.
+A module-level ablation shows what each module contributes.
+
+
+\subsection{Experiment Design}
+\label{sec:exp-design}
+
+To answer the four research questions we run four families of experiments on the the \ardoco benchmark, the largest benchmark to the best of our knowledge~\cite{fuchs_establishing_2023}.  
+% It is the largest architectural traceability benchmark to the best of our knowledge.
+% It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at two grains, document-to-component and document-to-code.
+All baselines are run with their authors' released configurations.
+% %TODO, maybe separate the table so have some basic stat here, but space limited.
+% \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
+% We use this benchmark because it is the standard evaluation set for this task~\cite{keim_recovering_2024,fuchs_lissa_2025,fuchs_whos_2025}.
+For each task, we repeat our approach running three times and report average to avoid bias by LLM running variance. 
+To avoid single, we run experiments with diverse language-model backends, GPT-5.4, GPT-5.5 and Claude Sonnet.
+
+\subsubsection{Experiments for \ref{rq:sota}}
+\label{sec:exp:rq1}
+
+Doc-code is the downstream task of doc-model: following prior work~\cite{fuchs_whos_2025,keim_recovering_2024}, \approach{} recovers the doc-model links first, then composes them into code links.
+The two evaluations are:
+\begin{enumerate}[leftmargin=*]
+    \item \emph{Doc-model.} For every sentence in the architecture document, we use \approach to link it back to architectural components.
+     We then compare recovered links with the doc-model gold standard links. 
+    We compare \approach{} with two baselines: \emph{SWATTR}~\cite{keim_trace_2021}, a lexical string-similarity pipeline; and \Artemis{}~\cite{fuchs_whos_2025}, an \ac{LLM} entity-recognition tool for the same task.
+    %TODO, maybe add VSM and lissa, or other baselines to avoid not enough baselines critics 
+    This is the link task where \approach{} can directly show its strength.
+    \item \emph{Doc-code.} For every sentence we recover the code files it talks about and compare them with the link-level gold standard. 
+    \approach{} reaches code files by transitive linking, the same composition used by \TransArc{}.
+    It combines its doc-model links with the architecture model's component-to-file link recovery via ArCoTL~\cite{keim_recovering_2024}. 
+    We compare \approach{} with two baselines: \TransArc{}~\cite{keim_recovering_2024}, the strongest heuristic-based approach; and \Artemis{} composed through the same \TransArc{} file mapping, as an \ac{LLM} baseline at the doc-code grain.
+\end{enumerate}
+For each task we use the same metrics \TransArc{} and \Artemis{} use. 
+We report link level precision, recall, and \fone per project and averaged across projects.
+The outcome of \ref{rq:sota} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-model) and on the downstream task that developers care about (doc-code).
+
+
+\subsubsection{Experiments for \ref{rq:metrics}}
+\label{sec:exp:rq2}
+\ref{rq:sota} scores every system with the standard link-level metrics.
+The pre-study (\autoref{sec:metric:prestudy}) shows these metrics are limited because of the benchmark's extreme inequality.
+\ref{rq:metrics} re-runs the same comparisons under the metric suite of \autoref{sec:metric:suite}.
+
+%TODO, since SFM is already justified within the suite, just plainly say apply the suite.
+%  Reworded below to match. SFM is the doc-model-only size-aware metric; not used on the file grain.
+For each (system, project) cell on the doc-code task we compute the \fone-tail of the suite: reference link-level \fone, sentence coverage, and the two component-size aware metrics (worst-component and harmonic-mean per-component \fone).
+On the doc-model task, we instead report the silent-failure mass (SFM, \autoref{eq:sfm}), the share of documented sentences whose component a system abandons.
+We read the size-aware metrics beside link-level \fone: where a system scores well on the standard metric yet poorly on the size-aware ones, it has recovered the bulk of the links while leaving whole components untraced.
+
+\subsubsection{Experiments for \ref{rq:validators}}
+\label{sec:exp:rq3}
+We build three ablations of \approach{} that remove judges.
+Running on the same benchmark, we compare each ablation against \emph{\fullVariant{}}, the full pipeline.
+
+\begin{enumerate}[leftmargin=*]
+\item \emph{\noEntityValid{}}: skip the \entValidator{} (\autoref{sec:validators}); accept all candidates from \linkerB without the 
+\entValidator{}.
+
+\item \emph{\noCitation{}}: skip the \corefValidator{}; accept all implicit-reference candidates without \corefValidator{}.
+
+\item \emph{\noValidator{}}: skip both judges (the two above combined).
+\end{enumerate}
+
+
+% For each ablation we report (i) the change in macro \fone\ over the five projects against \fullVariant{}, 
+% (ii) the true positives the validator preserves and the false positives it removes against the unvalidated linker output (the net validator effect), 
+% and (iii) how that net effect breaks down per component, 
+% to show whether the validator filters uniformly or only on certain components.
+
+\subsubsection{Experiments for \ref{rq:ablation}}
+\label{sec:exp:rq4}
+We ablate \approach{} at the module level.
+The workflow has three modules: the knowledge module and the two linker modules \linkerB{} and \linkerC{}.
+We measure their contributions with different methods.
+For the knowledge module we run a leave-one-out variant: we strip the knowledge module, re-run both linkers, and compare against the full workflow.
+This isolates how much of the gain comes from the shared knowledge rather than from the linkers themselves.
+We compare every ablation variant: each linker on its own and the no-knowledge variant.
+We also measure each linker by set overlap, decomposing the gold links it catches into the cells \texttt{|only\_E|}, \texttt{|both|}, and \texttt{|only\_C|}, so we can report how many true positives each linker contributes that the other does not.
+\autoref{tab:rq4} reports the size-aware suite for the full workflow and for each module removed.
+
+
+% \subsection{Dataset}
+% \label{sec:dataset}
+
+% We use the ARDoCo benchmark, the largest architectural traceability benchmark to the best of our knowledge~\cite{fuchs_establishing_2023}.
+% It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at two grains, document-to-component and document-to-code:
+% %TODO, maybe separate the table so have some basic stat here, but space limited.
+% \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
+% We use this benchmark because it is the standard evaluation set for this task~\cite{keim_recovering_2024,fuchs_lissa_2025,fuchs_whos_2025}.
+
+ % lists, per project, the number of sentences in the architecture document and the number of components in the architecture model, alongside the link-concentration statistics analyzed there.
+% \autoref{sec:metric:prestudy} discusses the two structural properties of this expansion: the per-project expansion factor and the long-tail per-component link distribution, that shape what the standard link-level \fone\ actually measures.
+
+% For each project we use the architecture document as input~$D$, the architecture model as the component set~$C$, and the gold standard as the ground-truth links between sentences of~$D$ and components of~$C$ (or files belonging to components of~$C$, for the doc-code task).

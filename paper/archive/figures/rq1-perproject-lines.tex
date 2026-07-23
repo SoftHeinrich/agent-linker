@@ -1,0 +1,38 @@
+% RQ1 per-project breakdown (appendix), doc-to-model link \fone\ across the five projects,
+% one line per system on the GPT-5.4 backend. Companion to the exact-number table
+% appendix/rq1-perproject.tex. Message: \approach{} is above the baselines on every project.
+%   \approach=darkblue, Artemis=darkorange, TransArc=darkgreen.
+%
+% !!! PLACEHOLDER DATA !!! The per-project \fone\ values below are illustrative.
+% NUMBERS PASS: fill from the scored per-project CSVs (s_linker21 gpt-5.4 + baselines).
+% TODO: add a twin panel for doc-to-code (file \fone) in the numbers pass.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1.25cm,y=8cm]
+  % axes
+  \draw[black!55,thick] (-0.35,0.5) -- (-0.35,1.0);
+  \draw[black!55,thick] (-0.35,0.5) -- (4.35,0.5);
+  \foreach \y in {0.5,0.6,0.7,0.8,0.9,1.0}{
+    \draw[black!55] (-0.35,\y) -- (-0.42,\y) node[left,font=\tiny]{\y};
+    \draw[black!12] (-0.35,\y) -- (4.35,\y);
+  }
+  \node[font=\small,rotate=90,anchor=south] at (-0.78,0.75) {doc-to-model \fone};
+  % project tick labels
+  \foreach \i/\name in {0/MediaStore,1/TeaStore,2/Teammates,3/BigBlueButton,4/JabRef}{
+    \node[font=\tiny,rotate=30,anchor=north east] at (\i,0.49) {\name};
+  }
+  % --- lines (PLACEHOLDER values) ---
+  \draw[darkblue,thick]  (0,0.96)--(1,0.95)--(2,0.92)--(3,0.91)--(4,0.93);
+  \draw[darkorange,thick](0,0.88)--(1,0.86)--(2,0.80)--(3,0.78)--(4,0.90);
+  \draw[darkgreen,thick] (0,0.84)--(1,0.82)--(2,0.79)--(3,0.80)--(4,0.76);
+  \foreach \x/\y in {0/0.96,1/0.95,2/0.92,3/0.91,4/0.93}{\fill[darkblue]  (\x,\y) circle (1.6pt);}
+  \foreach \x/\y in {0/0.88,1/0.86,2/0.80,3/0.78,4/0.90}{\fill[darkorange](\x,\y) circle (1.6pt);}
+  \foreach \x/\y in {0/0.84,1/0.82,2/0.79,3/0.80,4/0.76}{\fill[darkgreen] (\x,\y) circle (1.6pt);}
+  % legend (top-left, low-F1 corner is busy so place top)
+  \node[darkblue,font=\tiny\bfseries,anchor=west]  at (0.1,0.55) {\approach{}};
+  \node[darkorange,font=\tiny,anchor=west]         at (1.2,0.55) {Artemis};
+  \node[darkgreen,font=\tiny,anchor=west]          at (2.3,0.55) {TransArc};
+\end{tikzpicture}
+\caption{RQ1 per-project doc-to-model link \fone\ on the GPT-5.4 backend.}
+\label{fig:rq1-perproject}
+\end{figure}

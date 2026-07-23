@@ -1,0 +1,54 @@
+\section{Related Work}\label{sec:rw}
+
+
+% \paragraph{Traceability link recovery.}
+% Automated traceability link recovery grew out of the requirements-traceability problem~\cite{gotel1994analysis,ramesh2001toward}, and it is still a long-standing open problem for the community~\cite{vierhauser2017grand}.
+% We use the standard definitions of Cleland-Huang, Gotel, and Zisman~\cite{clelandhuang2012handbook,spanoudakis2005software}.
+% For two decades, the main family of methods scored each artifact pair by textual similarity.
+% Examples include vector-space and probabilistic models~\cite{antoniol2002recovering}, latent-semantic indexing~\cite{marcus2003recovering}, the artifact-management variants of De Lucia et al.~\cite{delucia2007recovering}, and candidate ranking~\cite{hayes2006advancing}.
+% Related work mapped the field~\cite{borg2014recovering}, estimated how many links are still missing~\cite{falessi2017estimating}, and showed that the links pay off during maintenance~\cite{maeder2015developers}.
+% Later approaches generate links from rules over different kinds of artifacts~\cite{zisman2004based}, manage traceability information models in practice~\cite{horkoff2021managing}, and raise accuracy with learning.
+% The learning-based ones include fused textual and structural signals~\cite{mcmillan2009combining}, hierarchical Bayesian models~\cite{poshyvanyk2020improving}, multi-layered bug-to-fix recovery~\cite{nguyen2012multi}, and pre-trained BERT encoders~\cite{clelandhuang2021traceability}.
+% On the architecture side, the documentation, model, and code must stay consistent~\cite{capilla2011enhanced,avgeriou2022understanding}.
+% Here, recovery has mostly used structure or runtime data.
+% ArchTrace~\cite{murta2008continuous} and LISA~\cite{buchgeher2011automatic} keep links up to date as the system changes.
+% DiscoTect recovers a view from a running system~\cite{schmerl2004discotect}.
+% Architecture-based testing checks the code against the description~\cite{muccini2004using}, and tactics are linked to their code~\cite{mirakhorli2016detecting}.
+% The ARDoCo line sets the benchmark and the doc--model--code pipeline we compare against~\cite{keim_trace_2021,keim_recovering_2024}, and LiSSA shows that retrieval-augmented \acp{LLM} can replace IR-era stages~\cite{fuchs_lissa_2025}.
+% In all of these, a candidate is scored by textual similarity, structure, or runtime evidence.
+% None of them first builds a reusable record of project knowledge, uses implicit references as link evidence, or checks each proposed link against the evidence that should support it.
+% \approach works differently: it recovers sentence-level links from the architecture documentation itself, the doc-model step that holds back doc-code.
+
+% \paragraph{NLP4RE.}
+% The recurring obstacle is the vocabulary gap~\cite{furnas1987vocabulary}.
+% One thing can appear under many different forms, and a component name may itself be an ordinary word.
+% The requirements-engineering community pulls this knowledge from text.
+% Examples include glossary-term extraction~\cite{arora2017automated}, cross-domain and terminological ambiguity detection~\cite{ferrari2019approach,dalpiaz2019detecting}, and the broader NLP4RE programme~\cite{ferrari2021natural}.
+% Text-retrieval work instead rewrites queries to close the same gap~\cite{haiduc2013automatic}.
+% Prior work treats implicit references as a defect to flag~\cite{yang2011analysing,ezzini2022automated}, not as evidence.
+% \approach works differently.
+% It produces an alias table and an ambiguity map as a primary artifact, built before any link is scored.
+% It then resolves each implicit reference into link evidence under an earlier-sentence constraint.
+
+% \paragraph{LLM4SE and text-to-code retrieval.}
+% \acp{LLM} now drive many software-engineering tasks~\cite{zhang2023large}, including software architecture~\cite{vaidhyanathan2024generate}.
+% This rests on the idea that code and its documentation are regular enough to model~\cite{devanbu2012naturalness}.
+% The work closest to us matches natural-language text to the code that implements it.
+% IR-era code search links queries to implementations~\cite{mcmillan2011portfolio} and rewrites them to close the lexical gap~\cite{roy2019automatic}.
+% Neural models add code summarization~\cite{hu2018comment} and learned semantic search~\cite{xu2022better,jiang2021supervised}.
+% Surveys chart the move from IR-based code search to \acp{LLM}~\cite{xia2022opportunities}, and retrieval-augmented search now calls \acp{LLM} directly~\cite{gao2024search}.
+% These methods score how related natural-language text and code are, then return a ranked list.
+% \approach works differently: it ties each match to its knowledge layer and accepts a link only after a judge confirms the evidence behind it.
+
+% \paragraph{Hallucination control in LLM workflows.}
+% The main risk of these workflows is hallucination.
+% The community answers it by backing up or checking outputs after they are generated.
+% Methods include retrieval grounding~\cite{pradel2024hallucinator,ray2024mitigating}, generate-then-validate prediction~\cite{pradel2020typewriter}, chained verification questions~\cite{khomh2024chain}, semantic prompt augmentation~\cite{ahmed2024automatic}, and metamorphic hallucination detection~\cite{zhang2025hallucination}.
+% \approach builds this defence into the workflow.
+% It is a training-free, multi-stage pipeline.
+% Its per-linker judge rejects a hallucinated link using the specific evidence the link rests on: the matched span, the form of the reference, and, for a pronoun, the sentence it points back to.
+
+% \paragraph{Position of \approach.}
+% \approach is the first architecture-to-code traceability link recovery approach that (i)~separates a reusable knowledge layer from the linker, (ii)~uses implicit references as link evidence under a structural earlier-sentence constraint, and (iii)~matches how hard each \ac{LLM} judge checks a link to how hard its sub-problem is.
+% We compare against SWATTR~\cite{keim_trace_2021}, the lexical-pattern line; \TransArc~\cite{keim_recovering_2024}, the ARDoCo doc-code pipeline; and \Artemis~\cite{fuchs_whos_2025}, the single-pass-\ac{LLM} line.
+\cite{11334548}

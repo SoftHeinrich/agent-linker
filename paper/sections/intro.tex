@@ -1,0 +1,257 @@
+\section{Introduction}
+\label{sec:intro}
+
+% ============================================================================
+% NEW INTRO DESIGN -- sentence-by-sentence SPEC (DRAFT 2026-06-30; PROSE NOT YET WRITTEN)
+% Scope-up overhaul. Plan: /home/dev/.claude/plans/glimmering-soaring-stroustrup.md
+% Locked decisions:
+%   - Frame = the QUESTION "do high LLM scores mean real recovery?" (lens, NOT a claim).
+%   - Task mechanics (doc-model/doc-code) = near-zero in intro; defer to sec:motivation.
+%   - Claim scope = HYBRID: big question carries energy; ALL claims/numbers stay TLR-specific;
+%     name the failure mode but TLR-scoped; own the known-constructs critique in-text;
+%     ONE hedged transfer sentence in discussion/conclusion only (NOT here, NOT a bullet).
+%   - SINGLE bold thesis = the workflow, reframed to the DECISION altitude ("earn the link",
+%     keep slot at :31). Metric = motivation for contrib 2.
+%   - Para-1 number = PROBLEM-SCALE (the long-tailed link distribution), NOT our result; result forward-ref Para 3.
+%   - STRUCTURE = 5 paragraphs (old standalone Para 2 dissolved, Option A): 1 hook / 2 gap (task in
+%     one clause) / 3 thesis+proposal+result / 4 measure (key finding) / 5 contributions+roadmap.
+%   - PRIOR-WORK AXIS (corrected 2026-06-30 from the actual papers -- NOT "single call/no knowledge"):
+%     the gap is HOW A LINK IS DECIDED. Artemis is DECOMPOSED (LLM=NER only); its SAD<->SAM link
+%     decision is heuristic name/alias string+embedding similarity over a threshold; it DOES extract
+%     aliases, DOES resolve bounded coref, DOES build a reusable entity/alias artifact. LiSSA = one
+%     uniform pairwise LLM classification, no knowledge artifact, no coref/alias. Both commit a link
+%     in ONE UNVERIFIED SHOT and discard their own signal (Artemis ignores occurrences at decision;
+%     LiSSA discards CoT). DELETE "isolation" AND "single call" AND "Artemis has no reusable knowledge".
+% ----------------------------------------------------------------------------
+% GLOBAL WRITING SPEC (paper-wide; readability rules. Repo rule WINS over Wang's denser prose.)
+%   WORD DIFFICULTY (vocabulary level):
+%     - Target high-school reading level (~Flesch-Kincaid grade 9-11). Pick the plainest word
+%       that is still exact. Plain > clever.
+%     - Keep ONLY established technical terms: LLM, trace link, documentation, model, component,
+%       code, precision/recall, F1. Expand every acronym on first use.
+%     - BAN internal jargon (SAD/SAM/ACF1/HUS) and ornate words: "surface"(->mention/name match),
+%       "ruler"(->metric), "utilize"(->use), "leverage"(->use), "elucidate", "myriad", "delve".
+%     - NO elegant variation: ONE plain term per concept across the whole paper
+%       (links NOT "pairs"; judge NOT "validator/check"; the metric NOT "the score/ruler";
+%        the distribution property = "long-tailed", NOT "skew/uneven/inequality/concentration" in prose
+%        -- "long-tailed" is the established term and reads better; "concentration" stays only as the
+%        table/data label table/gold_concentration).
+%   SENTENCE LENGTH (readability):
+%     - Average 15-20 words/sentence; hard cap ~30. One idea per sentence.
+%     - Split run-ons. NO clause pile-ups, NO semicolon chains, NO stacked em-dashes;
+%       use parallel (i)/(ii)/(iii) for lists instead (Wang move).
+%     - Vary rhythm: allow an occasional very short sentence (<10 words) for the hook and the
+%       bold thesis. Claim / rqanswer sentences stay <=15 words.
+%     - PLAIN WORDS APPLY TO THESE SPEC COMMENTS TOO: no figurative jargon (no "wound/punch/climax/
+%       dead spot/non-sequitur"); say "problem/fix/key finding/left flat/out of place".
+%   FORMAT: leading zeros (0.84 not .84 in prose); deltas in pp; "percentage points" spelled
+%     out once then "pp". Active voice. No hedging in claim positions (no "we believe/may/might").
+%   MACROS: \approach \linkerB(DLinker) \linkerC(ILinker) \Artemis \TransArc \ac{LLM}.
+% Verified numbers to use:
+%   doc-model avgF1: Artemis .836, SWATTR .799, \approach .936 (+10.0pp).
+%   doc-code  avgF1: TransArc .803, Artemis .849, \approach .906 (+5.7pp link-level).
+%   doc-code size-aware (tab:rq2, \approach vs Artemis): sent.cov .84 vs .71 (+13pp),
+%     worst-comp F1 .75 vs .35 (+41pp), harmonic per-comp F1 .88 vs .47 (+42pp).
+%   doc-model SFM (silent-failure mass): \approach 0.0% on every project; Artemis macro 7.1%
+%     (abandons one component on 3/5 projects); SWATTR macro 7.4%.
+%   long-tailed links (motivation; data: table/gold_concentration): ~99% of doc-code links in a few
+%     large components; the preferences component = 0.4% of links yet described by 20% of sentences.
+% ----------------------------------------------------------------------------
+% PARA 1 -- Big question + broken-measure hook. Open at altitude; name BOTH strengths.
+%   S1. Broad pain: trace links tie architecture documentation, the architecture model
+%       (gloss: its components and their relations -- fixes P2), and code; they underpin
+%       understanding/maintenance and are a long-standing open problem. [cite trace-link survey]
+%   S2. The LLM turn: recent LLM approaches push recovery scores high -- traceability looks solved.
+%   S3. LENS QUESTION (the hook's setup): but does a high score mean the recovery a
+%       practitioner can actually rely on? (a QUESTION, never "...for LLM benchmarks broadly").
+%   S4. PROBLEM-SCALE DEFECT (number, not our result): on the benchmark a few large components
+%       hold ~99% of the scored links. [forward-ref sec:motivation; no per-project name needed here]
+%   S5. Consequence (concrete): so a top-ranked tool can rank first while never linking a whole
+%       component that a fifth of the documentation describes -- and the score never registers it.
+%   S6. THESIS-OF-PAPER (both strengths, co-equal, named once): this paper delivers both a stronger
+%       recovery method and a measure that exposes such failures. [NO task definitions in Para 1.]
+% ----------------------------------------------------------------------------
+% PARA 2 -- The gap: place the task in ONE clause, 2 short pictures of prior work, 1 summary of the lack.
+%   [Old standalone "Para 2" DISSOLVED here (Option A): task naming folded into S1 (one clause,
+%    mechanics stay near-zero); baseline number lives in Para 3 S6; the C2 inversion moved to Para 4 S2b.
+%    Cut old :16. DECISION altitude; DELETE "isolation". Must NOT strawman Artemis (STRONG baseline).
+%    SWATTR UP FRONT with LiSSA, NOT at the end. C3 satisfied: Artemis named here as strongest.]
+%   S1. (TASK clause + SWATTR/LiSSA picture; prose MAY split into 2 sentences) In architecture
+%       traceability -- linking a documentation sentence to model components (doc-model) and on to
+%       code (doc-code; \autoref{sec:motivation}) -- prior work takes two lines: the lexical line,
+%       SWATTR, scores each candidate with linguistic patterns [cite keim_trace_2021]; the \ac{LLM}
+%       line, LiSSA, classifies each documentation-target pair with one \ac{LLM} call [cite fuchs_lissa_2025].
+%   S2. (Artemis -- the strongest baseline) \Artemis uses an \ac{LLM} to extract architecture
+%       entities with their aliases, then links them to the model by name and embedding similarity
+%       [cite fuchs_whos_2025].
+%   S3. (ROOT CAUSE = ONE single idea, then its implication; do NOT split into a 3-item list and do
+%       NOT pre-announce our modules) The one shared root cause: each link is decided in a single
+%       unchecked step, by matching surface names rather than weighing the evidence the sentence gives.
+%       IMPLICATION (one sentence): the decision cannot be trusted -- overloaded ordinary-word names
+%       slip in, differently phrased references are handled alike, and unsupported links go uncaught.
+%       [ONE problem + its implication. NOT three separate problems. Para 3's three modules fix THIS
+%        one problem TOGETHER (turn the unchecked surface match into an earned, evidence-grounded decision).]
+%   [NOTE "single LLM call": literal only for LiSSA; \Artemis is NER-\ac{LLM} + heuristic similarity,
+%    so the SUMMARY says "one undifferentiated, unverified step" to cover both without strawmanning
+%    \Artemis. LiSSA is the WEAK baseline ("no coref / no project-specific aliases" is accurate);
+%    \Artemis HAS aliases + bounded coref + a reusable entity/alias record -- that is not the gap.]
+% ----------------------------------------------------------------------------
+% PARA 3 -- Thesis + proposal. SINGLE bold thesis (DECISION altitude); result forward-ref. (C1, C5, P6.)
+%   S1. BOLD THESIS ("earn the link") = the single FIX for Para 2's one problem: the recovery power
+%       lies in HOW each link is decided. \approach replaces the one unchecked surface match with a
+%       decision a link must EARN -- grounded in disambiguated knowledge, made by a linker matched to
+%       how the reference is phrased, and confirmed by an evidence judge that can reject it. [bold]
+%       [the three parts act TOGETHER to turn an unchecked surface match into an earned, evidence-
+%        grounded decision -- do NOT present them as three separate fixes for three separate problems,
+%        and do NOT echo Para 2's problem wording. Para 2 = the problem; this = the fix.]
+%   S2. We present \approach, the first multi-stage \ac{LLM} workflow for doc-model recovery that
+%       carries an ambiguity-aware knowledge layer into the decision and checks every link with a
+%       context-augmented, evidence-grounded \ac{LLM}-as-a-judge.
+%       [novelty stamp must NOT be refuted by Artemis's entity/alias artifact -- the delta is
+%        ambiguity-at-decision + reference-form split + evidence veto, NOT "we have knowledge, they don't".]
+%   S3. It has three modules that TOGETHER deliver the earned decision (not three fixes for three
+%       problems): a knowledge module computed once, and two linkers \linkerB (direct/named mentions)
+%       and \linkerC (implicit references), each paired with a judge.
+%   S4. DE-TOTALIZE (C5) + OWN-THE-CONSTRUCT + SELLING POINT ("context-augmented judge"): each judge
+%       is a CONTEXT-AUGMENTED \ac{LLM}-as-a-judge -- unlike a plain \ac{LLM}-as-a-judge that scores an
+%       output in isolation, ours is handed the evidence the link rests on (the matched span, the form
+%       of the reference, and, for an implicit reference, the antecedent sentence), so it can VETO a
+%       link, not just score it. It is specialized per reference form (\linkerB / \linkerC) and rejects
+%       any link the cited evidence does not support. \linkerB targets named references; \linkerC
+%       resolves implicit references against their antecedent.
+%       [SELLING POINT term = "context-augmented judge" (the delta vs a vanilla \ac{LLM}-as-a-judge);
+%        name the pattern, then state the delta -- context-augmented + per-reference-form + can reject;
+%        keep body term "judge"/"\evidenceBacked judge"; full own-the-construct + cite belongs in rw.tex.]
+%   S5. INTERFACE simplicity (P6, collapse no-tuning synonyms): one invocation over the document
+%       and model -- no labeled links, no per-project tuning.
+%   S6. RESULT forward-ref (headline pair, link-level): \approach reaches doc-model \avgfone .936,
+%       +10.0pp over \Artemis (all five projects gaining), and doc-code \avgfone .906 (+5.7pp).
+%       END S6 with a HAND-OFF clause so +5.7pp does not read as weak: "but link-level \fone understates
+%       this doc-code gain -- see Para 4" (Wang M12 forward-pointer; reviewer fix #1).
+%       [cite fuchs_whos_2025,keim_recovering_2024,replication]
+%   [NO size-aware numbers in Para 3 -- the size-aware standout is the KEY FINDING in Para 4.
+%    C1 is satisfied across Para 3->4: the +5.7pp link-level doc-code number is immediately
+%    re-contextualized by Para 4's size-aware finding, so it is never left as the sole doc-code story.]
+% ----------------------------------------------------------------------------
+% PARA 4 -- Second contribution: the measure. Motivate from a TASK PROPERTY, not a competitor's gap.
+%   [NOT bold -- P1; M1 stakeholder; M3 own constructs. The failure/gap is EVIDENCE, NOT the reason.
+%    Ends on the KEY FINDING that our approach stands out under the suite.]
+%   S1. MOTIVATION = intrinsic task property (NOT "tool X fails"): in this task, the links follow a
+%       long-tailed distribution across components -- a few large components hold most links, and a
+%       long tail of small ones hold only a few. This long-tailed shape is a property of the
+%       architecture, independent of any tool.
+%   S2. EVIDENCE of the property = the top-3 links data we have: on the benchmark the three largest
+%       components hold ~99% of the doc-code links. [data: table/gold_concentration; ref sec:motivation]
+%   S2b. (C2 inversion, MOVED here from old Para 2 -- now a PROOF POINT, not an unexplained aside) the same
+%       file-expansion is why doc-code \fone (.849) sits ABOVE doc-model \fone (.836) for the prior
+%       pipeline: composing with sub-1.0 model-code scoring still rises because large components
+%       dominate the link count -- the inversion reinforces the long-tailed distribution, not against it.
+%   S3. CONSEQUENCE of the property (construct mismatch, M1 stakeholder): because the few large
+%       components dominate, link-level \fone answers the wrong question for an architect, who needs
+%       every documented component covered, not just the big ones.
+%   S4. So our second contribution: an architecture-driven evaluation suite that adds FOUR size-aware
+%       metrics -- sentence coverage, worst-component \fone, and the harmonic mean of per-component
+%       \fone on doc-code, and the silent-failure mass (SFM) on doc-model (on doc-model the worst-
+%       component and harmonic per-component \fone go redundant with link-level \fone, Spearman .87/.83,
+%       so SFM is the doc-model F1-tail metric; sentence coverage is reported on BOTH tasks). [plain, not bold]
+%   S5. M3 own-the-constructs (preempt "you reinvented macro-averaging"): these build on established
+%       ideas (macro-averaging, worst-group/minimax, GMAP); our contribution is the architecture-aware
+%       adaptation, NOT new statistics. [keep TLR-specific]
+%   S6. KEY FINDING (the C1 payoff): under this suite -- exactly where link-level \fone
+%       is blind -- \approach stands out most. Its lead over \Artemis on doc-code widens from +5.7pp
+%       link-level to +41pp worst-component \fone and +42pp harmonic per-component \fone
+%       (\autoref{tab:rq2}). The suite does not just expose failures; it reveals our largest advantage.
+% ----------------------------------------------------------------------------
+% PARA 5 -- Contributions (3 bullets) + roadmap.
+%   Lead: "This work makes three contributions:"
+%   B1. \textbf{\approach}, a , multi-stage \ac{LLM} workflow for doc-model recovery (\autoref{sec:approach}).
+%   B2. an \textbf{architecture-driven evaluation suite} of size-aware metrics for architecture TLR (\autoref{sec:metric}). [TLR-scoped wording]
+%   B3. an \textbf{empirical study} on five projects with ablations: +10.0pp doc-model, +5.7pp doc-code, with a much larger tail gap (\autoref{sec:exp-design},\autoref{sec:results}).
+%   [replication CITED in prose, not a bullet.]
+%   Roadmap: restore one-sentence-per-section roadmap (Wang T5; currently commented below).
+% ----------------------------------------------------------------------------
+% NOTE (HYBRID transfer line -- goes in discussion.tex/conclusion.tex, NOT here):
+%   "Long-tailed gold standards are unlikely to be unique to architecture TLR; whether size-aware
+%   evaluation matters for other LLM-driven SE tasks with long-tailed labels is an open question we
+%   leave to future work." (words "open question / future work" are load-bearing.)
+% ============================================================================
+
+% ===== PROSE (written 2026-06-30 against the spec above; 5-paragraph flow) =====
+
+% Para 1 -- big question + long-tailed hook; open at altitude, promise both strengths.
+Beyond code, software systems are described by architecture documentation and architecture models.
+Trace links tie these artifacts together, so a change in one can be followed into the others.
+They underpin impact analysis, change propagation, and compliance review, and without them architectural knowledge erodes as the system ages~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
+Recovering these links automatically is a long-standing open problem.
+Recent \ac{LLM}-based approaches push recovery scores up to 84\% \fone. %, and the task looks solved. % use soften words?
+However, can practitioners rely on these links? %But does a high score mean the links a practitioner can rely on?
+On an established benchmark~\cite{fuchs_establishing_2023}, we found that trace link distribution is long tailed:
+a few large components hold about $74-99\%$ of the scored links.
+A tool can therefore top the benchmark yet never link a whole component that a fifth of the documentation describes, and the score fails to present this miss sufficiently. %never shows the miss.
+This paper answers the question with both an improved traceability link recovery method and a measure that exposes these misses.
+
+% Para 2 -- the gap: task in one clause, SWATTR+LiSSA then Artemis, one root cause + implication.
+We study this in architecture traceability: linking a documentation sentence to model components (doc-model), and through them to code (doc-code; \autoref{sec:motivation}).
+Prior work follows two lines.
+The lexical line, such as SWATTR~\cite{keim_trace_2021}, scores each candidate link with linguistic patterns.
+The \ac{LLM} line, such as LiSSA~\cite{fuchs_lissa_2025}, classifies each documentation-and-target pair with one \ac{LLM} call.
+The strongest approach, \Artemis, uses an \ac{LLM} to extract architecture entities with their aliases, then links them to the model by name and embedding similarity~\cite{fuchs_whos_2025}.
+These approaches share one root cause: each link is decided in a single unchecked step, by matching names rather than weighing the evidence the sentence gives.
+The decision cannot be trusted.
+% Overloaded everyday-word names slip in, references phrased in different ways are treated alike, and unsupported links go uncaught.
+ Common word that happens to name a component gets linked, a plainly named mention and an indirect one are handled alike, and a link the evidence does not back is never caught.
+
+% Para 3 -- single bold thesis (decision altitude) + proposal + result, with hand-off to Para 4.
+\textbf{The recovery power lies in how each link is decided: rather than committing in one unchecked step, \approach makes a link earn its place: grounded in disambiguated knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
+We present \approach, the first multi-stage \ac{LLM} workflow for doc-model trace-link recovery that carries an ambiguity-aware knowledge layer into the decision and checks every link with a context-augmented \ac{LLM}-as-a-judge.
+Three modules work together to make this decision: a knowledge module computed once, and two linkers, each paired with a judge.
+\linkerB targets named references; \linkerC resolves an implicit reference against its antecedent.
+Each judge is a context-augmented \ac{LLM}-as-a-judge: a plain judge scores an output alone, but ours receives the evidence the link rests on, such as the matched span, the form of the reference, and, for an implicit reference, the antecedent sentence.
+So, it can reject trace links the evidence does not support.
+% Running \approach takes one invocation over the documentation and model, with no labeled links and no per-project tuning.
+On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.936$, $10.0$ percentage points above the strongest baseline \Artemis, and every project gains~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+On doc-code it reaches an \avgfone of $0.906$ ($+5.7$pp). 
+% ; link-level \fone\ understates this gain, as the size-aware suite below shows.
+
+% Para 4 -- second contribution: the measure, motivated from the long-tailed task property; ends on the key finding.
+Our second contribution starts from a fact about the task itself: trace links are long tailed.
+A few large components hold most of the links, while a long tail of small components hold only a handful.
+On the benchmark, the three largest components hold $74$--$99\%$ of the doc-code links (\autoref{sec:motivation}).
+Standard link-level \fone\ rewards the large components, so the average hides the tail.
+We therefore add an architecture-driven evaluation suite of four size-aware metrics that measure how the small components fare.
+% These adapt established ideas (macro-averaging, worst-group reporting, and harmonic-mean aggregation) to the architecture, so the contribution is the adaptation, not new statistics.
+\Artemis{}, the \ac{LLM} pipeline credited with beating \TransArc{} by $4.6$pp link-level F1, in fact covers fewer sentences ($-4$pp) and abandons more components ($-20$pp worst-component \fone).
+The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
+The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
+On doc-code \approach{} clears it: it leads \TransArc{} by $9$pp on sentence coverage, $21$pp on the worst component, and $21$pp on the harmonic per-component \fone.
+On doc-model, \approach{} abandons no documented component on any project, while both \Artemis{} and SWATTR abandon at least one.
+Exactly where link-level \fone{} is blind, \approach{} covers the components every prior tool drops.
+
+% Para 5 -- contributions (3 bullets) + roadmap.
+This work makes three contributions:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{\approach}, a training-free, multi-stage \ac{LLM} workflow for doc-model trace-link recovery (\autoref{sec:approach}).
+    \item an \textbf{architecture-driven evaluation suite} of four size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
+    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $10.0$pp on doc-model and $5.7$pp on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
+\end{itemize}
+
+\autoref{sec:motivation} motivates the task and its long-tailed distribution.
+\autoref{sec:approach} presents \approach.
+\autoref{sec:metric} defines the evaluation suite.
+\autoref{sec:exp-design} and \autoref{sec:results} give the experimental design and results.
+% \autoref{sec:rw} discusses related work and \autoref{sec:threats} the threats to validity.
+
+% ===============================================================
+% OPEN REVIEWER COMMENTS (Jan Keim) -- carried over from the pre-rewrite
+% Overleaf intro so they are not lost by the 2026-06 rewrite. Verify each
+% is addressed by the current prose; remove once resolved.
+% ---------------------------------------------------------------
+% [Para 1, F1->decisions claim] can you state from the F1 how many decisions are missed or wrong? I would say no (JK)
+% [Para 3, prior work vs ours] how does relate to Artemis and its Named-Architecture-Entity-Recognition step? (JK) From my initial understanding, the process of SWATTR/Artemis also builds a kind of knowledge layer and this is then used to recover the links. It is unclear for me, how this is different from what you are proposing.
+% [Para 4, "runtime knowledge layer"] What is a runtime knowledge layer? (JK) Without this, it is unclear what the contribution or difference is.
+% [Para 4, "surface match would catch too much"] What is meant with "whose surface match would catch too much"? (JK) Explain further as the reader might not understand
+% [Para 4, examples] Add examples for the things above and for the next paragraph to make it more tangible (JK)
+% [Para 4, no-tuning claim] Prior work also kind of works in this way. You do not need labelled trace links or specific tuning per se. Or do I misunderstand this? (JK)
+% [Para 5, "ruler" term] I understand it after reading multiple times, but it is a bit hard to follow. I especially struggle with the concept of the "ruler" instead of calling it a "metric" or "measurement" or "evaluation setup" (JK)
+% [Para 6, overall] Latest here, I lack the necessary context to understand everything (JK)
+% ===============================================================

@@ -1,0 +1,88 @@
+== routing ==
+    router: 8/191
+    router: 16/191
+    router: 24/191
+    router: 32/191
+    router: 40/191
+    router: 48/191
+    router: 56/191
+    router: 64/191
+    router: 72/191
+    router: 80/191
+    router: 88/191
+    router: 96/191
+    router: 104/191
+    router: 112/191
+    router: 120/191
+    router: 128/191
+    router: 136/191
+    router: 144/191
+    router: 152/191
+    router: 160/191
+    router: 168/191
+    router: 176/191
+    router: 184/191
+    router: 191/191
+== dispatch to specialized judges ==
+    route.AFFIRM.P1: 8/47
+    route.AFFIRM.P1: 16/47
+    route.AFFIRM.P1: 24/47
+    route.AFFIRM.P1: 32/47
+    route.AFFIRM.P1: 40/47
+    route.AFFIRM.P1: 47/47
+    route.AFFIRM.P2: 8/47
+    route.AFFIRM.P2: 16/47
+    route.AFFIRM.P2: 24/47
+    route.AFFIRM.P2: 32/47
+    route.AFFIRM.P2: 40/47
+    route.AFFIRM.P2: 47/47
+    route.CONTRAST: 3/3
+    route.IMPLICIT: 8/40
+    route.IMPLICIT: 16/40
+    route.IMPLICIT: 24/40
+    route.IMPLICIT: 32/40
+    route.IMPLICIT: 40/40
+    route.ANAPHORA: 8/19
+    route.ANAPHORA: 16/19
+    route.ANAPHORA: 19/19
+====================================================================================
+JUDGE-ROUTER (LLM router over general signals -> specialized judges) — gpt-5.4, reasoning-off
+====================================================================================
+
+Routing mix by label (how each label's cases were routed):
+  label      AFFIRMA  CONTRAS  IMPLICI  ANAPHOR  CODEPAT   ABSENT
+  R-TP            36        2        9        3        0        0
+  R-TN             9        0       18       15        8       33
+  NP-FN            2        1        9        1        0        3
+  NP-CTRL          0        0        4        0        0       38
+
+Approval rate per label (HIGH on R-TP/NP-FN = recall; LOW on R-TN/NP-CTRL = precision):
+  R-TP       45/50  =  90%
+  R-TN        8/83  =  10%
+  NP-FN       8/16  =  50%
+  NP-CTRL     0/42  =   0%
+
+REMAINING-FN SLICE: router approves 12/22 consistent FN (55%)
+  per-FN (mode | verdict):
+    bigblueb s6     HTML5 Server   ABSENT      reject
+    bigblueb s10    HTML5 Client   IMPLICIT    reject
+    bigblueb s10    HTML5 Server   IMPLICIT    APPROVE
+    bigblueb s19    HTML5 Client   IMPLICIT    APPROVE
+    bigblueb s39    HTML5 Server   ABSENT      reject
+    bigblueb s47    HTML5 Server   ABSENT      reject
+    bigblueb s59    FreeSWITCH     CONTRAST    APPROVE
+    bigblueb s65    WebRTC-SFU     IMPLICIT    reject
+    bigblueb s66    FreeSWITCH     AFFIRMATIVE APPROVE
+    bigblueb s73    WebRTC-SFU     IMPLICIT    reject
+    bigblueb s73    HTML5 Server   ANAPHORA    reject
+    bigblueb s79    HTML5 Client   IMPLICIT    APPROVE
+    mediasto s33    FileStorage    IMPLICIT    APPROVE
+    mediasto s33    DB             CONTRAST    APPROVE
+    teammate s7     Logic          IMPLICIT    APPROVE
+    teammate s8     Logic          AFFIRMATIVE reject
+    teammate s88    Logic          AFFIRMATIVE reject
+    teammate s122   GAE Datastore  IMPLICIT    APPROVE
+    teammate s138   GAE Datastore  IMPLICIT    APPROVE
+    teammate s185   Logic          IMPLICIT    APPROVE
+    teastore s7     WebUI          CONTRAST    APPROVE
+    teastore s26    Persistence    ANAPHORA    reject

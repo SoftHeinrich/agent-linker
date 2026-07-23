@@ -1,0 +1,872 @@
+### [10:51:57] STEP 1/2: build+install reactor (skip test exec)
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] ArDoCo (Core) - The Consistency Analyzer                           [pom]
+[INFO] InFormALin Framework                                               [pom]
+[INFO] Common Utilities and Pipeline Definitions                          [jar]
+[INFO] stages                                                             [pom]
+[INFO] code-traceability                                                  [jar]
+[INFO] text-preprocessing                                                 [jar]
+[INFO] text-extraction                                                    [jar]
+[INFO] connection-generator                                               [jar]
+[INFO] model-provider                                                     [jar]
+[INFO] pipeline                                                           [pom]
+[INFO] pipeline-core                                                      [jar]
+[INFO] recommendation-generator                                           [jar]
+[INFO] pipeline-tlr                                                       [jar]
+[INFO] tests                                                              [pom]
+[INFO] tests-base                                                         [jar]
+[INFO] cli                                                                [jar]
+[INFO] tests-tlr                                                          [jar]
+[INFO] 
+[INFO] Using the MultiThreadedBuilder implementation with a thread count of 12
+[INFO] 
+[INFO] --------------------< io.github.ardoco.core:parent >--------------------
+[INFO] Building ArDoCo (Core) - The Consistency Analyzer 0.18.0-ICSE24-SNAPSHOT [1/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ parent ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:parent:pom:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ parent ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/parent/0.18.0-ICSE24-SNAPSHOT/parent-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] 
+[INFO] ------------------< io.github.ardoco.core:framework >-------------------
+[INFO] 
+[INFO] Building InFormALin Framework 0.18.0-ICSE24-SNAPSHOT              [2/17]
+[INFO] --------------------< io.github.ardoco.core:stages >--------------------
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] Building stages 0.18.0-ICSE24-SNAPSHOT                            [3/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ stages ---
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ framework ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:stages:pom:0.18.0-ICSE24-SNAPSHOT...
+[INFO] Generating flattened POM of project io.github.ardoco.core:framework:pom:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ stages ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ framework ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/stages/0.18.0-ICSE24-SNAPSHOT/stages-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/framework/0.18.0-ICSE24-SNAPSHOT/framework-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------------< io.github.ardoco.core:common >--------------------
+[INFO] Building Common Utilities and Pipeline Definitions 0.18.0-ICSE24-SNAPSHOT [4/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ common ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:common:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 123 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/PhraseMappingAggregatorStrategy.java:[27,67] [ImmutableEnumChecker] enums should be immutable: 'PhraseMappingAggregatorStrategy' has field 'mapper' of type 'java.util.function.ToDoubleBiFunction<edu.kit.kastel.mcse.ardoco.core.api.textextraction.PhraseMapping,edu.kit.kastel.mcse.ardoco.core.api.textextraction.PhraseMapping>', the declaration of type 'java.util.function.ToDoubleBiFunction<edu.kit.kastel.mcse.ardoco.core.api.textextraction.PhraseMapping,edu.kit.kastel.mcse.ardoco.core.api.textextraction.PhraseMapping>' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/AggregationFunctions.java:[63,55] [ImmutableEnumChecker] enums should be immutable: 'AggregationFunctions' has field 'function' of type 'java.util.function.ToDoubleFunction<java.util.Collection<java.lang.Double>>', the declaration of type 'java.util.function.ToDoubleFunction<java.util.Collection<java.lang.Double>>' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/api/InputDiagramData.java:[56,94] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean '.filter(f -> ALLOWED_FILE_TYPES.stream().anyMatch(t -> f.getName().toLowerCase(Locale.ROOT).endsWith("." + t)))' or '.filter(f -> ALLOWED_FILE_TYPES.stream().anyMatch(t -> f.getName().toLowerCase(Locale.getDefault()).endsWith("." + t)))' or '.filter(f -> ALLOWED_FILE_TYPES.stream().anyMatch(t -> Ascii.toLowerCase(f.getName()).endsWith("." + t)))'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/CommonUtilities.java:[256,41] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'for (String namePart : Splitter.onPattern("[-_]").split(name)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/CommonUtilities.java:[270,41] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'for (String namePart : Splitter.onPattern("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])").split(name)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/CommonUtilities.java:[304,30] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'var split = Splitter.on('_').splitToList(name);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/CommonUtilities.java:[315,30] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'var split = Splitter.on('-').splitToList(name);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/CommonUtilities.java:[352,28] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'if (word.toUpperCase(Locale.ROOT).equals(word)) {' or 'if (word.toUpperCase(Locale.getDefault()).equals(word)) {' or 'if (Ascii.toUpperCase(word).equals(word)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/configuration/ConfigurationInstantiatorUtils.java:[31,29] [UnusedVariable] This assignment to the local variable 'result' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/wordsim/vector/WordVectorSqliteImporter.java:[176,46] [ByteBufferBackingArray] ByteBuffer.array() shouldn't be called unless ByteBuffer.arrayOffset() is used or if the ByteBuffer was initialized using ByteBuffer.wrap() or ByteBuffer.allocate().
+    (see https://errorprone.info/bugpattern/ByteBufferBackingArray)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/wordsim/measures/levenshtein/LevenshteinMeasure.java:[66,54] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String firstWord = ctx.firstTerm().toLowerCase(Locale.ROOT);' or 'String firstWord = ctx.firstTerm().toLowerCase(Locale.getDefault());' or 'String firstWord = Ascii.toLowerCase(ctx.firstTerm());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/wordsim/measures/levenshtein/LevenshteinMeasure.java:[67,56] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String secondWord = ctx.secondTerm().toLowerCase(Locale.ROOT);' or 'String secondWord = ctx.secondTerm().toLowerCase(Locale.getDefault());' or 'String secondWord = Ascii.toLowerCase(ctx.secondTerm());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/wordsim/WordSimUtils.java:[73,47] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'var first = ctx.firstTerm().toLowerCase(Locale.ROOT);' or 'var first = ctx.firstTerm().toLowerCase(Locale.getDefault());' or 'var first = Ascii.toLowerCase(ctx.firstTerm());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/wordsim/WordSimUtils.java:[74,49] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'var second = ctx.secondTerm().toLowerCase(Locale.ROOT);' or 'var second = ctx.secondTerm().toLowerCase(Locale.getDefault());' or 'var second = Ascii.toLowerCase(ctx.secondTerm());'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ common ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ common ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 9 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/src/test/java/edu/kit/kastel/mcse/ardoco/core/data/impl/TextData.java:[33,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(o instanceof TextData))'?
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ common ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ common ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/target/common-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ common ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/target/common-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ common ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/target/common-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/common/0.18.0-ICSE24-SNAPSHOT/common-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/common/0.18.0-ICSE24-SNAPSHOT/common-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/framework/common/target/common-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/common/0.18.0-ICSE24-SNAPSHOT/common-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] 
+[INFO] --------------< io.github.ardoco.core:code-traceability >---------------
+[INFO] -------------------< io.github.ardoco.core:pipeline >-------------------
+[INFO] ----------------< io.github.ardoco.core:model-provider >----------------
+[INFO] --------------< io.github.ardoco.core:text-preprocessing >--------------
+[INFO] Building model-provider 0.18.0-ICSE24-SNAPSHOT                    [7/17]
+[INFO] Building pipeline 0.18.0-ICSE24-SNAPSHOT                          [6/17]
+[INFO] Building code-traceability 0.18.0-ICSE24-SNAPSHOT                 [5/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Building text-preprocessing 0.18.0-ICSE24-SNAPSHOT                [8/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ pipeline ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:pipeline:pom:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ pipeline ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/pipeline/0.18.0-ICSE24-SNAPSHOT/pipeline-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] 
+[INFO] ----------------< io.github.ardoco.core:pipeline-core >-----------------
+[INFO] Building pipeline-core 0.18.0-ICSE24-SNAPSHOT                     [9/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ pipeline-core ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ pipeline-core ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:pipeline-core:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ pipeline-core ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 6 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/src/main/java/edu/kit/kastel/mcse/ardoco/core/common/util/FilePrinter.java:[92,71] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String metaModelTypeName = metaModel.toString().toLowerCase(Locale.ROOT);' or 'String metaModelTypeName = metaModel.toString().toLowerCase(Locale.getDefault());' or 'String metaModelTypeName = Ascii.toLowerCase(metaModel.toString());'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ pipeline-core ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 8 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ pipeline-core ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 3 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ pipeline-core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ pipeline-core ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/target/pipeline-core-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ pipeline-core ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/target/pipeline-core-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ pipeline-core ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/target/pipeline-core-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-core/0.18.0-ICSE24-SNAPSHOT/pipeline-core-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-core/0.18.0-ICSE24-SNAPSHOT/pipeline-core-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-core/target/pipeline-core-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-core/0.18.0-ICSE24-SNAPSHOT/pipeline-core-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --------------------< io.github.ardoco.core:tests >---------------------
+[INFO] Building tests 0.18.0-ICSE24-SNAPSHOT                            [10/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ tests ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:tests:pom:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ tests ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/tests/0.18.0-ICSE24-SNAPSHOT/tests-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] 
+[INFO] ------------------< io.github.ardoco.core:tests-base >------------------
+[INFO] Building tests-base 0.18.0-ICSE24-SNAPSHOT                       [11/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ tests-base ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 115 resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ tests-base ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:tests-base:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ tests-base ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 13 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/results/EvaluationResults.java:[74,15] [UnusedVariable] This assignment to the local variable 'phiCoefficient' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/Project.java:[116,34] [ImmutableEnumChecker] enums should be immutable: 'Project' has field 'expectedTraceLinkResults' of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults', the declaration of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/Project.java:[117,34] [ImmutableEnumChecker] enums should be immutable: 'Project' has field 'expectedInconsistencyResults' of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults', the declaration of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/CodeProject.java:[84,34] [ImmutableEnumChecker] enums should be immutable: 'CodeProject' has field 'expectedResultsForSamCode' of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults', the declaration of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/CodeProject.java:[85,34] [ImmutableEnumChecker] enums should be immutable: 'CodeProject' has field 'expectedResultsForSadSamCode' of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults', the declaration of type 'edu.kit.kastel.mcse.ardoco.core.tests.eval.results.ExpectedResults' is not annotated with @com.google.errorprone.annotations.Immutable
+    (see https://errorprone.info/bugpattern/ImmutableEnumChecker)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/CodeProject.java:[154,34] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'var parts = Splitter.on(',').splitToList(line);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[11,26] [UnusedVariable] The field 'logger' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line or 'static { LoggerFactory.getLogger(EvaluationMetrics.class); }'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[141,43] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'var num = tp.multiply(tn).subtract( fp.multiply(fn));'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[147,20] [BigDecimalEquals] BigDecimal#equals has surprising behavior: it also compares scale.
+    (see https://errorprone.info/bugpattern/BigDecimalEquals)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[147,49] [BigDecimalEquals] BigDecimal#equals has surprising behavior: it also compares scale.
+    (see https://errorprone.info/bugpattern/BigDecimalEquals)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[147,78] [BigDecimalEquals] BigDecimal#equals has surprising behavior: it also compares scale.
+    (see https://errorprone.info/bugpattern/BigDecimalEquals)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[147,107] [BigDecimalEquals] BigDecimal#equals has surprising behavior: it also compares scale.
+    (see https://errorprone.info/bugpattern/BigDecimalEquals)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[175,24] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'var nominator =  fp.add(tn).multiply(tp.add(fp)).sqrt(MathContext.DECIMAL128);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/EvaluationMetrics.java:[176,26] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'var denominator =  fn.add(tn).multiply(tp.add(fn)).sqrt(MathContext.DECIMAL128);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/helper/CombineGoldStandards.java:[16,28] [DefaultCharset] Implicit use of the platform default charset, which can result in differing behaviour between JVM executions or incorrect behavior if the encoding of the data source doesn't match expectations.
+    (see https://errorprone.info/bugpattern/DefaultCharset)
+  Did you mean 'try (Scanner scan = new Scanner(System.in, UTF_8.name())) {' or 'try (Scanner scan = new Scanner(System.in, Charset.defaultCharset().name())) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/helper/CombineGoldStandards.java:[52,53] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'List<String> nameXLine = Splitter.on(',').splitToList(gsLine.strip());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/main/java/edu/kit/kastel/mcse/ardoco/core/tests/eval/helper/CombineGoldStandards.java:[66,29] [DefaultCharset] Implicit use of the platform default charset, which can result in differing behaviour between JVM executions or incorrect behavior if the encoding of the data source doesn't match expectations.
+    (see https://errorprone.info/bugpattern/DefaultCharset)
+  Did you mean 'return Arrays.stream(new Scanner(file, UTF_8.name()).useDelimiter("\\A").next().strip().split("\\n")).map(String::strip).toList();' or 'return Arrays.stream(new Scanner(file, Charset.defaultCharset().name()).useDelimiter("\\A").next().strip().split("\\n")).map(String::strip).toList();'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ tests-base ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ tests-base ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ tests-base ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ tests-base ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/target/tests-base-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ tests-base ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/target/tests-base-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ tests-base ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/target/tests-base-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/tests-base/0.18.0-ICSE24-SNAPSHOT/tests-base-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/tests-base/0.18.0-ICSE24-SNAPSHOT/tests-base-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-base/target/tests-base-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/tests-base/0.18.0-ICSE24-SNAPSHOT/tests-base-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ model-provider ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ model-provider ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:model-provider:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ model-provider ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 38 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/architecture/uml/parser/xmlelements/OwnedOperation.java:[12,19] [UnusedVariable] The field 'id' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/architecture/pcm/parser/PcmComponent.java:[46,25] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'return Iterables.get(Splitter.on(':').split(type), 1);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaExtractor.java:[89,110] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return paths.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(suffix))' or 'return paths.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().toLowerCase(Locale.getDefault()).endsWith(suffix))' or 'return paths.filter(path -> Files.isRegularFile(path) && Ascii.toLowerCase(path.getFileName().toString()).endsWith(suffix))'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/shell/ShellVisitor.java:[63,33] [DefaultCharset] Implicit use of the platform default charset, which can result in differing behaviour between JVM executions or incorrect behavior if the encoding of the data source doesn't match expectations.
+    (see https://errorprone.info/bugpattern/DefaultCharset)
+  Did you mean 'try (Reader reader = Files.newBufferedReader(path.toFile().toPath(), UTF_8)) {' or 'try (Reader reader = Files.newBufferedReader(path.toFile().toPath(), Charset.defaultCharset())) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[71,12] [UnusedVariable] The parameter 'codeClassifier' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean 'private record JavaClassifier(ITypeBinding binding) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[74,12] [UnusedVariable] The parameter 'binding' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[68,12] [UnusedVariable] The parameter 'codeType' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean 'private record JavaType(ITypeBinding binding, List<ITypeBinding> referencedBindings) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[68,12] [UnusedVariable] The parameter 'binding' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[68,12] [UnusedVariable] The parameter 'referencedBindings' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[74,12] [UnusedVariable] The parameter 'codeInterface' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean 'private record JavaInterface(ITypeBinding binding) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[71,12] [UnusedVariable] The parameter 'binding' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/core/models/connectors/generators/code/java/JavaModel.java:[148,56] [ModifiedButNotUsed] A collection or proto builder was created, but its values were never accessed.
+    (see https://errorprone.info/bugpattern/ModifiedButNotUsed)
+  Did you mean to remove this line?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ model-provider ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 43 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ model-provider ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 5 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ model-provider ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ model-provider ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/target/model-provider-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ model-provider ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/target/model-provider-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ model-provider ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/target/model-provider-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/model-provider/0.18.0-ICSE24-SNAPSHOT/model-provider-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/model-provider/0.18.0-ICSE24-SNAPSHOT/model-provider-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/model-provider/target/model-provider-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/model-provider/0.18.0-ICSE24-SNAPSHOT/model-provider-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ code-traceability ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ code-traceability ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:code-traceability:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ code-traceability ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 45 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ text-preprocessing ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ text-preprocessing ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:text-preprocessing:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ text-preprocessing ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 6 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ text-preprocessing ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ text-preprocessing ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 10 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/computation/Confidence.java:[90,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof Confidence)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/computation/computationtree/DependentHeuristicNode.java:[43,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof DependentHeuristicNode)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/computation/computationtree/AggregationNode.java:[55,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof AggregationNode)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/NameComparisonUtils.java:[62,36] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'return Math.min(1, (double)  getWordCount(interfaceEntity.getName().substring(1)) / getWordCount(otherNamedEntity.getName()));'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/NameComparisonUtils.java:[146,31] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return name.toLowerCase(Locale.ROOT);' or 'return name.toLowerCase(Locale.getDefault());' or 'return Ascii.toLowerCase(name);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/aggregation/Threshold.java:[59,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof Threshold)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/aggregation/Average.java:[88,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof Average)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/computation/computationtree/StandaloneHeuristicNode.java:[43,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof StandaloneHeuristicNode)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/heuristics/PackageResemblance.java:[54,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof PackageResemblance)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/heuristics/PackageResemblance.java:[67,68] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return "PackageResemblance-" + config.toString().toLowerCase(Locale.ROOT);' or 'return "PackageResemblance-" + config.toString().toLowerCase(Locale.getDefault());' or 'return "PackageResemblance-" + Ascii.toLowerCase(config.toString());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/heuristics/ComponentNameResemblance.java:[90,19] [EqualsGetClass] Prefer instanceof to getClass when implementing Object#equals.
+    (see https://errorprone.info/bugpattern/EqualsGetClass)
+  Did you mean 'if (!(obj instanceof ComponentNameResemblance)) {'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/heuristics/ComponentNameResemblance.java:[103,78] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return "ComponentNameResemblance-" + nameConfig.toString().toLowerCase(Locale.ROOT) + "-" + preprocessConfig.toString().toLowerCase();' or 'return "ComponentNameResemblance-" + nameConfig.toString().toLowerCase(Locale.getDefault()) + "-" + preprocessConfig.toString().toLowerCase();' or 'return "ComponentNameResemblance-" + Ascii.toLowerCase(nameConfig.toString()) + "-" + preprocessConfig.toString().toLowerCase();'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/heuristics/ComponentNameResemblance.java:[103,128] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return "ComponentNameResemblance-" + nameConfig.toString().toLowerCase() + "-" + preprocessConfig.toString().toLowerCase(Locale.ROOT);' or 'return "ComponentNameResemblance-" + nameConfig.toString().toLowerCase() + "-" + preprocessConfig.toString().toLowerCase(Locale.getDefault());' or 'return "ComponentNameResemblance-" + nameConfig.toString().toLowerCase() + "-" + Ascii.toLowerCase(preprocessConfig.toString());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/main/java/edu/kit/kastel/mcse/ardoco/core/codetraceability/informants/arcotl/functions/aggregation/MatchBest.java:[33,45] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'Confidence childBestConfidence =  childResult.getBestConfidence(endpointToMatch);'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ code-traceability ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ code-traceability ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ code-traceability ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ code-traceability ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/target/code-traceability-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ code-traceability ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/target/code-traceability-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ code-traceability ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/target/code-traceability-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/code-traceability/0.18.0-ICSE24-SNAPSHOT/code-traceability-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/code-traceability/0.18.0-ICSE24-SNAPSHOT/code-traceability-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/code-traceability/target/code-traceability-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/code-traceability/0.18.0-ICSE24-SNAPSHOT/code-traceability-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ text-preprocessing ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ text-preprocessing ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-preprocessing/target/text-preprocessing-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ text-preprocessing ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-preprocessing/target/text-preprocessing-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ text-preprocessing ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-preprocessing/target/text-preprocessing-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/text-preprocessing/0.18.0-ICSE24-SNAPSHOT/text-preprocessing-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-preprocessing/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/text-preprocessing/0.18.0-ICSE24-SNAPSHOT/text-preprocessing-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-preprocessing/target/text-preprocessing-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/text-preprocessing/0.18.0-ICSE24-SNAPSHOT/text-preprocessing-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] ---------------< io.github.ardoco.core:text-extraction >----------------
+[INFO] Building text-extraction 0.18.0-ICSE24-SNAPSHOT                  [12/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ text-extraction ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 7 resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ text-extraction ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:text-extraction:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ text-extraction ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 17 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/main/java/edu/kit/kastel/mcse/ardoco/core/textextraction/OriginalTextStateStrategy.java:[28,56] [UnnecessaryLambda] Returning a lambda from a helper method or saving it in a constant is unnecessary; prefer to implement the functional interface method directly and use a method reference instead.
+    (see https://errorprone.info/bugpattern/UnnecessaryLambda)
+  Did you mean 'private static  Integer nounMappingHash(NounMapping nm){return Objects.hash(nm.getReferenceWords().toSet(), nm.getWords());}'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/main/java/edu/kit/kastel/mcse/ardoco/core/textextraction/OriginalTextStateStrategy.java:[29,63] [UnnecessaryLambda] Returning a lambda from a helper method or saving it in a constant is unnecessary; prefer to implement the functional interface method directly and use a method reference instead.
+    (see https://errorprone.info/bugpattern/UnnecessaryLambda)
+  Did you mean 'private static  boolean nounMappingEquals(NounMapping nm1, NounMapping nm2){return Objects.equals(nm1.getReferenceWords().toSet(), nm2'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/main/java/edu/kit/kastel/mcse/ardoco/core/textextraction/PhraseConcerningTextStateStrategy.java:[28,56] [UnnecessaryLambda] Returning a lambda from a helper method or saving it in a constant is unnecessary; prefer to implement the functional interface method directly and use a method reference instead.
+    (see https://errorprone.info/bugpattern/UnnecessaryLambda)
+  Did you mean 'private static  Integer nounMappingHash(NounMapping nm){return Objects.hash(nm.getReference(), nm.getPhrases());}'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/main/java/edu/kit/kastel/mcse/ardoco/core/textextraction/PhraseConcerningTextStateStrategy.java:[29,63] [UnnecessaryLambda] Returning a lambda from a helper method or saving it in a constant is unnecessary; prefer to implement the functional interface method directly and use a method reference instead.
+    (see https://errorprone.info/bugpattern/UnnecessaryLambda)
+  Did you mean 'private static  boolean nounMappingEquals(NounMapping nm1, NounMapping nm2){return (Objects.equals(nm1.getPhrases(), nm2'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ text-extraction ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ text-extraction ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 2 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/test/java/edu/kit/kastel/mcse/ardoco/core/textextraction/agents/MappingCombinerTest.java:[56,23] [UnusedVariable] The field 'dogPhrase3' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/test/java/edu/kit/kastel/mcse/ardoco/core/textextraction/agents/MappingCombinerTest.java:[54,23] [UnusedVariable] The field 'turtlePhrase2' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/test/java/edu/kit/kastel/mcse/ardoco/core/textextraction/agents/MappingCombinerTest.java:[58,23] [UnusedVariable] The field 'dogPhrase4' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/src/test/java/edu/kit/kastel/mcse/ardoco/core/textextraction/agents/MappingCombinerTest.java:[463,18] [TypeParameterUnusedInFormals] Declaring a type parameter that is only used in the return type is a misuse of generics: operations on the type parameter are unchecked, it hides unsafe casts at invocations of the method, and it interacts badly with method overload resolution.
+    (see https://errorprone.info/bugpattern/TypeParameterUnusedInFormals)
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ text-extraction ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ text-extraction ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/target/text-extraction-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ text-extraction ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/target/text-extraction-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ text-extraction ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/target/text-extraction-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/text-extraction/0.18.0-ICSE24-SNAPSHOT/text-extraction-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/text-extraction/0.18.0-ICSE24-SNAPSHOT/text-extraction-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/text-extraction/target/text-extraction-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/text-extraction/0.18.0-ICSE24-SNAPSHOT/text-extraction-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] -------------< io.github.ardoco.core:connection-generator >-------------
+[INFO] Building connection-generator 0.18.0-ICSE24-SNAPSHOT             [13/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] -----------< io.github.ardoco.core:recommendation-generator >-----------
+[INFO] Building recommendation-generator 0.18.0-ICSE24-SNAPSHOT         [14/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ connection-generator ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ recommendation-generator ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ connection-generator ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ recommendation-generator ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:recommendation-generator:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] Generating flattened POM of project io.github.ardoco.core:connection-generator:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ recommendation-generator ---
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ connection-generator ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 8 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 12 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/recommendationgenerator/RecommendationStateImpl.java:[153,73] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return recommendedInstances.select(ri -> ri.getName().toLowerCase(Locale.ROOT).contentEquals(name.toLowerCase())).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getName().toLowerCase(Locale.getDefault()).contentEquals(name.toLowerCase())).toImmutable();' or 'return recommendedInstances.select(ri -> Ascii.toLowerCase(ri.getName()).contentEquals(name.toLowerCase())).toImmutable();'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/recommendationgenerator/RecommendationStateImpl.java:[153,106] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return recommendedInstances.select(ri -> ri.getName().toLowerCase().contentEquals(name.toLowerCase(Locale.ROOT))).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getName().toLowerCase().contentEquals(name.toLowerCase(Locale.getDefault()))).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getName().toLowerCase().contentEquals(Ascii.toLowerCase(name))).toImmutable();'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/recommendationgenerator/RecommendationStateImpl.java:[182,73] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return recommendedInstances.select(ri -> ri.getType().toLowerCase(Locale.ROOT).contentEquals(type.toLowerCase())).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getType().toLowerCase(Locale.getDefault()).contentEquals(type.toLowerCase())).toImmutable();' or 'return recommendedInstances.select(ri -> Ascii.toLowerCase(ri.getType()).contentEquals(type.toLowerCase())).toImmutable();'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/recommendationgenerator/RecommendationStateImpl.java:[182,106] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'return recommendedInstances.select(ri -> ri.getType().toLowerCase().contentEquals(type.toLowerCase(Locale.ROOT))).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getType().toLowerCase().contentEquals(type.toLowerCase(Locale.getDefault()))).toImmutable();' or 'return recommendedInstances.select(ri -> ri.getType().toLowerCase().contentEquals(Ascii.toLowerCase(type))).toImmutable();'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ recommendation-generator ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ recommendation-generator ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ recommendation-generator ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ recommendation-generator ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/target/recommendation-generator-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ recommendation-generator ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/target/recommendation-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ recommendation-generator ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/target/recommendation-generator-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/recommendation-generator/0.18.0-ICSE24-SNAPSHOT/recommendation-generator-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/recommendation-generator/0.18.0-ICSE24-SNAPSHOT/recommendation-generator-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/recommendation-generator/target/recommendation-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/recommendation-generator/0.18.0-ICSE24-SNAPSHOT/recommendation-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/connectiongenerator/informants/ProjectNameInformant.java:[71,56] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String wordText = word.getText().toLowerCase(Locale.ROOT);' or 'String wordText = word.getText().toLowerCase(Locale.getDefault());' or 'String wordText = Ascii.toLowerCase(word.getText());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/connectiongenerator/informants/ProjectNameInformant.java:[86,63] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'concatenatedWords.append(word.getText().toLowerCase(Locale.ROOT));' or 'concatenatedWords.append(word.getText().toLowerCase(Locale.getDefault()));' or 'concatenatedWords.append(Ascii.toLowerCase(word.getText()));'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/src/main/java/edu/kit/kastel/mcse/ardoco/core/connectiongenerator/informants/ProjectNameInformant.java:[135,57] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'wordText = currWord.getText().toLowerCase(Locale.ROOT);' or 'wordText = currWord.getText().toLowerCase(Locale.getDefault());' or 'wordText = Ascii.toLowerCase(currWord.getText());'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ connection-generator ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ connection-generator ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ connection-generator ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ connection-generator ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/target/connection-generator-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ connection-generator ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/target/connection-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ connection-generator ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/target/connection-generator-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/connection-generator/0.18.0-ICSE24-SNAPSHOT/connection-generator-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/connection-generator/0.18.0-ICSE24-SNAPSHOT/connection-generator-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/stages/connection-generator/target/connection-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/connection-generator/0.18.0-ICSE24-SNAPSHOT/connection-generator-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] -----------------< io.github.ardoco.core:pipeline-tlr >-----------------
+[INFO] Building pipeline-tlr 0.18.0-ICSE24-SNAPSHOT                     [15/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ pipeline-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ pipeline-tlr ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:pipeline-tlr:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ pipeline-tlr ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 4 source files with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/src/main/java/edu/kit/kastel/mcse/ardoco/core/execution/ArDoCoForSamCodeTraceabilityLinkRecovery.java:[16,32] [UnusedVariable] The field 'logger' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line or 'static { LoggerFactory.getLogger(ArDoCoForSamCodeTraceabilityLinkRecovery.class); }'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ pipeline-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ pipeline-tlr ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 4 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ pipeline-tlr ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ pipeline-tlr ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/target/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ pipeline-tlr ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/target/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ pipeline-tlr ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/target/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-tlr/0.18.0-ICSE24-SNAPSHOT/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-tlr/0.18.0-ICSE24-SNAPSHOT/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/pipeline/pipeline-tlr/target/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/pipeline-tlr/0.18.0-ICSE24-SNAPSHOT/pipeline-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] ------------------< io.github.ardoco.core:tests-tlr >-------------------
+[INFO] Building tests-tlr 0.18.0-ICSE24-SNAPSHOT                        [16/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] ---------------------< io.github.ardoco.core:cli >----------------------
+[INFO] Building cli 0.18.0-ICSE24-SNAPSHOT                              [17/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ tests-tlr ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:tests-tlr:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ tests-tlr ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ tests-tlr ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 18 source files with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ cli ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ cli ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:cli:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ cli ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [forked debug release 17] to target/classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/RawLinkDumpIT.java:[43,52] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = project.name().toLowerCase(Locale.ROOT);' or 'String name = project.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(project.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadCodeTraceabilityLinkRecoveryEvaluation.java:[39,52] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = codeProject.name().toLowerCase(Locale.ROOT);' or 'String name = codeProject.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(codeProject.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/TraceabilityLinkRecoveryEvaluation.java:[120,44] [StringSplitter] String.split(String) has surprising behavior
+    (see https://errorprone.info/bugpattern/StringSplitter)
+  Did you mean 'var splitTraceLink = Splitter.on(',').splitToList(traceLink);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/TraceabilityLinkRecoveryEvaluation.java:[194,15] [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted without them
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'return  goldStandardTraceLink.equals(traceLink);'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SamCodeTraceabilityLinkRecoveryEvaluation.java:[34,52] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = codeProject.name().toLowerCase(Locale.ROOT);' or 'String name = codeProject.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(codeProject.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadSamCodeTraceabilityLinkRecoveryEvaluation.java:[38,52] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = codeProject.name().toLowerCase(Locale.ROOT);' or 'String name = codeProject.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(codeProject.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadSamTraceabilityLinkRecoveryEvaluation.java:[65,48] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = project.name().toLowerCase(Locale.ROOT);' or 'String name = project.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(project.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadSamTraceabilityLinkRecoveryEvaluation.java:[117,48] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = project.name().toLowerCase(Locale.ROOT);' or 'String name = project.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(project.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadSamTraceabilityLinkRecoveryEvaluation.java:[165,59] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String projectName = project.name().toLowerCase(Locale.ROOT);' or 'String projectName = project.name().toLowerCase(Locale.getDefault());' or 'String projectName = Ascii.toLowerCase(project.name());'?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/core/tests/integration/SadSamTraceabilityLinkRecoveryEvaluation.java:[198,48] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'String name = project.name().toLowerCase(Locale.ROOT);' or 'String name = project.name().toLowerCase(Locale.getDefault());' or 'String name = Ascii.toLowerCase(project.name());'?
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ tests-tlr ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ tests-tlr ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/target/tests-tlr-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ tests-tlr ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/target/tests-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:integration-test (default) @ tests-tlr ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:verify (default) @ tests-tlr ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ tests-tlr ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/target/tests-tlr-0.18.0-ICSE24-SNAPSHOT.jar to /home/dev/.m2/repository/io/github/ardoco/core/tests-tlr/0.18.0-ICSE24-SNAPSHOT/tests-tlr-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/tests-tlr/0.18.0-ICSE24-SNAPSHOT/tests-tlr-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/target/tests-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/tests-tlr/0.18.0-ICSE24-SNAPSHOT/tests-tlr-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/src/main/java/edu/kit/kastel/mcse/ardoco/core/cli/ArDoCoCli.java:[39,32] [UnusedVariable] The field 'GOLD_STANDARD_PATH_SEPARATOR' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/src/main/java/edu/kit/kastel/mcse/ardoco/core/cli/ArDoCoCli.java:[38,32] [UnusedVariable] The field 'WARNING_NO_CODE_MODEL' is never read.
+    (see https://errorprone.info/bugpattern/UnusedVariable)
+  Did you mean to remove this line?
+[WARNING] /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/src/main/java/edu/kit/kastel/mcse/ardoco/core/cli/ArDoCoCli.java:[74,36] [StringCaseLocaleUsage] Specify a `Locale` when calling `String#to{Lower,Upper}Case`. (Note: there are multiple suggested fixes; the third may be most appropriate if you're dealing with ASCII Strings.)
+    (see https://errorprone.info/bugpattern/StringCaseLocaleUsage)
+  Did you mean 'switch (task.toLowerCase(Locale.ROOT)) {' or 'switch (task.toLowerCase(Locale.getDefault())) {' or 'switch (Ascii.toLowerCase(task)) {'?
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ cli ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ cli ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [forked debug release 17] to target/test-classes
+[WARNING] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ cli ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ cli ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/cli-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-assembly-plugin:3.6.0:single (make-assembly) @ cli ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/ardoco-cli.jar
+[WARNING] Configuration option 'appendAssemblyId' is set to false.
+Instead of attaching the assembly file: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/ardoco-cli.jar, it will become the file for main project artifact.
+NOTE: If multiple descriptors or descriptor-formats are provided for this project, the value of this file will be non-deterministic!
+[WARNING] Replacing pre-existing project main-artifact file: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/cli-0.18.0-ICSE24-SNAPSHOT.jar
+with assembly file: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/ardoco-cli.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:3.3.0:test-jar (default) @ cli ---
+[INFO] Building jar: /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/cli-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:integration-test (default) @ cli ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.1.2:verify (default) @ cli ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ cli ---
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/ardoco-cli.jar to /home/dev/.m2/repository/io/github/ardoco/core/cli/0.18.0-ICSE24-SNAPSHOT/cli-0.18.0-ICSE24-SNAPSHOT.jar
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/.flattened-pom.xml to /home/dev/.m2/repository/io/github/ardoco/core/cli/0.18.0-ICSE24-SNAPSHOT/cli-0.18.0-ICSE24-SNAPSHOT.pom
+[INFO] Installing /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/cli/target/cli-0.18.0-ICSE24-SNAPSHOT-tests.jar to /home/dev/.m2/repository/io/github/ardoco/core/cli/0.18.0-ICSE24-SNAPSHOT/cli-0.18.0-ICSE24-SNAPSHOT-tests.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for ArDoCo (Core) - The Consistency Analyzer 0.18.0-ICSE24-SNAPSHOT:
+[INFO] 
+[INFO] ArDoCo (Core) - The Consistency Analyzer ........... SUCCESS [  9.392 s]
+[INFO] InFormALin Framework ............................... SUCCESS [  0.015 s]
+[INFO] Common Utilities and Pipeline Definitions .......... SUCCESS [02:10 min]
+[INFO] stages ............................................. SUCCESS [  0.014 s]
+[INFO] code-traceability .................................. SUCCESS [13:57 min]
+[INFO] text-preprocessing ................................. SUCCESS [13:58 min]
+[INFO] text-extraction .................................... SUCCESS [ 16.080 s]
+[INFO] connection-generator ............................... SUCCESS [  2.034 s]
+[INFO] model-provider ..................................... SUCCESS [04:18 min]
+[INFO] pipeline ........................................... SUCCESS [  0.160 s]
+[INFO] pipeline-core ...................................... SUCCESS [  3.214 s]
+[INFO] recommendation-generator ........................... SUCCESS [  1.964 s]
+[INFO] pipeline-tlr ....................................... SUCCESS [  2.278 s]
+[INFO] tests .............................................. SUCCESS [  2.753 s]
+[INFO] tests-base ......................................... SUCCESS [ 22.910 s]
+[INFO] cli ................................................ SUCCESS [ 40.639 s]
+[INFO] tests-tlr .......................................... SUCCESS [  3.312 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  17:19 min (Wall Clock)
+[INFO] Finished at: 2026-06-21T11:09:17Z
+[INFO] ------------------------------------------------------------------------
+### [11:09:17] STEP 2/2: run RawLinkDumpIT (SWATTR + TransArC, 5 projects)
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] Using the MultiThreadedBuilder implementation with a thread count of 12
+[INFO] 
+[INFO] ------------------< io.github.ardoco.core:tests-tlr >-------------------
+[INFO] Building tests-tlr 0.18.0-ICSE24-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/baseline-repos/transarc-icse24/ardoco+arcotl/tests/tests-tlr/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.5.0:flatten (flatten) @ tests-tlr ---
+[INFO] Generating flattened POM of project io.github.ardoco.core:tests-tlr:jar:0.18.0-ICSE24-SNAPSHOT...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ tests-tlr ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ tests-tlr ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ tests-tlr ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ tests-tlr ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.924 s (Wall Clock)
+[INFO] Finished at: 2026-06-21T11:09:18Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.1.2:test (default-test) on project tests-tlr: No tests matching pattern "_none_" were executed! (Set -Dsurefire.failIfNoSpecifiedTests=false to ignore this error.) -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+### IT RUN FAILED
