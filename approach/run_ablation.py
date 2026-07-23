@@ -130,6 +130,7 @@ CANONICAL_VARIANTS = [
     "s_linker23_ctx",  # s23_verify + proposer conditioned on s21's per-sentence links as LLM context (residual extraction, no coded heuristics)
     "s_linker23_tier_f1",  # tiered ranking (not binary gate): emit FIRM+PROBABLE tiers; F1 operating point
     "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
+    "s_linker24",  # anchored sibling/prefix recovery over unchanged S21 floor
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1002,6 +1003,19 @@ VARIANT_SPECS = {
         description=(
             "S-Linker23TieredF2 — same tiered linker at the recall/F2 operating point "
             "(FIRM+PROBABLE+WEAK). Subclass of SLinker23Tiered (GATE-01 safe)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker24": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker24",
+        class_name="SLinker24",
+        description=(
+            "S-Linker24 — unchanged S21 floor plus a narrow, LLM-resolved recovery "
+            "for locally anchored Client/Server siblings and unique technical-prefix "
+            "shorthand. Every addition must pass S21's existing strict coreference "
+            "validator; no broad proposer or router is used."
         ),
         canonical=False,
         experimental=True,

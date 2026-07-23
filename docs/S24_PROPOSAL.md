@@ -23,16 +23,14 @@ router's precision problem.
 
 ## Minimal design
 
-`SLinker24AnchoredRecovery(SLinker21)` adds one narrow recovery pass after S21
-Phase 5 and before merge:
+`SLinker24(SLinker21)` adds one narrow recovery pass after S21 Phase 5 and
+before merge. The first implementation deliberately starts with the two
+least-ambiguous eligibility forms—structural Client/Server siblings and unique
+technical prefixes—before considering Phase-1 aliases:
 
-1. Build an **anchor ledger** from S21's Phase-1 aliases and exact component/alias
-   mentions. Each entry is `(sentence, phrase, component)`.
-2. Form a recovery question only for a sentence containing either:
-   - a document-derived alias/shorthand absent from the component catalog; or
-   - a role word that is locally anchored to one structural sibling family; or
-   - a unique token-prefix shorthand for exactly one component (`WebRTC` for
-     `WebRTC-SFU`).
+1. Form a recovery question only for a sentence containing either a role word
+   locally anchored to one structural sibling family or a unique token-prefix
+   shorthand for exactly one component (`WebRTC` for `WebRTC-SFU`).
 3. The resolver must return an exact referring phrase, exactly one component (or
    an explicit abstention), and the anchor sentence that establishes the referent.
    It does **not** read the whole catalog and does not propose arbitrary links.
@@ -78,6 +76,23 @@ mechanism and removes the broad candidate source.
 This is a hypothesis, not an expected score. The existing S21 two-pass entity gate
 is deliberately not weakened; S24 uses the stricter coreference gate because these
 are referential, not direct entity, links.
+
+## First live result: negative (N=1)
+
+The first implementation was evaluated on all five projects with OpenAI GPT-5.4,
+enforced Flex tier, and explicit `reasoning_effort=none`. The independent
+`mini-src` macro score was P 97.31%, R 90.55%, F1 93.73% (170 TP, 7 FP, 25 FN;
+pooled F2 88.82%). See
+[`results/s24_gpt54_openai_flex_noreasoning_20260723/RESULTS.md`](../results/s24_gpt54_openai_flex_noreasoning_20260723/RESULTS.md)
+for per-project scores and request provenance.
+
+Crucially, the marginal S24 result was **zero accepted additions**. The anchored
+resolver approved some candidates, but the inherited S21 coreference gate rejected
+every one. Since S21 was freshly rerun and LLM outputs are stochastic, its changed
+floor cannot be read as an S24 score delta. The valid conclusion is narrower: the
+current strict coreference gate is not an adequate acceptance test for these direct
+anchored role/prefix references. Do not promote this implementation; redesign the
+anchored evidence gate and score marginal additions before a further full sweep.
 
 ## Evaluation sequence
 
