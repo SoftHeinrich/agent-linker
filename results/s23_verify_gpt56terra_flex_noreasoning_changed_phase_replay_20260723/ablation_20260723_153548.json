@@ -1,0 +1,574 @@
+{
+  "mediastore": {
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.9393939393939394,
+      "R": 1.0,
+      "F1": 0.96875,
+      "tp": 31,
+      "fp": 2,
+      "fn": 0,
+      "n_links": 33,
+      "time": 35.033215045928955,
+      "sources": {
+        "entity": 27,
+        "llmrouter": 6
+      },
+      "fp_by_source": {
+        "llmrouter": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        },
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": []
+    }
+  },
+  "teastore": {
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.627906976744186,
+      "R": 1.0,
+      "F1": 0.7714285714285715,
+      "tp": 27,
+      "fp": 16,
+      "fn": 0,
+      "n_links": 43,
+      "time": 38.70791697502136,
+      "sources": {
+        "entity": 19,
+        "coreference": 7,
+        "llmrouter": 17
+      },
+      "fp_by_source": {
+        "llmrouter": 16
+      },
+      "fp_details": [
+        {
+          "sentence": 13,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+        },
+        {
+          "sentence": 14,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The scaled image is stored for later use."
+        },
+        {
+          "sentence": 15,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name and size is found, the image will be loaded and delivered."
+        },
+        {
+          "sentence": 16,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+        },
+        {
+          "sentence": 17,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Before loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered"
+        },
+        {
+          "sentence": 19,
+          "component": "Auth",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Passwords are hashed using BCrypt."
+        },
+        {
+          "sentence": 20,
+          "component": "Auth",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+        },
+        {
+          "sentence": 29,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the u"
+        },
+        {
+          "sentence": 30,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The item rating of the users are based on their purchases."
+        },
+        {
+          "sentence": 31,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+        },
+        {
+          "sentence": 31,
+          "component": "PopularityBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+        },
+        {
+          "sentence": 32,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        },
+        {
+          "sentence": 33,
+          "component": "SlopeOneRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "We implemented two versions of the algorithm."
+        },
+        {
+          "sentence": 34,
+          "component": "SlopeOneRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 35,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": []
+    }
+  },
+  "teammates": {
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.7887323943661971,
+      "R": 0.9824561403508771,
+      "F1": 0.875,
+      "tp": 56,
+      "fp": 15,
+      "fn": 1,
+      "n_links": 71,
+      "time": 137.38424396514893,
+      "sources": {
+        "entity": 52,
+        "coreference": 7,
+        "llmrouter": 12
+      },
+      "fp_by_source": {
+        "coreference": 2,
+        "llmrouter": 8,
+        "entity": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 27,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "It is written in Angular framework and consists of HTML, SCSS, and TypeScript files."
+        },
+        {
+          "sentence": 41,
+          "component": "UI",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Third, the browser will render the page and execute the page scripts, most of the time requiring AJAX requests to the se"
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 51,
+          "component": "UI",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Requests for static asset files (e.g. CSS, JS files, images) are served directly without going through web.xml configura"
+        },
+        {
+          "sentence": 79,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Managing relationships between entities, e.g. cascade logic for create/update/delete."
+        },
+        {
+          "sentence": 80,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Managing transactions, e.g. ensuring atomicity of a transaction."
+        },
+        {
+          "sentence": 82,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Providing a mechanism for checking access control rights."
+        },
+        {
+          "sentence": 83,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 194,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The Client component contains scripts that can connect directly to the application back-end for administrative purposes,"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.7230769230769231,
+      "R": 0.7580645161290323,
+      "F1": 0.7401574803149606,
+      "tp": 47,
+      "fp": 18,
+      "fn": 15,
+      "n_links": 65,
+      "time": 112.5560691356659,
+      "sources": {
+        "entity": 51,
+        "coreference": 2,
+        "llmrouter": 12
+      },
+      "fp_by_source": {
+        "llmrouter": 10,
+        "entity": 8
+      },
+      "fp_details": [
+        {
+          "sentence": 27,
+          "component": "Redis PubSub",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 27,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 28,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+        },
+        {
+          "sentence": 29,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Backends handle all the non-streamer events."
+        },
+        {
+          "sentence": 30,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+        },
+        {
+          "sentence": 31,
+          "component": "Redis PubSub",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 31,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 32,
+          "component": "HTML5 Server",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no fro"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 77,
+          "component": "Presentation Conversion",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 82,
+          "component": "Presentation Conversion",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion."
+        },
+        {
+          "sentence": 83,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Then below the SVG conversion flow."
+        },
+        {
+          "sentence": 84,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "It covers the conversion fallback."
+        },
+        {
+          "sentence": 87,
+          "component": "Apps",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram shows how the various components of BigBlueButton connect to each other via sockets."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 16.855587005615234,
+      "sources": {
+        "entity": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": []
+    }
+  }
+}

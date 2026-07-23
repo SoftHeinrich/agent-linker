@@ -114,3 +114,28 @@ Conversion` at S83/S84 and `Apps` at S87. It also approved some observed entity
 FPs, so restoring P2 alone cannot repair the collapse. The replay is evidence
 about the omitted gate, not a replacement end-to-end run: it is a new stochastic
 request and cannot prove the exact counterfactual output.
+
+## 2026-07-23 `verify` changed-phase replay
+
+To isolate the cost of returning to the two-pass design, the `verify1p_all`
+call traces above seeded a prompt-hash checkpoint cache. The replay reused the
+unchanged GPT-5.6-terra S21 acquisition/extraction/coreference prompts, while
+new P2 and router/gate prompts used GPT-5.6-terra with Flex and explicit
+`reasoning_effort=none`. `scripts/seed-checkpoint-from-traces.py` makes this
+procedure reproducible from the tracked full call traces.
+
+| Variant / replay | Macro P | Macro R | Macro F1 | Macro F2 | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `verify1p_all` full N=1 | 82.31 | 97.07 | 88.88 | 93.56 | 186 | 52 | 9 |
+| `verify` changed-phase replay | 81.58 | 94.81 | 87.11 | 91.37 | 179 | 51 | 16 |
+
+Per dataset, `verify` scores F1 96.88 (mediastore), 77.14 (teastore), 87.50
+(teammates), 74.02 (BigBlueButton), and 100.00 (JabRef). `mini-src` reproduces
+those CSV scores. The raw output is in
+`results/s23_verify_gpt56terra_flex_noreasoning_changed_phase_replay_20260723/`.
+
+This is informative but not a pure P2-only estimate: the S23 proposer/router
+calls were not available as complete prompts in the original trace and therefore
+were fresh, stochastic calls. The replay demonstrates that restoring both P2
+passes did **not** rescue performance under this configuration; it does not
+justify the stronger claim that P2 caused the 1.77pp macro-F1 difference.

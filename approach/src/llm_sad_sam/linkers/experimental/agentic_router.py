@@ -41,6 +41,7 @@ named+routed is verified gold-incompleteness, not error.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from typing import Callable, Optional, Sequence
 
@@ -51,7 +52,10 @@ _ACTIONS = (VALIDATE, CODE, REJECT)
 def _make_client(model: str | None = None):
     """Create a client without changing process-wide OpenAI configuration."""
     from llm_sad_sam.llm_client import LLMClient, LLMBackend
-    return LLMClient(backend=LLMBackend.OPENAI, model=model, enable_logging=False)
+    # The ablation runner can explicitly select checkpoint replay.  Preserve the
+    # historical standalone OpenAI default when no backend is configured.
+    backend = None if os.environ.get("LLM_BACKEND") else LLMBackend.OPENAI
+    return LLMClient(backend=backend, model=model, enable_logging=False)
 
 
 # ── data types ───────────────────────────────────────────────────────────────

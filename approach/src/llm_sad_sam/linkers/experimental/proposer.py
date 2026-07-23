@@ -299,7 +299,10 @@ def _parse_batch(txt: str, strategy="coverage") -> list[dict]:
 def make_client():
     """Create a client without changing process-wide OpenAI configuration."""
     from llm_sad_sam.llm_client import LLMClient, LLMBackend
-    return LLMClient(backend=LLMBackend.OPENAI, enable_logging=False)
+    # Honor checkpoint replay when the runner explicitly selects it; retain the
+    # historical standalone OpenAI default otherwise.
+    backend = None if os.environ.get("LLM_BACKEND") else LLMBackend.OPENAI
+    return LLMClient(backend=backend, enable_logging=False)
 
 
 def _parse(txt: str) -> list[dict]:
