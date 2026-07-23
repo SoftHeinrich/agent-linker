@@ -139,3 +139,26 @@ calls were not available as complete prompts in the original trace and therefore
 were fresh, stochastic calls. The replay demonstrates that restoring both P2
 passes did **not** rescue performance under this configuration; it does not
 justify the stronger claim that P2 caused the 1.77pp macro-F1 difference.
+
+## 2026-07-23 canonical S21 GPT-5.4 control
+
+The fresh OpenAI control used `gpt-5.4` (provider response model
+`gpt-5.4-2026-03-05`), `OPENAI_SERVICE_TIER=flex`,
+`OPENAI_ENFORCE_FLEX=1`, and `OPENAI_REASONING_EFFORT=none`. The request-path
+test asserts that this configuration sends `reasoning_effort=none` and omits
+`temperature`; all five saved call traces identify the returned GPT-5.4 model.
+
+| Dataset | P | R | F1 | F2 | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| mediastore | 100.00 | 90.32 | 94.92 | 92.11 | 28 | 0 | 3 |
+| teastore | 100.00 | 100.00 | 100.00 | 100.00 | 27 | 0 | 0 |
+| teammates | 94.23 | 85.96 | 89.91 | 87.50 | 49 | 3 | 8 |
+| bigbluebutton | 100.00 | 77.42 | 87.27 | 81.08 | 48 | 0 | 14 |
+| jabref | 100.00 | 100.00 | 100.00 | 100.00 | 18 | 0 | 0 |
+| **Macro** | **98.85** | **90.74** | **94.42** | **92.14** | **170** | **3** | **25** |
+
+`mini-src` reproduces all five CSV scores in
+`results/s21_gpt54_openai_flex_noreasoning_20260723/`. This is N=1 and does not
+prove that model choice alone explains the S23 outcomes, but it is a strong
+control against the hypothesis that explicit no-reasoning was silently ignored:
+canonical S21 produces a high-precision result under the same request policy.
