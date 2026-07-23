@@ -36,10 +36,12 @@ Required only to run a new ALinker experiment:
 - an OpenAI key for the configured OpenAI backend, or a configured Claude CLI
 - network access for API calls and Python package installation
 
-Create the live-experiment environment with `./scripts/bootstrap-approach.sh`.
-The runner uses the vendored benchmark by default; override it with
-`ALINKER_BENCHMARK=/path/to/benchmark` if needed. Results and logs are written
-under `approach/` and are ignored by Git.
+Create the live-experiment environment with `./scripts/setup.sh`. It installs
+the approach dependencies and, if `approach/.env` does not already exist,
+creates it with an absolute `ALINKER_BENCHMARK` setting pointing to this
+repository's vendored `benchmark/`. Existing `.env` files are never overwritten.
+Override that setting with `ALINKER_BENCHMARK=/path/to/benchmark` if needed.
+Results and logs are written under `approach/` and are ignored by Git.
 
 ## Live experiment caveat
 

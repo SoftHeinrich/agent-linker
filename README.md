@@ -31,10 +31,11 @@ cd alinker-replication-package
 `verify.sh` uses only Python 3 and runs the frozen evaluation panel against the
 vendored benchmark and recorded results. It must finish with `PASS`.
 
-To prepare the optional live LLM experiment environment:
+To prepare the optional live LLM experiment environment and configure its
+vendored benchmark path:
 
 ```bash
-./scripts/bootstrap-approach.sh
+./scripts/setup.sh
 export OPENAI_API_KEY=...        # only for a new live run
 .venv/bin/python approach/run_ablation.py --list-variants
 ```
