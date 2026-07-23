@@ -399,7 +399,7 @@ class LLMClient:
             messages.append({"role": msg.role, "content": msg.content})
 
         try:
-            service_tier = os.environ.get("OPENAI_SERVICE_TIER", "flex")
+            service_tier = self._openai_service_tier()
             create_kwargs = dict(
                 model=self.openai_model,
                 messages=messages,
@@ -956,6 +956,15 @@ class LLMClient:
         else:
             create_kwargs["temperature"] = self.temperature
 
+    @staticmethod
+    def _openai_service_tier() -> str:
+        """Return the single service-tier setting, optionally enforcing Flex."""
+        tier = os.environ.get("OPENAI_SERVICE_TIER", "flex").strip().lower()
+        enforce_flex = os.environ.get("OPENAI_ENFORCE_FLEX", "").lower()
+        if enforce_flex in {"1", "true", "yes"} and tier != "flex":
+            raise ValueError("OPENAI_ENFORCE_FLEX requires OPENAI_SERVICE_TIER=flex")
+        return tier
+
     def _get_openai_client(self):
         """Lazily initialize OpenAI client with connection pool management."""
         if self._openai_client is None:
@@ -990,7 +999,7 @@ class LLMClient:
         last_error = None
         for attempt in range(max_retries):
             try:
-                service_tier = os.environ.get("OPENAI_SERVICE_TIER", "flex")
+                service_tier = self._openai_service_tier()
                 create_kwargs = dict(
                     model=self.openai_model,
                     messages=[

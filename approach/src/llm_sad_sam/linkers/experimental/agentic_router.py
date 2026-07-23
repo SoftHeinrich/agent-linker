@@ -41,7 +41,6 @@ named+routed is verified gold-incompleteness, not error.
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass
 from typing import Callable, Optional, Sequence
 
@@ -49,13 +48,10 @@ VALIDATE, CODE, REJECT = "VALIDATE", "CODE", "REJECT"
 _ACTIONS = (VALIDATE, CODE, REJECT)
 
 
-def _make_client(model: str = "gpt-5.4"):
-    """Reasoning-off client (never sets OPENAI_REASONING_EFFORT)."""
-    os.environ.pop("OPENAI_REASONING_EFFORT", None)
-    os.environ["OPENAI_MODEL_NAME"] = model
+def _make_client(model: str | None = None):
+    """Create a client without changing process-wide OpenAI configuration."""
     from llm_sad_sam.llm_client import LLMClient, LLMBackend
-    return LLMClient(backend=LLMBackend.OPENAI, model=model, temperature=0.1,
-                     enable_logging=False)
+    return LLMClient(backend=LLMBackend.OPENAI, model=model, enable_logging=False)
 
 
 # ── data types ───────────────────────────────────────────────────────────────
@@ -143,7 +139,7 @@ class StrictGate:
     Callable: gate(candidates) -> {candidate_id: keep_bool}. Parse failure => reject
     (conservative — the router only ever *drops* what the gate cannot confirm)."""
 
-    def __init__(self, client=None, model: str = "gpt-5.4", batch: int = 8, timeout: int = 180):
+    def __init__(self, client=None, model: str | None = None, batch: int = 8, timeout: int = 180):
         self.client, self.model, self.batch, self.timeout = client, model, batch, timeout
 
     def _client(self):
@@ -231,7 +227,7 @@ class DocModelAgenticRouter:
     """
 
     def __init__(self, client=None, gate: Optional[Callable] = None,
-                 model: str = "gpt-5.4", batch: int = 8, timeout: int = 180):
+                 model: str | None = None, batch: int = 8, timeout: int = 180):
         self.client = client
         self.model, self.batch, self.timeout = model, batch, timeout
         self.gate = gate if gate is not None else StrictGate(model=model)

@@ -11,7 +11,7 @@ in `approach/pilot/`; it does not replace the frozen S21 paper panel in
 | --- | --- | --- | --- |
 | `s_linker23_verify` | Adds router-proposed candidates behind a separate, unchanged S21 two-pass evidence gate. The regular S21 floor is preserved. | One all-five-dataset default-tier run: macro F1 92.7 vs S21 92.8; macro F2 91.6 vs 89.9; 9 vs 4 FP. The alias-wired run likewise reports F1 parity (92.8) and F2 +1.4pp, but has a separate stochastic S21 floor. | Best-supported S23 *reference design*: a conservative augmentation with a preserved floor. It buys recall/F2, not demonstrated F1 improvement. |
 | `s_linker23_verify1p` | Same as `verify`, but the **augmentation gate only** uses S21 evidence pass P1 and drops P2. The ordinary S21 floor still uses P1 AND P2. | Offline, router-less five-dataset tier cache: augmentation gate F1 0.920 (183 TP, 20 FP) versus two-pass 0.896 (168 TP, 12 FP). | Most promising cost/recall hypothesis for a new live study. It retains the S21-floor non-regression design, but has no end-to-end, repeated result yet. Do not present 0.920 as system F1. |
-| `s_linker23_verify1p_all` | Extends single-pass gating to both the augmentation and S21's own Phase-4 Framing-C floor. Phase-5 coreference is unchanged. | Checkpoint/replay ablation is described in code; the available pilot cache models the whole candidate union but is not a fresh live run. | A useful cost ablation, not the primary augmentation claim: it changes S21's protected floor, so it loses `verify`/`verify1p`'s floor-preservation argument. |
+| `s_linker23_verify1p_all` | Extends single-pass gating to both the augmentation and S21's own Phase-4 Framing-C floor. Phase-5 coreference is unchanged. | One fresh all-five-dataset run with GPT-5.6-terra/Flex/explicit no-reasoning: macro P 82.31%, R 97.07%, F1 88.88%, F2 93.56% (186 TP, 52 FP, 9 FN). | A useful cost ablation, not the primary augmentation claim: it changes S21's protected floor, loses `verify`/`verify1p`'s floor-preservation argument, and this N=1 run has a substantial precision regression. |
 
 ### What the one-pass cache actually says
 
@@ -61,5 +61,29 @@ for at least three independent all-five-dataset runs with a fixed backend/model
 and `OPENAI_SERVICE_TIER=default`; report per-run as well as aggregate F1, F2,
 precision, recall, FP, API calls, latency, and failures. Add `verify1p_all` to
 that matrix only to quantify its changed-floor tradeoff. The currently tracked
-OpenAI router run used a responsive-call trace but did not complete, so it is not
-evidence for or against any variant.
+S21 agent-router attempt used a responsive-call trace but did not complete, so it
+is not evidence for or against that earlier router variant.
+
+## 2026-07-23 `verify1p_all` whole-dataset run
+
+The complete N=1 result is in
+`results/s23_verify1p_all_gpt56terra_flex_noreasoning_central_20260723/` and was
+independently scored with `evaluation/mini-src/metrics.py`. Configuration was
+`OPENAI_MODEL_NAME=gpt-5.6-terra`, `OPENAI_SERVICE_TIER=flex`,
+`OPENAI_ENFORCE_FLEX=1`, and `OPENAI_REASONING_EFFORT=none`. The latter sends
+`reasoning_effort=none` and omits `temperature`.
+
+| Dataset | P | R | F1 | F2 | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| mediastore | 93.94 | 100.00 | 96.88 | 98.73 | 31 | 2 | 0 |
+| teastore | 77.14 | 100.00 | 87.10 | 94.41 | 27 | 8 | 0 |
+| teammates | 74.67 | 98.25 | 84.85 | 92.41 | 56 | 19 | 1 |
+| bigbluebutton | 71.05 | 87.10 | 78.26 | 83.33 | 54 | 22 | 8 |
+| jabref | 94.74 | 100.00 | 97.30 | 98.90 | 18 | 1 | 0 |
+| **Macro** | **82.31** | **97.07** | **88.88** | **93.56** | **186** | **52** | **9** |
+
+This result is not comparable as a replacement claim against the older GPT-5.4
+pilot or paper panel: it changes the model, drops P2 from the S21 floor, and has
+only one stochastic run. It does, however, falsify the idea that `verify1p_all`
+is an obviously safe default under this requested configuration: its recall/F2
+are high, while false positives are concentrated in teammates and BigBlueButton.

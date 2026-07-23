@@ -297,12 +297,9 @@ def _parse_batch(txt: str, strategy="coverage") -> list[dict]:
 # ── LLM plumbing ─────────────────────────────────────────────────────────────
 
 def make_client():
-    """Reasoning-off gpt-5.4 client (never set OPENAI_REASONING_EFFORT)."""
-    os.environ.pop("OPENAI_REASONING_EFFORT", None)
-    os.environ["OPENAI_MODEL_NAME"] = MODEL
+    """Create a client without changing process-wide OpenAI configuration."""
     from llm_sad_sam.llm_client import LLMClient, LLMBackend
-    return LLMClient(backend=LLMBackend.OPENAI, model=MODEL,
-                     temperature=0.1, enable_logging=False)
+    return LLMClient(backend=LLMBackend.OPENAI, enable_logging=False)
 
 
 def _parse(txt: str) -> list[dict]:
