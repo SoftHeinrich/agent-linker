@@ -125,6 +125,15 @@ The runtime is now fail-closed: Flex capacity failures are retryable, and any
 exhausted request is recorded as `FATAL` in the phase trace then aborts the project
 instead of returning partial predictions.
 
+## Valid fail-closed composite result (N=1)
+
+After rerunning the contaminated Teammates and BBB projects under the fail-closed
+guard, the valid five-project composite is macro P 97.71%, R 91.96%, F1 94.67%
+(173 TP, 6 FP, 22 FN; pooled F2 90.20%). BBB is P 94.23%, R 79.03%, F1 85.96%,
+confirming that its earlier 43.55% recall was caused by silent failed batches rather
+than the S24 method. The detailed result provenance is in
+[`results/s24_anchored_validator_gpt54_openai_flex_noreasoning_tm_bbb_recovery_20260724/RESULTS.md`](../results/s24_anchored_validator_gpt54_openai_flex_noreasoning_tm_bbb_recovery_20260724/RESULTS.md).
+
 ## Evaluation sequence
 
 1. **Deterministic eligibility audit.** On the frozen benchmark, report eligible
