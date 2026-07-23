@@ -87,3 +87,30 @@ pilot or paper panel: it changes the model, drops P2 from the S21 floor, and has
 only one stochastic run. It does, however, falsify the idea that `verify1p_all`
 is an obviously safe default under this requested configuration: its recall/F2
 are high, while false positives are concentrated in teammates and BigBlueButton.
+
+### Why teammates and BigBlueButton regress
+
+The tracked result attributes every final link to `entity`, `coreference`, or
+`llmrouter`. The two regressions are dominated by the agentic augmentation,
+which is substantially broader than the S21 floor:
+
+| Dataset | Router proposed → accepted | FP: router | FP: P1-only entity floor | FP: coreference |
+| --- | ---: | ---: | ---: | ---: |
+| teammates | 161 → 9 | 8 | 9 | 2 |
+| bigbluebutton | 93 → 22 | 14 | 8 | 0 |
+
+The router mistakes generic document vocabulary for component-specific evidence.
+On teammates this includes UI/browser flow prose and generic data-layer duties;
+on BigBlueButton it maps *frontends/backends* to `HTML5 Server` and Redis-event
+prose to `Redis PubSub`. These account for 22 of the 41 FPs across the two sets.
+The one-pass floor is the other material cause: it admits code/package-path or
+weak alias cases such as `common.datatransfer`, `e2e.util`, `logic.api`, generic
+`conversion process`, and diagram/meta prose.
+
+A diagnostic replay of P2 on the original P1 validation batches (same GPT-5.6-
+terra/Flex/no-reasoning configuration) rejected observed entity FPs including
+TM `Common` at S160/S161 and `GAE Datastore` at S139, plus BBB `Presentation
+Conversion` at S83/S84 and `Apps` at S87. It also approved some observed entity
+FPs, so restoring P2 alone cannot repair the collapse. The replay is evidence
+about the omitted gate, not a replacement end-to-end run: it is a new stochastic
+request and cannot prove the exact counterfactual output.
