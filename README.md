@@ -21,6 +21,8 @@ The exact upstream revisions and vendoring policy are recorded in
 workflow and its limits, see [`docs/REPLICATION.md`](docs/REPLICATION.md).
 For the distinction between S21, the router, and the S23 verification variants,
 see [`docs/VARIANT_COMPARISON.md`](docs/VARIANT_COMPARISON.md).
+The next deliberately narrow recall experiment is specified in
+[`docs/S24_PROPOSAL.md`](docs/S24_PROPOSAL.md).
 
 ## Quick start
 
