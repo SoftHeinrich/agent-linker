@@ -1,0 +1,507 @@
+{
+  "protocol": "fixed S21 floor; Codex controller and recovery tools; no gold in prompts",
+  "datasets": [
+    {
+      "dataset": "mediastore",
+      "inventory": {
+        "alias_phase4": 6,
+        "anchored_reference": 0
+      },
+      "selected_tools": [
+        "alias_phase4"
+      ],
+      "floor": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 3,
+        "P": 1.0,
+        "R": 0.9032258064516129,
+        "F1": 0.9491525423728813
+      },
+      "final": {
+        "tp": 31,
+        "fp": 1,
+        "fn": 0,
+        "P": 0.96875,
+        "R": 1.0,
+        "F1": 0.9841269841269841
+      },
+      "marginal": {
+        "tp": 3,
+        "fp": 1,
+        "precision": 0.75,
+        "links": [
+          {
+            "sentence": 12,
+            "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+            "gold": false,
+            "source": "s24_agent_alias"
+          },
+          {
+            "sentence": 33,
+            "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+            "gold": true,
+            "source": "s24_agent_alias"
+          },
+          {
+            "sentence": 33,
+            "component_id": "_qxAiILg7EeSNPorBlo7x9g",
+            "gold": true,
+            "source": "s24_agent_alias"
+          },
+          {
+            "sentence": 34,
+            "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+            "gold": true,
+            "source": "s24_agent_alias"
+          }
+        ]
+      },
+      "llm_calls": 3,
+      "trace": [
+        {
+          "phase": "phase_24_agent_plan",
+          "ts": 1784846783.7200408,
+          "elapsed_s": 4.963,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You control optional recovery tools after a trace-linking floor has completed.\n\nYou may call zero, one, or both tools. You cannot create links yourself.\n\nTOOLS\n- alias_phase4: deterministically scan exact occurrences of aliases already approved\n  by the floor's knowledge phase, then send only floor-missed candidates through\n  the floor's unchanged two-pass entity validator.\n- anchored_reference: run the narrow anchored-reference resolver and validator for\n  local structural sibling or unique technical-prefix shorthand.\n\nRUNTIME PROJECT SNAPSHOT\n- component catalog: [\"UserDBAdapter\", \"AudioWatermarking\", \"Reencoding\", \"MediaManagement\", \"Facade\", \"MediaAccess\", \"Packaging\", \"DB\", \"FileStorage\", \"TagWatermarking\", \"Cache\", \"UserManagement\", \"DownloadLoadBalancer\", \"ParallelWatermarking\"]\n- accepted floor links: 28\n- eligible alias_phase4 candidates: 6\n- eligible anchored_reference candidates: 0\n\nChoose tools only when their eligible count is nonzero. Prefer a bounded, evidence-\ngrounded tool over broad re-extraction. Do not infer missing gold links and do not\nuse project identity. Return JSON only:\n{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"brief runtime-only reason\"}\n",
+          "response_text": "{\"calls\":[\"alias_phase4\"],\"reason\":\"Six eligible approved-alias candidates remain for deterministic validation; anchored_reference has zero eligible candidates.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 4963,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p1",
+          "ts": 1784846788.6845117,
+          "elapsed_s": 7.524,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"database\" -> DB\n  [prev: The UserManagement component answers the requests for registration and authentication.] \"The UserDBAdapter component queries the database.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The UserManagement component answers the requests for registration and authentication.\"]\nCase 2: \"database\" -> DB\n  [prev: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.] \"The MediaAccess component encapsulates database access for meta-data of audio files.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"When a user uploads an audio file, the MediaAccess component stores it at the predefined location.\"]\nCase 3: \"database\" -> DB\n  [prev: Furthermore, it fetches a list of all available audio files.] \"By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Furthermore, it fetches a list of all available audio files.\"]\nCase 4: \"database\" -> DB\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\nCase 5: \"Database\" -> DB\n  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] \"When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.\"\n  Evidence: source=agent_alias, span=\"Database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"]\nCase 6: \"DataStorage\" -> FileStorage\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"queries the database\",\"approve\":true},{\"case\":2,\"claim\":\"encapsulates database access for meta-data of audio files\",\"approve\":true},{\"case\":3,\"claim\":\"encapsulate database access for the user data\",\"approve\":true},{\"case\":4,\"claim\":\"decouple the DataStorage from the database\",\"approve\":true},{\"case\":5,\"claim\":\"fetches the associated meta-data from the Database\",\"approve\":true},{\"case\":6,\"claim\":\"decouple the DataStorage from the database\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7524,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p2",
+          "ts": 1784846796.2088184,
+          "elapsed_s": 11.284,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"database\" -> DB\n  [prev: The UserManagement component answers the requests for registration and authentication.] \"The UserDBAdapter component queries the database.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The UserManagement component answers the requests for registration and authentication.\"]\nCase 2: \"database\" -> DB\n  [prev: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.] \"The MediaAccess component encapsulates database access for meta-data of audio files.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"When a user uploads an audio file, the MediaAccess component stores it at the predefined location.\"]\nCase 3: \"database\" -> DB\n  [prev: Furthermore, it fetches a list of all available audio files.] \"By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Furthermore, it fetches a list of all available audio files.\"]\nCase 4: \"database\" -> DB\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\nCase 5: \"Database\" -> DB\n  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] \"When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.\"\n  Evidence: source=agent_alias, span=\"Database\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"]\nCase 6: \"DataStorage\" -> FileStorage\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"queries the database\",\"approve\":true},{\"case\":2,\"claim\":\"none\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"to decouple the DataStorage from the database\",\"approve\":true},{\"case\":5,\"claim\":\"fetches the associated meta-data from the Database\",\"approve\":true},{\"case\":6,\"claim\":\"to decouple the DataStorage from the database\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 11283,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "teastore",
+      "inventory": {
+        "alias_phase4": 4,
+        "anchored_reference": 1
+      },
+      "selected_tools": [
+        "alias_phase4",
+        "anchored_reference"
+      ],
+      "floor": {
+        "tp": 25,
+        "fp": 0,
+        "fn": 2,
+        "P": 1.0,
+        "R": 0.9259259259259259,
+        "F1": 0.9615384615384615
+      },
+      "final": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 1,
+        "P": 1.0,
+        "R": 0.9629629629629629,
+        "F1": 0.9811320754716981
+      },
+      "marginal": {
+        "tp": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "links": [
+          {
+            "sentence": 7,
+            "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+            "gold": true,
+            "source": "s24_anchor"
+          }
+        ]
+      },
+      "llm_calls": 5,
+      "trace": [
+        {
+          "phase": "phase_24_agent_plan",
+          "ts": 1784846807.5000012,
+          "elapsed_s": 4.294,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You control optional recovery tools after a trace-linking floor has completed.\n\nYou may call zero, one, or both tools. You cannot create links yourself.\n\nTOOLS\n- alias_phase4: deterministically scan exact occurrences of aliases already approved\n  by the floor's knowledge phase, then send only floor-missed candidates through\n  the floor's unchanged two-pass entity validator.\n- anchored_reference: run the narrow anchored-reference resolver and validator for\n  local structural sibling or unique technical-prefix shorthand.\n\nRUNTIME PROJECT SNAPSHOT\n- component catalog: [\"WebUI\", \"Registry\", \"Persistence\", \"Recommender\", \"Auth\", \"SlopeOneRecommender\", \"OrderBasedRecommender\", \"DummyRecommender\", \"PopularityBasedRecommender\", \"ImageProvider\", \"PreprocessedSlopeOneRecommender\"]\n- accepted floor links: 25\n- eligible alias_phase4 candidates: 4\n- eligible anchored_reference candidates: 1\n\nChoose tools only when their eligible count is nonzero. Prefer a bounded, evidence-\ngrounded tool over broad re-extraction. Do not infer missing gold links and do not\nuse project identity. Return JSON only:\n{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"brief runtime-only reason\"}\n",
+          "response_text": "{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"Both bounded recovery tools have nonzero eligible candidates (4 alias and 1 anchored-reference) and validate only floor-missed, evidence-grounded links.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 4294,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p1",
+          "ts": 1784846811.7951024,
+          "elapsed_s": 5.438,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"UI\" -> WebUI\n  [prev: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.] \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 2: \"UI\" -> WebUI\n  [prev: It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.] \"If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 3: \"UI\" -> WebUI\n  [prev: If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.] \"If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 4: \"UI\" -> WebUI\n  [prev: The scaled image is stored for later use.] \"If the product ID or UI name and size is found, the image will be loaded and delivered.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The scaled image is stored for later use.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"none\",\"approve\":false},{\"case\":2,\"claim\":\"none\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"none\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 5438,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p2",
+          "ts": 1784846817.233582,
+          "elapsed_s": 5.026,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"UI\" -> WebUI\n  [prev: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.] \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 2: \"UI\" -> WebUI\n  [prev: It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.] \"If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 3: \"UI\" -> WebUI\n  [prev: If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.] \"If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nCase 4: \"UI\" -> WebUI\n  [prev: The scaled image is stored for later use.] \"If the product ID or UI name and size is found, the image will be loaded and delivered.\"\n  Evidence: source=agent_alias, span=\"UI\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The scaled image is stored for later use.\"]\n  Anchors (confirmed refs):\n    S2: The WebUI service retrieves images from the Image Provider.\n    S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n    S10: The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"none\",\"approve\":false},{\"case\":2,\"claim\":\"none\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"none\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 5025,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784846822.2613435,
+          "elapsed_s": 3.121,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate WebUI\n  Source sentence: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n  Explicit anchor S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n  Basis: unique technical prefix 'webui'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"the WebUi\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 3121,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_validate",
+          "ts": 1784846825.382761,
+          "elapsed_s": 3.836,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate each bounded anchored reference. Approve only if the exact referring phrase in the source sentence denotes the target component established by the anchor AND the source sentence makes an architectural claim about that component. Reject generic/hardware uses, another component with the same prefix, code/package paths, and diagram/caption text. Return JSON: {\"validations\":[{\"case\":1,\"claim\":\"exact source quote\",\"approve\":true}]}.\n\nCase 1: target WebUI\n  Source sentence: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n  Exact referring phrase: the WebUi\n  Anchor S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n  Eligibility: unique technical prefix 'webui'",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 3836,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "teammates",
+      "inventory": {
+        "alias_phase4": 15,
+        "anchored_reference": 27
+      },
+      "selected_tools": [
+        "alias_phase4",
+        "anchored_reference"
+      ],
+      "floor": {
+        "tp": 49,
+        "fp": 3,
+        "fn": 8,
+        "P": 0.9423076923076923,
+        "R": 0.8596491228070176,
+        "F1": 0.8990825688073394
+      },
+      "final": {
+        "tp": 51,
+        "fp": 5,
+        "fn": 6,
+        "P": 0.9107142857142857,
+        "R": 0.8947368421052632,
+        "F1": 0.9026548672566371
+      },
+      "marginal": {
+        "tp": 2,
+        "fp": 2,
+        "precision": 0.5,
+        "links": [
+          {
+            "sentence": 8,
+            "component_id": "_3LCnIKESEeu-mYqkDskRow",
+            "gold": true,
+            "source": "s24_anchor"
+          },
+          {
+            "sentence": 50,
+            "component_id": "_1lMqsKESEeu-mYqkDskRow",
+            "gold": false,
+            "source": "s24_agent_alias"
+          },
+          {
+            "sentence": 141,
+            "component_id": "_KGVMcKETEeu-mYqkDskRow",
+            "gold": true,
+            "source": "s24_agent_alias"
+          },
+          {
+            "sentence": 182,
+            "component_id": "_1lMqsKESEeu-mYqkDskRow",
+            "gold": false,
+            "source": "s24_agent_alias"
+          }
+        ]
+      },
+      "llm_calls": 6,
+      "trace": [
+        {
+          "phase": "phase_24_agent_plan",
+          "ts": 1784846829.227979,
+          "elapsed_s": 6.481,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You control optional recovery tools after a trace-linking floor has completed.\n\nYou may call zero, one, or both tools. You cannot create links yourself.\n\nTOOLS\n- alias_phase4: deterministically scan exact occurrences of aliases already approved\n  by the floor's knowledge phase, then send only floor-missed candidates through\n  the floor's unchanged two-pass entity validator.\n- anchored_reference: run the narrow anchored-reference resolver and validator for\n  local structural sibling or unique technical-prefix shorthand.\n\nRUNTIME PROJECT SNAPSHOT\n- component catalog: [\"Common\", \"UI\", \"Logic\", \"Storage\", \"Test Driver\", \"E2E\", \"Client\", \"GAE Datastore\"]\n- accepted floor links: 52\n- eligible alias_phase4 candidates: 15\n- eligible anchored_reference candidates: 27\n\nChoose tools only when their eligible count is nonzero. Prefer a bounded, evidence-\ngrounded tool over broad re-extraction. Do not infer missing gold links and do not\nuse project identity. Return JSON only:\n{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"brief runtime-only reason\"}\n",
+          "response_text": "{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"Both recovery paths have nonzero eligible candidates and are bounded by deterministic or narrow validated resolution.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 6480,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p1",
+          "ts": 1784846835.714362,
+          "elapsed_s": 13.577,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"GAE\" -> GAE Datastore\n  [prev: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.] \"TEAMMATES is a Web application that runs on Google App Engine (GAE).\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 2: \"GAE\" -> GAE Datastore\n  [prev: Such a request will go through the following steps.] \"First, request received by the GAE server.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Such a request will go through the following steps.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 3: \"GAE\" -> GAE Datastore\n  [prev: There are two general types of requests.] \"The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"There are two general types of requests.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 4: \"GAE\" -> GAE Datastore\n  [prev: Those keys are strings known only to the person who deployed the application (typically, the administrator).] \"Automated requests are all requests sent automatically by the GAE server during specific periods of time.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Those keys are strings known only to the person who deployed the application (typically, the administrator).\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 5: \"GAE\" -> GAE Datastore\n  [prev: If this privilege is absent (e.g. non-administrator users trying to invoke the automated actions), the request will be dropped and a 403 Forbidden status will be returned.] \"Second, requests generated by the GAE server are equipped with this privilege.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"If this privilege is absent (e.g. non-administrator users trying to invoke the automated actions), the request will be dropped and a 403 Forbidden status will be returned.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 6: \"GAE\" -> GAE Datastore\n  [prev: Seventh, the corresponding AutomatedAction will be performed, interacting with the Logic component as necessary.] \"GAE server sends such automated requests through two different configurations.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Seventh, the corresponding AutomatedAction will be performed, interacting with the Logic component as necessary.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 7: \"GAE\" -> GAE Datastore\n  [prev: It is configured in cron.xml.] \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"It is configured in cron.xml.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 8: \"GAE\" -> GAE Datastore\n  [prev: Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).] \"This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 9: \"GAE\" -> GAE Datastore\n  [prev: Providing a mechanism for checking access control rights.] \"Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Providing a mechanism for checking access control rights.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 10: \"GAE\" -> GAE Datastore\n  [prev: TaskQueuer adds tasks to the task queue.] \"It connects to GAE's task queue API.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"TaskQueuer adds tasks to the task queue.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 11: \"GAE\" -> GAE Datastore\n  [prev: Add and Delete operations try to wait until data is persisted in the datastore before returning.] \"This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Add and Delete operations try to wait until data is persisted in the datastore before returning.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 12: \"GAE\" -> GAE Datastore\n  [prev: For example, an object we deleted may appear to still exist for a short while.] \"Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"For example, an object we deleted may appear to still exist for a short while.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 13: \"front-end\" -> UI\n  [prev: The most common format is JsonResult (requests for obtaining data or processing existing data), and other formats are defined as necessary, e.g. FileDownloadResult (e.g. downloading feedback session report) and ImageResult (e.g. profile pictures).] \"Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end.\"\n  Evidence: source=agent_alias, span=\"front-end\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The most common format is JsonResult (requests for obtaining data or processing existing data), and other formats are defined as necessary, e.g. FileDownloadResult (e.g. downloading feedback session report) and ImageResult (e.g. profile pictures).\"]\n  Anchors (confirmed refs):\n    S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n    S4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n    S5: This UI is a single HTML page generated by Angular framework.\n    S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n    S25: The diagram below shows the object structure of the UI component.\nCase 14: \"Front-end\" -> UI\n  [prev: Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests that test units as well as integration of units with each other.] \"Front-end files (particularly TypeScript) are tested separately with Jest.\"\n  Evidence: source=agent_alias, span=\"Front-end\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests that test units as well as integration of units with each other.\"]\n  Anchors (confirmed refs):\n    S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n    S4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n    S5: This UI is a single HTML page generated by Angular framework.\n    S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n    S25: The diagram below shows the object structure of the UI component.\nCase 15: \"Google's distributed datastore\" -> GAE Datastore\n  [prev: However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.] \"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\"\n  Evidence: source=agent_alias, span=\"Google's distributed datastore\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"none\",\"approve\":false},{\"case\":2,\"claim\":\"none\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"none\",\"approve\":false},{\"case\":5,\"claim\":\"none\",\"approve\":false},{\"case\":6,\"claim\":\"none\",\"approve\":false},{\"case\":7,\"claim\":\"none\",\"approve\":false},{\"case\":8,\"claim\":\"none\",\"approve\":false},{\"case\":9,\"claim\":\"none\",\"approve\":false},{\"case\":10,\"claim\":\"none\",\"approve\":false},{\"case\":11,\"claim\":\"none\",\"approve\":false},{\"case\":12,\"claim\":\"none\",\"approve\":false},{\"case\":13,\"claim\":\"process it on the front-end\",\"approve\":true},{\"case\":14,\"claim\":\"Front-end files (particularly TypeScript) are tested separately with Jest\",\"approve\":true},{\"case\":15,\"claim\":\"a database operation to propagate across all serves of the Google's distributed datastore\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 13576,
+          "model": null
+        },
+        {
+          "phase": "phase_24_alias_p2",
+          "ts": 1784846849.2910185,
+          "elapsed_s": 12.585,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"GAE\" -> GAE Datastore\n  [prev: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.] \"TEAMMATES is a Web application that runs on Google App Engine (GAE).\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 2: \"GAE\" -> GAE Datastore\n  [prev: Such a request will go through the following steps.] \"First, request received by the GAE server.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Such a request will go through the following steps.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 3: \"GAE\" -> GAE Datastore\n  [prev: There are two general types of requests.] \"The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"There are two general types of requests.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 4: \"GAE\" -> GAE Datastore\n  [prev: Those keys are strings known only to the person who deployed the application (typically, the administrator).] \"Automated requests are all requests sent automatically by the GAE server during specific periods of time.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Those keys are strings known only to the person who deployed the application (typically, the administrator).\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 5: \"GAE\" -> GAE Datastore\n  [prev: If this privilege is absent (e.g. non-administrator users trying to invoke the automated actions), the request will be dropped and a 403 Forbidden status will be returned.] \"Second, requests generated by the GAE server are equipped with this privilege.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"If this privilege is absent (e.g. non-administrator users trying to invoke the automated actions), the request will be dropped and a 403 Forbidden status will be returned.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 6: \"GAE\" -> GAE Datastore\n  [prev: Seventh, the corresponding AutomatedAction will be performed, interacting with the Logic component as necessary.] \"GAE server sends such automated requests through two different configurations.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Seventh, the corresponding AutomatedAction will be performed, interacting with the Logic component as necessary.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 7: \"GAE\" -> GAE Datastore\n  [prev: It is configured in cron.xml.] \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"It is configured in cron.xml.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 8: \"GAE\" -> GAE Datastore\n  [prev: Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).] \"This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 9: \"GAE\" -> GAE Datastore\n  [prev: Providing a mechanism for checking access control rights.] \"Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Providing a mechanism for checking access control rights.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 10: \"GAE\" -> GAE Datastore\n  [prev: TaskQueuer adds tasks to the task queue.] \"It connects to GAE's task queue API.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"TaskQueuer adds tasks to the task queue.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 11: \"GAE\" -> GAE Datastore\n  [prev: Add and Delete operations try to wait until data is persisted in the datastore before returning.] \"This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Add and Delete operations try to wait until data is persisted in the datastore before returning.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 12: \"GAE\" -> GAE Datastore\n  [prev: For example, an object we deleted may appear to still exist for a short while.] \"Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\"\n  Evidence: source=agent_alias, span=\"GAE\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"For example, an object we deleted may appear to still exist for a short while.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\nCase 13: \"front-end\" -> UI\n  [prev: The most common format is JsonResult (requests for obtaining data or processing existing data), and other formats are defined as necessary, e.g. FileDownloadResult (e.g. downloading feedback session report) and ImageResult (e.g. profile pictures).] \"Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end.\"\n  Evidence: source=agent_alias, span=\"front-end\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"The most common format is JsonResult (requests for obtaining data or processing existing data), and other formats are defined as necessary, e.g. FileDownloadResult (e.g. downloading feedback session report) and ImageResult (e.g. profile pictures).\"]\n  Anchors (confirmed refs):\n    S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n    S4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n    S5: This UI is a single HTML page generated by Angular framework.\n    S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n    S25: The diagram below shows the object structure of the UI component.\nCase 14: \"Front-end\" -> UI\n  [prev: Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests that test units as well as integration of units with each other.] \"Front-end files (particularly TypeScript) are tested separately with Jest.\"\n  Evidence: source=agent_alias, span=\"Front-end\", mention=via known alias, ambiguous=True\n  Rationale: exact Phase-1-approved alias\n  [prev: \"Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests that test units as well as integration of units with each other.\"]\n  Anchors (confirmed refs):\n    S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n    S4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n    S5: This UI is a single HTML page generated by Angular framework.\n    S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n    S25: The diagram below shows the object structure of the UI component.\nCase 15: \"Google's distributed datastore\" -> GAE Datastore\n  [prev: However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.] \"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\"\n  Evidence: source=agent_alias, span=\"Google's distributed datastore\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.\"]\n  Anchors (confirmed refs):\n    S9: The storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\n    S137: These classes act as the bridge to the GAE Datastore.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"none\",\"approve\":false},{\"case\":2,\"claim\":\"none\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"none\",\"approve\":false},{\"case\":5,\"claim\":\"none\",\"approve\":false},{\"case\":6,\"claim\":\"none\",\"approve\":false},{\"case\":7,\"claim\":\"none\",\"approve\":false},{\"case\":8,\"claim\":\"none\",\"approve\":false},{\"case\":9,\"claim\":\"none\",\"approve\":false},{\"case\":10,\"claim\":\"none\",\"approve\":false},{\"case\":11,\"claim\":\"none\",\"approve\":false},{\"case\":12,\"claim\":\"none\",\"approve\":false},{\"case\":13,\"claim\":\"process it on the front-end\",\"approve\":true},{\"case\":14,\"claim\":\"Front-end files (particularly TypeScript) are tested separately with Jest.\",\"approve\":true},{\"case\":15,\"claim\":\"Google's distributed datastore\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 12584,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784846861.878465,
+          "elapsed_s": 18.875,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate Client\n  Source sentence: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n  Explicit anchor S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n  Basis: unique technical prefix 'client'\n\nCase 2: candidate Logic\n  Source sentence: The main logic of the application is in POJOs (Plain Old Java Objects).\n  Explicit anchor S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n  Basis: unique technical prefix 'logic'\n\nCase 3: candidate Test Driver\n  Source sentence: Test data is transmitted using JSON format.\n  Explicit anchor S10: The following explains the use of the Test Driver.\n  Basis: unique technical prefix 'test'\n\nCase 4: candidate Logic\n  Source sentence: Managing relationships between entities, e.g. cascade logic for create/update/delete.\n  Explicit anchor S77: The Logic component handles the business logic of TEAMMATES.\n  Basis: unique technical prefix 'logic'\n\nCase 5: candidate Logic\n  Source sentence: Package overview contains logic.api, logic.core.\n  Explicit anchor S79: Managing relationships between entities, e.g. cascade logic for create/update/delete.\n  Basis: unique technical prefix 'logic'\n\nCase 6: candidate Logic\n  Source sentence: logic.api provides the API of the component to be accessed by the UI.\n  Explicit anchor S84: Package overview contains logic.api, logic.core.\n  Basis: unique technical prefix 'logic'\n\nCase 7: candidate Logic\n  Source sentence: logic.core contains the core logic of the system.\n  Explicit anchor S85: logic.api provides the API of the component to be accessed by the UI.\n  Basis: unique technical prefix 'logic'\n\nCase 8: candidate Logic\n  Source sentence: Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\n  Explicit anchor S87: Logic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.\n  Basis: unique technical prefix 'logic'\n\nCase 9: candidate Logic\n  Source sentence: It contains minimal logic beyond what is directly relevant to CRUD operations.\n  Explicit anchor S117: Refer to the API for the cascade logic.\n  Basis: unique technical prefix 'logic'\n\nCase 10: candidate Storage\n  Source sentence: Package overview contains storage.api, storage.entity, storage.search.\n  Explicit anchor S128: The Storage component does not perform any cascade delete/create operations.\n  Basis: unique technical prefix 'storage'\n\nCase 11: candidate Storage\n  Source sentence: storage.api provides the API of the component to be accessed by the logic component.\n  Explicit anchor S130: Package overview contains storage.api, storage.entity, storage.search.\n  Basis: unique technical prefix 'storage'\n\nCase 12: candidate Storage\n  Source sentence: storage.entity contains classes that represent persistable entities.\n  Explicit anchor S131: storage.api provides the API of the component to be accessed by the logic component.\n  Basis: unique technical prefix 'storage'\n\nCase 13: candidate Storage\n  Source sentence: storage.search contains classes for dealing with searching and indexing.\n  Explicit anchor S132: storage.entity contains classes that represent persistable entities.\n  Basis: unique technical prefix 'storage'\n\nCase 14: candidate Common\n  Source sentence: Package overview contains common.util, common.exceptions, common.datatransfer.\n  Explicit anchor S155: The Common component contains common utilities used across TEAMMATES.\n  Basis: unique technical prefix 'common'\n\nCase 15: candidate Common\n  Source sentence: common.util contains utility classes.\n  Explicit anchor S156: Package overview contains common.util, common.exceptions, common.datatransfer.\n  Basis: unique technical prefix 'common'\n\nCase 16: candidate Common\n  Source sentence: common.exceptions contains custom exceptions.\n  Explicit anchor S157: common.util contains utility classes.\n  Basis: unique technical prefix 'common'\n\nCase 17: candidate Common\n  Source sentence: common.datatransfer contains data transfer objects.\n  Explicit anchor S158: common.exceptions contains custom exceptions.\n  Basis: unique technical prefix 'common'\n\nCase 18: candidate Common\n  Source sentence: common.datatransfer package contains lightweight data transfer object classes for transferring data among components.\n  Explicit anchor S159: common.datatransfer contains data transfer objects.\n  Basis: unique technical prefix 'common'\n\nCase 19: candidate Test Driver\n  Source sentence: x.datatransfer contains component test cases for testing the datatransfer objects from the Common component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 20: candidate Test Driver\n  Source sentence: x.util contains component test cases for testing the utility classes from the Common component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":false,\"phrase\":\"\"},{\"case\":2,\"approve\":true,\"phrase\":\"main logic of the application\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":false,\"phrase\":\"\"},{\"case\":7,\"approve\":false,\"phrase\":\"\"},{\"case\":8,\"approve\":false,\"phrase\":\"\"},{\"case\":9,\"approve\":false,\"phrase\":\"\"},{\"case\":10,\"approve\":false,\"phrase\":\"\"},{\"case\":11,\"approve\":false,\"phrase\":\"\"},{\"case\":12,\"approve\":false,\"phrase\":\"\"},{\"case\":13,\"approve\":false,\"phrase\":\"\"},{\"case\":14,\"approve\":false,\"phrase\":\"\"},{\"case\":15,\"approve\":false,\"phrase\":\"\"},{\"case\":16,\"approve\":false,\"phrase\":\"\"},{\"case\":17,\"approve\":false,\"phrase\":\"\"},{\"case\":18,\"approve\":false,\"phrase\":\"\"},{\"case\":19,\"approve\":false,\"phrase\":\"\"},{\"case\":20,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 18874,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784846880.7531538,
+          "elapsed_s": 7.577,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate Test Driver\n  Source sentence: x.logic contains component test cases for testing the Logic component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 2: candidate Test Driver\n  Source sentence: x.storage contains component test cases for testing the Storage component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 3: candidate Test Driver\n  Source sentence: x.search contains component test cases for testing the search functions.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 4: candidate Client\n  Source sentence: Package overview contains client.util, client.remoteapi, client.scripts.\n  Explicit anchor S194: The Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.\n  Basis: unique technical prefix 'client'\n\nCase 5: candidate Client\n  Source sentence: client.util contains helpers needed for client scripts.\n  Explicit anchor S195: Package overview contains client.util, client.remoteapi, client.scripts.\n  Basis: unique technical prefix 'client'\n\nCase 6: candidate Client\n  Source sentence: client.remoteapi classes needed to connect to the back end directly.\n  Explicit anchor S196: client.util contains helpers needed for client scripts.\n  Basis: unique technical prefix 'client'\n\nCase 7: candidate Client\n  Source sentence: client.scripts scripts that deal with the back end data for administrative purposes.\n  Explicit anchor S197: client.remoteapi classes needed to connect to the back end directly.\n  Basis: unique technical prefix 'client'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":false,\"phrase\":\"\"},{\"case\":2,\"approve\":false,\"phrase\":\"\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":false,\"phrase\":\"\"},{\"case\":7,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7576,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_validate",
+          "ts": 1784846888.3302777,
+          "elapsed_s": 7.344,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate each bounded anchored reference. Approve only if the exact referring phrase in the source sentence denotes the target component established by the anchor AND the source sentence makes an architectural claim about that component. Reject generic/hardware uses, another component with the same prefix, code/package paths, and diagram/caption text. Return JSON: {\"validations\":[{\"case\":1,\"claim\":\"exact source quote\",\"approve\":true}]}.\n\nCase 1: target Logic\n  Source sentence: The main logic of the application is in POJOs (Plain Old Java Objects).\n  Exact referring phrase: main logic of the application\n  Anchor S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n  Eligibility: unique technical prefix 'logic'",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The main logic of the application is in POJOs (Plain Old Java Objects).\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7343,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "bigbluebutton",
+      "inventory": {
+        "alias_phase4": 0,
+        "anchored_reference": 11
+      },
+      "selected_tools": [
+        "anchored_reference"
+      ],
+      "floor": {
+        "tp": 48,
+        "fp": 2,
+        "fn": 14,
+        "P": 0.96,
+        "R": 0.7741935483870968,
+        "F1": 0.8571428571428571
+      },
+      "final": {
+        "tp": 50,
+        "fp": 3,
+        "fn": 12,
+        "P": 0.9433962264150944,
+        "R": 0.8064516129032258,
+        "F1": 0.8695652173913043
+      },
+      "marginal": {
+        "tp": 2,
+        "fp": 1,
+        "precision": 0.6666666666666666,
+        "links": [
+          {
+            "sentence": 59,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "gold": true,
+            "source": "s24_anchor"
+          },
+          {
+            "sentence": 60,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "gold": false,
+            "source": "s24_anchor"
+          },
+          {
+            "sentence": 66,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "gold": true,
+            "source": "s24_anchor"
+          }
+        ]
+      },
+      "llm_calls": 3,
+      "trace": [
+        {
+          "phase": "phase_24_agent_plan",
+          "ts": 1784846895.6795034,
+          "elapsed_s": 5.563,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You control optional recovery tools after a trace-linking floor has completed.\n\nYou may call zero, one, or both tools. You cannot create links yourself.\n\nTOOLS\n- alias_phase4: deterministically scan exact occurrences of aliases already approved\n  by the floor's knowledge phase, then send only floor-missed candidates through\n  the floor's unchanged two-pass entity validator.\n- anchored_reference: run the narrow anchored-reference resolver and validator for\n  local structural sibling or unique technical-prefix shorthand.\n\nRUNTIME PROJECT SNAPSHOT\n- component catalog: [\"Recording Service\", \"kurento\", \"WebRTC-SFU\", \"HTML5 Server\", \"HTML5 Client\", \"Presentation Conversion\", \"BBB web\", \"Redis PubSub\", \"FSESL\", \"Apps\", \"Redis DB\", \"FreeSWITCH\"]\n- accepted floor links: 50\n- eligible alias_phase4 candidates: 0\n- eligible anchored_reference candidates: 11\n\nChoose tools only when their eligible count is nonzero. Prefer a bounded, evidence-\ngrounded tool over broad re-extraction. Do not infer missing gold links and do not\nuse project identity. Return JSON only:\n{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"brief runtime-only reason\"}\n",
+          "response_text": "{\"calls\":[\"anchored_reference\"],\"reason\":\"11 eligible anchored-reference candidates remain; alias_phase4 has zero eligible candidates.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 5562,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784846901.2446187,
+          "elapsed_s": 18.668,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate HTML5 Client\n  Source sentence: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  Explicit anchor S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 2: candidate HTML5 Server\n  Source sentence: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\n  Explicit anchor S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  Basis: local 'html5' anchor with role 'server'\n\nCase 3: candidate HTML5 Client\n  Source sentence: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\n  Explicit anchor S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 4: candidate HTML5 Client\n  Source sentence: BigBlueButton 2.2 used a single nodejs process for all client-side communication.\n  Explicit anchor S14: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 5: candidate HTML5 Server\n  Source sentence: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\n  Explicit anchor S15: Scalability of HTML5 server component.\n  Basis: local 'html5' anchor with role 'server'\n\nCase 6: candidate FreeSWITCH\n  Source sentence: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Explicit anchor S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 7: candidate FreeSWITCH\n  Source sentence: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n  Explicit anchor S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 8: candidate FreeSWITCH\n  Source sentence: FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\n  Explicit anchor S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 9: candidate WebRTC-SFU\n  Source sentence: When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\n  Explicit anchor S70: The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\n  Basis: unique technical prefix 'webrtc'\n\nCase 10: candidate WebRTC-SFU\n  Source sentence: WebRTC provides the user with high-quality audio with lower delay.\n  Explicit anchor S70: The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\n  Basis: unique technical prefix 'webrtc'\n\nCase 11: candidate Presentation Conversion\n  Source sentence: The diagram below describes the flow of the presentation conversion.\n  Explicit anchor S80: Presentation conversion flow.\n  Basis: unique technical prefix 'presentation'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":false,\"phrase\":\"\"},{\"case\":2,\"approve\":false,\"phrase\":\"\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":7,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":8,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":9,\"approve\":false,\"phrase\":\"\"},{\"case\":10,\"approve\":false,\"phrase\":\"\"},{\"case\":11,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 18667,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_validate",
+          "ts": 1784846919.9123657,
+          "elapsed_s": 13.527,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate each bounded anchored reference. Approve only if the exact referring phrase in the source sentence denotes the target component established by the anchor AND the source sentence makes an architectural claim about that component. Reject generic/hardware uses, another component with the same prefix, code/package paths, and diagram/caption text. Return JSON: {\"validations\":[{\"case\":1,\"claim\":\"exact source quote\",\"approve\":true}]}.\n\nCase 1: target FreeSWITCH\n  Source sentence: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Exact referring phrase: FreeSWITCH\n  Anchor S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n  Eligibility: unique technical prefix 'freeswitch'\n\nCase 2: target FreeSWITCH\n  Source sentence: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n  Exact referring phrase: FreeSWITCH\n  Anchor S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Eligibility: unique technical prefix 'freeswitch'\n\nCase 3: target FreeSWITCH\n  Source sentence: FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\n  Exact referring phrase: FreeSWITCH\n  Anchor S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.\n  Eligibility: unique technical prefix 'freeswitch'",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\",\"approve\":true},{\"case\":2,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":3,\"claim\":\"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 13527,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "jabref",
+      "inventory": {
+        "alias_phase4": 0,
+        "anchored_reference": 0
+      },
+      "selected_tools": [],
+      "floor": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0
+      },
+      "final": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 0,
+        "precision": null,
+        "links": []
+      },
+      "llm_calls": 1,
+      "trace": [
+        {
+          "phase": "phase_24_agent_plan",
+          "ts": 1784846933.4412007,
+          "elapsed_s": 4.736,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You control optional recovery tools after a trace-linking floor has completed.\n\nYou may call zero, one, or both tools. You cannot create links yourself.\n\nTOOLS\n- alias_phase4: deterministically scan exact occurrences of aliases already approved\n  by the floor's knowledge phase, then send only floor-missed candidates through\n  the floor's unchanged two-pass entity validator.\n- anchored_reference: run the narrow anchored-reference resolver and validator for\n  local structural sibling or unique technical-prefix shorthand.\n\nRUNTIME PROJECT SNAPSHOT\n- component catalog: [\"gui\", \"cli\", \"logic\", \"globals\", \"model\", \"preferences\"]\n- accepted floor links: 18\n- eligible alias_phase4 candidates: 0\n- eligible anchored_reference candidates: 0\n\nChoose tools only when their eligible count is nonzero. Prefer a bounded, evidence-\ngrounded tool over broad re-extraction. Do not infer missing gold links and do not\nuse project identity. Return JSON only:\n{\"calls\":[\"alias_phase4\",\"anchored_reference\"],\"reason\":\"brief runtime-only reason\"}\n",
+          "response_text": "{\"calls\":[],\"reason\":\"Both recovery tools have zero eligible candidates.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 4726,
+          "model": null
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "marginal_tp": 8,
+    "marginal_fp": 4,
+    "marginal_precision": 0.6666666666666666,
+    "macro_floor_f1": 0.9333832859723078,
+    "macro_final_f1": 0.9474958288493248,
+    "macro_delta": 0.01411254287701702,
+    "distinct_plans": 4
+  },
+  "pass_gate": {
+    "at_least_one_tp": true,
+    "at_most_one_fp": false,
+    "marginal_precision_at_least_0_95": false,
+    "macro_f1_improves": true,
+    "project_adaptive_routes": true,
+    "passed": false
+  }
+}
