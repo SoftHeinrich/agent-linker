@@ -1,0 +1,455 @@
+{
+  "mediastore": {
+    "s_linker24": {
+      "variant": "s_linker24",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 44.26969766616821,
+      "sources": {
+        "entity": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teastore": {
+    "s_linker24": {
+      "variant": "s_linker24",
+      "P": 1.0,
+      "R": 0.9629629629629629,
+      "F1": 0.9811320754716981,
+      "tp": 26,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 26,
+      "time": 39.923250675201416,
+      "sources": {
+        "entity": 21,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teammates": {
+    "s_linker24": {
+      "variant": "s_linker24",
+      "P": 0.847457627118644,
+      "R": 0.8771929824561403,
+      "F1": 0.8620689655172413,
+      "tp": 50,
+      "fp": 9,
+      "fn": 7,
+      "n_links": 59,
+      "time": 377.0211343765259,
+      "sources": {
+        "entity": 49,
+        "coreference": 9,
+        "s24_anchor": 1
+      },
+      "fp_by_source": {
+        "entity": 4,
+        "coreference": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 139,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 140,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in "
+        },
+        {
+          "sentence": 161,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "They can be combined in various ways to transfer structured data between components."
+        },
+        {
+          "sentence": 166,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Some of these classes are methodless and thus more of a data structure rather than a class."
+        },
+        {
+          "sentence": 167,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These classes use public variables for data for easy access."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 16,
+          "component": "E2E",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 78,
+          "component": "Logic",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker24": {
+      "variant": "s_linker24",
+      "P": 0.9310344827586207,
+      "R": 0.43548387096774194,
+      "F1": 0.5934065934065935,
+      "tp": 27,
+      "fp": 2,
+      "fn": 35,
+      "n_links": 29,
+      "time": 433.4985592365265,
+      "sources": {
+        "entity": 20,
+        "coreference": 7,
+        "s24_anchor": 2
+      },
+      "fp_by_source": {
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "HTML5 Server",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the cor"
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 4,
+          "component": "HTML5 Client",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 5,
+          "component": "HTML5 Client",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 6,
+          "component": "HTML5 Client",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "HTML5 Server",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Server",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 14,
+          "component": "HTML5 Client",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 15,
+          "component": "HTML5 Server",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 30,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 36,
+          "component": "BBB web",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 37,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 38,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 46,
+          "component": "Redis PubSub",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "Redis PubSub",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 48,
+          "component": "Redis DB",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 49,
+          "component": "Redis DB",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 51,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 54,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 57,
+          "component": "FSESL",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker24": {
+      "variant": "s_linker24",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 193.33449125289917,
+      "sources": {
+        "entity": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": []
+    }
+  }
+}

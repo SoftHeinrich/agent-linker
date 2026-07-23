@@ -31,20 +31,24 @@ technical prefixes—before considering Phase-1 aliases:
 1. Form a recovery question only for a sentence containing either a role word
    locally anchored to one structural sibling family or a unique token-prefix
    shorthand for exactly one component (`WebRTC` for `WebRTC-SFU`).
+2. Eligibility additionally requires a nearby earlier sentence explicitly naming
+   the exact candidate component. A prefix is eligible only if it maps to exactly
+   one runtime component.
 3. The resolver must return an exact referring phrase, exactly one component (or
    an explicit abstention), and the anchor sentence that establishes the referent.
    It does **not** read the whole catalog and does not propose arbitrary links.
-4. Convert only resolved cases into S21's existing coreference-style candidates and
-   pass them through the unchanged strict coreference validator. Merge approved
-   additions with the S21 floor.
+4. A dedicated anchored-reference validator then checks that exact phrase against
+   the supplied anchor. It explicitly rejects hardware/generic uses, another
+   same-prefix component, package paths, and diagram captions. Merge only those
+   approved additions with the unchanged S21 floor.
 
 The critical invariant is:
 
 ```text
-S24 additions = anchored resolver decision AND existing S21 strict coref gate
+S24 additions = anchored eligibility AND resolver decision AND anchored-reference validator
 ```
 
-This is simpler than S23: one bounded resolver, one existing gate, no separate
+This is simpler than S23: one bounded resolver, one bounded validator, no separate
 general blocks proposer, no action router, no second entity validator policy, and
 no change to S21's floor.
 
@@ -74,8 +78,8 @@ proposer/router created 22 router FPs in teammates+BBB. S24 keeps the recovery
 mechanism and removes the broad candidate source.
 
 This is a hypothesis, not an expected score. The existing S21 two-pass entity gate
-is deliberately not weakened; S24 uses the stricter coreference gate because these
-are referential, not direct entity, links.
+is deliberately not weakened. S24 uses a separate validator because anchored
+shorthand is neither a direct entity match nor necessarily a pronoun-style coreference.
 
 ## First live result: negative (N=1)
 
@@ -91,8 +95,21 @@ resolver approved some candidates, but the inherited S21 coreference gate reject
 every one. Since S21 was freshly rerun and LLM outputs are stochastic, its changed
 floor cannot be read as an S24 score delta. The valid conclusion is narrower: the
 current strict coreference gate is not an adequate acceptance test for these direct
-anchored role/prefix references. Do not promote this implementation; redesign the
-anchored evidence gate and score marginal additions before a further full sweep.
+anchored role/prefix references. The next S24 run replaces it with a dedicated
+anchored-reference validator and narrows eligibility to explicit local anchors.
+
+## Dedicated-validator result: promising marginal evidence (N=1)
+
+The corrected implementation evaluated 40 eligible candidates, of which 6 were
+resolver-approved and 3 passed the dedicated validator. All three additions were
+gold links (BBB `Apps` S52, BBB `FreeSWITCH` S66, and teammates `Logic` S88), with
+zero marginal FP. This is the signal the inherited coreference gate had suppressed.
+The full rerun's macro score is not a meaningful delta because its independently
+sampled S21 floor, especially BBB, was much lower. The complete evidence is in
+[`results/s24_anchored_validator_gpt54_openai_flex_noreasoning_20260723/RESULTS.md`](../results/s24_anchored_validator_gpt54_openai_flex_noreasoning_20260723/RESULTS.md).
+
+The next required step is two more identically configured runs: promotion requires
+at least one clean TP in two of three runs and no more than one marginal FP per run.
 
 ## Evaluation sequence
 
