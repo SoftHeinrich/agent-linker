@@ -269,60 +269,6 @@ use project identity. Return JSON only:
     def _anchored_opportunity_count(text_path, model_path, floor) -> int:
         """Count S24's deterministic structural opportunities without an LLM."""
         components = parse_pcm_repository(model_path)
-        names = {component.name: component.id for component in components}
         sentences = load_sentences(text_path)
-        families: dict[str, list[tuple[str, str]]] = {}
-        for name in names:
-            match = re.match(r"(.+?)\s+(Client|Server)$", name, re.I)
-            if match:
-                families.setdefault(match.group(1).lower(), []).append(
-                    (name, match.group(2).lower())
-                )
-        prefixes: dict[str, list[str]] = {}
-        for name in names:
-            prefix = re.split(r"[-\s]", name)[0]
-            if any(char.isupper() for char in prefix) or any(
-                char.isdigit() for char in prefix
-            ):
-                prefixes.setdefault(prefix.lower(), []).append(name)
-
-        def anchor_before(index, component_name):
-            needle = re.compile(rf"\b{re.escape(component_name)}\b", re.I)
-            return next(
-                (
-                    sentence
-                    for sentence in reversed(sentences[max(0, index - 5) : index])
-                    if needle.search(sentence.text)
-                ),
-                None,
-            )
-
-        floor_keys = {(link.sentence_number, link.component_id) for link in floor}
-        cases: set[tuple[int, str]] = set()
-        for index, sentence in enumerate(sentences):
-            low = sentence.text.lower()
-            context = " ".join(
-                item.text.lower()
-                for item in sentences[max(0, index - 5) : index]
-            )
-            for base, members in families.items():
-                if base not in context:
-                    continue
-                for name, role in members:
-                    if (
-                        anchor_before(index, name)
-                        and re.search(rf"\b{re.escape(role)}\b", low)
-                        and name.lower() not in low
-                    ):
-                        cases.add((sentence.number, names[name]))
-            for prefix, component_names in prefixes.items():
-                if (
-                    len(component_names) != 1
-                    or len(prefix) < 4
-                    or not re.search(rf"\b{re.escape(prefix)}\b", low)
-                ):
-                    continue
-                name = component_names[0]
-                if anchor_before(index, name) and name.lower() != low:
-                    cases.add((sentence.number, names[name]))
-        return len(cases - floor_keys)
+        _, cases = SLinker24._anchored_cases(sentences, components, floor)
+        return len(cases)

@@ -1,0 +1,1627 @@
+{
+  "protocol": "fixed saved S21 floors; sequential Codex controller sees only runtime profiles and tool observations; gold loaded after execution",
+  "datasets": [
+    {
+      "dataset": "mediastore",
+      "profile": {
+        "document": {
+          "sentences": 37,
+          "sentences_with_floor_links": 26,
+          "floor_sentence_coverage": 0.703
+        },
+        "components": {
+          "catalog_size": 14,
+          "catalog": [
+            "UserDBAdapter",
+            "AudioWatermarking",
+            "Reencoding",
+            "MediaManagement",
+            "Facade",
+            "MediaAccess",
+            "Packaging",
+            "DB",
+            "FileStorage",
+            "TagWatermarking",
+            "Cache",
+            "UserManagement",
+            "DownloadLoadBalancer",
+            "ParallelWatermarking"
+          ],
+          "ambiguous_names": [
+            "Cache",
+            "DB"
+          ],
+          "ambiguous_ratio": 0.143,
+          "without_floor_links": [
+            "AudioWatermarking",
+            "Cache",
+            "DownloadLoadBalancer",
+            "ParallelWatermarking"
+          ],
+          "floor_link_counts": {
+            "Facade": 3,
+            "MediaManagement": 4,
+            "UserManagement": 2,
+            "UserDBAdapter": 3,
+            "TagWatermarking": 2,
+            "Packaging": 1,
+            "Reencoding": 1,
+            "DB": 5,
+            "MediaAccess": 5,
+            "FileStorage": 2
+          }
+        },
+        "knowledge": {
+          "approved_aliases": 4,
+          "alias_scopes": {
+            "global": 4
+          },
+          "alias_profile": [
+            {
+              "alias": "Database",
+              "target": "DB",
+              "scope": "global"
+            },
+            {
+              "alias": "DataStorage",
+              "target": "FileStorage",
+              "scope": "global"
+            },
+            {
+              "alias": "ReEncoder",
+              "target": "Reencoding",
+              "scope": "global"
+            },
+            {
+              "alias": "AudioAccess",
+              "target": "MediaAccess",
+              "scope": "global"
+            }
+          ]
+        },
+        "floor": {
+          "links": 28,
+          "source_mix": {
+            "entity": 28
+          }
+        },
+        "recovery_evidence": {
+          "alias_phase4": {
+            "eligible": 1,
+            "samples": [
+              {
+                "sentence": 33,
+                "text": "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.",
+                "matched_alias": "DataStorage",
+                "target": "FileStorage",
+                "target_ambiguous": false
+              }
+            ]
+          },
+          "anchored_reference": {
+            "eligible": 0,
+            "samples": []
+          }
+        }
+      },
+      "inventory": {
+        "alias_phase4": 1,
+        "anchored_reference": 0
+      },
+      "workflow": [
+        {
+          "action": "alias_phase4",
+          "assessment": {
+            "document_regime": "architecture_prose",
+            "catalog_risk": "medium",
+            "best_evidence": "alias_phase4",
+            "expected_gain": "low",
+            "false_positive_risk": "low"
+          },
+          "reason": "One exact occurrence of the globally approved alias DataStorage specifically targets non-ambiguous FileStorage in sentence 33; anchored-reference has no eligible evidence, and the unchanged two-pass validator limits false-positive exposure.",
+          "feedback": {
+            "input": {
+              "eligible": 1,
+              "distinct_targets": 1
+            },
+            "validation": {
+              "pass1_approved": 1,
+              "pass2_approved": 1,
+              "consensus_approved": 1,
+              "pass_disagreements": 0
+            },
+            "output": {
+              "new_links": 1,
+              "accepted_targets": [
+                "FileStorage"
+              ]
+            }
+          }
+        }
+      ],
+      "selected_tools": [
+        "alias_phase4"
+      ],
+      "run_all_tool_count": 1,
+      "floor": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 3,
+        "P": 1.0,
+        "R": 0.9032258064516129,
+        "F1": 0.9491525423728813
+      },
+      "final": {
+        "tp": 29,
+        "fp": 0,
+        "fn": 2,
+        "P": 1.0,
+        "R": 0.9354838709677419,
+        "F1": 0.9666666666666666
+      },
+      "marginal": {
+        "tp": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "links": [
+          {
+            "sentence": 33,
+            "component_id": "_qxAiILg7EeSNPorBlo7x9g",
+            "gold": true,
+            "source": "s24_dynamic_alias"
+          }
+        ]
+      },
+      "llm_calls": 3,
+      "trace": [
+        {
+          "phase": "phase_24_dynamic_plan_1",
+          "ts": 1784875916.885734,
+          "elapsed_s": 5.472,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 37,\n    \"sentences_with_floor_links\": 26,\n    \"floor_sentence_coverage\": 0.703\n  },\n  \"components\": {\n    \"catalog_size\": 14,\n    \"catalog\": [\n      \"UserDBAdapter\",\n      \"AudioWatermarking\",\n      \"Reencoding\",\n      \"MediaManagement\",\n      \"Facade\",\n      \"MediaAccess\",\n      \"Packaging\",\n      \"DB\",\n      \"FileStorage\",\n      \"TagWatermarking\",\n      \"Cache\",\n      \"UserManagement\",\n      \"DownloadLoadBalancer\",\n      \"ParallelWatermarking\"\n    ],\n    \"ambiguous_names\": [\n      \"Cache\",\n      \"DB\"\n    ],\n    \"ambiguous_ratio\": 0.143,\n    \"without_floor_links\": [\n      \"AudioWatermarking\",\n      \"Cache\",\n      \"DownloadLoadBalancer\",\n      \"ParallelWatermarking\"\n    ],\n    \"floor_link_counts\": {\n      \"Facade\": 3,\n      \"MediaManagement\": 4,\n      \"UserManagement\": 2,\n      \"UserDBAdapter\": 3,\n      \"TagWatermarking\": 2,\n      \"Packaging\": 1,\n      \"Reencoding\": 1,\n      \"DB\": 5,\n      \"MediaAccess\": 5,\n      \"FileStorage\": 2\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 4,\n    \"alias_scopes\": {\n      \"global\": 4\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"Database\",\n        \"target\": \"DB\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"DataStorage\",\n        \"target\": \"FileStorage\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"ReEncoder\",\n        \"target\": \"Reencoding\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"AudioAccess\",\n        \"target\": \"MediaAccess\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 28,\n    \"source_mix\": {\n      \"entity\": 28\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 1,\n      \"samples\": [\n        {\n          \"sentence\": 33,\n          \"text\": \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\",\n          \"matched_alias\": \"DataStorage\",\n          \"target\": \"FileStorage\",\n          \"target_ambiguous\": false\n        }\n      ]\n    },\n    \"anchored_reference\": {\n      \"eligible\": 0,\n      \"samples\": []\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[]\n\nAVAILABLE ACTIONS\n[\"alias_phase4\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\"assessment\":{\"document_regime\":\"architecture_prose\",\"catalog_risk\":\"medium\",\"best_evidence\":\"alias_phase4\",\"expected_gain\":\"low\",\"false_positive_risk\":\"low\"},\"action\":\"alias_phase4\",\"reason\":\"One exact occurrence of the globally approved alias DataStorage specifically targets non-ambiguous FileStorage in sentence 33; anchored-reference has no eligible evidence, and the unchanged two-pass validator limits false-positive exposure.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 5471,
+          "model": null
+        },
+        {
+          "phase": "phase_24_dynamic_alias_p1",
+          "ts": 1784875922.357594,
+          "elapsed_s": 6.59,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"DataStorage\" -> FileStorage\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"decouple the DataStorage from the database\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 6589,
+          "model": null
+        },
+        {
+          "phase": "phase_24_dynamic_alias_p2",
+          "ts": 1784875928.9473376,
+          "elapsed_s": 4.962,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"DataStorage\" -> FileStorage\n  [prev: All salted hashes of passwords are also stored in the Database component.] \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=agent_alias, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: exact Phase-1-approved alias\n  [prev: \"All salted hashes of passwords are also stored in the Database component.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"decouple the DataStorage from the database\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 4962,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "teastore",
+      "profile": {
+        "document": {
+          "sentences": 43,
+          "sentences_with_floor_links": 22,
+          "floor_sentence_coverage": 0.512
+        },
+        "components": {
+          "catalog_size": 11,
+          "catalog": [
+            "WebUI",
+            "Registry",
+            "Persistence",
+            "Recommender",
+            "Auth",
+            "SlopeOneRecommender",
+            "OrderBasedRecommender",
+            "DummyRecommender",
+            "PopularityBasedRecommender",
+            "ImageProvider",
+            "PreprocessedSlopeOneRecommender"
+          ],
+          "ambiguous_names": [
+            "Auth",
+            "ImageProvider",
+            "Persistence",
+            "Recommender",
+            "Registry"
+          ],
+          "ambiguous_ratio": 0.455,
+          "without_floor_links": [
+            "SlopeOneRecommender",
+            "OrderBasedRecommender",
+            "DummyRecommender",
+            "PopularityBasedRecommender",
+            "PreprocessedSlopeOneRecommender"
+          ],
+          "floor_link_counts": {
+            "Registry": 5,
+            "WebUI": 5,
+            "ImageProvider": 5,
+            "Auth": 2,
+            "Persistence": 5,
+            "Recommender": 3
+          }
+        },
+        "knowledge": {
+          "approved_aliases": 9,
+          "alias_scopes": {
+            "global": 7,
+            "local": 2
+          },
+          "alias_profile": [
+            {
+              "alias": "UI",
+              "target": "WebUI",
+              "scope": "global"
+            },
+            {
+              "alias": "WebUi",
+              "target": "WebUI",
+              "scope": "global"
+            },
+            {
+              "alias": "front-end",
+              "target": "WebUI",
+              "scope": "global"
+            },
+            {
+              "alias": "registry",
+              "target": "Registry",
+              "scope": "local"
+            },
+            {
+              "alias": "PersistenceProvider",
+              "target": "Persistence",
+              "scope": "global"
+            },
+            {
+              "alias": "Persistence service",
+              "target": "Persistence",
+              "scope": "global"
+            },
+            {
+              "alias": "persistence provider",
+              "target": "Persistence",
+              "scope": "local"
+            },
+            {
+              "alias": "Image Provider",
+              "target": "ImageProvider",
+              "scope": "global"
+            },
+            {
+              "alias": "Image Provider service",
+              "target": "ImageProvider",
+              "scope": "global"
+            }
+          ]
+        },
+        "floor": {
+          "links": 25,
+          "source_mix": {
+            "entity": 20,
+            "coreference": 5
+          }
+        },
+        "recovery_evidence": {
+          "alias_phase4": {
+            "eligible": 4,
+            "samples": [
+              {
+                "sentence": 11,
+                "text": "It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.",
+                "matched_alias": "UI",
+                "target": "WebUI",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 12,
+                "text": "If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.",
+                "matched_alias": "UI",
+                "target": "WebUI",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 13,
+                "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.",
+                "matched_alias": "UI",
+                "target": "WebUI",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 15,
+                "text": "If the product ID or UI name and size is found, the image will be loaded and delivered.",
+                "matched_alias": "UI",
+                "target": "WebUI",
+                "target_ambiguous": false
+              }
+            ]
+          },
+          "anchored_reference": {
+            "eligible": 1,
+            "samples": [
+              {
+                "sentence": 7,
+                "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+                "target": "WebUI",
+                "anchor_sentence": 5,
+                "anchor_text": "The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.",
+                "basis": "unique technical prefix 'webui'"
+              }
+            ]
+          }
+        }
+      },
+      "inventory": {
+        "alias_phase4": 4,
+        "anchored_reference": 1
+      },
+      "workflow": [
+        {
+          "action": "anchored_reference",
+          "assessment": {
+            "document_regime": "architecture_prose",
+            "catalog_risk": "high",
+            "best_evidence": "anchored_reference",
+            "expected_gain": "low",
+            "false_positive_risk": "low"
+          },
+          "reason": "The single anchored candidate uses the project-specific unique technical prefix 'webui' with a local structural anchor, while all four alias candidates match generic 'UI' inside the distinct phrase 'UI name'. Despite only one eligible reference, its semantic specificity and locality justify the dedicated validator; catalog risk is high given 45.5% ambiguous names and five unlinked recommender components.",
+          "feedback": {
+            "input": {
+              "eligible": 1,
+              "distinct_targets": 1
+            },
+            "validation": {
+              "resolver_approved": 1,
+              "validator_approved": 1
+            },
+            "output": {
+              "new_links": 1,
+              "accepted_targets": [
+                "WebUI"
+              ]
+            }
+          }
+        },
+        {
+          "action": "stop",
+          "assessment": {
+            "document_regime": "architecture_prose",
+            "catalog_risk": "high",
+            "best_evidence": "none",
+            "expected_gain": "low",
+            "false_positive_risk": "high"
+          },
+          "reason": "The anchored-reference funnel already produced its one specific candidate with full resolver and validator agreement. The only remaining evidence is four alias matches of generic \"UI\" within the distinct phrase \"UI name,\" offering no project-grounded support for WebUI despite high catalog risk from 45.5% ambiguous names and five unlinked recommender components."
+        }
+      ],
+      "selected_tools": [
+        "anchored_reference"
+      ],
+      "run_all_tool_count": 2,
+      "floor": {
+        "tp": 25,
+        "fp": 0,
+        "fn": 2,
+        "P": 1.0,
+        "R": 0.9259259259259259,
+        "F1": 0.9615384615384615
+      },
+      "final": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 1,
+        "P": 1.0,
+        "R": 0.9629629629629629,
+        "F1": 0.9811320754716981
+      },
+      "marginal": {
+        "tp": 1,
+        "fp": 0,
+        "precision": 1.0,
+        "links": [
+          {
+            "sentence": 7,
+            "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+            "gold": true,
+            "source": "s24_anchor"
+          }
+        ]
+      },
+      "llm_calls": 4,
+      "trace": [
+        {
+          "phase": "phase_24_dynamic_plan_1",
+          "ts": 1784875933.9138,
+          "elapsed_s": 12.71,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 43,\n    \"sentences_with_floor_links\": 22,\n    \"floor_sentence_coverage\": 0.512\n  },\n  \"components\": {\n    \"catalog_size\": 11,\n    \"catalog\": [\n      \"WebUI\",\n      \"Registry\",\n      \"Persistence\",\n      \"Recommender\",\n      \"Auth\",\n      \"SlopeOneRecommender\",\n      \"OrderBasedRecommender\",\n      \"DummyRecommender\",\n      \"PopularityBasedRecommender\",\n      \"ImageProvider\",\n      \"PreprocessedSlopeOneRecommender\"\n    ],\n    \"ambiguous_names\": [\n      \"Auth\",\n      \"ImageProvider\",\n      \"Persistence\",\n      \"Recommender\",\n      \"Registry\"\n    ],\n    \"ambiguous_ratio\": 0.455,\n    \"without_floor_links\": [\n      \"SlopeOneRecommender\",\n      \"OrderBasedRecommender\",\n      \"DummyRecommender\",\n      \"PopularityBasedRecommender\",\n      \"PreprocessedSlopeOneRecommender\"\n    ],\n    \"floor_link_counts\": {\n      \"Registry\": 5,\n      \"WebUI\": 5,\n      \"ImageProvider\": 5,\n      \"Auth\": 2,\n      \"Persistence\": 5,\n      \"Recommender\": 3\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 9,\n    \"alias_scopes\": {\n      \"global\": 7,\n      \"local\": 2\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"UI\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"WebUi\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"front-end\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"registry\",\n        \"target\": \"Registry\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"PersistenceProvider\",\n        \"target\": \"Persistence\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Persistence service\",\n        \"target\": \"Persistence\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"persistence provider\",\n        \"target\": \"Persistence\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Image Provider\",\n        \"target\": \"ImageProvider\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Image Provider service\",\n        \"target\": \"ImageProvider\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 25,\n    \"source_mix\": {\n      \"entity\": 20,\n      \"coreference\": 5\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 4,\n      \"samples\": [\n        {\n          \"sentence\": 11,\n          \"text\": \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"If the product ID or UI name is not available to the Image Provider, a standard \\\"not found\\\" image will be delivered in the correct size.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 13,\n          \"text\": \"If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 15,\n          \"text\": \"If the product ID or UI name and size is found, the image will be loaded and delivered.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        }\n      ]\n    },\n    \"anchored_reference\": {\n      \"eligible\": 1,\n      \"samples\": [\n        {\n          \"sentence\": 7,\n          \"text\": \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\",\n          \"target\": \"WebUI\",\n          \"anchor_sentence\": 5,\n          \"anchor_text\": \"The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\",\n          \"basis\": \"unique technical prefix 'webui'\"\n        }\n      ]\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[]\n\nAVAILABLE ACTIONS\n[\"alias_phase4\", \"anchored_reference\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\"assessment\":{\"document_regime\":\"architecture_prose\",\"catalog_risk\":\"high\",\"best_evidence\":\"anchored_reference\",\"expected_gain\":\"low\",\"false_positive_risk\":\"low\"},\"action\":\"anchored_reference\",\"reason\":\"The single anchored candidate uses the project-specific unique technical prefix 'webui' with a local structural anchor, while all four alias candidates match generic 'UI' inside the distinct phrase 'UI name'. Despite only one eligible reference, its semantic specificity and locality justify the dedicated validator; catalog risk is high given 45.5% ambiguous names and five unlinked recommender components.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 12710,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784875946.6259232,
+          "elapsed_s": 7.465,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate WebUI\n  Source sentence: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n  Explicit anchor S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n  Basis: unique technical prefix 'webui'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"the WebUi\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7464,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_validate",
+          "ts": 1784875954.09107,
+          "elapsed_s": 7.192,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate each bounded anchored reference. Approve only if the exact referring phrase in the source sentence denotes the target component established by the anchor AND the source sentence makes an architectural claim about that component. Reject generic/hardware uses, another component with the same prefix, code/package paths, and diagram/caption text. Return JSON: {\"validations\":[{\"case\":1,\"claim\":\"exact source quote\",\"approve\":true}]}.\n\nCase 1: target WebUI\n  Source sentence: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n  Exact referring phrase: the WebUi\n  Anchor S5: The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\n  Eligibility: unique technical prefix 'webui'",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7191,
+          "model": null
+        },
+        {
+          "phase": "phase_24_dynamic_plan_2",
+          "ts": 1784875961.2829087,
+          "elapsed_s": 9.737,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 43,\n    \"sentences_with_floor_links\": 22,\n    \"floor_sentence_coverage\": 0.512\n  },\n  \"components\": {\n    \"catalog_size\": 11,\n    \"catalog\": [\n      \"WebUI\",\n      \"Registry\",\n      \"Persistence\",\n      \"Recommender\",\n      \"Auth\",\n      \"SlopeOneRecommender\",\n      \"OrderBasedRecommender\",\n      \"DummyRecommender\",\n      \"PopularityBasedRecommender\",\n      \"ImageProvider\",\n      \"PreprocessedSlopeOneRecommender\"\n    ],\n    \"ambiguous_names\": [\n      \"Auth\",\n      \"ImageProvider\",\n      \"Persistence\",\n      \"Recommender\",\n      \"Registry\"\n    ],\n    \"ambiguous_ratio\": 0.455,\n    \"without_floor_links\": [\n      \"SlopeOneRecommender\",\n      \"OrderBasedRecommender\",\n      \"DummyRecommender\",\n      \"PopularityBasedRecommender\",\n      \"PreprocessedSlopeOneRecommender\"\n    ],\n    \"floor_link_counts\": {\n      \"Registry\": 5,\n      \"WebUI\": 5,\n      \"ImageProvider\": 5,\n      \"Auth\": 2,\n      \"Persistence\": 5,\n      \"Recommender\": 3\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 9,\n    \"alias_scopes\": {\n      \"global\": 7,\n      \"local\": 2\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"UI\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"WebUi\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"front-end\",\n        \"target\": \"WebUI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"registry\",\n        \"target\": \"Registry\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"PersistenceProvider\",\n        \"target\": \"Persistence\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Persistence service\",\n        \"target\": \"Persistence\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"persistence provider\",\n        \"target\": \"Persistence\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Image Provider\",\n        \"target\": \"ImageProvider\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Image Provider service\",\n        \"target\": \"ImageProvider\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 25,\n    \"source_mix\": {\n      \"entity\": 20,\n      \"coreference\": 5\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 4,\n      \"samples\": [\n        {\n          \"sentence\": 11,\n          \"text\": \"It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"If the product ID or UI name is not available to the Image Provider, a standard \\\"not found\\\" image will be delivered in the correct size.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 13,\n          \"text\": \"If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 15,\n          \"text\": \"If the product ID or UI name and size is found, the image will be loaded and delivered.\",\n          \"matched_alias\": \"UI\",\n          \"target\": \"WebUI\",\n          \"target_ambiguous\": false\n        }\n      ]\n    },\n    \"anchored_reference\": {\n      \"eligible\": 1,\n      \"samples\": [\n        {\n          \"sentence\": 7,\n          \"text\": \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\",\n          \"target\": \"WebUI\",\n          \"anchor_sentence\": 5,\n          \"anchor_text\": \"The WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\",\n          \"basis\": \"unique technical prefix 'webui'\"\n        }\n      ]\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[\n  {\n    \"action\": \"anchored_reference\",\n    \"assessment\": {\n      \"document_regime\": \"architecture_prose\",\n      \"catalog_risk\": \"high\",\n      \"best_evidence\": \"anchored_reference\",\n      \"expected_gain\": \"low\",\n      \"false_positive_risk\": \"low\"\n    },\n    \"reason\": \"The single anchored candidate uses the project-specific unique technical prefix 'webui' with a local structural anchor, while all four alias candidates match generic 'UI' inside the distinct phrase 'UI name'. Despite only one eligible reference, its semantic specificity and locality justify the dedicated validator; catalog risk is high given 45.5% ambiguous names and five unlinked recommender components.\",\n    \"feedback\": {\n      \"input\": {\n        \"eligible\": 1,\n        \"distinct_targets\": 1\n      },\n      \"validation\": {\n        \"resolver_approved\": 1,\n        \"validator_approved\": 1\n      },\n      \"output\": {\n        \"new_links\": 1,\n        \"accepted_targets\": [\n          \"WebUI\"\n        ]\n      }\n    }\n  }\n]\n\nAVAILABLE ACTIONS\n[\"alias_phase4\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose\",\n    \"catalog_risk\": \"high\",\n    \"best_evidence\": \"none\",\n    \"expected_gain\": \"low\",\n    \"false_positive_risk\": \"high\"\n  },\n  \"action\": \"stop\",\n  \"reason\": \"The anchored-reference funnel already produced its one specific candidate with full resolver and validator agreement. The only remaining evidence is four alias matches of generic \\\"UI\\\" within the distinct phrase \\\"UI name,\\\" offering no project-grounded support for WebUI despite high catalog risk from 45.5% ambiguous names and five unlinked recommender components.\"\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 9737,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "teammates",
+      "profile": {
+        "document": {
+          "sentences": 198,
+          "sentences_with_floor_links": 44,
+          "floor_sentence_coverage": 0.222
+        },
+        "components": {
+          "catalog_size": 8,
+          "catalog": [
+            "Common",
+            "UI",
+            "Logic",
+            "Storage",
+            "Test Driver",
+            "E2E",
+            "Client",
+            "GAE Datastore"
+          ],
+          "ambiguous_names": [
+            "Client",
+            "Common",
+            "Logic",
+            "Storage",
+            "UI"
+          ],
+          "ambiguous_ratio": 0.625,
+          "without_floor_links": [],
+          "floor_link_counts": {
+            "UI": 10,
+            "Logic": 11,
+            "Storage": 11,
+            "Common": 5,
+            "Test Driver": 4,
+            "E2E": 5,
+            "Client": 4,
+            "GAE Datastore": 2
+          }
+        },
+        "knowledge": {
+          "approved_aliases": 30,
+          "alias_scopes": {
+            "global": 22,
+            "local": 8
+          },
+          "alias_profile": [
+            {
+              "alias": "UI",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "GAE",
+              "target": "GAE Datastore",
+              "scope": "global"
+            },
+            {
+              "alias": "E2E",
+              "target": "E2E",
+              "scope": "global"
+            },
+            {
+              "alias": "UI Component",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "UI component",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "UI Browser",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "UI Server",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "front-end",
+              "target": "UI",
+              "scope": "global"
+            },
+            {
+              "alias": "browser",
+              "target": "UI",
+              "scope": "local"
+            },
+            {
+              "alias": "Logic Component",
+              "target": "Logic",
+              "scope": "global"
+            },
+            {
+              "alias": "Logic component",
+              "target": "Logic",
+              "scope": "global"
+            },
+            {
+              "alias": "logic",
+              "target": "Logic",
+              "scope": "local"
+            },
+            {
+              "alias": "Storage Component",
+              "target": "Storage",
+              "scope": "global"
+            },
+            {
+              "alias": "Storage component",
+              "target": "Storage",
+              "scope": "global"
+            },
+            {
+              "alias": "storage layer",
+              "target": "Storage",
+              "scope": "local"
+            },
+            {
+              "alias": "storage",
+              "target": "Storage",
+              "scope": "local"
+            },
+            {
+              "alias": "Common Component",
+              "target": "Common",
+              "scope": "global"
+            },
+            {
+              "alias": "Common component",
+              "target": "Common",
+              "scope": "global"
+            },
+            {
+              "alias": "Test Driver Component",
+              "target": "Test Driver",
+              "scope": "global"
+            },
+            {
+              "alias": "Test Driver",
+              "target": "Test Driver",
+              "scope": "global"
+            },
+            {
+              "alias": "test driver",
+              "target": "Test Driver",
+              "scope": "local"
+            },
+            {
+              "alias": "E2E Component",
+              "target": "E2E",
+              "scope": "global"
+            },
+            {
+              "alias": "E2E component",
+              "target": "E2E",
+              "scope": "global"
+            },
+            {
+              "alias": "end-to-end component",
+              "target": "E2E",
+              "scope": "local"
+            },
+            {
+              "alias": "Client Component",
+              "target": "Client",
+              "scope": "global"
+            },
+            {
+              "alias": "Client component",
+              "target": "Client",
+              "scope": "global"
+            },
+            {
+              "alias": "GAE Datastore",
+              "target": "GAE Datastore",
+              "scope": "global"
+            },
+            {
+              "alias": "datastore",
+              "target": "GAE Datastore",
+              "scope": "local"
+            },
+            {
+              "alias": "database",
+              "target": "GAE Datastore",
+              "scope": "local"
+            },
+            {
+              "alias": "Google's distributed datastore",
+              "target": "GAE Datastore",
+              "scope": "global"
+            }
+          ]
+        },
+        "floor": {
+          "links": 52,
+          "source_mix": {
+            "entity": 47,
+            "coreference": 5
+          }
+        },
+        "recovery_evidence": {
+          "alias_phase4": {
+            "eligible": 13,
+            "samples": [
+              {
+                "sentence": 2,
+                "text": "TEAMMATES is a Web application that runs on Google App Engine (GAE).",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 31,
+                "text": "First, request received by the GAE server.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 35,
+                "text": "The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 58,
+                "text": "Automated requests are all requests sent automatically by the GAE server during specific periods of time.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 62,
+                "text": "Second, requests generated by the GAE server are equipped with this privilege.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 69,
+                "text": "GAE server sends such automated requests through two different configurations.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 73,
+                "text": "Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 74,
+                "text": "This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 83,
+                "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 94,
+                "text": "It connects to GAE's task queue API.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 139,
+                "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 144,
+                "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.",
+                "matched_alias": "GAE",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              },
+              {
+                "sentence": 141,
+                "text": "Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.",
+                "matched_alias": "Google's distributed datastore",
+                "target": "GAE Datastore",
+                "target_ambiguous": false
+              }
+            ]
+          },
+          "anchored_reference": {
+            "eligible": 27,
+            "samples": [
+              {
+                "sentence": 4,
+                "text": "The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..",
+                "target": "Client",
+                "anchor_sentence": 1,
+                "anchor_text": "Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.",
+                "basis": "unique technical prefix 'client'"
+              },
+              {
+                "sentence": 8,
+                "text": "The main logic of the application is in POJOs (Plain Old Java Objects).",
+                "target": "Logic",
+                "anchor_sentence": 7,
+                "anchor_text": "In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 12,
+                "text": "Test data is transmitted using JSON format.",
+                "target": "Test Driver",
+                "anchor_sentence": 10,
+                "anchor_text": "The following explains the use of the Test Driver.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 79,
+                "text": "Managing relationships between entities, e.g. cascade logic for create/update/delete.",
+                "target": "Logic",
+                "anchor_sentence": 77,
+                "anchor_text": "The Logic component handles the business logic of TEAMMATES.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 84,
+                "text": "Package overview contains logic.api, logic.core.",
+                "target": "Logic",
+                "anchor_sentence": 79,
+                "anchor_text": "Managing relationships between entities, e.g. cascade logic for create/update/delete.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 85,
+                "text": "logic.api provides the API of the component to be accessed by the UI.",
+                "target": "Logic",
+                "anchor_sentence": 84,
+                "anchor_text": "Package overview contains logic.api, logic.core.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 86,
+                "text": "logic.core contains the core logic of the system.",
+                "target": "Logic",
+                "anchor_sentence": 85,
+                "anchor_text": "logic.api provides the API of the component to be accessed by the UI.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 88,
+                "text": "Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.",
+                "target": "Logic",
+                "anchor_sentence": 87,
+                "anchor_text": "Logic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 119,
+                "text": "It contains minimal logic beyond what is directly relevant to CRUD operations.",
+                "target": "Logic",
+                "anchor_sentence": 117,
+                "anchor_text": "Refer to the API for the cascade logic.",
+                "basis": "unique technical prefix 'logic'"
+              },
+              {
+                "sentence": 130,
+                "text": "Package overview contains storage.api, storage.entity, storage.search.",
+                "target": "Storage",
+                "anchor_sentence": 128,
+                "anchor_text": "The Storage component does not perform any cascade delete/create operations.",
+                "basis": "unique technical prefix 'storage'"
+              },
+              {
+                "sentence": 131,
+                "text": "storage.api provides the API of the component to be accessed by the logic component.",
+                "target": "Storage",
+                "anchor_sentence": 130,
+                "anchor_text": "Package overview contains storage.api, storage.entity, storage.search.",
+                "basis": "unique technical prefix 'storage'"
+              },
+              {
+                "sentence": 132,
+                "text": "storage.entity contains classes that represent persistable entities.",
+                "target": "Storage",
+                "anchor_sentence": 131,
+                "anchor_text": "storage.api provides the API of the component to be accessed by the logic component.",
+                "basis": "unique technical prefix 'storage'"
+              },
+              {
+                "sentence": 133,
+                "text": "storage.search contains classes for dealing with searching and indexing.",
+                "target": "Storage",
+                "anchor_sentence": 132,
+                "anchor_text": "storage.entity contains classes that represent persistable entities.",
+                "basis": "unique technical prefix 'storage'"
+              },
+              {
+                "sentence": 156,
+                "text": "Package overview contains common.util, common.exceptions, common.datatransfer.",
+                "target": "Common",
+                "anchor_sentence": 155,
+                "anchor_text": "The Common component contains common utilities used across TEAMMATES.",
+                "basis": "unique technical prefix 'common'"
+              },
+              {
+                "sentence": 157,
+                "text": "common.util contains utility classes.",
+                "target": "Common",
+                "anchor_sentence": 156,
+                "anchor_text": "Package overview contains common.util, common.exceptions, common.datatransfer.",
+                "basis": "unique technical prefix 'common'"
+              },
+              {
+                "sentence": 158,
+                "text": "common.exceptions contains custom exceptions.",
+                "target": "Common",
+                "anchor_sentence": 157,
+                "anchor_text": "common.util contains utility classes.",
+                "basis": "unique technical prefix 'common'"
+              },
+              {
+                "sentence": 159,
+                "text": "common.datatransfer contains data transfer objects.",
+                "target": "Common",
+                "anchor_sentence": 158,
+                "anchor_text": "common.exceptions contains custom exceptions.",
+                "basis": "unique technical prefix 'common'"
+              },
+              {
+                "sentence": 160,
+                "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components.",
+                "target": "Common",
+                "anchor_sentence": 159,
+                "anchor_text": "common.datatransfer contains data transfer objects.",
+                "basis": "unique technical prefix 'common'"
+              },
+              {
+                "sentence": 174,
+                "text": "x.datatransfer contains component test cases for testing the datatransfer objects from the Common component.",
+                "target": "Test Driver",
+                "anchor_sentence": 173,
+                "anchor_text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 175,
+                "text": "x.util contains component test cases for testing the utility classes from the Common component.",
+                "target": "Test Driver",
+                "anchor_sentence": 173,
+                "anchor_text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 176,
+                "text": "x.logic contains component test cases for testing the Logic component.",
+                "target": "Test Driver",
+                "anchor_sentence": 173,
+                "anchor_text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 177,
+                "text": "x.storage contains component test cases for testing the Storage component.",
+                "target": "Test Driver",
+                "anchor_sentence": 173,
+                "anchor_text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 178,
+                "text": "x.search contains component test cases for testing the search functions.",
+                "target": "Test Driver",
+                "anchor_sentence": 173,
+                "anchor_text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+                "basis": "unique technical prefix 'test'"
+              },
+              {
+                "sentence": 195,
+                "text": "Package overview contains client.util, client.remoteapi, client.scripts.",
+                "target": "Client",
+                "anchor_sentence": 194,
+                "anchor_text": "The Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.",
+                "basis": "unique technical prefix 'client'"
+              },
+              {
+                "sentence": 196,
+                "text": "client.util contains helpers needed for client scripts.",
+                "target": "Client",
+                "anchor_sentence": 195,
+                "anchor_text": "Package overview contains client.util, client.remoteapi, client.scripts.",
+                "basis": "unique technical prefix 'client'"
+              },
+              {
+                "sentence": 197,
+                "text": "client.remoteapi classes needed to connect to the back end directly.",
+                "target": "Client",
+                "anchor_sentence": 196,
+                "anchor_text": "client.util contains helpers needed for client scripts.",
+                "basis": "unique technical prefix 'client'"
+              },
+              {
+                "sentence": 198,
+                "text": "client.scripts scripts that deal with the back end data for administrative purposes.",
+                "target": "Client",
+                "anchor_sentence": 197,
+                "anchor_text": "client.remoteapi classes needed to connect to the back end directly.",
+                "basis": "unique technical prefix 'client'"
+              }
+            ]
+          }
+        }
+      },
+      "inventory": {
+        "alias_phase4": 13,
+        "anchored_reference": 27
+      },
+      "workflow": [
+        {
+          "action": "anchored_reference",
+          "assessment": {
+            "document_regime": "mixed",
+            "catalog_risk": "high",
+            "best_evidence": "anchored_reference",
+            "expected_gain": "high",
+            "false_positive_risk": "medium"
+          },
+          "reason": "The catalog has 62.5% ambiguous names and substantial naming overlap, but all components already have floor links. Anchored-reference offers 27 mostly local, project-specific package-prefix candidates (logic.*, storage.*, common.*, client.*), whereas alias_phase4 is dominated by 12 GAE mentions whose server/platform sense may not denote GAE Datastore.",
+          "feedback": {
+            "input": {
+              "eligible": 27,
+              "distinct_targets": 5
+            },
+            "validation": {
+              "resolver_approved": 0,
+              "validator_approved": 0
+            },
+            "output": {
+              "new_links": 0,
+              "accepted_targets": []
+            }
+          }
+        },
+        {
+          "action": "stop",
+          "assessment": {
+            "document_regime": "mixed",
+            "catalog_risk": "high",
+            "best_evidence": "none",
+            "expected_gain": "low",
+            "false_positive_risk": "high"
+          },
+          "reason": "Catalog ambiguity is high (5/8 names), all components already have floor links, and anchored_reference produced 0 approvals from 27 candidates. The remaining alias_phase4 evidence is dominated by 12 GAE server/platform mentions that do not specifically denote GAE Datastore; the lone specific datastore phrase does not justify the phase's validation cost and false-positive exposure."
+        }
+      ],
+      "selected_tools": [
+        "anchored_reference"
+      ],
+      "run_all_tool_count": 2,
+      "floor": {
+        "tp": 49,
+        "fp": 3,
+        "fn": 8,
+        "P": 0.9423076923076923,
+        "R": 0.8596491228070176,
+        "F1": 0.8990825688073394
+      },
+      "final": {
+        "tp": 49,
+        "fp": 3,
+        "fn": 8,
+        "P": 0.9423076923076923,
+        "R": 0.8596491228070176,
+        "F1": 0.8990825688073394
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 0,
+        "precision": null,
+        "links": []
+      },
+      "llm_calls": 4,
+      "trace": [
+        {
+          "phase": "phase_24_dynamic_plan_1",
+          "ts": 1784875971.0287578,
+          "elapsed_s": 11.832,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 198,\n    \"sentences_with_floor_links\": 44,\n    \"floor_sentence_coverage\": 0.222\n  },\n  \"components\": {\n    \"catalog_size\": 8,\n    \"catalog\": [\n      \"Common\",\n      \"UI\",\n      \"Logic\",\n      \"Storage\",\n      \"Test Driver\",\n      \"E2E\",\n      \"Client\",\n      \"GAE Datastore\"\n    ],\n    \"ambiguous_names\": [\n      \"Client\",\n      \"Common\",\n      \"Logic\",\n      \"Storage\",\n      \"UI\"\n    ],\n    \"ambiguous_ratio\": 0.625,\n    \"without_floor_links\": [],\n    \"floor_link_counts\": {\n      \"UI\": 10,\n      \"Logic\": 11,\n      \"Storage\": 11,\n      \"Common\": 5,\n      \"Test Driver\": 4,\n      \"E2E\": 5,\n      \"Client\": 4,\n      \"GAE Datastore\": 2\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 30,\n    \"alias_scopes\": {\n      \"global\": 22,\n      \"local\": 8\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"UI\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"GAE\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"E2E\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Component\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI component\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Browser\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Server\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"front-end\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"browser\",\n        \"target\": \"UI\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Logic Component\",\n        \"target\": \"Logic\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Logic component\",\n        \"target\": \"Logic\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"logic\",\n        \"target\": \"Logic\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Storage Component\",\n        \"target\": \"Storage\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Storage component\",\n        \"target\": \"Storage\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"storage layer\",\n        \"target\": \"Storage\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"storage\",\n        \"target\": \"Storage\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Common Component\",\n        \"target\": \"Common\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Common component\",\n        \"target\": \"Common\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Test Driver Component\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Test Driver\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"test driver\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"E2E Component\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"E2E component\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"end-to-end component\",\n        \"target\": \"E2E\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Client Component\",\n        \"target\": \"Client\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Client component\",\n        \"target\": \"Client\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"GAE Datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"database\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Google's distributed datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 52,\n    \"source_mix\": {\n      \"entity\": 47,\n      \"coreference\": 5\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 13,\n      \"samples\": [\n        {\n          \"sentence\": 2,\n          \"text\": \"TEAMMATES is a Web application that runs on Google App Engine (GAE).\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 31,\n          \"text\": \"First, request received by the GAE server.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 35,\n          \"text\": \"The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 58,\n          \"text\": \"Automated requests are all requests sent automatically by the GAE server during specific periods of time.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 62,\n          \"text\": \"Second, requests generated by the GAE server are equipped with this privilege.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 69,\n          \"text\": \"GAE server sends such automated requests through two different configurations.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 74,\n          \"text\": \"This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 83,\n          \"text\": \"Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 94,\n          \"text\": \"It connects to GAE's task queue API.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 139,\n          \"text\": \"This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 144,\n          \"text\": \"Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 141,\n          \"text\": \"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\",\n          \"matched_alias\": \"Google's distributed datastore\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        }\n      ]\n    },\n    \"anchored_reference\": {\n      \"eligible\": 27,\n      \"samples\": [\n        {\n          \"sentence\": 4,\n          \"text\": \"The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 1,\n          \"anchor_text\": \"Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 8,\n          \"text\": \"The main logic of the application is in POJOs (Plain Old Java Objects).\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 7,\n          \"anchor_text\": \"In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"Test data is transmitted using JSON format.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 10,\n          \"anchor_text\": \"The following explains the use of the Test Driver.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"Managing relationships between entities, e.g. cascade logic for create/update/delete.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 77,\n          \"anchor_text\": \"The Logic component handles the business logic of TEAMMATES.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 84,\n          \"text\": \"Package overview contains logic.api, logic.core.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 79,\n          \"anchor_text\": \"Managing relationships between entities, e.g. cascade logic for create/update/delete.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 85,\n          \"text\": \"logic.api provides the API of the component to be accessed by the UI.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 84,\n          \"anchor_text\": \"Package overview contains logic.api, logic.core.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 86,\n          \"text\": \"logic.core contains the core logic of the system.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 85,\n          \"anchor_text\": \"logic.api provides the API of the component to be accessed by the UI.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 88,\n          \"text\": \"Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 87,\n          \"anchor_text\": \"Logic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 119,\n          \"text\": \"It contains minimal logic beyond what is directly relevant to CRUD operations.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 117,\n          \"anchor_text\": \"Refer to the API for the cascade logic.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 130,\n          \"text\": \"Package overview contains storage.api, storage.entity, storage.search.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 128,\n          \"anchor_text\": \"The Storage component does not perform any cascade delete/create operations.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 131,\n          \"text\": \"storage.api provides the API of the component to be accessed by the logic component.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 130,\n          \"anchor_text\": \"Package overview contains storage.api, storage.entity, storage.search.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 132,\n          \"text\": \"storage.entity contains classes that represent persistable entities.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 131,\n          \"anchor_text\": \"storage.api provides the API of the component to be accessed by the logic component.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 133,\n          \"text\": \"storage.search contains classes for dealing with searching and indexing.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 132,\n          \"anchor_text\": \"storage.entity contains classes that represent persistable entities.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 156,\n          \"text\": \"Package overview contains common.util, common.exceptions, common.datatransfer.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 155,\n          \"anchor_text\": \"The Common component contains common utilities used across TEAMMATES.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 157,\n          \"text\": \"common.util contains utility classes.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 156,\n          \"anchor_text\": \"Package overview contains common.util, common.exceptions, common.datatransfer.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 158,\n          \"text\": \"common.exceptions contains custom exceptions.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 157,\n          \"anchor_text\": \"common.util contains utility classes.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 159,\n          \"text\": \"common.datatransfer contains data transfer objects.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 158,\n          \"anchor_text\": \"common.exceptions contains custom exceptions.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 160,\n          \"text\": \"common.datatransfer package contains lightweight data transfer object classes for transferring data among components.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 159,\n          \"anchor_text\": \"common.datatransfer contains data transfer objects.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 174,\n          \"text\": \"x.datatransfer contains component test cases for testing the datatransfer objects from the Common component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 175,\n          \"text\": \"x.util contains component test cases for testing the utility classes from the Common component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 176,\n          \"text\": \"x.logic contains component test cases for testing the Logic component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 177,\n          \"text\": \"x.storage contains component test cases for testing the Storage component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 178,\n          \"text\": \"x.search contains component test cases for testing the search functions.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 195,\n          \"text\": \"Package overview contains client.util, client.remoteapi, client.scripts.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 194,\n          \"anchor_text\": \"The Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 196,\n          \"text\": \"client.util contains helpers needed for client scripts.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 195,\n          \"anchor_text\": \"Package overview contains client.util, client.remoteapi, client.scripts.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 197,\n          \"text\": \"client.remoteapi classes needed to connect to the back end directly.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 196,\n          \"anchor_text\": \"client.util contains helpers needed for client scripts.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 198,\n          \"text\": \"client.scripts scripts that deal with the back end data for administrative purposes.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 197,\n          \"anchor_text\": \"client.remoteapi classes needed to connect to the back end directly.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        }\n      ]\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[]\n\nAVAILABLE ACTIONS\n[\"alias_phase4\", \"anchored_reference\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\"assessment\":{\"document_regime\":\"mixed\",\"catalog_risk\":\"high\",\"best_evidence\":\"anchored_reference\",\"expected_gain\":\"high\",\"false_positive_risk\":\"medium\"},\"action\":\"anchored_reference\",\"reason\":\"The catalog has 62.5% ambiguous names and substantial naming overlap, but all components already have floor links. Anchored-reference offers 27 mostly local, project-specific package-prefix candidates (logic.*, storage.*, common.*, client.*), whereas alias_phase4 is dominated by 12 GAE mentions whose server/platform sense may not denote GAE Datastore.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 11831,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784875982.8645513,
+          "elapsed_s": 15.369,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate Client\n  Source sentence: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\n  Explicit anchor S1: Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\n  Basis: unique technical prefix 'client'\n\nCase 2: candidate Logic\n  Source sentence: The main logic of the application is in POJOs (Plain Old Java Objects).\n  Explicit anchor S7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\n  Basis: unique technical prefix 'logic'\n\nCase 3: candidate Test Driver\n  Source sentence: Test data is transmitted using JSON format.\n  Explicit anchor S10: The following explains the use of the Test Driver.\n  Basis: unique technical prefix 'test'\n\nCase 4: candidate Logic\n  Source sentence: Managing relationships between entities, e.g. cascade logic for create/update/delete.\n  Explicit anchor S77: The Logic component handles the business logic of TEAMMATES.\n  Basis: unique technical prefix 'logic'\n\nCase 5: candidate Logic\n  Source sentence: Package overview contains logic.api, logic.core.\n  Explicit anchor S79: Managing relationships between entities, e.g. cascade logic for create/update/delete.\n  Basis: unique technical prefix 'logic'\n\nCase 6: candidate Logic\n  Source sentence: logic.api provides the API of the component to be accessed by the UI.\n  Explicit anchor S84: Package overview contains logic.api, logic.core.\n  Basis: unique technical prefix 'logic'\n\nCase 7: candidate Logic\n  Source sentence: logic.core contains the core logic of the system.\n  Explicit anchor S85: logic.api provides the API of the component to be accessed by the UI.\n  Basis: unique technical prefix 'logic'\n\nCase 8: candidate Logic\n  Source sentence: Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\n  Explicit anchor S87: Logic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.\n  Basis: unique technical prefix 'logic'\n\nCase 9: candidate Logic\n  Source sentence: It contains minimal logic beyond what is directly relevant to CRUD operations.\n  Explicit anchor S117: Refer to the API for the cascade logic.\n  Basis: unique technical prefix 'logic'\n\nCase 10: candidate Storage\n  Source sentence: Package overview contains storage.api, storage.entity, storage.search.\n  Explicit anchor S128: The Storage component does not perform any cascade delete/create operations.\n  Basis: unique technical prefix 'storage'\n\nCase 11: candidate Storage\n  Source sentence: storage.api provides the API of the component to be accessed by the logic component.\n  Explicit anchor S130: Package overview contains storage.api, storage.entity, storage.search.\n  Basis: unique technical prefix 'storage'\n\nCase 12: candidate Storage\n  Source sentence: storage.entity contains classes that represent persistable entities.\n  Explicit anchor S131: storage.api provides the API of the component to be accessed by the logic component.\n  Basis: unique technical prefix 'storage'\n\nCase 13: candidate Storage\n  Source sentence: storage.search contains classes for dealing with searching and indexing.\n  Explicit anchor S132: storage.entity contains classes that represent persistable entities.\n  Basis: unique technical prefix 'storage'\n\nCase 14: candidate Common\n  Source sentence: Package overview contains common.util, common.exceptions, common.datatransfer.\n  Explicit anchor S155: The Common component contains common utilities used across TEAMMATES.\n  Basis: unique technical prefix 'common'\n\nCase 15: candidate Common\n  Source sentence: common.util contains utility classes.\n  Explicit anchor S156: Package overview contains common.util, common.exceptions, common.datatransfer.\n  Basis: unique technical prefix 'common'\n\nCase 16: candidate Common\n  Source sentence: common.exceptions contains custom exceptions.\n  Explicit anchor S157: common.util contains utility classes.\n  Basis: unique technical prefix 'common'\n\nCase 17: candidate Common\n  Source sentence: common.datatransfer contains data transfer objects.\n  Explicit anchor S158: common.exceptions contains custom exceptions.\n  Basis: unique technical prefix 'common'\n\nCase 18: candidate Common\n  Source sentence: common.datatransfer package contains lightweight data transfer object classes for transferring data among components.\n  Explicit anchor S159: common.datatransfer contains data transfer objects.\n  Basis: unique technical prefix 'common'\n\nCase 19: candidate Test Driver\n  Source sentence: x.datatransfer contains component test cases for testing the datatransfer objects from the Common component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 20: candidate Test Driver\n  Source sentence: x.util contains component test cases for testing the utility classes from the Common component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":false,\"phrase\":\"\"},{\"case\":2,\"approve\":false,\"phrase\":\"\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":false,\"phrase\":\"\"},{\"case\":7,\"approve\":false,\"phrase\":\"\"},{\"case\":8,\"approve\":false,\"phrase\":\"\"},{\"case\":9,\"approve\":false,\"phrase\":\"\"},{\"case\":10,\"approve\":false,\"phrase\":\"\"},{\"case\":11,\"approve\":false,\"phrase\":\"\"},{\"case\":12,\"approve\":false,\"phrase\":\"\"},{\"case\":13,\"approve\":false,\"phrase\":\"\"},{\"case\":14,\"approve\":false,\"phrase\":\"\"},{\"case\":15,\"approve\":false,\"phrase\":\"\"},{\"case\":16,\"approve\":false,\"phrase\":\"\"},{\"case\":17,\"approve\":false,\"phrase\":\"\"},{\"case\":18,\"approve\":false,\"phrase\":\"\"},{\"case\":19,\"approve\":false,\"phrase\":\"\"},{\"case\":20,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 15369,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784875998.2337852,
+          "elapsed_s": 10.83,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate Test Driver\n  Source sentence: x.logic contains component test cases for testing the Logic component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 2: candidate Test Driver\n  Source sentence: x.storage contains component test cases for testing the Storage component.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 3: candidate Test Driver\n  Source sentence: x.search contains component test cases for testing the search functions.\n  Explicit anchor S173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\n  Basis: unique technical prefix 'test'\n\nCase 4: candidate Client\n  Source sentence: Package overview contains client.util, client.remoteapi, client.scripts.\n  Explicit anchor S194: The Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.\n  Basis: unique technical prefix 'client'\n\nCase 5: candidate Client\n  Source sentence: client.util contains helpers needed for client scripts.\n  Explicit anchor S195: Package overview contains client.util, client.remoteapi, client.scripts.\n  Basis: unique technical prefix 'client'\n\nCase 6: candidate Client\n  Source sentence: client.remoteapi classes needed to connect to the back end directly.\n  Explicit anchor S196: client.util contains helpers needed for client scripts.\n  Basis: unique technical prefix 'client'\n\nCase 7: candidate Client\n  Source sentence: client.scripts scripts that deal with the back end data for administrative purposes.\n  Explicit anchor S197: client.remoteapi classes needed to connect to the back end directly.\n  Basis: unique technical prefix 'client'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":false,\"phrase\":\"\"},{\"case\":2,\"approve\":false,\"phrase\":\"\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":false,\"phrase\":\"\"},{\"case\":7,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 10829,
+          "model": null
+        },
+        {
+          "phase": "phase_24_dynamic_plan_2",
+          "ts": 1784876009.063588,
+          "elapsed_s": 12.818,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 198,\n    \"sentences_with_floor_links\": 44,\n    \"floor_sentence_coverage\": 0.222\n  },\n  \"components\": {\n    \"catalog_size\": 8,\n    \"catalog\": [\n      \"Common\",\n      \"UI\",\n      \"Logic\",\n      \"Storage\",\n      \"Test Driver\",\n      \"E2E\",\n      \"Client\",\n      \"GAE Datastore\"\n    ],\n    \"ambiguous_names\": [\n      \"Client\",\n      \"Common\",\n      \"Logic\",\n      \"Storage\",\n      \"UI\"\n    ],\n    \"ambiguous_ratio\": 0.625,\n    \"without_floor_links\": [],\n    \"floor_link_counts\": {\n      \"UI\": 10,\n      \"Logic\": 11,\n      \"Storage\": 11,\n      \"Common\": 5,\n      \"Test Driver\": 4,\n      \"E2E\": 5,\n      \"Client\": 4,\n      \"GAE Datastore\": 2\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 30,\n    \"alias_scopes\": {\n      \"global\": 22,\n      \"local\": 8\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"UI\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"GAE\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"E2E\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Component\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI component\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Browser\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"UI Server\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"front-end\",\n        \"target\": \"UI\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"browser\",\n        \"target\": \"UI\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Logic Component\",\n        \"target\": \"Logic\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Logic component\",\n        \"target\": \"Logic\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"logic\",\n        \"target\": \"Logic\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Storage Component\",\n        \"target\": \"Storage\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Storage component\",\n        \"target\": \"Storage\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"storage layer\",\n        \"target\": \"Storage\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"storage\",\n        \"target\": \"Storage\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Common Component\",\n        \"target\": \"Common\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Common component\",\n        \"target\": \"Common\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Test Driver Component\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Test Driver\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"test driver\",\n        \"target\": \"Test Driver\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"E2E Component\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"E2E component\",\n        \"target\": \"E2E\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"end-to-end component\",\n        \"target\": \"E2E\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Client Component\",\n        \"target\": \"Client\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Client component\",\n        \"target\": \"Client\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"GAE Datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"database\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Google's distributed datastore\",\n        \"target\": \"GAE Datastore\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 52,\n    \"source_mix\": {\n      \"entity\": 47,\n      \"coreference\": 5\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 13,\n      \"samples\": [\n        {\n          \"sentence\": 2,\n          \"text\": \"TEAMMATES is a Web application that runs on Google App Engine (GAE).\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 31,\n          \"text\": \"First, request received by the GAE server.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 35,\n          \"text\": \"The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 58,\n          \"text\": \"Automated requests are all requests sent automatically by the GAE server during specific periods of time.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 62,\n          \"text\": \"Second, requests generated by the GAE server are equipped with this privilege.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 69,\n          \"text\": \"GAE server sends such automated requests through two different configurations.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 74,\n          \"text\": \"This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 83,\n          \"text\": \"Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 94,\n          \"text\": \"It connects to GAE's task queue API.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 139,\n          \"text\": \"This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 144,\n          \"text\": \"Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\",\n          \"matched_alias\": \"GAE\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        },\n        {\n          \"sentence\": 141,\n          \"text\": \"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\",\n          \"matched_alias\": \"Google's distributed datastore\",\n          \"target\": \"GAE Datastore\",\n          \"target_ambiguous\": false\n        }\n      ]\n    },\n    \"anchored_reference\": {\n      \"eligible\": 27,\n      \"samples\": [\n        {\n          \"sentence\": 4,\n          \"text\": \"The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 1,\n          \"anchor_text\": \"Architecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 8,\n          \"text\": \"The main logic of the application is in POJOs (Plain Old Java Objects).\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 7,\n          \"anchor_text\": \"In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"Test data is transmitted using JSON format.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 10,\n          \"anchor_text\": \"The following explains the use of the Test Driver.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"Managing relationships between entities, e.g. cascade logic for create/update/delete.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 77,\n          \"anchor_text\": \"The Logic component handles the business logic of TEAMMATES.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 84,\n          \"text\": \"Package overview contains logic.api, logic.core.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 79,\n          \"anchor_text\": \"Managing relationships between entities, e.g. cascade logic for create/update/delete.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 85,\n          \"text\": \"logic.api provides the API of the component to be accessed by the UI.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 84,\n          \"anchor_text\": \"Package overview contains logic.api, logic.core.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 86,\n          \"text\": \"logic.core contains the core logic of the system.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 85,\n          \"anchor_text\": \"logic.api provides the API of the component to be accessed by the UI.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 88,\n          \"text\": \"Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 87,\n          \"anchor_text\": \"Logic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 119,\n          \"text\": \"It contains minimal logic beyond what is directly relevant to CRUD operations.\",\n          \"target\": \"Logic\",\n          \"anchor_sentence\": 117,\n          \"anchor_text\": \"Refer to the API for the cascade logic.\",\n          \"basis\": \"unique technical prefix 'logic'\"\n        },\n        {\n          \"sentence\": 130,\n          \"text\": \"Package overview contains storage.api, storage.entity, storage.search.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 128,\n          \"anchor_text\": \"The Storage component does not perform any cascade delete/create operations.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 131,\n          \"text\": \"storage.api provides the API of the component to be accessed by the logic component.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 130,\n          \"anchor_text\": \"Package overview contains storage.api, storage.entity, storage.search.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 132,\n          \"text\": \"storage.entity contains classes that represent persistable entities.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 131,\n          \"anchor_text\": \"storage.api provides the API of the component to be accessed by the logic component.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 133,\n          \"text\": \"storage.search contains classes for dealing with searching and indexing.\",\n          \"target\": \"Storage\",\n          \"anchor_sentence\": 132,\n          \"anchor_text\": \"storage.entity contains classes that represent persistable entities.\",\n          \"basis\": \"unique technical prefix 'storage'\"\n        },\n        {\n          \"sentence\": 156,\n          \"text\": \"Package overview contains common.util, common.exceptions, common.datatransfer.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 155,\n          \"anchor_text\": \"The Common component contains common utilities used across TEAMMATES.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 157,\n          \"text\": \"common.util contains utility classes.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 156,\n          \"anchor_text\": \"Package overview contains common.util, common.exceptions, common.datatransfer.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 158,\n          \"text\": \"common.exceptions contains custom exceptions.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 157,\n          \"anchor_text\": \"common.util contains utility classes.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 159,\n          \"text\": \"common.datatransfer contains data transfer objects.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 158,\n          \"anchor_text\": \"common.exceptions contains custom exceptions.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 160,\n          \"text\": \"common.datatransfer package contains lightweight data transfer object classes for transferring data among components.\",\n          \"target\": \"Common\",\n          \"anchor_sentence\": 159,\n          \"anchor_text\": \"common.datatransfer contains data transfer objects.\",\n          \"basis\": \"unique technical prefix 'common'\"\n        },\n        {\n          \"sentence\": 174,\n          \"text\": \"x.datatransfer contains component test cases for testing the datatransfer objects from the Common component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 175,\n          \"text\": \"x.util contains component test cases for testing the utility classes from the Common component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 176,\n          \"text\": \"x.logic contains component test cases for testing the Logic component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 177,\n          \"text\": \"x.storage contains component test cases for testing the Storage component.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 178,\n          \"text\": \"x.search contains component test cases for testing the search functions.\",\n          \"target\": \"Test Driver\",\n          \"anchor_sentence\": 173,\n          \"anchor_text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\",\n          \"basis\": \"unique technical prefix 'test'\"\n        },\n        {\n          \"sentence\": 195,\n          \"text\": \"Package overview contains client.util, client.remoteapi, client.scripts.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 194,\n          \"anchor_text\": \"The Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 196,\n          \"text\": \"client.util contains helpers needed for client scripts.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 195,\n          \"anchor_text\": \"Package overview contains client.util, client.remoteapi, client.scripts.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 197,\n          \"text\": \"client.remoteapi classes needed to connect to the back end directly.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 196,\n          \"anchor_text\": \"client.util contains helpers needed for client scripts.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        },\n        {\n          \"sentence\": 198,\n          \"text\": \"client.scripts scripts that deal with the back end data for administrative purposes.\",\n          \"target\": \"Client\",\n          \"anchor_sentence\": 197,\n          \"anchor_text\": \"client.remoteapi classes needed to connect to the back end directly.\",\n          \"basis\": \"unique technical prefix 'client'\"\n        }\n      ]\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[\n  {\n    \"action\": \"anchored_reference\",\n    \"assessment\": {\n      \"document_regime\": \"mixed\",\n      \"catalog_risk\": \"high\",\n      \"best_evidence\": \"anchored_reference\",\n      \"expected_gain\": \"high\",\n      \"false_positive_risk\": \"medium\"\n    },\n    \"reason\": \"The catalog has 62.5% ambiguous names and substantial naming overlap, but all components already have floor links. Anchored-reference offers 27 mostly local, project-specific package-prefix candidates (logic.*, storage.*, common.*, client.*), whereas alias_phase4 is dominated by 12 GAE mentions whose server/platform sense may not denote GAE Datastore.\",\n    \"feedback\": {\n      \"input\": {\n        \"eligible\": 27,\n        \"distinct_targets\": 5\n      },\n      \"validation\": {\n        \"resolver_approved\": 0,\n        \"validator_approved\": 0\n      },\n      \"output\": {\n        \"new_links\": 0,\n        \"accepted_targets\": []\n      }\n    }\n  }\n]\n\nAVAILABLE ACTIONS\n[\"alias_phase4\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\"assessment\":{\"document_regime\":\"mixed\",\"catalog_risk\":\"high\",\"best_evidence\":\"none\",\"expected_gain\":\"low\",\"false_positive_risk\":\"high\"},\"action\":\"stop\",\"reason\":\"Catalog ambiguity is high (5/8 names), all components already have floor links, and anchored_reference produced 0 approvals from 27 candidates. The remaining alias_phase4 evidence is dominated by 12 GAE server/platform mentions that do not specifically denote GAE Datastore; the lone specific datastore phrase does not justify the phase's validation cost and false-positive exposure.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 12817,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "bigbluebutton",
+      "profile": {
+        "document": {
+          "sentences": 87,
+          "sentences_with_floor_links": 42,
+          "floor_sentence_coverage": 0.483
+        },
+        "components": {
+          "catalog_size": 12,
+          "catalog": [
+            "Recording Service",
+            "kurento",
+            "WebRTC-SFU",
+            "HTML5 Server",
+            "HTML5 Client",
+            "Presentation Conversion",
+            "BBB web",
+            "Redis PubSub",
+            "FSESL",
+            "Apps",
+            "Redis DB",
+            "FreeSWITCH"
+          ],
+          "ambiguous_names": [],
+          "ambiguous_ratio": 0.0,
+          "without_floor_links": [],
+          "floor_link_counts": {
+            "HTML5 Client": 11,
+            "HTML5 Server": 8,
+            "BBB web": 5,
+            "Redis PubSub": 4,
+            "Redis DB": 2,
+            "Recording Service": 1,
+            "Apps": 6,
+            "FSESL": 2,
+            "FreeSWITCH": 5,
+            "kurento": 3,
+            "WebRTC-SFU": 2,
+            "Presentation Conversion": 1
+          }
+        },
+        "knowledge": {
+          "approved_aliases": 11,
+          "alias_scopes": {
+            "global": 10,
+            "local": 1
+          },
+          "alias_profile": [
+            {
+              "alias": "bbb-html5",
+              "target": "HTML5 Server",
+              "scope": "global"
+            },
+            {
+              "alias": "BBB web",
+              "target": "BBB web",
+              "scope": "global"
+            },
+            {
+              "alias": "Apps Akka",
+              "target": "Apps",
+              "scope": "global"
+            },
+            {
+              "alias": "KMS",
+              "target": "kurento",
+              "scope": "global"
+            },
+            {
+              "alias": "fsels",
+              "target": "FSESL",
+              "scope": "global"
+            },
+            {
+              "alias": "BigBlueButton web application",
+              "target": "BBB web",
+              "scope": "global"
+            },
+            {
+              "alias": "BigBlueButton Apps",
+              "target": "Apps",
+              "scope": "global"
+            },
+            {
+              "alias": "FreeSWITCH Event Socket Layer",
+              "target": "FSESL",
+              "scope": "global"
+            },
+            {
+              "alias": "Kurento Media Server",
+              "target": "kurento",
+              "scope": "global"
+            },
+            {
+              "alias": "conversion process",
+              "target": "Presentation Conversion",
+              "scope": "local"
+            },
+            {
+              "alias": "Recording Processor",
+              "target": "Recording Service",
+              "scope": "global"
+            }
+          ]
+        },
+        "floor": {
+          "links": 50,
+          "source_mix": {
+            "entity": 41,
+            "coreference": 9
+          }
+        },
+        "recovery_evidence": {
+          "alias_phase4": {
+            "eligible": 0,
+            "samples": []
+          },
+          "anchored_reference": {
+            "eligible": 11,
+            "samples": [
+              {
+                "sentence": 9,
+                "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+                "target": "HTML5 Client",
+                "anchor_sentence": 6,
+                "anchor_text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+                "basis": "local structural family 'html5' with role 'client'"
+              },
+              {
+                "sentence": 10,
+                "text": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.",
+                "target": "HTML5 Server",
+                "anchor_sentence": 9,
+                "anchor_text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+                "basis": "local structural family 'html5' with role 'server'"
+              },
+              {
+                "sentence": 10,
+                "text": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.",
+                "target": "HTML5 Client",
+                "anchor_sentence": 6,
+                "anchor_text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+                "basis": "local structural family 'html5' with role 'client'"
+              },
+              {
+                "sentence": 16,
+                "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication.",
+                "target": "HTML5 Client",
+                "anchor_sentence": 14,
+                "anchor_text": "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.",
+                "basis": "local structural family 'html5' with role 'client'"
+              },
+              {
+                "sentence": 18,
+                "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.",
+                "target": "HTML5 Server",
+                "anchor_sentence": 15,
+                "anchor_text": "Scalability of HTML5 server component.",
+                "basis": "local structural family 'html5' with role 'server'"
+              },
+              {
+                "sentence": 59,
+                "text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+                "target": "FreeSWITCH",
+                "anchor_sentence": 58,
+                "anchor_text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+                "basis": "unique technical prefix 'freeswitch'"
+              },
+              {
+                "sentence": 60,
+                "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+                "target": "FreeSWITCH",
+                "anchor_sentence": 59,
+                "anchor_text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.",
+                "basis": "unique technical prefix 'freeswitch'"
+              },
+              {
+                "sentence": 66,
+                "text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+                "target": "FreeSWITCH",
+                "anchor_sentence": 63,
+                "anchor_text": "FreeSWITCH provides the voice conferencing capability in BigBlueButton.",
+                "basis": "unique technical prefix 'freeswitch'"
+              },
+              {
+                "sentence": 73,
+                "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+                "target": "WebRTC-SFU",
+                "anchor_sentence": 70,
+                "anchor_text": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+                "basis": "unique technical prefix 'webrtc'"
+              },
+              {
+                "sentence": 74,
+                "text": "WebRTC provides the user with high-quality audio with lower delay.",
+                "target": "WebRTC-SFU",
+                "anchor_sentence": 70,
+                "anchor_text": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+                "basis": "unique technical prefix 'webrtc'"
+              },
+              {
+                "sentence": 81,
+                "text": "The diagram below describes the flow of the presentation conversion.",
+                "target": "Presentation Conversion",
+                "anchor_sentence": 80,
+                "anchor_text": "Presentation conversion flow.",
+                "basis": "unique technical prefix 'presentation'"
+              }
+            ]
+          }
+        }
+      },
+      "inventory": {
+        "alias_phase4": 0,
+        "anchored_reference": 11
+      },
+      "workflow": [
+        {
+          "action": "anchored_reference",
+          "assessment": {
+            "document_regime": "architecture_prose",
+            "catalog_risk": "low",
+            "best_evidence": "anchored_reference",
+            "expected_gain": "medium",
+            "false_positive_risk": "medium"
+          },
+          "reason": "All 12 components already have floor links, no catalog names are ambiguous, and alias_phase4 has no eligible evidence. Anchored_reference has 11 project-grounded candidates, including specific unique prefixes such as FreeSWITCH, WebRTC, and presentation; weaker HTML5 client/server family references raise validator risk to medium but justify the dedicated resolver.",
+          "feedback": {
+            "input": {
+              "eligible": 11,
+              "distinct_targets": 5
+            },
+            "validation": {
+              "resolver_approved": 4,
+              "validator_approved": 4
+            },
+            "output": {
+              "new_links": 3,
+              "accepted_targets": [
+                "FreeSWITCH",
+                "HTML5 Client"
+              ]
+            }
+          }
+        }
+      ],
+      "selected_tools": [
+        "anchored_reference"
+      ],
+      "run_all_tool_count": 1,
+      "floor": {
+        "tp": 48,
+        "fp": 2,
+        "fn": 14,
+        "P": 0.96,
+        "R": 0.7741935483870968,
+        "F1": 0.8571428571428571
+      },
+      "final": {
+        "tp": 51,
+        "fp": 2,
+        "fn": 11,
+        "P": 0.9622641509433962,
+        "R": 0.8225806451612904,
+        "F1": 0.8869565217391304
+      },
+      "marginal": {
+        "tp": 3,
+        "fp": 0,
+        "precision": 1.0,
+        "links": [
+          {
+            "sentence": 9,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "gold": true,
+            "source": "s24_anchor"
+          },
+          {
+            "sentence": 59,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "gold": true,
+            "source": "s24_anchor"
+          },
+          {
+            "sentence": 66,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "gold": true,
+            "source": "s24_anchor"
+          }
+        ]
+      },
+      "llm_calls": 3,
+      "trace": [
+        {
+          "phase": "phase_24_dynamic_plan_1",
+          "ts": 1784876021.8863266,
+          "elapsed_s": 7.29,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You are the workflow controller after an S21 trace-linking floor.\n\nChoose exactly ONE next action from the available bounded phases or stop. You\ncannot propose, approve, reject, or edit links. Return a compact decision record,\nnot hidden chain-of-thought.\n\nPHASES\n- alias_phase4: exact occurrences of aliases already approved by the document\n  knowledge phase, followed by S21's unchanged two-pass entity validator.\n- anchored_reference: local structural-sibling or unique technical-prefix\n  references, followed by the dedicated anchored-reference resolver and validator.\n\nDECISION PRINCIPLES\n- First classify the documentation regime from the actual evidence as\n  architecture_prose, mixed, technical_inventory, or caption_heavy.\n- Assess catalog risk from ambiguous names, naming overlap, and concentration of\n  unlinked or weakly linked components.\n- Rank the remaining phase evidence by semantic specificity, locality, expected\n  novel recall, validator risk, and cost. Counts alone are not evidence quality.\n- Prefer evidence whose referring phrase and target are specific in this project.\n- After observing a phase funnel, use its yield and validator agreement. Call\n  another only when its evidence is complementary enough to justify its\n  validation cost and false-positive exposure.\n- Stop when no remaining phase has sufficiently specific project-grounded evidence.\n- Never infer gold links and never use project identity.\n\nRUNTIME PROFILE\n{\n  \"document\": {\n    \"sentences\": 87,\n    \"sentences_with_floor_links\": 42,\n    \"floor_sentence_coverage\": 0.483\n  },\n  \"components\": {\n    \"catalog_size\": 12,\n    \"catalog\": [\n      \"Recording Service\",\n      \"kurento\",\n      \"WebRTC-SFU\",\n      \"HTML5 Server\",\n      \"HTML5 Client\",\n      \"Presentation Conversion\",\n      \"BBB web\",\n      \"Redis PubSub\",\n      \"FSESL\",\n      \"Apps\",\n      \"Redis DB\",\n      \"FreeSWITCH\"\n    ],\n    \"ambiguous_names\": [],\n    \"ambiguous_ratio\": 0.0,\n    \"without_floor_links\": [],\n    \"floor_link_counts\": {\n      \"HTML5 Client\": 11,\n      \"HTML5 Server\": 8,\n      \"BBB web\": 5,\n      \"Redis PubSub\": 4,\n      \"Redis DB\": 2,\n      \"Recording Service\": 1,\n      \"Apps\": 6,\n      \"FSESL\": 2,\n      \"FreeSWITCH\": 5,\n      \"kurento\": 3,\n      \"WebRTC-SFU\": 2,\n      \"Presentation Conversion\": 1\n    }\n  },\n  \"knowledge\": {\n    \"approved_aliases\": 11,\n    \"alias_scopes\": {\n      \"global\": 10,\n      \"local\": 1\n    },\n    \"alias_profile\": [\n      {\n        \"alias\": \"bbb-html5\",\n        \"target\": \"HTML5 Server\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"BBB web\",\n        \"target\": \"BBB web\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Apps Akka\",\n        \"target\": \"Apps\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"KMS\",\n        \"target\": \"kurento\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"fsels\",\n        \"target\": \"FSESL\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"BigBlueButton web application\",\n        \"target\": \"BBB web\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"BigBlueButton Apps\",\n        \"target\": \"Apps\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"FreeSWITCH Event Socket Layer\",\n        \"target\": \"FSESL\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"Kurento Media Server\",\n        \"target\": \"kurento\",\n        \"scope\": \"global\"\n      },\n      {\n        \"alias\": \"conversion process\",\n        \"target\": \"Presentation Conversion\",\n        \"scope\": \"local\"\n      },\n      {\n        \"alias\": \"Recording Processor\",\n        \"target\": \"Recording Service\",\n        \"scope\": \"global\"\n      }\n    ]\n  },\n  \"floor\": {\n    \"links\": 50,\n    \"source_mix\": {\n      \"entity\": 41,\n      \"coreference\": 9\n    }\n  },\n  \"recovery_evidence\": {\n    \"alias_phase4\": {\n      \"eligible\": 0,\n      \"samples\": []\n    },\n    \"anchored_reference\": {\n      \"eligible\": 11,\n      \"samples\": [\n        {\n          \"sentence\": 9,\n          \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n          \"target\": \"HTML5 Client\",\n          \"anchor_sentence\": 6,\n          \"anchor_text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n          \"basis\": \"local structural family 'html5' with role 'client'\"\n        },\n        {\n          \"sentence\": 10,\n          \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\",\n          \"target\": \"HTML5 Server\",\n          \"anchor_sentence\": 9,\n          \"anchor_text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n          \"basis\": \"local structural family 'html5' with role 'server'\"\n        },\n        {\n          \"sentence\": 10,\n          \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\",\n          \"target\": \"HTML5 Client\",\n          \"anchor_sentence\": 6,\n          \"anchor_text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n          \"basis\": \"local structural family 'html5' with role 'client'\"\n        },\n        {\n          \"sentence\": 16,\n          \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\",\n          \"target\": \"HTML5 Client\",\n          \"anchor_sentence\": 14,\n          \"anchor_text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\",\n          \"basis\": \"local structural family 'html5' with role 'client'\"\n        },\n        {\n          \"sentence\": 18,\n          \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\",\n          \"target\": \"HTML5 Server\",\n          \"anchor_sentence\": 15,\n          \"anchor_text\": \"Scalability of HTML5 server component.\",\n          \"basis\": \"local structural family 'html5' with role 'server'\"\n        },\n        {\n          \"sentence\": 59,\n          \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\",\n          \"target\": \"FreeSWITCH\",\n          \"anchor_sentence\": 58,\n          \"anchor_text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\",\n          \"basis\": \"unique technical prefix 'freeswitch'\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"target\": \"FreeSWITCH\",\n          \"anchor_sentence\": 59,\n          \"anchor_text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\",\n          \"basis\": \"unique technical prefix 'freeswitch'\"\n        },\n        {\n          \"sentence\": 66,\n          \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\",\n          \"target\": \"FreeSWITCH\",\n          \"anchor_sentence\": 63,\n          \"anchor_text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\",\n          \"basis\": \"unique technical prefix 'freeswitch'\"\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n          \"target\": \"WebRTC-SFU\",\n          \"anchor_sentence\": 70,\n          \"anchor_text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n          \"basis\": \"unique technical prefix 'webrtc'\"\n        },\n        {\n          \"sentence\": 74,\n          \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\",\n          \"target\": \"WebRTC-SFU\",\n          \"anchor_sentence\": 70,\n          \"anchor_text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n          \"basis\": \"unique technical prefix 'webrtc'\"\n        },\n        {\n          \"sentence\": 81,\n          \"text\": \"The diagram below describes the flow of the presentation conversion.\",\n          \"target\": \"Presentation Conversion\",\n          \"anchor_sentence\": 80,\n          \"anchor_text\": \"Presentation conversion flow.\",\n          \"basis\": \"unique technical prefix 'presentation'\"\n        }\n      ]\n    }\n  }\n}\n\nOBSERVED WORKFLOW\n[]\n\nAVAILABLE ACTIONS\n[\"anchored_reference\", \"stop\"]\n\nReturn JSON only:\n{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose|mixed|technical_inventory|caption_heavy\",\n    \"catalog_risk\": \"low|medium|high\",\n    \"best_evidence\": \"one available phase or none\",\n    \"expected_gain\": \"low|medium|high\",\n    \"false_positive_risk\": \"low|medium|high\"\n  },\n  \"action\": \"one available action\",\n  \"reason\": \"brief reason citing profile fields and candidate or feedback evidence\"\n}\n",
+          "response_text": "{\n  \"assessment\": {\n    \"document_regime\": \"architecture_prose\",\n    \"catalog_risk\": \"low\",\n    \"best_evidence\": \"anchored_reference\",\n    \"expected_gain\": \"medium\",\n    \"false_positive_risk\": \"medium\"\n  },\n  \"action\": \"anchored_reference\",\n  \"reason\": \"All 12 components already have floor links, no catalog names are ambiguous, and alias_phase4 has no eligible evidence. Anchored_reference has 11 project-grounded candidates, including specific unique prefixes such as FreeSWITCH, WebRTC, and presentation; weaker HTML5 client/server family references raise validator risk to medium but justify the dedicated resolver.\"\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7290,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_resolve",
+          "ts": 1784876029.1784937,
+          "elapsed_s": 11.727,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Resolve only the listed locally anchored references. Approve only if an EXACT phrase in the source sentence denotes the candidate component using the explicit anchor. Reject hardware/generic uses, code or package paths, and diagram/caption text. Return JSON: {\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"exact source phrase\"}]}\n\nCase 1: candidate HTML5 Client\n  Source sentence: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  Explicit anchor S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 2: candidate HTML5 Server\n  Source sentence: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\n  Explicit anchor S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  Basis: local 'html5' anchor with role 'server'\n\nCase 3: candidate HTML5 Client\n  Source sentence: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\n  Explicit anchor S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 4: candidate HTML5 Client\n  Source sentence: BigBlueButton 2.2 used a single nodejs process for all client-side communication.\n  Explicit anchor S14: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\n  Basis: local 'html5' anchor with role 'client'\n\nCase 5: candidate HTML5 Server\n  Source sentence: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\n  Explicit anchor S15: Scalability of HTML5 server component.\n  Basis: local 'html5' anchor with role 'server'\n\nCase 6: candidate FreeSWITCH\n  Source sentence: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Explicit anchor S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 7: candidate FreeSWITCH\n  Source sentence: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n  Explicit anchor S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 8: candidate FreeSWITCH\n  Source sentence: FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\n  Explicit anchor S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.\n  Basis: unique technical prefix 'freeswitch'\n\nCase 9: candidate WebRTC-SFU\n  Source sentence: When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\n  Explicit anchor S70: The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\n  Basis: unique technical prefix 'webrtc'\n\nCase 10: candidate WebRTC-SFU\n  Source sentence: WebRTC provides the user with high-quality audio with lower delay.\n  Explicit anchor S70: The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\n  Basis: unique technical prefix 'webrtc'\n\nCase 11: candidate Presentation Conversion\n  Source sentence: The diagram below describes the flow of the presentation conversion.\n  Explicit anchor S80: Presentation conversion flow.\n  Basis: unique technical prefix 'presentation'",
+          "response_text": "{\"resolutions\":[{\"case\":1,\"approve\":true,\"phrase\":\"BigBlueButton client\"},{\"case\":2,\"approve\":false,\"phrase\":\"\"},{\"case\":3,\"approve\":false,\"phrase\":\"\"},{\"case\":4,\"approve\":false,\"phrase\":\"\"},{\"case\":5,\"approve\":false,\"phrase\":\"\"},{\"case\":6,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":7,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":8,\"approve\":true,\"phrase\":\"FreeSWITCH\"},{\"case\":9,\"approve\":false,\"phrase\":\"\"},{\"case\":10,\"approve\":false,\"phrase\":\"\"},{\"case\":11,\"approve\":false,\"phrase\":\"\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 11727,
+          "model": null
+        },
+        {
+          "phase": "phase_24_anchor_validate",
+          "ts": 1784876040.9059684,
+          "elapsed_s": 9.365,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate each bounded anchored reference. Approve only if the exact referring phrase in the source sentence denotes the target component established by the anchor AND the source sentence makes an architectural claim about that component. Reject generic/hardware uses, another component with the same prefix, code/package paths, and diagram/caption text. Return JSON: {\"validations\":[{\"case\":1,\"claim\":\"exact source quote\",\"approve\":true}]}.\n\nCase 1: target HTML5 Client\n  Source sentence: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  Exact referring phrase: BigBlueButton client\n  Anchor S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  Eligibility: local 'html5' anchor with role 'client'\n\nCase 2: target FreeSWITCH\n  Source sentence: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Exact referring phrase: FreeSWITCH\n  Anchor S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n  Eligibility: unique technical prefix 'freeswitch'\n\nCase 3: target FreeSWITCH\n  Source sentence: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n  Exact referring phrase: FreeSWITCH\n  Anchor S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  Eligibility: unique technical prefix 'freeswitch'\n\nCase 4: target FreeSWITCH\n  Source sentence: FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\n  Exact referring phrase: FreeSWITCH\n  Anchor S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.\n  Eligibility: unique technical prefix 'freeswitch'",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"approve\":true},{\"case\":2,\"claim\":\"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\",\"approve\":true},{\"case\":3,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":4,\"claim\":\"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 9364,
+          "model": null
+        }
+      ]
+    },
+    {
+      "dataset": "jabref",
+      "profile": {
+        "document": {
+          "sentences": 13,
+          "sentences_with_floor_links": 10,
+          "floor_sentence_coverage": 0.769
+        },
+        "components": {
+          "catalog_size": 6,
+          "catalog": [
+            "gui",
+            "cli",
+            "logic",
+            "globals",
+            "model",
+            "preferences"
+          ],
+          "ambiguous_names": [
+            "logic",
+            "model"
+          ],
+          "ambiguous_ratio": 0.333,
+          "without_floor_links": [
+            "globals"
+          ],
+          "floor_link_counts": {
+            "model": 6,
+            "logic": 4,
+            "gui": 4,
+            "preferences": 2,
+            "cli": 2
+          }
+        },
+        "knowledge": {
+          "approved_aliases": 4,
+          "alias_scopes": {
+            "global": 2,
+            "local": 2
+          },
+          "alias_profile": [
+            {
+              "alias": "outer shell",
+              "target": "gui",
+              "scope": "global"
+            },
+            {
+              "alias": "command line interface",
+              "target": "cli",
+              "scope": "global"
+            },
+            {
+              "alias": "intermediate layer",
+              "target": "logic",
+              "scope": "local"
+            },
+            {
+              "alias": "core",
+              "target": "model",
+              "scope": "local"
+            }
+          ]
+        },
+        "floor": {
+          "links": 18,
+          "source_mix": {
+            "entity": 18
+          }
+        },
+        "recovery_evidence": {
+          "alias_phase4": {
+            "eligible": 0,
+            "samples": []
+          },
+          "anchored_reference": {
+            "eligible": 0,
+            "samples": []
+          }
+        }
+      },
+      "inventory": {
+        "alias_phase4": 0,
+        "anchored_reference": 0
+      },
+      "workflow": [],
+      "selected_tools": [],
+      "run_all_tool_count": 0,
+      "floor": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0
+      },
+      "final": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 0,
+        "precision": null,
+        "links": []
+      },
+      "llm_calls": 0,
+      "trace": []
+    }
+  ],
+  "aggregate": {
+    "marginal_tp": 5,
+    "marginal_fp": 0,
+    "marginal_precision": 1.0,
+    "macro_floor_f1": 0.9333832859723078,
+    "macro_final_f1": 0.9467675665369668,
+    "macro_delta": 0.013384280564659012,
+    "distinct_workflows": 3,
+    "dynamic_tool_calls": 4,
+    "run_all_tool_calls": 6,
+    "tool_calls_saved": 2
+  },
+  "pass_gate": {
+    "macro_f1_improves": true,
+    "marginal_precision_at_least_0_95": true,
+    "at_most_one_fp": true,
+    "at_least_three_workflows": true,
+    "fewer_tools_than_run_all": true,
+    "decisions_cite_runtime_profile": true,
+    "passed": true
+  }
+}

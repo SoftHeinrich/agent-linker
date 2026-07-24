@@ -42,10 +42,10 @@ class SLinker24(SLinker21):
                 return candidate
         return None
 
-    def _recover(self, text_path, model_path, floor):
-        components = parse_pcm_repository(model_path)
+    @classmethod
+    def _anchored_cases(cls, sentences, components, floor):
+        """Build the grounded candidate set shared by profiling and execution."""
         names = {c.name: c.id for c in components}
-        sentences = load_sentences(text_path)
         cases = []
 
         # Structural sibling candidates. A role word alone is insufficient: the
@@ -70,14 +70,14 @@ class SLinker24(SLinker21):
                 if base not in context:
                     continue
                 for name, role in members:
-                    anchor = self._anchor_before(sentences, index, name)
+                    anchor = cls._anchor_before(sentences, index, name)
                     if anchor and re.search(rf"\b{re.escape(role)}\b", low) and name.lower() not in low:
                         cases.append((sent, name, anchor, f"local '{base}' anchor with role '{role}'"))
             for prefix, component_names in prefixes.items():
                 if len(component_names) != 1 or len(prefix) < 4 or not re.search(rf"\b{re.escape(prefix)}\b", low):
                     continue
                 name = component_names[0]
-                anchor = self._anchor_before(sentences, index, name)
+                anchor = cls._anchor_before(sentences, index, name)
                 if anchor and name.lower() != low:
                     cases.append((sent, name, anchor, f"unique technical prefix '{prefix}'"))
 
@@ -87,6 +87,12 @@ class SLinker24(SLinker21):
             for sent, name, anchor, basis in cases
             if (sent.number, names[name]) not in floor_keys
         }.values())
+        return names, cases
+
+    def _recover(self, text_path, model_path, floor):
+        components = parse_pcm_repository(model_path)
+        sentences = load_sentences(text_path)
+        names, cases = self._anchored_cases(sentences, components, floor)
         self._s24_stats["eligible"] = len(cases)
         if not cases:
             return []

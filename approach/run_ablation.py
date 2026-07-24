@@ -132,6 +132,7 @@ CANONICAL_VARIANTS = [
     "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
     "s_linker24",  # anchored sibling/prefix recovery over unchanged S21 floor
     "s_linker24_agentic",  # agent-selected Phase-1/Phase-4 alias and S24 anchored recovery tools
+    "s_linker24_dynamic",  # sequential project-profile controller with validator-funnel feedback
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1031,6 +1032,20 @@ VARIANT_SPECS = {
             "Phase-4 gate and/or S24 anchored-reference recovery. The controller "
             "selects tools but cannot emit or approve links; all prompts use only "
             "generic English and runtime project data."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker24_dynamic": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker24_dynamic",
+        class_name="SLinker24Dynamic",
+        description=(
+            "S-Linker24 Dynamic — unchanged S21 floor plus a sequential controller "
+            "that profiles document style, component ambiguity, floor coverage, "
+            "and grounded candidate evidence. It selects one bounded recovery "
+            "phase at a time and revises the workflow from validator-funnel "
+            "feedback; it cannot emit or approve links."
         ),
         canonical=False,
         experimental=True,

@@ -19,6 +19,7 @@ from .s_linker23_ctx import SLinker23Ctx
 from .s_linker23_tiered import SLinker23Tiered, SLinker23TieredF2
 from .s_linker24 import SLinker24
 from .s_linker24_agentic import SLinker24Agentic
+from .s_linker24_dynamic import SLinker24Dynamic
 
 __all__ = [
     "SLinker21",
@@ -35,4 +36,5 @@ __all__ = [
     "SLinker23TieredF2",
     "SLinker24",
     "SLinker24Agentic",
+    "SLinker24Dynamic",
 ]
