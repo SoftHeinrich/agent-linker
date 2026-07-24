@@ -5,6 +5,7 @@ import json
 import re
 
 from llm_sad_sam.core.data_types_v2 import CandidateLink, SadSamLink
+from llm_sad_sam.core.document_loader_v2 import load_sentences
 from llm_sad_sam.linkers.experimental.s_linker24_orchestrator import (
     SLinker24Orchestrator,
 )
@@ -128,6 +129,30 @@ Return JSON only:
             tools.remove("relation_role_resolution")
         return tools
 
+    def _select_entity_candidates(self, candidates, sent_map):
+        forms_by_component = self._identity_forms_by_component()
+        return [
+            candidate
+            for candidate in candidates
+            if any(
+                self._find_exact_form(candidate.sentence_text, form)
+                for form in (
+                    candidate.component_name,
+                    *forms_by_component.get(candidate.component_name, []),
+                )
+            )
+        ]
+
+    def _identity_forms_by_component(self):
+        aliases = getattr(
+            getattr(self, "doc_knowledge", None), "aliases", {}
+        )
+        forms_by_component = {}
+        for term, entry in aliases.items():
+            component = getattr(entry, "component", entry)
+            forms_by_component.setdefault(component, []).append(term)
+        return forms_by_component
+
     def _run_selected_tool(
         self,
         action,
@@ -157,15 +182,14 @@ Return JSON only:
         candidates = self._apply_role_handles(
             handles, sentences, components, current_links
         )
-        approved = candidates
-        decisions = {
-            (candidate.sentence_number, candidate.component_id): {
-                "approved": True,
-                "path": "catalog_unique_handle",
-                "stage": "relation_role_resolution",
-            }
-            for candidate in candidates
-        }
+        full_sentences = (
+            load_sentences(self._current_text_path)
+            if self._current_text_path
+            else sentences
+        )
+        approved, decisions = self._review_role_candidates(
+            candidates, full_sentences
+        )
         links = [
             SadSamLink(
                 candidate.sentence_number,
@@ -193,6 +217,86 @@ Return JSON only:
             "handle_decisions": self._decision_view(decisions),
         }
 
+    def _review_role_candidates(self, candidates, full_sentences):
+        if not candidates:
+            return [], {}
+        forms_by_component = self._identity_forms_by_component()
+        targets = sorted({
+            candidate.component_name for candidate in candidates
+        })
+        profiles = []
+        for target in targets:
+            forms = [target, *forms_by_component.get(target, [])]
+            profiles.append({
+                "target": target,
+                "identity_anchors": [
+                    {
+                        "sentence": sentence.number,
+                        "text": sentence.text,
+                    }
+                    for sentence in full_sentences
+                    if any(
+                        self._find_exact_form(sentence.text, form)
+                        for form in forms
+                    )
+                ],
+            })
+        cases = [
+            {
+                "case": number,
+                "sentence": candidate.sentence_number,
+                "handle": candidate.matched_text,
+                "target": candidate.component_name,
+                "text": candidate.sentence_text,
+            }
+            for number, candidate in enumerate(candidates, 1)
+        ]
+        prompt = f"""Resolve shortened component handles in project context.
+For each case, keep the mapping only when the highlighted handle refers to the
+listed target component. Identity anchors show explicit project usage.
+
+TARGET PROFILES
+{json.dumps(profiles)}
+
+CASES
+{json.dumps(cases)}
+
+JSON only:
+{{"judgments":[{{"case":1,"keep":true,"referent":"brief referent"}}]}}
+"""
+        data = self._ask(
+            prompt,
+            phase="phase_24_role_context_review",
+            require_present="judgments",
+            label="S24 role-context review",
+            timeout=240,
+        )
+        by_case = {
+            int(item["case"]): {
+                "approved": item.get("keep") is True,
+                "referent": str(item.get("referent", "")).strip(),
+            }
+            for item in data.get("judgments", [])
+            if str(item.get("case", "")).isdigit()
+        }
+        approved = [
+            candidate
+            for number, candidate in enumerate(candidates, 1)
+            if by_case.get(number, {}).get("approved") is True
+        ]
+        decisions = {
+            (candidate.sentence_number, candidate.component_id): {
+                **by_case.get(number, {
+                    "approved": False,
+                    "referent": "missing judgment",
+                }),
+                "path": "role_context_review",
+                "stage": "relation_role_resolution",
+            }
+            for number, candidate in enumerate(candidates, 1)
+        }
+        return approved, decisions
+
     @staticmethod
     def _catalog_role_handles(components):
         tokens_by_component = {
@@ -219,6 +323,7 @@ Return JSON only:
         self, handles, sentences, components, current_links
     ):
         name_to_id = {component.name: component.id for component in components}
+        forms_by_component = self._identity_forms_by_component()
         current = {
             (link.sentence_number, link.component_id)
             for link in current_links
@@ -231,7 +336,18 @@ Return JSON only:
             for sentence in sentences:
                 key = (sentence.number, component_id)
                 matched = self._find_handle(sentence.text, expression)
-                if key in current or not matched:
+                identity_forms = [
+                    component,
+                    *forms_by_component.get(component, []),
+                ]
+                if (
+                    key in current
+                    or not matched
+                    or any(
+                        self._find_exact_form(sentence.text, form)
+                        for form in identity_forms
+                    )
+                ):
                     continue
                 candidates[key] = CandidateLink(
                     sentence.number,
@@ -246,7 +362,16 @@ Return JSON only:
     @staticmethod
     def _find_handle(text, expression):
         match = re.search(
-            rf"(?<![\w-]){re.escape(expression)}(?![\w-])",
+            rf"(?<![\w.-]){re.escape(expression)}(?![\w.-])",
+            text,
+            re.IGNORECASE,
+        )
+        return match.group(0) if match else ""
+
+    @staticmethod
+    def _find_exact_form(text, expression):
+        match = re.search(
+            rf"(?<!\w){re.escape(expression)}(?!\w)",
             text,
             re.IGNORECASE,
         )

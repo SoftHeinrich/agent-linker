@@ -9,6 +9,8 @@ Transform `s_linker12c` from a hybrid (structural-rule gate + LLM verify) pipeli
 - Canonical S21 remains byte-stable and is the fixed floor for new variants.
 - New prompts use only generic English and runtime project data.
 - Agentic recovery is bounded: a controller selects tools but cannot emit links.
+- Report macro and pooled F1/F2; S24 must exceed fresh S21 F2 without lowering
+  either F1 aggregate.
 
 ## Spikes
 
@@ -24,3 +26,4 @@ Transform `s_linker12c` from a hybrid (structural-rule gate + LLM verify) pipeli
 | 008 | s24-semantic-appeal | standard | Semantic reconsideration of all S21-rejected grounded candidates without heuristic eligibility rules | ✗ INVALIDATED — 7 TP / 12 FP, then 5 TP / 6 FP after identity/ownership structuring; below dynamic S24 and wrong refine-not-replace architecture | s24, error-analysis, appeal, no-magic |
 | 009 | s24-replacement-orchestrator | standard | Project-profile controller replaces S21's fixed workflow by selecting existing phase tools plus semantic coverage audit | ✓ VALIDATED performance — participation audit: macro F2 +3.92pp and pooled F2 +4.87pp vs S21; macro F1 +1.16pp; same route on all projects, so route diversity is not validated | s24, replacement, orchestration, phase-tools, no-magic |
 | 010 | s24-relation-role-routing | standard | Fresh project-profile controller selects non-overlapping relation/role capability from exact evidence and produces project-specific workflows | ✓ VALIDATED — 3 workflows; macro F2 92.70→93.95, pooled F2 89.69→92.21 vs fresh S21; recall +6.67pp | s24, replacement, dynamic-workflow, relation-role, fresh-run |
+| 011 | s24-f1-constrained-routing | comparison | Ownership-aligned entity and project-context handle review retain S24's F2 gain while macro and pooled F1 do not fall below fresh S21 | ✓ VALIDATED — macro F1 +0.80pp, pooled F1 +1.63pp, macro F2 +0.85pp, pooled F2 +1.89pp | s24, precision, f1, f2, ownership, no-magic |

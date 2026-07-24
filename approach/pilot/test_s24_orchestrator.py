@@ -252,6 +252,7 @@ def test_role_handle_application_is_structural():
     ] == [(1, "HTML5 Client")]
     assert not linker._find_handle("The tests pass.", "Test")
     assert not linker._find_handle("The bbb-html5 process starts.", "bbb")
+    assert not linker._find_handle("The test.driver package.", "driver")
 
 
 def test_role_tool_is_available_only_with_document_handle_evidence():
@@ -275,6 +276,81 @@ def test_role_tool_is_available_only_with_document_handle_evidence():
     assert "coverage_audit" not in linker.PHASE_TOOLS
 
 
+def test_role_variant_entity_ownership_is_name_or_approved_alias():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    linker.doc_knowledge = SimpleNamespace(
+        aliases={
+            "data store": SimpleNamespace(
+                component="Database", scope="global"
+            )
+        }
+    )
+    candidates = [
+        SimpleNamespace(
+            component_name="Database",
+            sentence_text="The Database stores records.",
+        ),
+        SimpleNamespace(
+            component_name="Database",
+            sentence_text="The data store persists records.",
+        ),
+        SimpleNamespace(
+            component_name="Database",
+            sentence_text="Records are persisted.",
+        ),
+    ]
+    assert linker._select_entity_candidates(candidates, {}) == candidates[:2]
+
+
+def test_role_context_review_uses_project_anchors():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    linker.doc_knowledge = SimpleNamespace(aliases={})
+    candidates = [
+        SimpleNamespace(
+            sentence_number=2,
+            component_id="backend",
+            component_name="HTML Backend",
+            matched_text="backend",
+            sentence_text="The backend handles requests.",
+        ),
+        SimpleNamespace(
+            sentence_number=3,
+            component_id="backend",
+            component_name="HTML Backend",
+            matched_text="backend",
+            sentence_text="The database backend is external.",
+        ),
+    ]
+    seen = {}
+
+    def ask(prompt, **_kwargs):
+        seen["prompt"] = prompt
+        return {
+            "judgments": [
+                {"case": 1, "keep": True, "referent": "HTML Backend"},
+                {"case": 2, "keep": False, "referent": "database engine"},
+            ]
+        }
+
+    linker._ask = ask
+    approved, decisions = linker._review_role_candidates(
+        candidates,
+        [
+            Sentence(1, "The HTML Backend is the request service."),
+            Sentence(2, "The backend handles requests."),
+            Sentence(3, "The database backend is external."),
+        ],
+    )
+    assert approved == candidates[:1]
+    assert decisions[(2, "backend")]["approved"] is True
+    assert decisions[(3, "backend")]["approved"] is False
+    assert "The HTML Backend is the request service." in seen["prompt"]
+
+
 if __name__ == "__main__":
     test_controller_is_limited_by_available_capabilities()
     test_audit_grounding_is_structural_only()
@@ -284,4 +360,6 @@ if __name__ == "__main__":
     test_role_handles_come_from_unique_compound_name_parts()
     test_role_handle_application_is_structural()
     test_role_tool_is_available_only_with_document_handle_evidence()
+    test_role_variant_entity_ownership_is_name_or_approved_alias()
+    test_role_context_review_uses_project_anchors()
     print("PASS: SLinker24Orchestrator contracts")

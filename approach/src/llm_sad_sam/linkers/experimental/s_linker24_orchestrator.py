@@ -376,7 +376,9 @@ Return JSON only:
         candidates_by_key = self._run_framing_c(
             sentences, components, name_to_id, sent_map
         )
-        candidates = list(candidates_by_key.values())
+        candidates = self._select_entity_candidates(
+            list(candidates_by_key.values()), sent_map
+        )
         bundles = {
             (candidate.sentence_number, candidate.component_id):
                 self._build_evidence_bundle(candidate, sent_map)
@@ -416,6 +418,10 @@ Return JSON only:
             "accepted": self._link_view(links, sent_map),
             "validator_decisions": self._decision_view(decisions),
         }
+
+    def _select_entity_candidates(self, candidates, sent_map):
+        """Return the candidates owned by this variant's entity capability."""
+        return candidates
 
     def _run_coreference_tool(
         self, sentences, components, name_to_id, sent_map
