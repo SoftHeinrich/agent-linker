@@ -1,0 +1,1111 @@
+{
+  "bigbluebutton": {
+    "s_linker24_role_orchestrator": {
+      "variant": "s_linker24_role_orchestrator",
+      "P": 0.9322033898305084,
+      "R": 0.8870967741935484,
+      "F1": 0.9090909090909092,
+      "F2": 0.8957654723127035,
+      "tp": 55,
+      "fp": 4,
+      "fn": 7,
+      "n_links": 59,
+      "time": 63.91038990020752,
+      "sources": {
+        "entity": 45,
+        "s24_entity_orthographic": 2,
+        "coreference": 4,
+        "s24_relation_role": 8
+      },
+      "fp_by_source": {
+        "entity": 4
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "bbb-web splits the load in round-robin fashion",
+            "converted into scalable vector graphics (SVG) via bbb-web"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "entity orthographic identity evidence for BBB web",
+          "reason": "Exact document orthographic candidates for a catalog component remain unresolved; run the entity pipeline first.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 4,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 5,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 8,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 9,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 21,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 26,
+                "component": "Apps"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 46,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 47,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 48,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 49,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 50,
+                "component": "Recording Service"
+              },
+              {
+                "sentence": 51,
+                "component": "Apps"
+              },
+              {
+                "sentence": 52,
+                "component": "Apps"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 57,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 58,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 59,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "Apps"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 61,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 62,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 63,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 66,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 67,
+                "component": "kurento"
+              },
+              {
+                "sentence": 67,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 68,
+                "component": "kurento"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              },
+              {
+                "sentence": 70,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 72,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 72,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 79,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 80,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 81,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 30,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 78,
+                "component": "BBB web"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "These connections are all handled by nginx.",
+            "This process would start to bottleneck",
+            "This means that bbb-html5 could use multiple CPU cores",
+            "This is where information about the meeting is stored"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "pronoun, demonstrative, and anaphoric reference resolution",
+          "reason": "Coreferential expressions remain in the document and require the dedicated resolver before relation-role resolution and finalization.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 11,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 38,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 53,
+                "component": "Apps"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 7,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 29,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 56,
+                "component": "Apps"
+              },
+              {
+                "sentence": 59,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 62,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 63,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 66,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              },
+              {
+                "sentence": 70,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              }
+            ]
+          }
+        },
+        {
+          "action": "relation_role_resolution",
+          "evidence_quotes": [
+            "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+            "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams."
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "unique terminal participant nouns from compound catalog names through grounded local discourse evidence",
+          "reason": "Entity identity and coreference processing are complete; grounded role-handle evidence remains for resolving compound-name terminal participants.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 10,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 10,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Client"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 68,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 18,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 39,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 47,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 68,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 82,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 83,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 84,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 5,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 6,
+                "component": "BBB web"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "llm_calls": 26
+    }
+  },
+  "teammates": {
+    "s_linker24_role_orchestrator": {
+      "variant": "s_linker24_role_orchestrator",
+      "P": 0.9137931034482759,
+      "R": 0.9298245614035088,
+      "F1": 0.9217391304347825,
+      "F2": 0.9265734265734266,
+      "tp": 53,
+      "fp": 5,
+      "fn": 4,
+      "n_links": 58,
+      "time": 64.71069884300232,
+      "sources": {
+        "entity": 48,
+        "coreference": 7,
+        "s24_relation_role": 3
+      },
+      "fp_by_source": {
+        "entity": 4,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 4,
+          "component": "UI",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "UI Component",
+            "Logic Component",
+            "Storage Component",
+            "Common Component",
+            "Test Driver Component",
+            "E2E Component",
+            "Client Component",
+            "GAE Datastore"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "exact catalog-name, approved-alias, and catalog-equivalent orthographic identity evidence",
+          "reason": "Exact component names and the approved aliases E2E and GAE occur in the document; identity evidence should be processed before anaphoric or role-resolution evidence.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "UI"
+              },
+              {
+                "sentence": 1,
+                "component": "Logic"
+              },
+              {
+                "sentence": 1,
+                "component": "Storage"
+              },
+              {
+                "sentence": 1,
+                "component": "Common"
+              },
+              {
+                "sentence": 1,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 1,
+                "component": "E2E"
+              },
+              {
+                "sentence": 1,
+                "component": "Client"
+              },
+              {
+                "sentence": 5,
+                "component": "UI"
+              },
+              {
+                "sentence": 7,
+                "component": "UI"
+              },
+              {
+                "sentence": 9,
+                "component": "Storage"
+              },
+              {
+                "sentence": 9,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 10,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 15,
+                "component": "E2E"
+              },
+              {
+                "sentence": 18,
+                "component": "Client"
+              },
+              {
+                "sentence": 20,
+                "component": "Common"
+              },
+              {
+                "sentence": 25,
+                "component": "UI"
+              },
+              {
+                "sentence": 29,
+                "component": "UI"
+              },
+              {
+                "sentence": 47,
+                "component": "Logic"
+              },
+              {
+                "sentence": 68,
+                "component": "Logic"
+              },
+              {
+                "sentence": 77,
+                "component": "Logic"
+              },
+              {
+                "sentence": 81,
+                "component": "UI"
+              },
+              {
+                "sentence": 85,
+                "component": "Logic"
+              },
+              {
+                "sentence": 85,
+                "component": "UI"
+              },
+              {
+                "sentence": 87,
+                "component": "Logic"
+              },
+              {
+                "sentence": 88,
+                "component": "Logic"
+              },
+              {
+                "sentence": 88,
+                "component": "Storage"
+              },
+              {
+                "sentence": 97,
+                "component": "UI"
+              },
+              {
+                "sentence": 97,
+                "component": "Logic"
+              },
+              {
+                "sentence": 101,
+                "component": "Storage"
+              },
+              {
+                "sentence": 118,
+                "component": "Storage"
+              },
+              {
+                "sentence": 122,
+                "component": "Logic"
+              },
+              {
+                "sentence": 123,
+                "component": "Storage"
+              },
+              {
+                "sentence": 125,
+                "component": "Storage"
+              },
+              {
+                "sentence": 128,
+                "component": "Storage"
+              },
+              {
+                "sentence": 129,
+                "component": "Logic"
+              },
+              {
+                "sentence": 131,
+                "component": "Storage"
+              },
+              {
+                "sentence": 131,
+                "component": "Logic"
+              },
+              {
+                "sentence": 137,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 155,
+                "component": "Common"
+              },
+              {
+                "sentence": 163,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 174,
+                "component": "Common"
+              },
+              {
+                "sentence": 175,
+                "component": "Common"
+              },
+              {
+                "sentence": 176,
+                "component": "Logic"
+              },
+              {
+                "sentence": 177,
+                "component": "Storage"
+              },
+              {
+                "sentence": 185,
+                "component": "E2E"
+              },
+              {
+                "sentence": 186,
+                "component": "E2E"
+              },
+              {
+                "sentence": 188,
+                "component": "E2E"
+              },
+              {
+                "sentence": 194,
+                "component": "Client"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 8,
+                "component": "Logic"
+              },
+              {
+                "sentence": 16,
+                "component": "E2E"
+              },
+              {
+                "sentence": 17,
+                "component": "E2E"
+              },
+              {
+                "sentence": 58,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 62,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 69,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 73,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 74,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 94,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 139,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 144,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 160,
+                "component": "Common"
+              },
+              {
+                "sentence": 192,
+                "component": "E2E"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "Its primary function is for E2E tests.",
+            "This component automates the testing of TEAMMATES."
+          ],
+          "discarded_evidence_quotes": [
+            "It is used for administrative purposes."
+          ],
+          "unresolved_obligation": "pronoun, demonstrative, and anaphoric reference resolution",
+          "reason": "Anaphoric expressions remain unresolved after exact-name identity linking; rejected entity evidence will not be retried.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 5,
+                "component": "UI"
+              },
+              {
+                "sentence": 16,
+                "component": "E2E"
+              },
+              {
+                "sentence": 19,
+                "component": "Client"
+              },
+              {
+                "sentence": 78,
+                "component": "Logic"
+              },
+              {
+                "sentence": 85,
+                "component": "UI"
+              },
+              {
+                "sentence": 88,
+                "component": "Storage"
+              },
+              {
+                "sentence": 96,
+                "component": "Logic"
+              },
+              {
+                "sentence": 119,
+                "component": "Storage"
+              },
+              {
+                "sentence": 120,
+                "component": "Storage"
+              },
+              {
+                "sentence": 125,
+                "component": "Storage"
+              },
+              {
+                "sentence": 168,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 186,
+                "component": "E2E"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 3,
+                "component": "UI"
+              },
+              {
+                "sentence": 3,
+                "component": "Logic"
+              },
+              {
+                "sentence": 3,
+                "component": "Storage"
+              },
+              {
+                "sentence": 3,
+                "component": "Common"
+              },
+              {
+                "sentence": 3,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 3,
+                "component": "E2E"
+              },
+              {
+                "sentence": 3,
+                "component": "Client"
+              },
+              {
+                "sentence": 30,
+                "component": "UI"
+              },
+              {
+                "sentence": 62,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 63,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 64,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 69,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 70,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 81,
+                "component": "UI"
+              },
+              {
+                "sentence": 83,
+                "component": "Logic"
+              },
+              {
+                "sentence": 85,
+                "component": "Logic"
+              },
+              {
+                "sentence": 92,
+                "component": "Logic"
+              },
+              {
+                "sentence": 94,
+                "component": "Logic"
+              },
+              {
+                "sentence": 97,
+                "component": "UI"
+              },
+              {
+                "sentence": 97,
+                "component": "Logic"
+              },
+              {
+                "sentence": 121,
+                "component": "Storage"
+              },
+              {
+                "sentence": 122,
+                "component": "Logic"
+              },
+              {
+                "sentence": 123,
+                "component": "Storage"
+              },
+              {
+                "sentence": 128,
+                "component": "Storage"
+              },
+              {
+                "sentence": 129,
+                "component": "Logic"
+              },
+              {
+                "sentence": 131,
+                "component": "Storage"
+              },
+              {
+                "sentence": 131,
+                "component": "Logic"
+              },
+              {
+                "sentence": 163,
+                "component": "Test Driver"
+              },
+              {
+                "sentence": 174,
+                "component": "Common"
+              },
+              {
+                "sentence": 175,
+                "component": "Common"
+              },
+              {
+                "sentence": 176,
+                "component": "Logic"
+              },
+              {
+                "sentence": 177,
+                "component": "Storage"
+              },
+              {
+                "sentence": 194,
+                "component": "Client"
+              }
+            ]
+          }
+        },
+        {
+          "action": "relation_role_resolution",
+          "evidence_quotes": [
+            "Driver",
+            "Datastore"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "resolve unique terminal participant nouns from compound catalog names through grounded local discourse evidence",
+          "reason": "The unresolved role-handle evidence maps \u201cDriver\u201d uniquely to Test Driver and \u201cDatastore\u201d uniquely to GAE Datastore; neither relies on rejected evidence.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 122,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 138,
+                "component": "GAE Datastore"
+              },
+              {
+                "sentence": 141,
+                "component": "GAE Datastore"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "llm_calls": 43
+    }
+  }
+}

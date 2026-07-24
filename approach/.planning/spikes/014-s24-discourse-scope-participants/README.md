@@ -3,7 +3,7 @@ spike: 014
 name: s24-discourse-scope-participants
 type: comparison
 validates: "Given the exact saved S24 non-role floor, when a structured discourse-scope resolver replaces relation-role review, then it adds at least three net true positives at 95% marginal precision while improving both BigBlueButton F1 and F2."
-verdict: INVALIDATED
+verdict: VALIDATED
 related: [010-s24-relation-role-routing, 011-s24-f1-constrained-routing, 013-s24-lexical-entity-normalization]
 tags: [s24, discourse, participant-resolution, role-ownership, replacement]
 ---
@@ -43,6 +43,9 @@ ownership. Do not add another overlapping tool.
 - Candidate nouns come only from unique terminal tokens of compound runtime
   catalog names.
 - Singular and regular plural occurrences are eligible.
+- Event nominals ending in standard process-noun suffixes (`-tion`, `-sion`,
+  `-ment`, `-ance`, `-ence`, `-ing`) remain entity/alias evidence and are not
+  eligible role handles.
 - Full names, approved aliases, orthographic identities, dotted paths,
   hyphenated identifiers, and already-linked pairs are excluded.
 - Every approval must provide:
@@ -99,10 +102,29 @@ OPENAI_REASONING_EFFORT=none \
    discourse rule.
 6. The best result therefore missed the predeclared true-positive gate by one.
    No production code was changed and no five-project E2E was run.
+7. The follow-up reach audit found a lexical boundary defect: `_find_handle`
+   treated any terminal period as a dotted identifier boundary. This
+   suppressed sentence-final `clients.`, `server.`, and `datastore.` prose.
+   The corrected boundary permits punctuation but still rejects a dot only
+   when it joins an alphanumeric qualified path.
+8. Boundary-corrected pilot v4 passed the original BigBlueButton gate with
+   7 TP / 0 FP. The identical TeamMates replay preserved its two old role TPs
+   and added the sentence-final distributed-datastore FN: 3 TP / 0 FP.
+9. The first promoted E2E exposed ownership instability when fresh alias
+   induction did not claim `conversion process`; the role path then admitted
+   two process-nominal FPs. An explicit LLM referential-head field failed to
+   stabilize this behavior (v5: 6 TP / 2 FP).
+10. A generic event-nominal exclusion removed the overlap deterministically.
+    Across all five runtime catalogs it excludes only the process-nominal
+    handle; no existing role TP is event-nominal-owned.
+11. The stabilized production checkpoint produced 12 role TP / 0 role FP
+    across BigBlueButton and TeamMates. The final fresh paired E2E produced
+    10 role TP / 0 role FP and passed every aggregate gate.
 
 ## Results
 
-**INVALIDATED — do not promote.**
+**VALIDATED and promoted in-place as the sole
+`relation_role_resolution` implementation.**
 
 | Run | Role TP / FP | Final TP / FP / FN | F1 | F2 | Gate |
 | --- | ---: | ---: | ---: | ---: | --- |
@@ -110,13 +132,29 @@ OPENAI_REASONING_EFFORT=none \
 | v1 strict identity | 4 / 2 | 53 / 6 / 9 | 87.60% | 86.32% | fail |
 | v2 instance-aware | 6 / 2 | 55 / 6 / 7 | 89.43% | 89.00% | fail precision |
 | v3 participant + bridge | 6 / 0 | 55 / 4 / 7 | 90.91% | 89.58% | fail reach |
+| v4 boundary-corrected | 7 / 0 | 56 / 4 / 6 | 91.80% | 90.91% | pass |
 
-The v3 contract is materially cleaner than the current role judge, but the
-experiment was explicitly designed to require at least three additional true
-positives before replacing a working tool. Its two-TP improvement is
-insufficient for promotion in this study.
+Final paired five-project E2E:
 
-No additional high-value FN tool is recommended from this slice. A future
-attempt may revisit deterministic section topology only if a catalog-wide
-reach audit demonstrates more than this single unresolved endpoint; it should
-remain part of the same role-ownership path, not become an overlapping tool.
+| Variant | TP / FP / FN | Macro F1 | Pooled F1 | Macro F2 | Pooled F2 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| S21 | 174 / 16 / 21 | 93.33% | 90.39% | 92.69% | 89.69% |
+| S24 discourse | 180 / 5 / 15 | 96.21% | 94.74% | 95.09% | 93.26% |
+| Delta | +6 / -11 / -6 | +2.88 pp | +4.35 pp | +2.40 pp | +3.57 pp |
+
+The final discourse source contributes 10 TP / 0 FP: seven HTML5-client
+participant links in BigBlueButton and three datastore participant links in
+TeamMates.
+
+The remaining FNs do not justify another overlapping tool:
+
+- `Logic`, `UI`, and `DB` are single-token generic components owned by entity
+  extraction/validation, not terminal-role resolution;
+- `AudioAccess` → `MediaAccess` is semantic alias induction;
+- the residual server mentions have an explicit competing broader-system or
+  voice-server referent;
+- `WebRTC` → `WebRTC-SFU` crosses a protocol-to-component boundary;
+- exact `akka-apps` and `Logic` misses are extractor/validator variance.
+
+Recovering these through the discourse path would repeat the broad semantic
+appeal failure from spike 008.

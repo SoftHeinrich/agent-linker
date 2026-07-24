@@ -63,6 +63,14 @@ Runtime files retained on this branch:
   when an `acm_path` kwarg is supplied, judged doc->code links land in
   `self.code_links` via `DirectCodeLinker`/`DirectLinkJudge` (not yet plumbed
   by `run_ablation.py`'s current `DATASETS` dict — future work).
+- `src/llm_sad_sam/linkers/experimental/s_linker24_role_orchestrator.py` —
+  the sole retained S24 orchestrator. Its entity path owns exact names,
+  approved aliases, and catalog-equivalent orthographic identities. Its
+  relation-role path owns unique terminal participant nouns, including regular
+  plurals and sentence-final punctuation, and requires section, identity,
+  bridge, claim, role, and competing-referent evidence. Event nominals remain
+  entity/alias-owned. Final fresh five-project E2E: 180 TP / 5 FP / 15 FN;
+  role source 10 TP / 0 FP. Spike 014 contains the full audit.
 - `src/llm_sad_sam/linkers/experimental/{helper_v3,ilinker3,__init__}.py`
 - `src/llm_sad_sam/core/` — `data_types`, `data_types_v2`, `document_loader`,
   `document_loader_v2`, `model_analyzer`

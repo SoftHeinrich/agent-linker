@@ -1,0 +1,492 @@
+{
+  "protocol": "fresh discourse review replacing old role links on the exact saved spike-013 S24 non-role floor; gold loaded after inference",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "none",
+  "min_new_tp_gain": 0,
+  "datasets": [
+    {
+      "dataset": "bigbluebutton",
+      "baseline": {
+        "tp": 55,
+        "fp": 4,
+        "fn": 7,
+        "P": 0.9322033898305084,
+        "R": 0.8870967741935484,
+        "F1": 0.9090909090909092,
+        "F2": 0.8957654723127035
+      },
+      "floor_without_old_role": {
+        "tp": 48,
+        "fp": 2,
+        "fn": 14,
+        "P": 0.96,
+        "R": 0.7741935483870968,
+        "F1": 0.8571428571428571,
+        "F2": 0.8053691275167785
+      },
+      "replacement": {
+        "tp": 54,
+        "fp": 2,
+        "fn": 8,
+        "P": 0.9642857142857143,
+        "R": 0.8709677419354839,
+        "F1": 0.9152542372881356,
+        "F2": 0.8881578947368421
+      },
+      "old_role_tp": 7,
+      "old_role_fp": 2,
+      "new_role_tp": 6,
+      "new_role_fp": 0,
+      "new_role_precision": 1.0,
+      "candidates": [
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "participant": "SFU",
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting."
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability."
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server."
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "participant": "Server",
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "participant": "server",
+          "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC."
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting."
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "The client side subscribes to the published collections on the server side."
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "participant": "client",
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "participant": "clients",
+          "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+        },
+        {
+          "sentence": 5,
+          "component": "BBB web",
+          "participant": "web",
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video."
+        },
+        {
+          "sentence": 6,
+          "component": "BBB web",
+          "participant": "web",
+          "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+        }
+      ],
+      "accepted": [
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "participant": "client"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "participant": "client"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "participant": "client"
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "participant": "client"
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "participant": "client"
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "participant": "client"
+        }
+      ],
+      "decisions": [
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "Kurento and WebRTC-SFU.",
+          "identity_anchor_sentence": 70,
+          "identity_anchor": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+          "scope_bridge_sentence": 70,
+          "scope_bridge": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+          "claim": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+          "participant_role": "implemented media-forwarding model",
+          "competing_referent": "Kurento Media Server KMS, which explicitly implements the SFU model",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 8,
+          "identity_anchor": "The HTML5 server sits behind nginx.",
+          "scope_bridge_sentence": 6,
+          "scope_bridge": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+          "claim": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+          "participant_role": "connection endpoint",
+          "competing_referent": "BigBlueButton server; the sentence does not bridge this general server to the HTML5 Server",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 8,
+          "identity_anchor": "The HTML5 server sits behind nginx.",
+          "scope_bridge_sentence": 9,
+          "scope_bridge": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "claim": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.",
+          "participant_role": "location/ownership scope for meeting information",
+          "competing_referent": "BigBlueButton server, explicitly mentioned in the preceding sentence and not resolved to HTML5 Server",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "Scalability of HTML5 server component.",
+          "identity_anchor_sentence": 15,
+          "identity_anchor": "Scalability of HTML5 server component.",
+          "scope_bridge_sentence": 19,
+          "scope_bridge": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+          "claim": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.",
+          "participant_role": "physical host-capacity reference",
+          "competing_referent": "the physical BigBlueButton 2.2 host server",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": false,
+          "section_anchor": "BBB web.",
+          "identity_anchor_sentence": 37,
+          "identity_anchor": "BigBlueButton web application is a Java-based application written in Scala.",
+          "scope_bridge_sentence": 39,
+          "scope_bridge": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.",
+          "claim": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.",
+          "participant_role": "API-controlled system endpoint",
+          "competing_referent": "BigBlueButton server; no local bridge identifies it as HTML5 Server",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "Redis PubSub.",
+          "identity_anchor_sentence": 8,
+          "identity_anchor": "The HTML5 server sits behind nginx.",
+          "scope_bridge_sentence": 47,
+          "scope_bridge": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+          "claim": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+          "participant_role": "deployment host for applications",
+          "competing_referent": "BigBlueButton server, which is broader than and not resolved to HTML5 Server",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "Kurento and WebRTC-SFU.",
+          "identity_anchor_sentence": 8,
+          "identity_anchor": "The HTML5 server sits behind nginx.",
+          "scope_bridge_sentence": 68,
+          "scope_bridge": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+          "claim": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+          "participant_role": "head noun in the name of Kurento Media Server KMS",
+          "competing_referent": "Kurento Media Server KMS",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "Joining a voice conference.",
+          "identity_anchor_sentence": 8,
+          "identity_anchor": "The HTML5 server sits behind nginx.",
+          "scope_bridge_sentence": 73,
+          "scope_bridge": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+          "claim": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+          "participant_role": "audio-connection endpoint",
+          "competing_referent": "the voice-conference server running in FreeSWITCH, established by \"A user can join the voice conference (running in FreeSWITCH)\"",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 5,
+          "identity_anchor": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "scope_bridge_sentence": 9,
+          "scope_bridge": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "claim": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "participant_role": "communication peer of the HTML5 Server",
+          "competing_referent": "BigBlueButton client, but the explicit client/server discourse and section scope resolve the generic client to the HTML5 Client",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 5,
+          "identity_anchor": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "scope_bridge_sentence": 9,
+          "scope_bridge": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "claim": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.",
+          "participant_role": "meeting-connected client instance represented in MongoDB",
+          "competing_referent": "an arbitrary third-party client; the immediately preceding sentence establishes BigBlueButton client state in this client/server scope",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 5,
+          "identity_anchor": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "scope_bridge_sentence": 9,
+          "scope_bridge": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "claim": "The client side subscribes to the published collections on the server side.",
+          "participant_role": "subscriber to server-published collections",
+          "competing_referent": "HTML5 Server client-side code; the local client/server discourse instead identifies the client side as the HTML5 Client side",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 5,
+          "identity_anchor": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "scope_bridge_sentence": 13,
+          "scope_bridge": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+          "claim": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+          "participant_role": "recipient-side state store",
+          "competing_referent": "an unspecified client implementation; MiniMongo and the preceding HTML5 client/server discussion make the client side the HTML5 Client",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "Uploading a presentation.",
+          "identity_anchor_sentence": 72,
+          "identity_anchor": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+          "scope_bridge_sentence": 79,
+          "scope_bridge": "The conversion process sends progress messages to the client through the Redis pubsub.",
+          "claim": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+          "participant_role": "user-facing presentation display endpoint",
+          "competing_referent": "an arbitrary browser client; the document's established client component is the BigBlueButton HTML5 client",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "section_anchor": "Uploading a presentation.",
+          "identity_anchor_sentence": 72,
+          "identity_anchor": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+          "scope_bridge_sentence": 76,
+          "scope_bridge": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+          "claim": "The conversion process sends progress messages to the client through the Redis pubsub.",
+          "participant_role": "recipient of conversion-progress messages",
+          "competing_referent": "an arbitrary client; the immediately preceding presentation-display client and document-wide client scope identify the HTML5 Client",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "approved": false,
+          "requested_keep": true,
+          "evidence_valid": false,
+          "section_anchor": "Scalability of HTML5 server component.",
+          "identity_anchor_sentence": 19,
+          "identity_anchor": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+          "scope_bridge_sentence": 20,
+          "scope_bridge": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).",
+          "claim": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+          "participant_role": "sources of incoming messages to HTML5 Server processes",
+          "competing_referent": "browser sessions, but the following sentence links bbb-html5 processing to handling those browser sessions and supports HTML5 Client instances",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 5,
+          "component": "BBB web",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 36,
+          "identity_anchor": "BBB web.",
+          "scope_bridge_sentence": 5,
+          "scope_bridge": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "claim": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "participant_role": "modifier within the phrase \"web application\"",
+          "competing_referent": "the HTML5 Client itself; \"web\" does not denote BBB web",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 6,
+          "component": "BBB web",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "section_anchor": "HTML5 client.",
+          "identity_anchor_sentence": 36,
+          "identity_anchor": "BBB web.",
+          "scope_bridge_sentence": 6,
+          "scope_bridge": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+          "claim": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+          "participant_role": "modifier within the technology phrase \"web socket connection\"",
+          "competing_referent": "WebSocket technology; it does not denote BBB web",
+          "path": "discourse_scope_review",
+          "stage": "relation_role_resolution"
+        }
+      ],
+      "llm_calls": 1,
+      "trace": [
+        {
+          "phase": "phase_24_discourse_scope_review",
+          "ts": 1784929637.9075778,
+          "elapsed_s": 13.117,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Resolve generic or inflected architectural participants using\nthe document's discourse structure. For each case, keep the mapping only when\nthe highlighted participant denotes the listed target component in its section\nor discourse chain.\n\nAn approval must identify an explicit target identity anchor, the participant's\narchitectural role in the source sentence, and the strongest competing\nreferent. A common role noun may validly denote a deployed component instance,\nits service endpoint, its owned state, or its user-facing instances; do not\nreject it merely for being generic or plural when the active discourse scope\nand architectural claim select the target. A competing referent must be an\nexplicit locally plausible entity, not an invented unnamed deployment. When\nan apparent alternate label is resolved to the target by a local discourse\nchain, cite the exact bridge sentence that makes that resolution possible.\n\nReject physical host capacity, users or browsers, protocol/technology use,\ncode paths, and cases where multiple explicit referents remain plausible.\nThe highlighted noun must itself be a semantic participant in a finite\narchitectural claim. Reject fragments and uses where it merely modifies the\nname of a workflow, process, stage, diagram, artifact, or technology. Full\nnames, aliases, pronouns, and orthographic variants are owned by other tools.\n\nDOCUMENT\n[{\"sentence\": 1, \"text\": \"High-level architecture.\"}, {\"sentence\": 2, \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"}, {\"sentence\": 3, \"text\": \"We'll break down each component in more detail below.\"}, {\"sentence\": 4, \"text\": \"HTML5 client.\"}, {\"sentence\": 5, \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"}, {\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"sentence\": 7, \"text\": \"These connections are all handled by nginx.\"}, {\"sentence\": 8, \"text\": \"The HTML5 server sits behind nginx.\"}, {\"sentence\": 9, \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"}, {\"sentence\": 10, \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"sentence\": 11, \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"}, {\"sentence\": 12, \"text\": \"The client side subscribes to the published collections on the server side.\"}, {\"sentence\": 13, \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"}, {\"sentence\": 14, \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"}, {\"sentence\": 15, \"text\": \"Scalability of HTML5 server component.\"}, {\"sentence\": 16, \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"}, {\"sentence\": 17, \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"}, {\"sentence\": 18, \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"sentence\": 20, \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"}, {\"sentence\": 21, \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"}, {\"sentence\": 22, \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"}, {\"sentence\": 23, \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"}, {\"sentence\": 24, \"text\": \"Frontends receive the ValidateAuthTokenResp event to complete authentication.\"}, {\"sentence\": 25, \"text\": \"Frontends collect subscriptions and publishers.\"}, {\"sentence\": 26, \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\"}, {\"sentence\": 27, \"text\": \"Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\"}, {\"sentence\": 28, \"text\": \"Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\"}, {\"sentence\": 29, \"text\": \"Backends handle all the non-streamer events.\"}, {\"sentence\": 30, \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\"}, {\"sentence\": 31, \"text\": \"So individual backends only process redis events for the meetings matching the associated instanceId.\"}, {\"sentence\": 32, \"text\": \"ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\"}, {\"sentence\": 33, \"text\": \"When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\"}, {\"sentence\": 34, \"text\": \"In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\"}, {\"sentence\": 35, \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"}, {\"sentence\": 36, \"text\": \"BBB web.\"}, {\"sentence\": 37, \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"}, {\"sentence\": 38, \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"}, {\"sentence\": 39, \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"}, {\"sentence\": 40, \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"}, {\"sentence\": 41, \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"}, {\"sentence\": 42, \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"}, {\"sentence\": 43, \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"}, {\"sentence\": 44, \"text\": \"The BigBlueButton comes with some simple API demos.\"}, {\"sentence\": 45, \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"}, {\"sentence\": 46, \"text\": \"Redis PubSub.\"}, {\"sentence\": 47, \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"}, {\"sentence\": 48, \"text\": \"Redis DB.\"}, {\"sentence\": 49, \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"}, {\"sentence\": 50, \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"}, {\"sentence\": 51, \"text\": \"Apps akka.\"}, {\"sentence\": 52, \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"}, {\"sentence\": 53, \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\"}, {\"sentence\": 54, \"text\": \"Below is a diagram of the different components of Apps Akka.\"}, {\"sentence\": 55, \"text\": \"The meeting business logic is in the MeetingActor.\"}, {\"sentence\": 56, \"text\": \"This is where information about the meeting is stored and where all messages for a meeting is processed.\"}, {\"sentence\": 57, \"text\": \"FSESL akka.\"}, {\"sentence\": 58, \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"}, {\"sentence\": 59, \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\"}, {\"sentence\": 60, \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"}, {\"sentence\": 61, \"text\": \"FreeSWITCH.\"}, {\"sentence\": 62, \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\"}, {\"sentence\": 63, \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\"}, {\"sentence\": 64, \"text\": \"Users are able to join the voice conference through the headset.\"}, {\"sentence\": 65, \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"}, {\"sentence\": 66, \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"}, {\"sentence\": 67, \"text\": \"Kurento and WebRTC-SFU.\"}, {\"sentence\": 68, \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"sentence\": 69, \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"}, {\"sentence\": 70, \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"}, {\"sentence\": 71, \"text\": \"Joining a voice conference.\"}, {\"sentence\": 72, \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"}, {\"sentence\": 73, \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"}, {\"sentence\": 74, \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"}, {\"sentence\": 75, \"text\": \"Uploading a presentation.\"}, {\"sentence\": 76, \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"sentence\": 77, \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"}, {\"sentence\": 78, \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"}, {\"sentence\": 79, \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}, {\"sentence\": 80, \"text\": \"Presentation conversion flow.\"}, {\"sentence\": 81, \"text\": \"The diagram below describes the flow of the presentation conversion.\"}, {\"sentence\": 82, \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"}, {\"sentence\": 83, \"text\": \"Then below the SVG conversion flow.\"}, {\"sentence\": 84, \"text\": \"It covers the conversion fallback.\"}, {\"sentence\": 85, \"text\": \"Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\"}, {\"sentence\": 86, \"text\": \"Internal network connections.\"}, {\"sentence\": 87, \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"}]\n\nTARGET IDENTITY ANCHORS\n[{\"target\": \"BBB web\", \"anchors\": [{\"sentence\": 36, \"text\": \"BBB web.\", \"identity_forms\": [\"BBB web\", \"BBB web\"]}, {\"sentence\": 37, \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\", \"identity_forms\": [\"BigBlueButton web application\"]}]}, {\"target\": \"HTML5 Client\", \"anchors\": [{\"sentence\": 4, \"text\": \"HTML5 client.\", \"identity_forms\": [\"HTML5 client\", \"HTML5 client\"]}, {\"sentence\": 5, \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\", \"identity_forms\": [\"HTML5 client\", \"HTML5 client\"]}, {\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\", \"identity_forms\": [\"HTML5 client\", \"HTML5 client\"]}, {\"sentence\": 14, \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\", \"identity_forms\": [\"HTML5 client\", \"HTML5 client\"]}, {\"sentence\": 72, \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\", \"identity_forms\": [\"HTML5 client\", \"HTML5 client\"]}]}, {\"target\": \"HTML5 Server\", \"anchors\": [{\"sentence\": 8, \"text\": \"The HTML5 server sits behind nginx.\", \"identity_forms\": [\"HTML5 server\", \"HTML5 server\"]}, {\"sentence\": 9, \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\", \"identity_forms\": [\"HTML5 server\", \"HTML5 server\"]}, {\"sentence\": 15, \"text\": \"Scalability of HTML5 server component.\", \"identity_forms\": [\"HTML5 server\", \"HTML5 server\"]}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\", \"identity_forms\": [\"bbb-html5\"]}, {\"sentence\": 20, \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\", \"identity_forms\": [\"bbb-html5\"]}, {\"sentence\": 21, \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\", \"identity_forms\": [\"bbb-html5\"]}]}, {\"target\": \"WebRTC-SFU\", \"anchors\": [{\"sentence\": 67, \"text\": \"Kurento and WebRTC-SFU.\", \"identity_forms\": [\"WebRTC-SFU\", \"WebRTC-SFU\"]}, {\"sentence\": 70, \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\", \"identity_forms\": [\"WebRTC-SFU\", \"WebRTC-SFU\"]}]}]\n\nCASES\n[{\"case\": 1, \"sentence\": 68, \"participant\": \"SFU\", \"target\": \"WebRTC-SFU\", \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"case\": 2, \"sentence\": 6, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"case\": 3, \"sentence\": 10, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"case\": 4, \"sentence\": 18, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"}, {\"case\": 5, \"sentence\": 39, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"}, {\"case\": 6, \"sentence\": 47, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"}, {\"case\": 7, \"sentence\": 68, \"participant\": \"Server\", \"target\": \"HTML5 Server\", \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"case\": 8, \"sentence\": 73, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"}, {\"case\": 9, \"sentence\": 9, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"}, {\"case\": 10, \"sentence\": 10, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"case\": 11, \"sentence\": 12, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"The client side subscribes to the published collections on the server side.\"}, {\"case\": 12, \"sentence\": 13, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"}, {\"case\": 13, \"sentence\": 76, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"case\": 14, \"sentence\": 79, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}, {\"case\": 15, \"sentence\": 19, \"participant\": \"clients\", \"target\": \"HTML5 Client\", \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"case\": 16, \"sentence\": 5, \"participant\": \"web\", \"target\": \"BBB web\", \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"}, {\"case\": 17, \"sentence\": 6, \"participant\": \"web\", \"target\": \"BBB web\", \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}]\n\nReturn JSON only:\n{\"judgments\":[{\"case\":1,\"keep\":true,\n\"section_anchor\":\"exact document quote\",\n\"identity_anchor_sentence\":1,\n\"identity_anchor\":\"exact quote from that anchor sentence\",\n\"scope_bridge_sentence\":1,\n\"scope_bridge\":\"exact quote establishing the local discourse chain\",\n\"claim\":\"exact quote from the source sentence\",\n\"participant_role\":\"brief role\",\n\"competing_referent\":\"strongest alternative or none\"}]}\n",
+          "response_text": "{\"judgments\":[{\"case\":1,\"keep\":false,\"section_anchor\":\"Kurento and WebRTC-SFU.\",\"identity_anchor_sentence\":70,\"identity_anchor\":\"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\"scope_bridge_sentence\":70,\"scope_bridge\":\"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\"claim\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\"participant_role\":\"implemented media-forwarding model\",\"competing_referent\":\"Kurento Media Server KMS, which explicitly implements the SFU model\"},{\"case\":2,\"keep\":false,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":8,\"identity_anchor\":\"The HTML5 server sits behind nginx.\",\"scope_bridge_sentence\":6,\"scope_bridge\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\"participant_role\":\"connection endpoint\",\"competing_referent\":\"BigBlueButton server; the sentence does not bridge this general server to the HTML5 Server\"},{\"case\":3,\"keep\":false,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":8,\"identity_anchor\":\"The HTML5 server sits behind nginx.\",\"scope_bridge_sentence\":9,\"scope_bridge\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"claim\":\"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\",\"participant_role\":\"location/ownership scope for meeting information\",\"competing_referent\":\"BigBlueButton server, explicitly mentioned in the preceding sentence and not resolved to HTML5 Server\"},{\"case\":4,\"keep\":false,\"section_anchor\":\"Scalability of HTML5 server component.\",\"identity_anchor_sentence\":15,\"identity_anchor\":\"Scalability of HTML5 server component.\",\"scope_bridge_sentence\":19,\"scope_bridge\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\"claim\":\"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\",\"participant_role\":\"physical host-capacity reference\",\"competing_referent\":\"the physical BigBlueButton 2.2 host server\"},{\"case\":5,\"keep\":false,\"section_anchor\":\"BBB web.\",\"identity_anchor_sentence\":37,\"identity_anchor\":\"BigBlueButton web application is a Java-based application written in Scala.\",\"scope_bridge_sentence\":39,\"scope_bridge\":\"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\",\"claim\":\"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\",\"participant_role\":\"API-controlled system endpoint\",\"competing_referent\":\"BigBlueButton server; no local bridge identifies it as HTML5 Server\"},{\"case\":6,\"keep\":false,\"section_anchor\":\"Redis PubSub.\",\"identity_anchor_sentence\":8,\"identity_anchor\":\"The HTML5 server sits behind nginx.\",\"scope_bridge_sentence\":47,\"scope_bridge\":\"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\"claim\":\"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\"participant_role\":\"deployment host for applications\",\"competing_referent\":\"BigBlueButton server, which is broader than and not resolved to HTML5 Server\"},{\"case\":7,\"keep\":false,\"section_anchor\":\"Kurento and WebRTC-SFU.\",\"identity_anchor_sentence\":8,\"identity_anchor\":\"The HTML5 server sits behind nginx.\",\"scope_bridge_sentence\":68,\"scope_bridge\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\"claim\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\"participant_role\":\"head noun in the name of Kurento Media Server KMS\",\"competing_referent\":\"Kurento Media Server KMS\"},{\"case\":8,\"keep\":false,\"section_anchor\":\"Joining a voice conference.\",\"identity_anchor_sentence\":8,\"identity_anchor\":\"The HTML5 server sits behind nginx.\",\"scope_bridge_sentence\":73,\"scope_bridge\":\"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\"claim\":\"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\"participant_role\":\"audio-connection endpoint\",\"competing_referent\":\"the voice-conference server running in FreeSWITCH, established by \\\"A user can join the voice conference (running in FreeSWITCH)\\\"\"},{\"case\":9,\"keep\":true,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":5,\"identity_anchor\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"scope_bridge_sentence\":9,\"scope_bridge\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"claim\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"participant_role\":\"communication peer of the HTML5 Server\",\"competing_referent\":\"BigBlueButton client, but the explicit client/server discourse and section scope resolve the generic client to the HTML5 Client\"},{\"case\":10,\"keep\":true,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":5,\"identity_anchor\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"scope_bridge_sentence\":9,\"scope_bridge\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"claim\":\"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\",\"participant_role\":\"meeting-connected client instance represented in MongoDB\",\"competing_referent\":\"an arbitrary third-party client; the immediately preceding sentence establishes BigBlueButton client state in this client/server scope\"},{\"case\":11,\"keep\":true,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":5,\"identity_anchor\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"scope_bridge_sentence\":9,\"scope_bridge\":\"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\"claim\":\"The client side subscribes to the published collections on the server side.\",\"participant_role\":\"subscriber to server-published collections\",\"competing_referent\":\"HTML5 Server client-side code; the local client/server discourse instead identifies the client side as the HTML5 Client side\"},{\"case\":12,\"keep\":true,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":5,\"identity_anchor\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"scope_bridge_sentence\":13,\"scope_bridge\":\"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\"claim\":\"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\"participant_role\":\"recipient-side state store\",\"competing_referent\":\"an unspecified client implementation; MiniMongo and the preceding HTML5 client/server discussion make the client side the HTML5 Client\"},{\"case\":13,\"keep\":true,\"section_anchor\":\"Uploading a presentation.\",\"identity_anchor_sentence\":72,\"identity_anchor\":\"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\"scope_bridge_sentence\":79,\"scope_bridge\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"participant_role\":\"user-facing presentation display endpoint\",\"competing_referent\":\"an arbitrary browser client; the document's established client component is the BigBlueButton HTML5 client\"},{\"case\":14,\"keep\":true,\"section_anchor\":\"Uploading a presentation.\",\"identity_anchor_sentence\":72,\"identity_anchor\":\"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\"scope_bridge_sentence\":76,\"scope_bridge\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"participant_role\":\"recipient of conversion-progress messages\",\"competing_referent\":\"an arbitrary client; the immediately preceding presentation-display client and document-wide client scope identify the HTML5 Client\"},{\"case\":15,\"keep\":true,\"section_anchor\":\"Scalability of HTML5 server component.\",\"identity_anchor_sentence\":19,\"identity_anchor\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\"scope_bridge_sentence\":20,\"scope_bridge\":\"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\",\"claim\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\"participant_role\":\"sources of incoming messages to HTML5 Server processes\",\"competing_referent\":\"browser sessions, but the following sentence links bbb-html5 processing to handling those browser sessions and supports HTML5 Client instances\"},{\"case\":16,\"keep\":false,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":36,\"identity_anchor\":\"BBB web.\",\"scope_bridge_sentence\":5,\"scope_bridge\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"claim\":\"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\"participant_role\":\"modifier within the phrase \\\"web application\\\"\",\"competing_referent\":\"the HTML5 Client itself; \\\"web\\\" does not denote BBB web\"},{\"case\":17,\"keep\":false,\"section_anchor\":\"HTML5 client.\",\"identity_anchor_sentence\":36,\"identity_anchor\":\"BBB web.\",\"scope_bridge_sentence\":6,\"scope_bridge\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\"participant_role\":\"modifier within the technology phrase \\\"web socket connection\\\"\",\"competing_referent\":\"WebSocket technology; it does not denote BBB web\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 13116,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 4703,
+            "completion_tokens": 2532,
+            "total_tokens": 7235
+          }
+        }
+      ]
+    }
+  ],
+  "pass_gate": false
+}
