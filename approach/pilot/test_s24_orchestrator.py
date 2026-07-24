@@ -368,7 +368,7 @@ def test_role_context_review_uses_project_anchors():
     assert "The HTML Backend is the request service." in seen["prompt"]
 
 
-def test_catalog_identifier_candidates_are_exact_and_nonoverlapping():
+def test_lexical_entity_candidates_are_exact_and_nonoverlapping():
     linker = SLinker24RoleOrchestrator.__new__(
         SLinker24RoleOrchestrator
     )
@@ -391,8 +391,8 @@ def test_catalog_identifier_candidates_are_exact_and_nonoverlapping():
         Sentence(4, "See package.order-processor for details."),
         Sentence(5, "The order-processor."),
     ]
-    candidates = linker._catalog_identifier_candidates(
-        sentences, components, []
+    candidates = linker._lexical_entity_candidates(
+        sentences, components
     )
     assert [
         (
@@ -403,6 +403,7 @@ def test_catalog_identifier_candidates_are_exact_and_nonoverlapping():
         for candidate in candidates
     ] == [
         (1, "order-processor", "Order Processor"),
+        (2, "DisplayGateway", "Display Gateway"),
         (5, "order-processor", "Order Processor"),
     ]
 
@@ -418,5 +419,5 @@ if __name__ == "__main__":
     test_role_tool_is_available_only_with_document_handle_evidence()
     test_role_variant_entity_ownership_is_name_or_approved_alias()
     test_role_context_review_uses_project_anchors()
-    test_catalog_identifier_candidates_are_exact_and_nonoverlapping()
+    test_lexical_entity_candidates_are_exact_and_nonoverlapping()
     print("PASS: SLinker24RoleOrchestrator contracts")

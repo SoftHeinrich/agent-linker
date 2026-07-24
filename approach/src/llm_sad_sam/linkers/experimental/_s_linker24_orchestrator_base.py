@@ -381,6 +381,9 @@ Return JSON only:
         candidates = self._select_entity_candidates(
             list(candidates_by_key.values()), sent_map
         )
+        candidates = self._augment_entity_candidates(
+            candidates, sentences, components
+        )
         bundles = {
             (candidate.sentence_number, candidate.component_id):
                 self._build_evidence_bundle(candidate, sent_map)
@@ -400,7 +403,7 @@ Return JSON only:
                 candidate.sentence_number,
                 candidate.component_id,
                 candidate.component_name,
-                source="entity",
+                source=self._entity_link_source(candidate),
             )
             for candidate in approved
         ]
@@ -424,6 +427,16 @@ Return JSON only:
     def _select_entity_candidates(self, candidates, sent_map):
         """Return the candidates owned by this variant's entity capability."""
         return candidates
+
+    def _augment_entity_candidates(
+        self, candidates, sentences, components
+    ):
+        """Add variant-owned candidates before the shared entity validator."""
+        return candidates
+
+    @staticmethod
+    def _entity_link_source(candidate):
+        return "entity"
 
     def _run_coreference_tool(
         self, sentences, components, name_to_id, sent_map

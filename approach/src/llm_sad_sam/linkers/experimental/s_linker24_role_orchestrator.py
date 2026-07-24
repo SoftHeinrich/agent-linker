@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 
 from llm_sad_sam.core.data_types_v2 import CandidateLink, SadSamLink
 from llm_sad_sam.core.document_loader_v2 import load_sentences
@@ -19,18 +20,16 @@ class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
         "entity_pipeline",
         "coreference_pipeline",
         "relation_role_resolution",
-        "catalog_identifier_resolution",
     )
 
     def _tool_catalog(self):
-        return """- entity_pipeline: exact catalog-name and approved-alias identity evidence,
-  followed by the existing two-pass validator.
+        return """- entity_pipeline: exact catalog-name, approved-alias, and
+  catalog-equivalent orthographic identity evidence, followed by the existing
+  two-pass validator.
 - coreference_pipeline: pronoun, demonstrative, and anaphoric reference
   resolution, followed by its existing validator.
 - relation_role_resolution: derive project-specific shortened handles from
   compound catalog names and apply exact standalone occurrences.
-- catalog_identifier_resolution: resolve standalone alternate spellings whose
-  complete token sequence equals one runtime catalog component.
 - finalize: return the union of links produced by completed tools."""
 
     def _choose_tool(self, profile, remaining, history, current, sent_map):
@@ -126,16 +125,16 @@ Return JSON only:
                 for sentence in sentences
             )
         ]
-        profile["catalog_identifier_evidence"] = self._link_view(
+        profile["entity_orthographic_evidence"] = self._link_view(
             [
                 SadSamLink(
                     candidate.sentence_number,
                     candidate.component_id,
                     candidate.component_name,
-                    source="catalog_identifier_candidate",
+                    source="entity_orthographic_candidate",
                 )
-                for candidate in self._catalog_identifier_candidates(
-                    sentences, components, []
+                for candidate in self._lexical_entity_candidates(
+                    sentences, components
                 )
             ],
             {sentence.number: sentence for sentence in sentences},
@@ -146,8 +145,6 @@ Return JSON only:
         tools = super()._available_tools(profile)
         if not profile.get("role_handle_evidence"):
             tools.remove("relation_role_resolution")
-        if not profile.get("catalog_identifier_evidence"):
-            tools.remove("catalog_identifier_resolution")
         return tools
 
     def _select_entity_candidates(self, candidates, sent_map):
@@ -174,6 +171,28 @@ Return JSON only:
             forms_by_component.setdefault(component, []).append(term)
         return forms_by_component
 
+    def _augment_entity_candidates(
+        self, candidates, sentences, components
+    ):
+        merged = {
+            (candidate.sentence_number, candidate.component_id): candidate
+            for candidate in candidates
+        }
+        for candidate in self._lexical_entity_candidates(
+            sentences, components
+        ):
+            merged.setdefault(
+                (candidate.sentence_number, candidate.component_id),
+                candidate,
+            )
+        return list(merged.values())
+
+    @staticmethod
+    def _entity_link_source(candidate):
+        if candidate.source == "entity_orthographic":
+            return "s24_entity_orthographic"
+        return "entity"
+
     def _run_selected_tool(
         self,
         action,
@@ -185,10 +204,6 @@ Return JSON only:
     ):
         if action == "relation_role_resolution":
             return self._run_relation_role_tool(
-                sentences, components, current, sent_map
-            )
-        if action == "catalog_identifier_resolution":
-            return self._run_catalog_identifier_tool(
                 sentences, components, current, sent_map
             )
         return super()._run_selected_tool(
@@ -347,111 +362,93 @@ JSON only:
         }
         return approved, decisions
 
-    def _run_catalog_identifier_tool(
-        self, sentences, components, current_links, sent_map
-    ):
-        candidates = self._catalog_identifier_candidates(
-            sentences, components, current_links
-        )
-        approved, decisions = self._review_identity_candidates(
-            candidates,
-            sentences,
-            case_key="identifier",
-            instruction=(
-                "Resolve catalog-equivalent standalone component identifiers."
-            ),
-            phase="phase_24_catalog_identifier_review",
-            label="S24 catalog-identifier review",
-            path="catalog_identifier_resolution",
-            stage="catalog_identifier_resolution",
-        )
-        links = [
-            SadSamLink(
-                candidate.sentence_number,
-                candidate.component_id,
-                candidate.component_name,
-                source="s24_catalog_identifier",
+    @staticmethod
+    def _lexical_signature(expression):
+        normalized = unicodedata.normalize("NFKC", expression)
+        normalized = normalized.replace("-", " ").replace("_", " ")
+        return tuple(
+            token.casefold()
+            for token in re.findall(
+                r"[A-Z]+(?=[A-Z][a-z]|\b)|"
+                r"[A-Z]?[a-z]+|[A-Z]+|\d+",
+                normalized,
             )
-            for candidate in approved
-        ]
-        return links, {
-            "proposed": self._link_view(
-                [
-                    SadSamLink(
-                        candidate.sentence_number,
-                        candidate.component_id,
-                        candidate.component_name,
-                        source="catalog_identifier_candidate",
-                    )
-                    for candidate in candidates
-                ],
-                sent_map,
-            ),
-            "accepted": self._link_view(links, sent_map),
-            "identifier_decisions": self._decision_view(decisions),
-        }
-
-    def _catalog_identifier_candidates(
-        self, sentences, components, current_links
-    ):
-        current = {
-            (link.sentence_number, link.component_id)
-            for link in current_links
-        }
-        forms_by_component = self._identity_forms_by_component()
-        tokens_by_component = {
-            component.name: self._identifier_tokens(component.name)
-            for component in components
-        }
-        pattern = re.compile(
-            r"(?<![\w-])(?<!\w\.)(?:"
-            r"[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+"
-            r"|[A-Za-z]+[A-Z][A-Za-z0-9]*"
-            r")(?![\w-])(?!\.\w)"
         )
+
+    @staticmethod
+    def _qualified_identifier_boundary(text, start, end):
+        before = text[start - 1] if start else ""
+        after = text[end] if end < len(text) else ""
+        dotted_before = (
+            before == "." and start > 1 and text[start - 2].isalnum()
+        )
+        dotted_after = (
+            after == "."
+            and end + 1 < len(text)
+            and text[end + 1].isalnum()
+        )
+        joined_before = before in "-_" or (
+            before and before.isalnum()
+        )
+        joined_after = after in "-_" or (
+            after and after.isalnum()
+        )
+        return (
+            dotted_before
+            or dotted_after
+            or joined_before
+            or joined_after
+        )
+
+    @classmethod
+    def _lexical_entity_candidates(cls, sentences, components):
+        """Find exact, catalog-unique orthographic entity variants."""
+        word_pattern = re.compile(r"[A-Za-z0-9]+")
+        owners = {}
+        for component in components:
+            signature = cls._lexical_signature(component.name)
+            if signature:
+                owners.setdefault(signature, []).append(component)
+        max_tokens = max((len(item) for item in owners), default=0)
         candidates = {}
         for sentence in sentences:
-            for match in pattern.finditer(sentence.text):
-                expression = match.group(0)
-                expression_tokens = self._identifier_tokens(expression)
-                for component in components:
-                    if (
-                        expression_tokens
-                        != tokens_by_component[component.name]
+            words = list(word_pattern.finditer(sentence.text))
+            for start_index, first in enumerate(words):
+                for end_index in range(
+                    start_index,
+                    min(len(words), start_index + max_tokens),
+                ):
+                    last = words[end_index]
+                    if end_index > start_index:
+                        separator = sentence.text[
+                            words[end_index - 1].end():last.start()
+                        ]
+                        if not re.fullmatch(r"[\s_-]+", separator):
+                            break
+                    start, end = first.start(), last.end()
+                    if cls._qualified_identifier_boundary(
+                        sentence.text, start, end
                     ):
                         continue
-                    identity_forms = [
-                        component.name,
-                        *forms_by_component.get(component.name, []),
-                    ]
+                    surface = sentence.text[start:end]
+                    targets = owners.get(
+                        cls._lexical_signature(surface), ()
+                    )
+                    if len(targets) != 1:
+                        continue
+                    component = targets[0]
+                    if surface.casefold() == component.name.casefold():
+                        continue
                     key = (sentence.number, component.id)
-                    if (
-                        key in current
-                        or any(
-                            expression.casefold() == form.casefold()
-                            for form in identity_forms
-                        )
-                    ):
-                        continue
                     candidates[key] = CandidateLink(
                         sentence.number,
                         sentence.text,
                         component.name,
                         component.id,
-                        expression,
-                        source="catalog_identifier",
+                        surface,
+                        source="entity_orthographic",
                     )
         return list(candidates.values())
-
-    @staticmethod
-    def _identifier_tokens(expression):
-        return [
-            token.casefold()
-            for token in re.findall(
-                r"[A-Z]+(?=[A-Z][a-z]|\b)|[A-Z]?[a-z]+|\d+",
-                expression.replace("-", " "),
-            )
-        ]
 
     @staticmethod
     def _catalog_role_handles(components):

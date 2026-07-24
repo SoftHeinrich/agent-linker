@@ -90,6 +90,16 @@ python run_ablation.py --variants s_linker21 --datasets mediastore
 python run_ablation.py --variants s_linker21_agentrouter --datasets mediastore
 ```
 
+The host provides the OpenAI credential as `OAI_KEY`, not
+`OPENAI_API_KEY`. For OpenAI-backed benchmark commands, map it only in the
+process environment:
+
+```bash
+OPENAI_API_KEY="$OAI_KEY" python run_ablation.py ...
+```
+
+Never write either credential value to `.env`, logs, results, or tracked files.
+
 ## Standing Gates
 
 - **GATE-01**: canonical/paper artifacts stay byte-stable —
