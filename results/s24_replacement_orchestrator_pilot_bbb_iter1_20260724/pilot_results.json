@@ -1,0 +1,865 @@
+{
+  "protocol": "replacement controller over recorded S21 phase tools and fresh semantic coverage audit; S21 final loaded only for post-run comparison",
+  "datasets": [
+    {
+      "dataset": "bigbluebutton",
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "document_reference_style": "The document predominantly uses explicit component names and approved aliases, with section headings and direct architectural descriptions.",
+          "component_profile_effect": "The catalog has no ambiguous components and provides aliases for major naming variants, making entity-based extraction well supported.",
+          "coverage_gap": "Explicit named-component evidence has not yet been extracted; coreferential and omission-focused evidence may remain afterward.",
+          "reason": "Run the entity pipeline first because the document is rich in direct component mentions and no tools have yet produced links.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 4,
+                "text": "HTML5 client.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 5,
+                "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 6,
+                "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 8,
+                "text": "The HTML5 server sits behind nginx.",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 9,
+                "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 14,
+                "text": "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 15,
+                "text": "Scalability of HTML5 server component.",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 19,
+                "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 20,
+                "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 21,
+                "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).",
+                "component": "HTML5 Server",
+                "source": "entity"
+              },
+              {
+                "sentence": 30,
+                "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.",
+                "component": "BBB web",
+                "source": "entity"
+              },
+              {
+                "sentence": 36,
+                "text": "BBB web.",
+                "component": "BBB web",
+                "source": "entity"
+              },
+              {
+                "sentence": 37,
+                "text": "BigBlueButton web application is a Java-based application written in Scala.",
+                "component": "BBB web",
+                "source": "entity"
+              },
+              {
+                "sentence": 46,
+                "text": "Redis PubSub.",
+                "component": "Redis PubSub",
+                "source": "entity"
+              },
+              {
+                "sentence": 47,
+                "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+                "component": "Redis PubSub",
+                "source": "entity"
+              },
+              {
+                "sentence": 48,
+                "text": "Redis DB.",
+                "component": "Redis DB",
+                "source": "entity"
+              },
+              {
+                "sentence": 49,
+                "text": "When a meeting is recorded, all events are stored in Redis DB.",
+                "component": "Redis DB",
+                "source": "entity"
+              },
+              {
+                "sentence": 50,
+                "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.",
+                "component": "Recording Service",
+                "source": "entity"
+              },
+              {
+                "sentence": 51,
+                "text": "Apps akka.",
+                "component": "Apps",
+                "source": "entity"
+              },
+              {
+                "sentence": 52,
+                "text": "BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.",
+                "component": "Apps",
+                "source": "entity"
+              },
+              {
+                "sentence": 54,
+                "text": "Below is a diagram of the different components of Apps Akka.",
+                "component": "Apps",
+                "source": "entity"
+              },
+              {
+                "sentence": 57,
+                "text": "FSESL akka.",
+                "component": "FSESL",
+                "source": "entity"
+              },
+              {
+                "sentence": 58,
+                "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+                "component": "FreeSWITCH",
+                "source": "entity"
+              },
+              {
+                "sentence": 60,
+                "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+                "component": "Apps",
+                "source": "entity"
+              },
+              {
+                "sentence": 60,
+                "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+                "component": "FSESL",
+                "source": "entity"
+              },
+              {
+                "sentence": 60,
+                "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+                "component": "Redis PubSub",
+                "source": "entity"
+              },
+              {
+                "sentence": 61,
+                "text": "FreeSWITCH.",
+                "component": "FreeSWITCH",
+                "source": "entity"
+              },
+              {
+                "sentence": 62,
+                "text": "We think FreeSWITCH is an amazing piece of software for handling audio.",
+                "component": "FreeSWITCH",
+                "source": "entity"
+              },
+              {
+                "sentence": 63,
+                "text": "FreeSWITCH provides the voice conferencing capability in BigBlueButton.",
+                "component": "FreeSWITCH",
+                "source": "entity"
+              },
+              {
+                "sentence": 67,
+                "text": "Kurento and WebRTC-SFU.",
+                "component": "kurento",
+                "source": "entity"
+              },
+              {
+                "sentence": 67,
+                "text": "Kurento and WebRTC-SFU.",
+                "component": "WebRTC-SFU",
+                "source": "entity"
+              },
+              {
+                "sentence": 68,
+                "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+                "component": "kurento",
+                "source": "entity"
+              },
+              {
+                "sentence": 69,
+                "text": "KMS is responsible for streaming of webcams, listen-only audio, and screensharing.",
+                "component": "kurento",
+                "source": "entity"
+              },
+              {
+                "sentence": 70,
+                "text": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+                "component": "WebRTC-SFU",
+                "source": "entity"
+              },
+              {
+                "sentence": 72,
+                "text": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+                "component": "FreeSWITCH",
+                "source": "entity"
+              },
+              {
+                "sentence": 72,
+                "text": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 78,
+                "text": "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.",
+                "component": "BBB web",
+                "source": "entity"
+              },
+              {
+                "sentence": 79,
+                "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+                "component": "Redis PubSub",
+                "source": "entity"
+              },
+              {
+                "sentence": 26,
+                "text": "Frontends receive other DDP events including method calls to send events to akka-apps.",
+                "component": "Apps",
+                "source": "entity"
+              },
+              {
+                "sentence": 73,
+                "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              },
+              {
+                "sentence": 79,
+                "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+                "component": "HTML5 Client",
+                "source": "entity"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "document_reference_style": "The document mixes explicit component names with local pronouns and role-based references within component sections.",
+          "component_profile_effect": "Approved aliases resolve naming variants, while the lack of ambiguous components supports reliable reference resolution from nearby named antecedents.",
+          "coverage_gap": "Coreferential evidence remains in sentences using references such as \"It,\" \"This,\" and section-scoped role terms after explicit component introductions.",
+          "reason": "Run coreference resolution next because it covers a complementary evidence mode not handled by the completed entity pipeline.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 11,
+                "text": "Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.",
+                "component": "HTML5 Client",
+                "source": "coreference"
+              },
+              {
+                "sentence": 12,
+                "text": "The client side subscribes to the published collections on the server side.",
+                "component": "HTML5 Client",
+                "source": "coreference"
+              },
+              {
+                "sentence": 12,
+                "text": "The client side subscribes to the published collections on the server side.",
+                "component": "HTML5 Server",
+                "source": "coreference"
+              },
+              {
+                "sentence": 13,
+                "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+                "component": "HTML5 Server",
+                "source": "coreference"
+              },
+              {
+                "sentence": 13,
+                "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+                "component": "HTML5 Client",
+                "source": "coreference"
+              },
+              {
+                "sentence": 38,
+                "text": "It implements the BigBlueButton API and holds a copy of the meeting state.",
+                "component": "BBB web",
+                "source": "coreference"
+              },
+              {
+                "sentence": 53,
+                "text": "It provides the list of users, chat, whiteboard, presentations in a meeting.",
+                "component": "Apps",
+                "source": "coreference"
+              },
+              {
+                "sentence": 73,
+                "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+                "component": "HTML5 Client",
+                "source": "coreference"
+              },
+              {
+                "sentence": 76,
+                "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+                "component": "HTML5 Client",
+                "source": "coreference"
+              },
+              {
+                "sentence": 79,
+                "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+                "component": "Presentation Conversion",
+                "source": "coreference"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coverage_audit",
+          "document_reference_style": "The document combines explicit names and approved aliases with section-scoped descriptions, role terms, and workflow references.",
+          "component_profile_effect": "The unambiguous catalog and aliases support auditing omitted section-level and semantic references against the existing entity and coreference coverage.",
+          "coverage_gap": "Potential grounded omissions remain, especially in component sections and the presentation-conversion workflow where several descriptive sentences lack links.",
+          "reason": "Run the complementary omission-focused audit before finalizing because entity and coreference modes are complete but current coverage still leaves semantically relevant passages unlinked.",
+          "feedback": {
+            "proposed": [
+              {
+                "sentence": 58,
+                "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+                "component": "FSESL",
+                "source": "coverage_audit_candidate"
+              },
+              {
+                "sentence": 66,
+                "text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+                "component": "FreeSWITCH",
+                "source": "coverage_audit_candidate"
+              },
+              {
+                "sentence": 76,
+                "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+                "component": "Presentation Conversion",
+                "source": "coverage_audit_candidate"
+              }
+            ],
+            "accepted": [
+              {
+                "sentence": 58,
+                "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+                "component": "FSESL",
+                "source": "s24_coverage_audit"
+              },
+              {
+                "sentence": 66,
+                "text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+                "component": "FreeSWITCH",
+                "source": "s24_coverage_audit"
+              },
+              {
+                "sentence": 76,
+                "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+                "component": "Presentation Conversion",
+                "source": "s24_coverage_audit"
+              }
+            ],
+            "validator_decisions": [
+              {
+                "sentence": 58,
+                "component_id": "_9wZIcFkHEeyewPSmlgszyA",
+                "approved": true,
+                "p1": true,
+                "p2": true,
+                "path": "coverage_audit_twopass",
+                "stage": "coverage_audit_twopass"
+              },
+              {
+                "sentence": 66,
+                "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+                "approved": true,
+                "p1": true,
+                "p2": true,
+                "path": "coverage_audit_twopass",
+                "stage": "coverage_audit_twopass"
+              },
+              {
+                "sentence": 76,
+                "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+                "approved": true,
+                "p1": true,
+                "p2": true,
+                "path": "coverage_audit_twopass",
+                "stage": "coverage_audit_twopass"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "selected_tools": [
+        "entity_pipeline",
+        "coreference_pipeline",
+        "coverage_audit"
+      ],
+      "s21": {
+        "tp": 48,
+        "fp": 2,
+        "fn": 14,
+        "P": 0.96,
+        "R": 0.7741935483870968,
+        "F1": 0.8571428571428571
+      },
+      "final": {
+        "tp": 49,
+        "fp": 4,
+        "fn": 13,
+        "P": 0.9245283018867925,
+        "R": 0.7903225806451613,
+        "F1": 0.8521739130434782
+      },
+      "difference_from_s21": {
+        "added_tp": 1,
+        "added_fp": 2,
+        "removed_tp": 0,
+        "removed_fp": 0
+      },
+      "links": [
+        {
+          "sentence": 4,
+          "text": "HTML5 client.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 5,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 6,
+          "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 8,
+          "text": "The HTML5 server sits behind nginx.",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 9,
+          "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 14,
+          "text": "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 15,
+          "text": "Scalability of HTML5 server component.",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 19,
+          "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 20,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 21,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).",
+          "component": "HTML5 Server",
+          "source": "entity"
+        },
+        {
+          "sentence": 30,
+          "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.",
+          "component": "BBB web",
+          "source": "entity"
+        },
+        {
+          "sentence": 36,
+          "text": "BBB web.",
+          "component": "BBB web",
+          "source": "entity"
+        },
+        {
+          "sentence": 37,
+          "text": "BigBlueButton web application is a Java-based application written in Scala.",
+          "component": "BBB web",
+          "source": "entity"
+        },
+        {
+          "sentence": 46,
+          "text": "Redis PubSub.",
+          "component": "Redis PubSub",
+          "source": "entity"
+        },
+        {
+          "sentence": 47,
+          "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+          "component": "Redis PubSub",
+          "source": "entity"
+        },
+        {
+          "sentence": 48,
+          "text": "Redis DB.",
+          "component": "Redis DB",
+          "source": "entity"
+        },
+        {
+          "sentence": 49,
+          "text": "When a meeting is recorded, all events are stored in Redis DB.",
+          "component": "Redis DB",
+          "source": "entity"
+        },
+        {
+          "sentence": 50,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.",
+          "component": "Recording Service",
+          "source": "entity"
+        },
+        {
+          "sentence": 51,
+          "text": "Apps akka.",
+          "component": "Apps",
+          "source": "entity"
+        },
+        {
+          "sentence": 52,
+          "text": "BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.",
+          "component": "Apps",
+          "source": "entity"
+        },
+        {
+          "sentence": 54,
+          "text": "Below is a diagram of the different components of Apps Akka.",
+          "component": "Apps",
+          "source": "entity"
+        },
+        {
+          "sentence": 57,
+          "text": "FSESL akka.",
+          "component": "FSESL",
+          "source": "entity"
+        },
+        {
+          "sentence": 58,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+          "component": "FreeSWITCH",
+          "source": "entity"
+        },
+        {
+          "sentence": 60,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+          "component": "Apps",
+          "source": "entity"
+        },
+        {
+          "sentence": 60,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+          "component": "FSESL",
+          "source": "entity"
+        },
+        {
+          "sentence": 60,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.",
+          "component": "Redis PubSub",
+          "source": "entity"
+        },
+        {
+          "sentence": 61,
+          "text": "FreeSWITCH.",
+          "component": "FreeSWITCH",
+          "source": "entity"
+        },
+        {
+          "sentence": 62,
+          "text": "We think FreeSWITCH is an amazing piece of software for handling audio.",
+          "component": "FreeSWITCH",
+          "source": "entity"
+        },
+        {
+          "sentence": 63,
+          "text": "FreeSWITCH provides the voice conferencing capability in BigBlueButton.",
+          "component": "FreeSWITCH",
+          "source": "entity"
+        },
+        {
+          "sentence": 67,
+          "text": "Kurento and WebRTC-SFU.",
+          "component": "kurento",
+          "source": "entity"
+        },
+        {
+          "sentence": 67,
+          "text": "Kurento and WebRTC-SFU.",
+          "component": "WebRTC-SFU",
+          "source": "entity"
+        },
+        {
+          "sentence": 68,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+          "component": "kurento",
+          "source": "entity"
+        },
+        {
+          "sentence": 69,
+          "text": "KMS is responsible for streaming of webcams, listen-only audio, and screensharing.",
+          "component": "kurento",
+          "source": "entity"
+        },
+        {
+          "sentence": 70,
+          "text": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.",
+          "component": "WebRTC-SFU",
+          "source": "entity"
+        },
+        {
+          "sentence": 72,
+          "text": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+          "component": "FreeSWITCH",
+          "source": "entity"
+        },
+        {
+          "sentence": 72,
+          "text": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 78,
+          "text": "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.",
+          "component": "BBB web",
+          "source": "entity"
+        },
+        {
+          "sentence": 79,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+          "component": "Redis PubSub",
+          "source": "entity"
+        },
+        {
+          "sentence": 26,
+          "text": "Frontends receive other DDP events including method calls to send events to akka-apps.",
+          "component": "Apps",
+          "source": "entity"
+        },
+        {
+          "sentence": 73,
+          "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 79,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+          "component": "HTML5 Client",
+          "source": "entity"
+        },
+        {
+          "sentence": 11,
+          "text": "Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.",
+          "component": "HTML5 Client",
+          "source": "coreference"
+        },
+        {
+          "sentence": 12,
+          "text": "The client side subscribes to the published collections on the server side.",
+          "component": "HTML5 Client",
+          "source": "coreference"
+        },
+        {
+          "sentence": 12,
+          "text": "The client side subscribes to the published collections on the server side.",
+          "component": "HTML5 Server",
+          "source": "coreference"
+        },
+        {
+          "sentence": 13,
+          "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+          "component": "HTML5 Server",
+          "source": "coreference"
+        },
+        {
+          "sentence": 13,
+          "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.",
+          "component": "HTML5 Client",
+          "source": "coreference"
+        },
+        {
+          "sentence": 38,
+          "text": "It implements the BigBlueButton API and holds a copy of the meeting state.",
+          "component": "BBB web",
+          "source": "coreference"
+        },
+        {
+          "sentence": 53,
+          "text": "It provides the list of users, chat, whiteboard, presentations in a meeting.",
+          "component": "Apps",
+          "source": "coreference"
+        },
+        {
+          "sentence": 76,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+          "component": "HTML5 Client",
+          "source": "coreference"
+        },
+        {
+          "sentence": 79,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+          "component": "Presentation Conversion",
+          "source": "coreference"
+        },
+        {
+          "sentence": 58,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+          "component": "FSESL",
+          "source": "s24_coverage_audit"
+        },
+        {
+          "sentence": 66,
+          "text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.",
+          "component": "FreeSWITCH",
+          "source": "s24_coverage_audit"
+        },
+        {
+          "sentence": 76,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+          "component": "Presentation Conversion",
+          "source": "s24_coverage_audit"
+        }
+      ],
+      "llm_calls": 6,
+      "trace": [
+        {
+          "phase": "phase_24_orchestrator_1",
+          "ts": 1784880749.2972872,
+          "elapsed_s": 12.901,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking phase tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize the current result. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: existing knowledge-aware entity extraction followed by the\n  existing two-pass evidence validator.\n- coreference_pipeline: existing reference-resolution extraction followed by\n  its reference validator.\n- coverage_audit: inspect the document, catalog, aliases, and CURRENT LINKS for\n  semantically grounded omissions, then send its candidates through the existing\n  two-pass evidence validator.\n- finalize: return the union of links produced by completed tools.\n\nWORKFLOW METHOD\n- Use the document's naming/reference style, component ambiguity and aliases,\n  current coverage, and concrete tool feedback.\n- Entity, coreference, and audit tools cover different evidence modes; choose\n  and order only those warranted by this project.\n- Treat candidate/link counts as observations, never thresholds.\n- Do not infer gold, use project identity, or create link decisions yourself.\n- Finalize when the current result has covered the project's supported reference\n  modes and no unused tool has complementary evidence.\n\nPROJECT PROFILE\n{\n  \"document\": [\n    {\n      \"sentence\": 1,\n      \"text\": \"High-level architecture.\"\n    },\n    {\n      \"sentence\": 2,\n      \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"\n    },\n    {\n      \"sentence\": 3,\n      \"text\": \"We'll break down each component in more detail below.\"\n    },\n    {\n      \"sentence\": 4,\n      \"text\": \"HTML5 client.\"\n    },\n    {\n      \"sentence\": 5,\n      \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"\n    },\n    {\n      \"sentence\": 6,\n      \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n    },\n    {\n      \"sentence\": 7,\n      \"text\": \"These connections are all handled by nginx.\"\n    },\n    {\n      \"sentence\": 8,\n      \"text\": \"The HTML5 server sits behind nginx.\"\n    },\n    {\n      \"sentence\": 9,\n      \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 10,\n      \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"\n    },\n    {\n      \"sentence\": 11,\n      \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"\n    },\n    {\n      \"sentence\": 12,\n      \"text\": \"The client side subscribes to the published collections on the server side.\"\n    },\n    {\n      \"sentence\": 13,\n      \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"\n    },\n    {\n      \"sentence\": 14,\n      \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 15,\n      \"text\": \"Scalability of HTML5 server component.\"\n    },\n    {\n      \"sentence\": 16,\n      \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"\n    },\n    {\n      \"sentence\": 17,\n      \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"\n    },\n    {\n      \"sentence\": 18,\n      \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"\n    },\n    {\n      \"sentence\": 19,\n      \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n    },\n    {\n      \"sentence\": 20,\n      \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"\n    },\n    {\n      \"sentence\": 21,\n      \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"\n    },\n    {\n      \"sentence\": 22,\n      \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"\n    },\n    {\n      \"sentence\": 23,\n      \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"\n    },\n    {\n      \"sentence\": 24,\n      \"text\": \"Frontends receive the ValidateAuthTokenResp event to complete authentication.\"\n    },\n    {\n      \"sentence\": 25,\n      \"text\": \"Frontends collect subscriptions and publishers.\"\n    },\n    {\n      \"sentence\": 26,\n      \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\"\n    },\n    {\n      \"sentence\": 27,\n      \"text\": \"Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\"\n    },\n    {\n      \"sentence\": 28,\n      \"text\": \"Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\"\n    },\n    {\n      \"sentence\": 29,\n      \"text\": \"Backends handle all the non-streamer events.\"\n    },\n    {\n      \"sentence\": 30,\n      \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\"\n    },\n    {\n      \"sentence\": 31,\n      \"text\": \"So individual backends only process redis events for the meetings matching the associated instanceId.\"\n    },\n    {\n      \"sentence\": 32,\n      \"text\": \"ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\"\n    },\n    {\n      \"sentence\": 33,\n      \"text\": \"When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\"\n    },\n    {\n      \"sentence\": 34,\n      \"text\": \"In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\"\n    },\n    {\n      \"sentence\": 35,\n      \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"\n    },\n    {\n      \"sentence\": 36,\n      \"text\": \"BBB web.\"\n    },\n    {\n      \"sentence\": 37,\n      \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"\n    },\n    {\n      \"sentence\": 38,\n      \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"\n    },\n    {\n      \"sentence\": 39,\n      \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 40,\n      \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"\n    },\n    {\n      \"sentence\": 41,\n      \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"\n    },\n    {\n      \"sentence\": 42,\n      \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"\n    },\n    {\n      \"sentence\": 43,\n      \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"\n    },\n    {\n      \"sentence\": 44,\n      \"text\": \"The BigBlueButton comes with some simple API demos.\"\n    },\n    {\n      \"sentence\": 45,\n      \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"\n    },\n    {\n      \"sentence\": 46,\n      \"text\": \"Redis PubSub.\"\n    },\n    {\n      \"sentence\": 47,\n      \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 48,\n      \"text\": \"Redis DB.\"\n    },\n    {\n      \"sentence\": 49,\n      \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"\n    },\n    {\n      \"sentence\": 50,\n      \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n    },\n    {\n      \"sentence\": 51,\n      \"text\": \"Apps akka.\"\n    },\n    {\n      \"sentence\": 52,\n      \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"\n    },\n    {\n      \"sentence\": 53,\n      \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\"\n    },\n    {\n      \"sentence\": 54,\n      \"text\": \"Below is a diagram of the different components of Apps Akka.\"\n    },\n    {\n      \"sentence\": 55,\n      \"text\": \"The meeting business logic is in the MeetingActor.\"\n    },\n    {\n      \"sentence\": 56,\n      \"text\": \"This is where information about the meeting is stored and where all messages for a meeting is processed.\"\n    },\n    {\n      \"sentence\": 57,\n      \"text\": \"FSESL akka.\"\n    },\n    {\n      \"sentence\": 58,\n      \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"\n    },\n    {\n      \"sentence\": 59,\n      \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\"\n    },\n    {\n      \"sentence\": 60,\n      \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n    },\n    {\n      \"sentence\": 61,\n      \"text\": \"FreeSWITCH.\"\n    },\n    {\n      \"sentence\": 62,\n      \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\"\n    },\n    {\n      \"sentence\": 63,\n      \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 64,\n      \"text\": \"Users are able to join the voice conference through the headset.\"\n    },\n    {\n      \"sentence\": 65,\n      \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"\n    },\n    {\n      \"sentence\": 66,\n      \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"\n    },\n    {\n      \"sentence\": 67,\n      \"text\": \"Kurento and WebRTC-SFU.\"\n    },\n    {\n      \"sentence\": 68,\n      \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n    },\n    {\n      \"sentence\": 69,\n      \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"\n    },\n    {\n      \"sentence\": 70,\n      \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"\n    },\n    {\n      \"sentence\": 71,\n      \"text\": \"Joining a voice conference.\"\n    },\n    {\n      \"sentence\": 72,\n      \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"\n    },\n    {\n      \"sentence\": 73,\n      \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"\n    },\n    {\n      \"sentence\": 74,\n      \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"\n    },\n    {\n      \"sentence\": 75,\n      \"text\": \"Uploading a presentation.\"\n    },\n    {\n      \"sentence\": 76,\n      \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n    },\n    {\n      \"sentence\": 77,\n      \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"\n    },\n    {\n      \"sentence\": 78,\n      \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"\n    },\n    {\n      \"sentence\": 79,\n      \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n    },\n    {\n      \"sentence\": 80,\n      \"text\": \"Presentation conversion flow.\"\n    },\n    {\n      \"sentence\": 81,\n      \"text\": \"The diagram below describes the flow of the presentation conversion.\"\n    },\n    {\n      \"sentence\": 82,\n      \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"\n    },\n    {\n      \"sentence\": 83,\n      \"text\": \"Then below the SVG conversion flow.\"\n    },\n    {\n      \"sentence\": 84,\n      \"text\": \"It covers the conversion fallback.\"\n    },\n    {\n      \"sentence\": 85,\n      \"text\": \"Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\"\n    },\n    {\n      \"sentence\": 86,\n      \"text\": \"Internal network connections.\"\n    },\n    {\n      \"sentence\": 87,\n      \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"\n    }\n  ],\n  \"component_catalog\": [\n    \"Recording Service\",\n    \"kurento\",\n    \"WebRTC-SFU\",\n    \"HTML5 Server\",\n    \"HTML5 Client\",\n    \"Presentation Conversion\",\n    \"BBB web\",\n    \"Redis PubSub\",\n    \"FSESL\",\n    \"Apps\",\n    \"Redis DB\",\n    \"FreeSWITCH\"\n  ],\n  \"ambiguous_components\": [],\n  \"approved_aliases\": [\n    {\n      \"alias\": \"bbb-html5\",\n      \"target\": \"HTML5 Server\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BBB web\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Apps Akka\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"KMS\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"fsels\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton web application\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton Apps\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"FreeSWITCH Event Socket Layer\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Kurento Media Server\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"conversion process\",\n      \"target\": \"Presentation Conversion\",\n      \"scope\": \"local\"\n    },\n    {\n      \"alias\": \"Recording Processor\",\n      \"target\": \"Recording Service\",\n      \"scope\": \"global\"\n    }\n  ]\n}\n\nCOMPLETED TOOL FEEDBACK\n[]\n\nCURRENT LINKS\n[]\n\nAVAILABLE ACTIONS\n[\"entity_pipeline\", \"coreference_pipeline\", \"coverage_audit\", \"finalize\"]\n\nReturn JSON only:\n{\n  \"action\": \"one available action\",\n  \"document_reference_style\": \"brief runtime assessment\",\n  \"component_profile_effect\": \"brief runtime assessment\",\n  \"coverage_gap\": \"complementary evidence still missing or none\",\n  \"reason\": \"brief workflow reason\"\n}\n",
+          "response_text": "{\n  \"action\": \"entity_pipeline\",\n  \"document_reference_style\": \"The document predominantly uses explicit component names and approved aliases, with section headings and direct architectural descriptions.\",\n  \"component_profile_effect\": \"The catalog has no ambiguous components and provides aliases for major naming variants, making entity-based extraction well supported.\",\n  \"coverage_gap\": \"Explicit named-component evidence has not yet been extracted; coreferential and omission-focused evidence may remain afterward.\",\n  \"reason\": \"Run the entity pipeline first because the document is rich in direct component mentions and no tools have yet produced links.\"\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 12901,
+          "model": null
+        },
+        {
+          "phase": "phase_24_orchestrator_2",
+          "ts": 1784880762.1988163,
+          "elapsed_s": 8.021,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking phase tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize the current result. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: existing knowledge-aware entity extraction followed by the\n  existing two-pass evidence validator.\n- coreference_pipeline: existing reference-resolution extraction followed by\n  its reference validator.\n- coverage_audit: inspect the document, catalog, aliases, and CURRENT LINKS for\n  semantically grounded omissions, then send its candidates through the existing\n  two-pass evidence validator.\n- finalize: return the union of links produced by completed tools.\n\nWORKFLOW METHOD\n- Use the document's naming/reference style, component ambiguity and aliases,\n  current coverage, and concrete tool feedback.\n- Entity, coreference, and audit tools cover different evidence modes; choose\n  and order only those warranted by this project.\n- Treat candidate/link counts as observations, never thresholds.\n- Do not infer gold, use project identity, or create link decisions yourself.\n- Finalize when the current result has covered the project's supported reference\n  modes and no unused tool has complementary evidence.\n\nPROJECT PROFILE\n{\n  \"document\": [\n    {\n      \"sentence\": 1,\n      \"text\": \"High-level architecture.\"\n    },\n    {\n      \"sentence\": 2,\n      \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"\n    },\n    {\n      \"sentence\": 3,\n      \"text\": \"We'll break down each component in more detail below.\"\n    },\n    {\n      \"sentence\": 4,\n      \"text\": \"HTML5 client.\"\n    },\n    {\n      \"sentence\": 5,\n      \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"\n    },\n    {\n      \"sentence\": 6,\n      \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n    },\n    {\n      \"sentence\": 7,\n      \"text\": \"These connections are all handled by nginx.\"\n    },\n    {\n      \"sentence\": 8,\n      \"text\": \"The HTML5 server sits behind nginx.\"\n    },\n    {\n      \"sentence\": 9,\n      \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 10,\n      \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"\n    },\n    {\n      \"sentence\": 11,\n      \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"\n    },\n    {\n      \"sentence\": 12,\n      \"text\": \"The client side subscribes to the published collections on the server side.\"\n    },\n    {\n      \"sentence\": 13,\n      \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"\n    },\n    {\n      \"sentence\": 14,\n      \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 15,\n      \"text\": \"Scalability of HTML5 server component.\"\n    },\n    {\n      \"sentence\": 16,\n      \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"\n    },\n    {\n      \"sentence\": 17,\n      \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"\n    },\n    {\n      \"sentence\": 18,\n      \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"\n    },\n    {\n      \"sentence\": 19,\n      \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n    },\n    {\n      \"sentence\": 20,\n      \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"\n    },\n    {\n      \"sentence\": 21,\n      \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"\n    },\n    {\n      \"sentence\": 22,\n      \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"\n    },\n    {\n      \"sentence\": 23,\n      \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"\n    },\n    {\n      \"sentence\": 24,\n      \"text\": \"Frontends receive the ValidateAuthTokenResp event to complete authentication.\"\n    },\n    {\n      \"sentence\": 25,\n      \"text\": \"Frontends collect subscriptions and publishers.\"\n    },\n    {\n      \"sentence\": 26,\n      \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\"\n    },\n    {\n      \"sentence\": 27,\n      \"text\": \"Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\"\n    },\n    {\n      \"sentence\": 28,\n      \"text\": \"Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\"\n    },\n    {\n      \"sentence\": 29,\n      \"text\": \"Backends handle all the non-streamer events.\"\n    },\n    {\n      \"sentence\": 30,\n      \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\"\n    },\n    {\n      \"sentence\": 31,\n      \"text\": \"So individual backends only process redis events for the meetings matching the associated instanceId.\"\n    },\n    {\n      \"sentence\": 32,\n      \"text\": \"ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\"\n    },\n    {\n      \"sentence\": 33,\n      \"text\": \"When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\"\n    },\n    {\n      \"sentence\": 34,\n      \"text\": \"In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\"\n    },\n    {\n      \"sentence\": 35,\n      \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"\n    },\n    {\n      \"sentence\": 36,\n      \"text\": \"BBB web.\"\n    },\n    {\n      \"sentence\": 37,\n      \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"\n    },\n    {\n      \"sentence\": 38,\n      \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"\n    },\n    {\n      \"sentence\": 39,\n      \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 40,\n      \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"\n    },\n    {\n      \"sentence\": 41,\n      \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"\n    },\n    {\n      \"sentence\": 42,\n      \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"\n    },\n    {\n      \"sentence\": 43,\n      \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"\n    },\n    {\n      \"sentence\": 44,\n      \"text\": \"The BigBlueButton comes with some simple API demos.\"\n    },\n    {\n      \"sentence\": 45,\n      \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"\n    },\n    {\n      \"sentence\": 46,\n      \"text\": \"Redis PubSub.\"\n    },\n    {\n      \"sentence\": 47,\n      \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 48,\n      \"text\": \"Redis DB.\"\n    },\n    {\n      \"sentence\": 49,\n      \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"\n    },\n    {\n      \"sentence\": 50,\n      \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n    },\n    {\n      \"sentence\": 51,\n      \"text\": \"Apps akka.\"\n    },\n    {\n      \"sentence\": 52,\n      \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"\n    },\n    {\n      \"sentence\": 53,\n      \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\"\n    },\n    {\n      \"sentence\": 54,\n      \"text\": \"Below is a diagram of the different components of Apps Akka.\"\n    },\n    {\n      \"sentence\": 55,\n      \"text\": \"The meeting business logic is in the MeetingActor.\"\n    },\n    {\n      \"sentence\": 56,\n      \"text\": \"This is where information about the meeting is stored and where all messages for a meeting is processed.\"\n    },\n    {\n      \"sentence\": 57,\n      \"text\": \"FSESL akka.\"\n    },\n    {\n      \"sentence\": 58,\n      \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"\n    },\n    {\n      \"sentence\": 59,\n      \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\"\n    },\n    {\n      \"sentence\": 60,\n      \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n    },\n    {\n      \"sentence\": 61,\n      \"text\": \"FreeSWITCH.\"\n    },\n    {\n      \"sentence\": 62,\n      \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\"\n    },\n    {\n      \"sentence\": 63,\n      \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 64,\n      \"text\": \"Users are able to join the voice conference through the headset.\"\n    },\n    {\n      \"sentence\": 65,\n      \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"\n    },\n    {\n      \"sentence\": 66,\n      \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"\n    },\n    {\n      \"sentence\": 67,\n      \"text\": \"Kurento and WebRTC-SFU.\"\n    },\n    {\n      \"sentence\": 68,\n      \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n    },\n    {\n      \"sentence\": 69,\n      \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"\n    },\n    {\n      \"sentence\": 70,\n      \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"\n    },\n    {\n      \"sentence\": 71,\n      \"text\": \"Joining a voice conference.\"\n    },\n    {\n      \"sentence\": 72,\n      \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"\n    },\n    {\n      \"sentence\": 73,\n      \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"\n    },\n    {\n      \"sentence\": 74,\n      \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"\n    },\n    {\n      \"sentence\": 75,\n      \"text\": \"Uploading a presentation.\"\n    },\n    {\n      \"sentence\": 76,\n      \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n    },\n    {\n      \"sentence\": 77,\n      \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"\n    },\n    {\n      \"sentence\": 78,\n      \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"\n    },\n    {\n      \"sentence\": 79,\n      \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n    },\n    {\n      \"sentence\": 80,\n      \"text\": \"Presentation conversion flow.\"\n    },\n    {\n      \"sentence\": 81,\n      \"text\": \"The diagram below describes the flow of the presentation conversion.\"\n    },\n    {\n      \"sentence\": 82,\n      \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"\n    },\n    {\n      \"sentence\": 83,\n      \"text\": \"Then below the SVG conversion flow.\"\n    },\n    {\n      \"sentence\": 84,\n      \"text\": \"It covers the conversion fallback.\"\n    },\n    {\n      \"sentence\": 85,\n      \"text\": \"Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\"\n    },\n    {\n      \"sentence\": 86,\n      \"text\": \"Internal network connections.\"\n    },\n    {\n      \"sentence\": 87,\n      \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"\n    }\n  ],\n  \"component_catalog\": [\n    \"Recording Service\",\n    \"kurento\",\n    \"WebRTC-SFU\",\n    \"HTML5 Server\",\n    \"HTML5 Client\",\n    \"Presentation Conversion\",\n    \"BBB web\",\n    \"Redis PubSub\",\n    \"FSESL\",\n    \"Apps\",\n    \"Redis DB\",\n    \"FreeSWITCH\"\n  ],\n  \"ambiguous_components\": [],\n  \"approved_aliases\": [\n    {\n      \"alias\": \"bbb-html5\",\n      \"target\": \"HTML5 Server\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BBB web\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Apps Akka\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"KMS\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"fsels\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton web application\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton Apps\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"FreeSWITCH Event Socket Layer\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Kurento Media Server\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"conversion process\",\n      \"target\": \"Presentation Conversion\",\n      \"scope\": \"local\"\n    },\n    {\n      \"alias\": \"Recording Processor\",\n      \"target\": \"Recording Service\",\n      \"scope\": \"global\"\n    }\n  ]\n}\n\nCOMPLETED TOOL FEEDBACK\n[\n  {\n    \"action\": \"entity_pipeline\",\n    \"document_reference_style\": \"The document predominantly uses explicit component names and approved aliases, with section headings and direct architectural descriptions.\",\n    \"component_profile_effect\": \"The catalog has no ambiguous components and provides aliases for major naming variants, making entity-based extraction well supported.\",\n    \"coverage_gap\": \"Explicit named-component evidence has not yet been extracted; coreferential and omission-focused evidence may remain afterward.\",\n    \"reason\": \"Run the entity pipeline first because the document is rich in direct component mentions and no tools have yet produced links.\",\n    \"feedback\": {\n      \"accepted\": [\n        {\n          \"sentence\": 4,\n          \"text\": \"HTML5 client.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 5,\n          \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 6,\n          \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 8,\n          \"text\": \"The HTML5 server sits behind nginx.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 9,\n          \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 14,\n          \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 15,\n          \"text\": \"Scalability of HTML5 server component.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 19,\n          \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 20,\n          \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 21,\n          \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 30,\n          \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 36,\n          \"text\": \"BBB web.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 37,\n          \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 46,\n          \"text\": \"Redis PubSub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 47,\n          \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 48,\n          \"text\": \"Redis DB.\",\n          \"component\": \"Redis DB\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 49,\n          \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\",\n          \"component\": \"Redis DB\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 50,\n          \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\n          \"component\": \"Recording Service\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 51,\n          \"text\": \"Apps akka.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 52,\n          \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 54,\n          \"text\": \"Below is a diagram of the different components of Apps Akka.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 57,\n          \"text\": \"FSESL akka.\",\n          \"component\": \"FSESL\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 58,\n          \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"FSESL\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 61,\n          \"text\": \"FreeSWITCH.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 62,\n          \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 63,\n          \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 67,\n          \"text\": \"Kurento and WebRTC-SFU.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 67,\n          \"text\": \"Kurento and WebRTC-SFU.\",\n          \"component\": \"WebRTC-SFU\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 68,\n          \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 69,\n          \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 70,\n          \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n          \"component\": \"WebRTC-SFU\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 72,\n          \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 72,\n          \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 78,\n          \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 26,\n          \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        }\n      ]\n    }\n  }\n]\n\nCURRENT LINKS\n[\n  {\n    \"sentence\": 4,\n    \"text\": \"HTML5 client.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 5,\n    \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 6,\n    \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 8,\n    \"text\": \"The HTML5 server sits behind nginx.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 9,\n    \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 14,\n    \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 15,\n    \"text\": \"Scalability of HTML5 server component.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 19,\n    \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 20,\n    \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 21,\n    \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 30,\n    \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 36,\n    \"text\": \"BBB web.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 37,\n    \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 46,\n    \"text\": \"Redis PubSub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 47,\n    \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 48,\n    \"text\": \"Redis DB.\",\n    \"component\": \"Redis DB\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 49,\n    \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\",\n    \"component\": \"Redis DB\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 50,\n    \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\n    \"component\": \"Recording Service\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 51,\n    \"text\": \"Apps akka.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 52,\n    \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 54,\n    \"text\": \"Below is a diagram of the different components of Apps Akka.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 57,\n    \"text\": \"FSESL akka.\",\n    \"component\": \"FSESL\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 58,\n    \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"FSESL\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 61,\n    \"text\": \"FreeSWITCH.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 62,\n    \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 63,\n    \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 67,\n    \"text\": \"Kurento and WebRTC-SFU.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 67,\n    \"text\": \"Kurento and WebRTC-SFU.\",\n    \"component\": \"WebRTC-SFU\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 68,\n    \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 69,\n    \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 70,\n    \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n    \"component\": \"WebRTC-SFU\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 72,\n    \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 72,\n    \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 78,\n    \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 79,\n    \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 26,\n    \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 73,\n    \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 79,\n    \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  }\n]\n\nAVAILABLE ACTIONS\n[\"coreference_pipeline\", \"coverage_audit\", \"finalize\"]\n\nReturn JSON only:\n{\n  \"action\": \"one available action\",\n  \"document_reference_style\": \"brief runtime assessment\",\n  \"component_profile_effect\": \"brief runtime assessment\",\n  \"coverage_gap\": \"complementary evidence still missing or none\",\n  \"reason\": \"brief workflow reason\"\n}\n",
+          "response_text": "{\n  \"action\": \"coreference_pipeline\",\n  \"document_reference_style\": \"The document mixes explicit component names with local pronouns and role-based references within component sections.\",\n  \"component_profile_effect\": \"Approved aliases resolve naming variants, while the lack of ambiguous components supports reliable reference resolution from nearby named antecedents.\",\n  \"coverage_gap\": \"Coreferential evidence remains in sentences using references such as \\\"It,\\\" \\\"This,\\\" and section-scoped role terms after explicit component introductions.\",\n  \"reason\": \"Run coreference resolution next because it covers a complementary evidence mode not handled by the completed entity pipeline.\"\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 8021,
+          "model": null
+        },
+        {
+          "phase": "phase_24_orchestrator_3",
+          "ts": 1784880770.220557,
+          "elapsed_s": 7.446,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking phase tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize the current result. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: existing knowledge-aware entity extraction followed by the\n  existing two-pass evidence validator.\n- coreference_pipeline: existing reference-resolution extraction followed by\n  its reference validator.\n- coverage_audit: inspect the document, catalog, aliases, and CURRENT LINKS for\n  semantically grounded omissions, then send its candidates through the existing\n  two-pass evidence validator.\n- finalize: return the union of links produced by completed tools.\n\nWORKFLOW METHOD\n- Use the document's naming/reference style, component ambiguity and aliases,\n  current coverage, and concrete tool feedback.\n- Entity, coreference, and audit tools cover different evidence modes; choose\n  and order only those warranted by this project.\n- Treat candidate/link counts as observations, never thresholds.\n- Do not infer gold, use project identity, or create link decisions yourself.\n- Finalize when the current result has covered the project's supported reference\n  modes and no unused tool has complementary evidence.\n\nPROJECT PROFILE\n{\n  \"document\": [\n    {\n      \"sentence\": 1,\n      \"text\": \"High-level architecture.\"\n    },\n    {\n      \"sentence\": 2,\n      \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"\n    },\n    {\n      \"sentence\": 3,\n      \"text\": \"We'll break down each component in more detail below.\"\n    },\n    {\n      \"sentence\": 4,\n      \"text\": \"HTML5 client.\"\n    },\n    {\n      \"sentence\": 5,\n      \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"\n    },\n    {\n      \"sentence\": 6,\n      \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n    },\n    {\n      \"sentence\": 7,\n      \"text\": \"These connections are all handled by nginx.\"\n    },\n    {\n      \"sentence\": 8,\n      \"text\": \"The HTML5 server sits behind nginx.\"\n    },\n    {\n      \"sentence\": 9,\n      \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 10,\n      \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"\n    },\n    {\n      \"sentence\": 11,\n      \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"\n    },\n    {\n      \"sentence\": 12,\n      \"text\": \"The client side subscribes to the published collections on the server side.\"\n    },\n    {\n      \"sentence\": 13,\n      \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"\n    },\n    {\n      \"sentence\": 14,\n      \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 15,\n      \"text\": \"Scalability of HTML5 server component.\"\n    },\n    {\n      \"sentence\": 16,\n      \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"\n    },\n    {\n      \"sentence\": 17,\n      \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"\n    },\n    {\n      \"sentence\": 18,\n      \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"\n    },\n    {\n      \"sentence\": 19,\n      \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n    },\n    {\n      \"sentence\": 20,\n      \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"\n    },\n    {\n      \"sentence\": 21,\n      \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"\n    },\n    {\n      \"sentence\": 22,\n      \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"\n    },\n    {\n      \"sentence\": 23,\n      \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"\n    },\n    {\n      \"sentence\": 24,\n      \"text\": \"Frontends receive the ValidateAuthTokenResp event to complete authentication.\"\n    },\n    {\n      \"sentence\": 25,\n      \"text\": \"Frontends collect subscriptions and publishers.\"\n    },\n    {\n      \"sentence\": 26,\n      \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\"\n    },\n    {\n      \"sentence\": 27,\n      \"text\": \"Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\"\n    },\n    {\n      \"sentence\": 28,\n      \"text\": \"Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\"\n    },\n    {\n      \"sentence\": 29,\n      \"text\": \"Backends handle all the non-streamer events.\"\n    },\n    {\n      \"sentence\": 30,\n      \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\"\n    },\n    {\n      \"sentence\": 31,\n      \"text\": \"So individual backends only process redis events for the meetings matching the associated instanceId.\"\n    },\n    {\n      \"sentence\": 32,\n      \"text\": \"ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\"\n    },\n    {\n      \"sentence\": 33,\n      \"text\": \"When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\"\n    },\n    {\n      \"sentence\": 34,\n      \"text\": \"In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\"\n    },\n    {\n      \"sentence\": 35,\n      \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"\n    },\n    {\n      \"sentence\": 36,\n      \"text\": \"BBB web.\"\n    },\n    {\n      \"sentence\": 37,\n      \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"\n    },\n    {\n      \"sentence\": 38,\n      \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"\n    },\n    {\n      \"sentence\": 39,\n      \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 40,\n      \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"\n    },\n    {\n      \"sentence\": 41,\n      \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"\n    },\n    {\n      \"sentence\": 42,\n      \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"\n    },\n    {\n      \"sentence\": 43,\n      \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"\n    },\n    {\n      \"sentence\": 44,\n      \"text\": \"The BigBlueButton comes with some simple API demos.\"\n    },\n    {\n      \"sentence\": 45,\n      \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"\n    },\n    {\n      \"sentence\": 46,\n      \"text\": \"Redis PubSub.\"\n    },\n    {\n      \"sentence\": 47,\n      \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"\n    },\n    {\n      \"sentence\": 48,\n      \"text\": \"Redis DB.\"\n    },\n    {\n      \"sentence\": 49,\n      \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"\n    },\n    {\n      \"sentence\": 50,\n      \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n    },\n    {\n      \"sentence\": 51,\n      \"text\": \"Apps akka.\"\n    },\n    {\n      \"sentence\": 52,\n      \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"\n    },\n    {\n      \"sentence\": 53,\n      \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\"\n    },\n    {\n      \"sentence\": 54,\n      \"text\": \"Below is a diagram of the different components of Apps Akka.\"\n    },\n    {\n      \"sentence\": 55,\n      \"text\": \"The meeting business logic is in the MeetingActor.\"\n    },\n    {\n      \"sentence\": 56,\n      \"text\": \"This is where information about the meeting is stored and where all messages for a meeting is processed.\"\n    },\n    {\n      \"sentence\": 57,\n      \"text\": \"FSESL akka.\"\n    },\n    {\n      \"sentence\": 58,\n      \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"\n    },\n    {\n      \"sentence\": 59,\n      \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\"\n    },\n    {\n      \"sentence\": 60,\n      \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n    },\n    {\n      \"sentence\": 61,\n      \"text\": \"FreeSWITCH.\"\n    },\n    {\n      \"sentence\": 62,\n      \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\"\n    },\n    {\n      \"sentence\": 63,\n      \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\"\n    },\n    {\n      \"sentence\": 64,\n      \"text\": \"Users are able to join the voice conference through the headset.\"\n    },\n    {\n      \"sentence\": 65,\n      \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"\n    },\n    {\n      \"sentence\": 66,\n      \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"\n    },\n    {\n      \"sentence\": 67,\n      \"text\": \"Kurento and WebRTC-SFU.\"\n    },\n    {\n      \"sentence\": 68,\n      \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n    },\n    {\n      \"sentence\": 69,\n      \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"\n    },\n    {\n      \"sentence\": 70,\n      \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"\n    },\n    {\n      \"sentence\": 71,\n      \"text\": \"Joining a voice conference.\"\n    },\n    {\n      \"sentence\": 72,\n      \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"\n    },\n    {\n      \"sentence\": 73,\n      \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"\n    },\n    {\n      \"sentence\": 74,\n      \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"\n    },\n    {\n      \"sentence\": 75,\n      \"text\": \"Uploading a presentation.\"\n    },\n    {\n      \"sentence\": 76,\n      \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n    },\n    {\n      \"sentence\": 77,\n      \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"\n    },\n    {\n      \"sentence\": 78,\n      \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"\n    },\n    {\n      \"sentence\": 79,\n      \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n    },\n    {\n      \"sentence\": 80,\n      \"text\": \"Presentation conversion flow.\"\n    },\n    {\n      \"sentence\": 81,\n      \"text\": \"The diagram below describes the flow of the presentation conversion.\"\n    },\n    {\n      \"sentence\": 82,\n      \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"\n    },\n    {\n      \"sentence\": 83,\n      \"text\": \"Then below the SVG conversion flow.\"\n    },\n    {\n      \"sentence\": 84,\n      \"text\": \"It covers the conversion fallback.\"\n    },\n    {\n      \"sentence\": 85,\n      \"text\": \"Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\"\n    },\n    {\n      \"sentence\": 86,\n      \"text\": \"Internal network connections.\"\n    },\n    {\n      \"sentence\": 87,\n      \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"\n    }\n  ],\n  \"component_catalog\": [\n    \"Recording Service\",\n    \"kurento\",\n    \"WebRTC-SFU\",\n    \"HTML5 Server\",\n    \"HTML5 Client\",\n    \"Presentation Conversion\",\n    \"BBB web\",\n    \"Redis PubSub\",\n    \"FSESL\",\n    \"Apps\",\n    \"Redis DB\",\n    \"FreeSWITCH\"\n  ],\n  \"ambiguous_components\": [],\n  \"approved_aliases\": [\n    {\n      \"alias\": \"bbb-html5\",\n      \"target\": \"HTML5 Server\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BBB web\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Apps Akka\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"KMS\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"fsels\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton web application\",\n      \"target\": \"BBB web\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"BigBlueButton Apps\",\n      \"target\": \"Apps\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"FreeSWITCH Event Socket Layer\",\n      \"target\": \"FSESL\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"Kurento Media Server\",\n      \"target\": \"kurento\",\n      \"scope\": \"global\"\n    },\n    {\n      \"alias\": \"conversion process\",\n      \"target\": \"Presentation Conversion\",\n      \"scope\": \"local\"\n    },\n    {\n      \"alias\": \"Recording Processor\",\n      \"target\": \"Recording Service\",\n      \"scope\": \"global\"\n    }\n  ]\n}\n\nCOMPLETED TOOL FEEDBACK\n[\n  {\n    \"action\": \"entity_pipeline\",\n    \"document_reference_style\": \"The document predominantly uses explicit component names and approved aliases, with section headings and direct architectural descriptions.\",\n    \"component_profile_effect\": \"The catalog has no ambiguous components and provides aliases for major naming variants, making entity-based extraction well supported.\",\n    \"coverage_gap\": \"Explicit named-component evidence has not yet been extracted; coreferential and omission-focused evidence may remain afterward.\",\n    \"reason\": \"Run the entity pipeline first because the document is rich in direct component mentions and no tools have yet produced links.\",\n    \"feedback\": {\n      \"accepted\": [\n        {\n          \"sentence\": 4,\n          \"text\": \"HTML5 client.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 5,\n          \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 6,\n          \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 8,\n          \"text\": \"The HTML5 server sits behind nginx.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 9,\n          \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 14,\n          \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 15,\n          \"text\": \"Scalability of HTML5 server component.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 19,\n          \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 20,\n          \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 21,\n          \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 30,\n          \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 36,\n          \"text\": \"BBB web.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 37,\n          \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 46,\n          \"text\": \"Redis PubSub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 47,\n          \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 48,\n          \"text\": \"Redis DB.\",\n          \"component\": \"Redis DB\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 49,\n          \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\",\n          \"component\": \"Redis DB\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 50,\n          \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\n          \"component\": \"Recording Service\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 51,\n          \"text\": \"Apps akka.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 52,\n          \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 54,\n          \"text\": \"Below is a diagram of the different components of Apps Akka.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 57,\n          \"text\": \"FSESL akka.\",\n          \"component\": \"FSESL\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 58,\n          \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"FSESL\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 60,\n          \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 61,\n          \"text\": \"FreeSWITCH.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 62,\n          \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 63,\n          \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 67,\n          \"text\": \"Kurento and WebRTC-SFU.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 67,\n          \"text\": \"Kurento and WebRTC-SFU.\",\n          \"component\": \"WebRTC-SFU\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 68,\n          \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 69,\n          \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\",\n          \"component\": \"kurento\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 70,\n          \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n          \"component\": \"WebRTC-SFU\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 72,\n          \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n          \"component\": \"FreeSWITCH\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 72,\n          \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 78,\n          \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\",\n          \"component\": \"BBB web\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n          \"component\": \"Redis PubSub\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 26,\n          \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\",\n          \"component\": \"Apps\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"entity\"\n        }\n      ]\n    }\n  },\n  {\n    \"action\": \"coreference_pipeline\",\n    \"document_reference_style\": \"The document mixes explicit component names with local pronouns and role-based references within component sections.\",\n    \"component_profile_effect\": \"Approved aliases resolve naming variants, while the lack of ambiguous components supports reliable reference resolution from nearby named antecedents.\",\n    \"coverage_gap\": \"Coreferential evidence remains in sentences using references such as \\\"It,\\\" \\\"This,\\\" and section-scoped role terms after explicit component introductions.\",\n    \"reason\": \"Run coreference resolution next because it covers a complementary evidence mode not handled by the completed entity pipeline.\",\n    \"feedback\": {\n      \"accepted\": [\n        {\n          \"sentence\": 11,\n          \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"The client side subscribes to the published collections on the server side.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 12,\n          \"text\": \"The client side subscribes to the published collections on the server side.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 13,\n          \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\n          \"component\": \"HTML5 Server\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 13,\n          \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 38,\n          \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\",\n          \"component\": \"BBB web\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 53,\n          \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\",\n          \"component\": \"Apps\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 73,\n          \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 76,\n          \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\n          \"component\": \"HTML5 Client\",\n          \"source\": \"coreference\"\n        },\n        {\n          \"sentence\": 79,\n          \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n          \"component\": \"Presentation Conversion\",\n          \"source\": \"coreference\"\n        }\n      ]\n    }\n  }\n]\n\nCURRENT LINKS\n[\n  {\n    \"sentence\": 4,\n    \"text\": \"HTML5 client.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 5,\n    \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 6,\n    \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 8,\n    \"text\": \"The HTML5 server sits behind nginx.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 9,\n    \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 14,\n    \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 15,\n    \"text\": \"Scalability of HTML5 server component.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 19,\n    \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 20,\n    \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 21,\n    \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 30,\n    \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 36,\n    \"text\": \"BBB web.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 37,\n    \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 46,\n    \"text\": \"Redis PubSub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 47,\n    \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 48,\n    \"text\": \"Redis DB.\",\n    \"component\": \"Redis DB\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 49,\n    \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\",\n    \"component\": \"Redis DB\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 50,\n    \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\n    \"component\": \"Recording Service\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 51,\n    \"text\": \"Apps akka.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 52,\n    \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 54,\n    \"text\": \"Below is a diagram of the different components of Apps Akka.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 57,\n    \"text\": \"FSESL akka.\",\n    \"component\": \"FSESL\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 58,\n    \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"FSESL\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 60,\n    \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 61,\n    \"text\": \"FreeSWITCH.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 62,\n    \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 63,\n    \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 67,\n    \"text\": \"Kurento and WebRTC-SFU.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 67,\n    \"text\": \"Kurento and WebRTC-SFU.\",\n    \"component\": \"WebRTC-SFU\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 68,\n    \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 69,\n    \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\",\n    \"component\": \"kurento\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 70,\n    \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\",\n    \"component\": \"WebRTC-SFU\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 72,\n    \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n    \"component\": \"FreeSWITCH\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 72,\n    \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 78,\n    \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\",\n    \"component\": \"BBB web\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 79,\n    \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n    \"component\": \"Redis PubSub\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 26,\n    \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\",\n    \"component\": \"Apps\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 73,\n    \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 79,\n    \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"entity\"\n  },\n  {\n    \"sentence\": 11,\n    \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 12,\n    \"text\": \"The client side subscribes to the published collections on the server side.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 12,\n    \"text\": \"The client side subscribes to the published collections on the server side.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 13,\n    \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\n    \"component\": \"HTML5 Server\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 13,\n    \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 38,\n    \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\",\n    \"component\": \"BBB web\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 53,\n    \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\",\n    \"component\": \"Apps\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 76,\n    \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\n    \"component\": \"HTML5 Client\",\n    \"source\": \"coreference\"\n  },\n  {\n    \"sentence\": 79,\n    \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\",\n    \"component\": \"Presentation Conversion\",\n    \"source\": \"coreference\"\n  }\n]\n\nAVAILABLE ACTIONS\n[\"coverage_audit\", \"finalize\"]\n\nReturn JSON only:\n{\n  \"action\": \"one available action\",\n  \"document_reference_style\": \"brief runtime assessment\",\n  \"component_profile_effect\": \"brief runtime assessment\",\n  \"coverage_gap\": \"complementary evidence still missing or none\",\n  \"reason\": \"brief workflow reason\"\n}\n",
+          "response_text": "{\n  \"action\": \"coverage_audit\",\n  \"document_reference_style\": \"The document combines explicit names and approved aliases with section-scoped descriptions, role terms, and workflow references.\",\n  \"component_profile_effect\": \"The unambiguous catalog and aliases support auditing omitted section-level and semantic references against the existing entity and coreference coverage.\",\n  \"coverage_gap\": \"Potential grounded omissions remain, especially in component sections and the presentation-conversion workflow where several descriptive sentences lack links.\",\n  \"reason\": \"Run the complementary omission-focused audit before finalizing because entity and coreference modes are complete but current coverage still leaves semantically relevant passages unlinked.\"\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7445,
+          "model": null
+        },
+        {
+          "phase": "phase_24_coverage_audit",
+          "ts": 1784880777.666671,
+          "elapsed_s": 30.488,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Audit trace-link coverage for one software design document.\nFind supported component references missing from CURRENT LINKS. This is a\ncandidate-generation tool; a separate validator makes final decisions.\n\nCOMPONENT CATALOG\n[\"Recording Service\", \"kurento\", \"WebRTC-SFU\", \"HTML5 Server\", \"HTML5 Client\", \"Presentation Conversion\", \"BBB web\", \"Redis PubSub\", \"FSESL\", \"Apps\", \"Redis DB\", \"FreeSWITCH\"]\n\nAPPROVED DOCUMENT ALIASES\n[{\"alias\": \"bbb-html5\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BBB web\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"Apps Akka\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"KMS\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"fsels\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton web application\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton Apps\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"FreeSWITCH Event Socket Layer\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"Kurento Media Server\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"conversion process\", \"target\": \"Presentation Conversion\", \"scope\": \"local\"}, {\"alias\": \"Recording Processor\", \"target\": \"Recording Service\", \"scope\": \"global\"}]\n\nFor each proposed omission, establish:\n- REFERENT IDENTITY: the exact quoted phrase denotes the catalog component\n  itself, not merely an associated user, browser, algorithm, implementation,\n  package, connection, data item, action, or result;\n- CLAIM OWNERSHIP: the sentence states an architectural fact owned by that\n  component;\n- COMPETING REFERENT: the strongest alternative interpretation, or \"none\".\n\nDo not repeat CURRENT LINKS. Reject code/package-only mentions, unsupported\ngroup references, and captions without a component claim. Use only exact catalog\nnames and exact source quotes.\n\nDOCUMENT\nITEM S1\n  SENTENCE: High-level architecture.\n  CURRENT LINKS: []\n\nITEM S2\n  SENTENCE: The following diagram provides a high-level view of how BigBlueButton's components work together.\n  CURRENT LINKS: []\n\nITEM S3\n  SENTENCE: We'll break down each component in more detail below.\n  CURRENT LINKS: []\n\nITEM S4\n  SENTENCE: HTML5 client.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S5\n  SENTENCE: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S6\n  SENTENCE: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S7\n  SENTENCE: These connections are all handled by nginx.\n  CURRENT LINKS: []\n\nITEM S8\n  SENTENCE: The HTML5 server sits behind nginx.\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S9\n  SENTENCE: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S10\n  SENTENCE: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\n  CURRENT LINKS: []\n\nITEM S11\n  SENTENCE: Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S12\n  SENTENCE: The client side subscribes to the published collections on the server side.\n  CURRENT LINKS: [\"HTML5 Client\", \"HTML5 Server\"]\n\nITEM S13\n  SENTENCE: Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\n  CURRENT LINKS: [\"HTML5 Server\", \"HTML5 Client\"]\n\nITEM S14\n  SENTENCE: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S15\n  SENTENCE: Scalability of HTML5 server component.\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S16\n  SENTENCE: BigBlueButton 2.2 used a single nodejs process for all client-side communication.\n  CURRENT LINKS: []\n\nITEM S17\n  SENTENCE: This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\n  CURRENT LINKS: []\n\nITEM S18\n  SENTENCE: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\n  CURRENT LINKS: []\n\nITEM S19\n  SENTENCE: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S20\n  SENTENCE: This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S21\n  SENTENCE: As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\n  CURRENT LINKS: [\"HTML5 Server\"]\n\nITEM S22\n  SENTENCE: A restart of BigBlueButton is required if you make changes to these files.\n  CURRENT LINKS: []\n\nITEM S23\n  SENTENCE: The breakdown of functionality between front-end and back-end is as follows.\n  CURRENT LINKS: []\n\nITEM S24\n  SENTENCE: Frontends receive the ValidateAuthTokenResp event to complete authentication.\n  CURRENT LINKS: []\n\nITEM S25\n  SENTENCE: Frontends collect subscriptions and publishers.\n  CURRENT LINKS: []\n\nITEM S26\n  SENTENCE: Frontends receive other DDP events including method calls to send events to akka-apps.\n  CURRENT LINKS: [\"Apps\"]\n\nITEM S27\n  SENTENCE: Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\n  CURRENT LINKS: []\n\nITEM S28\n  SENTENCE: Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\n  CURRENT LINKS: []\n\nITEM S29\n  SENTENCE: Backends handle all the non-streamer events.\n  CURRENT LINKS: []\n\nITEM S30\n  SENTENCE: If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\n  CURRENT LINKS: [\"BBB web\"]\n\nITEM S31\n  SENTENCE: So individual backends only process redis events for the meetings matching the associated instanceId.\n  CURRENT LINKS: []\n\nITEM S32\n  SENTENCE: ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\n  CURRENT LINKS: []\n\nITEM S33\n  SENTENCE: When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\n  CURRENT LINKS: []\n\nITEM S34\n  SENTENCE: In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\n  CURRENT LINKS: []\n\nITEM S35\n  SENTENCE: See \"Automatically apply configuration changes on restart\".\n  CURRENT LINKS: []\n\nITEM S36\n  SENTENCE: BBB web.\n  CURRENT LINKS: [\"BBB web\"]\n\nITEM S37\n  SENTENCE: BigBlueButton web application is a Java-based application written in Scala.\n  CURRENT LINKS: [\"BBB web\"]\n\nITEM S38\n  SENTENCE: It implements the BigBlueButton API and holds a copy of the meeting state.\n  CURRENT LINKS: [\"BBB web\"]\n\nITEM S39\n  SENTENCE: The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\n  CURRENT LINKS: []\n\nITEM S40\n  SENTENCE: Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\n  CURRENT LINKS: []\n\nITEM S41\n  SENTENCE: BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\n  CURRENT LINKS: []\n\nITEM S42\n  SENTENCE: BigBlueButton comes with its own front-end called Greenlight.\n  CURRENT LINKS: []\n\nITEM S43\n  SENTENCE: When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\n  CURRENT LINKS: []\n\nITEM S44\n  SENTENCE: The BigBlueButton comes with some simple API demos.\n  CURRENT LINKS: []\n\nITEM S45\n  SENTENCE: Regardless of which front-end you use, they all use the API under the hood.\n  CURRENT LINKS: []\n\nITEM S46\n  SENTENCE: Redis PubSub.\n  CURRENT LINKS: [\"Redis PubSub\"]\n\nITEM S47\n  SENTENCE: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\n  CURRENT LINKS: [\"Redis PubSub\"]\n\nITEM S48\n  SENTENCE: Redis DB.\n  CURRENT LINKS: [\"Redis DB\"]\n\nITEM S49\n  SENTENCE: When a meeting is recorded, all events are stored in Redis DB.\n  CURRENT LINKS: [\"Redis DB\"]\n\nITEM S50\n  SENTENCE: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\n  CURRENT LINKS: [\"Recording Service\"]\n\nITEM S51\n  SENTENCE: Apps akka.\n  CURRENT LINKS: [\"Apps\"]\n\nITEM S52\n  SENTENCE: BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\n  CURRENT LINKS: [\"Apps\"]\n\nITEM S53\n  SENTENCE: It provides the list of users, chat, whiteboard, presentations in a meeting.\n  CURRENT LINKS: [\"Apps\"]\n\nITEM S54\n  SENTENCE: Below is a diagram of the different components of Apps Akka.\n  CURRENT LINKS: [\"Apps\"]\n\nITEM S55\n  SENTENCE: The meeting business logic is in the MeetingActor.\n  CURRENT LINKS: []\n\nITEM S56\n  SENTENCE: This is where information about the meeting is stored and where all messages for a meeting is processed.\n  CURRENT LINKS: []\n\nITEM S57\n  SENTENCE: FSESL akka.\n  CURRENT LINKS: [\"FSESL\"]\n\nITEM S58\n  SENTENCE: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n  CURRENT LINKS: [\"FreeSWITCH\"]\n\nITEM S59\n  SENTENCE: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n  CURRENT LINKS: []\n\nITEM S60\n  SENTENCE: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n  CURRENT LINKS: [\"Apps\", \"FSESL\", \"Redis PubSub\"]\n\nITEM S61\n  SENTENCE: FreeSWITCH.\n  CURRENT LINKS: [\"FreeSWITCH\"]\n\nITEM S62\n  SENTENCE: We think FreeSWITCH is an amazing piece of software for handling audio.\n  CURRENT LINKS: [\"FreeSWITCH\"]\n\nITEM S63\n  SENTENCE: FreeSWITCH provides the voice conferencing capability in BigBlueButton.\n  CURRENT LINKS: [\"FreeSWITCH\"]\n\nITEM S64\n  SENTENCE: Users are able to join the voice conference through the headset.\n  CURRENT LINKS: []\n\nITEM S65\n  SENTENCE: Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\n  CURRENT LINKS: []\n\nITEM S66\n  SENTENCE: FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\n  CURRENT LINKS: []\n\nITEM S67\n  SENTENCE: Kurento and WebRTC-SFU.\n  CURRENT LINKS: [\"kurento\", \"WebRTC-SFU\"]\n\nITEM S68\n  SENTENCE: Kurento Media Server KMS is a media server that implements both SFU and MCU models.\n  CURRENT LINKS: [\"kurento\"]\n\nITEM S69\n  SENTENCE: KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\n  CURRENT LINKS: [\"kurento\"]\n\nITEM S70\n  SENTENCE: The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\n  CURRENT LINKS: [\"WebRTC-SFU\"]\n\nITEM S71\n  SENTENCE: Joining a voice conference.\n  CURRENT LINKS: []\n\nITEM S72\n  SENTENCE: A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\n  CURRENT LINKS: [\"FreeSWITCH\", \"HTML5 Client\"]\n\nITEM S73\n  SENTENCE: When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S74\n  SENTENCE: WebRTC provides the user with high-quality audio with lower delay.\n  CURRENT LINKS: []\n\nITEM S75\n  SENTENCE: Uploading a presentation.\n  CURRENT LINKS: []\n\nITEM S76\n  SENTENCE: Uploaded presentations go through a conversion process in order to be displayed inside the client.\n  CURRENT LINKS: [\"HTML5 Client\"]\n\nITEM S77\n  SENTENCE: When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\n  CURRENT LINKS: []\n\nITEM S78\n  SENTENCE: The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\n  CURRENT LINKS: [\"BBB web\"]\n\nITEM S79\n  SENTENCE: The conversion process sends progress messages to the client through the Redis pubsub.\n  CURRENT LINKS: [\"Redis PubSub\", \"HTML5 Client\", \"Presentation Conversion\"]\n\nITEM S80\n  SENTENCE: Presentation conversion flow.\n  CURRENT LINKS: []\n\nITEM S81\n  SENTENCE: The diagram below describes the flow of the presentation conversion.\n  CURRENT LINKS: []\n\nITEM S82\n  SENTENCE: We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\n  CURRENT LINKS: []\n\nITEM S83\n  SENTENCE: Then below the SVG conversion flow.\n  CURRENT LINKS: []\n\nITEM S84\n  SENTENCE: It covers the conversion fallback.\n  CURRENT LINKS: []\n\nITEM S85\n  SENTENCE: Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\n  CURRENT LINKS: []\n\nITEM S86\n  SENTENCE: Internal network connections.\n  CURRENT LINKS: []\n\nITEM S87\n  SENTENCE: The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\n  CURRENT LINKS: []\n\nReturn JSON only:\n{\"omissions\":[{\"sentence\":1,\"component\":\"exact catalog name\",\n\"quote\":\"exact source words\",\"referent\":\"thing denoted\",\n\"claim_owner\":\"thing claim is about\",\"competing_referent\":\"alternative or none\"}]}\n",
+          "response_text": "{\"omissions\":[{\"sentence\":58,\"component\":\"FSESL\",\"quote\":\"the component that integrates with FreeSWITCH\",\"referent\":\"FSESL, the extracted integration component made into its own application\",\"claim_owner\":\"FSESL\",\"competing_referent\":\"an unnamed generic FreeSWITCH integration component\"},{\"sentence\":66,\"component\":\"FreeSWITCH\",\"quote\":\"FreeSWITCH\",\"referent\":\"the FreeSWITCH voice-conferencing component\",\"claim_owner\":\"FreeSWITCH\",\"competing_referent\":\"none\"},{\"sentence\":76,\"component\":\"Presentation Conversion\",\"quote\":\"conversion process\",\"referent\":\"the Presentation Conversion component through which uploaded presentations are processed\",\"claim_owner\":\"Presentation Conversion\",\"competing_referent\":\"a generic document-conversion workflow\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 30487,
+          "model": null
+        },
+        {
+          "phase": "phase_24_audit_p1",
+          "ts": 1784880808.1553183,
+          "elapsed_s": 12.513,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"the component that integrates with FreeSWITCH\" -> FSESL\n  [prev: FSESL akka.] \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=coverage_audit, span=\"the component that integrates with FreeSWITCH\", mention=indirect/unclear match, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"FSESL akka.\"]\n  Anchors (confirmed refs):\n    S57: FSESL akka.\nCase 2: \"FreeSWITCH\" -> FreeSWITCH\n  [prev: Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.] \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"\n  Evidence: source=coverage_audit, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"]\n  Anchors (confirmed refs):\n    S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n    S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n    S61: FreeSWITCH.\n    S62: We think FreeSWITCH is an amazing piece of software for handling audio.\nCase 3: \"conversion process\" -> Presentation Conversion\n  [prev: Uploading a presentation.] \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=coverage_audit, span=\"conversion process\", mention=via known alias, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"Uploading a presentation.\"]\n  Anchors (confirmed refs):\n    S80: Presentation conversion flow.\n    S81: The diagram below describes the flow of the presentation conversion.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"the component that integrates with FreeSWITCH\",\"approve\":true},{\"case\":2,\"claim\":\"FreeSWITCH can also be integrated with VOIP providers\",\"approve\":true},{\"case\":3,\"claim\":\"Uploaded presentations go through a conversion process\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 12512,
+          "model": null
+        },
+        {
+          "phase": "phase_24_audit_p2",
+          "ts": 1784880820.6682982,
+          "elapsed_s": 7.874,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"the component that integrates with FreeSWITCH\" -> FSESL\n  [prev: FSESL akka.] \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=coverage_audit, span=\"the component that integrates with FreeSWITCH\", mention=indirect/unclear match, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"FSESL akka.\"]\n  Anchors (confirmed refs):\n    S57: FSESL akka.\nCase 2: \"FreeSWITCH\" -> FreeSWITCH\n  [prev: Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.] \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"\n  Evidence: source=coverage_audit, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"]\n  Anchors (confirmed refs):\n    S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\n    S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\n    S61: FreeSWITCH.\n    S62: We think FreeSWITCH is an amazing piece of software for handling audio.\nCase 3: \"conversion process\" -> Presentation Conversion\n  [prev: Uploading a presentation.] \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=coverage_audit, span=\"conversion process\", mention=via known alias, ambiguous=False\n  Rationale: semantic coverage audit: referent identity and claim ownership\n  [prev: \"Uploading a presentation.\"]\n  Anchors (confirmed refs):\n    S80: Presentation conversion flow.\n    S81: The diagram below describes the flow of the presentation conversion.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"the component that integrates with FreeSWITCH\",\"approve\":true},{\"case\":2,\"claim\":\"FreeSWITCH can also be integrated with VOIP providers\",\"approve\":true},{\"case\":3,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 7874,
+          "model": null
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "macro_s21_f1": 0.8571428571428571,
+    "macro_replacement_f1": 0.8521739130434782,
+    "delta_vs_s21": -0.004968944099378869,
+    "current_dynamic_f1": 0.9467675665369668,
+    "delta_vs_dynamic": -0.09459365349348858,
+    "replacement_fp": 4,
+    "s21_fp": 2,
+    "distinct_workflows": 1
+  },
+  "pass_gate": {
+    "beats_s21": false,
+    "beats_current_dynamic": false,
+    "no_fp_regression": false,
+    "project_specific_workflows": false,
+    "passed": false
+  }
+}

@@ -1,9 +1,9 @@
 # Live-run status
 
-This directory preserves the text evidence from live runs attempted after the
-package was assembled. It is intentionally separate from the released link
-artifacts in `sota-links/`: none of the runs below is a completed result that
-should be used in the paper tables.
+This directory preserves the text evidence from experimental runs attempted
+after the package was assembled. It is intentionally separate from the released
+link artifacts in `sota-links/`; completed runs below are experimental evidence
+and are not automatically part of the paper tables.
 
 | Run | Variant / backend / dataset | Status | Preserved evidence |
 | --- | --- | --- | --- |
@@ -22,6 +22,12 @@ should be used in the paper tables.
 | 2026-07-24 01:03–01:05 UTC | `s_linker24_agentic` corrected pilot / Codex controller+tools / saved S21 floors / all five datasets | Passed: 6 TP, 0 FP, 100% marginal precision, four distinct plans; macro F1 93.34%→94.88% (+1.54pp). | `s24_agentic_tools_pilot_iter2_20260724/RESULTS.md` |
 | 2026-07-24 01:06–01:08 UTC | promoted `s_linker24_agentic` / Codex controller+tools / saved S21 floors / all five datasets | Production class replay passed: 5 TP, 0 FP, 100% marginal precision, four distinct plans; macro F1 93.34%→94.68% (+1.34pp). | `s24_agentic_promoted_fixed_floor_20260724/RESULTS.md` |
 | 2026-07-24 01:04–01:10 UTC | promoted `s_linker24_agentic` / Codex / mediastore | Normal end-to-end runner smoke passed. Same-run internal S21 floor F1 96.77%; alias tool added 1 TP / 0 FP; final F1 98.41% (+1.64pp). | `s24_agentic_codex_e2e_mediastore_20260724/RESULTS.md` |
+| 2026-07-24 09:55–10:05 UTC | semantic appeal pilot / Codex / saved S21 rejected candidates / all five datasets | **Invalidated.** Iteration 1: 7 TP / 12 FP and macro F1 below S21. Identity/ownership iteration: 5 TP / 6 FP, above S21 but below dynamic S24. User then rejected the refine-not-replace architecture. | `s24_semantic_appeal_pilot_iter1_20260724/` and `s24_semantic_appeal_pilot_iter2_identity_20260724/` |
+| 2026-07-24 10:10–10:22 UTC | replacement orchestrator pilot / Codex controller+audit / recorded phase tools / all five datasets | **Passed F2-first objective.** 174 TP / 9 FP / 21 FN; macro F1 94.01%, macro F2 92.96%, pooled F1 92.06%, pooled F2 90.34%. S21 comparison: macro F2 90.83%, pooled F2 88.14%. | `s24_replacement_orchestrator_pilot_all_iter1_20260724/` |
+| 2026-07-24 10:40–10:45 UTC | `s_linker24_orchestrator` / Codex / mediastore | Fresh replacement smoke completed from raw inputs: 31 TP / 1 FP / 0 FN, F1 98.41%, F2 99.36%. Audit safely accepted no additions after fresh entity coverage. | `s24_orchestrator_codex_e2e_mediastore_20260724/` |
+| 2026-07-24 11:05–11:08 UTC | replacement orchestrator feedback-parity replay / Codex / recorded phase tools / all five datasets | **Failed before scoring.** Full raw phase feedback recursively enlarged controller history until the Codex subprocess failed with `Argument list too long`. | `s24_replacement_orchestrator_pilot_all_iter3_feedback_parity_20260724/FAILURE.md` |
+| 2026-07-24 11:10–11:16 UTC | replacement orchestrator compact-feedback replay / Codex / recorded phase tools / all five datasets | **Passed F2 objective, but route hypothesis failed.** 175 TP / 12 FP / 20 FN; macro F2 93.23%, pooled F2 90.49%; same route on all projects. Full outputs retained, controller state normalized. | `s24_replacement_orchestrator_pilot_all_iter4_compact_feedback_20260724/` |
+| 2026-07-24 11:20–11:28 UTC | replacement orchestrator participation-audit replay / Codex / recorded phase tools / all five datasets | **Passed causal F2 hypothesis.** 181 TP / 12 FP / 14 FN; macro F1 94.50%, macro F2 94.75%, pooled F1 93.30%, pooled F2 93.01%. Recovered predicted relational, negated, multi-target, and structural-discourse cases. Same route; route diversity remains unvalidated. | `s24_replacement_orchestrator_pilot_all_iter5_participation_20260724/` |
 
 The `.jsonl`, `.log`, and `*_calls.json` files are text provenance: they record
 the request sequence, model, response status, and phase-level trace. The local

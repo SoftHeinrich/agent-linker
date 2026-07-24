@@ -133,6 +133,7 @@ CANONICAL_VARIANTS = [
     "s_linker24",  # anchored sibling/prefix recovery over unchanged S21 floor
     "s_linker24_agentic",  # agent-selected Phase-1/Phase-4 alias and S24 anchored recovery tools
     "s_linker24_dynamic",  # sequential project-profile controller with validator-funnel feedback
+    "s_linker24_orchestrator",  # replacement controller over reusable phase tools; F2-oriented
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1050,6 +1051,19 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "s_linker24_orchestrator": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker24_orchestrator",
+        class_name="SLinker24Orchestrator",
+        description=(
+            "S-Linker24 Orchestrator — replacement workflow with no S21 floor. "
+            "A project-profile controller selects reusable entity, coreference, "
+            "and semantic coverage-audit phase tools in an acyclic state graph. "
+            "The controller cannot propose or validate links."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
     "s_linker23_ctx": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker23_ctx",
@@ -1324,7 +1338,16 @@ def eval_metrics(predicted: set[tuple[int, str]], gold: set[tuple[int, str]]) ->
     precision = tp / (tp + fp) if (tp + fp) else 0.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
-    return {"tp": tp, "fp": fp, "fn": fn, "P": precision, "R": recall, "F1": f1}
+    f2 = 5 * tp / (5 * tp + 4 * fn + fp) if (tp + fp + fn) else 0.0
+    return {
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "P": precision,
+        "R": recall,
+        "F1": f1,
+        "F2": f2,
+    }
 
 
 def require_existing(path: Path, label: str) -> None:
@@ -1395,7 +1418,8 @@ def run_variant(
     export_links_csv(predictions, results_dir / f"{variant_name}_{dataset_name}_links.csv")
 
     print(
-        f"  {variant_name}: P={metrics['P']:.1%} R={metrics['R']:.1%} F1={metrics['F1']:.1%} "
+        f"  {variant_name}: P={metrics['P']:.1%} R={metrics['R']:.1%} "
+        f"F1={metrics['F1']:.1%} F2={metrics['F2']:.1%} "
         f"TP={metrics['tp']} FP={metrics['fp']} FN={metrics['fn']} ({elapsed:.0f}s)"
     )
     print(f"    Sources: {dict(source_counts)}")
@@ -1406,6 +1430,7 @@ def run_variant(
         "P": metrics["P"],
         "R": metrics["R"],
         "F1": metrics["F1"],
+        "F2": metrics["F2"],
         "tp": metrics["tp"],
         "fp": metrics["fp"],
         "fn": metrics["fn"],
@@ -1424,27 +1449,46 @@ def print_summary(all_results: dict[str, dict[str, dict[str, object]]], selected
     print(f"{'=' * 120}")
     header = f"{'Dataset':<16}"
     for variant in selected_variants:
-        header += f" | {variant:^18}"
+        header += f" | {variant:^27}"
     print(header)
-    print(f"{'-' * 16}" + ("-+-" + "-" * 18) * len(selected_variants))
+    print(f"{'-' * 16}" + ("-+-" + "-" * 27) * len(selected_variants))
 
     for dataset_name, dataset_results in all_results.items():
         row = f"{dataset_name:<16}"
         for variant in selected_variants:
             result = dataset_results.get(variant)
             if result is None:
-                row += " | " + f"{'--':^18}"
+                row += " | " + f"{'--':^27}"
             else:
-                row += " | " + f"F1 {result['F1']:.1%} FP {result['fp']:>3}"
+                row += " | " + (
+                    f"F1 {result['F1']:.1%} F2 {result['F2']:.1%} "
+                    f"FP {result['fp']:>3}"
+                )
         print(row)
 
-    print(f"{'-' * 16}" + ("-+-" + "-" * 18) * len(selected_variants))
+    print(f"{'-' * 16}" + ("-+-" + "-" * 27) * len(selected_variants))
     row = f"{'Macro avg':<16}"
     for variant in selected_variants:
         values = [all_results[dataset][variant] for dataset in all_results if variant in all_results[dataset]]
         avg_f1 = sum(value["F1"] for value in values) / len(values)
+        avg_f2 = sum(value["F2"] for value in values) / len(values)
         total_fp = sum(value["fp"] for value in values)
-        row += " | " + f"F1 {avg_f1:.1%} FP {total_fp:>3}"
+        row += " | " + f"F1 {avg_f1:.1%} F2 {avg_f2:.1%} FP {total_fp:>3}"
+    print(row)
+
+    row = f"{'Pooled':<16}"
+    for variant in selected_variants:
+        values = [
+            all_results[dataset][variant]
+            for dataset in all_results
+            if variant in all_results[dataset]
+        ]
+        tp = sum(value["tp"] for value in values)
+        fp = sum(value["fp"] for value in values)
+        fn = sum(value["fn"] for value in values)
+        pooled_f1 = 2 * tp / (2 * tp + fp + fn)
+        pooled_f2 = 5 * tp / (5 * tp + 4 * fn + fp)
+        row += " | " + f"F1 {pooled_f1:.1%} F2 {pooled_f2:.1%} FP {fp:>3}"
     print(row)
 
 
