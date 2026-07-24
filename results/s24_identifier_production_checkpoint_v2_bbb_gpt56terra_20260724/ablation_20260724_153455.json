@@ -1,0 +1,561 @@
+{
+  "bigbluebutton": {
+    "s_linker24_role_orchestrator": {
+      "variant": "s_linker24_role_orchestrator",
+      "P": 0.8983050847457628,
+      "R": 0.8548387096774194,
+      "F1": 0.8760330578512397,
+      "F2": 0.8631921824104235,
+      "tp": 53,
+      "fp": 6,
+      "fn": 9,
+      "n_links": 59,
+      "time": 55.036531925201416,
+      "sources": {
+        "entity": 41,
+        "coreference": 5,
+        "s24_relation_role": 11,
+        "s24_catalog_identifier": 2
+      },
+      "fp_by_source": {
+        "coreference": 1,
+        "entity": 1,
+        "s24_relation_role": 4
+      },
+      "fp_details": [
+        {
+          "sentence": 56,
+          "component": "Apps",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This is where information about the meeting is stored and where all messages for a meeting is processed."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "s24_relation_role",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "s24_relation_role",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 83,
+          "component": "Presentation Conversion",
+          "source": "s24_relation_role",
+          "confidence": 1.0,
+          "text": "Then below the SVG conversion flow."
+        },
+        {
+          "sentence": 84,
+          "component": "Presentation Conversion",
+          "source": "s24_relation_role",
+          "confidence": 1.0,
+          "text": "It covers the conversion fallback."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "HTML5 client",
+            "bbb-html5",
+            "BBB web",
+            "Redis PubSub",
+            "Apps akka",
+            "FSESL akka",
+            "Kurento Media Server"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "exact catalog-name and approved-alias identity evidence",
+          "reason": "No tools have run; exact component names and approved aliases are directly present in the document.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 4,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 5,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 8,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 9,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 21,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 46,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 47,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 48,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 49,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 51,
+                "component": "Apps"
+              },
+              {
+                "sentence": 52,
+                "component": "Apps"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 57,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 58,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 59,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "Apps"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 61,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 62,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 63,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 67,
+                "component": "kurento"
+              },
+              {
+                "sentence": 67,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 68,
+                "component": "kurento"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              },
+              {
+                "sentence": 70,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 72,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 72,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 80,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 81,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 26,
+                "component": "Apps"
+              },
+              {
+                "sentence": 66,
+                "component": "FreeSWITCH"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "These connections",
+            "This process",
+            "This means",
+            "they all use the API",
+            "it\u2019s own application"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "pronoun, demonstrative, and anaphoric reference resolution",
+          "reason": "Entity identity linking is complete; unresolved anaphoric references have direct document evidence and require the coreference capability before the remaining evidence modes.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 11,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 38,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 53,
+                "component": "Apps"
+              },
+              {
+                "sentence": 56,
+                "component": "Apps"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 7,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 59,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Apps"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 72,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 72,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              }
+            ]
+          }
+        },
+        {
+          "action": "relation_role_resolution",
+          "evidence_quotes": [
+            "WebRTC",
+            "SFU",
+            "Server",
+            "Client",
+            "Conversion",
+            "web",
+            "PubSub"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "derive project-specific shortened handles from compound catalog names and apply exact standalone occurrences",
+          "reason": "Exact standalone shortened handles remain unresolved and have explicit role-handle evidence; catalog-identifier resolution should follow.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 9,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 10,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 79,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 83,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 84,
+                "component": "Presentation Conversion"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 5,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 74,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 68,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 10,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 18,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 68,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 5,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 6,
+                "component": "BBB web"
+              }
+            ]
+          }
+        },
+        {
+          "action": "catalog_identifier_resolution",
+          "evidence_quotes": [
+            "bbb-web",
+            "bbb-web"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "standalone alternate spelling whose complete token sequence equals one runtime catalog component",
+          "reason": "The unresolved catalog-identifier candidates in sentences 30 and 78 use the exact alternate spelling bbb-web for catalog component BBB web; this capability has not yet run.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 30,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 78,
+                "component": "BBB web"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "llm_calls": 27
+    }
+  }
+}

@@ -211,6 +211,23 @@ def test_role_controller_requires_grounded_workflow_evidence():
     else:
         raise AssertionError("ungrounded controller action was accepted")
 
+    linker._ask = lambda *args, **kwargs: {
+        "action": "finalize",
+        "evidence_quotes": ["a server"],
+    }
+    try:
+        linker._choose_tool(
+            profile,
+            ["relation_role_resolution"],
+            [],
+            [],
+            {},
+        )
+    except RuntimeError as exc:
+        assert "invalid replacement action" in str(exc)
+    else:
+        raise AssertionError("controller finalized with evidence-backed work")
+
 
 def test_role_handles_come_from_unique_compound_name_parts():
     components = [
@@ -351,6 +368,45 @@ def test_role_context_review_uses_project_anchors():
     assert "The HTML Backend is the request service." in seen["prompt"]
 
 
+def test_catalog_identifier_candidates_are_exact_and_nonoverlapping():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    linker.doc_knowledge = SimpleNamespace(
+        aliases={
+            "DisplayGateway": SimpleNamespace(
+                component="Display Gateway", scope="global"
+            )
+        }
+    )
+    components = [
+        SimpleNamespace(name="Order Processor", id="order-processor"),
+        SimpleNamespace(name="Display Gateway", id="display-gateway"),
+        SimpleNamespace(name="Reencoding", id="reencoding"),
+    ]
+    sentences = [
+        Sentence(1, "The order-processor component handles requests."),
+        Sentence(2, "The DisplayGateway renders pages."),
+        Sentence(3, "The re-encoding step runs."),
+        Sentence(4, "See package.order-processor for details."),
+        Sentence(5, "The order-processor."),
+    ]
+    candidates = linker._catalog_identifier_candidates(
+        sentences, components, []
+    )
+    assert [
+        (
+            candidate.sentence_number,
+            candidate.matched_text,
+            candidate.component_name,
+        )
+        for candidate in candidates
+    ] == [
+        (1, "order-processor", "Order Processor"),
+        (5, "order-processor", "Order Processor"),
+    ]
+
+
 if __name__ == "__main__":
     test_controller_is_limited_by_available_capabilities()
     test_audit_grounding_is_structural_only()
@@ -362,4 +418,5 @@ if __name__ == "__main__":
     test_role_tool_is_available_only_with_document_handle_evidence()
     test_role_variant_entity_ownership_is_name_or_approved_alias()
     test_role_context_review_uses_project_anchors()
+    test_catalog_identifier_candidates_are_exact_and_nonoverlapping()
     print("PASS: SLinker24Orchestrator contracts")

@@ -19,6 +19,7 @@ class SLinker24RoleOrchestrator(SLinker24Orchestrator):
         "entity_pipeline",
         "coreference_pipeline",
         "relation_role_resolution",
+        "catalog_identifier_resolution",
     )
 
     def _tool_catalog(self):
@@ -28,12 +29,14 @@ class SLinker24RoleOrchestrator(SLinker24Orchestrator):
   resolution, followed by its existing validator.
 - relation_role_resolution: derive project-specific shortened handles from
   compound catalog names and apply exact standalone occurrences.
+- catalog_identifier_resolution: resolve standalone alternate spellings whose
+  complete token sequence equals one runtime catalog component.
 - finalize: return the union of links produced by completed tools."""
 
     def _choose_tool(self, profile, remaining, history, current, sent_map):
         prompt = f"""You orchestrate trace-linking tools for one software project.
-There is no base linker and no protected floor. Choose one available tool or
-finalize. You cannot propose, validate, add, or remove links.
+There is no base linker and no protected floor. Choose one available,
+evidence-backed tool. You cannot propose, validate, add, or remove links.
 
 TOOLS
 {self._tool_catalog()}
@@ -48,11 +51,13 @@ CURRENT LINKS
 {json.dumps(self._controller_link_view(current))}
 
 AVAILABLE ACTIONS
-{json.dumps(remaining + ["finalize"])}
+{json.dumps(remaining)}
 
 Select an unused capability only when exact document words show its evidence
 mode remains unresolved. Rejected evidence must not be retried through another
-tool. Counts are observations, not thresholds.
+tool. Every listed capability already has project-profile evidence; order them
+by the unresolved evidence, then finish after all listed capabilities run.
+Counts are observations, not thresholds.
 
 Return JSON only:
 {{"action":"one available action",
@@ -67,7 +72,7 @@ Return JSON only:
             label="S24 role controller",
         )
         action = str(data.get("action", "")).strip()
-        if action not in remaining + ["finalize"]:
+        if action not in remaining:
             raise RuntimeError(f"invalid replacement action: {action!r}")
         quotes = [
             str(quote).strip().strip("\"'")
@@ -80,7 +85,7 @@ Return JSON only:
         grounded_quotes = [
             quote for quote in quotes if quote.casefold() in document
         ]
-        if action != "finalize" and not grounded_quotes:
+        if not grounded_quotes:
             raise RuntimeError(
                 f"ungrounded workflow evidence for {action!r}: {quotes!r}"
             )
@@ -121,12 +126,28 @@ Return JSON only:
                 for sentence in sentences
             )
         ]
+        profile["catalog_identifier_evidence"] = self._link_view(
+            [
+                SadSamLink(
+                    candidate.sentence_number,
+                    candidate.component_id,
+                    candidate.component_name,
+                    source="catalog_identifier_candidate",
+                )
+                for candidate in self._catalog_identifier_candidates(
+                    sentences, components, []
+                )
+            ],
+            {sentence.number: sentence for sentence in sentences},
+        )
         return profile
 
     def _available_tools(self, profile):
         tools = super()._available_tools(profile)
         if not profile.get("role_handle_evidence"):
             tools.remove("relation_role_resolution")
+        if not profile.get("catalog_identifier_evidence"):
+            tools.remove("catalog_identifier_resolution")
         return tools
 
     def _select_entity_candidates(self, candidates, sent_map):
@@ -164,6 +185,10 @@ Return JSON only:
     ):
         if action == "relation_role_resolution":
             return self._run_relation_role_tool(
+                sentences, components, current, sent_map
+            )
+        if action == "catalog_identifier_resolution":
+            return self._run_catalog_identifier_tool(
                 sentences, components, current, sent_map
             )
         return super()._run_selected_tool(
@@ -218,6 +243,31 @@ Return JSON only:
         }
 
     def _review_role_candidates(self, candidates, full_sentences):
+        return self._review_identity_candidates(
+            candidates,
+            full_sentences,
+            case_key="handle",
+            instruction=(
+                "Resolve shortened component handles in project context."
+            ),
+            phase="phase_24_role_context_review",
+            label="S24 role-context review",
+            path="role_context_review",
+            stage="relation_role_resolution",
+        )
+
+    def _review_identity_candidates(
+        self,
+        candidates,
+        full_sentences,
+        *,
+        case_key,
+        instruction,
+        phase,
+        label,
+        path,
+        stage,
+    ):
         if not candidates:
             return [], {}
         forms_by_component = self._identity_forms_by_component()
@@ -245,14 +295,14 @@ Return JSON only:
             {
                 "case": number,
                 "sentence": candidate.sentence_number,
-                "handle": candidate.matched_text,
+                case_key: candidate.matched_text,
                 "target": candidate.component_name,
                 "text": candidate.sentence_text,
             }
             for number, candidate in enumerate(candidates, 1)
         ]
-        prompt = f"""Resolve shortened component handles in project context.
-For each case, keep the mapping only when the highlighted handle refers to the
+        prompt = f"""{instruction}
+For each case, keep the mapping only when the highlighted expression refers to the
 listed target component. Identity anchors show explicit project usage.
 
 TARGET PROFILES
@@ -266,9 +316,9 @@ JSON only:
 """
         data = self._ask(
             prompt,
-            phase="phase_24_role_context_review",
+            phase=phase,
             require_present="judgments",
-            label="S24 role-context review",
+            label=label,
             timeout=240,
         )
         by_case = {
@@ -290,12 +340,118 @@ JSON only:
                     "approved": False,
                     "referent": "missing judgment",
                 }),
-                "path": "role_context_review",
-                "stage": "relation_role_resolution",
+                "path": path,
+                "stage": stage,
             }
             for number, candidate in enumerate(candidates, 1)
         }
         return approved, decisions
+
+    def _run_catalog_identifier_tool(
+        self, sentences, components, current_links, sent_map
+    ):
+        candidates = self._catalog_identifier_candidates(
+            sentences, components, current_links
+        )
+        approved, decisions = self._review_identity_candidates(
+            candidates,
+            sentences,
+            case_key="identifier",
+            instruction=(
+                "Resolve catalog-equivalent standalone component identifiers."
+            ),
+            phase="phase_24_catalog_identifier_review",
+            label="S24 catalog-identifier review",
+            path="catalog_identifier_resolution",
+            stage="catalog_identifier_resolution",
+        )
+        links = [
+            SadSamLink(
+                candidate.sentence_number,
+                candidate.component_id,
+                candidate.component_name,
+                source="s24_catalog_identifier",
+            )
+            for candidate in approved
+        ]
+        return links, {
+            "proposed": self._link_view(
+                [
+                    SadSamLink(
+                        candidate.sentence_number,
+                        candidate.component_id,
+                        candidate.component_name,
+                        source="catalog_identifier_candidate",
+                    )
+                    for candidate in candidates
+                ],
+                sent_map,
+            ),
+            "accepted": self._link_view(links, sent_map),
+            "identifier_decisions": self._decision_view(decisions),
+        }
+
+    def _catalog_identifier_candidates(
+        self, sentences, components, current_links
+    ):
+        current = {
+            (link.sentence_number, link.component_id)
+            for link in current_links
+        }
+        forms_by_component = self._identity_forms_by_component()
+        tokens_by_component = {
+            component.name: self._identifier_tokens(component.name)
+            for component in components
+        }
+        pattern = re.compile(
+            r"(?<![\w-])(?<!\w\.)(?:"
+            r"[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+"
+            r"|[A-Za-z]+[A-Z][A-Za-z0-9]*"
+            r")(?![\w-])(?!\.\w)"
+        )
+        candidates = {}
+        for sentence in sentences:
+            for match in pattern.finditer(sentence.text):
+                expression = match.group(0)
+                expression_tokens = self._identifier_tokens(expression)
+                for component in components:
+                    if (
+                        expression_tokens
+                        != tokens_by_component[component.name]
+                    ):
+                        continue
+                    identity_forms = [
+                        component.name,
+                        *forms_by_component.get(component.name, []),
+                    ]
+                    key = (sentence.number, component.id)
+                    if (
+                        key in current
+                        or any(
+                            expression.casefold() == form.casefold()
+                            for form in identity_forms
+                        )
+                    ):
+                        continue
+                    candidates[key] = CandidateLink(
+                        sentence.number,
+                        sentence.text,
+                        component.name,
+                        component.id,
+                        expression,
+                        source="catalog_identifier",
+                    )
+        return list(candidates.values())
+
+    @staticmethod
+    def _identifier_tokens(expression):
+        return [
+            token.casefold()
+            for token in re.findall(
+                r"[A-Z]+(?=[A-Z][a-z]|\b)|[A-Z]?[a-z]+|\d+",
+                expression.replace("-", " "),
+            )
+        ]
 
     @staticmethod
     def _catalog_role_handles(components):
