@@ -234,13 +234,16 @@ def test_role_handles_come_from_unique_compound_name_parts():
         SimpleNamespace(name="HTML5 Client"),
         SimpleNamespace(name="HTML5 Server"),
         SimpleNamespace(name="WebRTC-SFU"),
+        SimpleNamespace(name="Presentation Conversion"),
         SimpleNamespace(name="logic"),
     ]
     assert SLinker24RoleOrchestrator._catalog_role_handles(components) == [
         {"expression": "Client", "component": "HTML5 Client"},
+        {"expression": "Clients", "component": "HTML5 Client"},
         {"expression": "Server", "component": "HTML5 Server"},
-        {"expression": "WebRTC", "component": "WebRTC-SFU"},
+        {"expression": "Servers", "component": "HTML5 Server"},
         {"expression": "SFU", "component": "WebRTC-SFU"},
+        {"expression": "SFUs", "component": "WebRTC-SFU"},
     ]
 
 
@@ -270,6 +273,7 @@ def test_role_handle_application_is_structural():
     assert not linker._find_handle("The tests pass.", "Test")
     assert not linker._find_handle("The bbb-html5 process starts.", "bbb")
     assert not linker._find_handle("The test.driver package.", "driver")
+    assert linker._find_handle("Messages reach the client.", "client")
 
 
 def test_role_tool_is_available_only_with_document_handle_evidence():
@@ -348,8 +352,38 @@ def test_role_context_review_uses_project_anchors():
         seen["prompt"] = prompt
         return {
             "judgments": [
-                {"case": 1, "keep": True, "referent": "HTML Backend"},
-                {"case": 2, "keep": False, "referent": "database engine"},
+                {
+                    "case": 1,
+                    "keep": True,
+                    "section_anchor": (
+                        "The HTML Backend is the request service."
+                    ),
+                    "identity_anchor_sentence": 1,
+                    "identity_anchor": "HTML Backend",
+                    "scope_bridge_sentence": 1,
+                    "scope_bridge": (
+                        "The HTML Backend is the request service."
+                    ),
+                    "claim": "The backend handles requests.",
+                    "participant_role": "request handler",
+                    "competing_referent": "none",
+                },
+                {
+                    "case": 2,
+                    "keep": False,
+                    "section_anchor": (
+                        "The HTML Backend is the request service."
+                    ),
+                    "identity_anchor_sentence": 1,
+                    "identity_anchor": "HTML Backend",
+                    "scope_bridge_sentence": 1,
+                    "scope_bridge": (
+                        "The HTML Backend is the request service."
+                    ),
+                    "claim": "The database backend is external.",
+                    "participant_role": "database modifier",
+                    "competing_referent": "database engine",
+                },
             ]
         }
 

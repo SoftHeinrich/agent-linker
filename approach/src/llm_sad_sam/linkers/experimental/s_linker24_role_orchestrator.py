@@ -28,8 +28,8 @@ class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
   two-pass validator.
 - coreference_pipeline: pronoun, demonstrative, and anaphoric reference
   resolution, followed by its existing validator.
-- relation_role_resolution: derive project-specific shortened handles from
-  compound catalog names and apply exact standalone occurrences.
+- relation_role_resolution: resolve unique terminal participant nouns from
+  compound catalog names through grounded local discourse evidence.
 - finalize: return the union of links produced by completed tools."""
 
     def _choose_tool(self, profile, remaining, history, current, sent_map):
@@ -258,18 +258,188 @@ Return JSON only:
         }
 
     def _review_role_candidates(self, candidates, full_sentences):
-        return self._review_identity_candidates(
-            candidates,
-            full_sentences,
-            case_key="handle",
-            instruction=(
-                "Resolve shortened component handles in project context."
-            ),
-            phase="phase_24_role_context_review",
-            label="S24 role-context review",
-            path="role_context_review",
-            stage="relation_role_resolution",
+        if not candidates:
+            return [], {}
+        sent_map = {
+            sentence.number: sentence for sentence in full_sentences
+        }
+        forms_by_component = self._identity_forms_by_component()
+        targets = sorted({
+            candidate.component_name for candidate in candidates
+        })
+        profiles = []
+        for target in targets:
+            forms = [target, *forms_by_component.get(target, [])]
+            anchors = []
+            for sentence in full_sentences:
+                matches = [
+                    self._find_exact_form(sentence.text, form)
+                    for form in forms
+                ]
+                matches = [match for match in matches if match]
+                if matches:
+                    anchors.append({
+                        "sentence": sentence.number,
+                        "text": sentence.text,
+                        "identity_forms": matches,
+                    })
+            profiles.append({"target": target, "anchors": anchors})
+        anchors_by_target = {
+            item["target"]: {
+                anchor["sentence"]: anchor
+                for anchor in item["anchors"]
+            }
+            for item in profiles
+        }
+        cases = [
+            {
+                "case": number,
+                "sentence": candidate.sentence_number,
+                "participant": candidate.matched_text,
+                "target": candidate.component_name,
+                "text": candidate.sentence_text,
+            }
+            for number, candidate in enumerate(candidates, 1)
+        ]
+        document = [
+            {"sentence": sentence.number, "text": sentence.text}
+            for sentence in full_sentences
+        ]
+        prompt = f"""Resolve generic or inflected architectural participants
+using the document's discourse structure. For each case, keep the mapping only
+when the highlighted participant denotes the listed target component in its
+section or discourse chain.
+
+An approval must identify an explicit target identity anchor, the participant's
+architectural role in the source sentence, and the strongest competing
+referent. A common role noun may validly denote a deployed component instance,
+its service endpoint, its owned state, or its user-facing instances; do not
+reject it merely for being generic or plural when the active discourse scope
+and architectural claim select the target. A competing referent must be an
+explicit locally plausible entity, not an invented unnamed deployment. When
+an apparent alternate label is resolved to the target by a local discourse
+chain, cite the exact bridge sentence that makes that resolution possible.
+
+Reject physical host capacity, users or browsers, protocol/technology use,
+code paths, and cases where multiple explicit referents remain plausible.
+The highlighted noun must itself be a semantic participant in a finite
+architectural claim. Reject fragments and uses where it merely modifies the
+name of a workflow, process, stage, diagram, artifact, or technology. Full
+names, aliases, pronouns, and orthographic variants are owned by other tools.
+
+DOCUMENT
+{json.dumps(document)}
+
+TARGET IDENTITY ANCHORS
+{json.dumps(profiles)}
+
+CASES
+{json.dumps(cases)}
+
+Return JSON only:
+{{"judgments":[{{"case":1,"keep":true,
+"section_anchor":"exact document quote",
+"identity_anchor_sentence":1,
+"identity_anchor":"exact quote from that anchor sentence",
+"scope_bridge_sentence":1,
+"scope_bridge":"exact quote establishing the local discourse chain",
+"claim":"exact quote from the source sentence",
+"participant_role":"brief role",
+"competing_referent":"strongest alternative or none"}}]}}
+"""
+        data = self._ask(
+            prompt,
+            phase="phase_24_discourse_scope_review",
+            require_present="judgments",
+            label="S24 discourse-scope review",
+            timeout=240,
         )
+        document_text = "\n".join(
+            sentence.text for sentence in full_sentences
+        ).casefold()
+        by_case = {}
+        for item in data.get("judgments", []):
+            if not str(item.get("case", "")).isdigit():
+                continue
+            number = int(item["case"])
+            if not 1 <= number <= len(candidates):
+                continue
+            candidate = candidates[number - 1]
+            anchor_value = str(
+                item.get("identity_anchor_sentence", "")
+            )
+            bridge_value = str(
+                item.get("scope_bridge_sentence", "")
+            )
+            anchor_sentence = (
+                int(anchor_value) if anchor_value.isdigit() else 0
+            )
+            bridge_sentence = (
+                int(bridge_value) if bridge_value.isdigit() else 0
+            )
+            anchor = str(item.get("identity_anchor", "")).strip()
+            bridge = str(item.get("scope_bridge", "")).strip()
+            section = str(item.get("section_anchor", "")).strip()
+            claim = str(item.get("claim", "")).strip()
+            role = str(item.get("participant_role", "")).strip()
+            competing = str(
+                item.get("competing_referent", "")
+            ).strip()
+            allowed_anchor = anchors_by_target.get(
+                candidate.component_name, {}
+            ).get(anchor_sentence)
+            allowed_bridge = sent_map.get(bridge_sentence)
+            evidence_valid = (
+                bool(section)
+                and section.casefold() in document_text
+                and allowed_anchor is not None
+                and bool(anchor)
+                and anchor.casefold()
+                in allowed_anchor["text"].casefold()
+                and allowed_bridge is not None
+                and bool(bridge)
+                and bridge.casefold()
+                in allowed_bridge.text.casefold()
+                and bool(claim)
+                and claim.casefold()
+                in candidate.sentence_text.casefold()
+                and bool(role)
+                and bool(competing)
+            )
+            by_case[number] = {
+                "approved": (
+                    item.get("keep") is True and evidence_valid
+                ),
+                "requested_keep": item.get("keep") is True,
+                "evidence_valid": evidence_valid,
+                "section_anchor": section,
+                "identity_anchor_sentence": anchor_sentence,
+                "identity_anchor": anchor,
+                "scope_bridge_sentence": bridge_sentence,
+                "scope_bridge": bridge,
+                "claim": claim,
+                "participant_role": role,
+                "competing_referent": competing,
+            }
+        approved = [
+            candidate
+            for number, candidate in enumerate(candidates, 1)
+            if by_case.get(number, {}).get("approved") is True
+        ]
+        decisions = {
+            (candidate.sentence_number, candidate.component_id): {
+                **by_case.get(number, {
+                    "approved": False,
+                    "requested_keep": False,
+                    "evidence_valid": False,
+                    "competing_referent": "missing judgment",
+                }),
+                "path": "discourse_scope_review",
+                "stage": "relation_role_resolution",
+            }
+            for number, candidate in enumerate(candidates, 1)
+        }
+        return approved, decisions
 
     def _review_identity_candidates(
         self,
@@ -460,17 +630,37 @@ JSON only:
         }
         owners = {}
         for component_name, tokens in tokens_by_component.items():
-            for token in set(item.casefold() for item in tokens):
-                owners.setdefault(token, set()).add(component_name)
-        return [
-            {"expression": token, "component": component_name}
-            for component_name, tokens in tokens_by_component.items()
-            if len(tokens) > 1
-            for token in (
-                tokens if "-" in component_name else tokens[-1:]
+            if len(tokens) > 1:
+                owners.setdefault(
+                    tokens[-1].casefold(), set()
+                ).add(component_name)
+        handles = []
+        for component_name, tokens in tokens_by_component.items():
+            if len(tokens) < 2:
+                continue
+            terminal = tokens[-1]
+            if len(owners[terminal.casefold()]) != 1:
+                continue
+            if re.search(
+                r"(?:tion|sion|ment|ance|ence|ing)$",
+                terminal,
+                re.IGNORECASE,
+            ):
+                continue
+            expressions = [terminal]
+            if (
+                terminal.isalpha()
+                and not terminal.casefold().endswith("s")
+            ):
+                expressions.append(f"{terminal}s")
+            handles.extend(
+                {
+                    "expression": expression,
+                    "component": component_name,
+                }
+                for expression in expressions
             )
-            if len(owners[token.casefold()]) == 1
-        ]
+        return handles
 
     def _apply_role_handles(
         self, handles, sentences, components, current_links
@@ -514,12 +704,16 @@ JSON only:
 
     @staticmethod
     def _find_handle(text, expression):
-        match = re.search(
-            rf"(?<![\w.-]){re.escape(expression)}(?![\w.-])",
+        for match in re.finditer(
+            rf"(?<![\w-]){re.escape(expression)}(?![\w-])",
             text,
             re.IGNORECASE,
-        )
-        return match.group(0) if match else ""
+        ):
+            if not SLinker24RoleOrchestrator._qualified_identifier_boundary(
+                text, match.start(), match.end()
+            ):
+                return match.group(0)
+        return ""
 
     @staticmethod
     def _find_exact_form(text, expression):

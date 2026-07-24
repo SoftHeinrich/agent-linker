@@ -18,6 +18,7 @@ from llm_sad_sam.linkers.experimental.s_linker24_role_orchestrator import (
 
 from pilot.s24_discourse_scope_pilot import (
     discourse_candidates,
+    find_prose_handle,
     review_discourse_candidates,
     terminal_role_handles,
 )
@@ -39,6 +40,7 @@ def test_terminal_roles_include_regular_plural_only():
     components = [
         component("HTML5 Client", "client"),
         component("HTML5 Server", "server"),
+        component("Presentation Conversion", "conversion"),
         component("Test Driver", "driver"),
         component("Other Driver", "other-driver"),
     ]
@@ -78,6 +80,19 @@ def test_candidates_are_nonoverlapping_and_code_safe():
         )
         for candidate in candidates
     ] == [(1, "HTML5 Client", "clients")]
+
+
+def test_terminal_period_is_prose_not_a_dotted_identifier():
+    linker = bare()
+    assert find_prose_handle(
+        linker, "Messages are sent to clients.", "clients"
+    ) == "clients"
+    assert find_prose_handle(
+        linker, "Use package.clients.handler.", "clients"
+    ) == ""
+    assert find_prose_handle(
+        linker, "See clients. Then continue.", "clients"
+    ) == "clients"
 
 
 def test_review_fails_closed_on_unverified_evidence():
@@ -156,6 +171,7 @@ def test_review_accepts_complete_grounded_evidence():
 if __name__ == "__main__":
     test_terminal_roles_include_regular_plural_only()
     test_candidates_are_nonoverlapping_and_code_safe()
+    test_terminal_period_is_prose_not_a_dotted_identifier()
     test_review_fails_closed_on_unverified_evidence()
     test_review_accepts_complete_grounded_evidence()
     print("PASS: S24 discourse-scope contracts")

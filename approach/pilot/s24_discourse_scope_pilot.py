@@ -45,6 +45,12 @@ def terminal_role_handles(components):
         terminal = tokens[-1]
         if len(owners[terminal.casefold()]) != 1:
             continue
+        if re.search(
+            r"(?:tion|sion|ment|ance|ence|ing)$",
+            terminal,
+            re.IGNORECASE,
+        ):
+            continue
         expressions = [terminal]
         if terminal.isalpha() and not terminal.casefold().endswith("s"):
             expressions.append(f"{terminal}s")
@@ -53,6 +59,19 @@ def terminal_role_handles(components):
             "expressions": expressions,
         })
     return handles
+
+
+def find_prose_handle(linker, text, expression):
+    for match in re.finditer(
+        rf"(?<![\w-]){re.escape(expression)}(?![\w-])",
+        text,
+        re.IGNORECASE,
+    ):
+        if not linker._qualified_identifier_boundary(
+            text, match.start(), match.end()
+        ):
+            return match.group(0)
+    return ""
 
 
 def discourse_candidates(
@@ -75,7 +94,8 @@ def discourse_candidates(
         for expression in handle["expressions"]:
             for sentence in sentences:
                 key = (sentence.number, component_id)
-                matched = linker._find_handle(
+                matched = find_prose_handle(
+                    linker,
                     sentence.text, expression
                 )
                 if (
@@ -418,6 +438,9 @@ def main():
     )
     parser.add_argument("--baseline-dir", type=Path, required=True)
     parser.add_argument("--results-dir", type=Path, required=True)
+    parser.add_argument(
+        "--min-new-tp-gain", type=int, default=3
+    )
     args = parser.parse_args()
     args.results_dir.mkdir(parents=True, exist_ok=True)
     rows = [
@@ -427,7 +450,8 @@ def main():
         for dataset in args.datasets
     ]
     passed = all(
-        row["new_role_tp"] >= row["old_role_tp"] + 3
+        row["new_role_tp"]
+        >= row["old_role_tp"] + args.min_new_tp_gain
         and row["new_role_precision"] >= 0.95
         and row["new_role_fp"] <= row["old_role_fp"]
         and row["replacement"]["F1"] > row["baseline"]["F1"]
@@ -441,6 +465,7 @@ def main():
         ),
         "model": "gpt-5.6-terra",
         "reasoning_effort": "none",
+        "min_new_tp_gain": args.min_new_tp_gain,
         "datasets": rows,
         "pass_gate": passed,
     }
