@@ -15,6 +15,9 @@ from llm_sad_sam.core.document_loader_v2 import Sentence, build_sent_map
 from llm_sad_sam.linkers.experimental.s_linker24_orchestrator import (
     SLinker24Orchestrator,
 )
+from llm_sad_sam.linkers.experimental.s_linker24_role_orchestrator import (
+    SLinker24RoleOrchestrator,
+)
 
 
 def bare():
@@ -135,9 +138,150 @@ def test_controller_feedback_is_normalized_without_losing_outcomes():
     }
 
 
+def test_role_controller_requires_grounded_workflow_evidence():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    profile = {
+        "document": [{"sentence": 1, "text": "The gateway calls a server."}],
+        "component_catalog": ["Gateway", "Backend"],
+        "ambiguous_components": [],
+        "approved_aliases": [],
+    }
+    linker._ask = lambda *args, **kwargs: {
+        "action": "relation_role_resolution",
+        "evidence_quotes": ["a server"],
+        "unresolved_obligation": "generic endpoint",
+        "reason": "role mapping remains",
+    }
+    action, decision = linker._choose_tool(
+        profile,
+        ["relation_role_resolution"],
+        [],
+        [],
+        {},
+    )
+    assert action == "relation_role_resolution"
+    assert decision["evidence_quotes"] == ["a server"]
+
+    linker._ask = lambda *args, **kwargs: {
+        "action": "relation_role_resolution",
+        "evidence_quotes": ['"a server"'],
+        "unresolved_obligation": "generic endpoint",
+    }
+    _, decision = linker._choose_tool(
+        profile,
+        ["relation_role_resolution"],
+        [],
+        [],
+        {},
+    )
+    assert decision["evidence_quotes"] == ["a server"]
+
+    linker._ask = lambda *args, **kwargs: {
+        "action": "relation_role_resolution",
+        "evidence_quotes": ["a server", "a paraphrased gateway"],
+    }
+    _, decision = linker._choose_tool(
+        profile,
+        ["relation_role_resolution"],
+        [],
+        [],
+        {},
+    )
+    assert decision["evidence_quotes"] == ["a server"]
+    assert decision["discarded_evidence_quotes"] == [
+        "a paraphrased gateway"
+    ]
+
+    linker._ask = lambda *args, **kwargs: {
+        "action": "relation_role_resolution",
+        "evidence_quotes": ["words absent from document"],
+    }
+    try:
+        linker._choose_tool(
+            profile,
+            ["relation_role_resolution"],
+            [],
+            [],
+            {},
+        )
+    except RuntimeError as exc:
+        assert "ungrounded workflow evidence" in str(exc)
+    else:
+        raise AssertionError("ungrounded controller action was accepted")
+
+
+def test_role_handles_come_from_unique_compound_name_parts():
+    components = [
+        SimpleNamespace(name="HTML5 Client"),
+        SimpleNamespace(name="HTML5 Server"),
+        SimpleNamespace(name="WebRTC-SFU"),
+        SimpleNamespace(name="logic"),
+    ]
+    assert SLinker24RoleOrchestrator._catalog_role_handles(components) == [
+        {"expression": "Client", "component": "HTML5 Client"},
+        {"expression": "Server", "component": "HTML5 Server"},
+        {"expression": "WebRTC", "component": "WebRTC-SFU"},
+        {"expression": "SFU", "component": "WebRTC-SFU"},
+    ]
+
+
+def test_role_handle_application_is_structural():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    sentences = [
+        Sentence(1, "The client calls the server."),
+        Sentence(2, "The serverless worker starts."),
+    ]
+    components = [SimpleNamespace(name="HTML5 Client", id="client")]
+    handles = [{
+        "expression": "Client",
+        "component": "HTML5 Client",
+    }]
+    candidates = linker._apply_role_handles(
+        handles,
+        sentences,
+        components,
+        [],
+    )
+    assert [
+        (candidate.sentence_number, candidate.component_name)
+        for candidate in candidates
+    ] == [(1, "HTML5 Client")]
+    assert not linker._find_handle("The tests pass.", "Test")
+    assert not linker._find_handle("The bbb-html5 process starts.", "bbb")
+
+
+def test_role_tool_is_available_only_with_document_handle_evidence():
+    linker = SLinker24RoleOrchestrator.__new__(
+        SLinker24RoleOrchestrator
+    )
+    assert "relation_role_resolution" not in linker._available_tools(
+        {"role_handle_evidence": []}
+    )
+    assert "relation_role_resolution" in linker._available_tools(
+        {
+            "role_handle_evidence": [
+                {
+                    "expression": "Client",
+                    "component": "HTML5 Client",
+                    "occurrences": [{"sentence": 1, "quote": "client"}],
+                }
+            ]
+        }
+    )
+    assert "coverage_audit" not in linker.PHASE_TOOLS
+
+
 if __name__ == "__main__":
     test_controller_is_limited_by_available_capabilities()
     test_audit_grounding_is_structural_only()
     test_link_is_replacement_not_s21_floor()
     test_controller_feedback_is_normalized_without_losing_outcomes()
+    test_role_controller_requires_grounded_workflow_evidence()
+    test_role_handles_come_from_unique_compound_name_parts()
+    test_role_handle_application_is_structural()
+    test_role_tool_is_available_only_with_document_handle_evidence()
     print("PASS: SLinker24Orchestrator contracts")

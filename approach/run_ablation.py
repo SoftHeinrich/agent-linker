@@ -134,6 +134,7 @@ CANONICAL_VARIANTS = [
     "s_linker24_agentic",  # agent-selected Phase-1/Phase-4 alias and S24 anchored recovery tools
     "s_linker24_dynamic",  # sequential project-profile controller with validator-funnel feedback
     "s_linker24_orchestrator",  # replacement controller over reusable phase tools; F2-oriented
+    "s_linker24_role_orchestrator",  # fresh relation/role resolver + evidence-grounded controller
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1064,6 +1065,21 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "s_linker24_role_orchestrator": dict(
+        aliases=(),
+        module=(
+            "llm_sad_sam.linkers.experimental."
+            "s_linker24_role_orchestrator"
+        ),
+        class_name="SLinker24RoleOrchestrator",
+        description=(
+            "S-Linker24 Role Orchestrator — replacement workflow with "
+            "non-overlapping entity, coreference, and catalog-handle "
+            "capabilities. Controller actions require exact document evidence."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
     "s_linker23_ctx": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker23_ctx",
@@ -1425,7 +1441,7 @@ def run_variant(
     print(f"    Sources: {dict(source_counts)}")
     print(f"    FP by source: {dict(fp_by_source)}")
 
-    return {
+    result = {
         "variant": variant_name,
         "P": metrics["P"],
         "R": metrics["R"],
@@ -1441,6 +1457,11 @@ def run_variant(
         "fp_details": fp_details,
         "fn_details": fn_details,
     }
+    if hasattr(linker, "orchestrator_workflow"):
+        result["workflow"] = linker.orchestrator_workflow
+    if hasattr(linker, "_llm_calls"):
+        result["llm_calls"] = len(linker._llm_calls)
+    return result
 
 
 def print_summary(all_results: dict[str, dict[str, dict[str, object]]], selected_variants: list[str]) -> None:

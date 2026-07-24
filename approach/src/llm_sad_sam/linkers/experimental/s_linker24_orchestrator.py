@@ -24,13 +24,15 @@ from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 from llm_sad_sam.linkers.experimental.s_linker21 import SLinker21
 
 
-PHASE_TOOLS = ("entity_pipeline", "coreference_pipeline", "coverage_audit")
-
-
 class SLinker24Orchestrator(SLinker21):
     """Project-profile controller that assembles a replacement phase workflow."""
 
     _VARIANT_NAME = "s_linker24_orchestrator"
+    PHASE_TOOLS = (
+        "entity_pipeline",
+        "coreference_pipeline",
+        "coverage_audit",
+    )
 
     def link(self, text_path, model_path, **_kwargs):
         self._phase_log = []
@@ -72,7 +74,7 @@ class SLinker24Orchestrator(SLinker21):
         )
 
         profile = self._project_profile(sentences, components)
-        remaining = list(PHASE_TOOLS)
+        remaining = self._available_tools(profile)
         current: list[SadSamLink] = []
         history = []
         while remaining:
@@ -84,18 +86,14 @@ class SLinker24Orchestrator(SLinker21):
                 break
 
             print(f"\n[Controller tool] {action}")
-            if action == "entity_pipeline":
-                produced, feedback = self._run_entity_tool(
-                    sentences, components, name_to_id, sent_map
-                )
-            elif action == "coreference_pipeline":
-                produced, feedback = self._run_coreference_tool(
-                    sentences, components, name_to_id, sent_map
-                )
-            else:
-                produced, feedback = self._run_coverage_audit_tool(
-                    sentences, components, current, sent_map
-                )
+            produced, feedback = self._run_selected_tool(
+                action,
+                sentences,
+                components,
+                name_to_id,
+                current,
+                sent_map,
+            )
 
             current = self._union(current, produced)
             history.append(
@@ -150,6 +148,83 @@ class SLinker24Orchestrator(SLinker21):
             f"({time.time() - started:.1f}s, {len(self._llm_calls)} LLM calls)"
         )
         return current
+
+    def _run_selected_tool(
+        self,
+        action,
+        sentences,
+        components,
+        name_to_id,
+        current,
+        sent_map,
+    ):
+        if action == "entity_pipeline":
+            return self._run_entity_tool(
+                sentences, components, name_to_id, sent_map
+            )
+        if action == "coreference_pipeline":
+            return self._run_coreference_tool(
+                sentences, components, name_to_id, sent_map
+            )
+        if action == "coverage_audit":
+            return self._run_coverage_audit_tool(
+                sentences, components, current, sent_map
+            )
+        raise RuntimeError(f"unimplemented replacement tool: {action!r}")
+
+    def _tool_catalog(self):
+        return """- entity_pipeline: knowledge-aware entity extraction followed by the existing
+  two-pass evidence validator.
+- coreference_pipeline: reference-resolution extraction followed by its
+  reference validator.
+- coverage_audit: inspect the document, catalog, aliases, and CURRENT LINKS for
+  semantically grounded omissions, then use the existing two-pass validator.
+- finalize: return the union of links produced by completed tools."""
+
+    def _available_tools(self, profile):
+        return list(self.PHASE_TOOLS)
+
+    def _coverage_scope_instruction(self):
+        return ""
+
+    def _coverage_prompt(self, profile, items):
+        return f"""Audit trace-link coverage for one software design document.
+Find supported component references missing from CURRENT LINKS. This is a
+candidate-generation tool; a separate validator makes final decisions.
+
+COMPONENT CATALOG
+{json.dumps(profile["component_catalog"])}
+
+APPROVED DOCUMENT ALIASES
+{json.dumps(profile["approved_aliases"])}
+
+{self._coverage_scope_instruction()}
+
+For each proposed omission, establish:
+- REFERENT IDENTITY: the exact quoted phrase denotes or unambiguously invokes
+  the catalog component itself, not merely an associated user, browser,
+  algorithm, implementation, package, connection, data item, action, or result;
+- ARCHITECTURAL PARTICIPATION: the sentence states an architectural fact in
+  which that component participates as subject, object, endpoint, service,
+  boundary, or contextual referent;
+- COMPETING REFERENT: the strongest alternative interpretation, or "none".
+
+Enumerate every distinct participating catalog component; do not stop after the
+most salient one. Negated and contrastive relations still specify architectural
+boundaries. A descriptive heading or caption is evidence when it identifies a
+component-owned architectural flow. Do not repeat CURRENT LINKS. Reject
+code/package-only mentions and unsupported group references. Use only exact
+catalog names and exact source quotes.
+
+DOCUMENT
+{items}
+
+Return JSON only:
+{{"omissions":[{{"sentence":1,"component":"exact catalog name",
+"quote":"exact source words","referent":"thing denoted",
+"architectural_role":"how component participates",
+"competing_referent":"alternative or none"}}]}}
+"""
 
     def _project_profile(self, sentences, components):
         aliases = getattr(self.doc_knowledge, "aliases", {})
@@ -242,13 +317,7 @@ There is no base linker and no protected floor. Choose one available tool or
 finalize the current result. You cannot propose, validate, add, or remove links.
 
 TOOLS
-- entity_pipeline: knowledge-aware entity extraction followed by the existing
-  two-pass evidence validator.
-- coreference_pipeline: reference-resolution extraction followed by its
-  reference validator.
-- coverage_audit: inspect the document, catalog, aliases, and CURRENT LINKS for
-  semantically grounded omissions, then use the existing two-pass validator.
-- finalize: return the union of links produced by completed tools.
+{self._tool_catalog()}
 
 WORKFLOW METHOD
 - Use the document's naming/reference style, component ambiguity and aliases,
@@ -451,41 +520,7 @@ Return JSON only:
             for sentence in sentences
         )
         profile = self._project_profile(sentences, components)
-        prompt = f"""Audit trace-link coverage for one software design document.
-Find supported component references missing from CURRENT LINKS. This is a
-candidate-generation tool; a separate validator makes final decisions.
-
-COMPONENT CATALOG
-{json.dumps(profile["component_catalog"])}
-
-APPROVED DOCUMENT ALIASES
-{json.dumps(profile["approved_aliases"])}
-
-For each proposed omission, establish:
-- REFERENT IDENTITY: the exact quoted phrase denotes or unambiguously invokes
-  the catalog component itself, not merely an associated user, browser,
-  algorithm, implementation, package, connection, data item, action, or result;
-- ARCHITECTURAL PARTICIPATION: the sentence states an architectural fact in
-  which that component participates as subject, object, endpoint, service,
-  boundary, or contextual referent;
-- COMPETING REFERENT: the strongest alternative interpretation, or "none".
-
-Enumerate every distinct participating catalog component; do not stop after the
-most salient one. Negated and contrastive relations still specify architectural
-boundaries. A descriptive heading or caption is evidence when it identifies a
-component-owned architectural flow. Do not repeat CURRENT LINKS. Reject
-code/package-only mentions and unsupported group references. Use only exact
-catalog names and exact source quotes.
-
-DOCUMENT
-{items}
-
-Return JSON only:
-{{"omissions":[{{"sentence":1,"component":"exact catalog name",
-"quote":"exact source words","referent":"thing denoted",
-"architectural_role":"how component participates",
-"competing_referent":"alternative or none"}}]}}
-"""
+        prompt = self._coverage_prompt(profile, items)
         data = self._ask(
             prompt,
             phase="phase_24_coverage_audit",

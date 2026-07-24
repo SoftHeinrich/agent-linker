@@ -1,0 +1,269 @@
+{
+  "protocol": "gold selects prior FN/FP sentences offline; all model/profile/entity/controller/role/validator responses fresh OpenAI calls",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "none",
+  "datasets": [
+    {
+      "dataset": "teastore",
+      "focus_sentences": [
+        7
+      ],
+      "prior_positive_edges": 1,
+      "prior_negative_edges": 0,
+      "action": "finalize",
+      "controller": {
+        "evidence_quotes": [
+          "WebUi",
+          "Image Provider service"
+        ],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "none",
+        "reason": "Exact identity evidence has already been resolved for both mentioned components, and no unused capability has unresolved evidence."
+      },
+      "entity": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0,
+        "F2": 1.0
+      },
+      "final": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "P": 1.0,
+        "R": 1.0,
+        "F1": 1.0,
+        "F2": 1.0
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 0
+      },
+      "entity_feedback": {
+        "candidates": [
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "component": "WebUI",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "component": "ImageProvider",
+            "source": "entity_candidate"
+          }
+        ],
+        "accepted": [
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "component": "WebUI",
+            "source": "entity"
+          },
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "component": "ImageProvider",
+            "source": "entity"
+          }
+        ],
+        "validator_decisions": [
+          {
+            "sentence": 7,
+            "component_id": "_bC13QDVWEeqPG_FgW3bi6Q",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 7,
+            "component_id": "_yA04AKTKEeqKjI323B3R3w",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          }
+        ]
+      },
+      "role_feedback": {},
+      "llm_calls": 8,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784888365.8817616,
+          "elapsed_s": 2.103,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\n    \"WebUI\",\n    \"SlopeOneRecommender\",\n    \"OrderBasedRecommender\",\n    \"DummyRecommender\",\n    \"PopularityBasedRecommender\",\n    \"ImageProvider\",\n    \"PreprocessedSlopeOneRecommender\"\n  ],\n  \"ambiguous\": [\n    \"Registry\",\n    \"Persistence\",\n    \"Recommender\",\n    \"Auth\"\n  ]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2102,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 183,
+            "completion_tokens": 90,
+            "total_tokens": 273
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784888365.8819423,
+          "elapsed_s": 2.468,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nThe TeaStore consists of 5 replicatable services and a single Registry instance.\nThe WebUI service retrieves images from the Image Provider.\nUsers are authenticated by the Auth service.\nData is retrieved from the PersistenceProvider and product recommendations from the Recommender service.\nThe WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\nIt contains logic to save and retireve values from cookies.\nImages (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\nThe UI provides a status page at link indicating the current state of the TeaStore.\nThe status view lists the instance count and hosts for all registered service instances.\nThe Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nIt matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\nIf the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\nIf the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\nThe scaled image is stored for later use.\nIf the product ID or UI name and size is found, the image will be loaded and delivered.\nTo speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place.\nBefore loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered directly from cache or from the physical drive otherwise.\nThe Auth service handles user and session authentication.\nPasswords are hashed using BCrypt.\nTo validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie.\nWhen a SessionBlob is received, the cookie content is re-salted and checked against the hash to check for session tampering.\nThe Persistence service provides access to the data persisted in the relational database back-end.\nIt maps the relational entities to the JSON entity objects passed between services using the EclipseLink JPA ORM mapper.\nIt features endpoints for general CRUD-Operations (Create, Read, Update, Delete) for the persistent entities.\nThe persistence provider uses a second level entity cache provided by the JPA implementation.\nAs such, it also acts as a caching layer.\nThe Recommender is used to generate individual product recommendations for each user.\nIt is trained using all existing orders.\nRecommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the user is currently looking at.\nThe item rating of the users are based on their purchases.\nIf the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorithm based on the general item popularity is chosen.\nIf the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\nWe implemented two versions of the algorithm.\nOne CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\nFurthermore, one order-based nearest-neighbor approach is available.\nIts recommendation time is dependent on the number of items in the current cart as well as the total number of stored orders.\nThe Registry provides information about how many service instances are online for each service and where they are located.\nService instances register themselves at the registry on startup.\nServices are also required to send a heartbeat signal by re-registering periodically.\nServices missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\nEvery running instance of the TeaStore uses one single registry.\nThe TeaStore is a test application.\nBy limiting it to a single registry instance, it enables easy configuration of multiple parallel TeaStores with minimal configuration overhead.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[{\"term\":\"WebUi\",\"component\":\"WebUI\",\"scope\":\"global\"},{\"term\":\"UI\",\"component\":\"WebUI\",\"scope\":\"global\"},{\"term\":\"Image Provider\",\"component\":\"ImageProvider\",\"scope\":\"global\"},{\"term\":\"PersistenceProvider\",\"component\":\"Persistence\",\"scope\":\"global\"}],\"synonyms\":[{\"term\":\"persistence provider\",\"component\":\"Persistence\",\"scope\":\"local\"},{\"term\":\"registry\",\"component\":\"Registry\",\"scope\":\"local\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2468,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1124,
+            "completion_tokens": 95,
+            "total_tokens": 1219
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784888368.350455,
+          "elapsed_s": 0.917,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nPROPOSED MAPPINGS:\n'WebUi' -> WebUI\n'UI' -> WebUI\n'Image Provider' -> ImageProvider\n'PersistenceProvider' -> Persistence\n'persistence provider' -> Persistence\n'registry' -> Registry\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"WebUi\",\"UI\",\"Image Provider\",\"PersistenceProvider\",\"persistence provider\",\"registry\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 916,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 245,
+            "completion_tokens": 24,
+            "total_tokens": 269
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784888369.2674844,
+          "elapsed_s": 0.841,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\nKNOWN ALIASES: WebUi=WebUI, UI=WebUI, Image Provider=ImageProvider, PersistenceProvider=Persistence\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS7: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":7,\"component\":\"WebUI\",\"matched_text\":\"WebUi\"},{\"sentence\":7,\"component\":\"ImageProvider\",\"matched_text\":\"Image Provider service\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 841,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 250,
+            "completion_tokens": 39,
+            "total_tokens": 289
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784888369.2687356,
+          "elapsed_s": 2.45,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\nKNOWN ALIASES: WebUi=WebUI, UI=WebUI, Image Provider=ImageProvider, PersistenceProvider=Persistence\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS7: Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":7,\"component\":\"WebUI\",\"matched_text\":\"WebUi\"},{\"sentence\":7,\"component\":\"ImageProvider\",\"matched_text\":\"Image Provider service\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2449,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 250,
+            "completion_tokens": 39,
+            "total_tokens": 289
+          }
+        },
+        {
+          "phase": "phase_24_entity_p1",
+          "ts": 1784888371.7195191,
+          "elapsed_s": 0.858,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"WebUi\" -> WebUI\n  \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\"\n  Evidence: source=entity, span=\"WebUi\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"Image Provider service\" -> ImageProvider\n  \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\"\n  Evidence: source=entity, span=\"Image Provider service\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Images (with few exceptions) are not provides by the WebUi\",\"approve\":true},{\"case\":2,\"claim\":\"are retrieved from the Image Provider service instead\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 857,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 525,
+            "completion_tokens": 52,
+            "total_tokens": 577
+          }
+        },
+        {
+          "phase": "phase_24_entity_p2",
+          "ts": 1784888372.5772483,
+          "elapsed_s": 0.775,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"WebUi\" -> WebUI\n  \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\"\n  Evidence: source=entity, span=\"WebUi\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"Image Provider service\" -> ImageProvider\n  \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\"\n  Evidence: source=entity, span=\"Image Provider service\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Images (with few exceptions) are not provides by the WebUi\",\"approve\":true},{\"case\":2,\"claim\":\"are retrieved from the Image Provider service instead\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 775,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 502,
+            "completion_tokens": 52,
+            "total_tokens": 554
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784888373.352778,
+          "elapsed_s": 2.558,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names, apply them to the document, then validate candidates.\n- coverage_audit: multi-component completeness, negated boundaries, and\n  meaningful headings/captions; it must not infer targets solely from a generic\n  role or technology phrase; followed by the existing two-pass validator.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 7, \"text\": \"Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\"}], \"component_catalog\": [\"WebUI\", \"Registry\", \"Persistence\", \"Recommender\", \"Auth\", \"SlopeOneRecommender\", \"OrderBasedRecommender\", \"DummyRecommender\", \"PopularityBasedRecommender\", \"ImageProvider\", \"PreprocessedSlopeOneRecommender\"], \"ambiguous_components\": [\"Auth\", \"Persistence\", \"Recommender\", \"Registry\"], \"approved_aliases\": [{\"alias\": \"WebUi\", \"target\": \"WebUI\", \"scope\": \"global\"}, {\"alias\": \"UI\", \"target\": \"WebUI\", \"scope\": \"global\"}, {\"alias\": \"Image Provider\", \"target\": \"ImageProvider\", \"scope\": \"global\"}, {\"alias\": \"PersistenceProvider\", \"target\": \"Persistence\", \"scope\": \"global\"}, {\"alias\": \"persistence provider\", \"target\": \"Persistence\", \"scope\": \"local\"}, {\"alias\": \"registry\", \"target\": \"Registry\", \"scope\": \"local\"}], \"role_handle_evidence\": []}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh edge identity pass\", \"feedback\": {\"accepted\": [{\"sentence\": 7, \"component\": \"WebUI\"}, {\"sentence\": 7, \"component\": \"ImageProvider\"}], \"rejected\": []}}]\n\nCURRENT LINKS\n[{\"sentence\": 7, \"component\": \"WebUI\", \"source\": \"entity\"}, {\"sentence\": 7, \"component\": \"ImageProvider\", \"source\": \"entity\"}]\n\nAVAILABLE ACTIONS\n[\"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"finalize\",\"evidence_quotes\":[\"WebUi\",\"Image Provider service\"],\"unresolved_obligation\":\"none\",\"reason\":\"Exact identity evidence has already been resolved for both mentioned components, and no unused capability has unresolved evidence.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2557,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 664,
+            "completion_tokens": 51,
+            "total_tokens": 715
+          }
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "entity": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "macro_f1": 1.0,
+      "macro_f2": 1.0,
+      "pooled_f1": 1.0,
+      "pooled_f2": 1.0
+    },
+    "final": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "macro_f1": 1.0,
+      "macro_f2": 1.0,
+      "pooled_f1": 1.0,
+      "pooled_f2": 1.0
+    },
+    "actions": [
+      "finalize"
+    ]
+  },
+  "pass_gate": false
+}

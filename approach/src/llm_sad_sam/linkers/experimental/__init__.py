@@ -21,6 +21,7 @@ from .s_linker24 import SLinker24
 from .s_linker24_agentic import SLinker24Agentic
 from .s_linker24_dynamic import SLinker24Dynamic
 from .s_linker24_orchestrator import SLinker24Orchestrator
+from .s_linker24_role_orchestrator import SLinker24RoleOrchestrator
 
 __all__ = [
     "SLinker21",
@@ -39,4 +40,5 @@ __all__ = [
     "SLinker24Agentic",
     "SLinker24Dynamic",
     "SLinker24Orchestrator",
+    "SLinker24RoleOrchestrator",
 ]
