@@ -11,6 +11,9 @@ Transform `s_linker12c` from a hybrid (structural-rule gate + LLM verify) pipeli
 - Agentic recovery is bounded: a controller selects tools but cannot emit links.
 - Report macro and pooled F1/F2; S24 must exceed fresh S21 F2 without lowering
   either F1 aggregate.
+- New FN capabilities must own a non-overlapping evidence mode and show enough
+  same-run causal reach to justify a pilot; low-value alias appeals and
+  benchmark-boundary patches remain design-only or are rejected.
 
 ## Spikes
 
