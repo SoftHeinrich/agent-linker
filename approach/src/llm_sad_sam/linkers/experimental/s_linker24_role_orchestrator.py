@@ -6,12 +6,12 @@ import re
 
 from llm_sad_sam.core.data_types_v2 import CandidateLink, SadSamLink
 from llm_sad_sam.core.document_loader_v2 import load_sentences
-from llm_sad_sam.linkers.experimental.s_linker24_orchestrator import (
-    SLinker24Orchestrator,
+from llm_sad_sam.linkers.experimental._s_linker24_orchestrator_base import (
+    _SLinker24OrchestratorBase,
 )
 
 
-class SLinker24RoleOrchestrator(SLinker24Orchestrator):
+class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
     """Replacement controller with non-overlapping reference-mode tools."""
 
     _VARIANT_NAME = "s_linker24_role_orchestrator"

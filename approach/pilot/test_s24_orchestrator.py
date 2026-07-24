@@ -12,8 +12,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from llm_sad_sam.core.data_types_v2 import SadSamLink
 from llm_sad_sam.core.document_loader_v2 import Sentence, build_sent_map
-from llm_sad_sam.linkers.experimental.s_linker24_orchestrator import (
-    SLinker24Orchestrator,
+from llm_sad_sam.linkers.experimental._s_linker24_orchestrator_base import (
+    _SLinker24OrchestratorBase,
 )
 from llm_sad_sam.linkers.experimental.s_linker24_role_orchestrator import (
     SLinker24RoleOrchestrator,
@@ -21,7 +21,7 @@ from llm_sad_sam.linkers.experimental.s_linker24_role_orchestrator import (
 
 
 def bare():
-    return SLinker24Orchestrator.__new__(SLinker24Orchestrator)
+    return _SLinker24OrchestratorBase.__new__(_SLinker24OrchestratorBase)
 
 
 def test_controller_is_limited_by_available_capabilities():
@@ -101,7 +101,7 @@ def test_audit_grounding_is_structural_only():
 
 
 def test_link_is_replacement_not_s21_floor():
-    source = inspect.getsource(SLinker24Orchestrator.link)
+    source = inspect.getsource(_SLinker24OrchestratorBase.link)
     assert "SLinker21.link" not in source
     assert "super().link" not in source
 
@@ -132,7 +132,7 @@ def test_controller_feedback_is_normalized_without_losing_outcomes():
         ],
         "validator_decisions": {"large": "evidence stays in phase output"},
     }
-    assert SLinker24Orchestrator._controller_feedback(feedback) == {
+    assert _SLinker24OrchestratorBase._controller_feedback(feedback) == {
         "accepted": [{"sentence": 1, "component": "Store"}],
         "rejected": [{"sentence": 2, "component": "UI"}],
     }
@@ -419,4 +419,4 @@ if __name__ == "__main__":
     test_role_variant_entity_ownership_is_name_or_approved_alias()
     test_role_context_review_uses_project_anchors()
     test_catalog_identifier_candidates_are_exact_and_nonoverlapping()
-    print("PASS: SLinker24Orchestrator contracts")
+    print("PASS: SLinker24RoleOrchestrator contracts")

@@ -130,11 +130,7 @@ CANONICAL_VARIANTS = [
     "s_linker23_ctx",  # s23_verify + proposer conditioned on s21's per-sentence links as LLM context (residual extraction, no coded heuristics)
     "s_linker23_tier_f1",  # tiered ranking (not binary gate): emit FIRM+PROBABLE tiers; F1 operating point
     "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
-    "s_linker24",  # anchored sibling/prefix recovery over unchanged S21 floor
-    "s_linker24_agentic",  # agent-selected Phase-1/Phase-4 alias and S24 anchored recovery tools
-    "s_linker24_dynamic",  # sequential project-profile controller with validator-funnel feedback
-    "s_linker24_orchestrator",  # replacement controller over reusable phase tools; F2-oriented
-    "s_linker24_role_orchestrator",  # fresh relation/role resolver + evidence-grounded controller
+    "s_linker24_role_orchestrator",  # latest S24: evidence-grounded replacement orchestrator
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1011,60 +1007,6 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
-    "s_linker24": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker24",
-        class_name="SLinker24",
-        description=(
-            "S-Linker24 — unchanged S21 floor plus a narrow, LLM-resolved recovery "
-            "for locally anchored Client/Server siblings and unique technical-prefix "
-            "shorthand. Every addition must pass a dedicated anchored-reference "
-            "validator; no broad proposer or router is used."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker24_agentic": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker24_agentic",
-        class_name="SLinker24Agentic",
-        description=(
-            "S-Linker24 Agentic — unchanged S21 floor plus a bounded controller "
-            "that may call Phase-1-approved alias recovery through S21's unchanged "
-            "Phase-4 gate and/or S24 anchored-reference recovery. The controller "
-            "selects tools but cannot emit or approve links; all prompts use only "
-            "generic English and runtime project data."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker24_dynamic": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker24_dynamic",
-        class_name="SLinker24Dynamic",
-        description=(
-            "S-Linker24 Dynamic — unchanged S21 floor plus a sequential controller "
-            "that profiles document style, component ambiguity, floor coverage, "
-            "and grounded candidate evidence. It selects one bounded recovery "
-            "phase at a time and revises the workflow from validator-funnel "
-            "feedback; it cannot emit or approve links."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker24_orchestrator": dict(
-        aliases=(),
-        module="llm_sad_sam.linkers.experimental.s_linker24_orchestrator",
-        class_name="SLinker24Orchestrator",
-        description=(
-            "S-Linker24 Orchestrator — replacement workflow with no S21 floor. "
-            "A project-profile controller selects reusable entity, coreference, "
-            "and semantic coverage-audit phase tools in an acyclic state graph. "
-            "The controller cannot propose or validate links."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
     "s_linker24_role_orchestrator": dict(
         aliases=(),
         module=(
@@ -1073,9 +1015,10 @@ VARIANT_SPECS = {
         ),
         class_name="SLinker24RoleOrchestrator",
         description=(
-            "S-Linker24 Role Orchestrator — replacement workflow with "
-            "non-overlapping entity, coreference, and catalog-handle "
-            "capabilities. Controller actions require exact document evidence."
+            "S-Linker24 Role Orchestrator — latest S24 replacement workflow with "
+            "non-overlapping entity, coreference, catalog-handle, and exact "
+            "catalog-identifier capabilities. Controller actions require exact "
+            "document evidence."
         ),
         canonical=False,
         experimental=True,

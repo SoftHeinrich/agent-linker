@@ -14,6 +14,10 @@ Transform `s_linker12c` from a hybrid (structural-rule gate + LLM verify) pipeli
 
 ## Spikes
 
+Spikes 006–009 and their superseded runtime/pilot artifacts are preserved under
+`.planning/archive/s24-pre-orchestrator-260724/`. Active S24 development begins
+with the retained replacement-orchestrator lineage at spike 010.
+
 | # | Name | Type | Validates | Verdict | Tags |
 |---|------|------|-----------|---------|------|
 | 001 | llm-trailing-words | standard | Single LLM call replaces structural gate + LLM verify for trailing-word alias enrichment with evidence guardrail | ✓ VALIDATED | llm-only, enrichment, trailing-words |

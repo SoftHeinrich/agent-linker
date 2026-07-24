@@ -1,8 +1,10 @@
-"""S24 replacement orchestrator over reusable trace-linking phase tools.
+"""Internal base for the retained S24 role orchestrator.
 
-This linker does not call ``SLinker21.link`` and has no protected S21 floor.
-It reuses S21's phase implementations as tools, while a controller selects their
-order from runtime document/component profiles and prior tool feedback.
+This module is implementation support, not a runnable or exported S24 variant.
+The public linker is ``SLinker24RoleOrchestrator``. It does not call
+``SLinker21.link`` and has no protected S21 floor. It reuses S21's phase
+implementations as tools, while a controller selects their order from runtime
+document/component profiles and prior tool feedback.
 
 Autonomy is bounded structurally: each state-transforming tool can run once and
 is then removed from the available registry. There is no numeric step budget or
@@ -24,10 +26,10 @@ from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 from llm_sad_sam.linkers.experimental.s_linker21 import SLinker21
 
 
-class SLinker24Orchestrator(SLinker21):
+class _SLinker24OrchestratorBase(SLinker21):
     """Project-profile controller that assembles a replacement phase workflow."""
 
-    _VARIANT_NAME = "s_linker24_orchestrator"
+    _VARIANT_NAME = "_s_linker24_orchestrator_base"
     PHASE_TOOLS = (
         "entity_pipeline",
         "coreference_pipeline",
