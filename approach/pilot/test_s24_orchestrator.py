@@ -143,15 +143,19 @@ def test_role_controller_requires_grounded_workflow_evidence():
         SLinker24RoleOrchestrator
     )
     profile = {
-        "document": [{"sentence": 1, "text": "The gateway calls a server."}],
-        "component_catalog": ["Gateway", "Backend"],
-        "ambiguous_components": [],
-        "approved_aliases": [],
+        "tool_evidence": {
+            "relation_role_resolution": [
+                {
+                    "sentence": 1,
+                    "quote": "server",
+                    "target": "Backend",
+                }
+            ]
+        }
     }
     linker._ask = lambda *args, **kwargs: {
         "action": "relation_role_resolution",
-        "evidence_quotes": ["a server"],
-        "unresolved_obligation": "generic endpoint",
+        "evidence": [1],
         "reason": "role mapping remains",
     }
     action, decision = linker._choose_tool(
@@ -162,41 +166,11 @@ def test_role_controller_requires_grounded_workflow_evidence():
         {},
     )
     assert action == "relation_role_resolution"
-    assert decision["evidence_quotes"] == ["a server"]
+    assert decision["evidence"] == [1]
 
     linker._ask = lambda *args, **kwargs: {
         "action": "relation_role_resolution",
-        "evidence_quotes": ['"a server"'],
-        "unresolved_obligation": "generic endpoint",
-    }
-    _, decision = linker._choose_tool(
-        profile,
-        ["relation_role_resolution"],
-        [],
-        [],
-        {},
-    )
-    assert decision["evidence_quotes"] == ["a server"]
-
-    linker._ask = lambda *args, **kwargs: {
-        "action": "relation_role_resolution",
-        "evidence_quotes": ["a server", "a paraphrased gateway"],
-    }
-    _, decision = linker._choose_tool(
-        profile,
-        ["relation_role_resolution"],
-        [],
-        [],
-        {},
-    )
-    assert decision["evidence_quotes"] == ["a server"]
-    assert decision["discarded_evidence_quotes"] == [
-        "a paraphrased gateway"
-    ]
-
-    linker._ask = lambda *args, **kwargs: {
-        "action": "relation_role_resolution",
-        "evidence_quotes": ["words absent from document"],
+        "evidence": [99],
     }
     try:
         linker._choose_tool(
@@ -207,13 +181,13 @@ def test_role_controller_requires_grounded_workflow_evidence():
             {},
         )
     except RuntimeError as exc:
-        assert "ungrounded workflow evidence" in str(exc)
+        assert "ungrounded simple action" in str(exc)
     else:
         raise AssertionError("ungrounded controller action was accepted")
 
     linker._ask = lambda *args, **kwargs: {
         "action": "finalize",
-        "evidence_quotes": ["a server"],
+        "evidence": [1],
     }
     try:
         linker._choose_tool(
@@ -224,7 +198,7 @@ def test_role_controller_requires_grounded_workflow_evidence():
             {},
         )
     except RuntimeError as exc:
-        assert "invalid replacement action" in str(exc)
+        assert "invalid simple action" in str(exc)
     else:
         raise AssertionError("controller finalized with evidence-backed work")
 
@@ -276,22 +250,24 @@ def test_role_handle_application_is_structural():
     assert linker._find_handle("Messages reach the client.", "client")
 
 
-def test_role_tool_is_available_only_with_document_handle_evidence():
+def test_role_tool_is_available_only_with_participant_evidence():
     linker = SLinker24RoleOrchestrator.__new__(
         SLinker24RoleOrchestrator
     )
     assert "relation_role_resolution" not in linker._available_tools(
-        {"role_handle_evidence": []}
+        {"tool_evidence": {"relation_role_resolution": []}}
     )
     assert "relation_role_resolution" in linker._available_tools(
         {
-            "role_handle_evidence": [
-                {
-                    "expression": "Client",
-                    "component": "HTML5 Client",
-                    "occurrences": [{"sentence": 1, "quote": "client"}],
-                }
-            ]
+            "tool_evidence": {
+                "relation_role_resolution": [
+                    {
+                        "sentence": 1,
+                        "quote": "client",
+                        "target": "HTML5 Client",
+                    }
+                ]
+            }
         }
     )
     assert "coverage_audit" not in linker.PHASE_TOOLS
@@ -355,34 +331,16 @@ def test_role_context_review_uses_project_anchors():
                 {
                     "case": 1,
                     "keep": True,
-                    "section_anchor": (
-                        "The HTML Backend is the request service."
-                    ),
-                    "identity_anchor_sentence": 1,
-                    "identity_anchor": "HTML Backend",
-                    "scope_bridge_sentence": 1,
-                    "scope_bridge": (
-                        "The HTML Backend is the request service."
-                    ),
-                    "claim": "The backend handles requests.",
-                    "participant_role": "request handler",
-                    "competing_referent": "none",
+                    "anchor_sentence": 1,
+                    "claim": '"The backend handles requests."',
+                    "alternative": "none",
                 },
                 {
                     "case": 2,
                     "keep": False,
-                    "section_anchor": (
-                        "The HTML Backend is the request service."
-                    ),
-                    "identity_anchor_sentence": 1,
-                    "identity_anchor": "HTML Backend",
-                    "scope_bridge_sentence": 1,
-                    "scope_bridge": (
-                        "The HTML Backend is the request service."
-                    ),
+                    "anchor_sentence": 1,
                     "claim": "The database backend is external.",
-                    "participant_role": "database modifier",
-                    "competing_referent": "database engine",
+                    "alternative": "database engine",
                 },
             ]
         }
@@ -450,7 +408,7 @@ if __name__ == "__main__":
     test_role_controller_requires_grounded_workflow_evidence()
     test_role_handles_come_from_unique_compound_name_parts()
     test_role_handle_application_is_structural()
-    test_role_tool_is_available_only_with_document_handle_evidence()
+    test_role_tool_is_available_only_with_participant_evidence()
     test_role_variant_entity_ownership_is_name_or_approved_alias()
     test_role_context_review_uses_project_anchors()
     test_lexical_entity_candidates_are_exact_and_nonoverlapping()

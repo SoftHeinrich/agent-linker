@@ -21,84 +21,95 @@ class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
         "coreference_pipeline",
         "relation_role_resolution",
     )
-
-    def _tool_catalog(self):
-        return """- entity_pipeline: exact catalog-name, approved-alias, and
-  catalog-equivalent orthographic identity evidence, followed by the existing
-  two-pass validator.
-- coreference_pipeline: pronoun, demonstrative, and anaphoric reference
-  resolution, followed by its existing validator.
-- relation_role_resolution: resolve unique terminal participant nouns from
-  compound catalog names through grounded local discourse evidence.
-- finalize: return the union of links produced by completed tools."""
+    TOOL_CONTRACTS = {
+        "entity_pipeline": "named components",
+        "coreference_pipeline": "references to introduced components",
+        "relation_role_resolution": "contextual participant nouns",
+    }
+    _REFERENCE = re.compile(
+        r"\b(?:it|its|they|their|them|this|these|those|"
+        r"such|former|latter)\b",
+        re.IGNORECASE,
+    )
 
     def _choose_tool(self, profile, remaining, history, current, sent_map):
-        prompt = f"""You orchestrate trace-linking tools for one software project.
-There is no base linker and no protected floor. Choose one available,
-evidence-backed tool. You cannot propose, validate, add, or remove links.
+        del current, sent_map
+        signals = self._compact_signals(profile, remaining)
+        prompt = f"""Choose the next trace-linking tool.
+You schedule tools; tools alone decide links.
 
 TOOLS
-{self._tool_catalog()}
+{json.dumps(self.TOOL_CONTRACTS)}
 
-PROJECT PROFILE
-{json.dumps(profile)}
+EVIDENCE
+{json.dumps(signals)}
 
-COMPLETED TOOL FEEDBACK
-{json.dumps(history)}
+DONE
+{json.dumps(self._compact_outcomes(history))}
 
-CURRENT LINKS
-{json.dumps(self._controller_link_view(current))}
-
-AVAILABLE ACTIONS
+ACTIONS
 {json.dumps(remaining)}
 
-Select an unused capability only when exact document words show its evidence
-mode remains unresolved. Rejected evidence must not be retried through another
-tool. Every listed capability already has project-profile evidence; order them
-by the unresolved evidence, then finish after all listed capabilities run.
-Counts are observations, not thresholds.
+Use a tool only for its evidence kind. Do not retry rejected evidence through
+another tool. Only evidence-bearing tools are listed; completion is automatic
+when none remain.
 
-Return JSON only:
-{{"action":"one available action",
-"evidence_quotes":["exact source words supporting the call"],
-"unresolved_obligation":"evidence mode or none",
-"reason":"brief workflow reason"}}
+JSON only:
+{{"action":"action","evidence":[1],"reason":"brief reason"}}
 """
         data = self._ask(
             prompt,
-            phase=f"phase_24_role_orchestrator_{len(history) + 1}",
+            phase=f"phase_24_simple_controller_{len(history) + 1}",
             require_present="action",
-            label="S24 role controller",
+            label="S24 simple controller",
         )
         action = str(data.get("action", "")).strip()
         if action not in remaining:
-            raise RuntimeError(f"invalid replacement action: {action!r}")
-        quotes = [
-            str(quote).strip().strip("\"'")
-            for quote in data.get("evidence_quotes", [])
-            if str(quote).strip().strip("\"'")
+            raise RuntimeError(f"invalid simple action: {action!r}")
+        cited = [
+            int(value)
+            for value in data.get("evidence", [])
+            if str(value).isdigit()
         ]
-        document = "\n".join(
-            item["text"] for item in profile["document"]
-        ).casefold()
-        grounded_quotes = [
-            quote for quote in quotes if quote.casefold() in document
-        ]
-        if not grounded_quotes:
+        available = {
+            item["sentence"]
+            for item in profile["tool_evidence"].get(action, [])
+        }
+        grounded = [value for value in cited if value in available]
+        if not grounded:
             raise RuntimeError(
-                f"ungrounded workflow evidence for {action!r}: {quotes!r}"
+                f"ungrounded simple action: {action!r}, {cited!r}"
             )
-        decision = {
-            "evidence_quotes": grounded_quotes,
-            "discarded_evidence_quotes": [
-                quote for quote in quotes if quote not in grounded_quotes
-            ],
-            "unresolved_obligation": str(
-                data.get("unresolved_obligation", "")
-            ).strip(),
+        return action, {
+            "evidence": grounded,
             "reason": str(data.get("reason", "")).strip(),
         }
-        return action, decision
+
+    @staticmethod
+    def _compact_outcomes(history):
+        return [
+            {
+                "tool": step["action"],
+                "accepted": len(
+                    step.get("feedback", {}).get("accepted", [])
+                ),
+                "rejected": len(
+                    step.get("feedback", {}).get("rejected", [])
+                ),
+            }
+            for step in history
+        ]
+
+    @staticmethod
+    def _compact_signals(profile, remaining):
+        evidence = profile.get("tool_evidence", {})
+        return {
+            tool: {
+                "count": len(evidence.get(tool, [])),
+                "examples": evidence.get(tool, [])[:6],
+            }
+            for tool in remaining
+        }
 
     def _project_profile(self, sentences, components):
         profile = super()._project_profile(sentences, components)
@@ -139,13 +150,67 @@ Return JSON only:
             ],
             {sentence.number: sentence for sentence in sentences},
         )
+        aliases = self._identity_forms_by_component()
+        identity = []
+        for sentence in sentences:
+            for component in components:
+                forms = [
+                    component.name,
+                    *aliases.get(component.name, []),
+                ]
+                match = next(
+                    (
+                        self._find_exact_form(sentence.text, form)
+                        for form in forms
+                        if self._find_exact_form(sentence.text, form)
+                    ),
+                    "",
+                )
+                if match:
+                    identity.append({
+                        "sentence": sentence.number,
+                        "quote": match,
+                        "target": component.name,
+                    })
+        identity.extend(
+            {
+                "sentence": item["sentence"],
+                "quote": item["text"],
+                "target": item["component"],
+            }
+            for item in profile["entity_orthographic_evidence"]
+        )
+        references = [
+            {
+                "sentence": sentence.number,
+                "quote": match.group(0),
+            }
+            for sentence in sentences
+            if (match := self._REFERENCE.search(sentence.text))
+        ]
+        participants = [
+            {
+                "sentence": occurrence["sentence"],
+                "quote": occurrence["quote"],
+                "target": item["component"],
+            }
+            for item in profile["role_handle_evidence"]
+            for occurrence in item["occurrences"]
+        ]
+        profile["tool_evidence"] = {
+            "entity_pipeline": identity,
+            "coreference_pipeline": references,
+            "relation_role_resolution": participants,
+        }
         return profile
 
     def _available_tools(self, profile):
-        tools = super()._available_tools(profile)
-        if not profile.get("role_handle_evidence"):
-            tools.remove("relation_role_resolution")
-        return tools
+        evidence = profile.get("tool_evidence", {})
+        return [
+            tool
+            for tool in self.PHASE_TOOLS
+            if evidence.get(tool)
+        ]
 
     def _select_entity_candidates(self, candidates, sent_map):
         forms_by_component = self._identity_forms_by_component()
@@ -260,151 +325,111 @@ Return JSON only:
     def _review_role_candidates(self, candidates, full_sentences):
         if not candidates:
             return [], {}
+        forms_by_component = self._identity_forms_by_component()
+        anchors_by_target = {}
+        for target in {
+            candidate.component_name for candidate in candidates
+        }:
+            forms = [target, *forms_by_component.get(target, [])]
+            anchors_by_target[target] = [
+                {
+                        "sentence": sentence.number,
+                        "text": sentence.text,
+                }
+                for sentence in full_sentences
+                if any(
+                    self._find_exact_form(sentence.text, form)
+                    for form in forms
+                )
+            ]
         sent_map = {
             sentence.number: sentence for sentence in full_sentences
         }
-        forms_by_component = self._identity_forms_by_component()
-        targets = sorted({
-            candidate.component_name for candidate in candidates
-        })
-        profiles = []
-        for target in targets:
-            forms = [target, *forms_by_component.get(target, [])]
-            anchors = []
-            for sentence in full_sentences:
-                matches = [
-                    self._find_exact_form(sentence.text, form)
-                    for form in forms
-                ]
-                matches = [match for match in matches if match]
-                if matches:
-                    anchors.append({
-                        "sentence": sentence.number,
-                        "text": sentence.text,
-                        "identity_forms": matches,
-                    })
-            profiles.append({"target": target, "anchors": anchors})
-        anchors_by_target = {
-            item["target"]: {
-                anchor["sentence"]: anchor
-                for anchor in item["anchors"]
-            }
-            for item in profiles
-        }
-        cases = [
-            {
+        cases = []
+        allowed_anchors = {}
+        evidence_sentences = set()
+        for number, candidate in enumerate(candidates, 1):
+            anchors = sorted(
+                anchors_by_target.get(candidate.component_name, []),
+                key=lambda item: (
+                    abs(item["sentence"] - candidate.sentence_number),
+                    item["sentence"],
+                ),
+            )[:3]
+            anchor_ids = [
+                anchor["sentence"] for anchor in anchors
+            ]
+            context = [
+                sentence.number
+                for sentence in full_sentences
+                if abs(
+                    sentence.number - candidate.sentence_number
+                ) <= 4
+            ]
+            allowed_anchors[number] = set(anchor_ids)
+            evidence_sentences.update(context)
+            evidence_sentences.update(anchor_ids)
+            cases.append({
                 "case": number,
-                "sentence": candidate.sentence_number,
+                "source": candidate.sentence_number,
                 "participant": candidate.matched_text,
                 "target": candidate.component_name,
-                "text": candidate.sentence_text,
+                "context": context,
+                "anchors": anchor_ids,
+            })
+        sentence_table = [
+            {
+                "sentence": number,
+                "text": sent_map[number].text,
             }
-            for number, candidate in enumerate(candidates, 1)
+            for number in sorted(evidence_sentences)
         ]
-        document = [
-            {"sentence": sentence.number, "text": sentence.text}
-            for sentence in full_sentences
-        ]
-        prompt = f"""Resolve generic or inflected architectural participants
-using the document's discourse structure. For each case, keep the mapping only
-when the highlighted participant denotes the listed target component in its
-section or discourse chain.
+        prompt = f"""Does each participant denote its target component?
+A generic singular or plural may denote the target when context and an anchor
+select it. Reject a stronger local referent, a hardware host/machine,
+type/model/technology, or another named component. Hardware capacity is host
+evidence; the word "server" alone is not. Keep only architectural claims.
 
-An approval must identify an explicit target identity anchor, the participant's
-architectural role in the source sentence, and the strongest competing
-referent. A common role noun may validly denote a deployed component instance,
-its service endpoint, its owned state, or its user-facing instances; do not
-reject it merely for being generic or plural when the active discourse scope
-and architectural claim select the target. A competing referent must be an
-explicit locally plausible entity, not an invented unnamed deployment. When
-an apparent alternate label is resolved to the target by a local discourse
-chain, cite the exact bridge sentence that makes that resolution possible.
-
-Reject physical host capacity, users or browsers, protocol/technology use,
-code paths, and cases where multiple explicit referents remain plausible.
-The highlighted noun must itself be a semantic participant in a finite
-architectural claim. Reject fragments and uses where it merely modifies the
-name of a workflow, process, stage, diagram, artifact, or technology. Full
-names, aliases, pronouns, and orthographic variants are owned by other tools.
-
-DOCUMENT
-{json.dumps(document)}
-
-TARGET IDENTITY ANCHORS
-{json.dumps(profiles)}
+SENTENCES
+{json.dumps(sentence_table)}
 
 CASES
 {json.dumps(cases)}
 
-Return JSON only:
-{{"judgments":[{{"case":1,"keep":true,
-"section_anchor":"exact document quote",
-"identity_anchor_sentence":1,
-"identity_anchor":"exact quote from that anchor sentence",
-"scope_bridge_sentence":1,
-"scope_bridge":"exact quote establishing the local discourse chain",
-"claim":"exact quote from the source sentence",
-"participant_role":"brief role",
-"competing_referent":"strongest alternative or none"}}]}}
+Use only a listed case anchor. Claim must be one contiguous exact substring of
+the source sentence; do not abbreviate it or use ellipses.
+
+JSON only:
+{{"judgments":[{{"case":1,"keep":true,"anchor_sentence":1,
+"claim":"exact source quote","alternative":"strongest alternative or none"}}]}}
 """
         data = self._ask(
             prompt,
-            phase="phase_24_discourse_scope_review",
+            phase="phase_24_simple_participant_review",
             require_present="judgments",
-            label="S24 discourse-scope review",
+            label="S24 simple participant review",
             timeout=240,
         )
-        document_text = "\n".join(
-            sentence.text for sentence in full_sentences
-        ).casefold()
         by_case = {}
         for item in data.get("judgments", []):
-            if not str(item.get("case", "")).isdigit():
+            case_value = str(item.get("case", ""))
+            anchor_value = str(item.get("anchor_sentence", ""))
+            if not case_value.isdigit():
                 continue
-            number = int(item["case"])
+            number = int(case_value)
             if not 1 <= number <= len(candidates):
                 continue
             candidate = candidates[number - 1]
-            anchor_value = str(
-                item.get("identity_anchor_sentence", "")
-            )
-            bridge_value = str(
-                item.get("scope_bridge_sentence", "")
-            )
-            anchor_sentence = (
-                int(anchor_value) if anchor_value.isdigit() else 0
-            )
-            bridge_sentence = (
-                int(bridge_value) if bridge_value.isdigit() else 0
-            )
-            anchor = str(item.get("identity_anchor", "")).strip()
-            bridge = str(item.get("scope_bridge", "")).strip()
-            section = str(item.get("section_anchor", "")).strip()
+            anchor = int(anchor_value) if anchor_value.isdigit() else 0
             claim = str(item.get("claim", "")).strip()
-            role = str(item.get("participant_role", "")).strip()
-            competing = str(
-                item.get("competing_referent", "")
-            ).strip()
-            allowed_anchor = anchors_by_target.get(
-                candidate.component_name, {}
-            ).get(anchor_sentence)
-            allowed_bridge = sent_map.get(bridge_sentence)
+            claim = claim.strip("\"'“”‘’")
+            alternative = str(item.get("alternative", "")).strip()
             evidence_valid = (
-                bool(section)
-                and section.casefold() in document_text
-                and allowed_anchor is not None
-                and bool(anchor)
-                and anchor.casefold()
-                in allowed_anchor["text"].casefold()
-                and allowed_bridge is not None
-                and bool(bridge)
-                and bridge.casefold()
-                in allowed_bridge.text.casefold()
+                anchor in allowed_anchors[number]
                 and bool(claim)
                 and claim.casefold()
                 in candidate.sentence_text.casefold()
-                and bool(role)
-                and bool(competing)
+                and bool(alternative)
             )
             by_case[number] = {
                 "approved": (
@@ -412,14 +437,9 @@ Return JSON only:
                 ),
                 "requested_keep": item.get("keep") is True,
                 "evidence_valid": evidence_valid,
-                "section_anchor": section,
-                "identity_anchor_sentence": anchor_sentence,
-                "identity_anchor": anchor,
-                "scope_bridge_sentence": bridge_sentence,
-                "scope_bridge": bridge,
+                "anchor_sentence": anchor,
                 "claim": claim,
-                "participant_role": role,
-                "competing_referent": competing,
+                "alternative": alternative,
             }
         approved = [
             candidate
@@ -432,101 +452,10 @@ Return JSON only:
                     "approved": False,
                     "requested_keep": False,
                     "evidence_valid": False,
-                    "competing_referent": "missing judgment",
+                    "alternative": "missing judgment",
                 }),
-                "path": "discourse_scope_review",
+                "path": "simple_participant_review",
                 "stage": "relation_role_resolution",
-            }
-            for number, candidate in enumerate(candidates, 1)
-        }
-        return approved, decisions
-
-    def _review_identity_candidates(
-        self,
-        candidates,
-        full_sentences,
-        *,
-        case_key,
-        instruction,
-        phase,
-        label,
-        path,
-        stage,
-    ):
-        if not candidates:
-            return [], {}
-        forms_by_component = self._identity_forms_by_component()
-        targets = sorted({
-            candidate.component_name for candidate in candidates
-        })
-        profiles = []
-        for target in targets:
-            forms = [target, *forms_by_component.get(target, [])]
-            profiles.append({
-                "target": target,
-                "identity_anchors": [
-                    {
-                        "sentence": sentence.number,
-                        "text": sentence.text,
-                    }
-                    for sentence in full_sentences
-                    if any(
-                        self._find_exact_form(sentence.text, form)
-                        for form in forms
-                    )
-                ],
-            })
-        cases = [
-            {
-                "case": number,
-                "sentence": candidate.sentence_number,
-                case_key: candidate.matched_text,
-                "target": candidate.component_name,
-                "text": candidate.sentence_text,
-            }
-            for number, candidate in enumerate(candidates, 1)
-        ]
-        prompt = f"""{instruction}
-For each case, keep the mapping only when the highlighted expression refers to the
-listed target component. Identity anchors show explicit project usage.
-
-TARGET PROFILES
-{json.dumps(profiles)}
-
-CASES
-{json.dumps(cases)}
-
-JSON only:
-{{"judgments":[{{"case":1,"keep":true,"referent":"brief referent"}}]}}
-"""
-        data = self._ask(
-            prompt,
-            phase=phase,
-            require_present="judgments",
-            label=label,
-            timeout=240,
-        )
-        by_case = {
-            int(item["case"]): {
-                "approved": item.get("keep") is True,
-                "referent": str(item.get("referent", "")).strip(),
-            }
-            for item in data.get("judgments", [])
-            if str(item.get("case", "")).isdigit()
-        }
-        approved = [
-            candidate
-            for number, candidate in enumerate(candidates, 1)
-            if by_case.get(number, {}).get("approved") is True
-        ]
-        decisions = {
-            (candidate.sentence_number, candidate.component_id): {
-                **by_case.get(number, {
-                    "approved": False,
-                    "referent": "missing judgment",
-                }),
-                "path": path,
-                "stage": stage,
             }
             for number, candidate in enumerate(candidates, 1)
         }

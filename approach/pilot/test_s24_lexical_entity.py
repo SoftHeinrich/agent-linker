@@ -87,11 +87,9 @@ def test_identifier_is_not_a_controller_tool():
     assert "catalog_identifier_resolution" not in (
         SLinker24RoleOrchestrator.PHASE_TOOLS
     )
-    assert "catalog-equivalent orthographic identity" in (
-        SLinker24RoleOrchestrator.__new__(
-            SLinker24RoleOrchestrator
-        )._tool_catalog()
-    )
+    assert SLinker24RoleOrchestrator.TOOL_CONTRACTS[
+        "entity_pipeline"
+    ] == "named components"
 
 
 if __name__ == "__main__":

@@ -17,6 +17,10 @@ Patterns established by the trace-linking spikes.
 - Compare augmentation on an identical saved floor whenever possible.
 - Score marginal additions independently before interpreting a fresh full run.
 - Controllers select bounded tools; they do not emit final domain decisions.
+- Controllers see compact evidence signals and prior outcome counts, while
+  domain tools see only bounded evidence needed for their own decision.
+- Let controllers choose evidence-bearing tool order over multiple turns, but
+  complete structurally when the finite capability set is exhausted.
 - Prompts use generic English and runtime catalogs, never benchmark vocabulary.
 - Preserve canonical linker files byte-for-byte; promote through subclasses and
   additive runner/export wiring.

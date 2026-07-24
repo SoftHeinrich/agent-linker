@@ -1,0 +1,430 @@
+{
+  "mode": "replay",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "none",
+  "datasets": [
+    {
+      "dataset": "bigbluebutton",
+      "baseline": {
+        "tp": 46,
+        "fp": 3,
+        "fn": 16,
+        "P": 0.9387755102040817,
+        "R": 0.7419354838709677,
+        "F1": 0.828828828828829,
+        "F2": 0.7744107744107744
+      },
+      "replacement": {
+        "tp": 56,
+        "fp": 3,
+        "fn": 6,
+        "P": 0.9491525423728814,
+        "R": 0.9032258064516129,
+        "F1": 0.9256198347107438,
+        "F2": 0.9120521172638436
+      },
+      "role_tp": 10,
+      "role_fp": 0,
+      "accepted": [
+        {
+          "sentence": 10,
+          "component": "HTML5 Server"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server"
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client"
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client"
+        }
+      ],
+      "decisions": [
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 67,
+          "claim": "SFU",
+          "alternative": "Kurento Media Server KMS",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 8,
+          "claim": "server",
+          "alternative": "BigBlueButton server",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 9,
+          "claim": "server",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 9,
+          "claim": "server",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 19,
+          "claim": "server",
+          "alternative": "a 16 or 32 CPU core server",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 19,
+          "claim": "server",
+          "alternative": "BigBlueButton server",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 19,
+          "claim": "server",
+          "alternative": "BigBlueButton server",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 19,
+          "claim": "Server",
+          "alternative": "Kurento Media Server KMS",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 19,
+          "claim": "server",
+          "alternative": "FreeSWITCH",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 6,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 6,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 14,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 14,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 72,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 72,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 72,
+          "claim": "client",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 14,
+          "claim": "clients",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 5,
+          "component": "BBB web",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 36,
+          "claim": "web",
+          "alternative": "HTML5 client",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 6,
+          "component": "BBB web",
+          "approved": false,
+          "requested_keep": false,
+          "evidence_valid": true,
+          "anchor_sentence": 36,
+          "claim": "web",
+          "alternative": "HTML5 client",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        }
+      ],
+      "prompt_metrics": {
+        "calls": 1,
+        "prompt_characters": 10616,
+        "prompt_tokens": 3234
+      },
+      "trace": [
+        {
+          "phase": "phase_24_simple_participant_review",
+          "ts": 1784934322.1557715,
+          "elapsed_s": 3.099,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Does each participant denote its target component?\nA generic singular or plural may denote the target when context and an anchor\nselect it. Reject a stronger local referent, a hardware host/machine,\ntype/model/technology, or another named component. Hardware capacity is host\nevidence; the word \"server\" alone is not. Keep only architectural claims.\n\nSENTENCES\n[{\"sentence\": 1, \"text\": \"High-level architecture.\"}, {\"sentence\": 2, \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"}, {\"sentence\": 3, \"text\": \"We'll break down each component in more detail below.\"}, {\"sentence\": 4, \"text\": \"HTML5 client.\"}, {\"sentence\": 5, \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"}, {\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"sentence\": 7, \"text\": \"These connections are all handled by nginx.\"}, {\"sentence\": 8, \"text\": \"The HTML5 server sits behind nginx.\"}, {\"sentence\": 9, \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"}, {\"sentence\": 10, \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"sentence\": 11, \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"}, {\"sentence\": 12, \"text\": \"The client side subscribes to the published collections on the server side.\"}, {\"sentence\": 13, \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"}, {\"sentence\": 14, \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"}, {\"sentence\": 15, \"text\": \"Scalability of HTML5 server component.\"}, {\"sentence\": 16, \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"}, {\"sentence\": 17, \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"}, {\"sentence\": 18, \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"sentence\": 20, \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"}, {\"sentence\": 21, \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"}, {\"sentence\": 22, \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"}, {\"sentence\": 23, \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"}, {\"sentence\": 35, \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"}, {\"sentence\": 36, \"text\": \"BBB web.\"}, {\"sentence\": 37, \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"}, {\"sentence\": 38, \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"}, {\"sentence\": 39, \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"}, {\"sentence\": 40, \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"}, {\"sentence\": 41, \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"}, {\"sentence\": 42, \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"}, {\"sentence\": 43, \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"}, {\"sentence\": 44, \"text\": \"The BigBlueButton comes with some simple API demos.\"}, {\"sentence\": 45, \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"}, {\"sentence\": 46, \"text\": \"Redis PubSub.\"}, {\"sentence\": 47, \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"}, {\"sentence\": 48, \"text\": \"Redis DB.\"}, {\"sentence\": 49, \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"}, {\"sentence\": 50, \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"}, {\"sentence\": 51, \"text\": \"Apps akka.\"}, {\"sentence\": 64, \"text\": \"Users are able to join the voice conference through the headset.\"}, {\"sentence\": 65, \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"}, {\"sentence\": 66, \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"}, {\"sentence\": 67, \"text\": \"Kurento and WebRTC-SFU.\"}, {\"sentence\": 68, \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"sentence\": 69, \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"}, {\"sentence\": 70, \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"}, {\"sentence\": 71, \"text\": \"Joining a voice conference.\"}, {\"sentence\": 72, \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"}, {\"sentence\": 73, \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"}, {\"sentence\": 74, \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"}, {\"sentence\": 75, \"text\": \"Uploading a presentation.\"}, {\"sentence\": 76, \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"sentence\": 77, \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"}, {\"sentence\": 78, \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"}, {\"sentence\": 79, \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}, {\"sentence\": 80, \"text\": \"Presentation conversion flow.\"}, {\"sentence\": 81, \"text\": \"The diagram below describes the flow of the presentation conversion.\"}, {\"sentence\": 82, \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"}, {\"sentence\": 83, \"text\": \"Then below the SVG conversion flow.\"}]\n\nCASES\n[{\"case\": 1, \"source\": 68, \"participant\": \"SFU\", \"target\": \"WebRTC-SFU\", \"context\": [64, 65, 66, 67, 68, 69, 70, 71, 72], \"anchors\": [67, 70]}, {\"case\": 2, \"source\": 6, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [2, 3, 4, 5, 6, 7, 8, 9, 10], \"anchors\": [8, 9, 15]}, {\"case\": 3, \"source\": 10, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [6, 7, 8, 9, 10, 11, 12, 13, 14], \"anchors\": [9, 8, 15]}, {\"case\": 4, \"source\": 12, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [8, 9, 10, 11, 12, 13, 14, 15, 16], \"anchors\": [9, 15, 8]}, {\"case\": 5, \"source\": 18, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [14, 15, 16, 17, 18, 19, 20, 21, 22], \"anchors\": [19, 20, 15]}, {\"case\": 6, \"source\": 39, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [35, 36, 37, 38, 39, 40, 41, 42, 43], \"anchors\": [21, 20, 19]}, {\"case\": 7, \"source\": 47, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [43, 44, 45, 46, 47, 48, 49, 50, 51], \"anchors\": [21, 20, 19]}, {\"case\": 8, \"source\": 68, \"participant\": \"Server\", \"target\": \"HTML5 Server\", \"context\": [64, 65, 66, 67, 68, 69, 70, 71, 72], \"anchors\": [21, 20, 19]}, {\"case\": 9, \"source\": 73, \"participant\": \"server\", \"target\": \"HTML5 Server\", \"context\": [69, 70, 71, 72, 73, 74, 75, 76, 77], \"anchors\": [21, 20, 19]}, {\"case\": 10, \"source\": 9, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [5, 6, 7, 8, 9, 10, 11, 12, 13], \"anchors\": [6, 5, 4]}, {\"case\": 11, \"source\": 10, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [6, 7, 8, 9, 10, 11, 12, 13, 14], \"anchors\": [6, 14, 5]}, {\"case\": 12, \"source\": 12, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [8, 9, 10, 11, 12, 13, 14, 15, 16], \"anchors\": [14, 6, 5]}, {\"case\": 13, \"source\": 13, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [9, 10, 11, 12, 13, 14, 15, 16, 17], \"anchors\": [14, 6, 5]}, {\"case\": 14, \"source\": 73, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [69, 70, 71, 72, 73, 74, 75, 76, 77], \"anchors\": [72, 14, 6]}, {\"case\": 15, \"source\": 76, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [72, 73, 74, 75, 76, 77, 78, 79, 80], \"anchors\": [72, 14, 6]}, {\"case\": 16, \"source\": 79, \"participant\": \"client\", \"target\": \"HTML5 Client\", \"context\": [75, 76, 77, 78, 79, 80, 81, 82, 83], \"anchors\": [72, 14, 6]}, {\"case\": 17, \"source\": 19, \"participant\": \"clients\", \"target\": \"HTML5 Client\", \"context\": [15, 16, 17, 18, 19, 20, 21, 22, 23], \"anchors\": [14, 6, 5]}, {\"case\": 18, \"source\": 5, \"participant\": \"web\", \"target\": \"BBB web\", \"context\": [1, 2, 3, 4, 5, 6, 7, 8, 9], \"anchors\": [36, 37]}, {\"case\": 19, \"source\": 6, \"participant\": \"web\", \"target\": \"BBB web\", \"context\": [2, 3, 4, 5, 6, 7, 8, 9, 10], \"anchors\": [36, 37]}]\n\nUse only a listed case anchor. Claim must be one contiguous exact substring of\nthe source sentence; do not abbreviate it or use ellipses.\n\nJSON only:\n{\"judgments\":[{\"case\":1,\"keep\":true,\"anchor_sentence\":1,\n\"claim\":\"exact source quote\",\"alternative\":\"strongest alternative or none\"}]}\n",
+          "response_text": "{\"judgments\":[{\"case\":1,\"keep\":false,\"anchor_sentence\":67,\"claim\":\"SFU\",\"alternative\":\"Kurento Media Server KMS\"},{\"case\":2,\"keep\":false,\"anchor_sentence\":8,\"claim\":\"server\",\"alternative\":\"BigBlueButton server\"},{\"case\":3,\"keep\":true,\"anchor_sentence\":9,\"claim\":\"server\",\"alternative\":\"none\"},{\"case\":4,\"keep\":true,\"anchor_sentence\":9,\"claim\":\"server\",\"alternative\":\"none\"},{\"case\":5,\"keep\":false,\"anchor_sentence\":19,\"claim\":\"server\",\"alternative\":\"a 16 or 32 CPU core server\"},{\"case\":6,\"keep\":false,\"anchor_sentence\":19,\"claim\":\"server\",\"alternative\":\"BigBlueButton server\"},{\"case\":7,\"keep\":false,\"anchor_sentence\":19,\"claim\":\"server\",\"alternative\":\"BigBlueButton server\"},{\"case\":8,\"keep\":false,\"anchor_sentence\":19,\"claim\":\"Server\",\"alternative\":\"Kurento Media Server KMS\"},{\"case\":9,\"keep\":false,\"anchor_sentence\":19,\"claim\":\"server\",\"alternative\":\"FreeSWITCH\"},{\"case\":10,\"keep\":true,\"anchor_sentence\":6,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":11,\"keep\":true,\"anchor_sentence\":6,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":12,\"keep\":true,\"anchor_sentence\":14,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":13,\"keep\":true,\"anchor_sentence\":14,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":14,\"keep\":true,\"anchor_sentence\":72,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":15,\"keep\":true,\"anchor_sentence\":72,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":16,\"keep\":true,\"anchor_sentence\":72,\"claim\":\"client\",\"alternative\":\"none\"},{\"case\":17,\"keep\":true,\"anchor_sentence\":14,\"claim\":\"clients\",\"alternative\":\"none\"},{\"case\":18,\"keep\":false,\"anchor_sentence\":36,\"claim\":\"web\",\"alternative\":\"HTML5 client\"},{\"case\":19,\"keep\":false,\"anchor_sentence\":36,\"claim\":\"web\",\"alternative\":\"HTML5 client\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 3098,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 3234,
+            "completion_tokens": 442,
+            "total_tokens": 3676
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "teammates",
+      "baseline": {
+        "tp": 54,
+        "fp": 4,
+        "fn": 3,
+        "P": 0.9310344827586207,
+        "R": 0.9473684210526315,
+        "F1": 0.9391304347826087,
+        "F2": 0.9440559440559441
+      },
+      "replacement": {
+        "tp": 54,
+        "fp": 4,
+        "fn": 3,
+        "P": 0.9310344827586207,
+        "R": 0.9473684210526315,
+        "F1": 0.9391304347826087,
+        "F2": 0.9440559440559441
+      },
+      "role_tp": 3,
+      "role_fp": 0,
+      "accepted": [
+        {
+          "sentence": 122,
+          "component": "GAE Datastore"
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore"
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore"
+        }
+      ],
+      "decisions": [
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 137,
+          "claim": "Hiding the complexities of datastore from the Logic component.",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 137,
+          "claim": "Add and Delete operations try to wait until data is persisted in the datastore before returning.",
+          "alternative": "none",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "approved": true,
+          "requested_keep": true,
+          "evidence_valid": true,
+          "anchor_sentence": 137,
+          "claim": "Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.",
+          "alternative": "Google's distributed datastore",
+          "path": "simple_participant_review",
+          "stage": "relation_role_resolution"
+        }
+      ],
+      "prompt_metrics": {
+        "calls": 1,
+        "prompt_characters": 3882,
+        "prompt_tokens": 1011
+      },
+      "trace": [
+        {
+          "phase": "phase_24_simple_participant_review",
+          "ts": 1784934325.2584243,
+          "elapsed_s": 1.048,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Does each participant denote its target component?\nA generic singular or plural may denote the target when context and an anchor\nselect it. Reject a stronger local referent, a hardware host/machine,\ntype/model/technology, or another named component. Hardware capacity is host\nevidence; the word \"server\" alone is not. Keep only architectural claims.\n\nSENTENCES\n[{\"sentence\": 118, \"text\": \"The Storage component performs CRUD (Create, Read, Update, Delete) operations on data entities individually.\"}, {\"sentence\": 119, \"text\": \"It contains minimal logic beyond what is directly relevant to CRUD operations.\"}, {\"sentence\": 120, \"text\": \"In particular, it is reponsible for the following.\"}, {\"sentence\": 121, \"text\": \"Validating data inside entities before creating/updating them, to ensure they are in a valid state.\"}, {\"sentence\": 122, \"text\": \"Hiding the complexities of datastore from the Logic component.\"}, {\"sentence\": 123, \"text\": \"All GQL queries are to be contained inside the Storage component.\"}, {\"sentence\": 124, \"text\": \"Hiding the persistable objects.\"}, {\"sentence\": 125, \"text\": \"Classes in the storage.entity package are not visible outside this component to hide information specific to data persistence.\"}, {\"sentence\": 126, \"text\": \"Instead, a corresponding non-persistent data transfer object named Attributes (e.g., CourseAttributes is the data transfer object for Course entities) object is returned.\"}, {\"sentence\": 134, \"text\": \"Note that the navigability of the association links between entity objects appear to be in the reverse direction of what we see in a normal OOP design.\"}, {\"sentence\": 135, \"text\": \"This is because we want to keep the data schema flexible so that new entity types can be added later with minimal modifications to existing elements.\"}, {\"sentence\": 136, \"text\": \"Represented by the Db classes.\"}, {\"sentence\": 137, \"text\": \"These classes act as the bridge to the GAE Datastore.\"}, {\"sentence\": 138, \"text\": \"Add and Delete operations try to wait until data is persisted in the datastore before returning.\"}, {\"sentence\": 139, \"text\": \"This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\"}, {\"sentence\": 140, \"text\": \"However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.\"}, {\"sentence\": 141, \"text\": \"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\"}, {\"sentence\": 142, \"text\": \"As a result, the data may be in an inconsistent states for short periods of time although things should become consistent eventually.\"}, {\"sentence\": 143, \"text\": \"For example, an object we deleted may appear to still exist for a short while.\"}, {\"sentence\": 144, \"text\": \"Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\"}, {\"sentence\": 145, \"text\": \"To API for creating the following information are presented.\"}]\n\nCASES\n[{\"case\": 1, \"source\": 122, \"participant\": \"datastore\", \"target\": \"GAE Datastore\", \"context\": [118, 119, 120, 121, 122, 123, 124, 125, 126], \"anchors\": [137, 139, 144]}, {\"case\": 2, \"source\": 138, \"participant\": \"datastore\", \"target\": \"GAE Datastore\", \"context\": [134, 135, 136, 137, 138, 139, 140, 141, 142], \"anchors\": [137, 139, 144]}, {\"case\": 3, \"source\": 141, \"participant\": \"datastore\", \"target\": \"GAE Datastore\", \"context\": [137, 138, 139, 140, 141, 142, 143, 144, 145], \"anchors\": [139, 144, 137]}]\n\nUse only a listed case anchor. Claim must be one contiguous exact substring of\nthe source sentence; do not abbreviate it or use ellipses.\n\nJSON only:\n{\"judgments\":[{\"case\":1,\"keep\":true,\"anchor_sentence\":1,\n\"claim\":\"exact source quote\",\"alternative\":\"strongest alternative or none\"}]}\n",
+          "response_text": "{\"judgments\":[{\"case\":1,\"keep\":true,\"anchor_sentence\":137,\"claim\":\"Hiding the complexities of datastore from the Logic component.\",\"alternative\":\"none\"},{\"case\":2,\"keep\":true,\"anchor_sentence\":137,\"claim\":\"Add and Delete operations try to wait until data is persisted in the datastore before returning.\",\"alternative\":\"none\"},{\"case\":3,\"keep\":true,\"anchor_sentence\":137,\"claim\":\"Eventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\",\"alternative\":\"Google's distributed datastore\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1047,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1011,
+            "completion_tokens": 121,
+            "total_tokens": 1132
+          }
+        }
+      ]
+    }
+  ],
+  "role_tp": 13,
+  "role_fp": 0,
+  "pass_role_gate": true
+}

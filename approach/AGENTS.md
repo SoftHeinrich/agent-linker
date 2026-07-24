@@ -64,13 +64,15 @@ Runtime files retained on this branch:
   `self.code_links` via `DirectCodeLinker`/`DirectLinkJudge` (not yet plumbed
   by `run_ablation.py`'s current `DATASETS` dict — future work).
 - `src/llm_sad_sam/linkers/experimental/s_linker24_role_orchestrator.py` —
-  the sole retained S24 orchestrator. Its entity path owns exact names,
-  approved aliases, and catalog-equivalent orthographic identities. Its
-  relation-role path owns unique terminal participant nouns, including regular
-  plurals and sentence-final punctuation, and requires section, identity,
-  bridge, claim, role, and competing-referent evidence. Event nominals remain
-  entity/alias-owned. Final fresh five-project E2E: 180 TP / 5 FP / 15 FN;
-  role source 10 TP / 0 FP. Spike 014 contains the full audit.
+  the sole retained S24 orchestrator. A compact multi-turn controller sees
+  only evidence counts/examples and prior outcome counts, then orders three
+  simple tools: named components, references to introduced components, and
+  contextual participant nouns. Completion is structural after all
+  evidence-bearing tools run. The participant judge sees one bounded local
+  sentence table and uses only anchor, contiguous claim, and alternative
+  fields. Final fresh five-project E2E: 185 TP / 4 FP / 10 FN; participant
+  source 13 TP / 0 FP; macro F1/F2 97.13/96.47 and pooled 96.35/95.46.
+  Spike 015 contains the simplicity audit and failed-intermediate evidence.
 - `src/llm_sad_sam/linkers/experimental/{helper_v3,ilinker3,__init__}.py`
 - `src/llm_sad_sam/core/` — `data_types`, `data_types_v2`, `document_loader`,
   `document_loader_v2`, `model_analyzer`
