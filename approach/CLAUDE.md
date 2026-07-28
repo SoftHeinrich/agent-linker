@@ -65,14 +65,16 @@ Runtime files retained on this branch:
   by `run_ablation.py`'s current `DATASETS` dict — future work).
 - `src/llm_sad_sam/linkers/experimental/s_linker24_role_orchestrator.py` —
   the sole retained S24 orchestrator. A compact multi-turn controller sees
-  only evidence counts/examples and prior outcome counts, then orders three
-  simple tools: named components, references to introduced components, and
-  contextual participant nouns. Completion is structural after all
-  evidence-bearing tools run. The participant judge sees one bounded local
-  sentence table and uses only anchor, contiguous claim, and alternative
-  fields. Final fresh five-project E2E: 185 TP / 4 FP / 10 FN; participant
-  source 13 TP / 0 FP; macro F1/F2 97.13/96.47 and pooled 96.35/95.46.
-  Spike 015 contains the simplicity audit and failed-intermediate evidence.
+  only general capability contracts and prior outcome counts, then orders
+  three self-discovering tools: named components, references to introduced
+  components, and contextual participant nouns. Completion is structural
+  after all bounded tools run. Participant discovery uses uniquely owned
+  runtime catalog-token overlap; a target-blind denotation pass precedes
+  grounded identity review to avoid target-label bias. Final fresh
+  five-project E2E: 182 TP / 8 FP / 13 FN; participant source 14 TP / 0 FP;
+  macro F1/F2 96.07/95.40 and pooled 94.55/93.81. Spike 016 contains the
+  hard-coding audit, failed generic-proposer evidence, and repeated
+  checkpoint results.
 - `src/llm_sad_sam/linkers/experimental/{helper_v3,ilinker3,__init__}.py`
 - `src/llm_sad_sam/core/` — `data_types`, `data_types_v2`, `document_loader`,
   `document_loader_v2`, `model_analyzer`

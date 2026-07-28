@@ -33,7 +33,6 @@ def test_controller_prompt_is_compact_and_grounded():
         seen["prompt"] = prompt
         return {
             "action": "entity_pipeline",
-            "evidence": [1],
             "reason": "named evidence remains",
         }
 
@@ -63,8 +62,9 @@ def test_controller_prompt_is_compact_and_grounded():
         {},
     )
     assert action == "entity_pipeline"
-    assert decision["evidence"] == [1]
+    assert decision["reason"] == "named evidence remains"
     assert "THIS FULL DOCUMENT MUST NOT BE SENT" not in seen["prompt"]
+    assert '"evidence"' not in seen["prompt"]
     assert len(seen["prompt"]) < 1200
 
 
@@ -76,7 +76,6 @@ def test_controller_uses_compact_prior_outcomes():
         seen["prompt"] = prompt
         return {
             "action": "coreference_pipeline",
-            "evidence": [2],
             "reason": "reference evidence remains",
         }
 
@@ -126,7 +125,15 @@ def test_local_participant_prompt_excludes_unrelated_document():
     ]
 
     def ask(prompt, **_kwargs):
-        seen["prompt"] = prompt
+        seen.setdefault("prompts", []).append(prompt)
+        if "Classify what each expression" in prompt:
+            return {
+                "judgments": [{
+                    "case": 1,
+                    "denotation": "participant",
+                    "claim": "client",
+                }]
+            }
         return {
             "judgments": [
                 {
@@ -145,9 +152,10 @@ def test_local_participant_prompt_excludes_unrelated_document():
     )
     assert approved == [candidate]
     assert decisions[(5, "client")]["evidence_valid"] is True
-    assert "UNRELATED DISTANT SENTENCE" not in seen["prompt"]
-    assert "section_anchor" not in seen["prompt"]
-    assert "scope_bridge" not in seen["prompt"]
+    combined = "\n".join(seen["prompts"])
+    assert "UNRELATED DISTANT SENTENCE" not in combined
+    assert "section_anchor" not in combined
+    assert "scope_bridge" not in combined
 
 
 def test_local_participant_review_fails_closed():
@@ -163,17 +171,28 @@ def test_local_participant_review_fails_closed():
         Sentence(1, "The HTML Server is the backend."),
         Sentence(2, "The server stores state."),
     ]
-    linker._ask = lambda *_args, **_kwargs: {
-        "judgments": [
-            {
-                "case": 1,
-                "keep": True,
-                "anchor_sentence": 99,
-                "claim": "The server stores state.",
-                "alternative": "none",
+    def ask(prompt, **_kwargs):
+        if "Classify what each expression" in prompt:
+            return {
+                "judgments": [{
+                    "case": 1,
+                    "denotation": "participant",
+                    "claim": "server",
+                }]
             }
-        ]
-    }
+        return {
+            "judgments": [
+                {
+                    "case": 1,
+                    "keep": True,
+                    "anchor_sentence": 99,
+                    "claim": "The server stores state.",
+                    "alternative": "none",
+                }
+            ]
+        }
+
+    linker._ask = ask
     approved, decisions = linker._review_role_candidates(
         [candidate], sentences
     )

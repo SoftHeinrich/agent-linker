@@ -58,7 +58,8 @@ def prompt_metrics(linker):
         item
         for item in linker._llm_calls
         if "simple_controller" in item.get("phase", "")
-        or "simple_participant" in item.get("phase", "")
+        or "general_denotation" in item.get("phase", "")
+        or "general_identity" in item.get("phase", "")
     ]
     return {
         "calls": len(selected),
@@ -98,8 +99,7 @@ def replay_project(name, baseline_dir, results_dir):
     linker = SLinker24SimplePilot(backend=LLMBackend.OPENAI)
     linker.model_knowledge = profile["model_knowledge"]
     linker.doc_knowledge = profile["doc_knowledge"]
-    candidates = linker._apply_role_handles(
-        linker._catalog_role_handles(components),
+    candidates = linker._catalog_overlap_candidates(
         sentences,
         components,
         floor,

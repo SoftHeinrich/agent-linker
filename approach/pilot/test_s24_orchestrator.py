@@ -138,26 +138,21 @@ def test_controller_feedback_is_normalized_without_losing_outcomes():
     }
 
 
-def test_role_controller_requires_grounded_workflow_evidence():
+def test_role_controller_only_schedules_remaining_tools():
     linker = SLinker24RoleOrchestrator.__new__(
         SLinker24RoleOrchestrator
     )
-    profile = {
-        "tool_evidence": {
-            "relation_role_resolution": [
-                {
-                    "sentence": 1,
-                    "quote": "server",
-                    "target": "Backend",
-                }
-            ]
+    profile = {"private": "must not reach controller"}
+    seen = {}
+
+    def ask(prompt, **_kwargs):
+        seen["prompt"] = prompt
+        return {
+            "action": "relation_role_resolution",
+            "reason": "participant discovery remains",
         }
-    }
-    linker._ask = lambda *args, **kwargs: {
-        "action": "relation_role_resolution",
-        "evidence": [1],
-        "reason": "role mapping remains",
-    }
+
+    linker._ask = ask
     action, decision = linker._choose_tool(
         profile,
         ["relation_role_resolution"],
@@ -166,28 +161,12 @@ def test_role_controller_requires_grounded_workflow_evidence():
         {},
     )
     assert action == "relation_role_resolution"
-    assert decision["evidence"] == [1]
-
-    linker._ask = lambda *args, **kwargs: {
-        "action": "relation_role_resolution",
-        "evidence": [99],
-    }
-    try:
-        linker._choose_tool(
-            profile,
-            ["relation_role_resolution"],
-            [],
-            [],
-            {},
-        )
-    except RuntimeError as exc:
-        assert "ungrounded simple action" in str(exc)
-    else:
-        raise AssertionError("ungrounded controller action was accepted")
+    assert decision["reason"] == "participant discovery remains"
+    assert "private" not in seen["prompt"]
+    assert '"evidence"' not in seen["prompt"]
 
     linker._ask = lambda *args, **kwargs: {
         "action": "finalize",
-        "evidence": [1],
     }
     try:
         linker._choose_tool(
@@ -203,73 +182,52 @@ def test_role_controller_requires_grounded_workflow_evidence():
         raise AssertionError("controller finalized with evidence-backed work")
 
 
-def test_role_handles_come_from_unique_compound_name_parts():
-    components = [
-        SimpleNamespace(name="HTML5 Client"),
-        SimpleNamespace(name="HTML5 Server"),
-        SimpleNamespace(name="WebRTC-SFU"),
-        SimpleNamespace(name="Presentation Conversion"),
-        SimpleNamespace(name="logic"),
-    ]
-    assert SLinker24RoleOrchestrator._catalog_role_handles(components) == [
-        {"expression": "Client", "component": "HTML5 Client"},
-        {"expression": "Clients", "component": "HTML5 Client"},
-        {"expression": "Server", "component": "HTML5 Server"},
-        {"expression": "Servers", "component": "HTML5 Server"},
-        {"expression": "SFU", "component": "WebRTC-SFU"},
-        {"expression": "SFUs", "component": "WebRTC-SFU"},
-    ]
-
-
-def test_role_handle_application_is_structural():
+def test_catalog_overlap_is_broad_unique_and_identifier_safe():
     linker = SLinker24RoleOrchestrator.__new__(
         SLinker24RoleOrchestrator
     )
+    linker.doc_knowledge = SimpleNamespace(aliases={})
     sentences = [
-        Sentence(1, "The client calls the server."),
+        Sentence(1, "The clients call the server."),
         Sentence(2, "The serverless worker starts."),
+        Sentence(3, "Use package.client.handler."),
+        Sentence(4, "The client-side cache is local."),
+        Sentence(5, "The conversion begins."),
+        Sentence(6, "WebRTC is enabled."),
     ]
-    components = [SimpleNamespace(name="HTML5 Client", id="client")]
-    handles = [{
-        "expression": "Client",
-        "component": "HTML5 Client",
-    }]
-    candidates = linker._apply_role_handles(
-        handles,
+    components = [
+        SimpleNamespace(name="HTML5 Client", id="client"),
+        SimpleNamespace(name="HTML5 Server", id="server"),
+        SimpleNamespace(
+            name="Presentation Conversion", id="conversion"
+        ),
+        SimpleNamespace(name="Web", id="web"),
+        SimpleNamespace(name="WebRTC-SFU", id="webrtc"),
+    ]
+    candidates = linker._catalog_overlap_candidates(
         sentences,
         components,
-        [],
+        [SadSamLink(1, "server", "HTML5 Server")],
     )
     assert [
-        (candidate.sentence_number, candidate.component_name)
+        (
+            candidate.sentence_number,
+            candidate.component_name,
+            candidate.matched_text,
+        )
         for candidate in candidates
-    ] == [(1, "HTML5 Client")]
-    assert not linker._find_handle("The tests pass.", "Test")
-    assert not linker._find_handle("The bbb-html5 process starts.", "bbb")
-    assert not linker._find_handle("The test.driver package.", "driver")
-    assert linker._find_handle("Messages reach the client.", "client")
+    ] == [
+        (1, "HTML5 Client", "clients"),
+        (2, "HTML5 Server", "serverless"),
+        (5, "Presentation Conversion", "conversion"),
+    ]
 
 
-def test_role_tool_is_available_only_with_participant_evidence():
+def test_all_tools_own_their_discovery():
     linker = SLinker24RoleOrchestrator.__new__(
         SLinker24RoleOrchestrator
     )
-    assert "relation_role_resolution" not in linker._available_tools(
-        {"tool_evidence": {"relation_role_resolution": []}}
-    )
-    assert "relation_role_resolution" in linker._available_tools(
-        {
-            "tool_evidence": {
-                "relation_role_resolution": [
-                    {
-                        "sentence": 1,
-                        "quote": "client",
-                        "target": "HTML5 Client",
-                    }
-                ]
-            }
-        }
-    )
+    assert linker._available_tools({}) == list(linker.PHASE_TOOLS)
     assert "coverage_audit" not in linker.PHASE_TOOLS
 
 
@@ -325,7 +283,22 @@ def test_role_context_review_uses_project_anchors():
     seen = {}
 
     def ask(prompt, **_kwargs):
-        seen["prompt"] = prompt
+        seen.setdefault("prompts", []).append(prompt)
+        if "Classify what each expression" in prompt:
+            return {
+                "judgments": [
+                    {
+                        "case": 1,
+                        "denotation": "participant",
+                        "claim": "backend",
+                    },
+                    {
+                        "case": 2,
+                        "denotation": "participant",
+                        "claim": "backend",
+                    },
+                ]
+            }
         return {
             "judgments": [
                 {
@@ -357,7 +330,10 @@ def test_role_context_review_uses_project_anchors():
     assert approved == candidates[:1]
     assert decisions[(2, "backend")]["approved"] is True
     assert decisions[(3, "backend")]["approved"] is False
-    assert "The HTML Backend is the request service." in seen["prompt"]
+    assert any(
+        "The HTML Backend is the request service." in prompt
+        for prompt in seen["prompts"]
+    )
 
 
 def test_lexical_entity_candidates_are_exact_and_nonoverlapping():
@@ -405,10 +381,9 @@ if __name__ == "__main__":
     test_audit_grounding_is_structural_only()
     test_link_is_replacement_not_s21_floor()
     test_controller_feedback_is_normalized_without_losing_outcomes()
-    test_role_controller_requires_grounded_workflow_evidence()
-    test_role_handles_come_from_unique_compound_name_parts()
-    test_role_handle_application_is_structural()
-    test_role_tool_is_available_only_with_participant_evidence()
+    test_role_controller_only_schedules_remaining_tools()
+    test_catalog_overlap_is_broad_unique_and_identifier_safe()
+    test_all_tools_own_their_discovery()
     test_role_variant_entity_ownership_is_name_or_approved_alias()
     test_role_context_review_uses_project_anchors()
     test_lexical_entity_candidates_are_exact_and_nonoverlapping()

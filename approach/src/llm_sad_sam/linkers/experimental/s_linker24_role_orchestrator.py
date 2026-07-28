@@ -1,4 +1,4 @@
-"""S24 replacement controller with a project-specific catalog-handle tool."""
+"""S24 controller whose small tools own candidate discovery and decisions."""
 from __future__ import annotations
 
 import json
@@ -13,7 +13,7 @@ from llm_sad_sam.linkers.experimental._s_linker24_orchestrator_base import (
 
 
 class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
-    """Replacement controller with non-overlapping reference-mode tools."""
+    """Multi-turn controller over non-overlapping, self-discovering tools."""
 
     _VARIANT_NAME = "s_linker24_role_orchestrator"
     PHASE_TOOLS = (
@@ -26,23 +26,13 @@ class SLinker24RoleOrchestrator(_SLinker24OrchestratorBase):
         "coreference_pipeline": "references to introduced components",
         "relation_role_resolution": "contextual participant nouns",
     }
-    _REFERENCE = re.compile(
-        r"\b(?:it|its|they|their|them|this|these|those|"
-        r"such|former|latter)\b",
-        re.IGNORECASE,
-    )
-
     def _choose_tool(self, profile, remaining, history, current, sent_map):
-        del current, sent_map
-        signals = self._compact_signals(profile, remaining)
+        del profile, current, sent_map
         prompt = f"""Choose the next trace-linking tool.
 You schedule tools; tools alone decide links.
 
 TOOLS
 {json.dumps(self.TOOL_CONTRACTS)}
-
-EVIDENCE
-{json.dumps(signals)}
 
 DONE
 {json.dumps(self._compact_outcomes(history))}
@@ -50,12 +40,11 @@ DONE
 ACTIONS
 {json.dumps(remaining)}
 
-Use a tool only for its evidence kind. Do not retry rejected evidence through
-another tool. Only evidence-bearing tools are listed; completion is automatic
-when none remain.
+Do not retry rejected candidates through another tool. Each tool discovers and
+decides only its own evidence kind. Completion is automatic when none remain.
 
 JSON only:
-{{"action":"action","evidence":[1],"reason":"brief reason"}}
+{{"action":"action","reason":"brief reason"}}
 """
         data = self._ask(
             prompt,
@@ -66,22 +55,7 @@ JSON only:
         action = str(data.get("action", "")).strip()
         if action not in remaining:
             raise RuntimeError(f"invalid simple action: {action!r}")
-        cited = [
-            int(value)
-            for value in data.get("evidence", [])
-            if str(value).isdigit()
-        ]
-        available = {
-            item["sentence"]
-            for item in profile["tool_evidence"].get(action, [])
-        }
-        grounded = [value for value in cited if value in available]
-        if not grounded:
-            raise RuntimeError(
-                f"ungrounded simple action: {action!r}, {cited!r}"
-            )
         return action, {
-            "evidence": grounded,
             "reason": str(data.get("reason", "")).strip(),
         }
 
@@ -100,117 +74,15 @@ JSON only:
             for step in history
         ]
 
-    @staticmethod
-    def _compact_signals(profile, remaining):
-        evidence = profile.get("tool_evidence", {})
-        return {
-            tool: {
-                "count": len(evidence.get(tool, [])),
-                "examples": evidence.get(tool, [])[:6],
-            }
-            for tool in remaining
-        }
-
     def _project_profile(self, sentences, components):
-        profile = super()._project_profile(sentences, components)
-        handles = self._catalog_role_handles(components)
-        profile["role_handle_evidence"] = [
-            {
-                **handle,
-                "occurrences": [
-                    {
-                        "sentence": sentence.number,
-                        "quote": matched,
-                    }
-                    for sentence in sentences
-                    if (
-                        matched := self._find_handle(
-                            sentence.text, handle["expression"]
-                        )
-                    )
-                ],
-            }
-            for handle in handles
-            if any(
-                self._find_handle(sentence.text, handle["expression"])
-                for sentence in sentences
-            )
-        ]
-        profile["entity_orthographic_evidence"] = self._link_view(
-            [
-                SadSamLink(
-                    candidate.sentence_number,
-                    candidate.component_id,
-                    candidate.component_name,
-                    source="entity_orthographic_candidate",
-                )
-                for candidate in self._lexical_entity_candidates(
-                    sentences, components
-                )
-            ],
-            {sentence.number: sentence for sentence in sentences},
-        )
-        aliases = self._identity_forms_by_component()
-        identity = []
-        for sentence in sentences:
-            for component in components:
-                forms = [
-                    component.name,
-                    *aliases.get(component.name, []),
-                ]
-                match = next(
-                    (
-                        self._find_exact_form(sentence.text, form)
-                        for form in forms
-                        if self._find_exact_form(sentence.text, form)
-                    ),
-                    "",
-                )
-                if match:
-                    identity.append({
-                        "sentence": sentence.number,
-                        "quote": match,
-                        "target": component.name,
-                    })
-        identity.extend(
-            {
-                "sentence": item["sentence"],
-                "quote": item["text"],
-                "target": item["component"],
-            }
-            for item in profile["entity_orthographic_evidence"]
-        )
-        references = [
-            {
-                "sentence": sentence.number,
-                "quote": match.group(0),
-            }
-            for sentence in sentences
-            if (match := self._REFERENCE.search(sentence.text))
-        ]
-        participants = [
-            {
-                "sentence": occurrence["sentence"],
-                "quote": occurrence["quote"],
-                "target": item["component"],
-            }
-            for item in profile["role_handle_evidence"]
-            for occurrence in item["occurrences"]
-        ]
-        profile["tool_evidence"] = {
-            "entity_pipeline": identity,
-            "coreference_pipeline": references,
-            "relation_role_resolution": participants,
+        return {
+            "sentence_count": len(sentences),
+            "component_count": len(components),
         }
-        return profile
 
     def _available_tools(self, profile):
-        evidence = profile.get("tool_evidence", {})
-        return [
-            tool
-            for tool in self.PHASE_TOOLS
-            if evidence.get(tool)
-        ]
+        del profile
+        return list(self.PHASE_TOOLS)
 
     def _select_entity_candidates(self, candidates, sent_map):
         forms_by_component = self._identity_forms_by_component()
@@ -283,9 +155,8 @@ JSON only:
     def _run_relation_role_tool(
         self, sentences, components, current_links, sent_map
     ):
-        handles = self._catalog_role_handles(components)
-        candidates = self._apply_role_handles(
-            handles, sentences, components, current_links
+        candidates = self._catalog_overlap_candidates(
+            sentences, components, current_links
         )
         full_sentences = (
             load_sentences(self._current_text_path)
@@ -305,7 +176,6 @@ JSON only:
             for candidate in approved
         ]
         return links, {
-            "role_handles": handles,
             "proposed": self._link_view(
                 [
                     SadSamLink(
@@ -319,10 +189,119 @@ JSON only:
                 sent_map,
             ),
             "accepted": self._link_view(links, sent_map),
-            "handle_decisions": self._decision_view(decisions),
+            "participant_decisions": self._decision_view(decisions),
         }
 
     def _review_role_candidates(self, candidates, full_sentences):
+        participant_candidates, decisions = self._classify_denotations(
+            candidates, full_sentences
+        )
+        approved, reviewed = self._review_role_batch(
+            participant_candidates, full_sentences
+        )
+        for key, decision in reviewed.items():
+            decisions[key] = {
+                **decisions.get(key, {}),
+                **decision,
+            }
+        return approved, decisions
+
+    def _classify_denotations(self, candidates, full_sentences):
+        sent_map = {
+            sentence.number: sentence for sentence in full_sentences
+        }
+        decisions = {}
+        for start in range(0, len(candidates), 25):
+            batch = candidates[start:start + 25]
+            evidence_ids = {
+                sentence.number
+                for candidate in batch
+                for sentence in full_sentences
+                if abs(sentence.number - candidate.sentence_number) <= 2
+            }
+            sentence_table = [
+                {
+                    "sentence": number,
+                    "text": sent_map[number].text,
+                }
+                for number in sorted(evidence_ids)
+            ]
+            cases = [
+                {
+                    "case": number,
+                    "source": candidate.sentence_number,
+                    "expression": candidate.matched_text,
+                }
+                for number, candidate in enumerate(batch, 1)
+            ]
+            prompt = f"""Classify what each expression itself denotes in its
+local context: participant for a software participant, or associated for
+something merely associated with software.
+
+SENTENCES
+{json.dumps(sentence_table)}
+
+CASES
+{json.dumps(cases)}
+
+Claim must be a contiguous exact substring of the source sentence.
+
+JSON only:
+{{"judgments":[{{"case":1,"denotation":"participant",
+"claim":"exact source quote"}}]}}
+"""
+            data = self._ask(
+                prompt,
+                phase="phase_24_general_denotation",
+                require_present="judgments",
+                label="S24 general denotation",
+                timeout=240,
+            )
+            for item in data.get("judgments", []):
+                case_value = str(item.get("case", ""))
+                if not case_value.isdigit():
+                    continue
+                number = int(case_value)
+                if not 1 <= number <= len(batch):
+                    continue
+                candidate = batch[number - 1]
+                claim = str(item.get("claim", "")).strip()
+                claim = claim.strip("\"'“”‘’")
+                denotation = str(item.get("denotation", "")).strip()
+                valid = (
+                    denotation in {"participant", "associated"}
+                    and bool(claim)
+                    and claim.casefold()
+                    in candidate.sentence_text.casefold()
+                )
+                key = (
+                    candidate.sentence_number,
+                    candidate.component_id,
+                )
+                decisions[key] = {
+                    "approved": False,
+                    "requested_keep": False,
+                    "evidence_valid": valid,
+                    "claim": claim,
+                    "denotation": denotation,
+                    "alternative": "not reviewed",
+                    "path": "general_denotation",
+                    "stage": "relation_role_resolution",
+                }
+        participant_candidates = [
+            candidate
+            for candidate in candidates
+            if decisions.get(
+                (candidate.sentence_number, candidate.component_id),
+                {},
+            ).get("denotation") == "participant"
+            and decisions[
+                (candidate.sentence_number, candidate.component_id)
+            ]["evidence_valid"]
+        ]
+        return participant_candidates, decisions
+
+    def _review_role_batch(self, candidates, full_sentences):
         if not candidates:
             return [], {}
         forms_by_component = self._identity_forms_by_component()
@@ -333,8 +312,8 @@ JSON only:
             forms = [target, *forms_by_component.get(target, [])]
             anchors_by_target[target] = [
                 {
-                        "sentence": sentence.number,
-                        "text": sentence.text,
+                    "sentence": sentence.number,
+                    "text": sentence.text,
                 }
                 for sentence in full_sentences
                 if any(
@@ -384,11 +363,10 @@ JSON only:
             }
             for number in sorted(evidence_sentences)
         ]
-        prompt = f"""Does each participant denote its target component?
-A generic singular or plural may denote the target when context and an anchor
-select it. Reject a stronger local referent, a hardware host/machine,
-type/model/technology, or another named component. Hardware capacity is host
-evidence; the word "server" alone is not. Keep only architectural claims.
+        prompt = f"""For each case, do the expression and target denote the
+same participant? A longer or shorter label may denote the same participant.
+Reject when a distinct referent is better supported. Keep only architectural
+claims.
 
 SENTENCES
 {json.dumps(sentence_table)}
@@ -405,9 +383,9 @@ JSON only:
 """
         data = self._ask(
             prompt,
-            phase="phase_24_simple_participant_review",
+            phase="phase_24_general_identity",
             require_present="judgments",
-            label="S24 simple participant review",
+            label="S24 general identity",
             timeout=240,
         )
         by_case = {}
@@ -454,7 +432,7 @@ JSON only:
                     "evidence_valid": False,
                     "alternative": "missing judgment",
                 }),
-                "path": "simple_participant_review",
+                "path": "general_identity",
                 "stage": "relation_role_resolution",
             }
             for number, candidate in enumerate(candidates, 1)
@@ -549,72 +527,52 @@ JSON only:
                     )
         return list(candidates.values())
 
-    @staticmethod
-    def _catalog_role_handles(components):
+    def _catalog_overlap_candidates(
+        self, sentences, components, current_links
+    ):
         tokens_by_component = {
-            component.name: re.findall(
-                r"[A-Za-z]+[A-Za-z0-9]*|\d+", component.name
-            )
+            component.id: [
+                token.casefold()
+                for token in re.findall(
+                    r"[A-Za-z]+[A-Za-z0-9]*|\d+",
+                    component.name,
+                )
+            ]
             for component in components
         }
-        owners = {}
-        for component_name, tokens in tokens_by_component.items():
-            if len(tokens) > 1:
-                owners.setdefault(
-                    tokens[-1].casefold(), set()
-                ).add(component_name)
-        handles = []
-        for component_name, tokens in tokens_by_component.items():
-            if len(tokens) < 2:
-                continue
-            terminal = tokens[-1]
-            if len(owners[terminal.casefold()]) != 1:
-                continue
-            if re.search(
-                r"(?:tion|sion|ment|ance|ence|ing)$",
-                terminal,
-                re.IGNORECASE,
-            ):
-                continue
-            expressions = [terminal]
-            if (
-                terminal.isalpha()
-                and not terminal.casefold().endswith("s")
-            ):
-                expressions.append(f"{terminal}s")
-            handles.extend(
-                {
-                    "expression": expression,
-                    "component": component_name,
-                }
-                for expression in expressions
-            )
-        return handles
-
-    def _apply_role_handles(
-        self, handles, sentences, components, current_links
-    ):
-        name_to_id = {component.name: component.id for component in components}
         forms_by_component = self._identity_forms_by_component()
         current = {
             (link.sentence_number, link.component_id)
             for link in current_links
         }
         candidates = {}
-        for handle in handles:
-            component = handle["component"]
-            component_id = name_to_id[component]
-            expression = handle["expression"]
-            for sentence in sentences:
-                key = (sentence.number, component_id)
-                matched = self._find_handle(sentence.text, expression)
+        for sentence in sentences:
+            for match in re.finditer(
+                r"[A-Za-z]+[A-Za-z0-9]*|\d+", sentence.text
+            ):
+                if self._qualified_identifier_boundary(
+                    sentence.text, match.start(), match.end()
+                ):
+                    continue
+                surface = match.group(0).casefold()
+                owners = [
+                    component
+                    for component in components
+                    if any(
+                        surface.startswith(token)
+                        for token in tokens_by_component[component.id]
+                    )
+                ]
+                if len(owners) != 1:
+                    continue
+                component = owners[0]
+                key = (sentence.number, component.id)
                 identity_forms = [
-                    component,
-                    *forms_by_component.get(component, []),
+                    component.name,
+                    *forms_by_component.get(component.name, []),
                 ]
                 if (
                     key in current
-                    or not matched
                     or any(
                         self._find_exact_form(sentence.text, form)
                         for form in identity_forms
@@ -624,25 +582,12 @@ JSON only:
                 candidates[key] = CandidateLink(
                     sentence.number,
                     sentence.text,
-                    component,
-                    component_id,
-                    matched,
-                    source="relation_role",
+                    component.name,
+                    component.id,
+                    match.group(0),
+                    source="catalog_overlap",
                 )
         return list(candidates.values())
-
-    @staticmethod
-    def _find_handle(text, expression):
-        for match in re.finditer(
-            rf"(?<![\w-]){re.escape(expression)}(?![\w-])",
-            text,
-            re.IGNORECASE,
-        ):
-            if not SLinker24RoleOrchestrator._qualified_identifier_boundary(
-                text, match.start(), match.end()
-            ):
-                return match.group(0)
-        return ""
 
     @staticmethod
     def _find_exact_form(text, expression):

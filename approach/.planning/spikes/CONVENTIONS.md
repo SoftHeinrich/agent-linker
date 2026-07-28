@@ -21,6 +21,10 @@ Patterns established by the trace-linking spikes.
   domain tools see only bounded evidence needed for their own decision.
 - Let controllers choose evidence-bearing tool order over multiple turns, but
   complete structurally when the finite capability set is exhausted.
+- Let each tool discover its own applicability; do not duplicate tool-specific
+  lexical tests in the controller.
+- When a proposed target biases semantic classification, classify the source
+  expression without the target first, then perform grounded identity review.
 - Prompts use generic English and runtime catalogs, never benchmark vocabulary.
 - Preserve canonical linker files byte-for-byte; promote through subclasses and
   additive runner/export wiring.

@@ -17,6 +17,8 @@ Transform `s_linker12c` from a hybrid (structural-rule gate + LLM verify) pipeli
 - The active orchestrator should expose small, general tool contracts. Its
   controller discovers and schedules evidence modes over multiple turns;
   tool prompts receive only the evidence needed for their decision.
+- Tool applicability should be owned by the tool rather than duplicated in a
+  controller-side lexical checker; retain only general grounding invariants.
 
 ## Spikes
 
@@ -41,3 +43,4 @@ with the retained replacement-orchestrator lineage at spike 010.
 | 013 | s24-lexical-entity-normalization | comparison | Exact unique catalog signatures augment the entity candidate set and replace the standalone identifier tool without losing its clean recoveries | ✓ VALIDATED — fresh pilot 2 TP / 0 FP; paired E2E macro/pooled F1 +4.34/+5.16 pp and F2 +2.82/+3.91 pp vs S21; one fewer BBB call than identifier-tool trace | s24, lexical-normalization, entity-ownership, identifiers, icse |
 | 014 | s24-discourse-scope-participants | comparison | Structured section/identity/claim evidence replaces the relation-role judge and must add at least three net TP at 95% precision on the exact saved S24 floor | ✓ VALIDATED — punctuation-safe v4 passed at 7 TP / 0 FP; final E2E role source 10 TP / 0 FP, macro F1/F2 +2.88/+2.40pp vs S21 | s24, discourse, participant-resolution, role-ownership, replacement |
 | 015 | s24-minimal-tool-orchestration | comparison | A compact multi-turn controller and local-evidence role judge preserve S24 performance while cutting orchestration prompt surface and removing dead specialization | ✓ VALIDATED — 86.5% fewer focused prompt tokens; role source 13 TP / 0 FP; paired E2E macro/pooled F1 +3.42/+5.68pp and F2 +3.18/+5.35pp vs S21 | s24, simplicity, controller, prompts, orchestration |
+| 016 | s24-general-tool-discovery | comparison | Tool-owned discovery and a contrastive judge replace duplicated reference vocabulary, participant morphology rules, and enumerated semantic failure classes on identical checkpoint floors | ✓ VALIDATED — production checkpoint 15 TP / 0 FP; paired E2E macro/pooled F1 +3.40/+5.08pp and F2 +3.77/+5.73pp vs S21 | s24, simplicity, discovery, hardcoding, controller, checkpoint |
