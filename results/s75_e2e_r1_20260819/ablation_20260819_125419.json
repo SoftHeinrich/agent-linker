@@ -1,0 +1,993 @@
+{
+  "mediastore": {
+    "s_linker75": {
+      "variant": "s_linker75",
+      "P": 1.0,
+      "R": 0.9032258064516129,
+      "F1": 0.9491525423728813,
+      "F2": 0.9210526315789473,
+      "tp": 28,
+      "fp": 0,
+      "fn": 3,
+      "n_links": 28,
+      "time": 20.714282751083374,
+      "sources": {
+        "full_name": 23,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "FileStorage",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 10
+    },
+    "s_linker75_null": {
+      "variant": "s_linker75_null",
+      "P": 0.9354838709677419,
+      "R": 0.9354838709677419,
+      "F1": 0.9354838709677419,
+      "F2": 0.9354838709677419,
+      "tp": 29,
+      "fp": 2,
+      "fn": 2,
+      "n_links": 31,
+      "time": 18.77637004852295,
+      "sources": {
+        "full_name": 23,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        },
+        {
+          "sentence": 37,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "However, a download can cause re-encoding of the audio file."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 10
+    },
+    "s_linker74": {
+      "variant": "s_linker74",
+      "P": 0.967741935483871,
+      "R": 0.967741935483871,
+      "F1": 0.967741935483871,
+      "F2": 0.967741935483871,
+      "tp": 30,
+      "fp": 1,
+      "fn": 1,
+      "n_links": 31,
+      "time": 20.306424379348755,
+      "sources": {
+        "full_name": 27,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    }
+  },
+  "teammates": {
+    "s_linker75": {
+      "variant": "s_linker75",
+      "P": 0.8909090909090909,
+      "R": 0.8596491228070176,
+      "F1": 0.875,
+      "F2": 0.8657243816254417,
+      "tp": 49,
+      "fp": 6,
+      "fn": 8,
+      "n_links": 55,
+      "time": 69.98592209815979,
+      "sources": {
+        "full_name": 49,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "full_name": 5,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 169,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Package overview contains test.driver, test.cases and subpackages."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 38
+    },
+    "s_linker75_null": {
+      "variant": "s_linker75_null",
+      "P": 0.8771929824561403,
+      "R": 0.8771929824561403,
+      "F1": 0.8771929824561403,
+      "F2": 0.8771929824561403,
+      "tp": 50,
+      "fp": 7,
+      "fn": 7,
+      "n_links": 57,
+      "time": 63.78367018699646,
+      "sources": {
+        "full_name": 49,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "full_name": 5,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 169,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Package overview contains test.driver, test.cases and subpackages."
+        },
+        {
+          "sentence": 170,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "test.driver contains infrastructure and helpers needed for running the tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 38
+    },
+    "s_linker74": {
+      "variant": "s_linker74",
+      "P": 0.9285714285714286,
+      "R": 0.9122807017543859,
+      "F1": 0.9203539823008849,
+      "F2": 0.9154929577464789,
+      "tp": 52,
+      "fp": 4,
+      "fn": 5,
+      "n_links": 56,
+      "time": 67.99481511116028,
+      "sources": {
+        "full_name": 44,
+        "full_name_variant": 2,
+        "partial_name": 3,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "full_name_variant": 2,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name_variant",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "full_name_variant",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 87,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 38
+    }
+  },
+  "teastore": {
+    "s_linker75": {
+      "variant": "s_linker75",
+      "P": 0.9642857142857143,
+      "R": 1.0,
+      "F1": 0.9818181818181818,
+      "F2": 0.9926470588235294,
+      "tp": 27,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 28,
+      "time": 25.632960319519043,
+      "sources": {
+        "full_name": 18,
+        "full_name_variant": 3,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker75_null": {
+      "variant": "s_linker75_null",
+      "P": 0.9310344827586207,
+      "R": 1.0,
+      "F1": 0.9642857142857143,
+      "F2": 0.9854014598540146,
+      "tp": 27,
+      "fp": 2,
+      "fn": 0,
+      "n_links": 29,
+      "time": 25.611675024032593,
+      "sources": {
+        "full_name": 21,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 35,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 12
+    },
+    "s_linker74": {
+      "variant": "s_linker74",
+      "P": 0.9642857142857143,
+      "R": 1.0,
+      "F1": 0.9818181818181818,
+      "F2": 0.9926470588235294,
+      "tp": 27,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 28,
+      "time": 23.85338830947876,
+      "sources": {
+        "full_name": 21,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 12
+    }
+  },
+  "bigbluebutton": {
+    "s_linker75": {
+      "variant": "s_linker75",
+      "P": 0.8028169014084507,
+      "R": 0.9193548387096774,
+      "F1": 0.8571428571428572,
+      "F2": 0.8934169278996865,
+      "tp": 57,
+      "fp": 14,
+      "fn": 5,
+      "n_links": 71,
+      "time": 55.33472728729248,
+      "sources": {
+        "full_name": 37,
+        "full_name_variant": 5,
+        "partial_name": 19,
+        "coreference": 10
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 3,
+        "coreference": 7,
+        "full_name_variant": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for "
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with"
+        },
+        {
+          "sentence": 24,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+        },
+        {
+          "sentence": 25,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends collect subscriptions and publishers."
+        },
+        {
+          "sentence": 26,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive other DDP events including method calls to send events to akka-apps."
+        },
+        {
+          "sentence": 27,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 28,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+        },
+        {
+          "sentence": 29,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Backends handle all the non-streamer events."
+        },
+        {
+          "sentence": 30,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name_variant",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 68,
+          "component": "kurento",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker75_null": {
+      "variant": "s_linker75_null",
+      "P": 0.8243243243243243,
+      "R": 0.9838709677419355,
+      "F1": 0.8970588235294118,
+      "F2": 0.9472049689440993,
+      "tp": 61,
+      "fp": 13,
+      "fn": 1,
+      "n_links": 74,
+      "time": 64.43460869789124,
+      "sources": {
+        "full_name": 40,
+        "full_name_variant": 4,
+        "partial_name": 21,
+        "coreference": 9
+      },
+      "fp_by_source": {
+        "partial_name": 4,
+        "coreference": 7,
+        "full_name": 1,
+        "full_name_variant": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for "
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 24,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+        },
+        {
+          "sentence": 25,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends collect subscriptions and publishers."
+        },
+        {
+          "sentence": 26,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive other DDP events including method calls to send events to akka-apps."
+        },
+        {
+          "sentence": 27,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 28,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+        },
+        {
+          "sentence": 29,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Backends handle all the non-streamer events."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 59,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name_variant",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker74": {
+      "variant": "s_linker74",
+      "P": 0.8805970149253731,
+      "R": 0.9516129032258065,
+      "F1": 0.9147286821705426,
+      "F2": 0.9365079365079365,
+      "tp": 59,
+      "fp": 8,
+      "fn": 3,
+      "n_links": 67,
+      "time": 59.18114519119263,
+      "sources": {
+        "full_name": 45,
+        "partial_name": 19,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "partial_name": 4,
+        "full_name": 3,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for "
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 59,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    }
+  },
+  "jabref": {
+    "s_linker75": {
+      "variant": "s_linker75",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 17.24833869934082,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker75_null": {
+      "variant": "s_linker75_null",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 14.347537755966187,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker74": {
+      "variant": "s_linker74",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 15.55476450920105,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    }
+  }
+}

@@ -184,6 +184,13 @@ CANONICAL_VARIANTS = [
     "s_linker72",  # s71 with the extraction half reverted: the judging rubric only
     "s_linker73",  # s70 with only the two GATE-07-inadmissible spans reworded
     "s_linker74",  # s70 with only the identifier syntax unspelled
+    "s_linker75",  # s74 with every remaining corpus-shaped prompt span gone
+    "s_linker75_null",  # in-set harness null for the finetune round
+    "s_linker76",  # s75 with two batch constants instead of three
+    "s_linker77",  # s75 with the deterministic layer reduced to one SCANS row
+    "s_linker78",  # s77 with the judging rubric stated as one principle
+    "s_linker79",  # s78 with no deterministic gate at all
+    "s_linker80",  # s79 with no computed evidence either
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1755,6 +1762,117 @@ VARIANT_SPECS = {
             "further about the component'. Corpus-shaped bytes in the judging path go "
             "to zero with the rubric's structure, leniency and other three conditions "
             "byte-equivalent to s70's."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker76": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker76",
+        class_name="SLinker76",
+        description=(
+            "S-Linker76 - s_linker75 with one changed number: COREFERENCE_BATCH is set "
+            "to JUDGE_BATCH, so the module states two batch sizes instead of three. The "
+            "third was the only bound with no counterpart and the module's largest cost "
+            "- 40.0 of 91.7 calls per five-project run. s_linker45 measured the same "
+            "unification on the s25 base over six paired runs at parity (F1 -0.2 "
+            "p = 0.52, F2 -0.0 p = 0.91, 65.3 calls against 88.8); this variant carries "
+            "that result into the s70-s75 line. Chosen by unification, not by search."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker77": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker77",
+        class_name="SLinker77",
+        description=(
+            "S-Linker77 - s_linker75 with the deterministic layer reduced to one row: "
+            "the two tight SCANS rows are relocated into the extraction prompt and "
+            "`_add_scan` is deleted, so `SCANS` keeps only the partial-name row. "
+            "s_linker67 measured the same relocation on the s66 base at TP -4.0 "
+            "(p = 0.03) / macro F2 -1.1 (p = 0.04) composed and refused it under an "
+            "F1-led reading; taken here under an F2-led budget of 2 pp. Everything else "
+            "is s75's byte for byte."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker78": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker78",
+        class_name="SLinker78",
+        description=(
+            "S-Linker78 - s_linker77 with the last enumeration gone: the full-name "
+            "gate's four numbered reject-conditions and three named approve-shapes "
+            "become one principle, with QUALIFIED_CLAUSE added to the judging prompt "
+            "for condition (1) and STRICTER_CLAUSE (already there) carrying (3) and "
+            "(4). s_linker71 measured this restructuring at ~0.8 F1 composed (94.80 "
+            "n=6 against s70's 95.74) and F2 96.19 against 96.99. Priced here on F2."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker79": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker79",
+        class_name="SLinker79",
+        description=(
+            "S-Linker79 - s_linker78 with the last two deterministic options gone: the "
+            "one SCANS row drops `unique_owner` (priced at 2.4 FP; folding it into the "
+            "target-blind denotation prompt is the fold round's -8.4 TP) and "
+            "`skip_when_named` (s_linker46 on the s25 base: F1 -1.5, F2 -1.0). What is "
+            "left proposes spans of one relation and decides nothing - no gate anywhere "
+            "in the deterministic layer. Priced under a 3 pp F2 budget."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker80": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker80",
+        class_name="SLinker80",
+        description=(
+            "S-Linker80 - s_linker79 with the mention label removed from the evidence "
+            "line, so the code computes nothing about a case at all. Expected to lose: "
+            "removing the field is -10.7 TP and asking the judge for it instead is "
+            "-6.7 TP (concept round). Run to price the design law's hardest case on F2 "
+            "rather than on TP."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker75_null": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker75_null",
+        class_name="SLinker75Null",
+        description=(
+            "S-Linker75Null - byte-identical to s_linker75 apart from the checkpoint "
+            "namespace. The in-set harness null for the finetune round: it measures "
+            "what a paired invocation reports as a difference when there is none, so "
+            "the round's deltas are read against it rather than against zero."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker75": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker75",
+        class_name="SLinker75",
+        description=(
+            "S-Linker75 - s_linker74 with the last four finetuned prompt spans gone. "
+            "(1) `ALIAS_EXCLUSION_RULES` stops spelling `X.Y or X.Y.Z` and states the "
+            "prohibition generally; `pilot/finetune_pilots.py --pilot aliascomp` "
+            "re-measured the general round's reason for keeping it and did not "
+            "reproduce it - the judged table reads 35.7 terms/run with the syntax "
+            "against 39.3 without (FP +3.7, p = 0.90), not 24.0 against 36.7. "
+            "(2) `ENTITY_EXTRACTION_RULES` loses its code-path clause and the "
+            "extraction prompt carries `QUALIFIED_CLAUSE` instead (stage: TP +0.7 "
+            "p = 1.00, FP -6.0 p = 0.20). (3) `P1_FOCUS` loses its code-level tail with "
+            "the reject-enumeration left byte-identical - the edit s71 bundled with "
+            "restructuring and never ran alone. (4) `LAYERED_COREF_RULES` loses the "
+            "fifth restatement and adds nothing (stage: TP +4.7, FP +3.7). One "
+            "sentence per distinction; 0 corpus-shaped bytes in the authored surface."
         ),
         canonical=False,
         experimental=True,

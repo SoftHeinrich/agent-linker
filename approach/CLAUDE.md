@@ -1261,6 +1261,128 @@ Details and what it does to the other conceptual leftovers:
   composed (`s_linker71` 94.80 at n=6, `s_linker72` 94.94), so the enumeration stays
   and only the span that names a shape changes.
 
+### The finetune round (s75, s75_null, s76) — every remaining corpus-shaped span
+
+`s_linker74` had removed the one span GATE-07 caught in the judging path and left four:
+the same distinction restated in three bespoke wordings (`ENTITY_EXTRACTION_RULES`,
+`P1_FOCUS`, `LAYERED_COREF_RULES`) plus `ALIAS_EXCLUSION_RULES`, which still spelled
+`X.Y or X.Y.Z`. The round's budget was set in advance at **2 pp of macro F1 to remove
+finetuning**. Report: `../results/finetune_round/README.md`; arms:
+`pilot/finetune_pilots.py`; invariants: `pilot/test_s75_nofinetune.py` (36 checks);
+runner: `pilot/run_s75_e2e.sh`.
+
+- **Stage arms, three a side, replayed on s74's own checkpoints.** Extraction, general
+  clause instead of the code-path one: TP +0.7 (p = 1.00), FP -6.0 (p = 0.20).
+  Coreference, phrase removed and nothing added: TP +4.7, FP +3.7. P1's tail dropped
+  **with `QUALIFIED_CLAUSE` added**: TP -0.7 (p = 0.90), FP -1.3 (p = 0.40); P1's tail
+  dropped **with nothing added**: **TP +2.3 (p = 0.20), FP ±0.0 (p = 1.00)**. **A clause
+  belongs once per prompt**: the full-name rubric already states the ground inside
+  reject-condition (1), so adding the clause there is a restatement and reads worse than
+  removing the tail alone. The extraction prompt has no enumeration, so there it is added.
+- **The alias syntax's defence does not reproduce, and the round says so.** The general
+  round kept `ALIAS_EXCLUSION_RULES` because both general rewordings grew the judged alias
+  table from 24.0 to ~37 terms per run. Re-measured against s74's checkpoints
+  (`--pilot aliascomp`), the syntax arm itself reads **35.7** against the general arm's
+  39.3 (FP +3.7, p = 0.90) — the gap is an invocation-set level, not the clause.
+  **What the clause does buy is reported rather than dropped**: 0 identifier fragments
+  admitted in 15 project-runs against 6 in one of fifteen. Compensating by flipping the
+  alias judge's tie-break to REJECT — the branch's own "looser proposer, stricter judge"
+  law — neither shrinks the table (37.7) nor keeps fragments out (13), so it is **not**
+  adopted: an unnecessary change is not a defensible one.
+- **`LAYERED_ENTITY_RULES` is byte-identical to s74's and is now re-grounded rather than
+  rewritten.** Its enumeration carries precision (s71/s72: ~0.8 F1 without it) and its
+  approve-shapes carry recall (s73: exactly 2.7 TP in each of three runs), and neither is
+  corpus-shaped — an enumeration is a rubric structure and headings and lists are general
+  documentation practice. The `prompt_defensibility.py` annotation for it was stale from
+  s70 and is corrected in place, with the measurement as the ground.
+- **The score the round exists for** (`pilot/prompt_defensibility.py --variant
+  s_linker75`, no LLM calls): **3412 of 3412 authored bytes admissible — general 2866,
+  se-practice 299, prior-work 247, corpus 0**, against s70's 1700 of 3645. GATE-06 also
+  re-checked: none of the 67 benchmark component names appears anywhere in the authored
+  text.
+- **`s_linker76` — the last tuned number.** `COREFERENCE_BATCH = 10` was the only resource
+  bound with no counterpart (the module also states 50 and 25) and the module's largest
+  cost: **40.0 of 91.7 calls per five-project run**. `s_linker45` measured the same
+  unification on the s25 base at parity over six paired runs (F1 -0.2 p = 0.52, F2 -0.0
+  p = 0.91, 65.3 calls against 88.8); s76 carries that result into this line. Chosen by
+  unification, not by search. **Priced and NOT adopted**
+  (`../results/s76_e2e_r{1,2,3}_20260819`, three paired runs): TP **-7.0**, FP -4.7, macro
+  F1 -0.7, **macro F2 -1.8** (every p at the n=3 floor), at **65 calls against 89 (-27%)**.
+  `s_linker45` measured the identical unification on the s25 base at parity over six runs
+  (macro F2 -0.0, p = 0.91), so this is another base-dependence result: s75's coreference
+  stage sits behind three linkers that subtract from it, and a wider resolution batch
+  changes which cases share a prompt. The cost is inside a 2 pp F2 budget but it is spent
+  on call count and taken out of recall, so the head keeps `COREFERENCE_BATCH = 10` and
+  s76 stands as the priced alternative.
+
+- **The non-prompt surface audited on the same terms** (deterministic, no LLM calls):
+  `INFLECTIONS` is general English morphology and **5 of its 9 endings never fire on any
+  of the 3697 (name, sentence) pairs** — a list fitted to this benchmark would contain
+  only the four that do, so its being larger than the benchmark needs is the evidence it
+  was not fitted. `CONTEXT_SENTENCES` and `ANCHOR_LIMIT` are one value, not two;
+  `EXTRACTION_BATCH` is grounded in s27's passage-length effect and `JUDGE_BATCH` in the
+  measured neutrality of batching. **A value chosen by unification is defensible; a value
+  chosen by search is not** — which is why s76 sets the coreference batch to a number the
+  module already states rather than sweeping for the best one.
+- **End to end, three paired runs in one invocation set**
+  (`../results/s75_e2e_r{1,2,3}_20260819`, arms s75 / s75_null / s74):
+
+  | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+  |---|---|---|---|---|---|---|
+  | `s_linker74` (control) | 182.7 | 15.0 | 94.42 | 94.46 | 90 | 2.51 |
+  | `s_linker75_null` | 184.0 | 25.7 | 92.84 | 94.27 | 90 | 1.54 |
+  | **`s_linker75`** | 182.7 | 22.7 | **93.59** | **94.49** | 90 | **0.84** |
+
+  **The null in this set is loud — F1 -1.58 and FP +10.7 against the control from a
+  checkpoint-namespace difference — so the null is the reference.** s75 against it:
+  TP -1.3 (p = 0.60), **FP -3.0 (p = 0.30)**, **macro F1 +0.7 (p = 0.30)**, macro F2 +0.2
+  (p = 0.70), composition +0.0 (p = 0.50) — QUALITY-NEUTRAL. s75 against s74: **TP ±0.0
+  (p = 1.00)**, **macro F2 ±0.0 (p = 1.00)**, macro F1 -0.8 (p = 0.40), FP +7.7 (p = 0.10,
+  the n=3 floor) — and the null moved FP by +10.7 against the same control, more than the
+  arm did. **Removing every finetuned span costs at most 0.8 macro F1 and nothing on
+  recall or F2**, against a budget of 2 pp. s75 also has the tightest run spread of the
+  three arms. Caveat: arm order is s75, null, s74 and s74 leads in all three runs; this
+  batch did not pay for the order reversal the prompt round used
+  (`../results/nullrev_e2e_*`), so the s75-vs-null row is the one to quote.
+
+### The elegance round (s77, s78, s79, s80) — structure priced on F2, budget 3 pp
+
+The finetune round removed the fitted English; this one asks the same question of the
+structure, at the measure the paper leads with. Four arms, each the previous plus one cut,
+**one invocation set** with an in-set null (`pilot/run_elegance_e2e.sh`,
+`../results/elegance_e2e_r{1,2,3}_20260819`; report in
+`../results/finetune_round/README.md`).
+
+| arm | cut | TP | FP | macro F1 | macro F2 | calls |
+|---|---|---|---|---|---|---|
+| `s_linker75` | control | 181.0 | 22.0 | 92.99 | 93.68 | 89 |
+| `s_linker75_null` | in-set null | 181.3 | 25.0 | 92.10 | 93.31 | 89 |
+| `s_linker77` | `SCANS` 3 rows → **1** (the two tight rows relocated) | 177.3 | 25.0 | 91.25 | 91.92 | 87 |
+| **`s_linker78`** | **+ rubric's 4 numbered conditions → one principle** | **184.3** | **22.0** | **93.15** | **94.41** | 89 |
+| `s_linker79` | + the last two options (**no gate anywhere**) | 182.0 | 39.0 | 89.66 | 92.26 | 98 |
+| `s_linker80` | + the computed mention label (**nothing computed**) | 180.7 | 32.7 | 90.59 | 92.30 | 98 |
+
+- **`s_linker78` is the head.** Against the control: **TP +3.3 (p = 0.10), FP ±0.0
+  (p = 1.00), macro F1 +0.2 (p = 0.90), macro F2 +0.7 (p = 0.20)**, null at F2 −0.37. It
+  removes more structure than any variant on this branch and is not worse than what it
+  removes it from: **one `SCANS` row, no enumeration in any prompt, 3365 of 3365 authored
+  bytes admissible.**
+- **The two cuts are complements, and this is the round's methodological result.** `s78`
+  contains `s77`'s cut, yet `s77` alone reads F2 −1.8. Relocating the tight scans makes the
+  extraction call propose the incidental mentions they used to guarantee; the *enumerated*
+  rubric rejects those (conditions (1) and (4)) and the one-principle rubric approves them.
+  The enumeration was carrying precision against candidates the scans were not producing —
+  which is why `s71`/`s72`, which kept the scans, measured its removal as a −0.8 F1 loss.
+  **A clause is not independently priceable: two changes that each lose ground can gain it
+  together when one changes what the other's population contains.**
+- **The frontier, priced and not adopted.** `s_linker79` (no deterministic gate at all) is
+  F2 −1.4 for **FP +17.0**, so `unique_owner` and `skip_when_named` are worth ~17 spurious
+  links between them. `s_linker80` (nothing computed either) is F2 −1.4 at FP +10.7 — i.e.
+  **removing the mention label on top of the gates recovers precision relative to s79**,
+  where the concept round priced the label at −10.7 TP with the gates in place. **A fact's
+  value depends on what else the code is doing.** Both are inside the 3 pp F2 budget; both
+  are refused because `s78` is better on every measure at nearly the same simplicity.
+
 ## Notes
 
 - The variant registry in `run_ablation.py` still lists many older

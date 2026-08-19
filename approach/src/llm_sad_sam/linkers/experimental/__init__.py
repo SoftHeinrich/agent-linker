@@ -71,6 +71,13 @@ from .s_linker71 import SLinker71
 from .s_linker72 import SLinker72
 from .s_linker73 import SLinker73
 from .s_linker74 import SLinker74
+from .s_linker75 import SLinker75
+from .s_linker75_null import SLinker75Null
+from .s_linker76 import SLinker76
+from .s_linker77 import SLinker77
+from .s_linker78 import SLinker78
+from .s_linker79 import SLinker79
+from .s_linker80 import SLinker80
 
 __all__ = [
     "SLinker21",
@@ -139,4 +146,11 @@ __all__ = [
     "SLinker72",
     "SLinker73",
     "SLinker74",
+    "SLinker75",
+    "SLinker75Null",
+    "SLinker76",
+    "SLinker77",
+    "SLinker78",
+    "SLinker79",
+    "SLinker80",
 ]

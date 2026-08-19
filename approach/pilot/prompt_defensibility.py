@@ -49,7 +49,13 @@ from pathlib import Path
 sys.path.insert(0, "src")
 sys.path.insert(0, str(Path(__file__).parent))
 
-import llm_sad_sam.linkers.experimental.s_linker70 as L               # noqa: E402
+import llm_sad_sam.linkers.experimental.s_linker70 as L70            # noqa: E402
+import llm_sad_sam.linkers.experimental.s_linker75 as L75            # noqa: E402
+import llm_sad_sam.linkers.experimental.s_linker78 as L78            # noqa: E402
+
+#: The module whose authored surface is being scored. `--variant` rebinds it; the
+#: default is the variant this audit was written for.
+L = L70
 
 #: A dotted or joined identifier: the shape two prompts spell out literally.
 DOTTED = re.compile(r"\b[A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)+\b")
@@ -112,6 +118,65 @@ INVENTORY = [
 ]
 
 
+#: `s_linker75` changes four of the entries above, and the finetune round's stage arms
+#: are what re-ground them. Only these four differ; every other clause keeps its s70
+#: annotation, because its bytes are unchanged.
+INVENTORY_S75 = {
+    "ALIAS_EXCLUSION_RULES": ("se-practice",
+     "the same prohibition with the shape removed: a fragment of a longer identifier "
+     "is not an alias. Ground: qualified names compose. The general round kept the "
+     "syntax because both general rewordings grew the alias table 24.0 -> ~37 terms "
+     "per run; `finetune_pilots.py --pilot aliascomp` re-measured that against s74's "
+     "own checkpoints and read 35.7 with the syntax against 39.3 without (FP +3.7, "
+     "p = 0.90). Cost of the removal, reported not hidden: 6 identifier fragments "
+     "admitted in 1 of 15 project-runs against 0."),
+    "ENTITY_EXTRACTION_RULES": ("general",
+     "the admission contract, which is the stage's definition. The code-path clause "
+     "is gone and `QUALIFIED_CLAUSE` carries the distinction in the same prompt "
+     "(stage: TP +0.7 p = 1.00, FP -6.0 p = 0.20)."),
+    "P1_FOCUS": ("general",
+     "the stage's question and nothing else. The code-level tail is gone; the rubric "
+     "in the same prompt states the same ground inside reject-condition (1), so "
+     "nothing is added (stage: TP +2.3 p = 0.20, FP +/-0.0 p = 1.00)."),
+    "LAYERED_ENTITY_RULES": ("general",
+     "byte-identical to s74's, and re-grounded by what three variants measured rather "
+     "than by rewriting it. (1) states the compositional ground since s74 and names no "
+     "syntax; (2) negation is logic; (3) and (4) are the use/mention distinction, which "
+     "STRICTER_CLAUSE states in the same prompt -- kept because replacing the "
+     "enumeration with one principle costs ~0.8 F1 composed (s71 94.80 n=6, s72 94.94), "
+     "so the numbered form carries precision a principle does not. The three "
+     "approve-shapes were on the corpus list in error: a heading and a list are general "
+     "technical-documentation practice, not a property of these five documents, and "
+     "removing them costs exactly 2.7 TP in each of three runs (s73). GATE-07 catches "
+     "shapes peculiar to a corpus, not the structure every document of the genre has."),
+    "LAYERED_COREF_RULES": ("general",
+     "referring-expression and ambiguity criteria, with the fifth restatement of the "
+     "identifier distinction removed and nothing put in its place -- a clause about "
+     "identifiers misleads a judge whose cases contain no name (general round: "
+     "replacing it is TP -3.0; removing it is TP +4.7, FP +3.7)."),
+}
+
+
+#: `s_linker78` restates the rubric as one principle, which changes what that entry
+#: stands on: there is no enumeration left to defend, and the two grounds its conditions
+#: rested on are carried by clauses the same prompt already holds.
+INVENTORY_S78 = {
+    "LAYERED_ENTITY_RULES": ("general",
+     "approve by default, reject on a positive ground -- the name is doing some other "
+     "job here, or the sentence denies what it would otherwise say. No enumeration, no "
+     "document shapes, no syntax. Condition (1)'s ground is `QUALIFIED_CLAUSE`, which "
+     "this prompt now carries; (3) and (4) are the use/mention distinction, which "
+     "`STRICTER_CLAUSE` states in the same prompt; (2) negation is the final clause. "
+     "The restructuring cost ~0.8 F1 on the s70 base (s71/s72) and is taken here "
+     "because the elegance round measured it at TP +3.3 / macro F2 +0.7 on the s77 "
+     "base, where the extractor proposes the incidental mentions the enumeration used "
+     "to reject."),
+    "ENTITY_EXTRACTION_RULES": ("general",
+     "the admission contract plus the recall floor the two relocated scans used to "
+     "draw, stated as what to report rather than as a shape to match. Names no syntax."),
+}
+
+
 #: A case starts at a `Case n:` header (judging, denotation) or an `Sn:` line
 #: (extraction, alias). Everything up to the next such marker belongs to it -- the
 #: sentence, the `[prev: ...]` line, the evidence line and the anchors. Splitting on
@@ -164,12 +229,23 @@ def load_calls(runs):
     return calls
 
 
+def inventory():
+    """The annotation table for the module under audit."""
+    if L is L78:
+        merged = dict(INVENTORY_S75)
+        merged.update(INVENTORY_S78)
+        return [(n, *merged.get(n, (g, w))) for n, g, w in INVENTORY]
+    if L is L75:
+        return [(n, *INVENTORY_S75.get(n, (g, w))) for n, g, w in INVENTORY]
+    return INVENTORY
+
+
 def d0():
     print("=== D0  the authored surface, clause by clause ===\n")
     total = 0
     by = Counter()
     print(f"{'constant':<34}{'bytes':>7}  ground")
-    for name, verdict, why in INVENTORY:
+    for name, verdict, why in inventory():
         text = getattr(L, name)
         total += len(text)
         by[verdict] += len(text)
@@ -281,12 +357,17 @@ def d3(calls):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", default="../results/s70_solo_r*_20260817")
+    ap.add_argument("--variant", default="s_linker70",
+                    choices=("s_linker70", "s_linker75", "s_linker78"),
+                    help="which module's authored surface to score")
     args = ap.parse_args()
+    global L
+    L = {"s_linker75": L75, "s_linker78": L78}.get(args.variant, L70)
     runs = sorted(Path().glob(args.runs))
     if not runs:
         raise SystemExit(f"no runs matched {args.runs}")
     calls = load_calls(runs)
-    print(f"\nprompt defensibility — s_linker70, {len(runs)} runs, "
+    print(f"\nprompt defensibility — {args.variant}, {len(runs)} runs, "
           f"{len(calls)} recorded calls\n")
     d0()
     d1(calls)
