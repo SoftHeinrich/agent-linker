@@ -1,0 +1,180 @@
+
+==============================================================================
+ALL
+  s_linker59     links/run  202.8   TP  185.8   FP  17.0
+  s_linker59_null links/run  202.3   TP  187.2   FP  15.2
+
+s_linker59_null minus s_linker59 — ALL
+  sizes   s_linker59: [197, 199, 202, 207, 208, 204]   s_linker59_null: [206, 201, 206, 197, 202, 202]
+  within  s_linker59: [18, 11, 16, 21, 13, 23, 24, 21, 21, 17, 22, 14, 21, 11, 14]   s_linker59_null: [13, 18, 15, 28, 18, 13, 14, 23, 11, 15, 14, 10, 21, 17, 22]
+  between min 10 / mean 18.3 / max 26
+  composition (mean between - mean within): +1.0
+    p = 0.12  (floor 0.00)
+  TP: s_linker59 185.8  s_linker59_null 187.2  delta +1.3  two-sided p 0.08
+  FP: s_linker59 17.0  s_linker59_null 15.2  delta -1.8  two-sided p 0.44
+  verdict: QUALITY-CHANGING (TP p=0.08, FP p=0.44)
+
+==============================================================================
+full_name  [the change CANNOT reach this stage — any difference here is shared-stage spread]
+  s_linker59     links/run  163.8   TP  154.3   FP   9.5
+  s_linker59_null links/run  162.8   TP  154.0   FP   8.8
+
+s_linker59_null minus s_linker59 — full_name
+  sizes   s_linker59: [161, 159, 162, 168, 168, 165]   s_linker59_null: [162, 161, 167, 162, 166, 159]
+  within  s_linker59: [10, 7, 9, 13, 6, 17, 17, 19, 16, 8, 14, 7, 12, 7, 9]   s_linker59_null: [11, 13, 12, 20, 17, 14, 13, 17, 12, 15, 9, 16, 16, 19, 15]
+  between min 7 / mean 13.8 / max 22
+  composition (mean between - mean within): +0.8
+    p = 0.17  (floor 0.00)
+  TP: s_linker59 154.3  s_linker59_null 154.0  delta -0.3  two-sided p 0.82
+  FP: s_linker59 9.5  s_linker59_null 8.8  delta -0.7  two-sided p 0.79
+  verdict: QUALITY-NEUTRAL (TP p=0.82, FP p=0.79); composition p=0.17, floor 0.00
+
+==============================================================================
+partial_name  [the change CAN reach this stage]
+  s_linker59     links/run   20.8   TP   16.2   FP   4.7
+  s_linker59_null links/run   21.0   TP   17.3   FP   3.7
+
+s_linker59_null minus s_linker59 — partial_name
+  sizes   s_linker59: [21, 20, 23, 21, 19, 21]   s_linker59_null: [24, 22, 19, 21, 19, 21]
+  within  s_linker59: [3, 2, 6, 2, 4, 5, 5, 1, 3, 8, 4, 6, 4, 2, 2]   s_linker59_null: [8, 5, 11, 11, 7, 3, 3, 3, 5, 6, 6, 2, 2, 6, 8]
+  between min 0 / mean 5.3 / max 10
+  composition (mean between - mean within): +0.5
+    p = 0.19  (floor 0.00)
+  TP: s_linker59 16.2  s_linker59_null 17.3  delta +1.2  two-sided p 0.13
+  FP: s_linker59 4.7  s_linker59_null 3.7  delta -1.0  two-sided p 0.48
+  verdict: QUALITY-CHANGING (TP p=0.13, FP p=0.48)
+
+==============================================================================
+coreference  [the change CAN reach this stage]
+  s_linker59     links/run   18.2   TP   15.3   FP   2.8
+  s_linker59_null links/run   18.5   TP   15.8   FP   2.7
+
+s_linker59_null minus s_linker59 — coreference
+  sizes   s_linker59: [15, 20, 17, 18, 21, 18]   s_linker59_null: [20, 18, 20, 14, 17, 22]
+  within  s_linker59: [7, 4, 5, 8, 5, 7, 8, 5, 6, 3, 6, 3, 7, 4, 5]   s_linker59_null: [2, 4, 6, 7, 8, 2, 4, 5, 8, 6, 7, 10, 5, 10, 13]
+  between min 2 / mean 5.7 / max 11
+  composition (mean between - mean within): -0.3
+    p = 0.89  (floor 0.00)
+  TP: s_linker59 15.3  s_linker59_null 15.8  delta +0.5  two-sided p 0.57
+  FP: s_linker59 2.8  s_linker59_null 2.7  delta -0.2  two-sided p 1.00
+  verdict: QUALITY-NEUTRAL (TP p=0.57, FP p=1.0); composition p=0.89, floor 0.00
+
+==============================================================================
+ALL
+  s_linker59     links/run  202.8   TP  185.8   FP  17.0
+  s_linker62     links/run  207.3   TP  187.7   FP  19.7
+
+s_linker62 minus s_linker59 — ALL
+  sizes   s_linker59: [197, 199, 202, 207, 208, 204]   s_linker62: [210, 201, 210, 210, 211, 202]
+  within  s_linker59: [18, 11, 16, 21, 13, 23, 24, 21, 21, 17, 22, 14, 21, 11, 14]   s_linker62: [23, 22, 20, 31, 24, 29, 29, 22, 13, 20, 35, 24, 33, 24, 21]
+  between min 12 / mean 26.1 / max 37
+  composition (mean between - mean within): +4.8
+    p = 0.00  (floor 0.00)
+  TP: s_linker59 185.8  s_linker62 187.7  delta +1.8  two-sided p 0.06
+  FP: s_linker59 17.0  s_linker62 19.7  delta +2.7  two-sided p 0.34
+  verdict: QUALITY-CHANGING (TP p=0.06, FP p=0.34)
+
+==============================================================================
+full_name  [the change CANNOT reach this stage — any difference here is shared-stage spread]
+  s_linker59     links/run  163.8   TP  154.3   FP   9.5
+  s_linker62     links/run  164.2   TP  153.7   FP  10.5
+
+s_linker62 minus s_linker59 — full_name
+  sizes   s_linker59: [161, 159, 162, 168, 168, 165]   s_linker62: [163, 162, 166, 167, 165, 162]
+  within  s_linker59: [10, 7, 9, 13, 6, 17, 17, 19, 16, 8, 14, 7, 12, 7, 9]   s_linker62: [17, 15, 10, 20, 21, 24, 21, 15, 10, 9, 27, 22, 24, 19, 9]
+  between min 6 / mean 16.5 / max 26
+  composition (mean between - mean within): +2.0
+    p = 0.08  (floor 0.00)
+  TP: s_linker59 154.3  s_linker62 153.7  delta -0.7  two-sided p 0.51
+  FP: s_linker59 9.5  s_linker62 10.5  delta +1.0  two-sided p 0.66
+  verdict: QUALITY-NEUTRAL (TP p=0.51, FP p=0.66); composition p=0.08, floor 0.00
+
+==============================================================================
+partial_name  [the change CAN reach this stage]
+  s_linker59     links/run   20.8   TP   16.2   FP   4.7
+  s_linker62     links/run   23.8   TP   18.5   FP   5.3
+
+s_linker62 minus s_linker59 — partial_name
+  sizes   s_linker59: [21, 20, 23, 21, 19, 21]   s_linker62: [27, 23, 24, 26, 21, 22]
+  within  s_linker59: [3, 2, 6, 2, 4, 5, 5, 1, 3, 8, 4, 6, 4, 2, 2]   s_linker62: [10, 7, 11, 12, 11, 7, 9, 2, 3, 8, 9, 8, 11, 12, 1]
+  between min 5 / mean 9.8 / max 14
+  composition (mean between - mean within): +3.9
+    p = 0.00  (floor 0.00)
+  TP: s_linker59 16.2  s_linker62 18.5  delta +2.3  two-sided p 0.00
+  FP: s_linker59 4.7  s_linker62 5.3  delta +0.7  two-sided p 0.67
+  verdict: QUALITY-CHANGING (TP p=0.0, FP p=0.67)
+
+==============================================================================
+coreference  [the change CAN reach this stage]
+  s_linker59     links/run   18.2   TP   15.3   FP   2.8
+  s_linker62     links/run   19.3   TP   15.5   FP   3.8
+
+s_linker62 minus s_linker59 — coreference
+  sizes   s_linker59: [15, 20, 17, 18, 21, 18]   s_linker62: [20, 16, 20, 17, 25, 18]
+  within  s_linker59: [7, 4, 5, 8, 5, 7, 8, 5, 6, 3, 6, 3, 7, 4, 5]   s_linker62: [4, 8, 5, 11, 6, 6, 3, 9, 4, 3, 11, 4, 10, 1, 11]
+  between min 2 / mean 5.6 / max 13
+  composition (mean between - mean within): -0.4
+    p = 0.98  (floor 0.00)
+  TP: s_linker59 15.3  s_linker62 15.5  delta +0.2  two-sided p 1.00
+  FP: s_linker59 2.8  s_linker62 3.8  delta +1.0  two-sided p 0.60
+  verdict: QUALITY-NEUTRAL (TP p=1.0, FP p=0.6); composition p=0.98, floor 0.00
+
+==============================================================================
+ALL
+  s_linker59     links/run  202.8   TP  185.8   FP  17.0
+  s_linker63     links/run  209.2   TP  187.5   FP  21.7
+
+s_linker63 minus s_linker59 — ALL
+  sizes   s_linker59: [197, 199, 202, 207, 208, 204]   s_linker63: [208, 210, 205, 210, 209, 213]
+  within  s_linker59: [18, 11, 16, 21, 13, 23, 24, 21, 21, 17, 22, 14, 21, 11, 14]   s_linker63: [22, 23, 32, 41, 11, 11, 18, 33, 21, 17, 30, 26, 33, 31, 44]
+  between min 13 / mean 25.5 / max 43
+  composition (mean between - mean within): +3.5
+    p = 0.00  (floor 0.00)
+  TP: s_linker59 185.8  s_linker63 187.5  delta +1.7  two-sided p 0.32
+  FP: s_linker59 17.0  s_linker63 21.7  delta +4.7  two-sided p 0.10
+  verdict: QUALITY-CHANGING (TP p=0.32, FP p=0.1)
+
+==============================================================================
+full_name  [the change CANNOT reach this stage — any difference here is shared-stage spread]
+  s_linker59     links/run  163.8   TP  154.3   FP   9.5
+  s_linker63     links/run  164.2   TP  153.8   FP  10.3
+
+s_linker63 minus s_linker59 — full_name
+  sizes   s_linker59: [161, 159, 162, 168, 168, 165]   s_linker63: [157, 170, 165, 166, 166, 161]
+  within  s_linker59: [10, 7, 9, 13, 6, 17, 17, 19, 16, 8, 14, 7, 12, 7, 9]   s_linker63: [13, 14, 15, 25, 10, 11, 10, 22, 11, 7, 19, 14, 18, 13, 27]
+  between min 6 / mean 13.1 / max 25
+  composition (mean between - mean within): -0.3
+    p = 0.69  (floor 0.00)
+  TP: s_linker59 154.3  s_linker63 153.8  delta -0.5  two-sided p 0.72
+  FP: s_linker59 9.5  s_linker63 10.3  delta +0.8  two-sided p 0.74
+  verdict: QUALITY-NEUTRAL (TP p=0.72, FP p=0.74); composition p=0.69, floor 0.00
+
+==============================================================================
+partial_name  [the change CAN reach this stage]
+  s_linker59     links/run   20.8   TP   16.2   FP   4.7
+  s_linker63     links/run   26.7   TP   18.2   FP   8.5
+
+s_linker63 minus s_linker59 — partial_name
+  sizes   s_linker59: [21, 20, 23, 21, 19, 21]   s_linker63: [33, 22, 22, 28, 23, 32]
+  within  s_linker59: [3, 2, 6, 2, 4, 5, 5, 1, 3, 8, 4, 6, 4, 2, 2]   s_linker63: [11, 11, 17, 14, 1, 0, 8, 5, 12, 8, 5, 12, 11, 18, 15]
+  between min 5 / mean 11.4 / max 17
+  composition (mean between - mean within): +4.6
+    p = 0.00  (floor 0.00)
+  TP: s_linker59 16.2  s_linker63 18.2  delta +2.0  two-sided p 0.13
+  FP: s_linker59 4.7  s_linker63 8.5  delta +3.8  two-sided p 0.03
+  verdict: QUALITY-CHANGING (TP p=0.13, FP p=0.03)
+
+==============================================================================
+coreference  [the change CAN reach this stage]
+  s_linker59     links/run   18.2   TP   15.3   FP   2.8
+  s_linker63     links/run   18.3   TP   15.5   FP   2.8
+
+s_linker63 minus s_linker59 — coreference
+  sizes   s_linker59: [15, 20, 17, 18, 21, 18]   s_linker63: [18, 18, 18, 16, 20, 20]
+  within  s_linker59: [7, 4, 5, 8, 5, 7, 8, 5, 6, 3, 6, 3, 7, 4, 5]   s_linker63: [2, 2, 2, 12, 2, 2, 2, 12, 4, 2, 12, 4, 10, 4, 14]
+  between min 1 / mean 5.3 / max 16
+  composition (mean between - mean within): -0.4
+    p = 0.97  (floor 0.00)
+  TP: s_linker59 15.3  s_linker63 15.5  delta +0.2  two-sided p 1.00
+  FP: s_linker59 2.8  s_linker63 2.8  delta +0.0  two-sided p 1.00
+  verdict: QUALITY-NEUTRAL (TP p=1.0, FP p=1.0); composition p=0.97, floor 0.00

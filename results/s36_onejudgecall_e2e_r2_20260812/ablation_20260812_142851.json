@@ -1,0 +1,291 @@
+{
+  "mediastore": {
+    "s_linker36": {
+      "variant": "s_linker36",
+      "P": 0.9375,
+      "R": 0.967741935483871,
+      "F1": 0.9523809523809523,
+      "F2": 0.9615384615384616,
+      "tp": 30,
+      "fp": 2,
+      "fn": 1,
+      "n_links": 32,
+      "time": 25.12490153312683,
+      "sources": {
+        "full_name": 28,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "full_name": 1,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        },
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 10
+    }
+  },
+  "teammates": {
+    "s_linker36": {
+      "variant": "s_linker36",
+      "P": 0.8688524590163934,
+      "R": 0.9298245614035088,
+      "F1": 0.8983050847457625,
+      "F2": 0.916955017301038,
+      "tp": 53,
+      "fp": 8,
+      "fn": 4,
+      "n_links": 61,
+      "time": 71.0949342250824,
+      "sources": {
+        "full_name": 56,
+        "coreference": 5
+      },
+      "fp_by_source": {
+        "full_name": 8
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 33
+    }
+  },
+  "teastore": {
+    "s_linker36": {
+      "variant": "s_linker36",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 23.62753701210022,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 10
+    }
+  },
+  "bigbluebutton": {
+    "s_linker36": {
+      "variant": "s_linker36",
+      "P": 0.9818181818181818,
+      "R": 0.8709677419354839,
+      "F1": 0.923076923076923,
+      "F2": 0.8910891089108911,
+      "tp": 54,
+      "fp": 1,
+      "fn": 8,
+      "n_links": 55,
+      "time": 45.7087607383728,
+      "sources": {
+        "full_name": 40,
+        "full_name_variant": 2,
+        "partial_name": 12,
+        "coreference": 1
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 38,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 19
+    }
+  },
+  "jabref": {
+    "s_linker36": {
+      "variant": "s_linker36",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 13.581775426864624,
+      "sources": {
+        "full_name": 19
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 7
+    }
+  }
+}

@@ -1,0 +1,238 @@
+[
+  {
+    "phase": "s24_replacement_summary",
+    "ts": 1786050364.9139473,
+    "in": {
+      "profile": {
+        "sentence_count": 13,
+        "component_count": 6
+      }
+    },
+    "out": {
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "reason": "fixed name-evidence order",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 1,
+                "component": "logic"
+              },
+              {
+                "sentence": 1,
+                "component": "gui"
+              },
+              {
+                "sentence": 2,
+                "component": "preferences"
+              },
+              {
+                "sentence": 2,
+                "component": "cli"
+              },
+              {
+                "sentence": 4,
+                "component": "logic"
+              },
+              {
+                "sentence": 4,
+                "component": "model"
+              },
+              {
+                "sentence": 4,
+                "component": "gui"
+              },
+              {
+                "sentence": 5,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "logic"
+              },
+              {
+                "sentence": 6,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "gui"
+              },
+              {
+                "sentence": 7,
+                "component": "gui"
+              },
+              {
+                "sentence": 9,
+                "component": "model"
+              },
+              {
+                "sentence": 9,
+                "component": "logic"
+              },
+              {
+                "sentence": 10,
+                "component": "cli"
+              },
+              {
+                "sentence": 11,
+                "component": "preferences"
+              },
+              {
+                "sentence": 12,
+                "component": "model"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 5,
+                "component": "logic"
+              },
+              {
+                "sentence": 7,
+                "component": "preferences"
+              }
+            ]
+          }
+        },
+        {
+          "action": "relation_role_resolution",
+          "reason": "fixed name-evidence order",
+          "feedback": {
+            "accepted": [],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "reason": "fixed name-evidence order",
+          "feedback": {
+            "accepted": [],
+            "rejected": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 1,
+                "component": "gui"
+              },
+              {
+                "sentence": 11,
+                "component": "preferences"
+              },
+              {
+                "sentence": 12,
+                "component": "model"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "final": 18,
+      "elapsed_s": 17.15,
+      "llm_calls": 9
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 1,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 1,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "preferences",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "cli",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 5,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 7,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 10,
+        "c": "cli",
+        "src": "entity"
+      },
+      {
+        "s": 11,
+        "c": "preferences",
+        "src": "entity"
+      },
+      {
+        "s": 12,
+        "c": "model",
+        "src": "entity"
+      }
+    ]
+  }
+]

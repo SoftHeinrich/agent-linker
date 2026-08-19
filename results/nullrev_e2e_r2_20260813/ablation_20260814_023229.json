@@ -1,0 +1,737 @@
+{
+  "mediastore": {
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 21.025114059448242,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.967741935483871,
+      "R": 0.967741935483871,
+      "F1": 0.967741935483871,
+      "F2": 0.967741935483871,
+      "tp": 30,
+      "fp": 1,
+      "fn": 1,
+      "n_links": 31,
+      "time": 22.332582235336304,
+      "sources": {
+        "full_name": 28,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 30,
+          "component": "UserDBAdapter",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    }
+  },
+  "teammates": {
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 0.8059701492537313,
+      "R": 0.9473684210526315,
+      "F1": 0.8709677419354839,
+      "F2": 0.9152542372881356,
+      "tp": 54,
+      "fp": 13,
+      "fn": 3,
+      "n_links": 67,
+      "time": 71.97639727592468,
+      "sources": {
+        "full_name": 59,
+        "partial_name": 3,
+        "coreference": 5
+      },
+      "fp_by_source": {
+        "full_name": 10,
+        "partial_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 183,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The test cases are found in x.spec.ts files."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.7534246575342466,
+      "R": 0.9649122807017544,
+      "F1": 0.8461538461538461,
+      "F2": 0.9136212624584718,
+      "tp": 55,
+      "fp": 18,
+      "fn": 2,
+      "n_links": 73,
+      "time": 70.65694212913513,
+      "sources": {
+        "full_name": 60,
+        "partial_name": 5,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "full_name": 10,
+        "coreference": 3,
+        "partial_name": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 86,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.core contains the core logic of the system."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 176,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.logic contains component test cases for testing the Logic component."
+        },
+        {
+          "sentence": 177,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.storage contains component test cases for testing the Storage component."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 183,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The test cases are found in x.spec.ts files."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 194,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component contains scripts that can connect directly to the application back-end for administrative purposes,"
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    }
+  },
+  "teastore": {
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 20.984424591064453,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 21.303507328033447,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    }
+  },
+  "bigbluebutton": {
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 0.875,
+      "R": 0.9032258064516129,
+      "F1": 0.8888888888888888,
+      "F2": 0.8974358974358975,
+      "tp": 56,
+      "fp": 8,
+      "fn": 6,
+      "n_links": 64,
+      "time": 48.633137226104736,
+      "sources": {
+        "full_name": 46,
+        "partial_name": 16,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 19,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.8028169014084507,
+      "R": 0.9193548387096774,
+      "F1": 0.8571428571428572,
+      "F2": 0.8934169278996865,
+      "tp": 57,
+      "fp": 14,
+      "fn": 5,
+      "n_links": 71,
+      "time": 47.93019366264343,
+      "sources": {
+        "full_name": 48,
+        "partial_name": 16,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 6,
+        "coreference": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with"
+        },
+        {
+          "sentence": 24,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+        },
+        {
+          "sentence": 25,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends collect subscriptions and publishers."
+        },
+        {
+          "sentence": 26,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends receive other DDP events including method calls to send events to akka-apps."
+        },
+        {
+          "sentence": 27,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 28,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 19,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    }
+  },
+  "jabref": {
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 12.593581676483154,
+      "sources": {
+        "full_name": 19
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 15.710475444793701,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    }
+  }
+}

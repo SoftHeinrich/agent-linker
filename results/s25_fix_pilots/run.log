@@ -1,0 +1,246 @@
+[knowledge] reusing ../results/coref_examples_ab/doc_knowledge.pkl
+
+### fix 2 — batch _review_identity
+Upstream cached: partial-name candidates are deterministic; the
+denotation judge runs once per project and both arms reuse it.
+current_links is empty for both arms, so the candidate set is a
+superset of production's -- same input to both, and it stresses
+batching harder than production would.
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  mediastore: 0 candidates
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  teastore: 0 candidates
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  teammates: 28 candidates -> 3 participants
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  bigbluebutton: 29 candidates -> 19 participants
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  jabref: 0 candidates
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  Backend: openai (gpt-5.6-terra)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  A_single_prompt: [12, 13, 13]
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+
+  Backend: openai (gpt-5.6-terra)
+  Backend: openai (gpt-5.6-terra)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  B_batched: [13, 13, 13]
+
+fix 2 — identity batching
+  sizes   A_single_prompt: [12, 13, 13]   B_batched: [13, 13, 13]
+  within  A_single_prompt: [1, 1, 0]   B_batched: [0, 0, 0]
+  between min 0 / mean 0.3 / max 1
+  composition (mean between - mean within): +0.0
+    null [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    p = 1.00  (floor 0.10)
+  TP: A_single_prompt 11.0  B_batched 11.0  delta +0.0  two-sided p 1.00
+  FP: A_single_prompt 1.7  B_batched 2.0  delta +0.3  two-sided p 1.00
+  verdict: QUALITY-NEUTRAL (TP p=1.0, FP p=1.0); composition p=1.00, floor 0.10
+report -> ../results/s25_fix_pilots/fix2_identity_batching.json
+
+### fix 4 — qualified-path filter in _keep_stated_names
+Extraction is cached per project: it is upstream of the filter and
+untouched by it, so both arms judge the same extraction output.
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+    Consensus: P1=33 P2=32 ∪=34
+  mediastore: 34 extracted -> 28 stated-name -> arm B drops 0
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+    Consensus: P1=21 P2=26 ∪=26
+  teastore: 26 extracted -> 21 stated-name -> arm B drops 0
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=73 P2=79 ∪=80
+  teammates: 80 extracted -> 67 stated-name -> arm B drops 8
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=51 P2=51 ∪=52
+  bigbluebutton: 52 extracted -> 44 stated-name -> arm B drops 14
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+    Consensus: P1=20 P2=20 ∪=20
+  jabref: 20 extracted -> 20 stated-name -> arm B drops 0
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  A_current: [166, 166, 165]
+SLinker25 (full-name -> partial-name -> coreference; fixed order)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+
+  Backend: openai (gpt-5.6-terra)
+  Backend: openai (gpt-5.6-terra)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+
+SLinker25 (full-name -> partial-name -> coreference; fixed order)  Backend: openai (gpt-5.6-terra)  Backend: openai (gpt-5.6-terra)
+
+  Backend: openai (gpt-5.6-terra)
+
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  B_path_filtered: [148, 148, 148]
+
+  qualified-path-only pairs that arm A approves:
+    run 1: 17 approved  TP 15  FP 2
+    run 2: 17 approved  TP 15  FP 2
+    run 3: 17 approved  TP 15  FP 2
+
+fix 4 — qualified-path filter
+  sizes   A_current: [166, 166, 165]   B_path_filtered: [148, 148, 148]
+  within  A_current: [0, 1, 1]   B_path_filtered: [0, 0, 0]
+  between min 17 / mean 17.7 / max 18
+  composition (mean between - mean within): +17.3
+    null [17.3, -1.6, -1.6, -1.6, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1]
+    p = 0.10  (floor 0.10)
+  TP: A_current 155.7  B_path_filtered 140.0  delta -15.7  two-sided p 0.10
+  FP: A_current 10.0  B_path_filtered 8.0  delta -2.0  two-sided p 0.10
+  verdict: QUALITY-CHANGING (TP p=0.1, FP p=0.1)
+report -> ../results/s25_fix_pilots/fix4_qualified_path.json
+
+### fix 3 — numbered-table coreference prompt
+Control arm reused from ../results/coref_examples_ab/report.json (same model, same alias
+cache, same Examples-cut rubric). Only the new arm is paid for.
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  prompt bytes over all batches: inline 504,484  table 202,870  (40%)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)SLinker25 (full-name -> partial-name -> coreference; fixed order)
+
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker25 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  B_table: [117, 132, 132]
+
+fix 3 — coref prompt packaging
+  sizes   A_inline: [111, 102, 103]   B_table: [117, 132, 132]
+  within  A_inline: [37, 28, 13]   B_table: [47, 47, 0]
+  between min 67 / mean 73.2 / max 81
+  composition (mean between - mean within): +44.6
+    null [44.6, 4.0, 3.4, 1.8, -4.9, -4.9, -11.0, -11.0, -11.0, -11.0]
+    p = 0.10  (floor 0.10)
+  TP: A_inline 78.7  B_table 94.3  delta +15.7  two-sided p 0.10
+  FP: A_inline 26.7  B_table 32.7  delta +6.0  two-sided p 0.10
+  verdict: QUALITY-CHANGING (TP p=0.1, FP p=0.1)
+report -> ../results/s25_fix_pilots/fix3_coref_table.json
+
+total 192s

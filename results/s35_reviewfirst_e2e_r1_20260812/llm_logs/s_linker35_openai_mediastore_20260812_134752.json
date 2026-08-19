@@ -1,0 +1,256 @@
+[
+  {
+    "phase": "s25_summary",
+    "ts": 1786535272.4780898,
+    "in": {
+      "components": 14,
+      "sentences": 37
+    },
+    "out": {
+      "workflow": [
+        {
+          "linker": "full_name",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "Facade"
+              },
+              {
+                "sentence": 3,
+                "component": "Facade"
+              },
+              {
+                "sentence": 6,
+                "component": "Facade"
+              },
+              {
+                "sentence": 7,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 8,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 11,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 12,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 13,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 16,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 17,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 17,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 19,
+                "component": "Packaging"
+              },
+              {
+                "sentence": 26,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 27,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 29,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 30,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 34,
+                "component": "MediaAccess"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "partial_name",
+          "feedback": {
+            "accepted": [],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "coreference",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 9,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 28,
+                "component": "MediaAccess"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 34,
+                "component": "MediaAccess"
+              }
+            ]
+          }
+        }
+      ],
+      "final": 19,
+      "elapsed_s": 16.11,
+      "llm_calls": 9,
+      "phase_metrics": {
+        "phase_25_doc_extract": {
+          "calls": 1,
+          "elapsed_s": 1.673,
+          "tokens": 986,
+          "errors": 0
+        },
+        "phase_25_full_name_extract": {
+          "calls": 1,
+          "elapsed_s": 2.451,
+          "tokens": 1643,
+          "errors": 0
+        },
+        "phase_25_full_name_p1": {
+          "calls": 1,
+          "elapsed_s": 2.555,
+          "tokens": 3292,
+          "errors": 0
+        },
+        "phase_25_full_name_p2": {
+          "calls": 1,
+          "elapsed_s": 2.444,
+          "tokens": 3286,
+          "errors": 0
+        },
+        "phase_25_coreference": {
+          "calls": 4,
+          "elapsed_s": 5.949,
+          "tokens": 11440,
+          "errors": 0
+        },
+        "phase_25_coreference_judge": {
+          "calls": 1,
+          "elapsed_s": 1.024,
+          "tokens": 637,
+          "errors": 0
+        }
+      }
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 3,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 7,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 8,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 11,
+        "c": "UserManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 12,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 13,
+        "c": "UserManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 16,
+        "c": "TagWatermarking",
+        "src": "full_name"
+      },
+      {
+        "s": 17,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 17,
+        "c": "TagWatermarking",
+        "src": "full_name"
+      },
+      {
+        "s": 19,
+        "c": "Packaging",
+        "src": "full_name"
+      },
+      {
+        "s": 26,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 27,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 29,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 30,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 34,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 9,
+        "c": "MediaManagement",
+        "src": "coreference"
+      },
+      {
+        "s": 28,
+        "c": "MediaAccess",
+        "src": "coreference"
+      }
+    ]
+  }
+]

@@ -1,0 +1,554 @@
+{
+  "mediastore": {
+    "s_linker25": {
+      "variant": "s_linker25",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 21.51659083366394,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 19.466686964035034,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    }
+  },
+  "teammates": {
+    "s_linker25": {
+      "variant": "s_linker25",
+      "P": 0.8852459016393442,
+      "R": 0.9473684210526315,
+      "F1": 0.9152542372881356,
+      "F2": 0.9342560553633218,
+      "tp": 54,
+      "fp": 7,
+      "fn": 3,
+      "n_links": 61,
+      "time": 62.421456813812256,
+      "sources": {
+        "full_name": 53,
+        "partial_name": 3,
+        "coreference": 5
+      },
+      "fp_by_source": {
+        "full_name": 4,
+        "partial_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 170,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.driver contains infrastructure and helpers needed for running the tests."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 181,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests th"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 37
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.7605633802816901,
+      "R": 0.9473684210526315,
+      "F1": 0.8437499999999999,
+      "F2": 0.903010033444816,
+      "tp": 54,
+      "fp": 17,
+      "fn": 3,
+      "n_links": 71,
+      "time": 63.027504444122314,
+      "sources": {
+        "full_name": 60,
+        "partial_name": 6,
+        "coreference": 5
+      },
+      "fp_by_source": {
+        "partial_name": 6,
+        "full_name": 11
+      },
+      "fp_details": [
+        {
+          "sentence": 14,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "HttpUnit is used to set up a simulated web server in servlet-level tests, where an actual web server is not required."
+        },
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 170,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.driver contains infrastructure and helpers needed for running the tests."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 183,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The test cases are found in x.spec.ts files."
+        },
+        {
+          "sentence": 188,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    }
+  },
+  "teastore": {
+    "s_linker25": {
+      "variant": "s_linker25",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 22.116368055343628,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 20.20750617980957,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    }
+  },
+  "bigbluebutton": {
+    "s_linker25": {
+      "variant": "s_linker25",
+      "P": 0.9821428571428571,
+      "R": 0.8870967741935484,
+      "F1": 0.9322033898305085,
+      "F2": 0.9046052631578947,
+      "tp": 55,
+      "fp": 1,
+      "fn": 7,
+      "n_links": 56,
+      "time": 50.76162242889404,
+      "sources": {
+        "full_name": 40,
+        "full_name_variant": 2,
+        "partial_name": 13,
+        "coreference": 1
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 38,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.921875,
+      "R": 0.9516129032258065,
+      "F1": 0.9365079365079365,
+      "F2": 0.9455128205128205,
+      "tp": 59,
+      "fp": 5,
+      "fn": 3,
+      "n_links": 64,
+      "time": 46.23509216308594,
+      "sources": {
+        "full_name": 43,
+        "partial_name": 19,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    }
+  },
+  "jabref": {
+    "s_linker25": {
+      "variant": "s_linker25",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 12.750083923339844,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 12.56900954246521,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    }
+  }
+}

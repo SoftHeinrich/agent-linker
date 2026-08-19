@@ -1,0 +1,882 @@
+{
+  "protocol": "gold selects prior FN/FP sentences offline; all model/profile/entity/controller/role/validator responses fresh OpenAI calls",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "none",
+  "datasets": [
+    {
+      "dataset": "bigbluebutton",
+      "focus_sentences": [
+        6,
+        10,
+        19,
+        39,
+        47,
+        50,
+        58,
+        65,
+        73,
+        76,
+        79
+      ],
+      "prior_positive_edges": 9,
+      "prior_negative_edges": 4,
+      "action": "relation_role_resolution",
+      "controller": {
+        "evidence_quotes": [
+          "The MongoDB database contains information about all meetings on the server",
+          "multiple nodejs processes handling incoming messages from clients",
+          "endpoint to control the BigBlueButton server",
+          "different applications running on the BigBlueButton server",
+          "the component that integrates with FreeSWITCH into it\u2019s own application",
+          "connecting using WebRTC"
+        ],
+        "unresolved_obligation": "project-specific generic role or technology vocabulary",
+        "reason": "Several unlinked sentences use generic roles and technologies whose component targets may be resolvable through project-specific role vocabulary."
+      },
+      "entity": {
+        "tp": 8,
+        "fp": 5,
+        "fn": 9,
+        "P": 0.6153846153846154,
+        "R": 0.47058823529411764,
+        "F1": 0.5333333333333333,
+        "F2": 0.49382716049382713
+      },
+      "final": {
+        "tp": 8,
+        "fp": 5,
+        "fn": 9,
+        "P": 0.6153846153846154,
+        "R": 0.47058823529411764,
+        "F1": 0.5333333333333333,
+        "F2": 0.49382716049382713
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 0
+      },
+      "entity_feedback": {
+        "candidates": [
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "HTML5 Client",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "BBB web",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 19,
+            "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+            "component": "HTML5 Server",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 39,
+            "text": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.",
+            "component": "BBB web",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 47,
+            "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+            "component": "Redis PubSub",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 50,
+            "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.",
+            "component": "Recording Service",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 58,
+            "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+            "component": "FreeSWITCH",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 73,
+            "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+            "component": "HTML5 Client",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "Presentation Conversion",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "HTML5 Client",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Presentation Conversion",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "HTML5 Client",
+            "source": "entity_candidate"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Redis PubSub",
+            "source": "entity_candidate"
+          }
+        ],
+        "accepted": [
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "HTML5 Client",
+            "source": "entity"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "BBB web",
+            "source": "entity"
+          },
+          {
+            "sentence": 19,
+            "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.",
+            "component": "HTML5 Server",
+            "source": "entity"
+          },
+          {
+            "sentence": 39,
+            "text": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.",
+            "component": "BBB web",
+            "source": "entity"
+          },
+          {
+            "sentence": 47,
+            "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.",
+            "component": "Redis PubSub",
+            "source": "entity"
+          },
+          {
+            "sentence": 50,
+            "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.",
+            "component": "Recording Service",
+            "source": "entity"
+          },
+          {
+            "sentence": 58,
+            "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.",
+            "component": "FreeSWITCH",
+            "source": "entity"
+          },
+          {
+            "sentence": 73,
+            "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.",
+            "component": "HTML5 Client",
+            "source": "entity"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "Presentation Conversion",
+            "source": "entity"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "HTML5 Client",
+            "source": "entity"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Presentation Conversion",
+            "source": "entity"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "HTML5 Client",
+            "source": "entity"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Redis PubSub",
+            "source": "entity"
+          }
+        ],
+        "validator_decisions": [
+          {
+            "sentence": 6,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 6,
+            "component_id": "_4yx-8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 19,
+            "component_id": "_yGgUMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 39,
+            "component_id": "_4yx-8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 47,
+            "component_id": "_6sergFkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 50,
+            "component_id": "_kvWs4FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 58,
+            "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 73,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 76,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 76,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 79,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 79,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          },
+          {
+            "sentence": 79,
+            "component_id": "_6sergFkHEeyewPSmlgszyA",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "entity_twopass",
+            "stage": "entity_twopass"
+          }
+        ]
+      },
+      "role_feedback": {
+        "lexicon": [
+          {
+            "expression": "nginx",
+            "component": "HTML5 Server",
+            "evidence_quote": "These connections are all handled by nginx."
+          },
+          {
+            "expression": "frontends",
+            "component": "HTML5 Server",
+            "evidence_quote": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes"
+          },
+          {
+            "expression": "backends",
+            "component": "HTML5 Server",
+            "evidence_quote": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes"
+          },
+          {
+            "expression": "single nodejs process",
+            "component": "HTML5 Server",
+            "evidence_quote": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+          },
+          {
+            "expression": "nodejs processes",
+            "component": "HTML5 Server",
+            "evidence_quote": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+          },
+          {
+            "expression": "Java-based application",
+            "component": "BBB web",
+            "evidence_quote": "BigBlueButton web application is a Java-based application written in Scala."
+          },
+          {
+            "expression": "main application",
+            "component": "Apps",
+            "evidence_quote": "BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting."
+          },
+          {
+            "expression": "MeetingActor",
+            "component": "Apps",
+            "evidence_quote": "The meeting business logic is in the MeetingActor."
+          },
+          {
+            "expression": "media server",
+            "component": "kurento",
+            "evidence_quote": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+          },
+          {
+            "expression": "media controller",
+            "component": "WebRTC-SFU",
+            "evidence_quote": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams."
+          }
+        ],
+        "proposed": [],
+        "accepted": [],
+        "validator_decisions": []
+      },
+      "llm_calls": 9,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784887561.0436513,
+          "elapsed_s": 1.843,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\n    \"Recording Service\",\n    \"kurento\",\n    \"WebRTC-SFU\",\n    \"HTML5 Server\",\n    \"HTML5 Client\",\n    \"Presentation Conversion\",\n    \"BBB web\",\n    \"Redis PubSub\",\n    \"FSESL\",\n    \"Apps\",\n    \"Redis DB\",\n    \"FreeSWITCH\"\n  ],\n  \"ambiguous\": []\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1842,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 176,
+            "completion_tokens": 85,
+            "total_tokens": 261
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784887561.043836,
+          "elapsed_s": 2.348,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nHigh-level architecture.\nThe following diagram provides a high-level view of how BigBlueButton's components work together.\nWe'll break down each component in more detail below.\nHTML5 client.\nThe HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nThe HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nThese connections are all handled by nginx.\nThe HTML5 server sits behind nginx.\nThe HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\nThe MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\nEach user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\nThe client side subscribes to the published collections on the server side.\nUpdates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\nThe following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\nScalability of HTML5 server component.\nBigBlueButton 2.2 used a single nodejs process for all client-side communication.\nThis process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\nBecause nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\nBigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nThis means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\nAs of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\nA restart of BigBlueButton is required if you make changes to these files.\nThe breakdown of functionality between front-end and back-end is as follows.\nFrontends receive the ValidateAuthTokenResp event to complete authentication.\nFrontends collect subscriptions and publishers.\nFrontends receive other DDP events including method calls to send events to akka-apps.\nFrontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\nFrontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\nBackends handle all the non-streamer events.\nIf more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\nSo individual backends only process redis events for the meetings matching the associated instanceId.\nValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\nWhen you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\nIn this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\nSee \"Automatically apply configuration changes on restart\".\nBBB web.\nBigBlueButton web application is a Java-based application written in Scala.\nIt implements the BigBlueButton API and holds a copy of the meeting state.\nThe BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\nEvery access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\nBigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\nBigBlueButton comes with its own front-end called Greenlight.\nWhen using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\nThe BigBlueButton comes with some simple API demos.\nRegardless of which front-end you use, they all use the API under the hood.\nRedis PubSub.\nRedis PubSub provides a communication channel between different applications running on the BigBlueButton server.\nRedis DB.\nWhen a meeting is recorded, all events are stored in Redis DB.\nWhen the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nApps akka.\nBigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\nIt provides the list of users, chat, whiteboard, presentations in a meeting.\nBelow is a diagram of the different components of Apps Akka.\nThe meeting business logic is in the MeetingActor.\nThis is where information about the meeting is stored and where all messages for a meeting is processed.\nFSESL akka.\nWe have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nThis allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\nCommunication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nFreeSWITCH.\nWe think FreeSWITCH is an amazing piece of software for handling audio.\nFreeSWITCH provides the voice conferencing capability in BigBlueButton.\nUsers are able to join the voice conference through the headset.\nUsers joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\nFreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\nKurento and WebRTC-SFU.\nKurento Media Server KMS is a media server that implements both SFU and MCU models.\nKMS is responsible for streaming of webcams, listen-only audio, and screensharing.\nThe WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\nJoining a voice conference.\nA user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\nWhen joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\nWebRTC provides the user with high-quality audio with lower delay.\nUploading a presentation.\nUploaded presentations go through a conversion process in order to be displayed inside the client.\nWhen the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\nThe PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\nThe conversion process sends progress messages to the client through the Redis pubsub.\nPresentation conversion flow.\nThe diagram below describes the flow of the presentation conversion.\nWe take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\nThen below the SVG conversion flow.\nIt covers the conversion fallback.\nSometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\nInternal network connections.\nThe following diagram shows how the various components of BigBlueButton connect to each other via sockets.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[{\"term\":\"bbb-html5\",\"component\":\"HTML5 Server\",\"scope\":\"global\"},{\"term\":\"BBB web\",\"component\":\"BBB web\",\"scope\":\"global\"},{\"term\":\"Apps akka\",\"component\":\"Apps\",\"scope\":\"global\"},{\"term\":\"FSESL akka\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"fsels\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"KMS\",\"component\":\"kurento\",\"scope\":\"global\"},{\"term\":\"WebRTC-SFU\",\"component\":\"WebRTC-SFU\",\"scope\":\"global\"}],\"synonyms\":[{\"term\":\"HTML5 client\",\"component\":\"HTML5 Client\",\"scope\":\"global\"},{\"term\":\"HTML5 server\",\"component\":\"HTML5 Server\",\"scope\":\"global\"},{\"term\":\"BigBlueButton web application\",\"component\":\"BBB web\",\"scope\":\"global\"},{\"term\":\"BigBlueButton Apps\",\"component\":\"Apps\",\"scope\":\"global\"},{\"term\":\"Redis pubsub\",\"component\":\"Redis PubSub\",\"scope\":\"global\"},{\"term\":\"Redis DB\",\"component\":\"Redis DB\",\"scope\":\"global\"},{\"term\":\"Recording Processor\",\"component\":\"Recording Service\",\"scope\":\"global\"},{\"term\":\"Kurento Media Server\",\"component\":\"kurento\",\"scope\":\"global\"},{\"term\":\"FreeSWITCH Event Socket Layer\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"Presentation conversion flow\",\"component\":\"Presentation Conversion\",\"scope\":\"global\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2348,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1927,
+            "completion_tokens": 280,
+            "total_tokens": 2207
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784887563.392031,
+          "elapsed_s": 0.97,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nPROPOSED MAPPINGS:\n'bbb-html5' -> HTML5 Server\n'BBB web' -> BBB web\n'Apps akka' -> Apps\n'FSESL akka' -> FSESL\n'fsels' -> FSESL\n'KMS' -> kurento\n'WebRTC-SFU' -> WebRTC-SFU\n'HTML5 client' -> HTML5 Client\n'HTML5 server' -> HTML5 Server\n'BigBlueButton web application' -> BBB web\n'BigBlueButton Apps' -> Apps\n'Redis pubsub' -> Redis PubSub\n'Redis DB' -> Redis DB\n'Recording Processor' -> Recording Service\n'Kurento Media Server' -> kurento\n'FreeSWITCH Event Socket Layer' -> FSESL\n'Presentation conversion flow' -> Presentation Conversion\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"bbb-html5\",\"BBB web\",\"Apps akka\",\"FSESL akka\",\"fsels\",\"KMS\",\"WebRTC-SFU\",\"HTML5 client\",\"HTML5 server\",\"BigBlueButton web application\",\"BigBlueButton Apps\",\"Redis pubsub\",\"Redis DB\",\"Recording Processor\",\"Kurento Media Server\",\"FreeSWITCH Event Socket Layer\",\"Presentation conversion flow\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 970,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 358,
+            "completion_tokens": 78,
+            "total_tokens": 436
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784887564.362946,
+          "elapsed_s": 1.857,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\nKNOWN ALIASES: bbb-html5=HTML5 Server, BBB web=BBB web, Apps akka=Apps, FSESL akka=FSESL, fsels=FSESL, KMS=kurento, WebRTC-SFU=WebRTC-SFU, HTML5 client=HTML5 Client, HTML5 server=HTML5 Server, BigBlueButton web application=BBB web, BigBlueButton Apps=Apps, Redis pubsub=Redis PubSub, Redis DB=Redis DB, Recording Processor=Recording Service, Kurento Media Server=kurento, FreeSWITCH Event Socket Layer=FSESL, Presentation conversion flow=Presentation Conversion\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nS10: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\nS19: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nS39: The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\nS47: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\nS50: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nS58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nS65: Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\nS73: When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\nS76: Uploaded presentations go through a conversion process in order to be displayed inside the client.\nS79: The conversion process sends progress messages to the client through the Redis pubsub.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":6,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":19,\"component\":\"HTML5 Server\",\"matched_text\":\"bbb-html5\"},{\"sentence\":39,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":47,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis PubSub\"},{\"sentence\":50,\"component\":\"Recording Service\",\"matched_text\":\"Recording Processor\"},{\"sentence\":58,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":73,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":73,\"component\":\"HTML5 Client\",\"matched_text\":\"BigBlueButton client\"},{\"sentence\":76,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":76,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":79,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis pubsub\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1847,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 636,
+            "completion_tokens": 235,
+            "total_tokens": 871
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784887564.3642688,
+          "elapsed_s": 6.309,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\nKNOWN ALIASES: bbb-html5=HTML5 Server, BBB web=BBB web, Apps akka=Apps, FSESL akka=FSESL, fsels=FSESL, KMS=kurento, WebRTC-SFU=WebRTC-SFU, HTML5 client=HTML5 Client, HTML5 server=HTML5 Server, BigBlueButton web application=BBB web, BigBlueButton Apps=Apps, Redis pubsub=Redis PubSub, Redis DB=Redis DB, Recording Processor=Recording Service, Kurento Media Server=kurento, FreeSWITCH Event Socket Layer=FSESL, Presentation conversion flow=Presentation Conversion\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nS10: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\nS19: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nS39: The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\nS47: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\nS50: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nS58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nS65: Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\nS73: When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\nS76: Uploaded presentations go through a conversion process in order to be displayed inside the client.\nS79: The conversion process sends progress messages to the client through the Redis pubsub.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":6,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":19,\"component\":\"HTML5 Server\",\"matched_text\":\"bbb-html5\"},{\"sentence\":39,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":47,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis PubSub\"},{\"sentence\":50,\"component\":\"Recording Service\",\"matched_text\":\"Recording Processor\"},{\"sentence\":58,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":73,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":73,\"component\":\"HTML5 Client\",\"matched_text\":\"BigBlueButton client\"},{\"sentence\":76,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":76,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":79,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis pubsub\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 6309,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 636,
+            "completion_tokens": 235,
+            "total_tokens": 871
+          }
+        },
+        {
+          "phase": "phase_24_entity_p1",
+          "ts": 1784887570.6753483,
+          "elapsed_s": 2.227,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"HTML5 client\" -> HTML5 Client\n  \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"BigBlueButton server\" -> BBB web\n  \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 3: \"bbb-html5\" -> HTML5 Server\n  \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n  Evidence: source=entity, span=\"bbb-html5\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 4: \"BigBlueButton server\" -> BBB web\n  \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 5: \"Redis PubSub\" -> Redis PubSub\n  \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"\n  Evidence: source=entity, span=\"Redis PubSub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S79: The conversion process sends progress messages to the client through the Redis pubsub.\nCase 6: \"Recording Processor\" -> Recording Service\n  \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n  Evidence: source=entity, span=\"Recording Processor\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 7: \"FreeSWITCH\" -> FreeSWITCH\n  \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\nCase 8: \"client\" -> HTML5 Client\n  \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 9: \"conversion process\" -> Presentation Conversion\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 10: \"client\" -> HTML5 Client\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 11: \"conversion process\" -> Presentation Conversion\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 12: \"client\" -> HTML5 Client\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 13: \"Redis pubsub\" -> Redis PubSub\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"Redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S47: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":2,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":3,\"claim\":\"bbb-html5 towards multiple nodejs processes handling incoming messages from clients\",\"approve\":true},{\"case\":4,\"claim\":\"an endpoint to control the BigBlueButton server\",\"approve\":true},{\"case\":5,\"claim\":\"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\"approve\":true},{\"case\":6,\"claim\":\"the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\"approve\":true},{\"case\":7,\"claim\":\"the component that integrates with FreeSWITCH\",\"approve\":true},{\"case\":8,\"claim\":\"joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\"approve\":true},{\"case\":9,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true},{\"case\":10,\"claim\":\"displayed inside the client.\",\"approve\":true},{\"case\":11,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":12,\"claim\":\"sends progress messages to the client\",\"approve\":true},{\"case\":13,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2226,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1495,
+            "completion_tokens": 352,
+            "total_tokens": 1847
+          }
+        },
+        {
+          "phase": "phase_24_entity_p2",
+          "ts": 1784887572.9023616,
+          "elapsed_s": 2.627,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"HTML5 client\" -> HTML5 Client\n  \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"BigBlueButton server\" -> BBB web\n  \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 3: \"bbb-html5\" -> HTML5 Server\n  \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n  Evidence: source=entity, span=\"bbb-html5\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 4: \"BigBlueButton server\" -> BBB web\n  \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 5: \"Redis PubSub\" -> Redis PubSub\n  \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"\n  Evidence: source=entity, span=\"Redis PubSub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S79: The conversion process sends progress messages to the client through the Redis pubsub.\nCase 6: \"Recording Processor\" -> Recording Service\n  \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n  Evidence: source=entity, span=\"Recording Processor\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 7: \"FreeSWITCH\" -> FreeSWITCH\n  \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\nCase 8: \"client\" -> HTML5 Client\n  \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 9: \"conversion process\" -> Presentation Conversion\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 10: \"client\" -> HTML5 Client\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 11: \"conversion process\" -> Presentation Conversion\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 12: \"client\" -> HTML5 Client\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 13: \"Redis pubsub\" -> Redis PubSub\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"Redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S47: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":2,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":3,\"claim\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\"approve\":true},{\"case\":4,\"claim\":\"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\",\"approve\":true},{\"case\":5,\"claim\":\"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\",\"approve\":true},{\"case\":6,\"claim\":\"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\"approve\":true},{\"case\":7,\"claim\":\"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\",\"approve\":true},{\"case\":8,\"claim\":\"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\",\"approve\":true},{\"case\":9,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true},{\"case\":10,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true},{\"case\":11,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":12,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":13,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2626,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1472,
+            "completion_tokens": 424,
+            "total_tokens": 1896
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784887575.5292351,
+          "elapsed_s": 1.436,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: learn project-specific generic role or technology\n  vocabulary, apply it to the document, then validate the resulting candidates.\n- coverage_audit: multi-component completeness, negated boundaries, and\n  meaningful headings/captions; it must not infer targets solely from a generic\n  role or technology phrase; followed by the existing two-pass validator.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"sentence\": 10, \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"sentence\": 39, \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"}, {\"sentence\": 47, \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"}, {\"sentence\": 50, \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"}, {\"sentence\": 58, \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"}, {\"sentence\": 65, \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"}, {\"sentence\": 73, \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"}, {\"sentence\": 76, \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"sentence\": 79, \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}], \"component_catalog\": [\"Recording Service\", \"kurento\", \"WebRTC-SFU\", \"HTML5 Server\", \"HTML5 Client\", \"Presentation Conversion\", \"BBB web\", \"Redis PubSub\", \"FSESL\", \"Apps\", \"Redis DB\", \"FreeSWITCH\"], \"ambiguous_components\": [], \"approved_aliases\": [{\"alias\": \"bbb-html5\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BBB web\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"Apps akka\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"FSESL akka\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"fsels\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"KMS\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"WebRTC-SFU\", \"target\": \"WebRTC-SFU\", \"scope\": \"global\"}, {\"alias\": \"HTML5 client\", \"target\": \"HTML5 Client\", \"scope\": \"global\"}, {\"alias\": \"HTML5 server\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton web application\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton Apps\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"Redis pubsub\", \"target\": \"Redis PubSub\", \"scope\": \"global\"}, {\"alias\": \"Redis DB\", \"target\": \"Redis DB\", \"scope\": \"global\"}, {\"alias\": \"Recording Processor\", \"target\": \"Recording Service\", \"scope\": \"global\"}, {\"alias\": \"Kurento Media Server\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"FreeSWITCH Event Socket Layer\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"Presentation conversion flow\", \"target\": \"Presentation Conversion\", \"scope\": \"global\"}]}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh edge identity pass\", \"feedback\": {\"accepted\": [{\"sentence\": 6, \"component\": \"HTML5 Client\"}, {\"sentence\": 6, \"component\": \"BBB web\"}, {\"sentence\": 19, \"component\": \"HTML5 Server\"}, {\"sentence\": 39, \"component\": \"BBB web\"}, {\"sentence\": 47, \"component\": \"Redis PubSub\"}, {\"sentence\": 50, \"component\": \"Recording Service\"}, {\"sentence\": 58, \"component\": \"FreeSWITCH\"}, {\"sentence\": 73, \"component\": \"HTML5 Client\"}, {\"sentence\": 76, \"component\": \"Presentation Conversion\"}, {\"sentence\": 76, \"component\": \"HTML5 Client\"}, {\"sentence\": 79, \"component\": \"Presentation Conversion\"}, {\"sentence\": 79, \"component\": \"HTML5 Client\"}, {\"sentence\": 79, \"component\": \"Redis PubSub\"}], \"rejected\": []}}]\n\nCURRENT LINKS\n[{\"sentence\": 6, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 6, \"component\": \"BBB web\", \"source\": \"entity\"}, {\"sentence\": 19, \"component\": \"HTML5 Server\", \"source\": \"entity\"}, {\"sentence\": 39, \"component\": \"BBB web\", \"source\": \"entity\"}, {\"sentence\": 47, \"component\": \"Redis PubSub\", \"source\": \"entity\"}, {\"sentence\": 50, \"component\": \"Recording Service\", \"source\": \"entity\"}, {\"sentence\": 58, \"component\": \"FreeSWITCH\", \"source\": \"entity\"}, {\"sentence\": 73, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 76, \"component\": \"Presentation Conversion\", \"source\": \"entity\"}, {\"sentence\": 76, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 79, \"component\": \"Presentation Conversion\", \"source\": \"entity\"}, {\"sentence\": 79, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 79, \"component\": \"Redis PubSub\", \"source\": \"entity\"}]\n\nAVAILABLE ACTIONS\n[\"relation_role_resolution\", \"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"relation_role_resolution\",\"evidence_quotes\":[\"The MongoDB database contains information about all meetings on the server\",\"multiple nodejs processes handling incoming messages from clients\",\"endpoint to control the BigBlueButton server\",\"different applications running on the BigBlueButton server\",\"the component that integrates with FreeSWITCH into it\u2019s own application\",\"connecting using WebRTC\"],\"unresolved_obligation\":\"project-specific generic role or technology vocabulary\",\"reason\":\"Several unlinked sentences use generic roles and technologies whose component targets may be resolvable through project-specific role vocabulary.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1435,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1633,
+            "completion_tokens": 115,
+            "total_tokens": 1748
+          }
+        },
+        {
+          "phase": "phase_24_role_lexicon",
+          "ts": 1784887576.9654183,
+          "elapsed_s": 2.544,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Learn project-specific component vocabulary from this\nsoftware design document. Find generic role or technology expressions that the\ndocument uses to mean exactly one modeled component. Exclude component names,\napproved aliases, and pronouns.\n\nCOMPONENTS\n[\"Recording Service\", \"kurento\", \"WebRTC-SFU\", \"HTML5 Server\", \"HTML5 Client\", \"Presentation Conversion\", \"BBB web\", \"Redis PubSub\", \"FSESL\", \"Apps\", \"Redis DB\", \"FreeSWITCH\"]\n\nAPPROVED ALIASES\n[{\"alias\": \"bbb-html5\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BBB web\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"Apps akka\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"FSESL akka\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"fsels\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"KMS\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"WebRTC-SFU\", \"target\": \"WebRTC-SFU\", \"scope\": \"global\"}, {\"alias\": \"HTML5 client\", \"target\": \"HTML5 Client\", \"scope\": \"global\"}, {\"alias\": \"HTML5 server\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton web application\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton Apps\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"Redis pubsub\", \"target\": \"Redis PubSub\", \"scope\": \"global\"}, {\"alias\": \"Redis DB\", \"target\": \"Redis DB\", \"scope\": \"global\"}, {\"alias\": \"Recording Processor\", \"target\": \"Recording Service\", \"scope\": \"global\"}, {\"alias\": \"Kurento Media Server\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"FreeSWITCH Event Socket Layer\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"Presentation conversion flow\", \"target\": \"Presentation Conversion\", \"scope\": \"global\"}]\n\nDOCUMENT\n[{\"sentence\": 1, \"text\": \"High-level architecture.\"}, {\"sentence\": 2, \"text\": \"The following diagram provides a high-level view of how BigBlueButton's components work together.\"}, {\"sentence\": 3, \"text\": \"We'll break down each component in more detail below.\"}, {\"sentence\": 4, \"text\": \"HTML5 client.\"}, {\"sentence\": 5, \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"}, {\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"sentence\": 7, \"text\": \"These connections are all handled by nginx.\"}, {\"sentence\": 8, \"text\": \"The HTML5 server sits behind nginx.\"}, {\"sentence\": 9, \"text\": \"The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\"}, {\"sentence\": 10, \"text\": \"The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\"}, {\"sentence\": 11, \"text\": \"Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\"}, {\"sentence\": 12, \"text\": \"The client side subscribes to the published collections on the server side.\"}, {\"sentence\": 13, \"text\": \"Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\"}, {\"sentence\": 14, \"text\": \"The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\"}, {\"sentence\": 15, \"text\": \"Scalability of HTML5 server component.\"}, {\"sentence\": 16, \"text\": \"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"}, {\"sentence\": 17, \"text\": \"This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\"}, {\"sentence\": 18, \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"sentence\": 20, \"text\": \"This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\"}, {\"sentence\": 21, \"text\": \"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\"}, {\"sentence\": 22, \"text\": \"A restart of BigBlueButton is required if you make changes to these files.\"}, {\"sentence\": 23, \"text\": \"The breakdown of functionality between front-end and back-end is as follows.\"}, {\"sentence\": 24, \"text\": \"Frontends receive the ValidateAuthTokenResp event to complete authentication.\"}, {\"sentence\": 25, \"text\": \"Frontends collect subscriptions and publishers.\"}, {\"sentence\": 26, \"text\": \"Frontends receive other DDP events including method calls to send events to akka-apps.\"}, {\"sentence\": 27, \"text\": \"Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\"}, {\"sentence\": 28, \"text\": \"Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\"}, {\"sentence\": 29, \"text\": \"Backends handle all the non-streamer events.\"}, {\"sentence\": 30, \"text\": \"If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\"}, {\"sentence\": 31, \"text\": \"So individual backends only process redis events for the meetings matching the associated instanceId.\"}, {\"sentence\": 32, \"text\": \"ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\"}, {\"sentence\": 33, \"text\": \"When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\"}, {\"sentence\": 34, \"text\": \"In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\"}, {\"sentence\": 35, \"text\": \"See \\\"Automatically apply configuration changes on restart\\\".\"}, {\"sentence\": 36, \"text\": \"BBB web.\"}, {\"sentence\": 37, \"text\": \"BigBlueButton web application is a Java-based application written in Scala.\"}, {\"sentence\": 38, \"text\": \"It implements the BigBlueButton API and holds a copy of the meeting state.\"}, {\"sentence\": 39, \"text\": \"The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\"}, {\"sentence\": 40, \"text\": \"Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\"}, {\"sentence\": 41, \"text\": \"BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\"}, {\"sentence\": 42, \"text\": \"BigBlueButton comes with its own front-end called Greenlight.\"}, {\"sentence\": 43, \"text\": \"When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\"}, {\"sentence\": 44, \"text\": \"The BigBlueButton comes with some simple API demos.\"}, {\"sentence\": 45, \"text\": \"Regardless of which front-end you use, they all use the API under the hood.\"}, {\"sentence\": 46, \"text\": \"Redis PubSub.\"}, {\"sentence\": 47, \"text\": \"Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.\"}, {\"sentence\": 48, \"text\": \"Redis DB.\"}, {\"sentence\": 49, \"text\": \"When a meeting is recorded, all events are stored in Redis DB.\"}, {\"sentence\": 50, \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"}, {\"sentence\": 51, \"text\": \"Apps akka.\"}, {\"sentence\": 52, \"text\": \"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"}, {\"sentence\": 53, \"text\": \"It provides the list of users, chat, whiteboard, presentations in a meeting.\"}, {\"sentence\": 54, \"text\": \"Below is a diagram of the different components of Apps Akka.\"}, {\"sentence\": 55, \"text\": \"The meeting business logic is in the MeetingActor.\"}, {\"sentence\": 56, \"text\": \"This is where information about the meeting is stored and where all messages for a meeting is processed.\"}, {\"sentence\": 57, \"text\": \"FSESL akka.\"}, {\"sentence\": 58, \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"}, {\"sentence\": 59, \"text\": \"This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\"}, {\"sentence\": 60, \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"}, {\"sentence\": 61, \"text\": \"FreeSWITCH.\"}, {\"sentence\": 62, \"text\": \"We think FreeSWITCH is an amazing piece of software for handling audio.\"}, {\"sentence\": 63, \"text\": \"FreeSWITCH provides the voice conferencing capability in BigBlueButton.\"}, {\"sentence\": 64, \"text\": \"Users are able to join the voice conference through the headset.\"}, {\"sentence\": 65, \"text\": \"Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\"}, {\"sentence\": 66, \"text\": \"FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\"}, {\"sentence\": 67, \"text\": \"Kurento and WebRTC-SFU.\"}, {\"sentence\": 68, \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"sentence\": 69, \"text\": \"KMS is responsible for streaming of webcams, listen-only audio, and screensharing.\"}, {\"sentence\": 70, \"text\": \"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"}, {\"sentence\": 71, \"text\": \"Joining a voice conference.\"}, {\"sentence\": 72, \"text\": \"A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\"}, {\"sentence\": 73, \"text\": \"When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\"}, {\"sentence\": 74, \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"}, {\"sentence\": 75, \"text\": \"Uploading a presentation.\"}, {\"sentence\": 76, \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"sentence\": 77, \"text\": \"When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\"}, {\"sentence\": 78, \"text\": \"The PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\"}, {\"sentence\": 79, \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}, {\"sentence\": 80, \"text\": \"Presentation conversion flow.\"}, {\"sentence\": 81, \"text\": \"The diagram below describes the flow of the presentation conversion.\"}, {\"sentence\": 82, \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"}, {\"sentence\": 83, \"text\": \"Then below the SVG conversion flow.\"}, {\"sentence\": 84, \"text\": \"It covers the conversion fallback.\"}, {\"sentence\": 85, \"text\": \"Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\"}, {\"sentence\": 86, \"text\": \"Internal network connections.\"}, {\"sentence\": 87, \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"}]\n\nReturn exact document phrases and exact evidence quotes.\nJSON only:\n{\"mappings\":[{\"expression\":\"exact words\",\"component\":\"exact component\",\n\"evidence_quote\":\"exact document words\"}]}\n",
+          "response_text": "{\"mappings\":[{\"expression\":\"nginx\",\"component\":\"HTML5 Server\",\"evidence_quote\":\"These connections are all handled by nginx.\"},{\"expression\":\"frontends\",\"component\":\"HTML5 Server\",\"evidence_quote\":\"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes\"},{\"expression\":\"backends\",\"component\":\"HTML5 Server\",\"evidence_quote\":\"As of 2.3-alpha-7, bbb-html5 uses 2 \\\"frontend\\\" and two \\\"backend\\\" processes\"},{\"expression\":\"single nodejs process\",\"component\":\"HTML5 Server\",\"evidence_quote\":\"BigBlueButton 2.2 used a single nodejs process for all client-side communication.\"},{\"expression\":\"nodejs processes\",\"component\":\"HTML5 Server\",\"evidence_quote\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"},{\"expression\":\"Java-based application\",\"component\":\"BBB web\",\"evidence_quote\":\"BigBlueButton web application is a Java-based application written in Scala.\"},{\"expression\":\"main application\",\"component\":\"Apps\",\"evidence_quote\":\"BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\"},{\"expression\":\"MeetingActor\",\"component\":\"Apps\",\"evidence_quote\":\"The meeting business logic is in the MeetingActor.\"},{\"expression\":\"media server\",\"component\":\"kurento\",\"evidence_quote\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"},{\"expression\":\"media controller\",\"component\":\"WebRTC-SFU\",\"evidence_quote\":\"The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2544,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 3116,
+            "completion_tokens": 363,
+            "total_tokens": 3479
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "jabref",
+      "focus_sentences": [
+        3,
+        13
+      ],
+      "prior_positive_edges": 0,
+      "prior_negative_edges": 2,
+      "action": "relation_role_resolution",
+      "controller": {
+        "evidence_quotes": [
+          "The dependencies are only directed towards the center.",
+          "changes within the core in the outer layers."
+        ],
+        "unresolved_obligation": "project-specific generic role vocabulary (\"center\", \"core\", \"outer layers\")",
+        "reason": "The document uses generic architectural roles rather than catalog names or aliases; entity identity produced no links, so role resolution is the remaining applicable capability."
+      },
+      "entity": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "final": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "marginal": {
+        "tp": 0,
+        "fp": 3
+      },
+      "entity_feedback": {
+        "candidates": [],
+        "accepted": [],
+        "validator_decisions": []
+      },
+      "role_feedback": {
+        "lexicon": [
+          {
+            "expression": "intermediate layer",
+            "component": "logic",
+            "evidence_quote": "the logic as an intermediate layer towards the gui"
+          },
+          {
+            "expression": "outer shell",
+            "component": "gui",
+            "evidence_quote": "the gui which is the outer shell"
+          },
+          {
+            "expression": "center",
+            "component": "model",
+            "evidence_quote": "with the model in the center"
+          },
+          {
+            "expression": "command line interface",
+            "component": "cli",
+            "evidence_quote": "The cli package bundles classes that are responsible for JabRef\u2019s command line interface."
+          },
+          {
+            "expression": "core",
+            "component": "model",
+            "evidence_quote": "react upon changes within the core in the outer layers"
+          },
+          {
+            "expression": "outer layers",
+            "component": "gui",
+            "evidence_quote": "react upon changes within the core in the outer layers"
+          }
+        ],
+        "proposed": [
+          {
+            "sentence": 3,
+            "text": "The dependencies are only directed towards the center.",
+            "component": "model",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 13,
+            "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+            "component": "model",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 13,
+            "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+            "component": "gui",
+            "source": "relation_role_candidate"
+          }
+        ],
+        "accepted": [
+          {
+            "sentence": 3,
+            "text": "The dependencies are only directed towards the center.",
+            "component": "model",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 13,
+            "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+            "component": "model",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 13,
+            "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+            "component": "gui",
+            "source": "s24_relation_role"
+          }
+        ],
+        "validator_decisions": [
+          {
+            "sentence": 3,
+            "component_id": "_MFIzMEl4Ee243f2e4VWs6w",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "relation_role_twopass",
+            "stage": "relation_role_twopass"
+          },
+          {
+            "sentence": 13,
+            "component_id": "_MFIzMEl4Ee243f2e4VWs6w",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "relation_role_twopass",
+            "stage": "relation_role_twopass"
+          },
+          {
+            "sentence": 13,
+            "component_id": "_Coy0kEl4Ee243f2e4VWs6w",
+            "approved": true,
+            "p1": true,
+            "p2": true,
+            "path": "relation_role_twopass",
+            "stage": "relation_role_twopass"
+          }
+        ]
+      },
+      "llm_calls": 8,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784887579.513226,
+          "elapsed_s": 0.959,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: gui, cli, logic, globals, model, preferences\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\"architectural\":[\"gui\",\"cli\"],\"ambiguous\":[\"logic\",\"globals\",\"model\",\"preferences\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 959,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 146,
+            "completion_tokens": 24,
+            "total_tokens": 170
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784887579.513492,
+          "elapsed_s": 1.235,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nWe have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\nThere are additional utility packages for preferences and the cli.\nThe dependencies are only directed towards the center.\nWe have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\nThe model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\nThe logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\nOnly the gui knows the user and his preferences and can interact with him to help him solve tasks.\nFor each layer, we form packages according to their responsibility, i.e., vertical structuring.\nThe model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nThe cli package bundles classes that are responsible for JabRef\u2019s command line interface.\nThe preferences represents all information customizable by a user for her personal needs.\nWe use an event bus to publish events from the model to the other layers.\nThis allows us to keep the architecture but still react upon changes within the core in the outer layers.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[],\"synonyms\":[]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1235,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 576,
+            "completion_tokens": 13,
+            "total_tokens": 589
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784887580.750701,
+          "elapsed_s": 0.931,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS3: The dependencies are only directed towards the center.\nS13: This allows us to keep the architecture but still react upon changes within the core in the outer layers.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":1,\"component\":\"logic\",\"matched_text\":\"center\"},{\"sentence\":2,\"component\":\"logic\",\"matched_text\":\"core\"},{\"sentence\":2,\"component\":\"gui\",\"matched_text\":\"outer layers\"},{\"sentence\":2,\"component\":\"cli\",\"matched_text\":\"outer layers\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 931,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 194,
+            "completion_tokens": 62,
+            "total_tokens": 256
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784887580.7495148,
+          "elapsed_s": 1.716,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS3: The dependencies are only directed towards the center.\nS13: This allows us to keep the architecture but still react upon changes within the core in the outer layers.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":1,\"component\":\"logic\",\"matched_text\":\"center\"},{\"sentence\":2,\"component\":\"logic\",\"matched_text\":\"core\"},{\"sentence\":2,\"component\":\"gui\",\"matched_text\":\"outer layers\"},{\"sentence\":2,\"component\":\"cli\",\"matched_text\":\"outer layers\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1715,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 194,
+            "completion_tokens": 62,
+            "total_tokens": 256
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784887582.4656954,
+          "elapsed_s": 1.282,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: learn project-specific generic role or technology\n  vocabulary, apply it to the document, then validate the resulting candidates.\n- coverage_audit: multi-component completeness, negated boundaries, and\n  meaningful headings/captions; it must not infer targets solely from a generic\n  role or technology phrase; followed by the existing two-pass validator.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 3, \"text\": \"The dependencies are only directed towards the center.\"}, {\"sentence\": 13, \"text\": \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"}], \"component_catalog\": [\"gui\", \"cli\", \"logic\", \"globals\", \"model\", \"preferences\"], \"ambiguous_components\": [\"globals\", \"logic\", \"model\", \"preferences\"], \"approved_aliases\": []}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh edge identity pass\", \"feedback\": {\"accepted\": [], \"rejected\": []}}]\n\nCURRENT LINKS\n[]\n\nAVAILABLE ACTIONS\n[\"relation_role_resolution\", \"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"relation_role_resolution\",\"evidence_quotes\":[\"The dependencies are only directed towards the center.\",\"changes within the core in the outer layers.\"],\"unresolved_obligation\":\"project-specific generic role vocabulary (\\\"center\\\", \\\"core\\\", \\\"outer layers\\\")\",\"reason\":\"The document uses generic architectural roles rather than catalog names or aliases; entity identity produced no links, so role resolution is the remaining applicable capability.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1281,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 456,
+            "completion_tokens": 86,
+            "total_tokens": 542
+          }
+        },
+        {
+          "phase": "phase_24_role_lexicon",
+          "ts": 1784887583.7473595,
+          "elapsed_s": 1.454,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Learn project-specific component vocabulary from this\nsoftware design document. Find generic role or technology expressions that the\ndocument uses to mean exactly one modeled component. Exclude component names,\napproved aliases, and pronouns.\n\nCOMPONENTS\n[\"gui\", \"cli\", \"logic\", \"globals\", \"model\", \"preferences\"]\n\nAPPROVED ALIASES\n[]\n\nDOCUMENT\n[{\"sentence\": 1, \"text\": \"We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\"}, {\"sentence\": 2, \"text\": \"There are additional utility packages for preferences and the cli.\"}, {\"sentence\": 3, \"text\": \"The dependencies are only directed towards the center.\"}, {\"sentence\": 4, \"text\": \"We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\"}, {\"sentence\": 5, \"text\": \"The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\"}, {\"sentence\": 6, \"text\": \"The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\"}, {\"sentence\": 7, \"text\": \"Only the gui knows the user and his preferences and can interact with him to help him solve tasks.\"}, {\"sentence\": 8, \"text\": \"For each layer, we form packages according to their responsibility, i.e., vertical structuring.\"}, {\"sentence\": 9, \"text\": \"The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\"}, {\"sentence\": 10, \"text\": \"The cli package bundles classes that are responsible for JabRef\\u2019s command line interface.\"}, {\"sentence\": 11, \"text\": \"The preferences represents all information customizable by a user for her personal needs.\"}, {\"sentence\": 12, \"text\": \"We use an event bus to publish events from the model to the other layers.\"}, {\"sentence\": 13, \"text\": \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"}]\n\nReturn exact document phrases and exact evidence quotes.\nJSON only:\n{\"mappings\":[{\"expression\":\"exact words\",\"component\":\"exact component\",\n\"evidence_quote\":\"exact document words\"}]}\n",
+          "response_text": "{\"mappings\":[{\"expression\":\"intermediate layer\",\"component\":\"logic\",\"evidence_quote\":\"the logic as an intermediate layer towards the gui\"},{\"expression\":\"outer shell\",\"component\":\"gui\",\"evidence_quote\":\"the gui which is the outer shell\"},{\"expression\":\"center\",\"component\":\"model\",\"evidence_quote\":\"with the model in the center\"},{\"expression\":\"command line interface\",\"component\":\"cli\",\"evidence_quote\":\"The cli package bundles classes that are responsible for JabRef\u2019s command line interface.\"},{\"expression\":\"core\",\"component\":\"model\",\"evidence_quote\":\"react upon changes within the core in the outer layers\"},{\"expression\":\"outer layers\",\"component\":\"gui\",\"evidence_quote\":\"react upon changes within the core in the outer layers\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1453,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 576,
+            "completion_tokens": 151,
+            "total_tokens": 727
+          }
+        },
+        {
+          "phase": "phase_24_role_p1",
+          "ts": 1784887585.2014656,
+          "elapsed_s": 1.25,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"center\" -> model\n  [prev: There are additional utility packages for preferences and the cli.] \"The dependencies are only directed towards the center.\"\n  Evidence: source=relation_role, span=\"center\", mention=indirect/unclear match, ambiguous=True\n  Rationale: project-specific role vocabulary\n  [prev: \"There are additional utility packages for preferences and the cli.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: with the model in the center\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nCase 2: \"core\" -> model\n  [prev: We use an event bus to publish events from the model to the other layers.] \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"\n  Evidence: source=relation_role, span=\"core\", mention=indirect/unclear match, ambiguous=True\n  Rationale: project-specific role vocabulary\n  [prev: \"We use an event bus to publish events from the model to the other layers.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: react upon changes within the core in the outer layers\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nCase 3: \"outer layers\" -> gui\n  [prev: We use an event bus to publish events from the model to the other layers.] \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"\n  Evidence: source=relation_role, span=\"outer layers\", mention=indirect/unclear match, ambiguous=False\n  Rationale: project-specific role vocabulary\n  [prev: \"We use an event bus to publish events from the model to the other layers.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: react upon changes within the core in the outer layers\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The dependencies are only directed towards the center.\",\"approve\":true},{\"case\":2,\"claim\":\"react upon changes within the core in the outer layers.\",\"approve\":true},{\"case\":3,\"claim\":\"react upon changes within the core in the outer layers.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1250,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1207,
+            "completion_tokens": 70,
+            "total_tokens": 1277
+          }
+        },
+        {
+          "phase": "phase_24_role_p2",
+          "ts": 1784887586.4516978,
+          "elapsed_s": 1.004,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"center\" -> model\n  [prev: There are additional utility packages for preferences and the cli.] \"The dependencies are only directed towards the center.\"\n  Evidence: source=relation_role, span=\"center\", mention=indirect/unclear match, ambiguous=True\n  Rationale: project-specific role vocabulary\n  [prev: \"There are additional utility packages for preferences and the cli.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: with the model in the center\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nCase 2: \"core\" -> model\n  [prev: We use an event bus to publish events from the model to the other layers.] \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"\n  Evidence: source=relation_role, span=\"core\", mention=indirect/unclear match, ambiguous=True\n  Rationale: project-specific role vocabulary\n  [prev: \"We use an event bus to publish events from the model to the other layers.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: react upon changes within the core in the outer layers\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nCase 3: \"outer layers\" -> gui\n  [prev: We use an event bus to publish events from the model to the other layers.] \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"\n  Evidence: source=relation_role, span=\"outer layers\", mention=indirect/unclear match, ambiguous=False\n  Rationale: project-specific role vocabulary\n  [prev: \"We use an event bus to publish events from the model to the other layers.\"]\n  Anchors (confirmed refs):\n    VOCABULARY EVIDENCE: react upon changes within the core in the outer layers\n    S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\n    S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\n    S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\n    S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks.\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The dependencies are only directed towards the center.\",\"approve\":true},{\"case\":2,\"claim\":\"react upon changes within the core in the outer layers.\",\"approve\":true},{\"case\":3,\"claim\":\"react upon changes within the core in the outer layers.\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1003,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1184,
+            "completion_tokens": 70,
+            "total_tokens": 1254
+          }
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "entity": {
+      "tp": 8,
+      "fp": 5,
+      "fn": 9,
+      "macro_f1": 0.26666666666666666,
+      "macro_f2": 0.24691358024691357,
+      "pooled_f1": 0.5333333333333333,
+      "pooled_f2": 0.49382716049382713
+    },
+    "final": {
+      "tp": 8,
+      "fp": 8,
+      "fn": 9,
+      "macro_f1": 0.26666666666666666,
+      "macro_f2": 0.24691358024691357,
+      "pooled_f1": 0.48484848484848486,
+      "pooled_f2": 0.47619047619047616
+    },
+    "actions": [
+      "relation_role_resolution"
+    ]
+  },
+  "pass_gate": false
+}

@@ -1,0 +1,293 @@
+[
+  {
+    "phase": "s25_summary",
+    "ts": 1786538158.4806645,
+    "in": {
+      "components": 6,
+      "sentences": 13
+    },
+    "out": {
+      "workflow": [
+        {
+          "linker": "full_name",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 1,
+                "component": "logic"
+              },
+              {
+                "sentence": 1,
+                "component": "gui"
+              },
+              {
+                "sentence": 2,
+                "component": "preferences"
+              },
+              {
+                "sentence": 2,
+                "component": "cli"
+              },
+              {
+                "sentence": 3,
+                "component": "model"
+              },
+              {
+                "sentence": 4,
+                "component": "logic"
+              },
+              {
+                "sentence": 4,
+                "component": "model"
+              },
+              {
+                "sentence": 4,
+                "component": "gui"
+              },
+              {
+                "sentence": 5,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "logic"
+              },
+              {
+                "sentence": 6,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "gui"
+              },
+              {
+                "sentence": 7,
+                "component": "gui"
+              },
+              {
+                "sentence": 9,
+                "component": "model"
+              },
+              {
+                "sentence": 9,
+                "component": "logic"
+              },
+              {
+                "sentence": 10,
+                "component": "cli"
+              },
+              {
+                "sentence": 11,
+                "component": "preferences"
+              },
+              {
+                "sentence": 12,
+                "component": "model"
+              },
+              {
+                "sentence": 13,
+                "component": "model"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 5,
+                "component": "logic"
+              },
+              {
+                "sentence": 7,
+                "component": "preferences"
+              }
+            ]
+          }
+        },
+        {
+          "linker": "partial_name",
+          "feedback": {
+            "accepted": [],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "coreference",
+          "feedback": {
+            "accepted": [],
+            "rejected": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 1,
+                "component": "gui"
+              },
+              {
+                "sentence": 3,
+                "component": "model"
+              },
+              {
+                "sentence": 5,
+                "component": "logic"
+              },
+              {
+                "sentence": 11,
+                "component": "preferences"
+              },
+              {
+                "sentence": 12,
+                "component": "model"
+              }
+            ]
+          }
+        }
+      ],
+      "final": 20,
+      "elapsed_s": 13.97,
+      "llm_calls": 7,
+      "phase_metrics": {
+        "phase_25_doc_extract": {
+          "calls": 1,
+          "elapsed_s": 1.596,
+          "tokens": 530,
+          "errors": 0
+        },
+        "phase_25_doc_judge": {
+          "calls": 1,
+          "elapsed_s": 1.032,
+          "tokens": 214,
+          "errors": 0
+        },
+        "phase_25_full_name_extract": {
+          "calls": 1,
+          "elapsed_s": 2.19,
+          "tokens": 819,
+          "errors": 0
+        },
+        "phase_25_full_name_p1": {
+          "calls": 1,
+          "elapsed_s": 4.389,
+          "tokens": 6206,
+          "errors": 0
+        },
+        "phase_25_coreference": {
+          "calls": 2,
+          "elapsed_s": 3.114,
+          "tokens": 4115,
+          "errors": 0
+        },
+        "phase_25_coreference_judge": {
+          "calls": 1,
+          "elapsed_s": 1.638,
+          "tokens": 770,
+          "errors": 0
+        }
+      }
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 1,
+        "c": "logic",
+        "src": "full_name"
+      },
+      {
+        "s": 1,
+        "c": "gui",
+        "src": "full_name"
+      },
+      {
+        "s": 2,
+        "c": "preferences",
+        "src": "full_name"
+      },
+      {
+        "s": 2,
+        "c": "cli",
+        "src": "full_name"
+      },
+      {
+        "s": 3,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 4,
+        "c": "logic",
+        "src": "full_name"
+      },
+      {
+        "s": 4,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 4,
+        "c": "gui",
+        "src": "full_name"
+      },
+      {
+        "s": 5,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "logic",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "gui",
+        "src": "full_name"
+      },
+      {
+        "s": 7,
+        "c": "gui",
+        "src": "full_name"
+      },
+      {
+        "s": 9,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 9,
+        "c": "logic",
+        "src": "full_name"
+      },
+      {
+        "s": 10,
+        "c": "cli",
+        "src": "full_name"
+      },
+      {
+        "s": 11,
+        "c": "preferences",
+        "src": "full_name"
+      },
+      {
+        "s": 12,
+        "c": "model",
+        "src": "full_name"
+      },
+      {
+        "s": 13,
+        "c": "model",
+        "src": "full_name"
+      }
+    ]
+  }
+]

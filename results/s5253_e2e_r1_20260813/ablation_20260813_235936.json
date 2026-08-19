@@ -1,0 +1,1182 @@
+{
+  "mediastore": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 19.33313775062561,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker51": {
+      "variant": "s_linker51",
+      "P": 0.967741935483871,
+      "R": 0.967741935483871,
+      "F1": 0.967741935483871,
+      "F2": 0.967741935483871,
+      "tp": 30,
+      "fp": 1,
+      "fn": 1,
+      "n_links": 31,
+      "time": 20.662057161331177,
+      "sources": {
+        "full_name": 27,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker52": {
+      "variant": "s_linker52",
+      "P": 0.9666666666666667,
+      "R": 0.9354838709677419,
+      "F1": 0.9508196721311476,
+      "F2": 0.9415584415584416,
+      "tp": 29,
+      "fp": 1,
+      "fn": 2,
+      "n_links": 30,
+      "time": 22.255653619766235,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 28,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker53": {
+      "variant": "s_linker53",
+      "P": 1.0,
+      "R": 0.9354838709677419,
+      "F1": 0.9666666666666666,
+      "F2": 0.9477124183006536,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 29,
+      "time": 21.041691541671753,
+      "sources": {
+        "full_name": 27,
+        "coreference": 2
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 28,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    }
+  },
+  "teammates": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.9152542372881356,
+      "R": 0.9473684210526315,
+      "F1": 0.9310344827586206,
+      "F2": 0.9407665505226481,
+      "tp": 54,
+      "fp": 5,
+      "fn": 3,
+      "n_links": 59,
+      "time": 77.7989091873169,
+      "sources": {
+        "full_name": 50,
+        "partial_name": 2,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 2,
+        "full_name": 1,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker51": {
+      "variant": "s_linker51",
+      "P": 0.7971014492753623,
+      "R": 0.9649122807017544,
+      "F1": 0.8730158730158731,
+      "F2": 0.9259259259259259,
+      "tp": 55,
+      "fp": 14,
+      "fn": 2,
+      "n_links": 69,
+      "time": 60.38036799430847,
+      "sources": {
+        "full_name": 61,
+        "partial_name": 2,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "full_name": 11,
+        "coreference": 1,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker52": {
+      "variant": "s_linker52",
+      "P": 0.7887323943661971,
+      "R": 0.9824561403508771,
+      "F1": 0.875,
+      "F2": 0.9364548494983278,
+      "tp": 56,
+      "fp": 15,
+      "fn": 1,
+      "n_links": 71,
+      "time": 64.55117630958557,
+      "sources": {
+        "full_name": 63,
+        "partial_name": 2,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "full_name": 13,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 127,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 38
+    },
+    "s_linker53": {
+      "variant": "s_linker53",
+      "P": 0.7971014492753623,
+      "R": 0.9649122807017544,
+      "F1": 0.8730158730158731,
+      "F2": 0.9259259259259259,
+      "tp": 55,
+      "fp": 14,
+      "fn": 2,
+      "n_links": 69,
+      "time": 60.825000524520874,
+      "sources": {
+        "full_name": 61,
+        "partial_name": 2,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "full_name": 11,
+        "coreference": 1,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    }
+  },
+  "teastore": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 21.436338901519775,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker51": {
+      "variant": "s_linker51",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 23.578107595443726,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker52": {
+      "variant": "s_linker52",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 21.138736724853516,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker53": {
+      "variant": "s_linker53",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 21.281033039093018,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    }
+  },
+  "bigbluebutton": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.9090909090909091,
+      "R": 0.967741935483871,
+      "F1": 0.9374999999999999,
+      "F2": 0.9554140127388535,
+      "tp": 60,
+      "fp": 6,
+      "fn": 2,
+      "n_links": 66,
+      "time": 45.40640139579773,
+      "sources": {
+        "full_name": 46,
+        "partial_name": 18,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "full_name": 4,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    },
+    "s_linker51": {
+      "variant": "s_linker51",
+      "P": 0.9076923076923077,
+      "R": 0.9516129032258065,
+      "F1": 0.9291338582677167,
+      "F2": 0.9424920127795527,
+      "tp": 59,
+      "fp": 6,
+      "fn": 3,
+      "n_links": 65,
+      "time": 47.22795391082764,
+      "sources": {
+        "full_name": 46,
+        "partial_name": 17,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 59,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker52": {
+      "variant": "s_linker52",
+      "P": 0.9206349206349206,
+      "R": 0.9354838709677419,
+      "F1": 0.9279999999999999,
+      "F2": 0.932475884244373,
+      "tp": 58,
+      "fp": 5,
+      "fn": 4,
+      "n_links": 63,
+      "time": 41.1357307434082,
+      "sources": {
+        "full_name": 43,
+        "partial_name": 18,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "full_name": 3,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 59,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    },
+    "s_linker53": {
+      "variant": "s_linker53",
+      "P": 0.9375,
+      "R": 0.967741935483871,
+      "F1": 0.9523809523809523,
+      "F2": 0.9615384615384616,
+      "tp": 60,
+      "fp": 4,
+      "fn": 2,
+      "n_links": 64,
+      "time": 41.70325016975403,
+      "sources": {
+        "full_name": 42,
+        "full_name_variant": 2,
+        "partial_name": 18,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "full_name": 2,
+        "partial_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    }
+  },
+  "jabref": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 12.717697858810425,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker51": {
+      "variant": "s_linker51",
+      "P": 0.8571428571428571,
+      "R": 1.0,
+      "F1": 0.923076923076923,
+      "F2": 0.967741935483871,
+      "tp": 18,
+      "fp": 3,
+      "fn": 0,
+      "n_links": 21,
+      "time": 16.05359411239624,
+      "sources": {
+        "full_name": 21
+      },
+      "fp_by_source": {
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 3,
+          "component": "model",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The dependencies are only directed towards the center."
+        },
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        },
+        {
+          "sentence": 13,
+          "component": "model",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker52": {
+      "variant": "s_linker52",
+      "P": 0.9,
+      "R": 1.0,
+      "F1": 0.9473684210526316,
+      "F2": 0.9782608695652174,
+      "tp": 18,
+      "fp": 2,
+      "fn": 0,
+      "n_links": 20,
+      "time": 13.012703895568848,
+      "sources": {
+        "full_name": 20
+      },
+      "fp_by_source": {
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has on"
+        },
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker53": {
+      "variant": "s_linker53",
+      "P": 0.8571428571428571,
+      "R": 1.0,
+      "F1": 0.923076923076923,
+      "F2": 0.967741935483871,
+      "tp": 18,
+      "fp": 3,
+      "fn": 0,
+      "n_links": 21,
+      "time": 13.205074548721313,
+      "sources": {
+        "full_name": 21
+      },
+      "fp_by_source": {
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 3,
+          "component": "model",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The dependencies are only directed towards the center."
+        },
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        },
+        {
+          "sentence": 13,
+          "component": "model",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 8
+    }
+  }
+}

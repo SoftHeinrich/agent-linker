@@ -5,8 +5,8 @@
 % paragraph. Numbers mirror results.tex Summary (sec:results:summary) and the
 % abstract; keep in sync.
 This paper presents \approach, the first training-free, multi-stage \ac{LLM} workflow for architecture document to model traceability link recovery.
-\approach derives an alias table and an ambiguity map once, then reuses them in two linkers
-for named mentions and  implicit references, respectively. 
+\approach derives an alias table once, then reuses it in three linkers ordered by how much
+of a component's name the sentence gives. 
 Each linker behind an \ac{LLM}-based judge that rejects links with no supporting evidence.
 Alongside it we introduce an architecture-driven evaluation suite that adds sentence coverage and a per-component tail to the standard link-level metric on doc-code, and the silent-failure mass (SFM) on doc-model.
 On the established ARDoCo benchmark, \approach{} reaches a doc-model \avgfone of $0.936$, $10.0$pp above the strongest published pipeline,

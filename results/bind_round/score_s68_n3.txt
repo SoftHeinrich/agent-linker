@@ -1,0 +1,63 @@
+
+s_linker66
+  s68_e2e_r1_20260817                          TP 189 FP   9 F1  96.49 F2  97.17 calls 86
+  s68_e2e_r2_20260817                          TP 188 FP   8 F1  96.81 F2  97.10 calls 86
+  s68_e2e_r3_20260817                          TP 191 FP  10 F1  97.06 F2  97.78 calls 86
+  MEAN over 3 runs                             TP 189.3 FP   9.0 F1  96.79 F2  97.35 (F1 range 0.58)
+
+s_linker68
+  s68_e2e_r1_20260817                          TP 184 FP  16 F1  95.22 F2  95.68 calls 88
+  s68_e2e_r2_20260817                          TP 184 FP   7 F1  96.69 F2  96.28 calls 88
+  s68_e2e_r3_20260817                          TP 185 FP   7 F1  95.81 F2  95.35 calls 88
+  MEAN over 3 runs                             TP 184.3 FP  10.0 F1  95.91 F2  95.77 (F1 range 1.47)
+
+s_linker65
+  s68_e2e_r1_20260817                          TP 191 FP  11 F1  96.84 F2  97.70 calls 88
+  s68_e2e_r2_20260817                          TP 191 FP  11 F1  96.84 F2  97.70 calls 88
+  s68_e2e_r3_20260817                          TP 191 FP  13 F1  96.55 F2  97.58 calls 88
+  MEAN over 3 runs                             TP 191.0 FP  11.7 F1  96.74 F2  97.66 (F1 range 0.29)
+
+s_linker65_null
+  s68_e2e_r1_20260817                          TP 189 FP  10 F1  96.50 F2  97.17 calls 88
+  s68_e2e_r2_20260817                          TP 189 FP  10 F1  96.50 F2  97.17 calls 88
+  s68_e2e_r3_20260817                          TP 190 FP  10 F1  96.66 F2  97.42 calls 88
+  MEAN over 3 runs                             TP 189.3 FP  10.0 F1  96.55 F2  97.25 (F1 range 0.16)
+
+s_linker68 minus s_linker66
+  sizes   s_linker66: [198, 196, 201]   s_linker68: [200, 191, 192]
+  within  s_linker66: [2, 7, 7]   s_linker68: [13, 18, 9]
+  between min 9 / mean 12.2 / max 19
+  composition (mean between - mean within): +2.9
+    null [2.9, 0.7, 0.7, 0.7, 0.1, 0.1, -1.0, -1.0, -1.6, -1.6]
+    p = 0.10  (floor 0.10)
+  TP: s_linker66 189.3  s_linker68 184.3  delta -5.0  two-sided p 0.10
+  FP: s_linker66 9.0  s_linker68 10.0  delta +1.0  two-sided p 1.00
+  macro F1: s_linker66 96.8  s_linker68 95.9  delta -0.9  two-sided p 0.20
+  macro F2: s_linker66 97.4  s_linker68 95.8  delta -1.6  two-sided p 0.10
+  verdict: QUALITY-CHANGING (TP p=0.1, FP p=1.0, macro F1 p=0.2, macro F2 p=0.1)
+
+s_linker65 minus s_linker66
+  sizes   s_linker66: [198, 196, 201]   s_linker65: [202, 202, 204]
+  within  s_linker66: [2, 7, 7]   s_linker65: [0, 2, 2]
+  between min 5 / mean 7.9 / max 10
+  composition (mean between - mean within): +4.6
+    null [4.6, 1.2, 1.2, 0.1, -0.4, -0.4, -1.6, -1.6, -1.6, -1.6]
+    p = 0.10  (floor 0.10)
+  TP: s_linker66 189.3  s_linker65 191.0  delta +1.7  two-sided p 0.40
+  FP: s_linker66 9.0  s_linker65 11.7  delta +2.7  two-sided p 0.10
+  macro F1: s_linker66 96.8  s_linker65 96.7  delta -0.0  two-sided p 1.00
+  macro F2: s_linker66 97.4  s_linker65 97.7  delta +0.3  two-sided p 0.40
+  verdict: QUALITY-CHANGING (TP p=0.4, FP p=0.1, macro F1 p=1.0, macro F2 p=0.4)
+
+s_linker65_null minus s_linker66
+  sizes   s_linker66: [198, 196, 201]   s_linker65_null: [199, 199, 200]
+  within  s_linker66: [2, 7, 7]   s_linker65_null: [4, 3, 7]
+  between min 7 / mean 8.3 / max 10
+  composition (mean between - mean within): +3.3
+    null [3.3, 1.1, 0.6, 0.0, 0.0, -0.6, -0.6, -0.6, -1.7, -1.7]
+    p = 0.10  (floor 0.10)
+  TP: s_linker66 189.3  s_linker65_null 189.3  delta +0.0  two-sided p 1.00
+  FP: s_linker66 9.0  s_linker65_null 10.0  delta +1.0  two-sided p 0.40
+  macro F1: s_linker66 96.8  s_linker65_null 96.6  delta -0.2  two-sided p 0.40
+  macro F2: s_linker66 97.4  s_linker65_null 97.3  delta -0.1  two-sided p 0.80
+  verdict: QUALITY-NEUTRAL (TP p=1.0, FP p=0.4, macro F1 p=0.4, macro F2 p=0.8); composition p=0.10, floor 0.10

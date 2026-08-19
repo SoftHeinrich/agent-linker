@@ -1,0 +1,89 @@
+{
+  "model": "gpt-5.6-terra",
+  "runs": 3,
+  "source_run": "../results/s25_cleanup_verify_20260810",
+  "stats": {
+    "imperative general form": {
+      "arms": [
+        "s70 (spells out X.Y)",
+        "imperative general form"
+      ],
+      "runs_per_arm": 3,
+      "sizes": {
+        "s70 (spells out X.Y)": [
+          24,
+          24,
+          24
+        ],
+        "imperative general form": [
+          37,
+          36,
+          39
+        ]
+      },
+      "within_A": [
+        0,
+        0,
+        0
+      ],
+      "within_B": [
+        9,
+        2,
+        11
+      ],
+      "between": [
+        23,
+        18,
+        25,
+        23,
+        18,
+        25,
+        23,
+        18,
+        25
+      ],
+      "composition_stat": 18.3,
+      "composition_null": [
+        18.3,
+        0.6,
+        0.6,
+        0.6,
+        -3.3,
+        -3.3,
+        -3.3,
+        -3.3,
+        -3.3,
+        -3.3
+      ],
+      "p_composition": 0.1,
+      "p_floor": 0.1,
+      "quality": {
+        "TP": {
+          "s70 (spells out X.Y)_mean": 0.0,
+          "imperative general form_mean": 0.0,
+          "delta": 0.0,
+          "p": 1.0
+        },
+        "FP": {
+          "s70 (spells out X.Y)_mean": 24.0,
+          "imperative general form_mean": 37.3,
+          "delta": 13.3,
+          "p": 0.1
+        }
+      },
+      "verdict": "QUALITY-CHANGING (TP p=1.0, FP p=0.1)"
+    }
+  },
+  "sizes": {
+    "s70 (spells out X.Y)": [
+      24,
+      24,
+      24
+    ],
+    "imperative general form": [
+      37,
+      36,
+      39
+    ]
+  }
+}

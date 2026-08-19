@@ -1,0 +1,75 @@
+{
+  "model": "gpt-5.6-terra",
+  "runs": 3,
+  "source_run": "../results/s25_cleanup_verify_20260810",
+  "stats": {
+    "arms": [
+      "A_current",
+      "B_narrow_window"
+    ],
+    "runs_per_arm": 3,
+    "sizes": {
+      "A_current": [
+        165,
+        165,
+        167
+      ],
+      "B_narrow_window": [
+        165,
+        163,
+        163
+      ]
+    },
+    "within_A": [
+      2,
+      2,
+      4
+    ],
+    "within_B": [
+      2,
+      2,
+      0
+    ],
+    "between": [
+      2,
+      4,
+      4,
+      2,
+      4,
+      4,
+      4,
+      6,
+      6
+    ],
+    "composition_stat": 2.0,
+    "composition_null": [
+      2.0,
+      0.9,
+      0.3,
+      0.3,
+      -0.2,
+      -0.2,
+      -0.8,
+      -0.8,
+      -0.8,
+      -0.8
+    ],
+    "p_composition": 0.1,
+    "p_floor": 0.1,
+    "quality": {
+      "TP": {
+        "A_current_mean": 155.7,
+        "B_narrow_window_mean": 153.7,
+        "delta": -2.0,
+        "p": 0.2
+      },
+      "FP": {
+        "A_current_mean": 10.0,
+        "B_narrow_window_mean": 10.0,
+        "delta": 0.0,
+        "p": 1.0
+      }
+    },
+    "verdict": "QUALITY-CHANGING (TP p=0.2, FP p=1.0)"
+  }
+}

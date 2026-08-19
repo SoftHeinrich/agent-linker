@@ -1,0 +1,183 @@
+
+bind audit — s_linker64 over 2 runs: s64_e2e_r1_20260814, s64_e2e_r2_20260814
+
+=== B0  self-check: the rebuilt candidate set against the checkpoint ===
+  units: 10   recorded candidates: 346
+  rebuilt but not recorded: 0   recorded but not rebuilt: 0
+  (a non-zero residue means the extraction log and the checkpoint disagree; every number below reads the same two sources)
+
+=== B1  the binding inventory ===
+predicate                                           role                      bindable to       
+_scan / SCANS[stated_name]                          proposes                  extractor         
+_scan / SCANS[spelling]                             proposes                  extractor         
+_scan / SCANS[name_word]                            proposes                  extractor         
+_keep_stated_names                                  proposes                  extractor + judge 
+_classify_mention_typed                             labels                    judge             
+_inside_qualified_identifier                        primitive (of the above)  judge             
+_all_occurrences_in_qualified_path                  primitive (of the above)  judge             
+_in_dotted_path                                     primitive (of the above)  judge             
+_find_exact_form / _name_spans / _realizes / _ownersprimitive                 extractor         
+_states_a_name                                      primitive                 extractor + judge 
+_name_signature                                     primitive                 extractor         
+_iter_batches                                       structural                none              
+_window                                             structural                none              
+_unlinked                                           structural                none              
+_union                                              structural                none              
+
+  extractor-bindable: 5   judge-bindable: 4   both: 2   no prompt form: 4
+
+  what each prompt would have to say
+    _scan / SCANS[stated_name]
+        report a reference whenever the sentence writes the component's name exactly as the catalog spells it, however incidental the mention
+    _scan / SCANS[spelling]
+        count a name written with different spacing, hyphenation or compound joining as that name
+    _scan / SCANS[name_word]
+        report a sentence that uses one word of a multi-word name alone when only one component owns that word
+    _keep_stated_names
+        report a reference only when the sentence itself writes a name of the component / reject a case whose sentence writes no name
+    _classify_mention_typed
+        decide for yourself how the name appears in the sentence shown
+
+=== B2  the binding gap: what a prompt-bound extractor must newly find ===
+
+  per run, over 10 project-runs (2 five-project runs)
+
+source              pairs    gold  gold/pair  not proposed   gold  gold/pair
+extractor           192.5   161.0       0.84             —      —          —
+stated_name         112.0   107.0       0.96           1.0    0.5       0.50
+spelling              6.0     6.0       1.00           0.0    0.0       0.00
+name_word            60.0    19.0       0.32          53.5   15.0       0.28
+
+  the gap per project (pairs the extractor did not propose)
+
+project                        stated_name                  spelling                 name_word
+mediastore                    0.0 ( 0.0)              0.0 ( 0.0)              0.0 ( 0.0)
+teastore                      0.0 ( 0.0)              0.0 ( 0.0)              0.0 ( 0.0)
+teammates                     0.5 ( 0.5)              0.0 ( 0.0)             28.5 ( 2.0)
+bigbluebutton                 0.5 ( 0.0)              0.0 ( 0.0)             25.0 (13.0)
+jabref                        0.0 ( 0.0)              0.0 ( 0.0)              0.0 ( 0.0)
+
+  final links whose pair the extraction call never proposed, by the linker that produced them
+    coreference            19.0 per run ( 13.5 gold)
+    full_name               1.0 per run (  0.5 gold)
+    partial_name           22.5 per run ( 14.5 gold)
+
+    these are the links a prompt-bound extractor has to reproduce before anything else is measured
+
+  the gold ones, by pair
+    2x  teastore       s6     WebUI                    coreference
+    2x  teastore       s11    ImageProvider            coreference
+    2x  teastore       s23    Persistence              coreference
+    2x  teastore       s24    Persistence              coreference
+    2x  teastore       s26    Persistence              coreference
+    2x  teastore       s28    Recommender              coreference
+    2x  teammates      s19    Client                   coreference
+    2x  teammates      s78    Logic                    coreference
+    2x  teammates      s119   Storage                  coreference
+    2x  teammates      s120   Storage                  coreference
+    2x  bigbluebutton  s6     HTML5 Server             partial_name
+    2x  bigbluebutton  s10    HTML5 Server             partial_name
+    2x  bigbluebutton  s11    HTML5 Client             partial_name
+    2x  bigbluebutton  s12    HTML5 Client             partial_name
+    2x  bigbluebutton  s12    HTML5 Server             partial_name
+    2x  bigbluebutton  s13    HTML5 Server             partial_name
+    2x  bigbluebutton  s13    HTML5 Client             partial_name
+    2x  bigbluebutton  s39    HTML5 Server             partial_name
+    2x  bigbluebutton  s47    HTML5 Server             partial_name
+    2x  bigbluebutton  s76    HTML5 Client             partial_name
+    2x  bigbluebutton  s38    BBB web                  coreference
+    2x  bigbluebutton  s53    Apps                     coreference
+    1x  teammates      s87    Logic                    full_name
+    1x  teammates      s168   Test Driver              coreference
+    1x  bigbluebutton  s9     HTML5 Client             partial_name
+
+=== B3  the admission filter as a prompt clause ===
+
+  per five-project run, over 2 runs
+
+    extractor proposals                 192.5
+    the filter keeps                    171.0   (89%)
+    the filter drops                     21.5   of which gold 6.5
+    dropped and linked anyway             8.0   of which gold 6.5
+    dropped, gold, never recovered        0.0
+
+    a prompt clause that reproduced the filter exactly would change nothing;
+    the question an arm answers is whether an extractor told the contract
+    stops proposing these at all, and what it stops proposing with them
+
+
+=== B4  the mention label as a judge-side question ===
+
+  judged full-name cases per five-project run, over 2 runs
+
+label                                cases  approved   gold  appr. rate
+proper case, standalone              108.0     105.5  104.0       97.7%
+lowercase mention                     25.0      24.5   24.5       98.0%
+lowercase, inside qualified name       5.5       3.5    2.0       63.6%
+via known alias                       33.5      29.0   24.5       86.6%
+indirect/unclear match                 1.0       1.0    1.0      100.0%
+TOTAL                                173.0
+
+  where the label's evidence lives
+    computable from the shown sentence         139.5 cases per run
+    needs the alias table                       33.5 cases per run
+
+  the two defects the label carries (rule_audit A4), and what binding removes
+    candidate spans the `"" in "-_"` defect suppresses in the two qualified-skipping scans: 41
+    CODE_TOKEN labels the classifier can produce as written: 28; with case handled as the rest of the module handles it: 25
+    both live in the label and the two scans that read the same boundary test;
+    a judge asked the question directly carries neither
+
+=== B5  what has no prompt form ===
+
+  _iter_batches   how many sentences or cases one call sees. Binding it means one
+                  call for the whole document: `s_linker27` measured macro F1 91.70
+                  and accuracy that tracks document length (jabref 100.0 at 13
+                  sentences, teammates 84.1 at 198, 50 references reported where four
+                  batches report ~89).
+
+  _window         which sentences are shown as context. It is what a prompt *carries*,
+                  not what it says; halving CONTEXT_SENTENCES cost 2.0 TP (p=0.20) for
+                  no precision gain, and narrowing coreference's scope to unlinked
+                  sentences would lose 14.5 of 30.0 coreference links per run.
+
+  _unlinked       the subtraction between linkers, and the mechanism behind seven of
+                  this branch's stage-vs-pipeline reversals. Stating it in a prompt
+                  means telling a judge what another judge already accepted, which is
+                  the shared-context arrangement the merge line (s32-s38) measured as
+                  precision-negative every time.
+
+  _union          the merge of three link sets. Set arithmetic over three calls'
+                  outputs; there is no sentence of English that performs it.
+
+  These four are the residue of the deterministic layer once the proposing and
+  labelling rules are bound. They are control flow over calls, not statements about
+  text, so "how many hand-written rules does the workflow have" has a floor above zero
+  and the floor is structural.
+
+=== B6  composition risk per relocation ===
+
+  per five-project run, over 2 runs
+
+  bindscans removes
+         2.0   candidates moved
+         2.0   in the final link set
+         0.0   also proposed by linker_partial_name
+         0.0   also proposed by linker_coreference
+      composition risk 2.0 pairs per run — end-to-end evidence needed
+  bindcontract adds
+        21.5   candidates moved
+         8.0   in the final link set
+         6.5   also proposed by linker_partial_name
+         5.0   also proposed by linker_coreference
+      composition risk 19.5 pairs per run — end-to-end evidence needed
+  bindpartial removes
+        60.0   candidates moved
+        27.5   in the final link set
+         5.5   also proposed by linker_coreference
+      composition risk 33.0 pairs per run — end-to-end evidence needed
+
+  bindlabel moves no candidate: it changes verdicts on the same set, and
+  every full-name verdict feeds `_unlinked`, so its composition risk is the
+  size of its own verdict delta — read it off the stage pilot, not from here.
+

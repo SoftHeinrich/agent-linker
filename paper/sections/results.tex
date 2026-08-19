@@ -37,7 +37,7 @@ For space, this section reports the GPT-5.5 backend and the five-project average
 \autoref{tab:rq1} reports macro precision, recall, and \fone\ for every system on both tasks, doc-model and doc-code.
 On doc-model, \approach{} reaches an \avgfone of $0.936$ against the strongest baseline, \Artemis{}, at $0.836$, a gain of $+10.0$pp; the lexical SWATTR pipeline reaches $0.799$.
 The gain over \Artemis{} holds on every project: $+3.0$pp on MediaStore, $+12.8$pp on TeaStore, $+16.7$pp on Teammates, $+11.9$pp on BigBlueButton, and $+5.9$pp on JabRef.
-This is because \approach{} builds the alias table and ambiguity map once and reuses them across every sentence, then filters each link through the judge stack.
+This is because \approach{} builds the alias table once and reuses it across every sentence, then filters each link through the judge stack.
 %TODO, update for new reasons given critics at intro
 \Artemis{} instead extracts entities with no reusable architecture knowledge and no judging, so it cannot remove the plausible-but-wrong links an \ac{LLM} produces.
 Therefore \approach{} is the only system that recovers difficult links such as the alias-heavy, indirect references. 
@@ -169,7 +169,10 @@ The table tells the RQ2 story from inside the approach.
 Removing \linkerC{} or the knowledge module barely moves the standard link-level \fone, but it lowers the tail metrics: \linkerC{} removal trims the worst-component and harmonic scores, and the no-knowledge variant drops the tail sharply.
 Removing \linkerB{} is different---it collapses every metric, link-level \fone\ included, because \linkerB{} recovers most of the direct links.
 
-The knowledge module is ablated as the no-knowledge variant of \ref{rq:ablation}: removing the alias table and ambiguity map that both linkers read from costs $5.8$pp \avgfone, a contribution neither linker can recover on its own.
+%TODO [stale] this number was measured when the knowledge module still held an ambiguity map
+%   alongside the alias table. The map is gone (see sec:knowledge, measured neutral), so the
+%   no-knowledge variant now ablates the alias table alone and the 5.8pp must be re-measured.
+The knowledge module is ablated as the no-knowledge variant of \ref{rq:ablation}: removing the alias table that every linker reads from costs $5.8$pp \avgfone, a contribution no linker can recover on its own.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ4.}

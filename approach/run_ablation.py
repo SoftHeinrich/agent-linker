@@ -131,6 +131,59 @@ CANONICAL_VARIANTS = [
     "s_linker23_tier_f1",  # tiered ranking (not binary gate): emit FIRM+PROBABLE tiers; F1 operating point
     "s_linker23_tier_f2",  # tiered ranking: emit FIRM+PROBABLE+WEAK; recall/F2 operating point
     "s_linker24_role_orchestrator",  # latest S24: evidence-grounded replacement orchestrator
+    "s_linker25",  # fixed name-evidence order (full-name, partial-name, coreference); no controller
+    "s_linker26",  # s25 with alias discovery folded into the reading pass
+    "s_linker27",  # s26 without batching: one call reads the whole document
+    "s_linker28",  # s26 with the alias table no longer suppressing partial names
+    "s_linker29",  # s25 with the alias judge replaced by a grounding check
+    "s_linker30",  # s25 with alias judging folded into the extraction pass
+    "s_linker31",  # s25 with the alias pass proposing and judging in one call
+    "s_linker32",  # s25 with the alias judging carried by the extraction pass
+    "s_linker33",  # s32 with the carried judging decided by majority vote
+    "s_linker34",  # s32 with the carried judging requiring unanimity
+    "s_linker35",  # s34 with the carried judging asked before the document
+    "s_linker36",  # s25 with the full-name judge asking both criteria in one call
+    "s_linker37",  # s36 with a quote committed per criterion inside the one call
+    "s_linker38",  # one judging prompt sampled twice, verdicts ANDed
+    "s_linker39",  # two alias judges: dedicated validity + carried usage, unioned
+    "s_linker40",  # s38's single link-judging prompt + the two alias judges
+    "s_linker42",  # s36 plus a three-value mention label (audit-supported)
+    "s_linker43",  # s25 plus the three-value mention label, nothing else
+    "s_linker44",  # s25 with only the label's case grading merged away
+    "s_linker45",  # s25 with the coreference batch set to the judges' batch
+    "s_linker46",  # s25 with the alias table no longer suppressing partial names
+    "s_linker47",  # s25 with the grounded identity review removed
+    "s_linker48",  # s25 with five near-duplicate conditions merged into two
+    "s_linker49",  # s47 and s48 composed: one judging step each, two predicates
+    "s_linker50",  # s49 with the coreference rule stated as one guideline
+    "s_linker51",  # s49 with all nine enumerated rules stated as guidelines
+    "s_linker52",  # s51 with the three knowledge-side rules reverted
+    "s_linker53",  # s51 with one clause of the alias judge restored
+    "s_linker49_null",  # byte-identical to s49: the harness null arm
+    "s_linker54",  # s51 with the full-name family reverted
+    "s_linker55",  # s51 with only the coreference side generalized
+    "s_linker56",  # s55 with the coreference prompt de-duplicated
+    "s_linker57",  # s55 + the alias proposer generalized, judge kept
+    "s_linker58",  # s55 + the full-name proposer generalized, judges kept
+    "s_linker59",  # every clause single-stage ablation clears, and no others
+    "s_linker60",  # alias proposal folded into the reading, judge kept separate
+    "s_linker61",  # s60 + the qualified-name exclusion stated to the judge
+    "s_linker59_null",  # byte-identical to s59: the harness null arm
+    "s_linker62",  # s59 + inflection-bounded partial-name proposer
+    "s_linker63",  # s62 + the boundary defect in the span test repaired
+    "s_linker64",  # s62 + the stated-name net at the full-name proposer
+    "s_linker65",  # s64 with its four lexical rules restated as one relation
+    "s_linker65_null",  # byte-identical to s65: the harness null arm
+    "s_linker66",  # s65 with the admission contract stated in the extraction prompt
+    "s_linker67",  # s66 with the two tight scans stated there too
+    "s_linker68",  # s66 without the mention label's qualified-path value
+    "s_linker66_null",  # byte-identical to s66: the harness null arm
+    "s_linker69",  # s66 with the gates that do not decide folded or deleted
+    "s_linker70",  # s69 with the spelling row's two options folded and deleted
+    "s_linker71",  # s70 with the authored prompts restated as general principles
+    "s_linker72",  # s71 with the extraction half reverted: the judging rubric only
+    "s_linker73",  # s70 with only the two GATE-07-inadmissible spans reworded
+    "s_linker74",  # s70 with only the identifier syntax unspelled
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1019,6 +1072,767 @@ VARIANT_SPECS = {
             "non-overlapping entity, coreference, catalog-handle, and exact "
             "catalog-identifier capabilities. Controller actions require exact "
             "document evidence."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker25": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker25",
+        class_name="SLinker25",
+        description=(
+            "S-Linker25 — paper variant. Three linkers in fixed name-evidence "
+            "order: full-name, then partial-name, then coreference. Standalone "
+            "(no linker superclass); prompts byte-identical to s_linker21, "
+            "controller and coverage-audit paths removed."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker26": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker26",
+        class_name="SLinker26",
+        description=(
+            "S-Linker26 — s_linker25 with the knowledge module folded into the "
+            "reading pass: one prompt per sentence batch returns the references "
+            "and the names the passage establishes, and the table is fed forward "
+            "to the next batch. No separate alias pass, no alias judge."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker27": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker27",
+        class_name="SLinker27",
+        description=(
+            "S-Linker27 — the smallest variant: one call sends the whole document "
+            "and returns both the references in it and the names it uses, so there "
+            "is no alias stage, no alias judge and no extraction batching."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker28": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker28",
+        class_name="SLinker28",
+        description=(
+            "S-Linker28 — s_linker26's merged reading, with the alias table no "
+            "longer used to suppress partial-name candidates, so table size stops "
+            "trading recall between two linkers."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker29": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker29",
+        class_name="SLinker29",
+        description=(
+            "S-Linker29 — s_linker25 with the alias judge removed: the alias pass "
+            "reports the sentence that establishes each alias and the sentence is "
+            "checked lexically, so the workflow keeps both reading granularities "
+            "with one prompt and one LLM call fewer."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker30": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker30",
+        class_name="SLinker30",
+        description=(
+            "S-Linker30 — s_linker25 with the alias judge folded into the "
+            "extraction pass: extraction reports which offered aliases it saw used "
+            "as a name, and that confirmed subset is the table. One prompt and one "
+            "call fewer, both reading granularities intact."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker31": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker31",
+        class_name="SLinker31",
+        description=(
+            "S-Linker31 — s_linker25 with the alias pass proposing and reviewing "
+            "its own list in one call: same rubric, same whole-document view, one "
+            "prompt and one LLM call fewer."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker32": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker32",
+        class_name="SLinker32",
+        description=(
+            "S-Linker32 — s_linker25 with the alias judge's question and rubric "
+            "carried by the extraction pass: a second independent look at no extra "
+            "call. One prompt and one LLM call fewer."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker33": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker33",
+        class_name="SLinker33",
+        description=(
+            "S-Linker33 — s_linker32 with the carried alias judging decided by a "
+            "majority of the reading batches instead of any single one, so the "
+            "threshold no longer depends on document length."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker34": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker34",
+        class_name="SLinker34",
+        description=(
+            "S-Linker34 — s_linker32 with the carried alias judging requiring every "
+            "reading batch to approve, so a skimmed review rejects by default."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker35": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker35",
+        class_name="SLinker35",
+        description=(
+            "S-Linker35 — s_linker34 with the carried alias judging asked as task 1, "
+            "before the document is shown, so the review is not answered by a model "
+            "that has already spent itself extracting."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker36": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker36",
+        class_name="SLinker36",
+        description=(
+            "S-Linker36 — s_linker25 with the full-name judge asking its relevance "
+            "and uniqueness criteria in one call instead of two, halving the calls "
+            "of the workflow's largest stage."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker37": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker37",
+        class_name="SLinker37",
+        description=(
+            "S-Linker37 — s_linker36 with each of the two judging criteria preceded "
+            "by its own committed quote, so one call produces two answers that are "
+            "each as expensive as a dedicated pass."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker38": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker38",
+        class_name="SLinker38",
+        description=(
+            "S-Linker38 — one full-name judging prompt carrying both criteria, "
+            "sampled twice with the verdicts ANDed: the relevance/uniqueness pass "
+            "distinction leaves the architecture, independence comes from the two "
+            "samples."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker39": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker39",
+        class_name="SLinker39",
+        description=(
+            "S-Linker39 — two alias judges with distinct purposes: a dedicated "
+            "context-free validity judge and an in-context usage review carried by "
+            "the reading pass, combined as a union."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker40": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker40",
+        class_name="SLinker40",
+        description=(
+            "S-Linker40 — one link-judging prompt sampled twice (from s_linker38) "
+            "plus two alias judges with distinct purposes: a context-free validity "
+            "judge and an in-context usage review carried by the reading, unioned."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker42": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker42",
+        class_name="SLinker42",
+        description=(
+            "S-Linker42 — s_linker36's single full-name judging call plus a "
+            "mention label of three values instead of five, both supported by the "
+            "audit of s_linker38's six runs: the second sample splits on 0.6% of "
+            "cases and three of the five label values are approved at the same "
+            "rate."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker43": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker43",
+        class_name="SLinker43",
+        description=(
+            "S-Linker43 — s_linker25 with one change: the mention label the judge "
+            "is given has three values instead of five, dropping the case grading "
+            "that changed no verdict over six audited runs and the residual value "
+            "in favour of omitting the field."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker44": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker44",
+        class_name="SLinker44",
+        description=(
+            "S-Linker44 — s_linker25 with one change: the mention label's two "
+            "stated-name values, which differed only in the case of the match and "
+            "were approved at the same rate, become one. The field is always "
+            "present and the other three values are untouched."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker45": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker45",
+        class_name="SLinker45",
+        description=(
+            "S-Linker45 — s_linker25 with one change: coreference resolution reads "
+            "the batch size the judges use (25 sentences, not 10), so the workflow "
+            "states two batch constants instead of three and pays about 74 calls "
+            "per five-project run instead of 101."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker46": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker46",
+        class_name="SLinker46",
+        description=(
+            "S-Linker46 — s_linker25 with one change: the alias table admits "
+            "full-name candidates but no longer suppresses partial-name ones, so it "
+            "has one role instead of two opposite ones. Frees 16 candidates over the "
+            "five projects, 4 of them gold."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker47": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker47",
+        class_name="SLinker47",
+        description=(
+            "S-Linker47 — s_linker25 with one mechanism removed: the partial-name "
+            "linker's grounded identity review. Recorded over six s25 runs, that "
+            "review rejected 8.0 candidates per run of which 5.5 were gold, so it "
+            "traded 5.5 true positives for 2.5 false positives."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker48": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker48",
+        class_name="SLinker48",
+        description=(
+            "S-Linker48 — s_linker25 with no mechanism removed and five "
+            "near-duplicate conditions merged into two named predicates, plus the "
+            "three conjuncts of the identity gate that never fired in 122 recorded "
+            "cases. Every prompt byte, call and stage unchanged."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker49": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker49",
+        class_name="SLinker49",
+        description=(
+            "S-Linker49 — s_linker47 and s_linker48 composed: the grounded identity "
+            "review removed, so every linker judges in one call, and eight copies of "
+            "two conditions merged into two named predicates. Both held separately "
+            "over six paired runs."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker50": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker50",
+        class_name="SLinker50",
+        description=(
+            "S-Linker50 — s_linker49 with one constant reworded: the coreference "
+            "resolution rule states one guideline instead of two lettered clauses, a "
+            "five-phrase list and an alias-shape enumeration. The dropped clause "
+            "licensed 0 of 578 recorded resolutions. -27% instruction bytes per run; "
+            "no stage, call or method body changed."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker51": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker51",
+        class_name="SLinker51",
+        description=(
+            "S-Linker51 — s_linker49 with nine of ten rule constants rewritten from "
+            "enumerations into the principles they enumerate. Rule text -39%, "
+            "instruction bytes per five-project run -44%. Tests whether the prompts "
+            "are general guidelines or a rulebook grown against this benchmark."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker52": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker52",
+        class_name="SLinker52",
+        description=(
+            "S-Linker52 — s_linker51 with the three knowledge-side rules back at "
+            "s_linker49's wording; the other six generalizations stand. Bisects "
+            "s51's loss onto the side of the pipeline that builds the alias table."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker53": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker53",
+        class_name="SLinker53",
+        description=(
+            "S-Linker53 — s_linker51 with one subordinate clause restored inside the "
+            "alias judge: a phrase naming a grouping of several elements is not an "
+            "alias for one of them. The surrounding principle already entails it, so "
+            "this asks whether an enumerated case does work its entailing principle "
+            "does not."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker49_null": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker49_null",
+        class_name="SLinker49Null",
+        description=(
+            "S-Linker49Null — byte-identical to s_linker49 apart from the checkpoint "
+            "namespace. A null arm: paired against s_linker49 it measures what this "
+            "harness reports as a difference when there is none, which is the "
+            "calibration every p value in this branch has been quoted without."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker54": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker54",
+        class_name="SLinker54",
+        description=(
+            "S-Linker54 — s_linker51 with the three full-name rules reverted to "
+            "s_linker49's, the knowledge and coreference generalizations standing. "
+            "With s_linker52 it partitions s51's rewrite."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker55": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker55",
+        class_name="SLinker55",
+        description=(
+            "S-Linker55 — only the three coreference rules generalized; knowledge and "
+            "full-name exactly s_linker49's. Rule text -19%, instruction bytes per "
+            "run -31%, because COREF_RULES alone is half the budget."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker56": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker56",
+        class_name="SLinker56",
+        description=(
+            "S-Linker56 — s_linker55 with the coreference prompt's opening instruction "
+            "paragraph deleted: it stated the same three things as the COREF_RULES "
+            "block appended below it. 253 B x 40 calls per run, the workflow's only "
+            "intra-prompt duplication."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker57": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker57",
+        class_name="SLinker57",
+        description=(
+            "S-Linker57 — s_linker55 plus the two alias *proposer* rules generalized, "
+            "the alias judge carried verbatim. Tests whether a proposer's enumeration "
+            "is free when a dedicated judge follows, on a family whose judge is "
+            "lenient by design."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker58": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker58",
+        class_name="SLinker58",
+        description=(
+            "S-Linker58 — s_linker55 plus the full-name *proposer* rule generalized, "
+            "both judging rubrics carried verbatim. The mirror of s_linker57 on the "
+            "family with the largest measured effect."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker59": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker59",
+        class_name="SLinker59",
+        description=(
+            "S-Linker59 — the coreference family plus P1_FOCUS plus the alias judge "
+            "rubric generalized: every clause that single-stage ablation cleared, and "
+            "no others. Rule text -26%, instruction bytes per five-project run -34%. "
+            "LAYERED_ENTITY_RULES, ENTITY_EXTRACTION_RULES and the coreference "
+            "prompt's preamble are kept at s49's wording because the same method "
+            "refuted them."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker60": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker60",
+        class_name="SLinker60",
+        description=(
+            "S-Linker60 — s_linker59 with the alias proposer folded into the "
+            "entity-extraction reading and the alias judge kept as its own call: the "
+            "one arrangement the s26-s34 merge line never built. Three "
+            "document-reading prompts become two, 83 calls per run against 88. "
+            "Stage-screened at TP -0.6 (p = 0.80) / FP -16.6 (p = 0.01) on the alias "
+            "table."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker61": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker61",
+        class_name="SLinker61",
+        description=(
+            "S-Linker61 — s_linker60 with ALIAS_EXCLUSION_RULES also stated in the "
+            "alias judge's prompt, where a dedicated call enforces it. The merged "
+            "reading leaks qualified-name fragments the two-stage proposer never "
+            "did; measured reach on this benchmark is zero, so this is design "
+            "integrity rather than a performance claim."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker59_null": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker59_null",
+        class_name="SLinker59Null",
+        description=(
+            "S-Linker59Null — byte-identical to s_linker59 except its variant name. "
+            "Carried in the same invocation as every arm measured against s59, so the "
+            "harness's own paired-run offset is measured in-set rather than assumed "
+            "to be zero."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker62": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker62",
+        class_name="SLinker62",
+        description=(
+            "S-Linker62 — s_linker59 with the partial-name proposer's prefix test "
+            "bounded to English inflections. The bare prefix made `WebRTC` an owner "
+            "of both `WebRTC-SFU` and `BBB web`, so the pair was dropped as "
+            "ambiguous and two gold links were lost every run. Deterministic screen "
+            "+2.0 gold / +0.0 spurious candidates; with the real denotation judge "
+            "TP +2.0 (p = 0.01), FP +1.0 (p = 0.01)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker63": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker63",
+        class_name="SLinker63",
+        description=(
+            "S-Linker63 — s_linker62 with the boundary defect in "
+            "`_inside_qualified_identifier` repaired: `before in \"-_\"` was "
+            "evaluated with `before == \"\"` for a sentence-initial span, and "
+            "`\"\" in \"-_\"` is True, hiding 344 spans per run. At the stage the "
+            "repair is TP +/-0.0 (p = 1.00), FP +1.2 (p = 0.01), so this arm prices "
+            "a defect rather than proposing an improvement."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker65_null": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker65_null",
+        class_name="SLinker65Null",
+        description=(
+            "S-Linker65-null — byte-identical to s_linker65 apart from the "
+            "checkpoint namespace. The harness null arm: it measures what this "
+            "pipeline produces from nothing in one invocation set, so every other "
+            "arm's delta can be read against it rather than against zero."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker66": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker66",
+        class_name="SLinker66",
+        description=(
+            "S-Linker66 — s_linker65 with ONE relocation: the full-name linker's "
+            "admission contract leaves the code and is stated in the extraction "
+            "prompt. `_keep_stated_names` is deleted; `ENTITY_EXTRACTION_RULES` "
+            "asks for a reference only when the sentence itself writes the "
+            "component's name or a known alias. Stage evidence "
+            "(pilot/bind_pilots.py --pilot bindcontract, five samples a side): "
+            "deleting the filter with no compensation is TP +4.8 / FP +10.6 (both "
+            "p = 0.01); stating it in the prompt is TP -1.4 (p = 0.21), FP -1.8 "
+            "(p = 0.47)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker67": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker67",
+        class_name="SLinker67",
+        description=(
+            "S-Linker67 — s_linker66 plus the two tight scans relocated: "
+            "`SCANS[stated_name]` and `SCANS[spelling]` leave the code and their "
+            "recall floor is stated in the same extraction prompt, so `SCANS` "
+            "keeps one row and `_add_scan` is deleted. Stage evidence "
+            "(pilot/bind_pilots.py --pilot bindboth): TP -1.2 (p = 0.14), FP -1.2 "
+            "(p = 0.37). Note the same scans deleted under s65's *unchanged* "
+            "prompt cost TP 3.6 (p = 0.01) and the clause alone recovered none of "
+            "it (--pilot bindscans), so the two relocations are not separable."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker66_null": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker66_null",
+        class_name="SLinker66Null",
+        description=(
+            "S-Linker66-null — byte-identical to s_linker66 apart from the checkpoint "
+            "namespace. The in-set harness null for the fold round."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker69": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker69",
+        class_name="SLinker69",
+        description=(
+            "S-Linker69 — s_linker66 with the gates that turned out not to decide "
+            "either folded into a prompt or deleted: (1) the partial-name scan's "
+            "span-boundary gate becomes one general sentence in the denotation prompt "
+            "(deleting it outright is FP +7.0 p=0.01; folded it is TP -0.4 p=0.44, "
+            "FP -0.2 p=1.00), which also retires `SurfaceScan.skip_qualified` and "
+            "`_inside_qualified_identifier`; (2) the coreference antecedent gate is "
+            "deleted (TP +0.0, FP +0.0, both p=1.00 when scored on what coreference "
+            "actually contributes); (3) the denotation claim substring check is "
+            "deleted (0 of 380 verdicts voided over six runs); (4) `_unlinked` is "
+            "deleted — it compared a tuple against a list of SadSamLink and has never "
+            "removed anything (pilot/unlinked_audit.py), and repairing it instead is "
+            "TP -0.6 (p=0.17), FP +0.4 (p=0.71). `unique_owner` stays: folding it is "
+            "the round's negative result."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker70": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker70",
+        class_name="SLinker70",
+        description=(
+            "S-Linker70 — s_linker69 with the spelling row's two options gone. "
+            "(1) `skip_stricter` becomes `STRICTER_CLAUSE` in the full-name judging "
+            "prompt: the gate was keeping the ANY_CASE whole-name cell out of the "
+            "candidate set and cost 4.0 true positives per run. Deleting it is TP "
+            "+4.0 (p=0.01) at FP +1.8 (p=0.01); deleting it and stating the "
+            "distinction for the judge is TP +4.0 (p=0.01) at FP +/-0.0 (p=1.00) "
+            "(pilot/fold_pilots.py --pilot foldstricter, 5 samples per arm). "
+            "(2) `unique_owner` is dropped from that row as an identity — it frees 0 "
+            "pairs on all five projects in either configuration "
+            "(pilot/gate_inventory.py); it stays on the partial-name row, where it is "
+            "priced at 2.4 FP. The two gates that remain are both on the partial-name "
+            "row and are blocked by one design fact rather than two rules: the "
+            "denotation judge is target-blind, so neither question can be put to it."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker71": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker71",
+        class_name="SLinker71",
+        description=(
+            "S-Linker71 - s_linker70 with the authored prompts scored on provenance "
+            "and rewritten to general principles wherever they named a shape "
+            "(pilot/prompt_defensibility.py: 1700 of 3645 bytes stood on an admissible "
+            "ground). Adopted: (1) the full-name rubric's four numbered "
+            "reject-conditions and three named approve-shapes become one principle "
+            "plus QUALIFIED_CLAUSE and STRICTER_CLAUSE, and P1_FOCUS drops its "
+            "code-level-identifier tail - 850 authored bytes become 579 at TP +0.7 "
+            "(p=0.80), FP -1.3 (p=0.20); (2) the extraction prompt's code-path clause "
+            "becomes QUALIFIED_CLAUSE - TP +0.7 (p=1.00), FP -6.0 (p=0.20). Refused "
+            "and documented: the coreference rubric keeps its clause (removing it is "
+            "TP +4.7/FP +3.7, replacing it TP -3.0/FP +4.0 - a clause about "
+            "identifiers misleads a judge whose cases contain no name), and the alias "
+            "prompt keeps its syntax because both wordings admit 0 identifier "
+            "fragments while the general ones grow the table from 24.0 to 36.7-37.3 "
+            "terms per run: the clause's effect is not the effect it states."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker72": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker72",
+        class_name="SLinker72",
+        description=(
+            "S-Linker72 - s_linker71 split. KEPT: the full-name judging rubric's four "
+            "numbered reject-conditions and three named approve-shapes become one "
+            "principle plus QUALIFIED_CLAUSE and STRICTER_CLAUSE (850 authored bytes "
+            "-> 579). REVERTED to s_linker70: ENTITY_EXTRACTION_RULES and the "
+            "extraction prompt. s_linker71 generalized both at once and lost ground "
+            "over six runs (macro F1 94.80 / F2 96.19 against s70's 95.74 / 96.99), "
+            "although each half had read at parity on its own stage. The extraction "
+            "prompt feeds every later stage, so a change there is not stage-local; and "
+            "the alias arm in the same round showed the mechanism directly - a "
+            "prohibitive clause naming a concrete shape makes the model conservative "
+            "about everything, not only about what it prohibits (alias table 24.0 -> "
+            "36.7 terms per run with 0 prohibited fragments admitted either way)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker73": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker73",
+        class_name="SLinker73",
+        description=(
+            "S-Linker73 - s_linker70 with only the two spans GATE-07 forbids reworded, "
+            "after s_linker71 (F1 94.80, n=6) and s_linker72 (94.94, n=3) both lost "
+            "~0.8 F1 against s70's 95.74 by restructuring the judging rubric. The "
+            "enumeration carries precision a single principle does not, so it stays: "
+            "reject-condition (1) loses the literal `x.y or x.y.z` and says 'only as "
+            "part of a longer joined or dotted identifier' instead, and the approve "
+            "side loses 'a heading, or a list' for 'a mention that says nothing "
+            "further about the component'. Corpus-shaped bytes in the judging path go "
+            "to zero with the rubric's structure, leniency and other three conditions "
+            "byte-equivalent to s70's."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker74": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker74",
+        class_name="SLinker74",
+        description=(
+            "S-Linker74 - s_linker70 with exactly one span changed: reject-condition "
+            "(1) of the full-name judging rubric no longer spells `x.y or x.y.z` and "
+            "reads 'referred to only as part of a longer joined or dotted identifier' "
+            "instead. Located by three losses: restructuring the rubric costs ~0.8 F1 "
+            "(s71 94.80 n=6, s72 94.94 n=3, against s70's 95.74), and removing 'a "
+            "heading, or a list' costs exactly 2.7 TP in each of three runs (s73 "
+            "95.25) - headings and lists are general documentation practice and were "
+            "wrongly listed as corpus-shaped. Dotted identifiers really are "
+            "corpus-shaped (62/198 sentences on one benchmark, 0-6 on the other four), "
+            "so the syntax is the one span the bar catches."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker68": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker68",
+        class_name="SLinker68",
+        description=(
+            "S-Linker68 — s_linker66 with one further cut: the mention label loses "
+            "its qualified-path value, which was the only consumer of "
+            "`_all_occurrences_in_qualified_path`. Two deterministic predicates and "
+            "one label value fewer than s_linker65, with the two stated-name values "
+            "kept separate (merging those is s_linker44, macro F1 -0.9 at n=6). "
+            "Stage evidence (pilot/bind_pilots.py --pilot cutcodetoken, five samples "
+            "a side on the recorded candidate set): TP +/-0.0 (p = 1.00), FP -0.2 "
+            "(p = 1.00), composition p = 1.00. Three paired runs read macro TP -5.0, "
+            "but four fifths of that gap is gold the extraction call -- whose prompt "
+            "is byte-identical to s66's -- never proposed, on one project; restricted "
+            "to the candidates both arms proposed it is TP -1.0 (p = 0.30) against a "
+            "control of -0.7. NOT ADOPTED and NOT REFUTED."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker65": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker65",
+        class_name="SLinker65",
+        description=(
+            "S-Linker65 — s_linker64 with no mechanism, prompt or behaviour change: "
+            "its four lexical rules (the admission filter, the spelling-variant "
+            "proposer, the stated-name net and the partial-name proposer) are "
+            "restated as one relation, `_name_spans(text, name, form)`, over two "
+            "dimensions -- how exactly the surface must reproduce the name, and "
+            "whether the whole name or one word of it must be present. Which cell a "
+            "proposer scans is the only thing that distinguishes it, so the three "
+            "generators become three rows of `SCANS`. The identity is asserted, not "
+            "claimed: pilot/test_s65_one_relation.py checks all 3697 (name, "
+            "sentence) pairs, every candidate set of all three generators on all "
+            "five projects, and 44 other method bodies byte-identical (49/49). "
+            "Also removes the `_antecedent_states_name` wrapper."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker64": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker64",
+        class_name="SLinker64",
+        description=(
+            "S-Linker64 — s_linker62 plus a deterministic net at the full-name "
+            "proposer for sentences that write a component's model name as spelled "
+            "and that the extraction call never proposed. That bucket is where the "
+            "partial-name proposer defers, and it was 3.0 gold pairs per run that no "
+            "stage looked at again. Case-sensitive by design: the same scan run "
+            "case-insensitively is 31.3 new pairs per run at 0.06 gold each against "
+            "1.2 at 0.86. Stage-screened behind the unchanged two-pass judge at "
+            "TP +1.2 (p = 0.01), FP +0.4 (p = 0.44)."
         ),
         canonical=False,
         experimental=True,

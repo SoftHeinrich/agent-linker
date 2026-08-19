@@ -11,13 +11,19 @@
 \newcommand{\TransArc}{TransArc\xspace}
 \newcommand{\approach}{ArchLinker\xspace}
 \newcommand{\linkerA}{seedlinker\xspace}
-\newcommand{\linkerB}{DLinker\xspace}
-\newcommand{\linkerC}{ILinker\xspace}
+% Linker labels derive from the name-evidence axis: a sentence gives a
+% component's whole name, part of it, or only a reference to it.
+% Execution order is \linkerB -> \linkerD -> \linkerC. The letters are stable
+% identifiers, not the order: \linkerB/\linkerC predate \linkerD, so keeping
+% their meaning leaves every existing call site correct.
+\newcommand{\linkerB}{full-name linker\xspace}
+\newcommand{\linkerC}{coreference linker\xspace}
+\newcommand{\linkerD}{partial-name linker\xspace}
 \newcommand{\ardoco}{ArDoCo\xspace}
 
 % --- Phase 43 / D-10: RQ3 validator + variant macros (REQ-V263-05) ---
-\newcommand{\entValidator}{named judge\xspace}
-\newcommand{\corefValidator}{implicit judge\xspace}
+\newcommand{\entValidator}{full-name judge\xspace}
+\newcommand{\corefValidator}{coreference judge\xspace}
 \newcommand{\evidenceBacked}{evidence-backed\xspace}  % adjective; compose: "\evidenceBacked judge(s)/judging" (titles stay literal "Evidence-Backed")
 \newcommand{\fullVariant}{Full\xspace}
 \newcommand{\noEntityValid}{NoEntity\xspace}

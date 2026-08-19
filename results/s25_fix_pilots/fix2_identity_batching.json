@@ -1,0 +1,81 @@
+{
+  "model": "gpt-5.6-terra",
+  "runs": 3,
+  "stats": {
+    "arms": [
+      "A_single_prompt",
+      "B_batched"
+    ],
+    "runs_per_arm": 3,
+    "sizes": {
+      "A_single_prompt": [
+        12,
+        13,
+        13
+      ],
+      "B_batched": [
+        13,
+        13,
+        13
+      ]
+    },
+    "within_A": [
+      1,
+      1,
+      0
+    ],
+    "within_B": [
+      0,
+      0,
+      0
+    ],
+    "between": [
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "composition_stat": 0.0,
+    "composition_null": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "p_composition": 1.0,
+    "p_floor": 0.1,
+    "quality": {
+      "TP": {
+        "A_single_prompt_mean": 11.0,
+        "B_batched_mean": 11.0,
+        "delta": 0.0,
+        "p": 1.0
+      },
+      "FP": {
+        "A_single_prompt_mean": 1.7,
+        "B_batched_mean": 2.0,
+        "delta": 0.3,
+        "p": 1.0
+      }
+    },
+    "verdict": "QUALITY-NEUTRAL (TP p=1.0, FP p=1.0); composition p=1.00, floor 0.10"
+  },
+  "participants": {
+    "mediastore": 0,
+    "teastore": 0,
+    "teammates": 3,
+    "bigbluebutton": 19,
+    "jabref": 0
+  }
+}

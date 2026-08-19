@@ -1,0 +1,374 @@
+[
+  {
+    "phase": "s25_summary",
+    "ts": 1786532978.9524045,
+    "in": {
+      "components": 14,
+      "sentences": 37
+    },
+    "out": {
+      "workflow": [
+        {
+          "linker": "full_name",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "Facade"
+              },
+              {
+                "sentence": 3,
+                "component": "Facade"
+              },
+              {
+                "sentence": 6,
+                "component": "Facade"
+              },
+              {
+                "sentence": 7,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 8,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 11,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 12,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 13,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 16,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 17,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 17,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 19,
+                "component": "Packaging"
+              },
+              {
+                "sentence": 20,
+                "component": "Reencoding"
+              },
+              {
+                "sentence": 23,
+                "component": "DB"
+              },
+              {
+                "sentence": 25,
+                "component": "DB"
+              },
+              {
+                "sentence": 26,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 27,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 29,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 30,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 31,
+                "component": "DB"
+              },
+              {
+                "sentence": 32,
+                "component": "DB"
+              },
+              {
+                "sentence": 33,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 34,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 34,
+                "component": "DB"
+              },
+              {
+                "sentence": 35,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 36,
+                "component": "FileStorage"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "partial_name",
+          "feedback": {
+            "accepted": [],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "coreference",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 9,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 24,
+                "component": "DB"
+              },
+              {
+                "sentence": 28,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 31,
+                "component": "DB"
+              },
+              {
+                "sentence": 32,
+                "component": "DB"
+              },
+              {
+                "sentence": 34,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 34,
+                "component": "DB"
+              },
+              {
+                "sentence": 35,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 36,
+                "component": "FileStorage"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 21,
+                "component": "Reencoding"
+              },
+              {
+                "sentence": 33,
+                "component": "FileStorage"
+              }
+            ]
+          }
+        }
+      ],
+      "final": 29,
+      "elapsed_s": 20.77,
+      "llm_calls": 11,
+      "phase_metrics": {
+        "phase_25_doc_extract": {
+          "calls": 1,
+          "elapsed_s": 1.986,
+          "tokens": 1207,
+          "errors": 0
+        },
+        "phase_25_full_name_extract": {
+          "calls": 1,
+          "elapsed_s": 2.601,
+          "tokens": 1553,
+          "errors": 0
+        },
+        "phase_25_full_name_p1": {
+          "calls": 2,
+          "elapsed_s": 4.06,
+          "tokens": 4826,
+          "errors": 0
+        },
+        "phase_25_full_name_p2": {
+          "calls": 2,
+          "elapsed_s": 3.868,
+          "tokens": 4804,
+          "errors": 0
+        },
+        "phase_25_coreference": {
+          "calls": 4,
+          "elapsed_s": 6.554,
+          "tokens": 11440,
+          "errors": 0
+        },
+        "phase_25_coreference_judge": {
+          "calls": 1,
+          "elapsed_s": 1.686,
+          "tokens": 1251,
+          "errors": 0
+        }
+      }
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 3,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "Facade",
+        "src": "full_name"
+      },
+      {
+        "s": 7,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 8,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 11,
+        "c": "UserManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 12,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 13,
+        "c": "UserManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 16,
+        "c": "TagWatermarking",
+        "src": "full_name"
+      },
+      {
+        "s": 17,
+        "c": "MediaManagement",
+        "src": "full_name"
+      },
+      {
+        "s": 17,
+        "c": "TagWatermarking",
+        "src": "full_name"
+      },
+      {
+        "s": 19,
+        "c": "Packaging",
+        "src": "full_name"
+      },
+      {
+        "s": 20,
+        "c": "Reencoding",
+        "src": "full_name"
+      },
+      {
+        "s": 23,
+        "c": "DB",
+        "src": "full_name"
+      },
+      {
+        "s": 25,
+        "c": "DB",
+        "src": "full_name"
+      },
+      {
+        "s": 26,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 27,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 29,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 30,
+        "c": "UserDBAdapter",
+        "src": "full_name"
+      },
+      {
+        "s": 31,
+        "c": "DB",
+        "src": "full_name"
+      },
+      {
+        "s": 32,
+        "c": "DB",
+        "src": "full_name"
+      },
+      {
+        "s": 33,
+        "c": "FileStorage",
+        "src": "full_name"
+      },
+      {
+        "s": 34,
+        "c": "MediaAccess",
+        "src": "full_name"
+      },
+      {
+        "s": 34,
+        "c": "DB",
+        "src": "full_name"
+      },
+      {
+        "s": 35,
+        "c": "FileStorage",
+        "src": "full_name"
+      },
+      {
+        "s": 36,
+        "c": "FileStorage",
+        "src": "full_name"
+      },
+      {
+        "s": 9,
+        "c": "MediaManagement",
+        "src": "coreference"
+      },
+      {
+        "s": 24,
+        "c": "DB",
+        "src": "coreference"
+      },
+      {
+        "s": 28,
+        "c": "MediaAccess",
+        "src": "coreference"
+      }
+    ]
+  }
+]

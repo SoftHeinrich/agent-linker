@@ -13,11 +13,17 @@ We report our system as the mean of three runs and release every raw response~\c
 %  to mean-of-3 at the numbers pass, soften the within-run justification above accordingly.
 Second, the backend may have seen the five public projects during pre-training, so memorization rather than the workflow could explain the gain.
 The strongest baseline \Artemis{} runs on the same backend and shares this exposure, so the comparison stays fair.
+Third, an implementation detail of the span test that excludes matches inside qualified identifiers treats a sentence-initial match as if it were inside one, so one span per sentence is suppressed.
+We found this while auditing the deterministic layer and measured its repair over six paired runs: correcting it leaves recall unchanged and \emph{costs} $1.2$ false positives per run ($p=0.01$).
+We therefore report it rather than silently keeping or silently fixing it.
+A detail that a benchmark rewards is a detail fitted to that benchmark, whichever way it is resolved, and we expect the corrected behavior to be the one that transfers.
 % Third, the gain could come from the extra \ac{LLM} calls rather than the workflow itself; the ablations (\ref{rq:validators}, \ref{rq:ablation}) rule this out by attributing it to specific modules, each contributing a non-redundant slice of links.
 
 \paragraph{External validity.}
 We measure on the five Java systems of the ARDoCo benchmark, the largest curated one we know of~\cite{fuchs_establishing_2023}; results may not transfer to other languages, industrial systems, or differently written documents.
 We mitigate this by using all five projects, which span two orders of magnitude in size and several domains, and by keeping \approach{} training-free with no benchmark-specific tuning.
+One choice is worth stating precisely under this heading: which form of the writing relation each linker scans (\autoref{tab:forms}) rests on a property of English---a capitalized token is a proper noun where the same token in lower case is often ordinary vocabulary---and we confirmed the resulting precision ordering on the benchmark rather than deriving it there.
+The relation itself contains no project vocabulary, and its only word list is a closed set of English inflectional suffixes, so it carries nothing from these five documents to a sixth.
 To show the gains do not depend on one model, we run \approach{} on two backends, GPT-5.4 and Claude Sonnet.
 %TODO [backend] numbers are in the appendix mirror; just pin the exact Claude Sonnet version string in the appendix caption.
 

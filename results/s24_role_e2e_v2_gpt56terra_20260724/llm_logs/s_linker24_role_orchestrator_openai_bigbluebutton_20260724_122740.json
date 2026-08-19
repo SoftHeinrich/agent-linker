@@ -1,0 +1,1718 @@
+[
+  {
+    "phase": "s24_replacement_summary",
+    "ts": 1784888860.6841543,
+    "in": {
+      "profile": {
+        "document": [
+          {
+            "sentence": 1,
+            "text": "High-level architecture."
+          },
+          {
+            "sentence": 2,
+            "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+          },
+          {
+            "sentence": 3,
+            "text": "We'll break down each component in more detail below."
+          },
+          {
+            "sentence": 4,
+            "text": "HTML5 client."
+          },
+          {
+            "sentence": 5,
+            "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video."
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+          },
+          {
+            "sentence": 7,
+            "text": "These connections are all handled by nginx."
+          },
+          {
+            "sentence": 8,
+            "text": "The HTML5 server sits behind nginx."
+          },
+          {
+            "sentence": 9,
+            "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+          },
+          {
+            "sentence": 10,
+            "text": "The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting."
+          },
+          {
+            "sentence": 11,
+            "text": "Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received."
+          },
+          {
+            "sentence": 12,
+            "text": "The client side subscribes to the published collections on the server side."
+          },
+          {
+            "sentence": 13,
+            "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."
+          },
+          {
+            "sentence": 14,
+            "text": "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton."
+          },
+          {
+            "sentence": 15,
+            "text": "Scalability of HTML5 server component."
+          },
+          {
+            "sentence": 16,
+            "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+          },
+          {
+            "sentence": 17,
+            "text": "This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core)."
+          },
+          {
+            "sentence": 18,
+            "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability."
+          },
+          {
+            "sentence": 19,
+            "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+          },
+          {
+            "sentence": 20,
+            "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core)."
+          },
+          {
+            "sentence": 21,
+            "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files)."
+          },
+          {
+            "sentence": 22,
+            "text": "A restart of BigBlueButton is required if you make changes to these files."
+          },
+          {
+            "sentence": 23,
+            "text": "The breakdown of functionality between front-end and back-end is as follows."
+          },
+          {
+            "sentence": 24,
+            "text": "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+          },
+          {
+            "sentence": 25,
+            "text": "Frontends collect subscriptions and publishers."
+          },
+          {
+            "sentence": 26,
+            "text": "Frontends receive other DDP events including method calls to send events to akka-apps."
+          },
+          {
+            "sentence": 27,
+            "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+          },
+          {
+            "sentence": 28,
+            "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+          },
+          {
+            "sentence": 29,
+            "text": "Backends handle all the non-streamer events."
+          },
+          {
+            "sentence": 30,
+            "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+          },
+          {
+            "sentence": 31,
+            "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+          },
+          {
+            "sentence": 32,
+            "text": "ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling."
+          },
+          {
+            "sentence": 33,
+            "text": "When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes."
+          },
+          {
+            "sentence": 34,
+            "text": "In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh."
+          },
+          {
+            "sentence": 35,
+            "text": "See \"Automatically apply configuration changes on restart\"."
+          },
+          {
+            "sentence": 36,
+            "text": "BBB web."
+          },
+          {
+            "sentence": 37,
+            "text": "BigBlueButton web application is a Java-based application written in Scala."
+          },
+          {
+            "sentence": 38,
+            "text": "It implements the BigBlueButton API and holds a copy of the meeting state."
+          },
+          {
+            "sentence": 39,
+            "text": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server."
+          },
+          {
+            "sentence": 40,
+            "text": "Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application)."
+          },
+          {
+            "sentence": 41,
+            "text": "BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations)."
+          },
+          {
+            "sentence": 42,
+            "text": "BigBlueButton comes with its own front-end called Greenlight."
+          },
+          {
+            "sentence": 43,
+            "text": "When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings."
+          },
+          {
+            "sentence": 44,
+            "text": "The BigBlueButton comes with some simple API demos."
+          },
+          {
+            "sentence": 45,
+            "text": "Regardless of which front-end you use, they all use the API under the hood."
+          },
+          {
+            "sentence": 46,
+            "text": "Redis PubSub."
+          },
+          {
+            "sentence": 47,
+            "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+          },
+          {
+            "sentence": 48,
+            "text": "Redis DB."
+          },
+          {
+            "sentence": 49,
+            "text": "When a meeting is recorded, all events are stored in Redis DB."
+          },
+          {
+            "sentence": 50,
+            "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing."
+          },
+          {
+            "sentence": 51,
+            "text": "Apps akka."
+          },
+          {
+            "sentence": 52,
+            "text": "BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting."
+          },
+          {
+            "sentence": 53,
+            "text": "It provides the list of users, chat, whiteboard, presentations in a meeting."
+          },
+          {
+            "sentence": 54,
+            "text": "Below is a diagram of the different components of Apps Akka."
+          },
+          {
+            "sentence": 55,
+            "text": "The meeting business logic is in the MeetingActor."
+          },
+          {
+            "sentence": 56,
+            "text": "This is where information about the meeting is stored and where all messages for a meeting is processed."
+          },
+          {
+            "sentence": 57,
+            "text": "FSESL akka."
+          },
+          {
+            "sentence": 58,
+            "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+          },
+          {
+            "sentence": 59,
+            "text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+          },
+          {
+            "sentence": 60,
+            "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+          },
+          {
+            "sentence": 61,
+            "text": "FreeSWITCH."
+          },
+          {
+            "sentence": 62,
+            "text": "We think FreeSWITCH is an amazing piece of software for handling audio."
+          },
+          {
+            "sentence": 63,
+            "text": "FreeSWITCH provides the voice conferencing capability in BigBlueButton."
+          },
+          {
+            "sentence": 64,
+            "text": "Users are able to join the voice conference through the headset."
+          },
+          {
+            "sentence": 65,
+            "text": "Users joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC."
+          },
+          {
+            "sentence": 66,
+            "text": "FreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone."
+          },
+          {
+            "sentence": 67,
+            "text": "Kurento and WebRTC-SFU."
+          },
+          {
+            "sentence": 68,
+            "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+          },
+          {
+            "sentence": 69,
+            "text": "KMS is responsible for streaming of webcams, listen-only audio, and screensharing."
+          },
+          {
+            "sentence": 70,
+            "text": "The WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams."
+          },
+          {
+            "sentence": 71,
+            "text": "Joining a voice conference."
+          },
+          {
+            "sentence": 72,
+            "text": "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone."
+          },
+          {
+            "sentence": 73,
+            "text": "When joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC."
+          },
+          {
+            "sentence": 74,
+            "text": "WebRTC provides the user with high-quality audio with lower delay."
+          },
+          {
+            "sentence": 75,
+            "text": "Uploading a presentation."
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+          },
+          {
+            "sentence": 77,
+            "text": "When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice."
+          },
+          {
+            "sentence": 78,
+            "text": "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+          },
+          {
+            "sentence": 80,
+            "text": "Presentation conversion flow."
+          },
+          {
+            "sentence": 81,
+            "text": "The diagram below describes the flow of the presentation conversion."
+          },
+          {
+            "sentence": 82,
+            "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion."
+          },
+          {
+            "sentence": 83,
+            "text": "Then below the SVG conversion flow."
+          },
+          {
+            "sentence": 84,
+            "text": "It covers the conversion fallback."
+          },
+          {
+            "sentence": 85,
+            "text": "Sometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser."
+          },
+          {
+            "sentence": 86,
+            "text": "Internal network connections."
+          },
+          {
+            "sentence": 87,
+            "text": "The following diagram shows how the various components of BigBlueButton connect to each other via sockets."
+          }
+        ],
+        "component_catalog": [
+          "Recording Service",
+          "kurento",
+          "WebRTC-SFU",
+          "HTML5 Server",
+          "HTML5 Client",
+          "Presentation Conversion",
+          "BBB web",
+          "Redis PubSub",
+          "FSESL",
+          "Apps",
+          "Redis DB",
+          "FreeSWITCH"
+        ],
+        "ambiguous_components": [],
+        "approved_aliases": [
+          {
+            "alias": "bbb-html5",
+            "target": "HTML5 Server",
+            "scope": "global"
+          },
+          {
+            "alias": "BBB web",
+            "target": "BBB web",
+            "scope": "global"
+          },
+          {
+            "alias": "Apps akka",
+            "target": "Apps",
+            "scope": "global"
+          },
+          {
+            "alias": "FSESL akka",
+            "target": "FSESL",
+            "scope": "global"
+          },
+          {
+            "alias": "fsels",
+            "target": "FSESL",
+            "scope": "global"
+          },
+          {
+            "alias": "KMS",
+            "target": "kurento",
+            "scope": "global"
+          },
+          {
+            "alias": "WebRTC-SFU",
+            "target": "WebRTC-SFU",
+            "scope": "global"
+          },
+          {
+            "alias": "HTML5 client",
+            "target": "HTML5 Client",
+            "scope": "global"
+          },
+          {
+            "alias": "HTML5 server",
+            "target": "HTML5 Server",
+            "scope": "global"
+          },
+          {
+            "alias": "BigBlueButton web application",
+            "target": "BBB web",
+            "scope": "global"
+          },
+          {
+            "alias": "BigBlueButton Apps",
+            "target": "Apps",
+            "scope": "global"
+          },
+          {
+            "alias": "Redis pubsub",
+            "target": "Redis PubSub",
+            "scope": "global"
+          },
+          {
+            "alias": "Redis DB",
+            "target": "Redis DB",
+            "scope": "global"
+          },
+          {
+            "alias": "Recording Processor",
+            "target": "Recording Service",
+            "scope": "global"
+          },
+          {
+            "alias": "Kurento Media Server",
+            "target": "kurento",
+            "scope": "global"
+          },
+          {
+            "alias": "FreeSWITCH Event Socket Layer",
+            "target": "FSESL",
+            "scope": "global"
+          },
+          {
+            "alias": "Presentation conversion flow",
+            "target": "Presentation Conversion",
+            "scope": "global"
+          }
+        ],
+        "role_handle_evidence": [
+          {
+            "expression": "WebRTC",
+            "component": "WebRTC-SFU",
+            "occurrences": [
+              {
+                "sentence": 5,
+                "quote": "WebRTC"
+              },
+              {
+                "sentence": 65,
+                "quote": "WebRTC"
+              },
+              {
+                "sentence": 73,
+                "quote": "WebRTC"
+              },
+              {
+                "sentence": 74,
+                "quote": "WebRTC"
+              }
+            ]
+          },
+          {
+            "expression": "SFU",
+            "component": "WebRTC-SFU",
+            "occurrences": [
+              {
+                "sentence": 68,
+                "quote": "SFU"
+              }
+            ]
+          },
+          {
+            "expression": "Server",
+            "component": "HTML5 Server",
+            "occurrences": [
+              {
+                "sentence": 6,
+                "quote": "server"
+              },
+              {
+                "sentence": 8,
+                "quote": "server"
+              },
+              {
+                "sentence": 9,
+                "quote": "server"
+              },
+              {
+                "sentence": 10,
+                "quote": "server"
+              },
+              {
+                "sentence": 12,
+                "quote": "server"
+              },
+              {
+                "sentence": 13,
+                "quote": "server"
+              },
+              {
+                "sentence": 15,
+                "quote": "server"
+              },
+              {
+                "sentence": 18,
+                "quote": "server"
+              },
+              {
+                "sentence": 39,
+                "quote": "server"
+              },
+              {
+                "sentence": 47,
+                "quote": "server"
+              },
+              {
+                "sentence": 68,
+                "quote": "Server"
+              },
+              {
+                "sentence": 73,
+                "quote": "server"
+              }
+            ]
+          },
+          {
+            "expression": "Client",
+            "component": "HTML5 Client",
+            "occurrences": [
+              {
+                "sentence": 4,
+                "quote": "client"
+              },
+              {
+                "sentence": 5,
+                "quote": "client"
+              },
+              {
+                "sentence": 6,
+                "quote": "client"
+              },
+              {
+                "sentence": 9,
+                "quote": "client"
+              },
+              {
+                "sentence": 10,
+                "quote": "client"
+              },
+              {
+                "sentence": 11,
+                "quote": "client"
+              },
+              {
+                "sentence": 12,
+                "quote": "client"
+              },
+              {
+                "sentence": 13,
+                "quote": "client"
+              },
+              {
+                "sentence": 14,
+                "quote": "client"
+              },
+              {
+                "sentence": 72,
+                "quote": "client"
+              },
+              {
+                "sentence": 73,
+                "quote": "client"
+              },
+              {
+                "sentence": 76,
+                "quote": "client"
+              },
+              {
+                "sentence": 79,
+                "quote": "client"
+              }
+            ]
+          },
+          {
+            "expression": "Conversion",
+            "component": "Presentation Conversion",
+            "occurrences": [
+              {
+                "sentence": 76,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 79,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 80,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 81,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 82,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 83,
+                "quote": "conversion"
+              },
+              {
+                "sentence": 84,
+                "quote": "conversion"
+              }
+            ]
+          },
+          {
+            "expression": "web",
+            "component": "BBB web",
+            "occurrences": [
+              {
+                "sentence": 5,
+                "quote": "web"
+              },
+              {
+                "sentence": 6,
+                "quote": "web"
+              },
+              {
+                "sentence": 36,
+                "quote": "web"
+              },
+              {
+                "sentence": 37,
+                "quote": "web"
+              }
+            ]
+          },
+          {
+            "expression": "PubSub",
+            "component": "Redis PubSub",
+            "occurrences": [
+              {
+                "sentence": 46,
+                "quote": "PubSub"
+              },
+              {
+                "sentence": 47,
+                "quote": "PubSub"
+              },
+              {
+                "sentence": 60,
+                "quote": "pubsub"
+              },
+              {
+                "sentence": 79,
+                "quote": "pubsub"
+              }
+            ]
+          },
+          {
+            "expression": "DB",
+            "component": "Redis DB",
+            "occurrences": [
+              {
+                "sentence": 48,
+                "quote": "DB"
+              },
+              {
+                "sentence": 49,
+                "quote": "DB"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "out": {
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "HTML5 client",
+            "HTML5 server",
+            "BBB web",
+            "Redis PubSub",
+            "Redis DB",
+            "Apps akka",
+            "FSESL akka",
+            "FreeSWITCH",
+            "Kurento Media Server",
+            "Recording Processor"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "exact catalog-name and approved-alias identity evidence",
+          "reason": "The document contains direct catalog names and approved aliases that should be resolved by the identity pipeline first.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 4,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 5,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 8,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 9,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 21,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 30,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 46,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 47,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 48,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 49,
+                "component": "Redis DB"
+              },
+              {
+                "sentence": 50,
+                "component": "Recording Service"
+              },
+              {
+                "sentence": 51,
+                "component": "Apps"
+              },
+              {
+                "sentence": 52,
+                "component": "Apps"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 57,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 58,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 58,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 59,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "Apps"
+              },
+              {
+                "sentence": 60,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 61,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 62,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 63,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 66,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 67,
+                "component": "kurento"
+              },
+              {
+                "sentence": 67,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 68,
+                "component": "kurento"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              },
+              {
+                "sentence": 70,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 72,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 72,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 78,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 79,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 80,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 81,
+                "component": "Presentation Conversion"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "relation_role_resolution",
+          "evidence_quotes": [
+            "WebRTC",
+            "SFU",
+            "Conversion"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "project-specific shortened handles derived from compound catalog names",
+          "reason": "The document contains exact shortened handles for compound components, notably WebRTC/WebRTC-SFU and conversion/Presentation Conversion, which remain unresolved by identity matching.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 5,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 65,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 73,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 74,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 68,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 6,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 10,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 18,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 39,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 47,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 68,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 9,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 10,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 11,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 76,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 79,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 82,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 83,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 84,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 5,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 6,
+                "component": "BBB web"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "These connections",
+            "This process",
+            "This means",
+            "they all use the API",
+            "This is where information about the meeting is stored",
+            "it\u2019s own application"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "pronoun, demonstrative, and anaphoric reference resolution",
+          "reason": "The document contains unresolved anaphoric references with antecedents that may correspond to already identified architectural components.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 11,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 13,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 14,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 20,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 38,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 53,
+                "component": "Apps"
+              },
+              {
+                "sentence": 56,
+                "component": "Apps"
+              },
+              {
+                "sentence": 69,
+                "component": "kurento"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 7,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 12,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 15,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 19,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 36,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 37,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 54,
+                "component": "Apps"
+              },
+              {
+                "sentence": 59,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Apps"
+              },
+              {
+                "sentence": 60,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 60,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 72,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 72,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 73,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 79,
+                "component": "Redis PubSub"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coverage_audit",
+          "evidence_quotes": [
+            "High-level architecture.",
+            "The following diagram provides a high-level view of how BigBlueButton's components work together.",
+            "The following diagram shows how the various components of BigBlueButton connect to each other via sockets."
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "multi-component completeness and meaningful architecture/connection diagram headings",
+          "reason": "The completed tools resolved identity, shortened-handle, and coreference evidence. The remaining unused capability can audit meaningful multi-component architecture and connection descriptions for coverage without inferring from generic roles or technologies alone.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 26,
+                "component": "Apps"
+              },
+              {
+                "sentence": 27,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 31,
+                "component": "HTML5 Server"
+              },
+              {
+                "sentence": 31,
+                "component": "Redis PubSub"
+              },
+              {
+                "sentence": 47,
+                "component": "Apps"
+              },
+              {
+                "sentence": 55,
+                "component": "Apps"
+              },
+              {
+                "sentence": 58,
+                "component": "Apps"
+              },
+              {
+                "sentence": 64,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 69,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 73,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 77,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 78,
+                "component": "Presentation Conversion"
+              },
+              {
+                "sentence": 85,
+                "component": "Presentation Conversion"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 39,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 49,
+                "component": "Recording Service"
+              },
+              {
+                "sentence": 59,
+                "component": "FSESL"
+              },
+              {
+                "sentence": 63,
+                "component": "Apps"
+              },
+              {
+                "sentence": 65,
+                "component": "FreeSWITCH"
+              },
+              {
+                "sentence": 68,
+                "component": "HTML5 Client"
+              },
+              {
+                "sentence": 70,
+                "component": "kurento"
+              },
+              {
+                "sentence": 72,
+                "component": "WebRTC-SFU"
+              },
+              {
+                "sentence": 76,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 79,
+                "component": "BBB web"
+              },
+              {
+                "sentence": 87,
+                "component": "Recording Service"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "final": 89,
+      "elapsed_s": 64.57,
+      "llm_calls": 28
+    },
+    "links": [
+      {
+        "s": 4,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 5,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 8,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 14,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 15,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 19,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 20,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 21,
+        "c": "HTML5 Server",
+        "src": "entity"
+      },
+      {
+        "s": 30,
+        "c": "BBB web",
+        "src": "entity"
+      },
+      {
+        "s": 36,
+        "c": "BBB web",
+        "src": "entity"
+      },
+      {
+        "s": 37,
+        "c": "BBB web",
+        "src": "entity"
+      },
+      {
+        "s": 46,
+        "c": "Redis PubSub",
+        "src": "entity"
+      },
+      {
+        "s": 47,
+        "c": "Redis PubSub",
+        "src": "entity"
+      },
+      {
+        "s": 48,
+        "c": "Redis DB",
+        "src": "entity"
+      },
+      {
+        "s": 49,
+        "c": "Redis DB",
+        "src": "entity"
+      },
+      {
+        "s": 50,
+        "c": "Recording Service",
+        "src": "entity"
+      },
+      {
+        "s": 51,
+        "c": "Apps",
+        "src": "entity"
+      },
+      {
+        "s": 52,
+        "c": "Apps",
+        "src": "entity"
+      },
+      {
+        "s": 54,
+        "c": "Apps",
+        "src": "entity"
+      },
+      {
+        "s": 57,
+        "c": "FSESL",
+        "src": "entity"
+      },
+      {
+        "s": 58,
+        "c": "FSESL",
+        "src": "entity"
+      },
+      {
+        "s": 58,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 59,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 60,
+        "c": "Apps",
+        "src": "entity"
+      },
+      {
+        "s": 60,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 60,
+        "c": "FSESL",
+        "src": "entity"
+      },
+      {
+        "s": 60,
+        "c": "Redis PubSub",
+        "src": "entity"
+      },
+      {
+        "s": 61,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 62,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 63,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 66,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 67,
+        "c": "kurento",
+        "src": "entity"
+      },
+      {
+        "s": 67,
+        "c": "WebRTC-SFU",
+        "src": "entity"
+      },
+      {
+        "s": 68,
+        "c": "kurento",
+        "src": "entity"
+      },
+      {
+        "s": 69,
+        "c": "kurento",
+        "src": "entity"
+      },
+      {
+        "s": 70,
+        "c": "WebRTC-SFU",
+        "src": "entity"
+      },
+      {
+        "s": 72,
+        "c": "FreeSWITCH",
+        "src": "entity"
+      },
+      {
+        "s": 72,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 73,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 78,
+        "c": "BBB web",
+        "src": "entity"
+      },
+      {
+        "s": 79,
+        "c": "HTML5 Client",
+        "src": "entity"
+      },
+      {
+        "s": 79,
+        "c": "Redis PubSub",
+        "src": "entity"
+      },
+      {
+        "s": 80,
+        "c": "Presentation Conversion",
+        "src": "entity"
+      },
+      {
+        "s": 81,
+        "c": "Presentation Conversion",
+        "src": "entity"
+      },
+      {
+        "s": 5,
+        "c": "WebRTC-SFU",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 65,
+        "c": "WebRTC-SFU",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 73,
+        "c": "WebRTC-SFU",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 74,
+        "c": "WebRTC-SFU",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 68,
+        "c": "WebRTC-SFU",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 6,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 10,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 12,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 13,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 18,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 39,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 47,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 68,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 73,
+        "c": "HTML5 Server",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 9,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 10,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 11,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 12,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 13,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 76,
+        "c": "HTML5 Client",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 76,
+        "c": "Presentation Conversion",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 79,
+        "c": "Presentation Conversion",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 82,
+        "c": "Presentation Conversion",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 83,
+        "c": "Presentation Conversion",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 84,
+        "c": "Presentation Conversion",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 5,
+        "c": "BBB web",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 6,
+        "c": "BBB web",
+        "src": "s24_relation_role"
+      },
+      {
+        "s": 38,
+        "c": "BBB web",
+        "src": "coreference"
+      },
+      {
+        "s": 53,
+        "c": "Apps",
+        "src": "coreference"
+      },
+      {
+        "s": 56,
+        "c": "Apps",
+        "src": "coreference"
+      },
+      {
+        "s": 26,
+        "c": "Apps",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 27,
+        "c": "Redis PubSub",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 31,
+        "c": "HTML5 Server",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 31,
+        "c": "Redis PubSub",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 47,
+        "c": "Apps",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 55,
+        "c": "Apps",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 58,
+        "c": "Apps",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 64,
+        "c": "FreeSWITCH",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 69,
+        "c": "WebRTC-SFU",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 73,
+        "c": "FreeSWITCH",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 77,
+        "c": "Presentation Conversion",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 78,
+        "c": "Presentation Conversion",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 85,
+        "c": "Presentation Conversion",
+        "src": "s24_coverage_audit"
+      }
+    ]
+  }
+]

@@ -1,0 +1,575 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker21, s_linker25
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+  Model: 3 ambiguous of 14 components
+  Doc knowledge: 2 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=28 P2=29 ∪=30
+  Framing C: 30 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 27 / 30
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 7
+    Coref reject: S21 -> Reencoding
+  Coref validated: 6 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 27 (from 33 raw)
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_mediastore_20260806_225823.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_mediastore_20260806_225823_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 27 links (35.2s, 14 LLM calls)
+  s_linker21: P=100.0% R=87.1% F1=93.1% F2=89.4% TP=27 FP=0 FN=4 (35s)
+    Sources: {'entity': 27}
+    FP by source: {}
+
+  --- Variant: s_linker25 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Profile tools] Model and document knowledge
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: AudioAccess -> MediaAccess [global]
+  Checkpoint: profile saved
+
+[Controller tool] entity_pipeline
+    Consensus: P1=33 P2=35 ∪=35
+  Checkpoint: tool_entity_pipeline saved
+
+[Controller tool] relation_role_resolution
+  Checkpoint: tool_relation_role_resolution saved
+
+[Controller tool] coreference_pipeline
+    Coref reject: S1 -> Facade
+    Coref reject: S3 -> Facade
+    Coref reject: S5 -> Facade
+    Coref reject: S7 -> MediaManagement
+    Coref reject: S8 -> MediaManagement
+    Coref reject: S21 -> Reencoding
+    Coref reject: S31 -> DB
+    Coref reject: S32 -> DB
+    Coref reject: S33 -> FileStorage
+    Coref reject: S34 -> DB
+    Coref reject: S36 -> FileStorage
+  Checkpoint: tool_coreference_pipeline saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_mediastore_20260806_225853.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_mediastore_20260806_225853_calls.json (14 calls)
+
+Final: 30 links (30.3s, 14 LLM calls)
+  s_linker25: P=100.0% R=96.8% F1=98.4% F2=97.4% TP=30 FP=0 FN=1 (30s)
+    Sources: {'entity': 27, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: back end -> Logic [local]
+    Alias: back-end logic -> Logic [global]
+    Alias: storage layer -> Storage [global]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: test driver -> Test Driver [local]
+  Model: 1 ambiguous of 8 components
+  Doc knowledge: 10 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=76 P2=67 ∪=79
+  Framing C: 79 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 65 / 79
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 36
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S25 -> UI
+    Coref reject: S29 -> UI
+    Coref reject: S47 -> Logic
+    Coref reject: S68 -> Logic
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S85 -> UI
+    Coref reject: S88 -> Storage
+    Coref reject: S96 -> Logic
+    Coref reject: S125 -> Storage
+    Coref reject: S131 -> Storage
+    Coref reject: S131 -> Logic
+    Coref reject: S137 -> GAE Datastore
+    Coref reject: S163 -> Test Driver
+    Coref reject: S168 -> Test Driver
+    Coref reject: S174 -> Common
+    Coref reject: S175 -> Common
+    Coref reject: S176 -> Logic
+    Coref reject: S177 -> Storage
+    Coref reject: S194 -> Client
+  Coref validated: 9 / 36
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 70 (from 74 raw)
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_teammates_20260806_230013.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_teammates_20260806_230013_calls.json (41 calls)
+  Checkpoint: final saved
+
+Final: 70 links (80.5s, 41 LLM calls)
+  s_linker21: P=75.7% R=93.0% F1=83.5% F2=88.9% TP=53 FP=17 FN=4 (80s)
+    Sources: {'entity': 65, 'coreference': 5}
+    FP by source: {'entity': 16, 'coreference': 1}
+
+  --- Variant: s_linker25 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 8 components, 198 sentences
+
+[Profile tools] Model and document knowledge
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [local]
+    Alias: back end -> Logic [local]
+    Alias: storage layer -> Storage [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: Test Driver -> Test Driver [global]
+  Checkpoint: profile saved
+
+[Controller tool] entity_pipeline
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=68 P2=72 ∪=72
+  Checkpoint: tool_entity_pipeline saved
+
+[Controller tool] relation_role_resolution
+  Checkpoint: tool_relation_role_resolution saved
+
+[Controller tool] coreference_pipeline
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S25 -> UI
+    Coref reject: S29 -> UI
+    Coref reject: S47 -> Logic
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S85 -> UI
+    Coref reject: S88 -> Storage
+    Coref reject: S96 -> Logic
+    Coref reject: S121 -> Storage
+    Coref reject: S122 -> Logic
+    Coref reject: S123 -> Storage
+    Coref reject: S128 -> Storage
+    Coref reject: S129 -> Logic
+    Coref reject: S131 -> Logic
+    Coref reject: S163 -> Test Driver
+    Coref reject: S174 -> Common
+    Coref reject: S175 -> Common
+    Coref reject: S176 -> Logic
+    Coref reject: S177 -> Storage
+    Coref reject: S194 -> Client
+  Checkpoint: tool_coreference_pipeline saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_teammates_20260806_230154.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_teammates_20260806_230154_calls.json (42 calls)
+
+Final: 57 links (100.6s, 42 LLM calls)
+  s_linker25: P=87.7% R=87.7% F1=87.7% F2=87.7% TP=50 FP=7 FN=7 (101s)
+    Sources: {'entity': 50, 'coreference': 7}
+    FP by source: {'coreference': 2, 'entity': 5}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: WebUi -> WebUI [global]
+    Alias: UI -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: registry -> Registry [local]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=23 P2=21 ∪=23
+  Framing C: 23 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 21 / 23
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 13
+    Coref reject: S9 -> WebUI
+  Coref validated: 12 / 13
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 27 (from 33 raw)
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_teastore_20260806_230230.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_teastore_20260806_230230_calls.json (13 calls)
+  Checkpoint: final saved
+
+Final: 27 links (36.2s, 13 LLM calls)
+  s_linker21: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=27 FP=0 FN=0 (36s)
+    Sources: {'entity': 21, 'coreference': 6}
+    FP by source: {}
+
+  --- Variant: s_linker25 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 11 components, 43 sentences
+
+[Profile tools] Model and document knowledge
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: registry -> Registry [local]
+  Checkpoint: profile saved
+
+[Controller tool] entity_pipeline
+    Consensus: P1=20 P2=20 ∪=20
+  Checkpoint: tool_entity_pipeline saved
+
+[Controller tool] relation_role_resolution
+  Checkpoint: tool_relation_role_resolution saved
+
+[Controller tool] coreference_pipeline
+    Coref reject: S2 -> WebUI
+    Coref reject: S2 -> ImageProvider
+    Coref reject: S3 -> Auth
+    Coref reject: S4 -> Recommender
+    Coref reject: S5 -> WebUI
+    Coref reject: S7 -> WebUI
+    Coref reject: S7 -> ImageProvider
+    Coref reject: S8 -> WebUI
+    Coref reject: S10 -> ImageProvider
+    Coref reject: S10 -> WebUI
+    Coref reject: S25 -> Persistence
+    Coref reject: S38 -> Registry
+    Coref reject: S41 -> Registry
+  Checkpoint: tool_coreference_pipeline saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_teastore_20260806_230304.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_teastore_20260806_230304_calls.json (13 calls)
+
+Final: 26 links (33.4s, 13 LLM calls)
+  s_linker25: P=100.0% R=96.3% F1=98.1% F2=97.0% TP=26 FP=0 FN=1 (33s)
+    Sources: {'entity': 20, 'coreference': 6}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: conversion process -> Presentation Conversion [local]
+    Alias: apps -> Apps [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 14 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=51 P2=51 ∪=52
+  Framing C: 52 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 50 / 52
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 21
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S14 -> HTML5 Client
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S36 -> BBB web
+    Coref reject: S37 -> BBB web
+    Coref reject: S49 -> Redis DB
+    Coref reject: S54 -> Apps
+    Coref reject: S56 -> Apps
+    Coref reject: S60 -> FSESL
+    Coref reject: S60 -> Redis PubSub
+    Coref reject: S73 -> HTML5 Client
+    Coref reject: S79 -> Redis PubSub
+  Coref validated: 7 / 21
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 54 (from 57 raw)
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_bigbluebutton_20260806_230401.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_bigbluebutton_20260806_230401_calls.json (23 calls)
+  Checkpoint: final saved
+
+Final: 54 links (57.0s, 23 LLM calls)
+  s_linker21: P=87.0% R=75.8% F1=81.0% F2=77.8% TP=47 FP=7 FN=15 (57s)
+    Sources: {'entity': 50, 'coreference': 4}
+    FP by source: {'coreference': 1, 'entity': 6}
+
+  --- Variant: s_linker25 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 12 components, 87 sentences
+
+[Profile tools] Model and document knowledge
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Recording Processor -> Recording Service [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: redis pubsub -> Redis PubSub [global]
+    Alias: conversion process -> Presentation Conversion [local]
+  Checkpoint: profile saved
+
+[Controller tool] entity_pipeline
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=55 P2=64 ∪=64
+  Checkpoint: tool_entity_pipeline saved
+
+[Controller tool] relation_role_resolution
+  Checkpoint: tool_relation_role_resolution saved
+
+[Controller tool] coreference_pipeline
+    Coref reject: S5 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S16 -> HTML5 Client
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S36 -> BBB web
+    Coref reject: S37 -> BBB web
+    Coref reject: S49 -> Redis DB
+    Coref reject: S52 -> Apps
+    Coref reject: S54 -> Apps
+    Coref reject: S56 -> Apps
+    Coref reject: S57 -> FSESL
+    Coref reject: S58 -> FSESL
+    Coref reject: S60 -> FSESL
+    Coref reject: S60 -> Redis PubSub
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S74 -> WebRTC-SFU
+  Checkpoint: tool_coreference_pipeline saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_bigbluebutton_20260806_230527.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_bigbluebutton_20260806_230527_calls.json (25 calls)
+
+Final: 59 links (86.2s, 25 LLM calls)
+  s_linker25: P=91.5% R=87.1% F1=89.3% F2=87.9% TP=54 FP=5 FN=8 (86s)
+    Sources: {'entity': 44, 's24_entity_orthographic': 2, 's24_relation_role': 10, 'coreference': 3}
+    FP by source: {'coreference': 1, 'entity': 4}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 18 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 5
+    Coref reject: S1 -> model
+    Coref reject: S6 -> logic
+    Coref reject: S7 -> preferences
+    Coref reject: S8 -> logic
+    Coref reject: S13 -> model
+  Coref validated: 0 / 5
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 18 (from 18 raw)
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_jabref_20260806_230547.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker21_openai_jabref_20260806_230547_calls.json (9 calls)
+  Checkpoint: final saved
+
+Final: 18 links (20.5s, 9 LLM calls)
+  s_linker21: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=18 FP=0 FN=0 (21s)
+    Sources: {'entity': 18}
+    FP by source: {}
+
+  --- Variant: s_linker25 ---
+SLinker21 (canonical Full — s20U union pipeline + layered no-reasoning validator)
+  Backend: openai (gpt-5.6-terra)
+Loaded 6 components, 13 sentences
+
+[Profile tools] Model and document knowledge
+  Checkpoint: profile saved
+
+[Controller tool] entity_pipeline
+    Consensus: P1=20 P2=20 ∪=20
+  Checkpoint: tool_entity_pipeline saved
+
+[Controller tool] relation_role_resolution
+  Checkpoint: tool_relation_role_resolution saved
+
+[Controller tool] coreference_pipeline
+    Coref reject: S1 -> model
+    Coref reject: S1 -> gui
+    Coref reject: S11 -> preferences
+    Coref reject: S12 -> model
+  Checkpoint: tool_coreference_pipeline saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_jabref_20260806_230604.json
+  LLM call trace saved: ../results/s25_fixed_sequence_e2e_v1_20260806/llm_logs/s_linker25_openai_jabref_20260806_230604_calls.json (9 calls)
+
+Final: 18 links (17.1s, 9 LLM calls)
+  s_linker25: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=18 FP=0 FN=0 (17s)
+    Sources: {'entity': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker21          |         s_linker25         
+-----------------+-----------------------------+----------------------------
+mediastore       | F1 93.1% F2 89.4% FP   0 | F1 98.4% F2 97.4% FP   0
+teammates        | F1 83.5% F2 88.9% FP  17 | F1 87.7% F2 87.7% FP   7
+teastore         | F1 100.0% F2 100.0% FP   0 | F1 98.1% F2 97.0% FP   0
+bigbluebutton    | F1 81.0% F2 77.8% FP   7 | F1 89.3% F2 87.9% FP   5
+jabref           | F1 100.0% F2 100.0% FP   0 | F1 100.0% F2 100.0% FP   0
+-----------------+-----------------------------+----------------------------
+Macro avg        | F1 91.5% F2 91.2% FP  24 | F1 94.7% F2 94.0% FP  12
+Pooled           | F1 88.0% F2 88.1% FP  24 | F1 92.5% F2 91.8% FP  12
+
+Results saved to ../results/s25_fixed_sequence_e2e_v1_20260806/ablation_20260806_230604.json

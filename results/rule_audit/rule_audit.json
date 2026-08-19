@@ -1,0 +1,176 @@
+{
+  "inventory": [
+    {
+      "method": "_classify_mention_typed",
+      "role": "labels",
+      "code_lines": 10,
+      "doc_lines": 12,
+      "call_sites": 2
+    },
+    {
+      "method": "_all_occurrences_in_qualified_path",
+      "role": "primitive",
+      "code_lines": 6,
+      "doc_lines": 0,
+      "call_sites": 1
+    },
+    {
+      "method": "_find_exact_form",
+      "role": "primitive",
+      "code_lines": 4,
+      "doc_lines": 1,
+      "call_sites": 4
+    },
+    {
+      "method": "_in_dotted_path",
+      "role": "primitive",
+      "code_lines": 5,
+      "doc_lines": 9,
+      "call_sites": 2
+    },
+    {
+      "method": "_inside_qualified_identifier",
+      "role": "primitive",
+      "code_lines": 5,
+      "doc_lines": 1,
+      "call_sites": 2
+    },
+    {
+      "method": "_is_inflection_of",
+      "role": "primitive",
+      "code_lines": 2,
+      "doc_lines": 10,
+      "call_sites": 1
+    },
+    {
+      "method": "_name_signature",
+      "role": "primitive",
+      "code_lines": 8,
+      "doc_lines": 5,
+      "call_sites": 2
+    },
+    {
+      "method": "_states_a_name",
+      "role": "primitive",
+      "code_lines": 2,
+      "doc_lines": 7,
+      "call_sites": 3
+    },
+    {
+      "method": "_add_spelling_variants",
+      "role": "proposes",
+      "code_lines": 6,
+      "doc_lines": 1,
+      "call_sites": 1
+    },
+    {
+      "method": "_add_stated_name_net",
+      "role": "proposes",
+      "code_lines": 17,
+      "doc_lines": 29,
+      "call_sites": 1
+    },
+    {
+      "method": "_antecedent_states_name",
+      "role": "proposes",
+      "code_lines": 1,
+      "doc_lines": 6,
+      "call_sites": 1
+    },
+    {
+      "method": "_keep_stated_names",
+      "role": "proposes",
+      "code_lines": 2,
+      "doc_lines": 22,
+      "call_sites": 1
+    },
+    {
+      "method": "_name_word_candidates",
+      "role": "proposes",
+      "code_lines": 31,
+      "doc_lines": 6,
+      "call_sites": 1
+    },
+    {
+      "method": "_spelling_variant_candidates",
+      "role": "proposes",
+      "code_lines": 35,
+      "doc_lines": 1,
+      "call_sites": 1
+    },
+    {
+      "method": "_iter_batches",
+      "role": "structural",
+      "code_lines": 2,
+      "doc_lines": 1,
+      "call_sites": 5
+    },
+    {
+      "method": "_union",
+      "role": "structural",
+      "code_lines": 8,
+      "doc_lines": 1,
+      "call_sites": 1
+    },
+    {
+      "method": "_unlinked",
+      "role": "structural",
+      "code_lines": 2,
+      "doc_lines": 8,
+      "call_sites": 3
+    },
+    {
+      "method": "_window",
+      "role": "structural",
+      "code_lines": 2,
+      "doc_lines": 8,
+      "call_sites": 2
+    }
+  ],
+  "lattice": {
+    "find_exact_form": 0,
+    "stated_name_net": 0,
+    "is_inflection_of": 0,
+    "spelling_variants": 0
+  },
+  "yield": {
+    "as_spelled": {
+      "pairs": 112,
+      "gold": 107
+    },
+    "any_case": {
+      "pairs": 172,
+      "gold": 133
+    },
+    "any_spelling": {
+      "pairs": 176,
+      "gold": 137
+    },
+    "any_word": {
+      "pairs": 281,
+      "gold": 161
+    }
+  },
+  "residue": {
+    "reachable_now": 28,
+    "reachable_fixed": 25,
+    "labels_flipped": 3
+  },
+  "minimization": {
+    "before_lines": 106,
+    "after_lines": 90,
+    "before_methods": 9,
+    "after_methods": 8,
+    "before_matchers": [
+      "_add_stated_name_net",
+      "_spelling_variant_candidates",
+      "_name_word_candidates",
+      "_name_signature",
+      "_find_exact_form"
+    ],
+    "after_matchers": [
+      "_name_spans",
+      "_name_signature"
+    ]
+  }
+}

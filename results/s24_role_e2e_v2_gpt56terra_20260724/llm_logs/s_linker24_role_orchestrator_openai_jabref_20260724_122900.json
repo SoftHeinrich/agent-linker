@@ -1,0 +1,416 @@
+[
+  {
+    "phase": "s24_replacement_summary",
+    "ts": 1784888940.2760828,
+    "in": {
+      "profile": {
+        "document": [
+          {
+            "sentence": 1,
+            "text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell."
+          },
+          {
+            "sentence": 2,
+            "text": "There are additional utility packages for preferences and the cli."
+          },
+          {
+            "sentence": 3,
+            "text": "The dependencies are only directed towards the center."
+          },
+          {
+            "sentence": 4,
+            "text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases."
+          },
+          {
+            "sentence": 5,
+            "text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached."
+          },
+          {
+            "sentence": 6,
+            "text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use."
+          },
+          {
+            "sentence": 7,
+            "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+          },
+          {
+            "sentence": 8,
+            "text": "For each layer, we form packages according to their responsibility, i.e., vertical structuring."
+          },
+          {
+            "sentence": 9,
+            "text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes."
+          },
+          {
+            "sentence": 10,
+            "text": "The cli package bundles classes that are responsible for JabRef\u2019s command line interface."
+          },
+          {
+            "sentence": 11,
+            "text": "The preferences represents all information customizable by a user for her personal needs."
+          },
+          {
+            "sentence": 12,
+            "text": "We use an event bus to publish events from the model to the other layers."
+          },
+          {
+            "sentence": 13,
+            "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+          }
+        ],
+        "component_catalog": [
+          "gui",
+          "cli",
+          "logic",
+          "globals",
+          "model",
+          "preferences"
+        ],
+        "ambiguous_components": [
+          "globals",
+          "logic",
+          "model",
+          "preferences"
+        ],
+        "approved_aliases": [],
+        "role_handle_evidence": []
+      }
+    },
+    "out": {
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "the model in the center",
+            "the logic as an intermediate layer",
+            "the gui which is the outer shell",
+            "utility packages for preferences and the cli"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "exact catalog-name identity evidence",
+          "reason": "The document contains direct catalog component names that have not yet been processed for identity-based trace links.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 1,
+                "component": "logic"
+              },
+              {
+                "sentence": 1,
+                "component": "gui"
+              },
+              {
+                "sentence": 2,
+                "component": "preferences"
+              },
+              {
+                "sentence": 2,
+                "component": "cli"
+              },
+              {
+                "sentence": 4,
+                "component": "logic"
+              },
+              {
+                "sentence": 4,
+                "component": "model"
+              },
+              {
+                "sentence": 4,
+                "component": "gui"
+              },
+              {
+                "sentence": 5,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "logic"
+              },
+              {
+                "sentence": 6,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "gui"
+              },
+              {
+                "sentence": 7,
+                "component": "gui"
+              },
+              {
+                "sentence": 9,
+                "component": "model"
+              },
+              {
+                "sentence": 9,
+                "component": "logic"
+              },
+              {
+                "sentence": 10,
+                "component": "cli"
+              },
+              {
+                "sentence": 11,
+                "component": "preferences"
+              },
+              {
+                "sentence": 12,
+                "component": "model"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 5,
+                "component": "logic"
+              },
+              {
+                "sentence": 7,
+                "component": "preferences"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+            "Only the gui knows the user and his preferences and can interact with him"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "anaphoric and possessive reference resolution",
+          "reason": "The document contains unresolved demonstrative and possessive references that may resolve to already identified components; coreference processing is the applicable unused capability.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 6,
+                "component": "logic"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 1,
+                "component": "model"
+              },
+              {
+                "sentence": 2,
+                "component": "preferences"
+              },
+              {
+                "sentence": 2,
+                "component": "cli"
+              },
+              {
+                "sentence": 3,
+                "component": "model"
+              },
+              {
+                "sentence": 6,
+                "component": "model"
+              },
+              {
+                "sentence": 7,
+                "component": "preferences"
+              },
+              {
+                "sentence": 8,
+                "component": "logic"
+              },
+              {
+                "sentence": 9,
+                "component": "model"
+              },
+              {
+                "sentence": 10,
+                "component": "cli"
+              },
+              {
+                "sentence": 12,
+                "component": "gui"
+              }
+            ]
+          }
+        },
+        {
+          "action": "coverage_audit",
+          "evidence_quotes": [
+            "The dependencies are only directed towards the center.",
+            "For each layer, we form packages according to their responsibility, i.e., vertical structuring.",
+            "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "multi-component completeness, negated boundaries, and meaningful layer/core/outer-layer references",
+          "reason": "Unprocessed architectural boundary and layer-coverage statements remain; coverage_audit is the applicable unused capability.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 3,
+                "component": "model"
+              },
+              {
+                "sentence": 12,
+                "component": "logic"
+              },
+              {
+                "sentence": 12,
+                "component": "gui"
+              },
+              {
+                "sentence": 13,
+                "component": "model"
+              },
+              {
+                "sentence": 13,
+                "component": "logic"
+              },
+              {
+                "sentence": 13,
+                "component": "gui"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 7,
+                "component": "preferences"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "final": 24,
+      "elapsed_s": 54.06,
+      "llm_calls": 15
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 1,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 1,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "preferences",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "cli",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 5,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 7,
+        "c": "gui",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "logic",
+        "src": "entity"
+      },
+      {
+        "s": 10,
+        "c": "cli",
+        "src": "entity"
+      },
+      {
+        "s": 11,
+        "c": "preferences",
+        "src": "entity"
+      },
+      {
+        "s": 12,
+        "c": "model",
+        "src": "entity"
+      },
+      {
+        "s": 3,
+        "c": "model",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 12,
+        "c": "logic",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 12,
+        "c": "gui",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 13,
+        "c": "model",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 13,
+        "c": "logic",
+        "src": "s24_coverage_audit"
+      },
+      {
+        "s": 13,
+        "c": "gui",
+        "src": "s24_coverage_audit"
+      }
+    ]
+  }
+]

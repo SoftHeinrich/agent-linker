@@ -1,0 +1,78 @@
+{
+  "model": "gpt-5.6-terra",
+  "runs": 3,
+  "stats": {
+    "arms": [
+      "A_inline",
+      "B_table"
+    ],
+    "runs_per_arm": 3,
+    "sizes": {
+      "A_inline": [
+        111,
+        102,
+        103
+      ],
+      "B_table": [
+        117,
+        132,
+        132
+      ]
+    },
+    "within_A": [
+      37,
+      28,
+      13
+    ],
+    "within_B": [
+      47,
+      47,
+      0
+    ],
+    "between": [
+      74,
+      77,
+      77,
+      81,
+      72,
+      72,
+      72,
+      67,
+      67
+    ],
+    "composition_stat": 44.6,
+    "composition_null": [
+      44.6,
+      4.0,
+      3.4,
+      1.8,
+      -4.9,
+      -4.9,
+      -11.0,
+      -11.0,
+      -11.0,
+      -11.0
+    ],
+    "p_composition": 0.1,
+    "p_floor": 0.1,
+    "quality": {
+      "TP": {
+        "A_inline_mean": 78.7,
+        "B_table_mean": 94.3,
+        "delta": 15.7,
+        "p": 0.1
+      },
+      "FP": {
+        "A_inline_mean": 26.7,
+        "B_table_mean": 32.7,
+        "delta": 6.0,
+        "p": 0.1
+      }
+    },
+    "verdict": "QUALITY-CHANGING (TP p=0.1, FP p=0.1)"
+  },
+  "prompt_bytes": {
+    "A_inline": 504484,
+    "B_table": 202870
+  }
+}

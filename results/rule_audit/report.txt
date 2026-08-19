@@ -1,0 +1,107 @@
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /mnt/hostshare/ardoco-home/alinker-replication-package/.venv, got /mnt/hostshare/ardoco-home/alinker-replication-package/approach/../.venv
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /mnt/hostshare/ardoco-home/alinker-replication-package/.venv, got /mnt/hostshare/ardoco-home/alinker-replication-package/approach/../.venv
+
+=== A1  inventory of the deterministic layer ===
+method                                 role         code   doc  sites
+_classify_mention_typed                labels         10    12      2
+_all_occurrences_in_qualified_path     primitive       6     0      1
+_find_exact_form                       primitive       4     1      4
+_in_dotted_path                        primitive       5     9      2
+_inside_qualified_identifier           primitive       5     1      2
+_is_inflection_of                      primitive       2    10      1
+_name_signature                        primitive       8     5      2
+_states_a_name                         primitive       2     7      3
+_add_spelling_variants                 proposes        6     1      1
+_add_stated_name_net                   proposes       17    29      1
+_antecedent_states_name                proposes        1     6      1
+_keep_stated_names                     proposes        2    22      1
+_name_word_candidates                  proposes       31     6      1
+_spelling_variant_candidates           proposes       35     1      1
+_iter_batches                          structural      2     1      5
+_union                                 structural      8     1      1
+_unlinked                              structural      2     8      3
+_window                                structural      2     8      2
+
+  predicates that admit a link with no LLM verdict: 0
+  deterministic code lines: 148   docstring lines defending them: 128
+
+=== A2  four generators, one relation ===
+  (name, sentence) pairs checked: 3697
+    find_exact_form        IDENTICAL
+    stated_name_net        IDENTICAL
+    is_inflection_of       IDENTICAL
+    spelling_variants      IDENTICAL
+
+=== A3  the axis, as one monotone table ===
+project         form             pairs   gold  gold/pair
+mediastore      as_spelled          17     17      1.000
+mediastore      any_case            17     17      1.000
+mediastore      any_spelling        17     17      1.000
+mediastore      any_word            17     17      1.000
+teastore        as_spelled          10     10      1.000
+teastore        any_case            15     15      1.000
+teastore        any_spelling        19     19      1.000
+teastore        any_word            15     15      1.000
+teammates       as_spelled          46     44      0.957
+teammates       any_case            85     49      0.576
+teammates       any_spelling        85     49      0.576
+teammates       any_word           130     53      0.408
+bigbluebutton   as_spelled          19     18      0.947
+bigbluebutton   any_case            35     34      0.971
+bigbluebutton   any_spelling        35     34      0.971
+bigbluebutton   any_word            99     58      0.586
+jabref          as_spelled          20     18      0.900
+jabref          any_case            20     18      0.900
+jabref          any_spelling        20     18      0.900
+jabref          any_word            20     18      0.900
+
+ALL             as_spelled         112    107      0.955
+ALL             any_case           172    133      0.773
+ALL             any_spelling       176    137      0.778
+ALL             any_word           281    161      0.573
+
+  containment (each form accepts everything the stricter one accepts):
+    mediastore      as_spelled <= any_case: ok
+    mediastore      any_case <= any_spelling: ok
+    mediastore      any_spelling <= any_word: ok
+    teastore        as_spelled <= any_case: ok
+    teastore        any_case <= any_spelling: ok
+    teastore        any_spelling <= any_word: 4 ESCAPE
+    teammates       as_spelled <= any_case: ok
+    teammates       any_case <= any_spelling: ok
+    teammates       any_spelling <= any_word: ok
+    bigbluebutton   as_spelled <= any_case: ok
+    bigbluebutton   any_case <= any_spelling: 2 ESCAPE
+    bigbluebutton   any_spelling <= any_word: ok
+    jabref          as_spelled <= any_case: ok
+    jabref          any_case <= any_spelling: ok
+    jabref          any_spelling <= any_word: ok
+
+=== A4  what is left after the merge ===
+  _antecedent_states_name: 1 call site(s)
+  _full_name_source: 1 call site(s)
+  _all_occurrences_in_qualified_path lowercases the name and searches the raw sentence:
+      CODE_TOKEN labels it can produce as written : 28
+      ... with the case handled as the primitive does: 25
+      labels that would flip: 3
+
+  spans suppressed only by `"" in "-_"` (s_linker63 priced repairing this at FP +1.2):
+      mediastore      37
+      teastore        43
+      teammates       198
+      bigbluebutton   87
+      jabref          13
+      total           378
+
+=== A5  s_linker64 -> s_linker65 ===
+  lexical layer, s_linker64: 9 methods, 106 code lines
+  lexical layer, s_linker65: 8 methods, 90 code lines
+
+  distinct lexical rules to defend : 4  (s_linker64)
+  distinct relations to defend     : 1  (s_linker65), at 4 settings, 3 of them scanned
+  matching call sites in the lexical layer: 7 -> 7
+  methods a reviewer must read to know what a name match is: 5 -> 2
+      s_linker64: ['_add_stated_name_net', '_spelling_variant_candidates', '_name_word_candidates', '_name_signature', '_find_exact_form']
+      s_linker65: ['_name_spans', '_name_signature']
+
+written: ../results/rule_audit/rule_audit.json

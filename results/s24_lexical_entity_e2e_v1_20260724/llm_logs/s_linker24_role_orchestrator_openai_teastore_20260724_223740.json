@@ -1,0 +1,591 @@
+[
+  {
+    "phase": "s24_replacement_summary",
+    "ts": 1784925460.0761094,
+    "in": {
+      "profile": {
+        "document": [
+          {
+            "sentence": 1,
+            "text": "The TeaStore consists of 5 replicatable services and a single Registry instance."
+          },
+          {
+            "sentence": 2,
+            "text": "The WebUI service retrieves images from the Image Provider."
+          },
+          {
+            "sentence": 3,
+            "text": "Users are authenticated by the Auth service."
+          },
+          {
+            "sentence": 4,
+            "text": "Data is retrieved from the PersistenceProvider and product recommendations from the Recommender service."
+          },
+          {
+            "sentence": 5,
+            "text": "The WebUI provides the TeaStore front-end using Servlets in combination with JSP files."
+          },
+          {
+            "sentence": 6,
+            "text": "It contains logic to save and retireve values from cookies."
+          },
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead."
+          },
+          {
+            "sentence": 8,
+            "text": "The UI provides a status page at link indicating the current state of the TeaStore."
+          },
+          {
+            "sentence": 9,
+            "text": "The status view lists the instance count and hosts for all registered service instances."
+          },
+          {
+            "sentence": 10,
+            "text": "The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML."
+          },
+          {
+            "sentence": 11,
+            "text": "It matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier."
+          },
+          {
+            "sentence": 12,
+            "text": "If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size."
+          },
+          {
+            "sentence": 13,
+            "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+          },
+          {
+            "sentence": 14,
+            "text": "The scaled image is stored for later use."
+          },
+          {
+            "sentence": 15,
+            "text": "If the product ID or UI name and size is found, the image will be loaded and delivered."
+          },
+          {
+            "sentence": 16,
+            "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+          },
+          {
+            "sentence": 17,
+            "text": "Before loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered directly from cache or from the physical drive otherwise."
+          },
+          {
+            "sentence": 18,
+            "text": "The Auth service handles user and session authentication."
+          },
+          {
+            "sentence": 19,
+            "text": "Passwords are hashed using BCrypt."
+          },
+          {
+            "sentence": 20,
+            "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+          },
+          {
+            "sentence": 21,
+            "text": "When a SessionBlob is received, the cookie content is re-salted and checked against the hash to check for session tampering."
+          },
+          {
+            "sentence": 22,
+            "text": "The Persistence service provides access to the data persisted in the relational database back-end."
+          },
+          {
+            "sentence": 23,
+            "text": "It maps the relational entities to the JSON entity objects passed between services using the EclipseLink JPA ORM mapper."
+          },
+          {
+            "sentence": 24,
+            "text": "It features endpoints for general CRUD-Operations (Create, Read, Update, Delete) for the persistent entities."
+          },
+          {
+            "sentence": 25,
+            "text": "The persistence provider uses a second level entity cache provided by the JPA implementation."
+          },
+          {
+            "sentence": 26,
+            "text": "As such, it also acts as a caching layer."
+          },
+          {
+            "sentence": 27,
+            "text": "The Recommender is used to generate individual product recommendations for each user."
+          },
+          {
+            "sentence": 28,
+            "text": "It is trained using all existing orders."
+          },
+          {
+            "sentence": 29,
+            "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the user is currently looking at."
+          },
+          {
+            "sentence": 30,
+            "text": "The item rating of the users are based on their purchases."
+          },
+          {
+            "sentence": 31,
+            "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorithm based on the general item popularity is chosen."
+          },
+          {
+            "sentence": 32,
+            "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+          },
+          {
+            "sentence": 33,
+            "text": "We implemented two versions of the algorithm."
+          },
+          {
+            "sentence": 34,
+            "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase."
+          },
+          {
+            "sentence": 35,
+            "text": "Furthermore, one order-based nearest-neighbor approach is available."
+          },
+          {
+            "sentence": 36,
+            "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored orders."
+          },
+          {
+            "sentence": 37,
+            "text": "The Registry provides information about how many service instances are online for each service and where they are located."
+          },
+          {
+            "sentence": 38,
+            "text": "Service instances register themselves at the registry on startup."
+          },
+          {
+            "sentence": 39,
+            "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+          },
+          {
+            "sentence": 40,
+            "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again."
+          },
+          {
+            "sentence": 41,
+            "text": "Every running instance of the TeaStore uses one single registry."
+          },
+          {
+            "sentence": 42,
+            "text": "The TeaStore is a test application."
+          },
+          {
+            "sentence": 43,
+            "text": "By limiting it to a single registry instance, it enables easy configuration of multiple parallel TeaStores with minimal configuration overhead."
+          }
+        ],
+        "component_catalog": [
+          "WebUI",
+          "Registry",
+          "Persistence",
+          "Recommender",
+          "Auth",
+          "SlopeOneRecommender",
+          "OrderBasedRecommender",
+          "DummyRecommender",
+          "PopularityBasedRecommender",
+          "ImageProvider",
+          "PreprocessedSlopeOneRecommender"
+        ],
+        "ambiguous_components": [
+          "Auth",
+          "Persistence",
+          "Recommender",
+          "Registry"
+        ],
+        "approved_aliases": [
+          {
+            "alias": "WebUi",
+            "target": "WebUI",
+            "scope": "global"
+          },
+          {
+            "alias": "UI",
+            "target": "WebUI",
+            "scope": "global"
+          },
+          {
+            "alias": "Image Provider",
+            "target": "ImageProvider",
+            "scope": "global"
+          },
+          {
+            "alias": "PersistenceProvider",
+            "target": "Persistence",
+            "scope": "global"
+          },
+          {
+            "alias": "persistence provider",
+            "target": "Persistence",
+            "scope": "local"
+          },
+          {
+            "alias": "registry",
+            "target": "Registry",
+            "scope": "local"
+          }
+        ],
+        "role_handle_evidence": [],
+        "entity_orthographic_evidence": [
+          {
+            "sentence": 2,
+            "text": "The WebUI service retrieves images from the Image Provider.",
+            "component": "ImageProvider",
+            "source": "entity_orthographic_candidate"
+          },
+          {
+            "sentence": 7,
+            "text": "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "component": "ImageProvider",
+            "source": "entity_orthographic_candidate"
+          },
+          {
+            "sentence": 10,
+            "text": "The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.",
+            "component": "ImageProvider",
+            "source": "entity_orthographic_candidate"
+          },
+          {
+            "sentence": 12,
+            "text": "If the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.",
+            "component": "ImageProvider",
+            "source": "entity_orthographic_candidate"
+          }
+        ]
+      }
+    },
+    "out": {
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence_quotes": [
+            "The WebUI service retrieves images from the Image Provider.",
+            "Images (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.",
+            "The Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML."
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "exact catalog-name, approved-alias, and catalog-equivalent orthographic identity evidence",
+          "reason": "Entity identity evidence is present and unresolved; run the entity pipeline before finalization.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "Registry"
+              },
+              {
+                "sentence": 2,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 2,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 3,
+                "component": "Auth"
+              },
+              {
+                "sentence": 4,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 4,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 5,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 7,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 7,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 8,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 10,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 10,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 12,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 18,
+                "component": "Auth"
+              },
+              {
+                "sentence": 22,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 25,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 27,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 37,
+                "component": "Registry"
+              },
+              {
+                "sentence": 41,
+                "component": "Registry"
+              },
+              {
+                "sentence": 43,
+                "component": "Registry"
+              },
+              {
+                "sentence": 38,
+                "component": "Registry"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence_quotes": [
+            "It contains logic to save and retireve values from cookies.",
+            "It matches the provided product ID or UI name",
+            "Its recommendation time is dependent on the number of items in the current cart"
+          ],
+          "discarded_evidence_quotes": [],
+          "unresolved_obligation": "pronoun, demonstrative, and anaphoric reference resolution",
+          "reason": "Anaphoric references remain unresolved and the only available unused capability is the coreference pipeline.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 6,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 8,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 11,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 23,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 24,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 25,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 26,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 28,
+                "component": "Recommender"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 5,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 7,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 7,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 10,
+                "component": "ImageProvider"
+              },
+              {
+                "sentence": 10,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 38,
+                "component": "Registry"
+              },
+              {
+                "sentence": 41,
+                "component": "Registry"
+              },
+              {
+                "sentence": 43,
+                "component": "Registry"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "final": 27,
+      "elapsed_s": 22.88,
+      "llm_calls": 15
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "Registry",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "WebUI",
+        "src": "entity"
+      },
+      {
+        "s": 2,
+        "c": "ImageProvider",
+        "src": "entity"
+      },
+      {
+        "s": 3,
+        "c": "Auth",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "Persistence",
+        "src": "entity"
+      },
+      {
+        "s": 4,
+        "c": "Recommender",
+        "src": "entity"
+      },
+      {
+        "s": 5,
+        "c": "WebUI",
+        "src": "entity"
+      },
+      {
+        "s": 7,
+        "c": "WebUI",
+        "src": "entity"
+      },
+      {
+        "s": 7,
+        "c": "ImageProvider",
+        "src": "entity"
+      },
+      {
+        "s": 8,
+        "c": "WebUI",
+        "src": "entity"
+      },
+      {
+        "s": 10,
+        "c": "ImageProvider",
+        "src": "entity"
+      },
+      {
+        "s": 10,
+        "c": "WebUI",
+        "src": "entity"
+      },
+      {
+        "s": 12,
+        "c": "ImageProvider",
+        "src": "entity"
+      },
+      {
+        "s": 18,
+        "c": "Auth",
+        "src": "entity"
+      },
+      {
+        "s": 22,
+        "c": "Persistence",
+        "src": "entity"
+      },
+      {
+        "s": 25,
+        "c": "Persistence",
+        "src": "entity"
+      },
+      {
+        "s": 27,
+        "c": "Recommender",
+        "src": "entity"
+      },
+      {
+        "s": 37,
+        "c": "Registry",
+        "src": "entity"
+      },
+      {
+        "s": 41,
+        "c": "Registry",
+        "src": "entity"
+      },
+      {
+        "s": 43,
+        "c": "Registry",
+        "src": "entity"
+      },
+      {
+        "s": 38,
+        "c": "Registry",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "WebUI",
+        "src": "coreference"
+      },
+      {
+        "s": 11,
+        "c": "ImageProvider",
+        "src": "coreference"
+      },
+      {
+        "s": 23,
+        "c": "Persistence",
+        "src": "coreference"
+      },
+      {
+        "s": 24,
+        "c": "Persistence",
+        "src": "coreference"
+      },
+      {
+        "s": 26,
+        "c": "Persistence",
+        "src": "coreference"
+      },
+      {
+        "s": 28,
+        "c": "Recommender",
+        "src": "coreference"
+      }
+    ]
+  }
+]

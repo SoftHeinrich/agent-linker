@@ -1,0 +1,1564 @@
+{
+  "protocol": "gold selects prior S24 FP/FN sentences offline; all profile, candidate, validation, controller calls are fresh OpenAI calls; unfiltered and owned states share identical accepted candidates",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "none",
+  "datasets": [
+    {
+      "dataset": "mediastore",
+      "focus_sentences": [
+        25,
+        33
+      ],
+      "action": "finalize",
+      "controller": {
+        "evidence_quotes": [],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "none",
+        "reason": "All available evidence has been resolved by the completed entity pipeline, and no unused tool remains."
+      },
+      "unfiltered": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "P": 1.0,
+        "R": 0.75,
+        "F1": 0.8571428571428571,
+        "F2": 0.7894736842105263
+      },
+      "owned_entity": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "P": 1.0,
+        "R": 0.75,
+        "F1": 0.8571428571428571,
+        "F2": 0.7894736842105263
+      },
+      "final": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "P": 1.0,
+        "R": 0.75,
+        "F1": 0.8571428571428571,
+        "F2": 0.7894736842105263
+      },
+      "removed_by_ownership": 0,
+      "raw_validator_decisions": [
+        {
+          "sentence": 25,
+          "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 25,
+          "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 33,
+          "component_id": "_qxAiILg7EeSNPorBlo7x9g",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 33,
+          "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+          "approved": false,
+          "p1": true,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        }
+      ],
+      "role_feedback": {},
+      "llm_calls": 8,
+      "trace": [
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784892107.956082,
+          "elapsed_s": 2.278,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nOne of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.\nTo meet the user authentication requirement, registration and log-in have to be offered.\nTo this end, the Facade component delivers the corresponding registration and log-in pages to users.\nAfter the user has logged into the system, he or she will be forwarded to a site to list the audio files.\nThe main functionality, however, is provided by other components.\nIn addition, users can browse, download, and upload audio files using the Facade component.\nApplication business logic is provided by a central business logic component, called the MediaManagement component.\nThe MediaManagement component coordinates the communication of other components.\nFurthermore, it fetches audio files from a specific location (e.g., a dedicated file server or a local disk) when processing download requests.\nAs described above, to communicate with the system, users' registration and authentication are needed.\nThe UserManagement component answers the requests for registration and authentication.\nThe UserDBAdapter component queries the database.\nWhen a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords.\nTo reduce the risk of copyright infringements, all downloaded files are watermarked.\nTo this end, the requested files are first reencoded.\nThe re-encoded files are then digitally and individually watermarked by the TagWatermarking component.\nAfterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.\nHence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet.\nTo allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.\nThe ReEncoder component converts the bit rates of audio files.\nThis can result in reduction of file sizes.\nThe persistence tier contains components that are concerned with the storage of audio files and their meta-data.\nThe Database component represents an actual database (e.g., MySQL).\nIt stores user information and meta-data of audio files such as the name and the genre.\nAfter the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\nWhen a user uploads an audio file, the MediaAccess component stores it at the predefined location.\nThe MediaAccess component encapsulates database access for meta-data of audio files.\nFurthermore, it fetches a list of all available audio files.\nBy contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.\nThe UserDBAdapter component creates a query based on the user's request.\nThe Database component then executes the actual query for files.\nAll salted hashes of passwords are also stored in the Database component.\nBy contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\nWhen a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.\nAfterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage.\nWhen a user uploads a file, it will be stored in the DataStorage without any change.\nHowever, a download can cause re-encoding of the audio file.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[],\"synonyms\":[{\"term\":\"ReEncoder\",\"component\":\"Reencoding\",\"scope\":\"global\"},{\"term\":\"Database\",\"component\":\"DB\",\"scope\":\"global\"},{\"term\":\"DataStorage\",\"component\":\"FileStorage\",\"scope\":\"global\"},{\"term\":\"AudioAccess\",\"component\":\"MediaAccess\",\"scope\":\"global\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2277,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1038,
+            "completion_tokens": 68,
+            "total_tokens": 1106
+          }
+        },
+        {
+          "phase": "phase_1_model",
+          "ts": 1784892107.955924,
+          "elapsed_s": 2.363,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\n    \"UserDBAdapter\",\n    \"AudioWatermarking\",\n    \"Reencoding\",\n    \"MediaManagement\",\n    \"MediaAccess\",\n    \"Packaging\",\n    \"FileStorage\",\n    \"TagWatermarking\",\n    \"UserManagement\",\n    \"DownloadLoadBalancer\",\n    \"ParallelWatermarking\"\n  ],\n  \"ambiguous\": [\n    \"Facade\",\n    \"DB\",\n    \"Cache\"\n  ]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2362,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 181,
+            "completion_tokens": 95,
+            "total_tokens": 276
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784892110.233695,
+          "elapsed_s": 0.891,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nPROPOSED MAPPINGS:\n'ReEncoder' -> Reencoding\n'Database' -> DB\n'DataStorage' -> FileStorage\n'AudioAccess' -> MediaAccess\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"ReEncoder\",\"Database\",\"DataStorage\",\"AudioAccess\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 890,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 229,
+            "completion_tokens": 18,
+            "total_tokens": 247
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784892111.1264262,
+          "elapsed_s": 1.38,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\nKNOWN ALIASES: ReEncoder=Reencoding, Database=DB, DataStorage=FileStorage, AudioAccess=MediaAccess\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS25: After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\nS33: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":25,\"component\":\"MediaAccess\",\"matched_text\":\"AudioAccess\"},{\"sentence\":25,\"component\":\"DB\",\"matched_text\":\"Database\"},{\"sentence\":33,\"component\":\"FileStorage\",\"matched_text\":\"DataStorage\"},{\"sentence\":33,\"component\":\"DB\",\"matched_text\":\"database\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1379,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 288,
+            "completion_tokens": 64,
+            "total_tokens": 352
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784892111.1251616,
+          "elapsed_s": 1.581,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\nKNOWN ALIASES: ReEncoder=Reencoding, Database=DB, DataStorage=FileStorage, AudioAccess=MediaAccess\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS25: After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\nS33: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":25,\"component\":\"MediaAccess\",\"matched_text\":\"AudioAccess\"},{\"sentence\":25,\"component\":\"DB\",\"matched_text\":\"Database\"},{\"sentence\":33,\"component\":\"FileStorage\",\"matched_text\":\"DataStorage\"},{\"sentence\":33,\"component\":\"DB\",\"matched_text\":\"database\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1581,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 288,
+            "completion_tokens": 64,
+            "total_tokens": 352
+          }
+        },
+        {
+          "phase": "phase_11_entity_p1",
+          "ts": 1784892112.7072825,
+          "elapsed_s": 1.006,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"AudioAccess\" -> MediaAccess\n  \"After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\"\n  Evidence: source=entity, span=\"AudioAccess\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"Database\" -> DB\n  \"After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\"\n  Evidence: source=entity, span=\"Database\", mention=via known alias, ambiguous=True\n  Rationale: Framing C extraction\nCase 3: \"DataStorage\" -> FileStorage\n  \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=entity, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 4: \"database\" -> DB\n  \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=entity, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: Framing C extraction\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"AudioAccess creates a query that is sent to the Database component.\",\"approve\":true},{\"case\":2,\"claim\":\"the Database component\",\"approve\":true},{\"case\":3,\"claim\":\"to decouple the DataStorage from the database.\",\"approve\":true},{\"case\":4,\"claim\":\"the database\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1005,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 677,
+            "completion_tokens": 79,
+            "total_tokens": 756
+          }
+        },
+        {
+          "phase": "phase_11_entity_p2",
+          "ts": 1784892113.7132516,
+          "elapsed_s": 1.058,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"AudioAccess\" -> MediaAccess\n  \"After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\"\n  Evidence: source=entity, span=\"AudioAccess\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"Database\" -> DB\n  \"After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\"\n  Evidence: source=entity, span=\"Database\", mention=via known alias, ambiguous=True\n  Rationale: Framing C extraction\nCase 3: \"DataStorage\" -> FileStorage\n  \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=entity, span=\"DataStorage\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 4: \"database\" -> DB\n  \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"\n  Evidence: source=entity, span=\"database\", mention=via known alias, ambiguous=True\n  Rationale: Framing C extraction\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"AudioAccess creates a query that is sent to the Database component.\",\"approve\":true},{\"case\":2,\"claim\":\"Database component.\",\"approve\":true},{\"case\":3,\"claim\":\"decouple the DataStorage from the database.\",\"approve\":true},{\"case\":4,\"claim\":\"decouple the DataStorage from the database.\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1058,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 654,
+            "completion_tokens": 83,
+            "total_tokens": 737
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784892114.7720873,
+          "elapsed_s": 1.47,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names and apply exact standalone occurrences.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 25, \"text\": \"After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.\"}, {\"sentence\": 33, \"text\": \"By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.\"}], \"component_catalog\": [\"UserDBAdapter\", \"AudioWatermarking\", \"Reencoding\", \"MediaManagement\", \"Facade\", \"MediaAccess\", \"Packaging\", \"DB\", \"FileStorage\", \"TagWatermarking\", \"Cache\", \"UserManagement\", \"DownloadLoadBalancer\", \"ParallelWatermarking\"], \"ambiguous_components\": [\"Cache\", \"DB\", \"Facade\"], \"approved_aliases\": [{\"alias\": \"ReEncoder\", \"target\": \"Reencoding\", \"scope\": \"global\"}, {\"alias\": \"Database\", \"target\": \"DB\", \"scope\": \"global\"}, {\"alias\": \"DataStorage\", \"target\": \"FileStorage\", \"scope\": \"global\"}, {\"alias\": \"AudioAccess\", \"target\": \"MediaAccess\", \"scope\": \"global\"}], \"role_handle_evidence\": []}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh same-candidate ownership pass\", \"feedback\": {\"accepted\": [{\"sentence\": 25, \"component\": \"MediaAccess\", \"source\": \"entity\"}, {\"sentence\": 25, \"component\": \"DB\", \"source\": \"entity\"}, {\"sentence\": 33, \"component\": \"FileStorage\", \"source\": \"entity\"}], \"rejected\": []}}]\n\nCURRENT LINKS\n[{\"sentence\": 25, \"component\": \"MediaAccess\", \"source\": \"entity\"}, {\"sentence\": 25, \"component\": \"DB\", \"source\": \"entity\"}, {\"sentence\": 33, \"component\": \"FileStorage\", \"source\": \"entity\"}]\n\nAVAILABLE ACTIONS\n[\"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"finalize\",\"evidence_quotes\":[],\"unresolved_obligation\":\"none\",\"reason\":\"All available evidence has been resolved by the completed entity pipeline, and no unused tool remains.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1470,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 670,
+            "completion_tokens": 42,
+            "total_tokens": 712
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "teastore",
+      "focus_sentences": [
+        32,
+        34,
+        35,
+        39,
+        40
+      ],
+      "action": "finalize",
+      "controller": {
+        "evidence_quotes": [],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "none",
+        "reason": "The only available action is finalize; the completed entity pipeline produced no links."
+      },
+      "unfiltered": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "owned_entity": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "final": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "removed_by_ownership": 0,
+      "raw_validator_decisions": [
+        {
+          "sentence": 32,
+          "component_id": "_YkXeIDVgEeqPG_FgW3bi6Q",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 35,
+          "component_id": "_kgbngDVgEeqPG_FgW3bi6Q",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 39,
+          "component_id": "_dhM6oDVXEeqPG_FgW3bi6Q",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 40,
+          "component_id": "_dhM6oDVXEeqPG_FgW3bi6Q",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        }
+      ],
+      "role_feedback": {},
+      "llm_calls": 8,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784892116.2439501,
+          "elapsed_s": 1.062,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\n    \"WebUI\",\n    \"SlopeOneRecommender\",\n    \"OrderBasedRecommender\",\n    \"DummyRecommender\",\n    \"PopularityBasedRecommender\",\n    \"ImageProvider\",\n    \"PreprocessedSlopeOneRecommender\"\n  ],\n  \"ambiguous\": [\n    \"Registry\",\n    \"Persistence\",\n    \"Recommender\",\n    \"Auth\"\n  ]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1061,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 183,
+            "completion_tokens": 90,
+            "total_tokens": 273
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784892116.244278,
+          "elapsed_s": 1.749,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nThe TeaStore consists of 5 replicatable services and a single Registry instance.\nThe WebUI service retrieves images from the Image Provider.\nUsers are authenticated by the Auth service.\nData is retrieved from the PersistenceProvider and product recommendations from the Recommender service.\nThe WebUI provides the TeaStore front-end using Servlets in combination with JSP files.\nIt contains logic to save and retireve values from cookies.\nImages (with few exceptions) are not provides by the WebUi, but are retrieved from the Image Provider service instead.\nThe UI provides a status page at link indicating the current state of the TeaStore.\nThe status view lists the instance count and hosts for all registered service instances.\nThe Image Provider delivers images to the WebUI as base64 encoded strings to embed them in the final HTML.\nIt matches the provided product ID or UI name (the filename for images not representing a product and therefore without product ID) and the image size to a unique image identifier.\nIf the product ID or UI name is not available to the Image Provider, a standard \"not found\" image will be delivered in the correct size.\nIf the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled.\nThe scaled image is stored for later use.\nIf the product ID or UI name and size is found, the image will be loaded and delivered.\nTo speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place.\nBefore loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered directly from cache or from the physical drive otherwise.\nThe Auth service handles user and session authentication.\nPasswords are hashed using BCrypt.\nTo validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie.\nWhen a SessionBlob is received, the cookie content is re-salted and checked against the hash to check for session tampering.\nThe Persistence service provides access to the data persisted in the relational database back-end.\nIt maps the relational entities to the JSON entity objects passed between services using the EclipseLink JPA ORM mapper.\nIt features endpoints for general CRUD-Operations (Create, Read, Update, Delete) for the persistent entities.\nThe persistence provider uses a second level entity cache provided by the JPA implementation.\nAs such, it also acts as a caching layer.\nThe Recommender is used to generate individual product recommendations for each user.\nIt is trained using all existing orders.\nRecommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the user is currently looking at.\nThe item rating of the users are based on their purchases.\nIf the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorithm based on the general item popularity is chosen.\nIf the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\nWe implemented two versions of the algorithm.\nOne CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\nFurthermore, one order-based nearest-neighbor approach is available.\nIts recommendation time is dependent on the number of items in the current cart as well as the total number of stored orders.\nThe Registry provides information about how many service instances are online for each service and where they are located.\nService instances register themselves at the registry on startup.\nServices are also required to send a heartbeat signal by re-registering periodically.\nServices missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\nEvery running instance of the TeaStore uses one single registry.\nThe TeaStore is a test application.\nBy limiting it to a single registry instance, it enables easy configuration of multiple parallel TeaStores with minimal configuration overhead.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\n  \"abbreviations\": [\n    {\n      \"term\": \"UI\",\n      \"component\": \"WebUI\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"LFU\",\n      \"component\": \"ImageProvider\",\n      \"scope\": \"global\"\n    }\n  ],\n  \"synonyms\": [\n    {\n      \"term\": \"WebUi\",\n      \"component\": \"WebUI\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"Image Provider\",\n      \"component\": \"ImageProvider\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"PersistenceProvider\",\n      \"component\": \"Persistence\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"persistence provider\",\n      \"component\": \"Persistence\",\n      \"scope\": \"local\"\n    },\n    {\n      \"term\": \"registry\",\n      \"component\": \"Registry\",\n      \"scope\": \"local\"\n    }\n  ]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1749,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1124,
+            "completion_tokens": 207,
+            "total_tokens": 1331
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784892117.9934542,
+          "elapsed_s": 0.812,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nPROPOSED MAPPINGS:\n'UI' -> WebUI\n'LFU' -> ImageProvider\n'WebUi' -> WebUI\n'Image Provider' -> ImageProvider\n'PersistenceProvider' -> Persistence\n'persistence provider' -> Persistence\n'registry' -> Registry\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"UI\",\"WebUi\",\"Image Provider\",\"PersistenceProvider\",\"persistence provider\",\"registry\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 812,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 253,
+            "completion_tokens": 24,
+            "total_tokens": 277
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784892118.807964,
+          "elapsed_s": 1.161,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\nKNOWN ALIASES: UI=WebUI, WebUi=WebUI, Image Provider=ImageProvider, PersistenceProvider=Persistence\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS32: If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\nS34: One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\nS35: Furthermore, one order-based nearest-neighbor approach is available.\nS39: Services are also required to send a heartbeat signal by re-registering periodically.\nS40: Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":32,\"component\":\"SlopeOneRecommender\",\"matched_text\":\"Slope One\"},{\"sentence\":35,\"component\":\"OrderBasedRecommender\",\"matched_text\":\"order-based nearest-neighbor approach\"},{\"sentence\":39,\"component\":\"Registry\",\"matched_text\":\"re-registering periodically\"},{\"sentence\":40,\"component\":\"Registry\",\"matched_text\":\"register function\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1160,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 341,
+            "completion_tokens": 78,
+            "total_tokens": 419
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784892118.8065932,
+          "elapsed_s": 1.2,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\nKNOWN ALIASES: UI=WebUI, WebUi=WebUI, Image Provider=ImageProvider, PersistenceProvider=Persistence\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS32: If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\nS34: One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\nS35: Furthermore, one order-based nearest-neighbor approach is available.\nS39: Services are also required to send a heartbeat signal by re-registering periodically.\nS40: Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":32,\"component\":\"SlopeOneRecommender\",\"matched_text\":\"Slope One\"},{\"sentence\":35,\"component\":\"OrderBasedRecommender\",\"matched_text\":\"order-based nearest-neighbor approach\"},{\"sentence\":39,\"component\":\"Registry\",\"matched_text\":\"re-registering periodically\"},{\"sentence\":40,\"component\":\"Registry\",\"matched_text\":\"register function\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1200,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 341,
+            "completion_tokens": 78,
+            "total_tokens": 419
+          }
+        },
+        {
+          "phase": "phase_11_entity_p1",
+          "ts": 1784892120.0074852,
+          "elapsed_s": 1.879,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"Slope One\" -> SlopeOneRecommender\n  \"If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\"\n  Evidence: source=entity, span=\"Slope One\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"order-based nearest-neighbor approach\" -> OrderBasedRecommender\n  [prev: One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.] \"Furthermore, one order-based nearest-neighbor approach is available.\"\n  Evidence: source=entity, span=\"order-based nearest-neighbor approach\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\"]\nCase 3: \"re-registering periodically\" -> Registry\n  \"Services are also required to send a heartbeat signal by re-registering periodically.\"\n  Evidence: source=entity, span=\"re-registering periodically\", mention=indirect/unclear match, ambiguous=True\n  Rationale: Framing C extraction\nCase 4: \"register function\" -> Registry\n  [prev: Services are also required to send a heartbeat signal by re-registering periodically.] \"Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\"\n  Evidence: source=entity, span=\"register function\", mention=indirect/unclear match, ambiguous=True\n  Rationale: Framing C extraction\n  [prev: \"Services are also required to send a heartbeat signal by re-registering periodically.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Slope One as item-based collaborative filtering is applied to calculate the recommendations.\",\"approve\":false},{\"case\":2,\"claim\":\"one order-based nearest-neighbor approach is available.\",\"approve\":false},{\"case\":3,\"claim\":\"Services are also required to send a heartbeat signal by re-registering periodically.\",\"approve\":false},{\"case\":4,\"claim\":\"Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1879,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 774,
+            "completion_tokens": 111,
+            "total_tokens": 885
+          }
+        },
+        {
+          "phase": "phase_11_entity_p2",
+          "ts": 1784892121.8869555,
+          "elapsed_s": 1.061,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: WebUI, Registry, Persistence, Recommender, Auth, SlopeOneRecommender, OrderBasedRecommender, DummyRecommender, PopularityBasedRecommender, ImageProvider, PreprocessedSlopeOneRecommender\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"Slope One\" -> SlopeOneRecommender\n  \"If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\"\n  Evidence: source=entity, span=\"Slope One\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 2: \"order-based nearest-neighbor approach\" -> OrderBasedRecommender\n  [prev: One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.] \"Furthermore, one order-based nearest-neighbor approach is available.\"\n  Evidence: source=entity, span=\"order-based nearest-neighbor approach\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\"]\nCase 3: \"re-registering periodically\" -> Registry\n  \"Services are also required to send a heartbeat signal by re-registering periodically.\"\n  Evidence: source=entity, span=\"re-registering periodically\", mention=indirect/unclear match, ambiguous=True\n  Rationale: Framing C extraction\nCase 4: \"register function\" -> Registry\n  [prev: Services are also required to send a heartbeat signal by re-registering periodically.] \"Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\"\n  Evidence: source=entity, span=\"register function\", mention=indirect/unclear match, ambiguous=True\n  Rationale: Framing C extraction\n  [prev: \"Services are also required to send a heartbeat signal by re-registering periodically.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"Slope One as item-based collaborative filtering is applied to calculate the recommendations.\",\"approve\":false},{\"case\":2,\"claim\":\"one order-based nearest-neighbor approach is available.\",\"approve\":false},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"none\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1061,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 751,
+            "completion_tokens": 77,
+            "total_tokens": 828
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784892122.948307,
+          "elapsed_s": 0.83,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names and apply exact standalone occurrences.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 32, \"text\": \"If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations.\"}, {\"sentence\": 34, \"text\": \"One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user rating prediction matrix during the training phase.\"}, {\"sentence\": 35, \"text\": \"Furthermore, one order-based nearest-neighbor approach is available.\"}, {\"sentence\": 39, \"text\": \"Services are also required to send a heartbeat signal by re-registering periodically.\"}, {\"sentence\": 40, \"text\": \"Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called again.\"}], \"component_catalog\": [\"WebUI\", \"Registry\", \"Persistence\", \"Recommender\", \"Auth\", \"SlopeOneRecommender\", \"OrderBasedRecommender\", \"DummyRecommender\", \"PopularityBasedRecommender\", \"ImageProvider\", \"PreprocessedSlopeOneRecommender\"], \"ambiguous_components\": [\"Auth\", \"Persistence\", \"Recommender\", \"Registry\"], \"approved_aliases\": [{\"alias\": \"UI\", \"target\": \"WebUI\", \"scope\": \"global\"}, {\"alias\": \"WebUi\", \"target\": \"WebUI\", \"scope\": \"global\"}, {\"alias\": \"Image Provider\", \"target\": \"ImageProvider\", \"scope\": \"global\"}, {\"alias\": \"PersistenceProvider\", \"target\": \"Persistence\", \"scope\": \"global\"}, {\"alias\": \"persistence provider\", \"target\": \"Persistence\", \"scope\": \"local\"}, {\"alias\": \"registry\", \"target\": \"Registry\", \"scope\": \"local\"}], \"role_handle_evidence\": []}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh same-candidate ownership pass\", \"feedback\": {\"accepted\": [], \"rejected\": []}}]\n\nCURRENT LINKS\n[]\n\nAVAILABLE ACTIONS\n[\"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"finalize\",\"evidence_quotes\":[],\"unresolved_obligation\":\"none\",\"reason\":\"The only available action is finalize; the completed entity pipeline produced no links.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 830,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 673,
+            "completion_tokens": 39,
+            "total_tokens": 712
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "teammates",
+      "focus_sentences": [
+        4,
+        7,
+        8,
+        21,
+        85,
+        88,
+        125,
+        131,
+        169,
+        170,
+        173,
+        185,
+        188
+      ],
+      "action": "relation_role_resolution",
+      "controller": {
+        "evidence_quotes": [
+          "Package overview contains test.driver, test.cases and subpackages.",
+          "test.driver contains infrastructure and helpers needed for running the tests.",
+          "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        ],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "project-specific shortened handle resolution for Test Driver via Driver",
+        "reason": "Exact document occurrences of the derived standalone handle driver remain unresolved."
+      },
+      "unfiltered": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 10,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "owned_entity": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 10,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "final": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 10,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "removed_by_ownership": 0,
+      "raw_validator_decisions": [],
+      "role_feedback": {
+        "role_handles": [
+          {
+            "expression": "Driver",
+            "component": "Test Driver"
+          },
+          {
+            "expression": "Datastore",
+            "component": "GAE Datastore"
+          }
+        ],
+        "proposed": [
+          {
+            "sentence": 169,
+            "text": "Package overview contains test.driver, test.cases and subpackages.",
+            "component": "Test Driver",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 170,
+            "text": "test.driver contains infrastructure and helpers needed for running the tests.",
+            "component": "Test Driver",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 173,
+            "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+            "component": "Test Driver",
+            "source": "relation_role_candidate"
+          }
+        ],
+        "accepted": [
+          {
+            "sentence": 169,
+            "text": "Package overview contains test.driver, test.cases and subpackages.",
+            "component": "Test Driver",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 170,
+            "text": "test.driver contains infrastructure and helpers needed for running the tests.",
+            "component": "Test Driver",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 173,
+            "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers.",
+            "component": "Test Driver",
+            "source": "s24_relation_role"
+          }
+        ],
+        "handle_decisions": [
+          {
+            "sentence": 169,
+            "component_id": "_Bae2oKETEeu-mYqkDskRow",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 170,
+            "component_id": "_Bae2oKETEeu-mYqkDskRow",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 173,
+            "component_id": "_Bae2oKETEeu-mYqkDskRow",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          }
+        ]
+      },
+      "llm_calls": 6,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784892123.7796786,
+          "elapsed_s": 0.988,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\"Test Driver\", \"E2E\", \"GAE Datastore\"],\n  \"ambiguous\": [\"Common\", \"UI\", \"Logic\", \"Storage\", \"Client\"]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 988,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 156,
+            "completion_tokens": 45,
+            "total_tokens": 201
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784892123.7800217,
+          "elapsed_s": 1.533,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nArchitecture contains UI Component, Logic Component, Storage Component, Common Component, Test Driver Component, E2E Component, Client Component.\nTEAMMATES is a Web application that runs on Google App Engine (GAE).\nGiven above is an overview of the main components.\nThe UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\nThis UI is a single HTML page generated by Angular framework.\nThe initial page request is sent to the server over HTTP, and requests for data are sent asynchronously with AJAX.\nIn the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\nThe main logic of the application is in POJOs (Plain Old Java Objects).\nThe storage layer of the application uses the persistence framework provided by GAE Datastore, a NoSQL database.\nThe following explains the use of the Test Driver.\nTEAMMATES makes heavy use of automated regression testing.\nTest data is transmitted using JSON format.\nTestNG is used for Java testing (all levels) and Jest for JavaScript unit-testing.\nHttpUnit is used to set up a simulated web server in servlet-level tests, where an actual web server is not required.\nThe E2E end-to-end component is used to interact with the application as a whole with Web browsers.\nIts primary function is for E2E tests.\nSelenium Java is used to automate E2E testing with actual Web browsers.\nThe Client component can connect to the back end directly without using a Web browser.\nIt is used for administrative purposes, e.g. migrating data to a new schema.\nThe Common component contains utility code (data transfer objects, helper classes, etc.) used across the application.\nThe diagram below shows how the code in each component is organized into packages and the dependencies between them.\nlogic, ui.website, ui.controller represent an application of Model-View-Controller pattern.\nui.website is not a real package.\nIt is a conceptual package representing the front-end of the application.\nThe diagram below shows the object structure of the UI component.\nui.website is not a Java package.\nIt is written in Angular framework and consists of HTML, SCSS, and TypeScript files.\nThe framework will build those files into HTML, CSS and JavaScript files ready to be used by standard Web browsers.\nThe UI component is the first stop for 99% of all requests that are received by the application.\nSuch a request will go through the following steps.\nFirst, request received by the GAE server.\nSecond, custom filters are applied according to the order specified in web.xml, e.g. OriginCheckFilter.\nThird, request forwarded to a Servlet object as specified in web.xml for further processing, depending on the type of request.\nThere are two general types of requests.\nThe user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently.\nUser-invoked requests are all requests made by the users of the application, typically from the Web browser (i.e. by navigating to a particular URL of the application).\nThe request will be processed as in the image.\nThe initial request for the web page will be processed as follows.\nFirst, request forwarded to WebPageServlet.\nSecond, WebPageServlet returns the built single web page (index.html).\nThird, the browser will render the page and execute the page scripts, most of the time requiring AJAX requests to the server.\nSubsequent AJAX requests sent to the server will be processed as follows.\nFirst, request forwarded to the WebApiServlet.\nSecond, WebApiServlet uses the ActionFactory to generate the matching Action object, e.g. InstructorHomePageAction.\nThird, WebApiServlet executes the action.\nFourth, the Action object checks the access rights of the user.\nIf the action is allowed, it will be performed, interacting with the Logic component as necessary.\nFifth, the Action packages and processes the result into an ActionResult object.\nThe most common format is JsonResult (requests for obtaining data or processing existing data), and other formats are defined as necessary, e.g. FileDownloadResult (e.g. downloading feedback session report) and ImageResult (e.g. profile pictures).\nSixth, WebApiServlet sends the result back to the browser which will then process it on the front-end.\nRequests for static asset files (e.g. CSS, JS files, images) are served directly without going through web.xml configuration at all.\nThe Web API is protected by two layers of access control check.\nThese are origin check, authentication and authorization check.\nOrigin check mitigates CSRF attack.\nAuthentication and authorization check checks if the logged in user (or lack thereof) has sufficient privileges to trigger the API's actions.\nSpecial keys (csrf key and backdoor key) can be used to bypass each of the checks, typically for testing purpose.\nThose keys are strings known only to the person who deployed the application (typically, the administrator).\nAutomated requests are all requests sent automatically by the GAE server during specific periods of time.\nThis type of request will be processed as follows.\nFirst, the source of the request will be checked for administrator privilege.\nIf this privilege is absent (e.g. non-administrator users trying to invoke the automated actions), the request will be dropped and a 403 Forbidden status will be returned.\nSecond, requests generated by the GAE server are equipped with this privilege.\nThird, administrators can manually invoke these requests.\nThis is particularly useful in testing the actions associated with those requests.\nFourth, request forwarded to the AutomatedServlet.\nFifth, automatedServlet uses the AutomatedActionFactory to generate the matching AutomatedAction object, e.g. CompileLogsAction.\nSixth, automatedServlet executes the action.\nSeventh, the corresponding AutomatedAction will be performed, interacting with the Logic component as necessary.\nGAE server sends such automated requests through two different configurations.\nThese configurations are cron jobs or task queue workers.\nCron jobs are jobs that are automatically scheduled for a specified period of time, e.g. scheduling feedback session opening reminders.\nIt is configured in cron.xml.\nTask queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for the tasks to be added to queue), but executed by GAE (i.e. GAE determines when and which tasks in the queue are executed at any point of time).\nThis is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request processing limit imposed by GAE.\nIt is configured in queue.xml as well as the TaskQueue nested class of the Const class.\nSince the high-level workflow of processing a request is same for any request (differing by the two request types only), we use the Template Method pattern to abstract the process flow into the Action and AutomatedAction classes.\nThe Logic component handles the business logic of TEAMMATES.\nIn particular, it is responsible for the following.\nManaging relationships between entities, e.g. cascade logic for create/update/delete.\nManaging transactions, e.g. ensuring atomicity of a transaction.\nSanitizing input values received from the UI component.\nProviding a mechanism for checking access control rights.\nConnecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with third-party providers.\nPackage overview contains logic.api, logic.core.\nlogic.api provides the API of the component to be accessed by the UI.\nlogic.core contains the core logic of the system.\nLogic API is represented by the classes Logic, GateKeeper, EmailGenerator, EmailSender, TaskQueuer.\nLogic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\nGateKeeper checks access rights of a user for a given action.\nEmailGenerator generates emails to be sent.\nEmailSender sends email with the provider chosen based on the build configuration.\nIt connects to the email provider by using the appropriate Service class.\nTaskQueuer adds tasks to the task queue.\nIt connects to GAE's task queue API.\nTo access control the following information are presented.\nAlthough this component provides methods to perform access control, the API itself is not access controlled.\nThe UI is expected to check access control (using GateKeeper class) before calling a method in the Logic.\nTo API for creating entities the following information are presented.\nNull parameters causes an assertion failure.\nInvalid parameters throws InvalidParametersException.\nEntity already exists throws EntityAlreadyExistsException (escalated from Storage level).\nTo API for retrieving entities the following information are presented.\nAttempting to retrieve objects using null parameters causes an assertion failure.\nEntity not found returns null if the target entity not found.\nThis way, read operations can be used easily for checking the existence of an entity.\nTo API for updating entities the following information are presented.\nUpdate is done using UpdateOptions inside every Attributes.\nThe UpdateOptions will specify what is used to identify the entity to update and what will be updated.\nEntity not found throws EntityDoesNotExistException.\nInvalid parameters throws InvalidParametersException.\nTo API for deleting entities the following information are presented.\nThe following explains the FailDeleteSilentlyPolicy.\nIn general, delete operation do not throw exceptions if the target entity does not exist.\nThis is because if it does not exist, it is as good as deleted.\nThe following explains the Cascade policy.\nWhen a parent entity is deleted, entities that have referential integrity with the deleted entity should also be deleted.\nRefer to the API for the cascade logic.\nThe Storage component performs CRUD (Create, Read, Update, Delete) operations on data entities individually.\nIt contains minimal logic beyond what is directly relevant to CRUD operations.\nIn particular, it is reponsible for the following.\nValidating data inside entities before creating/updating them, to ensure they are in a valid state.\nHiding the complexities of datastore from the Logic component.\nAll GQL queries are to be contained inside the Storage component.\nHiding the persistable objects.\nClasses in the storage.entity package are not visible outside this component to hide information specific to data persistence.\nInstead, a corresponding non-persistent data transfer object named Attributes (e.g., CourseAttributes is the data transfer object for Course entities) object is returned.\nThese datatransfer classes are in common.datatransfer package, to be explained later.\nThe Storage component does not perform any cascade delete/create operations.\nCascade logic is handled by the Logic component.\nPackage overview contains storage.api, storage.entity, storage.search.\nstorage.api provides the API of the component to be accessed by the logic component.\nstorage.entity contains classes that represent persistable entities.\nstorage.search contains classes for dealing with searching and indexing.\nNote that the navigability of the association links between entity objects appear to be in the reverse direction of what we see in a normal OOP design.\nThis is because we want to keep the data schema flexible so that new entity types can be added later with minimal modifications to existing elements.\nRepresented by the Db classes.\nThese classes act as the bridge to the GAE Datastore.\nAdd and Delete operations try to wait until data is persisted in the datastore before returning.\nThis is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment.\nHowever, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in the live server.\nEventual consistency here means it takes some time for a database operation to propagate across all serves of the Google's distributed datastore.\nAs a result, the data may be in an inconsistent states for short periods of time although things should become consistent eventually.\nFor example, an object we deleted may appear to still exist for a short while.\nImplementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our data schema.\nTo API for creating the following information are presented.\nAttempt to create an entity that already exists throws EntityAlreadyExistsException.\nAttempt to create an entity with invalid data throws InvalidParametersException.\nTo API for retrieving the following information are presented.\nAttempt to retrieve an entity that does not exist returns null.\nTo API for updating the following information are presented.\nAttempt to update an entity that does not exist throws EntityDoesNotExistException.\nAttempt to update an entity with invalid data throws InvalidParametersException.\nTo API for deleting the following information are presented.\nAttempt to delete an entity that does not exist fails silently.\nThe Common component contains common utilities used across TEAMMATES.\nPackage overview contains common.util, common.exceptions, common.datatransfer.\ncommon.util contains utility classes.\ncommon.exceptions contains custom exceptions.\ncommon.datatransfer contains data transfer objects.\ncommon.datatransfer package contains lightweight data transfer object classes for transferring data among components.\nThey can be combined in various ways to transfer structured data between components.\nGiven below are three examples.\nTest Driver can use the DataBundle in this manner to send an arbitrary number of objects to be persisted in the database.\nThis structure can be used to transfer data of a course (e.g., when constructing the home page for an instructor).\nThis structure can be used to send results of a feedback session (e.g., when showing a feedback session report to an instructor).\nSome of these classes are methodless and thus more of a data structure rather than a class.\nThese classes use public variables for data for easy access.\nThis component automates the testing of TEAMMATES.\nPackage overview contains test.driver, test.cases and subpackages.\ntest.driver contains infrastructure and helpers needed for running the tests.\ntest.cases contains test cases.\nSub-packages contains x.testdriver, x.datatransfer, x.util, x.logic, x.storage, x.search, x.webapi, x.automated.\nx.testdriver contains component test cases for testing the test driver infrastructure and helpers.\nx.datatransfer contains component test cases for testing the datatransfer objects from the Common component.\nx.util contains component test cases for testing the utility classes from the Common component.\nx.logic contains component test cases for testing the Logic component.\nx.storage contains component test cases for testing the Storage component.\nx.search contains component test cases for testing the search functions.\nx.webapi contains system test cases for testing the user-invoked actions.\nx.automated contains system test cases for testing the system-automated actions (manually invoked during testing).\nSome Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests that test units as well as integration of units with each other.\nFront-end files (particularly TypeScript) are tested separately with Jest.\nThe test cases are found in x.spec.ts files.\nThis is how TEAMMATES testing maps to standard types of testing.\nThe E2E component has no knowledge of the internal workings of the application and can only interact either with Web browser as a whole application or REST API calls for the back-end logic.\nIts primary function is for E2E tests and L&P (Load & Performance) tests.\nPackage overview contains e2e.util, e2e.pageobjects, e2e.cases, x.util, x.e2e, x.lnp.\ne2e.util contains helpers needed for running E2E tests.\ne2e.pageobjects contains abstractions of the pages as they appear on a Browser (i.e. SUTs).\ne2e.cases contains test cases.\nx.util contains component test cases for testing the test helpers.\nx.e2e contains system test cases for testing the application as a whole.\nx.lnp contains load and performance tests (experimental).\nThe Client component contains scripts that can connect directly to the application back-end for administrative purposes, such as migrating data to a new schema and calculating statistics.\nPackage overview contains client.util, client.remoteapi, client.scripts.\nclient.util contains helpers needed for client scripts.\nclient.remoteapi classes needed to connect to the back end directly.\nclient.scripts scripts that deal with the back end data for administrative purposes.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\n  \"abbreviations\": [\n    {\n      \"term\": \"E2E\",\n      \"component\": \"E2E\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"GAE\",\n      \"component\": \"GAE Datastore\",\n      \"scope\": \"global\"\n    }\n  ],\n  \"synonyms\": [\n    {\n      \"term\": \"storage layer\",\n      \"component\": \"Storage\",\n      \"scope\": \"local\"\n    },\n    {\n      \"term\": \"Test Driver\",\n      \"component\": \"Test Driver\",\n      \"scope\": \"global\"\n    },\n    {\n      \"term\": \"test driver\",\n      \"component\": \"Test Driver\",\n      \"scope\": \"local\"\n    }\n  ]\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1533,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 3563,
+            "completion_tokens": 160,
+            "total_tokens": 3723
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784892125.3132248,
+          "elapsed_s": 1.229,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\n\nPROPOSED MAPPINGS:\n'E2E' -> E2E\n'GAE' -> GAE Datastore\n'storage layer' -> Storage\n'Test Driver' -> Test Driver\n'test driver' -> Test Driver\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"E2E\",\"GAE\",\"storage layer\",\"Test Driver\",\"test driver\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1228,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 217,
+            "completion_tokens": 23,
+            "total_tokens": 240
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784892126.5431705,
+          "elapsed_s": 1.303,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\nKNOWN ALIASES: E2E=E2E, GAE=GAE Datastore, Test Driver=Test Driver\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\nS7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\nS8: The main logic of the application is in POJOs (Plain Old Java Objects).\nS21: The diagram below shows how the code in each component is organized into packages and the dependencies between them.\nS85: logic.api provides the API of the component to be accessed by the UI.\nS88: Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\nS125: Classes in the storage.entity package are not visible outside this component to hide information specific to data persistence.\nS131: storage.api provides the API of the component to be accessed by the logic component.\nS169: Package overview contains test.driver, test.cases and subpackages.\nS170: test.driver contains infrastructure and helpers needed for running the tests.\nS173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\nS185: The E2E component has no knowledge of the internal workings of the application and can only interact either with Web browser as a whole application or REST API calls for the back-end logic.\nS188: e2e.util contains helpers needed for running E2E tests.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":4,\"component\":\"Common\",\"matched_text\":\"each component\"},{\"sentence\":5,\"component\":\"UI\",\"matched_text\":\"UI\"},{\"sentence\":6,\"component\":\"Logic\",\"matched_text\":\"Logic\"},{\"sentence\":6,\"component\":\"Storage\",\"matched_text\":\"Storage component\"},{\"sentence\":7,\"component\":\"Storage\",\"matched_text\":\"this component\"},{\"sentence\":8,\"component\":\"Logic\",\"matched_text\":\"logic component\"},{\"sentence\":11,\"component\":\"E2E\",\"matched_text\":\"E2E component\"},{\"sentence\":12,\"component\":\"E2E\",\"matched_text\":\"E2E tests\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1302,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 501,
+            "completion_tokens": 126,
+            "total_tokens": 627
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784892126.5445645,
+          "elapsed_s": 1.384,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Common, UI, Logic, Storage, Test Driver, E2E, Client, GAE Datastore\nKNOWN ALIASES: E2E=E2E, GAE=GAE Datastore, Test Driver=Test Driver\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS4: The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\nS7: In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\nS8: The main logic of the application is in POJOs (Plain Old Java Objects).\nS21: The diagram below shows how the code in each component is organized into packages and the dependencies between them.\nS85: logic.api provides the API of the component to be accessed by the UI.\nS88: Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\nS125: Classes in the storage.entity package are not visible outside this component to hide information specific to data persistence.\nS131: storage.api provides the API of the component to be accessed by the logic component.\nS169: Package overview contains test.driver, test.cases and subpackages.\nS170: test.driver contains infrastructure and helpers needed for running the tests.\nS173: x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\nS185: The E2E component has no knowledge of the internal workings of the application and can only interact either with Web browser as a whole application or REST API calls for the back-end logic.\nS188: e2e.util contains helpers needed for running E2E tests.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":4,\"component\":\"Common\",\"matched_text\":\"each component\"},{\"sentence\":5,\"component\":\"UI\",\"matched_text\":\"UI\"},{\"sentence\":6,\"component\":\"Logic\",\"matched_text\":\"Logic\"},{\"sentence\":6,\"component\":\"Storage\",\"matched_text\":\"Storage component\"},{\"sentence\":7,\"component\":\"Storage\",\"matched_text\":\"this component\"},{\"sentence\":8,\"component\":\"Logic\",\"matched_text\":\"logic component\"},{\"sentence\":11,\"component\":\"E2E\",\"matched_text\":\"E2E component\"},{\"sentence\":12,\"component\":\"E2E\",\"matched_text\":\"E2E tests\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1384,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 501,
+            "completion_tokens": 126,
+            "total_tokens": 627
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784892127.9297607,
+          "elapsed_s": 1.147,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names and apply exact standalone occurrences.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 4, \"text\": \"The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and JavaScript for client-side interactions such as sorting, input validation, etc..\"}, {\"sentence\": 7, \"text\": \"In the UI Server the entry point for the application back end logic is designed as a REST-ful controller.\"}, {\"sentence\": 8, \"text\": \"The main logic of the application is in POJOs (Plain Old Java Objects).\"}, {\"sentence\": 21, \"text\": \"The diagram below shows how the code in each component is organized into packages and the dependencies between them.\"}, {\"sentence\": 85, \"text\": \"logic.api provides the API of the component to be accessed by the UI.\"}, {\"sentence\": 88, \"text\": \"Logic is a Facade class which connects to the several Logic classes to handle the logic related to various types of data and to access data from the Storage component.\"}, {\"sentence\": 125, \"text\": \"Classes in the storage.entity package are not visible outside this component to hide information specific to data persistence.\"}, {\"sentence\": 131, \"text\": \"storage.api provides the API of the component to be accessed by the logic component.\"}, {\"sentence\": 169, \"text\": \"Package overview contains test.driver, test.cases and subpackages.\"}, {\"sentence\": 170, \"text\": \"test.driver contains infrastructure and helpers needed for running the tests.\"}, {\"sentence\": 173, \"text\": \"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\"}, {\"sentence\": 185, \"text\": \"The E2E component has no knowledge of the internal workings of the application and can only interact either with Web browser as a whole application or REST API calls for the back-end logic.\"}, {\"sentence\": 188, \"text\": \"e2e.util contains helpers needed for running E2E tests.\"}], \"component_catalog\": [\"Common\", \"UI\", \"Logic\", \"Storage\", \"Test Driver\", \"E2E\", \"Client\", \"GAE Datastore\"], \"ambiguous_components\": [\"Client\", \"Common\", \"Logic\", \"Storage\", \"UI\"], \"approved_aliases\": [{\"alias\": \"E2E\", \"target\": \"E2E\", \"scope\": \"global\"}, {\"alias\": \"GAE\", \"target\": \"GAE Datastore\", \"scope\": \"global\"}, {\"alias\": \"storage layer\", \"target\": \"Storage\", \"scope\": \"local\"}, {\"alias\": \"Test Driver\", \"target\": \"Test Driver\", \"scope\": \"global\"}, {\"alias\": \"test driver\", \"target\": \"Test Driver\", \"scope\": \"local\"}], \"role_handle_evidence\": [{\"expression\": \"Driver\", \"component\": \"Test Driver\", \"occurrences\": [{\"sentence\": 169, \"quote\": \"driver\"}, {\"sentence\": 170, \"quote\": \"driver\"}, {\"sentence\": 173, \"quote\": \"driver\"}]}]}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh same-candidate ownership pass\", \"feedback\": {\"accepted\": [], \"rejected\": []}}]\n\nCURRENT LINKS\n[]\n\nAVAILABLE ACTIONS\n[\"relation_role_resolution\", \"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"relation_role_resolution\",\"evidence_quotes\":[\"Package overview contains test.driver, test.cases and subpackages.\",\"test.driver contains infrastructure and helpers needed for running the tests.\",\"x.testdriver contains component test cases for testing the test driver infrastructure and helpers.\"],\"unresolved_obligation\":\"project-specific shortened handle resolution for Test Driver via Driver\",\"reason\":\"Exact document occurrences of the derived standalone handle driver remain unresolved.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1146,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 943,
+            "completion_tokens": 87,
+            "total_tokens": 1030
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "bigbluebutton",
+      "focus_sentences": [
+        5,
+        6,
+        18,
+        19,
+        50,
+        58,
+        60,
+        68,
+        74,
+        76,
+        79,
+        82,
+        83,
+        84,
+        87
+      ],
+      "action": "relation_role_resolution",
+      "controller": {
+        "evidence_quotes": [
+          "WebRTC",
+          "server",
+          "client",
+          "conversion",
+          "SFU",
+          "pubsub"
+        ],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "project-specific shortened-handle evidence remains unresolved",
+        "reason": "Exact standalone role handles are documented in the provided role-handle evidence and have not yet been processed."
+      },
+      "unfiltered": {
+        "tp": 11,
+        "fp": 4,
+        "fn": 2,
+        "P": 0.7333333333333333,
+        "R": 0.8461538461538461,
+        "F1": 0.7857142857142856,
+        "F2": 0.8208955223880597
+      },
+      "owned_entity": {
+        "tp": 9,
+        "fp": 2,
+        "fn": 4,
+        "P": 0.8181818181818182,
+        "R": 0.6923076923076923,
+        "F1": 0.7500000000000001,
+        "F2": 0.7142857142857143
+      },
+      "final": {
+        "tp": 12,
+        "fp": 14,
+        "fn": 1,
+        "P": 0.46153846153846156,
+        "R": 0.9230769230769231,
+        "F1": 0.6153846153846155,
+        "F2": 0.7692307692307693
+      },
+      "removed_by_ownership": 4,
+      "raw_validator_decisions": [
+        {
+          "sentence": 5,
+          "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 6,
+          "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 6,
+          "component_id": "_4yx-8FkHEeyewPSmlgszyA",
+          "approved": false,
+          "p1": true,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 19,
+          "component_id": "_yGgUMFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 50,
+          "component_id": "_kvWs4FkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 58,
+          "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 60,
+          "component_id": "_XuNf4FkJEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 60,
+          "component_id": "_nwrCMFwPEeyiuNx_RO7j-Q",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 60,
+          "component_id": "_9wZIcFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 60,
+          "component_id": "_6sergFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 68,
+          "component_id": "_oN4CMFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 68,
+          "component_id": "_s0aIcFkHEeyewPSmlgszyA",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 76,
+          "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 76,
+          "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 79,
+          "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 79,
+          "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 79,
+          "component_id": "_6sergFkHEeyewPSmlgszyA",
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_unfiltered_twopass",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 82,
+          "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+          "approved": false,
+          "p1": false,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 83,
+          "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+          "approved": false,
+          "p1": true,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        },
+        {
+          "sentence": 84,
+          "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+          "approved": false,
+          "p1": true,
+          "p2": false,
+          "path": "entity_unfiltered_twopass_reject",
+          "stage": "entity_unfiltered_twopass"
+        }
+      ],
+      "role_feedback": {
+        "role_handles": [
+          {
+            "expression": "Service",
+            "component": "Recording Service"
+          },
+          {
+            "expression": "WebRTC",
+            "component": "WebRTC-SFU"
+          },
+          {
+            "expression": "SFU",
+            "component": "WebRTC-SFU"
+          },
+          {
+            "expression": "Server",
+            "component": "HTML5 Server"
+          },
+          {
+            "expression": "Client",
+            "component": "HTML5 Client"
+          },
+          {
+            "expression": "Conversion",
+            "component": "Presentation Conversion"
+          },
+          {
+            "expression": "web",
+            "component": "BBB web"
+          },
+          {
+            "expression": "PubSub",
+            "component": "Redis PubSub"
+          },
+          {
+            "expression": "DB",
+            "component": "Redis DB"
+          }
+        ],
+        "proposed": [
+          {
+            "sentence": 5,
+            "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+            "component": "WebRTC-SFU",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 74,
+            "text": "WebRTC provides the user with high-quality audio with lower delay.",
+            "component": "WebRTC-SFU",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 68,
+            "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+            "component": "WebRTC-SFU",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "HTML5 Server",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 18,
+            "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.",
+            "component": "HTML5 Server",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 68,
+            "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+            "component": "HTML5 Server",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "HTML5 Client",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "HTML5 Client",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "Presentation Conversion",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Presentation Conversion",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 82,
+            "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.",
+            "component": "Presentation Conversion",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 83,
+            "text": "Then below the SVG conversion flow.",
+            "component": "Presentation Conversion",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 84,
+            "text": "It covers the conversion fallback.",
+            "component": "Presentation Conversion",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 5,
+            "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+            "component": "BBB web",
+            "source": "relation_role_candidate"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "BBB web",
+            "source": "relation_role_candidate"
+          }
+        ],
+        "accepted": [
+          {
+            "sentence": 5,
+            "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+            "component": "WebRTC-SFU",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 74,
+            "text": "WebRTC provides the user with high-quality audio with lower delay.",
+            "component": "WebRTC-SFU",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 68,
+            "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+            "component": "WebRTC-SFU",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "HTML5 Server",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 18,
+            "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.",
+            "component": "HTML5 Server",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 68,
+            "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models.",
+            "component": "HTML5 Server",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "HTML5 Client",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "HTML5 Client",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 76,
+            "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client.",
+            "component": "Presentation Conversion",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 79,
+            "text": "The conversion process sends progress messages to the client through the Redis pubsub.",
+            "component": "Presentation Conversion",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 82,
+            "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.",
+            "component": "Presentation Conversion",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 83,
+            "text": "Then below the SVG conversion flow.",
+            "component": "Presentation Conversion",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 84,
+            "text": "It covers the conversion fallback.",
+            "component": "Presentation Conversion",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 5,
+            "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.",
+            "component": "BBB web",
+            "source": "s24_relation_role"
+          },
+          {
+            "sentence": 6,
+            "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.",
+            "component": "BBB web",
+            "source": "s24_relation_role"
+          }
+        ],
+        "handle_decisions": [
+          {
+            "sentence": 5,
+            "component_id": "_s0aIcFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 74,
+            "component_id": "_s0aIcFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 68,
+            "component_id": "_s0aIcFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 6,
+            "component_id": "_yGgUMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 18,
+            "component_id": "_yGgUMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 68,
+            "component_id": "_yGgUMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 76,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 79,
+            "component_id": "_0e5u8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 76,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 79,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 82,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 83,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 84,
+            "component_id": "_2BgxMFkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 5,
+            "component_id": "_4yx-8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          },
+          {
+            "sentence": 6,
+            "component_id": "_4yx-8FkHEeyewPSmlgszyA",
+            "approved": true,
+            "path": "catalog_unique_handle",
+            "stage": "relation_role_resolution"
+          }
+        ]
+      },
+      "llm_calls": 8,
+      "trace": [
+        {
+          "phase": "phase_1_model",
+          "ts": 1784892129.0778244,
+          "elapsed_s": 1.525,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\n  \"architectural\": [\n    \"Recording Service\",\n    \"kurento\",\n    \"WebRTC-SFU\",\n    \"HTML5 Server\",\n    \"HTML5 Client\",\n    \"Presentation Conversion\",\n    \"BBB web\",\n    \"Redis PubSub\",\n    \"FSESL\",\n    \"Apps\",\n    \"Redis DB\",\n    \"FreeSWITCH\"\n  ],\n  \"ambiguous\": []\n}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1524,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 176,
+            "completion_tokens": 85,
+            "total_tokens": 261
+          }
+        },
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784892129.0780892,
+          "elapsed_s": 2.217,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nHigh-level architecture.\nThe following diagram provides a high-level view of how BigBlueButton's components work together.\nWe'll break down each component in more detail below.\nHTML5 client.\nThe HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nThe HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nThese connections are all handled by nginx.\nThe HTML5 server sits behind nginx.\nThe HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.\nThe MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.\nEach user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.\nThe client side subscribes to the published collections on the server side.\nUpdates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.\nThe following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.\nScalability of HTML5 server component.\nBigBlueButton 2.2 used a single nodejs process for all client-side communication.\nThis process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core).\nBecause nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\nBigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nThis means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).\nAs of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).\nA restart of BigBlueButton is required if you make changes to these files.\nThe breakdown of functionality between front-end and back-end is as follows.\nFrontends receive the ValidateAuthTokenResp event to complete authentication.\nFrontends collect subscriptions and publishers.\nFrontends receive other DDP events including method calls to send events to akka-apps.\nFrontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.\nFrontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.\nBackends handle all the non-streamer events.\nIf more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.\nSo individual backends only process redis events for the meetings matching the associated instanceId.\nValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling.\nWhen you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/apply-config.sh between shutdown and restart of the BigBlueButton processes.\nIn this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh.\nSee \"Automatically apply configuration changes on restart\".\nBBB web.\nBigBlueButton web application is a Java-based application written in Scala.\nIt implements the BigBlueButton API and holds a copy of the meeting state.\nThe BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoint to control the BigBlueButton server.\nEvery access to BigBlueButton comes through a front-end portal (we refer to as a third-party application).\nBigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations).\nBigBlueButton comes with its own front-end called Greenlight.\nWhen using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course and students can access the rooms and their recordings.\nThe BigBlueButton comes with some simple API demos.\nRegardless of which front-end you use, they all use the API under the hood.\nRedis PubSub.\nRedis PubSub provides a communication channel between different applications running on the BigBlueButton server.\nRedis DB.\nWhen a meeting is recorded, all events are stored in Redis DB.\nWhen the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nApps akka.\nBigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.\nIt provides the list of users, chat, whiteboard, presentations in a meeting.\nBelow is a diagram of the different components of Apps Akka.\nThe meeting business logic is in the MeetingActor.\nThis is where information about the meeting is stored and where all messages for a meeting is processed.\nFSESL akka.\nWe have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nThis allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.\nCommunication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nFreeSWITCH.\nWe think FreeSWITCH is an amazing piece of software for handling audio.\nFreeSWITCH provides the voice conferencing capability in BigBlueButton.\nUsers are able to join the voice conference through the headset.\nUsers joining through Google Chrome or Mozilla Firefox are able to take advantage of higher quality audio by connecting using WebRTC.\nFreeSWITCH can also be integrated with VOIP providers so that users who are not able to join using the headset will be able to call in using their phone.\nKurento and WebRTC-SFU.\nKurento Media Server KMS is a media server that implements both SFU and MCU models.\nKMS is responsible for streaming of webcams, listen-only audio, and screensharing.\nThe WebRTC-SFU acts as the media controller handling negotiations and to manage the media streams.\nJoining a voice conference.\nA user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.\nWhen joining through the client, the user can choose to join Microphone or Listen Only, and the BigBlueButton client will make an audio connection to the server via WebRTC.\nWebRTC provides the user with high-quality audio with lower delay.\nUploading a presentation.\nUploaded presentations go through a conversion process in order to be displayed inside the client.\nWhen the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice.\nThe PDF document is then converted into scalable vector graphics (SVG) via bbb-web.\nThe conversion process sends progress messages to the client through the Redis pubsub.\nPresentation conversion flow.\nThe diagram below describes the flow of the presentation conversion.\nWe take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\nThen below the SVG conversion flow.\nIt covers the conversion fallback.\nSometimes we detect that the generated SVG file is heavy to load by the browser, we use the fallback to put a rasterized image inside the SVG file and make its loading light for the browser.\nInternal network connections.\nThe following diagram shows how the various components of BigBlueButton connect to each other via sockets.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[{\"term\":\"bbb-html5\",\"component\":\"HTML5 Server\",\"scope\":\"global\"},{\"term\":\"BBB web\",\"component\":\"BBB web\",\"scope\":\"global\"},{\"term\":\"Apps akka\",\"component\":\"Apps\",\"scope\":\"global\"},{\"term\":\"FSESL akka\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"fsels\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"KMS\",\"component\":\"kurento\",\"scope\":\"global\"},{\"term\":\"WebRTC-SFU\",\"component\":\"WebRTC-SFU\",\"scope\":\"global\"}],\"synonyms\":[{\"term\":\"HTML5 client\",\"component\":\"HTML5 Client\",\"scope\":\"global\"},{\"term\":\"HTML5 server\",\"component\":\"HTML5 Server\",\"scope\":\"global\"},{\"term\":\"BigBlueButton web application\",\"component\":\"BBB web\",\"scope\":\"global\"},{\"term\":\"BigBlueButton Apps\",\"component\":\"Apps\",\"scope\":\"global\"},{\"term\":\"Redis pubsub\",\"component\":\"Redis PubSub\",\"scope\":\"global\"},{\"term\":\"Redis DB\",\"component\":\"Redis DB\",\"scope\":\"global\"},{\"term\":\"Recording Processor\",\"component\":\"Recording Service\",\"scope\":\"global\"},{\"term\":\"Kurento Media Server\",\"component\":\"kurento\",\"scope\":\"global\"},{\"term\":\"FreeSWITCH Event Socket Layer\",\"component\":\"FSESL\",\"scope\":\"global\"},{\"term\":\"Presentation conversion flow\",\"component\":\"Presentation Conversion\",\"scope\":\"global\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2217,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 1927,
+            "completion_tokens": 280,
+            "total_tokens": 2207
+          }
+        },
+        {
+          "phase": "phase_1_doc_judge",
+          "ts": 1784892131.2952766,
+          "elapsed_s": 1.372,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nPROPOSED MAPPINGS:\n'bbb-html5' -> HTML5 Server\n'BBB web' -> BBB web\n'Apps akka' -> Apps\n'FSESL akka' -> FSESL\n'fsels' -> FSESL\n'KMS' -> kurento\n'WebRTC-SFU' -> WebRTC-SFU\n'HTML5 client' -> HTML5 Client\n'HTML5 server' -> HTML5 Server\n'BigBlueButton web application' -> BBB web\n'BigBlueButton Apps' -> Apps\n'Redis pubsub' -> Redis PubSub\n'Redis DB' -> Redis DB\n'Recording Processor' -> Recording Service\n'Kurento Media Server' -> kurento\n'FreeSWITCH Event Socket Layer' -> FSESL\n'Presentation conversion flow' -> Presentation Conversion\n\n\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. An alias is invalid when the phrase is generic vocabulary, names the whole system, or names a different entity. An alias is also invalid when it names a grouping that encompasses multiple elements, because it identifies a grouping rather than a single named unit. When uncertain, prefer APPROVE.\n\nReturn JSON:\n{\"approved\": [\"term1\", \"term2\"]}\nJSON only:",
+          "response_text": "{\"approved\":[\"bbb-html5\",\"BBB web\",\"Apps akka\",\"FSESL akka\",\"fsels\",\"KMS\",\"WebRTC-SFU\",\"HTML5 client\",\"HTML5 server\",\"BigBlueButton web application\",\"BigBlueButton Apps\",\"Redis pubsub\",\"Redis DB\",\"Recording Processor\",\"Kurento Media Server\",\"FreeSWITCH Event Socket Layer\",\"Presentation conversion flow\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1371,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 358,
+            "completion_tokens": 78,
+            "total_tokens": 436
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass1",
+          "ts": 1784892132.6674833,
+          "elapsed_s": 2.131,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\nKNOWN ALIASES: bbb-html5=HTML5 Server, BBB web=BBB web, Apps akka=Apps, FSESL akka=FSESL, fsels=FSESL, KMS=kurento, WebRTC-SFU=WebRTC-SFU, HTML5 client=HTML5 Client, HTML5 server=HTML5 Server, BigBlueButton web application=BBB web, BigBlueButton Apps=Apps, Redis pubsub=Redis PubSub, Redis DB=Redis DB, Recording Processor=Recording Service, Kurento Media Server=kurento, FreeSWITCH Event Socket Layer=FSESL, Presentation conversion flow=Presentation Conversion\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nS6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nS18: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\nS19: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nS50: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nS58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nS60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nS68: Kurento Media Server KMS is a media server that implements both SFU and MCU models.\nS74: WebRTC provides the user with high-quality audio with lower delay.\nS76: Uploaded presentations go through a conversion process in order to be displayed inside the client.\nS79: The conversion process sends progress messages to the client through the Redis pubsub.\nS82: We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\nS83: Then below the SVG conversion flow.\nS84: It covers the conversion fallback.\nS87: The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":5,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":19,\"component\":\"HTML5 Server\",\"matched_text\":\"bbb-html5\"},{\"sentence\":50,\"component\":\"Recording Service\",\"matched_text\":\"Recording Processor\"},{\"sentence\":58,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":60,\"component\":\"Apps\",\"matched_text\":\"apps\"},{\"sentence\":60,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":60,\"component\":\"FSESL\",\"matched_text\":\"FreeSWITCH Event Socket Layer (fsels)\"},{\"sentence\":60,\"component\":\"Redis PubSub\",\"matched_text\":\"redis pubsub\"},{\"sentence\":68,\"component\":\"kurento\",\"matched_text\":\"Kurento Media Server KMS\"},{\"sentence\":68,\"component\":\"WebRTC-SFU\",\"matched_text\":\"SFU\"},{\"sentence\":76,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":76,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":79,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis pubsub\"},{\"sentence\":82,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion\"},{\"sentence\":83,\"component\":\"Presentation Conversion\",\"matched_text\":\"SVG conversion flow\"},{\"sentence\":84,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion fallback\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2130,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 696,
+            "completion_tokens": 337,
+            "total_tokens": 1033
+          }
+        },
+        {
+          "phase": "phase_2_framing_c_pass2",
+          "ts": 1784892132.6689997,
+          "elapsed_s": 2.831,
+          "timeout": 240,
+          "max_retries": 3,
+          "prompt": "Extract ALL references to components from this document.\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\nKNOWN ALIASES: bbb-html5=HTML5 Server, BBB web=BBB web, Apps akka=Apps, FSESL akka=FSESL, fsels=FSESL, KMS=kurento, WebRTC-SFU=WebRTC-SFU, HTML5 client=HTML5 Client, HTML5 server=HTML5 Server, BigBlueButton web application=BBB web, BigBlueButton Apps=Apps, Redis pubsub=Redis PubSub, Redis DB=Redis DB, Recording Processor=Recording Service, Kurento Media Server=kurento, FreeSWITCH Event Socket Layer=FSESL, Presentation conversion flow=Presentation Conversion\n\nInclude a reference when the sentence refers to the component by name, alias, or as a participant in a described interaction. Exclude when the name appears only inside a code-level path \u2014 even if the compound identifier is semantically related to the component \u2014 or as ordinary English with no architectural intent. Favor inclusion.\n\nDOCUMENT:\nS5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nS6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nS18: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\nS19: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\nS50: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\nS58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nS60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nS68: Kurento Media Server KMS is a media server that implements both SFU and MCU models.\nS74: WebRTC provides the user with high-quality audio with lower delay.\nS76: Uploaded presentations go through a conversion process in order to be displayed inside the client.\nS79: The conversion process sends progress messages to the client through the Redis pubsub.\nS82: We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\nS83: Then below the SVG conversion flow.\nS84: It covers the conversion fallback.\nS87: The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\n\nReturn JSON:\n{\"references\": [{\"sentence\": N_INTEGER, \"component\": \"Name\", \"matched_text\": \"text found in sentence\"}]}\nJSON only:",
+          "response_text": "{\"references\":[{\"sentence\":5,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"HTML5 Client\",\"matched_text\":\"HTML5 client\"},{\"sentence\":6,\"component\":\"BBB web\",\"matched_text\":\"BigBlueButton server\"},{\"sentence\":19,\"component\":\"HTML5 Server\",\"matched_text\":\"bbb-html5\"},{\"sentence\":50,\"component\":\"Recording Service\",\"matched_text\":\"Recording Processor\"},{\"sentence\":58,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":60,\"component\":\"Apps\",\"matched_text\":\"apps\"},{\"sentence\":60,\"component\":\"FreeSWITCH\",\"matched_text\":\"FreeSWITCH\"},{\"sentence\":60,\"component\":\"FSESL\",\"matched_text\":\"FreeSWITCH Event Socket Layer (fsels)\"},{\"sentence\":60,\"component\":\"Redis PubSub\",\"matched_text\":\"redis pubsub\"},{\"sentence\":68,\"component\":\"kurento\",\"matched_text\":\"Kurento Media Server KMS\"},{\"sentence\":68,\"component\":\"WebRTC-SFU\",\"matched_text\":\"SFU\"},{\"sentence\":76,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":76,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion process\"},{\"sentence\":79,\"component\":\"HTML5 Client\",\"matched_text\":\"client\"},{\"sentence\":79,\"component\":\"Redis PubSub\",\"matched_text\":\"Redis pubsub\"},{\"sentence\":82,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion\"},{\"sentence\":83,\"component\":\"Presentation Conversion\",\"matched_text\":\"SVG conversion flow\"},{\"sentence\":84,\"component\":\"Presentation Conversion\",\"matched_text\":\"conversion fallback\"}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2831,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 696,
+            "completion_tokens": 337,
+            "total_tokens": 1033
+          }
+        },
+        {
+          "phase": "phase_11_entity_p1",
+          "ts": 1784892135.5023706,
+          "elapsed_s": 4.248,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check architectural participation: does the sentence name this component as an architectural participant \u2014 performing operations, providing services, or taking part in the described system behavior, and not just as a qualified-name identifier (e.g. a package- or member-access path X.Y.Z)?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"HTML5 client\" -> HTML5 Client\n  \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 2: \"HTML5 client\" -> HTML5 Client\n  [prev: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.] \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"]\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nCase 3: \"BigBlueButton server\" -> BBB web\n  [prev: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.] \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"]\nCase 4: \"bbb-html5\" -> HTML5 Server\n  [prev: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.] \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n  Evidence: source=entity, span=\"bbb-html5\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"]\nCase 5: \"Recording Processor\" -> Recording Service\n  \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n  Evidence: source=entity, span=\"Recording Processor\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 6: \"FreeSWITCH\" -> FreeSWITCH\n  \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nCase 7: \"apps\" -> Apps\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"apps\", mention=lowercase mention, ambiguous=False\n  Rationale: Framing C extraction\nCase 8: \"FreeSWITCH\" -> FreeSWITCH\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nCase 9: \"FreeSWITCH Event Socket Layer (fsels)\" -> FSESL\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"FreeSWITCH Event Socket Layer (fsels)\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 10: \"redis pubsub\" -> Redis PubSub\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S79: The conversion process sends progress messages to the client through the Redis pubsub.\nCase 11: \"Kurento Media Server KMS\" -> kurento\n  \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n  Evidence: source=entity, span=\"Kurento Media Server KMS\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 12: \"SFU\" -> WebRTC-SFU\n  \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n  Evidence: source=entity, span=\"SFU\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 13: \"conversion process\" -> Presentation Conversion\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 14: \"client\" -> HTML5 Client\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 15: \"conversion process\" -> Presentation Conversion\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 16: \"client\" -> HTML5 Client\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 17: \"Redis pubsub\" -> Redis PubSub\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"Redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nCase 18: \"conversion\" -> Presentation Conversion\n  \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"\n  Evidence: source=entity, span=\"conversion\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 19: \"SVG conversion flow\" -> Presentation Conversion\n  [prev: We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.] \"Then below the SVG conversion flow.\"\n  Evidence: source=entity, span=\"SVG conversion flow\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"]\nCase 20: \"conversion fallback\" -> Presentation Conversion\n  [prev: Then below the SVG conversion flow.] \"It covers the conversion fallback.\"\n  Evidence: source=entity, span=\"conversion fallback\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"Then below the SVG conversion flow.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The HTML5 client is a single page, responsive web application\",\"approve\":true},{\"case\":2,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":3,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":4,\"claim\":\"multiple nodejs processes handling incoming messages from clients\",\"approve\":true},{\"case\":5,\"claim\":\"the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing\",\"approve\":true},{\"case\":6,\"claim\":\"the component that integrates with FreeSWITCH\",\"approve\":true},{\"case\":7,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub\",\"approve\":true},{\"case\":8,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub\",\"approve\":true},{\"case\":9,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub\",\"approve\":true},{\"case\":10,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub\",\"approve\":true},{\"case\":11,\"claim\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models\",\"approve\":true},{\"case\":12,\"claim\":\"implements both SFU and MCU models\",\"approve\":false},{\"case\":13,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client\",\"approve\":true},{\"case\":14,\"claim\":\"displayed inside the client\",\"approve\":true},{\"case\":15,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub\",\"approve\":true},{\"case\":16,\"claim\":\"sends progress messages to the client\",\"approve\":true},{\"case\":17,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub\",\"approve\":true},{\"case\":18,\"claim\":\"configuration for enabling and disabling SWF, SVG and PNG conversion\",\"approve\":false},{\"case\":19,\"claim\":\"the SVG conversion flow\",\"approve\":true},{\"case\":20,\"claim\":\"It covers the conversion fallback\",\"approve\":true}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 4248,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 2492,
+            "completion_tokens": 503,
+            "total_tokens": 2995
+          }
+        },
+        {
+          "phase": "phase_11_entity_p2",
+          "ts": 1784892139.7508652,
+          "elapsed_s": 2.901,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "Validate components in a document. Check referential specificity: is the component name used to identify this specific architectural element, or does it serve as a generic technical term in this sentence?\n\nCOMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A bare mention, a heading, or a list that includes the component name all count as valid links \u2014 approve them. Reject ONLY when one of these clearly holds: (1) the component is referred to only through a code-level or package/member path of the form x.y or x.y.z, even if that path is described as doing something; (2) the mention is negated (it is NOT a ...); (3) the matching word actually names a DIFFERENT entity; (4) the matching word is used as a generic technique or technology term, not as this system's component. When none of these reject-conditions clearly applies, approve.\n\nFor each case, first quote the EXACT words from the sentence that state the\narchitectural claim about the component (or write \"none\" if the sentence makes no\nsuch claim), then decide approve true/false based on that claim.\n\nCASES:\nCase 1: \"HTML5 client\" -> HTML5 Client\n  \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 2: \"HTML5 client\" -> HTML5 Client\n  [prev: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.] \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"HTML5 client\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"]\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\nCase 3: \"BigBlueButton server\" -> BBB web\n  [prev: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.] \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"\n  Evidence: source=entity, span=\"BigBlueButton server\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"]\nCase 4: \"bbb-html5\" -> HTML5 Server\n  [prev: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.] \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"\n  Evidence: source=entity, span=\"bbb-html5\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"]\nCase 5: \"Recording Processor\" -> Recording Service\n  \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"\n  Evidence: source=entity, span=\"Recording Processor\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 6: \"FreeSWITCH\" -> FreeSWITCH\n  \"We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nCase 7: \"apps\" -> Apps\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"apps\", mention=lowercase mention, ambiguous=False\n  Rationale: Framing C extraction\nCase 8: \"FreeSWITCH\" -> FreeSWITCH\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"FreeSWITCH\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S58: We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application.\nCase 9: \"FreeSWITCH Event Socket Layer (fsels)\" -> FSESL\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"FreeSWITCH Event Socket Layer (fsels)\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 10: \"redis pubsub\" -> Redis PubSub\n  \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"\n  Evidence: source=entity, span=\"redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S79: The conversion process sends progress messages to the client through the Redis pubsub.\nCase 11: \"Kurento Media Server KMS\" -> kurento\n  \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n  Evidence: source=entity, span=\"Kurento Media Server KMS\", mention=via known alias, ambiguous=False\n  Rationale: Framing C extraction\nCase 12: \"SFU\" -> WebRTC-SFU\n  \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"\n  Evidence: source=entity, span=\"SFU\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 13: \"conversion process\" -> Presentation Conversion\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 14: \"client\" -> HTML5 Client\n  \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 15: \"conversion process\" -> Presentation Conversion\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"conversion process\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 16: \"client\" -> HTML5 Client\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"client\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\n    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\nCase 17: \"Redis pubsub\" -> Redis PubSub\n  \"The conversion process sends progress messages to the client through the Redis pubsub.\"\n  Evidence: source=entity, span=\"Redis pubsub\", mention=proper case, standalone, ambiguous=False\n  Rationale: Framing C extraction\n  Anchors (confirmed refs):\n    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\nCase 18: \"conversion\" -> Presentation Conversion\n  \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"\n  Evidence: source=entity, span=\"conversion\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\nCase 19: \"SVG conversion flow\" -> Presentation Conversion\n  [prev: We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.] \"Then below the SVG conversion flow.\"\n  Evidence: source=entity, span=\"SVG conversion flow\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"]\nCase 20: \"conversion fallback\" -> Presentation Conversion\n  [prev: Then below the SVG conversion flow.] \"It covers the conversion fallback.\"\n  Evidence: source=entity, span=\"conversion fallback\", mention=indirect/unclear match, ambiguous=False\n  Rationale: Framing C extraction\n  [prev: \"Then below the SVG conversion flow.\"]\n\nReturn JSON:\n{\"validations\": [{\"case\": 1, \"claim\": \"<exact quote or none>\", \"approve\": true}]}\nJSON only:",
+          "response_text": "{\"validations\":[{\"case\":1,\"claim\":\"The HTML5 client is a single page, responsive web application\",\"approve\":true},{\"case\":2,\"claim\":\"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL)\",\"approve\":true},{\"case\":3,\"claim\":\"none\",\"approve\":false},{\"case\":4,\"claim\":\"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\",\"approve\":true},{\"case\":5,\"claim\":\"the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\",\"approve\":true},{\"case\":6,\"claim\":\"the component that integrates with FreeSWITCH\",\"approve\":true},{\"case\":7,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":8,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":9,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":10,\"claim\":\"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\",\"approve\":true},{\"case\":11,\"claim\":\"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\",\"approve\":true},{\"case\":12,\"claim\":\"none\",\"approve\":false},{\"case\":13,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true},{\"case\":14,\"claim\":\"Uploaded presentations go through a conversion process in order to be displayed inside the client.\",\"approve\":true},{\"case\":15,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":16,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":17,\"claim\":\"The conversion process sends progress messages to the client through the Redis pubsub.\",\"approve\":true},{\"case\":18,\"claim\":\"none\",\"approve\":false},{\"case\":19,\"claim\":\"none\",\"approve\":false},{\"case\":20,\"claim\":\"none\",\"approve\":false}]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 2900,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 2469,
+            "completion_tokens": 499,
+            "total_tokens": 2968
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784892142.6539211,
+          "elapsed_s": 1.323,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names and apply exact standalone occurrences.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [{\"sentence\": 5, \"text\": \"The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.\"}, {\"sentence\": 6, \"text\": \"The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.\"}, {\"sentence\": 18, \"text\": \"Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.\"}, {\"sentence\": 19, \"text\": \"BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.\"}, {\"sentence\": 50, \"text\": \"When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.\"}, {\"sentence\": 58, \"text\": \"We have extracted out the component that integrates with FreeSWITCH into it\\u2019s own application.\"}, {\"sentence\": 60, \"text\": \"Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.\"}, {\"sentence\": 68, \"text\": \"Kurento Media Server KMS is a media server that implements both SFU and MCU models.\"}, {\"sentence\": 74, \"text\": \"WebRTC provides the user with high-quality audio with lower delay.\"}, {\"sentence\": 76, \"text\": \"Uploaded presentations go through a conversion process in order to be displayed inside the client.\"}, {\"sentence\": 79, \"text\": \"The conversion process sends progress messages to the client through the Redis pubsub.\"}, {\"sentence\": 82, \"text\": \"We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion.\"}, {\"sentence\": 83, \"text\": \"Then below the SVG conversion flow.\"}, {\"sentence\": 84, \"text\": \"It covers the conversion fallback.\"}, {\"sentence\": 87, \"text\": \"The following diagram shows how the various components of BigBlueButton connect to each other via sockets.\"}], \"component_catalog\": [\"Recording Service\", \"kurento\", \"WebRTC-SFU\", \"HTML5 Server\", \"HTML5 Client\", \"Presentation Conversion\", \"BBB web\", \"Redis PubSub\", \"FSESL\", \"Apps\", \"Redis DB\", \"FreeSWITCH\"], \"ambiguous_components\": [], \"approved_aliases\": [{\"alias\": \"bbb-html5\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BBB web\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"Apps akka\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"FSESL akka\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"fsels\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"KMS\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"WebRTC-SFU\", \"target\": \"WebRTC-SFU\", \"scope\": \"global\"}, {\"alias\": \"HTML5 client\", \"target\": \"HTML5 Client\", \"scope\": \"global\"}, {\"alias\": \"HTML5 server\", \"target\": \"HTML5 Server\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton web application\", \"target\": \"BBB web\", \"scope\": \"global\"}, {\"alias\": \"BigBlueButton Apps\", \"target\": \"Apps\", \"scope\": \"global\"}, {\"alias\": \"Redis pubsub\", \"target\": \"Redis PubSub\", \"scope\": \"global\"}, {\"alias\": \"Redis DB\", \"target\": \"Redis DB\", \"scope\": \"global\"}, {\"alias\": \"Recording Processor\", \"target\": \"Recording Service\", \"scope\": \"global\"}, {\"alias\": \"Kurento Media Server\", \"target\": \"kurento\", \"scope\": \"global\"}, {\"alias\": \"FreeSWITCH Event Socket Layer\", \"target\": \"FSESL\", \"scope\": \"global\"}, {\"alias\": \"Presentation conversion flow\", \"target\": \"Presentation Conversion\", \"scope\": \"global\"}], \"role_handle_evidence\": [{\"expression\": \"WebRTC\", \"component\": \"WebRTC-SFU\", \"occurrences\": [{\"sentence\": 5, \"quote\": \"WebRTC\"}, {\"sentence\": 74, \"quote\": \"WebRTC\"}]}, {\"expression\": \"SFU\", \"component\": \"WebRTC-SFU\", \"occurrences\": [{\"sentence\": 68, \"quote\": \"SFU\"}]}, {\"expression\": \"Server\", \"component\": \"HTML5 Server\", \"occurrences\": [{\"sentence\": 6, \"quote\": \"server\"}, {\"sentence\": 18, \"quote\": \"server\"}, {\"sentence\": 68, \"quote\": \"Server\"}]}, {\"expression\": \"Client\", \"component\": \"HTML5 Client\", \"occurrences\": [{\"sentence\": 5, \"quote\": \"client\"}, {\"sentence\": 6, \"quote\": \"client\"}, {\"sentence\": 76, \"quote\": \"client\"}, {\"sentence\": 79, \"quote\": \"client\"}]}, {\"expression\": \"Conversion\", \"component\": \"Presentation Conversion\", \"occurrences\": [{\"sentence\": 76, \"quote\": \"conversion\"}, {\"sentence\": 79, \"quote\": \"conversion\"}, {\"sentence\": 82, \"quote\": \"conversion\"}, {\"sentence\": 83, \"quote\": \"conversion\"}, {\"sentence\": 84, \"quote\": \"conversion\"}]}, {\"expression\": \"web\", \"component\": \"BBB web\", \"occurrences\": [{\"sentence\": 5, \"quote\": \"web\"}, {\"sentence\": 6, \"quote\": \"web\"}]}, {\"expression\": \"PubSub\", \"component\": \"Redis PubSub\", \"occurrences\": [{\"sentence\": 60, \"quote\": \"pubsub\"}, {\"sentence\": 79, \"quote\": \"pubsub\"}]}]}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh same-candidate ownership pass\", \"feedback\": {\"accepted\": [{\"sentence\": 5, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 6, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 19, \"component\": \"HTML5 Server\", \"source\": \"entity\"}, {\"sentence\": 50, \"component\": \"Recording Service\", \"source\": \"entity\"}, {\"sentence\": 58, \"component\": \"FreeSWITCH\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"Apps\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"FreeSWITCH\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"FSESL\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"Redis PubSub\", \"source\": \"entity\"}, {\"sentence\": 68, \"component\": \"kurento\", \"source\": \"entity\"}, {\"sentence\": 79, \"component\": \"Redis PubSub\", \"source\": \"entity\"}], \"rejected\": []}}]\n\nCURRENT LINKS\n[{\"sentence\": 5, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 6, \"component\": \"HTML5 Client\", \"source\": \"entity\"}, {\"sentence\": 19, \"component\": \"HTML5 Server\", \"source\": \"entity\"}, {\"sentence\": 50, \"component\": \"Recording Service\", \"source\": \"entity\"}, {\"sentence\": 58, \"component\": \"FreeSWITCH\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"Apps\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"FreeSWITCH\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"FSESL\", \"source\": \"entity\"}, {\"sentence\": 60, \"component\": \"Redis PubSub\", \"source\": \"entity\"}, {\"sentence\": 68, \"component\": \"kurento\", \"source\": \"entity\"}, {\"sentence\": 79, \"component\": \"Redis PubSub\", \"source\": \"entity\"}]\n\nAVAILABLE ACTIONS\n[\"relation_role_resolution\", \"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"relation_role_resolution\",\"evidence_quotes\":[\"WebRTC\",\"server\",\"client\",\"conversion\",\"SFU\",\"pubsub\"],\"unresolved_obligation\":\"project-specific shortened-handle evidence remains unresolved\",\"reason\":\"Exact standalone role handles are documented in the provided role-handle evidence and have not yet been processed.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1323,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 2051,
+            "completion_tokens": 67,
+            "total_tokens": 2118
+          }
+        }
+      ]
+    },
+    {
+      "dataset": "jabref",
+      "focus_sentences": [],
+      "action": "finalize",
+      "controller": {
+        "evidence_quotes": [],
+        "discarded_evidence_quotes": [],
+        "unresolved_obligation": "none",
+        "reason": "The document is empty, and the completed entity pipeline produced no links or rejected evidence. No unused capability has exact document-word evidence to resolve."
+      },
+      "unfiltered": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "owned_entity": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "final": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "P": 0.0,
+        "R": 0.0,
+        "F1": 0.0,
+        "F2": 0.0
+      },
+      "removed_by_ownership": 0,
+      "raw_validator_decisions": [],
+      "role_feedback": {},
+      "llm_calls": 3,
+      "trace": [
+        {
+          "phase": "phase_1_doc_extract",
+          "ts": 1784892143.9792168,
+          "elapsed_s": 0.802,
+          "timeout": 300,
+          "max_retries": 3,
+          "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nFor each alias, classify its SCOPE:\n- \"global\": distinctive enough to unambiguously name the component anywhere in the document. Typical shapes: multi-word forms, hyphenated forms, CamelCase, all-caps abbreviations of length >= 2, or names beginning with an uppercase letter.\n- \"local\": a single all-lowercase word overlapping with ordinary English vocabulary. Safe only where the surrounding context already establishes which component is being discussed.\nQualified-name fragments (package- or member-access paths of the form X.Y or X.Y.Z) are NOT aliases \u2014 do not include them.\n\nDOCUMENT:\nWe have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\nThere are additional utility packages for preferences and the cli.\nThe dependencies are only directed towards the center.\nWe have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\nThe model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\nThe logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\nOnly the gui knows the user and his preferences and can interact with him to help him solve tasks.\nFor each layer, we form packages according to their responsibility, i.e., vertical structuring.\nThe model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nThe cli package bundles classes that are responsible for JabRef\u2019s command line interface.\nThe preferences represents all information customizable by a user for her personal needs.\nWe use an event bus to publish events from the model to the other layers.\nThis allows us to keep the architecture but still react upon changes within the core in the outer layers.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\", \"scope\": \"global\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\", \"scope\": \"local\"}]\n}\nJSON only:",
+          "response_text": "{\"abbreviations\":[],\"synonyms\":[]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 791,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 576,
+            "completion_tokens": 13,
+            "total_tokens": 589
+          }
+        },
+        {
+          "phase": "phase_1_model",
+          "ts": 1784892143.9789424,
+          "elapsed_s": 1.798,
+          "timeout": 100,
+          "max_retries": 3,
+          "prompt": "Classify these component names.\n\nNAMES: gui, cli, logic, globals, model, preferences\n\n\n\nNOW CLASSIFY THE NAMES ABOVE.\n\nReturn JSON:\n{\n  \"architectural\": [\"names that identify specific components\"],\n  \"ambiguous\": [\"names that could easily be used as ordinary words in documentation\"]\n}\n\nA name is ARCHITECTURAL when it identifies a specific role or mechanism. A name is AMBIGUOUS when ordinary technical writing about any system would use it generically without naming a specific component.\n\nJSON only:",
+          "response_text": "{\"architectural\":[\"gui\",\"cli\"],\"ambiguous\":[\"logic\",\"globals\",\"model\",\"preferences\"]}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1798,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 146,
+            "completion_tokens": 24,
+            "total_tokens": 170
+          }
+        },
+        {
+          "phase": "phase_24_role_orchestrator_2",
+          "ts": 1784892145.7784274,
+          "elapsed_s": 1.006,
+          "timeout": 120,
+          "max_retries": 3,
+          "prompt": "You orchestrate trace-linking tools for one software project.\nThere is no base linker and no protected floor. Choose one available tool or\nfinalize. You cannot propose, validate, add, or remove links.\n\nTOOLS\n- entity_pipeline: exact catalog-name and approved-alias identity evidence,\n  followed by the existing two-pass validator.\n- coreference_pipeline: pronoun, demonstrative, and anaphoric reference\n  resolution, followed by its existing validator.\n- relation_role_resolution: derive project-specific shortened handles from\n  compound catalog names and apply exact standalone occurrences.\n- finalize: return the union of links produced by completed tools.\n\nPROJECT PROFILE\n{\"document\": [], \"component_catalog\": [\"gui\", \"cli\", \"logic\", \"globals\", \"model\", \"preferences\"], \"ambiguous_components\": [\"globals\", \"logic\", \"model\", \"preferences\"], \"approved_aliases\": [], \"role_handle_evidence\": []}\n\nCOMPLETED TOOL FEEDBACK\n[{\"action\": \"entity_pipeline\", \"reason\": \"fresh same-candidate ownership pass\", \"feedback\": {\"accepted\": [], \"rejected\": []}}]\n\nCURRENT LINKS\n[]\n\nAVAILABLE ACTIONS\n[\"finalize\"]\n\nSelect an unused capability only when exact document words show its evidence\nmode remains unresolved. Rejected evidence must not be retried through another\ntool. Counts are observations, not thresholds.\n\nReturn JSON only:\n{\"action\":\"one available action\",\n\"evidence_quotes\":[\"exact source words supporting the call\"],\n\"unresolved_obligation\":\"evidence mode or none\",\n\"reason\":\"brief workflow reason\"}\n",
+          "response_text": "{\"action\":\"finalize\",\"evidence_quotes\":[],\"unresolved_obligation\":\"none\",\"reason\":\"The document is empty, and the completed entity pipeline produced no links or rejected evidence. No unused capability has exact document-word evidence to resolve.\"}",
+          "success": true,
+          "error": null,
+          "latency_ms": 1005,
+          "model": "gpt-5.6-terra",
+          "token_usage": {
+            "prompt_tokens": 358,
+            "completion_tokens": 52,
+            "total_tokens": 410
+          }
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "unfiltered": {
+      "tp": 14,
+      "fp": 4,
+      "fn": 13,
+      "macro_f1": 0.32857142857142857,
+      "macro_f2": 0.3220738413197172,
+      "pooled_f1": 0.6222222222222222,
+      "pooled_f2": 0.5555555555555556
+    },
+    "owned_entity": {
+      "tp": 12,
+      "fp": 2,
+      "fn": 15,
+      "macro_f1": 0.32142857142857145,
+      "macro_f2": 0.3007518796992481,
+      "pooled_f1": 0.5853658536585366,
+      "pooled_f2": 0.4918032786885246
+    },
+    "final": {
+      "tp": 15,
+      "fp": 17,
+      "fn": 12,
+      "macro_f1": 0.2945054945054945,
+      "macro_f2": 0.31174089068825916,
+      "pooled_f1": 0.5084745762711864,
+      "pooled_f2": 0.5357142857142857
+    },
+    "actions": [
+      "finalize",
+      "relation_role_resolution"
+    ]
+  },
+  "pass_gate": false
+}

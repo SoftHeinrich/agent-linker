@@ -1,0 +1,782 @@
+[
+  {
+    "phase": "s24_replacement_summary",
+    "ts": 1784934505.7354057,
+    "in": {
+      "profile": {
+        "document": [
+          {
+            "sentence": 1,
+            "text": "One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management."
+          },
+          {
+            "sentence": 2,
+            "text": "To meet the user authentication requirement, registration and log-in have to be offered."
+          },
+          {
+            "sentence": 3,
+            "text": "To this end, the Facade component delivers the corresponding registration and log-in pages to users."
+          },
+          {
+            "sentence": 4,
+            "text": "After the user has logged into the system, he or she will be forwarded to a site to list the audio files."
+          },
+          {
+            "sentence": 5,
+            "text": "The main functionality, however, is provided by other components."
+          },
+          {
+            "sentence": 6,
+            "text": "In addition, users can browse, download, and upload audio files using the Facade component."
+          },
+          {
+            "sentence": 7,
+            "text": "Application business logic is provided by a central business logic component, called the MediaManagement component."
+          },
+          {
+            "sentence": 8,
+            "text": "The MediaManagement component coordinates the communication of other components."
+          },
+          {
+            "sentence": 9,
+            "text": "Furthermore, it fetches audio files from a specific location (e.g., a dedicated file server or a local disk) when processing download requests."
+          },
+          {
+            "sentence": 10,
+            "text": "As described above, to communicate with the system, users' registration and authentication are needed."
+          },
+          {
+            "sentence": 11,
+            "text": "The UserManagement component answers the requests for registration and authentication."
+          },
+          {
+            "sentence": 12,
+            "text": "The UserDBAdapter component queries the database."
+          },
+          {
+            "sentence": 13,
+            "text": "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords."
+          },
+          {
+            "sentence": 14,
+            "text": "To reduce the risk of copyright infringements, all downloaded files are watermarked."
+          },
+          {
+            "sentence": 15,
+            "text": "To this end, the requested files are first reencoded."
+          },
+          {
+            "sentence": 16,
+            "text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."
+          },
+          {
+            "sentence": 17,
+            "text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+          },
+          {
+            "sentence": 18,
+            "text": "Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet."
+          },
+          {
+            "sentence": 19,
+            "text": "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file."
+          },
+          {
+            "sentence": 20,
+            "text": "The ReEncoder component converts the bit rates of audio files."
+          },
+          {
+            "sentence": 21,
+            "text": "This can result in reduction of file sizes."
+          },
+          {
+            "sentence": 22,
+            "text": "The persistence tier contains components that are concerned with the storage of audio files and their meta-data."
+          },
+          {
+            "sentence": 23,
+            "text": "The Database component represents an actual database (e.g., MySQL)."
+          },
+          {
+            "sentence": 24,
+            "text": "It stores user information and meta-data of audio files such as the name and the genre."
+          },
+          {
+            "sentence": 25,
+            "text": "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component."
+          },
+          {
+            "sentence": 26,
+            "text": "When a user uploads an audio file, the MediaAccess component stores it at the predefined location."
+          },
+          {
+            "sentence": 27,
+            "text": "The MediaAccess component encapsulates database access for meta-data of audio files."
+          },
+          {
+            "sentence": 28,
+            "text": "Furthermore, it fetches a list of all available audio files."
+          },
+          {
+            "sentence": 29,
+            "text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data."
+          },
+          {
+            "sentence": 30,
+            "text": "The UserDBAdapter component creates a query based on the user's request."
+          },
+          {
+            "sentence": 31,
+            "text": "The Database component then executes the actual query for files."
+          },
+          {
+            "sentence": 32,
+            "text": "All salted hashes of passwords are also stored in the Database component."
+          },
+          {
+            "sentence": 33,
+            "text": "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+          },
+          {
+            "sentence": 34,
+            "text": "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+          },
+          {
+            "sentence": 35,
+            "text": "Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage."
+          },
+          {
+            "sentence": 36,
+            "text": "When a user uploads a file, it will be stored in the DataStorage without any change."
+          },
+          {
+            "sentence": 37,
+            "text": "However, a download can cause re-encoding of the audio file."
+          }
+        ],
+        "component_catalog": [
+          "UserDBAdapter",
+          "AudioWatermarking",
+          "Reencoding",
+          "MediaManagement",
+          "Facade",
+          "MediaAccess",
+          "Packaging",
+          "DB",
+          "FileStorage",
+          "TagWatermarking",
+          "Cache",
+          "UserManagement",
+          "DownloadLoadBalancer",
+          "ParallelWatermarking"
+        ],
+        "ambiguous_components": [
+          "Cache",
+          "DB",
+          "Facade"
+        ],
+        "approved_aliases": [
+          {
+            "alias": "ReEncoder",
+            "target": "Reencoding",
+            "scope": "global"
+          },
+          {
+            "alias": "Database",
+            "target": "DB",
+            "scope": "global"
+          },
+          {
+            "alias": "DataStorage",
+            "target": "FileStorage",
+            "scope": "global"
+          },
+          {
+            "alias": "Facade component",
+            "target": "Facade",
+            "scope": "global"
+          },
+          {
+            "alias": "MediaManagement component",
+            "target": "MediaManagement",
+            "scope": "global"
+          },
+          {
+            "alias": "UserManagement component",
+            "target": "UserManagement",
+            "scope": "global"
+          },
+          {
+            "alias": "UserDBAdapter component",
+            "target": "UserDBAdapter",
+            "scope": "global"
+          },
+          {
+            "alias": "TagWatermarking component",
+            "target": "TagWatermarking",
+            "scope": "global"
+          },
+          {
+            "alias": "Packaging component",
+            "target": "Packaging",
+            "scope": "global"
+          },
+          {
+            "alias": "Database component",
+            "target": "DB",
+            "scope": "global"
+          },
+          {
+            "alias": "MediaAccess component",
+            "target": "MediaAccess",
+            "scope": "global"
+          }
+        ],
+        "role_handle_evidence": [],
+        "entity_orthographic_evidence": [],
+        "tool_evidence": {
+          "entity_pipeline": [
+            {
+              "sentence": 1,
+              "quote": "Facade",
+              "target": "Facade"
+            },
+            {
+              "sentence": 3,
+              "quote": "Facade",
+              "target": "Facade"
+            },
+            {
+              "sentence": 6,
+              "quote": "Facade",
+              "target": "Facade"
+            },
+            {
+              "sentence": 7,
+              "quote": "MediaManagement",
+              "target": "MediaManagement"
+            },
+            {
+              "sentence": 8,
+              "quote": "MediaManagement",
+              "target": "MediaManagement"
+            },
+            {
+              "sentence": 11,
+              "quote": "UserManagement",
+              "target": "UserManagement"
+            },
+            {
+              "sentence": 12,
+              "quote": "UserDBAdapter",
+              "target": "UserDBAdapter"
+            },
+            {
+              "sentence": 12,
+              "quote": "database",
+              "target": "DB"
+            },
+            {
+              "sentence": 13,
+              "quote": "UserManagement",
+              "target": "UserManagement"
+            },
+            {
+              "sentence": 16,
+              "quote": "TagWatermarking",
+              "target": "TagWatermarking"
+            },
+            {
+              "sentence": 17,
+              "quote": "MediaManagement",
+              "target": "MediaManagement"
+            },
+            {
+              "sentence": 17,
+              "quote": "TagWatermarking",
+              "target": "TagWatermarking"
+            },
+            {
+              "sentence": 19,
+              "quote": "Packaging",
+              "target": "Packaging"
+            },
+            {
+              "sentence": 20,
+              "quote": "ReEncoder",
+              "target": "Reencoding"
+            },
+            {
+              "sentence": 23,
+              "quote": "Database",
+              "target": "DB"
+            },
+            {
+              "sentence": 25,
+              "quote": "Database",
+              "target": "DB"
+            },
+            {
+              "sentence": 26,
+              "quote": "MediaAccess",
+              "target": "MediaAccess"
+            },
+            {
+              "sentence": 27,
+              "quote": "MediaAccess",
+              "target": "MediaAccess"
+            },
+            {
+              "sentence": 27,
+              "quote": "database",
+              "target": "DB"
+            },
+            {
+              "sentence": 29,
+              "quote": "UserDBAdapter",
+              "target": "UserDBAdapter"
+            },
+            {
+              "sentence": 29,
+              "quote": "database",
+              "target": "DB"
+            },
+            {
+              "sentence": 30,
+              "quote": "UserDBAdapter",
+              "target": "UserDBAdapter"
+            },
+            {
+              "sentence": 31,
+              "quote": "Database",
+              "target": "DB"
+            },
+            {
+              "sentence": 32,
+              "quote": "Database",
+              "target": "DB"
+            },
+            {
+              "sentence": 33,
+              "quote": "database",
+              "target": "DB"
+            },
+            {
+              "sentence": 33,
+              "quote": "DataStorage",
+              "target": "FileStorage"
+            },
+            {
+              "sentence": 34,
+              "quote": "MediaAccess",
+              "target": "MediaAccess"
+            },
+            {
+              "sentence": 34,
+              "quote": "Database",
+              "target": "DB"
+            },
+            {
+              "sentence": 35,
+              "quote": "DataStorage",
+              "target": "FileStorage"
+            },
+            {
+              "sentence": 36,
+              "quote": "DataStorage",
+              "target": "FileStorage"
+            }
+          ],
+          "coreference_pipeline": [
+            {
+              "sentence": 3,
+              "quote": "this"
+            },
+            {
+              "sentence": 9,
+              "quote": "it"
+            },
+            {
+              "sentence": 15,
+              "quote": "this"
+            },
+            {
+              "sentence": 17,
+              "quote": "these"
+            },
+            {
+              "sentence": 21,
+              "quote": "This"
+            },
+            {
+              "sentence": 22,
+              "quote": "their"
+            },
+            {
+              "sentence": 24,
+              "quote": "It"
+            },
+            {
+              "sentence": 26,
+              "quote": "it"
+            },
+            {
+              "sentence": 28,
+              "quote": "it"
+            },
+            {
+              "sentence": 36,
+              "quote": "it"
+            }
+          ],
+          "relation_role_resolution": []
+        }
+      }
+    },
+    "out": {
+      "workflow": [
+        {
+          "action": "entity_pipeline",
+          "evidence": [
+            1
+          ],
+          "reason": "Named component mentions are available and entity extraction has not yet been scheduled.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "Facade"
+              },
+              {
+                "sentence": 3,
+                "component": "Facade"
+              },
+              {
+                "sentence": 6,
+                "component": "Facade"
+              },
+              {
+                "sentence": 7,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 8,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 11,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 12,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 13,
+                "component": "UserManagement"
+              },
+              {
+                "sentence": 16,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 17,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 17,
+                "component": "TagWatermarking"
+              },
+              {
+                "sentence": 19,
+                "component": "Packaging"
+              },
+              {
+                "sentence": 20,
+                "component": "Reencoding"
+              },
+              {
+                "sentence": 23,
+                "component": "DB"
+              },
+              {
+                "sentence": 25,
+                "component": "DB"
+              },
+              {
+                "sentence": 26,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 27,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 29,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 30,
+                "component": "UserDBAdapter"
+              },
+              {
+                "sentence": 31,
+                "component": "DB"
+              },
+              {
+                "sentence": 32,
+                "component": "DB"
+              },
+              {
+                "sentence": 33,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 34,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 34,
+                "component": "DB"
+              },
+              {
+                "sentence": 35,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 36,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 12,
+                "component": "DB"
+              }
+            ],
+            "rejected": []
+          }
+        },
+        {
+          "action": "coreference_pipeline",
+          "evidence": [
+            3,
+            9,
+            15,
+            17,
+            21,
+            22
+          ],
+          "reason": "Resolve reference mentions to previously introduced components.",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 9,
+                "component": "MediaManagement"
+              },
+              {
+                "sentence": 24,
+                "component": "DB"
+              },
+              {
+                "sentence": 28,
+                "component": "MediaAccess"
+              },
+              {
+                "sentence": 31,
+                "component": "DB"
+              },
+              {
+                "sentence": 32,
+                "component": "DB"
+              },
+              {
+                "sentence": 34,
+                "component": "DB"
+              },
+              {
+                "sentence": 35,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 36,
+                "component": "FileStorage"
+              },
+              {
+                "sentence": 36,
+                "component": "FileStorage"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 21,
+                "component": "Reencoding"
+              },
+              {
+                "sentence": 33,
+                "component": "FileStorage"
+              }
+            ]
+          }
+        },
+        {
+          "action": "finalize",
+          "reason": "all phase capabilities consumed"
+        }
+      ],
+      "final": 30,
+      "elapsed_s": 23.03,
+      "llm_calls": 16
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "Facade",
+        "src": "entity"
+      },
+      {
+        "s": 3,
+        "c": "Facade",
+        "src": "entity"
+      },
+      {
+        "s": 6,
+        "c": "Facade",
+        "src": "entity"
+      },
+      {
+        "s": 7,
+        "c": "MediaManagement",
+        "src": "entity"
+      },
+      {
+        "s": 8,
+        "c": "MediaManagement",
+        "src": "entity"
+      },
+      {
+        "s": 11,
+        "c": "UserManagement",
+        "src": "entity"
+      },
+      {
+        "s": 12,
+        "c": "UserDBAdapter",
+        "src": "entity"
+      },
+      {
+        "s": 13,
+        "c": "UserManagement",
+        "src": "entity"
+      },
+      {
+        "s": 16,
+        "c": "TagWatermarking",
+        "src": "entity"
+      },
+      {
+        "s": 17,
+        "c": "MediaManagement",
+        "src": "entity"
+      },
+      {
+        "s": 17,
+        "c": "TagWatermarking",
+        "src": "entity"
+      },
+      {
+        "s": 19,
+        "c": "Packaging",
+        "src": "entity"
+      },
+      {
+        "s": 20,
+        "c": "Reencoding",
+        "src": "entity"
+      },
+      {
+        "s": 23,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 25,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 26,
+        "c": "MediaAccess",
+        "src": "entity"
+      },
+      {
+        "s": 27,
+        "c": "MediaAccess",
+        "src": "entity"
+      },
+      {
+        "s": 29,
+        "c": "UserDBAdapter",
+        "src": "entity"
+      },
+      {
+        "s": 30,
+        "c": "UserDBAdapter",
+        "src": "entity"
+      },
+      {
+        "s": 31,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 32,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 33,
+        "c": "FileStorage",
+        "src": "entity"
+      },
+      {
+        "s": 34,
+        "c": "MediaAccess",
+        "src": "entity"
+      },
+      {
+        "s": 34,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 35,
+        "c": "FileStorage",
+        "src": "entity"
+      },
+      {
+        "s": 36,
+        "c": "FileStorage",
+        "src": "entity"
+      },
+      {
+        "s": 12,
+        "c": "DB",
+        "src": "entity"
+      },
+      {
+        "s": 9,
+        "c": "MediaManagement",
+        "src": "coreference"
+      },
+      {
+        "s": 24,
+        "c": "DB",
+        "src": "coreference"
+      },
+      {
+        "s": 28,
+        "c": "MediaAccess",
+        "src": "coreference"
+      }
+    ]
+  }
+]

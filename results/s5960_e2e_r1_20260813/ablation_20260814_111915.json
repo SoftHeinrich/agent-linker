@@ -1,0 +1,1046 @@
+{
+  "mediastore": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.967741935483871,
+      "R": 0.967741935483871,
+      "F1": 0.967741935483871,
+      "F2": 0.967741935483871,
+      "tp": 30,
+      "fp": 1,
+      "fn": 1,
+      "n_links": 31,
+      "time": 23.52343249320984,
+      "sources": {
+        "full_name": 28,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 25.619158267974854,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker59": {
+      "variant": "s_linker59",
+      "P": 0.967741935483871,
+      "R": 0.967741935483871,
+      "F1": 0.967741935483871,
+      "F2": 0.967741935483871,
+      "tp": 30,
+      "fp": 1,
+      "fn": 1,
+      "n_links": 31,
+      "time": 22.41642689704895,
+      "sources": {
+        "full_name": 27,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 12
+    },
+    "s_linker60": {
+      "variant": "s_linker60",
+      "P": 1.0,
+      "R": 0.9354838709677419,
+      "F1": 0.9666666666666666,
+      "F2": 0.9477124183006536,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 29,
+      "time": 22.224467039108276,
+      "sources": {
+        "full_name": 27,
+        "coreference": 2
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 28,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 11
+    }
+  },
+  "teammates": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.9137931034482759,
+      "R": 0.9298245614035088,
+      "F1": 0.9217391304347825,
+      "F2": 0.9265734265734266,
+      "tp": 53,
+      "fp": 5,
+      "fn": 4,
+      "n_links": 58,
+      "time": 67.72515392303467,
+      "sources": {
+        "full_name": 48,
+        "partial_name": 3,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "full_name": 4,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 97,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 0.9298245614035088,
+      "R": 0.9298245614035088,
+      "F1": 0.9298245614035088,
+      "F2": 0.9298245614035088,
+      "tp": 53,
+      "fp": 4,
+      "fn": 4,
+      "n_links": 57,
+      "time": 70.71575546264648,
+      "sources": {
+        "full_name": 47,
+        "partial_name": 3,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 2,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 161,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "They can be combined in various ways to transfer structured data between components."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker59": {
+      "variant": "s_linker59",
+      "P": 0.9473684210526315,
+      "R": 0.9473684210526315,
+      "F1": 0.9473684210526315,
+      "F2": 0.9473684210526315,
+      "tp": 54,
+      "fp": 3,
+      "fn": 3,
+      "n_links": 57,
+      "time": 60.083473920822144,
+      "sources": {
+        "full_name": 48,
+        "partial_name": 3,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "full_name": 2,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 135,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This is because we want to keep the data schema flexible so that new entity types can be added later with minimal modifi"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 36
+    },
+    "s_linker60": {
+      "variant": "s_linker60",
+      "P": 0.7794117647058824,
+      "R": 0.9298245614035088,
+      "F1": 0.8479999999999999,
+      "F2": 0.8952702702702703,
+      "tp": 53,
+      "fp": 15,
+      "fn": 4,
+      "n_links": 68,
+      "time": 59.24371600151062,
+      "sources": {
+        "full_name": 46,
+        "partial_name": 16,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "partial_name": 13,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 2,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "TEAMMATES is a Web application that runs on Google App Engine (GAE)."
+        },
+        {
+          "sentence": 31,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "First, request received by the GAE server."
+        },
+        {
+          "sentence": 35,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The user-invoked requests and the automated (GAE server-invoked) requests, which are processed differently."
+        },
+        {
+          "sentence": 58,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Automated requests are all requests sent automatically by the GAE server during specific periods of time."
+        },
+        {
+          "sentence": 62,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Second, requests generated by the GAE server are equipped with this privilege."
+        },
+        {
+          "sentence": 73,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Task queue workers are hybrids of user-invoked and GAE-invoked in that they are queued by users (i.e. users request for "
+        },
+        {
+          "sentence": 74,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This is typically used for tasks that may take a long time to finish and can exceed the 1 minute standard request proces"
+        },
+        {
+          "sentence": 94,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It connects to GAE's task queue API."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 186,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Its primary function is for E2E tests and L&P (Load & Performance) tests."
+        },
+        {
+          "sentence": 188,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 193,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.lnp contains load and performance tests (experimental)."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 35
+    }
+  },
+  "teastore": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 20.478582859039307,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 1.0,
+      "R": 0.9259259259259259,
+      "F1": 0.9615384615384615,
+      "F2": 0.9398496240601504,
+      "tp": 25,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 25,
+      "time": 19.2213613986969,
+      "sources": {
+        "full_name": 18,
+        "coreference": 7
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 38,
+          "component": "Registry",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 41,
+          "component": "Registry",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 11
+    },
+    "s_linker59": {
+      "variant": "s_linker59",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 19.85382103919983,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker60": {
+      "variant": "s_linker60",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 16.666000843048096,
+      "sources": {
+        "full_name": 20,
+        "coreference": 7
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 10
+    }
+  },
+  "bigbluebutton": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 0.9206349206349206,
+      "R": 0.9354838709677419,
+      "F1": 0.9279999999999999,
+      "F2": 0.932475884244373,
+      "tp": 58,
+      "fp": 5,
+      "fn": 4,
+      "n_links": 63,
+      "time": 49.91597533226013,
+      "sources": {
+        "full_name": 40,
+        "full_name_variant": 2,
+        "partial_name": 19,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    },
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 0.9365079365079365,
+      "R": 0.9516129032258065,
+      "F1": 0.944,
+      "F2": 0.9485530546623794,
+      "tp": 59,
+      "fp": 4,
+      "fn": 3,
+      "n_links": 63,
+      "time": 46.502644777297974,
+      "sources": {
+        "full_name": 43,
+        "full_name_variant": 2,
+        "partial_name": 16,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 2,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    },
+    "s_linker59": {
+      "variant": "s_linker59",
+      "P": 0.8955223880597015,
+      "R": 0.967741935483871,
+      "F1": 0.930232558139535,
+      "F2": 0.9523809523809523,
+      "tp": 60,
+      "fp": 7,
+      "fn": 2,
+      "n_links": 67,
+      "time": 45.90023374557495,
+      "sources": {
+        "full_name": 42,
+        "full_name_variant": 2,
+        "partial_name": 21,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 5,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 53,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It provides the list of users, chat, whiteboard, presentations in a meeting."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 69,
+          "component": "BBB web",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "KMS is responsible for streaming of webcams, listen-only audio, and screensharing."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    },
+    "s_linker60": {
+      "variant": "s_linker60",
+      "P": 0.8805970149253731,
+      "R": 0.9516129032258065,
+      "F1": 0.9147286821705426,
+      "F2": 0.9365079365079365,
+      "tp": 59,
+      "fp": 8,
+      "fn": 3,
+      "n_links": 67,
+      "time": 46.80342364311218,
+      "sources": {
+        "full_name": 47,
+        "partial_name": 17,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "partial_name": 3,
+        "full_name": 4,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    }
+  },
+  "jabref": {
+    "s_linker49": {
+      "variant": "s_linker49",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 14.31692099571228,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker49_null": {
+      "variant": "s_linker49_null",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 14.236698150634766,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker59": {
+      "variant": "s_linker59",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 19.57271099090576,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 8
+    },
+    "s_linker60": {
+      "variant": "s_linker60",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 11.457897186279297,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 7
+    }
+  }
+}
