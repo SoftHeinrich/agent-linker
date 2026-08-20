@@ -195,6 +195,7 @@ CANONICAL_VARIANTS = [
     "s_linker82",  # s81 with the prompt/dead-code audit fixes and one judging pass
     "s_linker83",  # s82 with the coreference judge shown the resolution it judges
     "s_linker85",  # s83's coreference judge composed with WordNet in place of INFLECTIONS
+    "s_linker86",  # s85 with the full-name judge's focus line removed as a restatement
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1922,6 +1923,27 @@ VARIANT_SPECS = {
             "paired runs per model: terra macro F1 93.68 against 91.13 and luna 89.48 "
             "against 83.83, with luna's false positives halved (41.3 against 80.0) - "
             "the laxer model gains most and the stricter one does not regress."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker86": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker86",
+        class_name="SLinker86",
+        description=(
+            "S-Linker86 - s_linker85 with one deletion: the full-name judge's focus "
+            "line. VALIDATION_FOCUS asked for architectural participation and "
+            "referential specificity, which the rubric under it already asks - "
+            "LAYERED_ENTITY_RULES makes participation the approve-condition and "
+            "STRICTER_CLAUSE is about nothing else than a name identifying this "
+            "element rather than ordinary vocabulary. 243 B leave each of the ~18.5 "
+            "judging calls per five-project run. Stage arm on both models, three runs "
+            "a side over the same extraction pass: terra TP 182.0 -> 183.0, macro F2 "
+            "-0.0 (p = 0.80); luna TP 174.7 -> 175.7, macro F1 +0.1 (p = 0.90), macro "
+            "F2 +0.3 (p = 0.60). The same round measured typed verdict rubrics at all "
+            "three judges and refused every one on the second model; see "
+            "results/typed_round/README.md."
         ),
         canonical=False,
         experimental=True,

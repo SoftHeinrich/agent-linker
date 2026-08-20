@@ -1,0 +1,642 @@
+{
+  "mediastore": {
+    "s_linker86": {
+      "variant": "s_linker86",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 23.417882680892944,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 10
+    },
+    "s_linker85": {
+      "variant": "s_linker85",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 26.128357648849487,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 10
+    }
+  },
+  "teammates": {
+    "s_linker86": {
+      "variant": "s_linker86",
+      "P": 0.9310344827586207,
+      "R": 0.9473684210526315,
+      "F1": 0.9391304347826087,
+      "F2": 0.9440559440559441,
+      "tp": 54,
+      "fp": 4,
+      "fn": 3,
+      "n_links": 58,
+      "time": 92.24225068092346,
+      "sources": {
+        "full_name": 46,
+        "partial_name": 3,
+        "coreference": 9
+      },
+      "fp_by_source": {
+        "full_name": 2,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 33
+    },
+    "s_linker85": {
+      "variant": "s_linker85",
+      "P": 0.8703703703703703,
+      "R": 0.8245614035087719,
+      "F1": 0.8468468468468469,
+      "F2": 0.8333333333333334,
+      "tp": 47,
+      "fp": 7,
+      "fn": 10,
+      "n_links": 54,
+      "time": 81.10723090171814,
+      "sources": {
+        "full_name": 42,
+        "partial_name": 3,
+        "coreference": 9
+      },
+      "fp_by_source": {
+        "coreference": 5,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 41,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Third, the browser will render the page and execute the page scripts, most of the time requiring AJAX requests to the se"
+        },
+        {
+          "sentence": 50,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 4,
+          "component": "UI",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 7,
+          "component": "UI",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 87,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 101,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 33
+    }
+  },
+  "teastore": {
+    "s_linker86": {
+      "variant": "s_linker86",
+      "P": 0.96,
+      "R": 0.8888888888888888,
+      "F1": 0.923076923076923,
+      "F2": 0.9022556390977443,
+      "tp": 24,
+      "fp": 1,
+      "fn": 3,
+      "n_links": 25,
+      "time": 33.991962909698486,
+      "sources": {
+        "full_name": 18,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 38,
+          "component": "Registry",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 41,
+          "component": "Registry",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 43,
+          "component": "Registry",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 11
+    },
+    "s_linker85": {
+      "variant": "s_linker85",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 26.41580820083618,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 10
+    }
+  },
+  "bigbluebutton": {
+    "s_linker86": {
+      "variant": "s_linker86",
+      "P": 0.8405797101449275,
+      "R": 0.9354838709677419,
+      "F1": 0.8854961832061068,
+      "F2": 0.9148264984227129,
+      "tp": 58,
+      "fp": 11,
+      "fn": 4,
+      "n_links": 69,
+      "time": 67.56842184066772,
+      "sources": {
+        "full_name": 38,
+        "partial_name": 28,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "partial_name": 10,
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for "
+        },
+        {
+          "sentence": 18,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield"
+        },
+        {
+          "sentence": 46,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis PubSub."
+        },
+        {
+          "sentence": 47,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+        },
+        {
+          "sentence": 48,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis DB."
+        },
+        {
+          "sentence": 49,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When a meeting is recorded, all events are stored in Redis DB."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        },
+        {
+          "sentence": 79,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 60,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 80,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 81,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 20
+    },
+    "s_linker85": {
+      "variant": "s_linker85",
+      "P": 0.855072463768116,
+      "R": 0.9516129032258065,
+      "F1": 0.900763358778626,
+      "F2": 0.9305993690851735,
+      "tp": 59,
+      "fp": 10,
+      "fn": 3,
+      "n_links": 69,
+      "time": 74.47480773925781,
+      "sources": {
+        "full_name": 41,
+        "partial_name": 26,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 8,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for "
+        },
+        {
+          "sentence": 46,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis PubSub."
+        },
+        {
+          "sentence": 47,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+        },
+        {
+          "sentence": 48,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Redis DB."
+        },
+        {
+          "sentence": 49,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When a meeting is recorded, all events are stored in Redis DB."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "HTML5 Server",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        },
+        {
+          "sentence": 79,
+          "component": "Redis DB",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 80,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 81,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 21
+    }
+  },
+  "jabref": {
+    "s_linker86": {
+      "variant": "s_linker86",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 18.317681789398193,
+      "sources": {
+        "full_name": 19
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has on"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 7
+    },
+    "s_linker85": {
+      "variant": "s_linker85",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 15.462815046310425,
+      "sources": {
+        "full_name": 18,
+        "coreference": 1
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 3,
+          "component": "model",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The dependencies are only directed towards the center."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 7
+    }
+  }
+}

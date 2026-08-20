@@ -1,0 +1,209 @@
+# one prompt this arm sent: fullname2 / terra / ctl / run 1 / bigbluebutton / 18369 chars
+
+Validate components in a document. Check architectural participation and referential specificity: does the sentence name this component as an architectural participant, and does the name identify this specific architectural element rather than serve as a generic technical term?
+
+COMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH
+
+Approve the link by default: the component is named here and the document treats it as part of the system. A mention that says nothing further about the component still counts as a valid link. Reject only on a positive ground -- that the sentence asserts nothing of this component, because the name is doing some other job here, or because the sentence denies what it would otherwise say of it.
+
+An expression that occurs only as part of a longer joined or dotted identifier is naming a piece of that identifier, not a participant in what the sentence describes.
+Some sentences use an ordinary English word that happens to coincide with a component's name. Approve only when the sentence uses that word as the name of the component; if it is used in its ordinary sense and the component is not what the sentence is talking about, reject. Capitalization is evidence for a name and its absence is evidence against, but neither settles it on its own.
+
+For each case, first quote the EXACT words from the sentence that state the
+architectural claim about the component (or write "none" if the sentence makes no
+such claim), then decide approve true/false based on that claim.
+
+CASES:
+Case 1: "HTML5 client" -> HTML5 Client
+  [prev: We'll break down each component in more detail below.] "HTML5 client."
+  Evidence: source=full_name, span="HTML5 client"
+  [prev: "We'll break down each component in more detail below."]
+  Anchors (confirmed refs):
+    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.
+    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.
+    S14: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.
+    S72: A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.
+Case 2: "HTML5 client" -> HTML5 Client
+  [prev: HTML5 client.] "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video."
+  Evidence: source=full_name, span="HTML5 client"
+  [prev: "HTML5 client."]
+  Anchors (confirmed refs):
+    S4: HTML5 client.
+    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.
+    S14: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.
+    S72: A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.
+Case 3: "HTML5 client" -> HTML5 Client
+  [prev: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.] "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+  Evidence: source=full_name, span="HTML5 client"
+  [prev: "The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video."]
+  Anchors (confirmed refs):
+    S4: HTML5 client.
+    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.
+    S14: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.
+    S72: A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.
+Case 4: "HTML5 server" -> HTML5 Server
+  [prev: These connections are all handled by nginx.] "The HTML5 server sits behind nginx."
+  Evidence: source=full_name, span="HTML5 server"
+  [prev: "These connections are all handled by nginx."]
+  Anchors (confirmed refs):
+    S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.
+    S15: Scalability of HTML5 server component.
+Case 5: "HTML5 server" -> HTML5 Server
+  [prev: The HTML5 server sits behind nginx.] "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+  Evidence: source=full_name, span="HTML5 server"
+  [prev: "The HTML5 server sits behind nginx."]
+  Anchors (confirmed refs):
+    S8: The HTML5 server sits behind nginx.
+    S15: Scalability of HTML5 server component.
+Case 6: "HTML5 client" -> HTML5 Client
+  [prev: Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.] "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton."
+  Evidence: source=full_name, span="HTML5 client"
+  [prev: "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."]
+  Anchors (confirmed refs):
+    S4: HTML5 client.
+    S5: The HTML5 client is a single page, responsive web application that is built upon the following components, React.js for rendering the user interface in an efficient manner, WebRTC for sending/receiving audio and video.
+    S6: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.
+    S72: A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML5 client or through the phone.
+Case 7: "HTML5 server" -> HTML5 Server
+  [prev: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.] "Scalability of HTML5 server component."
+  Evidence: source=full_name, span="HTML5 server"
+  [prev: "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton."]
+  Anchors (confirmed refs):
+    S8: The HTML5 server sits behind nginx.
+    S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.
+Case 8: "bbb-html5" -> HTML5 Server
+  [prev: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.] "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+  Evidence: source=full_name, span="bbb-html5", mention=via known alias
+  [prev: "Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability."]
+  Anchors (confirmed refs):
+    S8: The HTML5 server sits behind nginx.
+    S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.
+    S15: Scalability of HTML5 server component.
+Case 9: "bbb-html5" -> HTML5 Server
+  [prev: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.] "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core)."
+  Evidence: source=full_name, span="bbb-html5", mention=via known alias
+  [prev: "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."]
+  Anchors (confirmed refs):
+    S8: The HTML5 server sits behind nginx.
+    S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.
+    S15: Scalability of HTML5 server component.
+Case 10: "bbb-html5" -> HTML5 Server
+  [prev: This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).] "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files)."
+  Evidence: source=full_name, span="bbb-html5", mention=via known alias
+  [prev: "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core)."]
+  Anchors (confirmed refs):
+    S8: The HTML5 server sits behind nginx.
+    S9: The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server.
+    S15: Scalability of HTML5 server component.
+Case 11: "bbb-web" -> BBB web
+  [prev: Backends handle all the non-streamer events.] "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+  Evidence: source=full_name, span="bbb-web"
+  [prev: "Backends handle all the non-streamer events."]
+  Anchors (confirmed refs):
+    S36: BBB web.
+Case 12: "BBB web" -> BBB web
+  [prev: See "Automatically apply configuration changes on restart".] "BBB web."
+  Evidence: source=full_name, span="BBB web"
+  [prev: "See "Automatically apply configuration changes on restart"."]
+Case 13: "BigBlueButton web application" -> BBB web
+  [prev: BBB web.] "BigBlueButton web application is a Java-based application written in Scala."
+  Evidence: source=full_name, span="BigBlueButton web application", mention=via known alias
+  [prev: "BBB web."]
+  Anchors (confirmed refs):
+    S36: BBB web.
+Case 14: "Redis PubSub" -> Redis PubSub
+  [prev: Regardless of which front-end you use, they all use the API under the hood.] "Redis PubSub."
+  Evidence: source=full_name, span="Redis PubSub"
+  [prev: "Regardless of which front-end you use, they all use the API under the hood."]
+  Anchors (confirmed refs):
+    S47: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+    S79: The conversion process sends progress messages to the client through the Redis pubsub.
+Case 15: "Redis PubSub" -> Redis PubSub
+  [prev: Redis PubSub.] "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+  Evidence: source=full_name, span="Redis PubSub"
+  [prev: "Redis PubSub."]
+  Anchors (confirmed refs):
+    S46: Redis PubSub.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+    S79: The conversion process sends progress messages to the client through the Redis pubsub.
+Case 16: "Redis DB" -> Redis DB
+  [prev: Redis PubSub provides a communication channel between different applications running on the BigBlueButton server.] "Redis DB."
+  Evidence: source=full_name, span="Redis DB"
+  [prev: "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."]
+  Anchors (confirmed refs):
+    S49: When a meeting is recorded, all events are stored in Redis DB.
+Case 17: "Redis DB" -> Redis DB
+  [prev: Redis DB.] "When a meeting is recorded, all events are stored in Redis DB."
+  Evidence: source=full_name, span="Redis DB"
+  [prev: "Redis DB."]
+  Anchors (confirmed refs):
+    S48: Redis DB.
+Case 18: "Recording Processor" -> Recording Service
+  [prev: When a meeting is recorded, all events are stored in Redis DB.] "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing."
+  Evidence: source=full_name, span="Recording Processor", mention=via known alias
+  [prev: "When a meeting is recorded, all events are stored in Redis DB."]
+Case 19: "Apps akka" -> Apps
+  [prev: When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing.] "Apps akka."
+  Evidence: source=full_name, span="Apps akka"
+  [prev: "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV, FLV) files for processing."]
+  Anchors (confirmed refs):
+    S26: Frontends receive other DDP events including method calls to send events to akka-apps.
+    S52: BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.
+    S54: Below is a diagram of the different components of Apps Akka.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+Case 20: "BigBlueButton Apps" -> Apps
+  [prev: Apps akka.] "BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting."
+  Evidence: source=full_name, span="BigBlueButton Apps"
+  [prev: "Apps akka."]
+  Anchors (confirmed refs):
+    S26: Frontends receive other DDP events including method calls to send events to akka-apps.
+    S51: Apps akka.
+    S54: Below is a diagram of the different components of Apps Akka.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+Case 21: "Apps Akka" -> Apps
+  [prev: It provides the list of users, chat, whiteboard, presentations in a meeting.] "Below is a diagram of the different components of Apps Akka."
+  Evidence: source=full_name, span="Apps Akka"
+  [prev: "It provides the list of users, chat, whiteboard, presentations in a meeting."]
+  Anchors (confirmed refs):
+    S26: Frontends receive other DDP events including method calls to send events to akka-apps.
+    S51: Apps akka.
+    S52: BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+Case 22: "FSESL akka" -> FSESL
+  [prev: This is where information about the meeting is stored and where all messages for a meeting is processed.] "FSESL akka."
+  Evidence: source=full_name, span="FSESL akka"
+  [prev: "This is where information about the meeting is stored and where all messages for a meeting is processed."]
+Case 23: "FreeSWITCH" -> FreeSWITCH
+  [prev: FSESL akka.] "We have extracted out the component that integrates with FreeSWITCH into it’s own application."
+  Evidence: source=full_name, span="FreeSWITCH"
+  [prev: "FSESL akka."]
+  Anchors (confirmed refs):
+    S59: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+    S61: FreeSWITCH.
+    S62: We think FreeSWITCH is an amazing piece of software for handling audio.
+    S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.
+Case 24: "FreeSWITCH" -> FreeSWITCH
+  [prev: We have extracted out the component that integrates with FreeSWITCH into it’s own application.] "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+  Evidence: source=full_name, span="FreeSWITCH"
+  [prev: "We have extracted out the component that integrates with FreeSWITCH into it’s own application."]
+  Anchors (confirmed refs):
+    S58: We have extracted out the component that integrates with FreeSWITCH into it’s own application.
+    S60: Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub.
+    S61: FreeSWITCH.
+    S62: We think FreeSWITCH is an amazing piece of software for handling audio.
+    S63: FreeSWITCH provides the voice conferencing capability in BigBlueButton.
+Case 25: "apps" -> Apps
+  [prev: This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration.] "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+  Evidence: source=full_name, span="apps"
+  [prev: "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."]
+  Anchors (confirmed refs):
+    S26: Frontends receive other DDP events including method calls to send events to akka-apps.
+    S51: Apps akka.
+    S52: BigBlueButton Apps is the main application that pulls together the different applications to provide real-time collaboration in the meeting.
+    S54: Below is a diagram of the different components of Apps Akka.
+
+Return JSON:
+{"validations": [{"case": 1, "claim": "<exact quote or none>", "approve": true}]}
+JSON only:

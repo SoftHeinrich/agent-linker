@@ -1405,3 +1405,58 @@ structure, at the measure the paper leads with. Four arms, each the previous plu
   entries actually resolve to runnable code here.
 - Default benchmarking backend is set in `.env` (`LLM_BACKEND=openai`,
   `gpt-5.4`). `.env` is untracked.
+
+### The typed round (s86) — one contradiction, one clause, and a closed set of verdicts
+
+The goal was compaction that holds on **both** models. Three questions, asked in the
+measurement policy's order; report `../results/typed_round/README.md`, arms
+`pilot/typed_prompt_pilots.py`, statistics `pilot/typed_round_stats.py`, deterministic
+screen `pilot/entity_prompt_audit.py`, invariants `pilot/test_s86_nofocus.py` (75
+checks), runner `pilot/run_typed_e2e.sh`.
+
+- **The full-name judging prompt contradicts itself, and the audit says which half
+  wins.** `LAYERED_ENTITY_RULES` says a mention that says nothing further "still counts
+  as a valid link"; the builder then asks for the architectural claim and says to decide
+  "based on that claim". Over the recorded runs, `claim = "none"` was rejected **45/45 on
+  terra (s85), 45/45 (s82), 23/23 on luna** — 105 of 105. The lenient sentence is inert,
+  and the two ways of resolving the contradiction were both measured: deleting it
+  (`nodead`) is neutral on both models, and honouring it (`typedlenient`, approving
+  `NO_CLAIM`) costs 5.0 gold per run on terra.
+- **Typed verdicts were asked of all three judges and refused at every one.** The module
+  already has one typed judge (the denotation step answers `participant`/`associated`),
+  so the question was whether the other rubrics could be a closed set of named verdicts
+  instead of prose. Full-name: gold 151.3 → 134.7 (p = 0.10) on terra, −8.7 on luna;
+  approving `NO_CLAIM` instead: −5.0 terra; restating the default as well: −8.3 terra,
+  −7.0 luna. Coreference: terra F1 −1.2; **with the default restated, terra-neutral
+  (F1 −0.0) and luna-fatal (FP +34.0, F1 −3.8)**. Alias: table 27.0 → 31.3 terms,
+  F1 −1.4. **Mechanism, one sentence: typing a rubric deletes its default, and the
+  default is what each judge's asymmetry was carrying** — the lenient gate lost recall
+  (three reject types and no "approve by default" invites reaching for one), the strict
+  gate lost strictness (three reject types instead of "when uncertain, reject" makes a
+  merely-plausible resolution reachable). A typed rubric is also **not smaller**: +66
+  chars per call at the coreference judge, +272 at the alias judge. **Had the round
+  stopped at terra it would have adopted the typed coreference judge.**
+- **The morphology clause stays, and the audit's attribution of its cost was wrong.**
+  "count a name written with different spacing, hyphenation or compound joining as that
+  name" is the only instruction admitting a candidate whose sentence writes no name at
+  `ANY_CASE`. That population is 3.3 pairs/run on terra (2.3 gold) and 12.0 on luna (2.3
+  gold, 9.7 spurious), which reads like a luna liability. Removing the clause removed
+  none of it: luna stage spurious went **up** (10.0 → 12.0) while gold fell 5.0 (macro
+  F2 −1.9); terra gold −3.3. The extractor proposes those pairs with or without a licence
+  to; what the clause buys is the hyphenation cases. **A surface attribution is not a
+  causal one** — s53's lesson from a new direction.
+- **`s_linker86` is what holds: `s_linker85` minus `VALIDATION_FOCUS`, and nothing
+  else.** The focus line asked for architectural participation and referential
+  specificity; `LAYERED_ENTITY_RULES` makes the first its approve-condition and
+  `STRICTER_CLAUSE` is about nothing but the second. Authored rule text **3485 → 3242 B
+  (−7.0%)**, 244 B out of every full-name judging call. Stage arm, three runs a side,
+  every arm judging the same extraction pass: terra TP 182.0 → 183.0 (F2 −0.0, p = 0.80),
+  luna TP 174.7 → 175.7 (F1 +0.1 p = 0.90, F2 +0.3 p = 0.60). Composition risk off the
+  checkpoints: 0.7 added pairs/run that a later stage also proposes, 0.0 removed pairs in
+  the final link set — non-zero, so E2E was paid for; small, so at n = 3.
+- **`nodead` and `nofocus` are each neutral and negative together** (terra `compact`
+  F1 −1.3, luna −0.45 at FP +6.0). Once the focus is gone the inert sentence stops being
+  inert, because the focus was carrying the participation requirement the claim-first
+  instruction leans on. **A clause is not independently priceable** — s78's result in the
+  other direction — so the round removes one clause, not two, and the dead sentence
+  stays, documented as dead.

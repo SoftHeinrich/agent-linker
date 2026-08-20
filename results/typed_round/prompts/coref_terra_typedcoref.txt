@@ -1,0 +1,129 @@
+# one prompt this arm sent: coref / terra / typedcoref / run 1 / bigbluebutton / 11744 chars
+
+Validate components in a document. Check coref resolution: does the referring expression in this sentence actually refer to the named component as an architectural participant?
+
+COMPONENTS: Recording Service, kurento, WebRTC-SFU, HTML5 Server, HTML5 Client, Presentation Conversion, BBB web, Redis PubSub, FSESL, Apps, Redis DB, FreeSWITCH
+
+These are coreference links: a pronoun or noun phrase in the sentence is claimed to
+refer back to the component, which is NOT named in the sentence itself.
+
+Give each case exactly one verdict:
+
+  REFERS     the sentence contains a genuine referring expression that unambiguously
+             points to THIS component and makes an architectural claim about it.
+  AMBIGUOUS  there is a referring expression, but its antecedent could equally be a
+             different component.
+  ARTIFACT   the expression denotes what a component acts on or produces -- the data,
+             the artifact, the request, the result -- and so refers to that thing and
+             not to the component, however clearly the component is the one acting.
+  NONE       the sentence contains no referring expression pointing to this component.
+
+For each case, first quote the EXACT words from the sentence that decide the verdict
+(or "none" if the sentence states nothing of the component), then give the verdict,
+then approve true for REFERS and false for every other verdict.
+
+CASES:
+Case 1: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "These connections"
+  Claimed antecedent (S6): "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+  [prev: The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection.] "These connections are all handled by nginx."
+Case 2: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "client"
+  Claimed antecedent (S6): "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+  [prev: The MongoDB database contains information about all meetings on the server and, in turn, each client connected to a meeting.] "Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received."
+Case 3: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "The client side"
+  Claimed antecedent (S11): "Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received."
+  [prev: Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.] "The client side subscribes to the published collections on the server side."
+Case 4: pronoun/role-ref -> HTML5 Server
+  Claimed reference: "the server side"
+  Claimed antecedent (S9): "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+  [prev: Each user's client is only aware of the their meeting's state, such the user's public and private chat messages sent and received.] "The client side subscribes to the published collections on the server side."
+Case 5: pronoun/role-ref -> HTML5 Server
+  Claimed reference: "the server side"
+  Claimed antecedent (S9): "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+  [prev: The client side subscribes to the published collections on the server side.] "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."
+Case 6: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "the client side"
+  Claimed antecedent (S12): "The client side subscribes to the published collections on the server side."
+  [prev: The client side subscribes to the published collections on the server side.] "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."
+Case 7: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "HTML5 client"
+  Claimed antecedent (S6): "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton client to making a web socket connection."
+  [prev: Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side.] "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton."
+Case 8: pronoun/role-ref -> HTML5 Server
+  Claimed reference: "HTML5 server component"
+  Claimed antecedent (S9): "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for keeping the state of each BigBlueButton client consistent with the BigBlueButton server."
+  [prev: The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton.] "Scalability of HTML5 server component."
+Case 9: pronoun/role-ref -> HTML5 Server
+  Claimed reference: "This process"
+  Claimed antecedent (S16): "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+  [prev: BigBlueButton 2.2 used a single nodejs process for all client-side communication.] "This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the core)."
+Case 10: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "bbb-html5"
+  Claimed antecedent (S14): "The following diagram gives an overview of the architecture of the HTML5 client and its communications with the other components in BigBlueButton."
+  [prev: Because nodejs was running on a single CPU core, having a 16 or 32 CPU core server for BigBlueButton 2.2 failed to yield much additional scalability.] "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+Case 11: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "bbb-html5"
+  Claimed antecedent (S19): "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients."
+  [prev: BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messages from clients.] "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core)."
+Case 12: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "bbb-html5"
+  Claimed antecedent (S19): "bbb-html5"
+  [prev: This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process runs on a single CPU core).] "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files)."
+Case 13: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "these files"
+  Claimed antecedent (S21): "bbb-html5-with-roles.conf"
+  [prev: As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value is configurable in bbb-html5-with-roles.conf, see Configuration Files).] "A restart of BigBlueButton is required if you make changes to these files."
+Case 14: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "front-end and back-end"
+  Claimed antecedent (S21): ""frontend" and two "backend" processes"
+  [prev: A restart of BigBlueButton is required if you make changes to these files.] "The breakdown of functionality between front-end and back-end is as follows."
+Case 15: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Frontends"
+  Claimed antecedent (S21): ""frontend""
+  [prev: The breakdown of functionality between front-end and back-end is as follows.] "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+Case 16: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Frontends"
+  Claimed antecedent (S21): ""frontend""
+  [prev: Frontends receive the ValidateAuthTokenResp event to complete authentication.] "Frontends collect subscriptions and publishers."
+Case 17: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Frontends"
+  Claimed antecedent (S21): ""frontend""
+  [prev: Frontends collect subscriptions and publishers.] "Frontends receive other DDP events including method calls to send events to akka-apps."
+Case 18: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Frontends"
+  Claimed antecedent (S21): ""frontend""
+  [prev: Frontends receive other DDP events including method calls to send events to akka-apps.] "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+Case 19: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Frontends"
+  Claimed antecedent (S21): ""frontend""
+  [prev: Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share.] "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+Case 20: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "Backends"
+  Claimed antecedent (S21): ""backend""
+  [prev: Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues.] "Backends handle all the non-streamer events."
+Case 21: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "backend"
+  Claimed antecedent (S21): ""backend""
+  [prev: Backends handle all the non-streamer events.] "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+Case 22: pronoun/role-ref -> BBB web
+  Claimed reference: "bbb-web"
+  Claimed antecedent (S30): "bbb-web"
+  [prev: Backends handle all the non-streamer events.] "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+Case 23: pronoun/role-ref -> Apps
+  Claimed reference: "individual backends"
+  Claimed antecedent (S29): "Backends handle all the non-streamer events."
+  [prev: If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId.] "So individual backends only process redis events for the meetings matching the associated instanceId."
+Case 24: pronoun/role-ref -> Apps
+  Claimed reference: "a backend"
+  Claimed antecedent (S31): "individual backends"
+  [prev: So individual backends only process redis events for the meetings matching the associated instanceId.] "ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling."
+Case 25: pronoun/role-ref -> HTML5 Client
+  Claimed reference: "frontends"
+  Claimed antecedent (S27): "Frontends handle completely the Streamer redis events"
+  [prev: So individual backends only process redis events for the meetings matching the associated instanceId.] "ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no frontends - for example dev environments that do not need to care about scaling."
+
+Return JSON:
+{"validations": [{"case": 1, "claim": "<exact quote or none>", "verdict": "<one of the verdicts above>", "approve": true}]}
+JSON only:
