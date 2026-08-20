@@ -1183,8 +1183,22 @@ for minutes. Escalate in this order and stop at the first level that decides:
    measure model drift instead of the change. Structurally vacuous for any change to the
    LAST linker (coreference), since nothing downstream can be starved.
 4. **E2E, and only to finalize.** Pay for runs when the composition risk is non-zero, and
-   then only for the change that carries it — not for the whole variant. Carry an in-set
-   null arm; never compare across invocation sets.
+   then only for the change that carries it — not for the whole variant. Never compare
+   across invocation sets: arms are comparable only when they ran inside the same
+   invocation, so every arm a claim rests on goes in the same batch.
+
+**No in-set null arm.** Earlier rounds carried a byte-identical copy of the base
+(`s49_null`, `s59_null`, `s65_null`, `s66_null`, `s75_null`) to size the harness noise a
+delta had to clear. That floor is now measured — six rounds of it, and it is quiet except
+where a checkpoint-namespace difference makes it loud (the finetune round's `s75_null`
+reads F1 -1.58 / FP +10.7 against its own control, `../results/finetune_round/README.md`).
+**Do not add one to new batches.** It is a whole arm — a third of a two-arm invocation, a
+quarter of a three-arm one — spent re-measuring a constant, and the measurement policy
+above says not to pay E2E for a settled question. Read new deltas against the recorded
+floor and against N>=3 paired runs with a sign-flip permutation test, which is what
+separates a real effect from the +/-55-link run-to-run swing anyway. If a *new* claim
+turns on the floor itself, re-measure it once and record it here rather than carrying it
+in every batch.
 
 **Do not pair-run arms that a checkpoint replay separates.** Adding an arm to an
 invocation multiplies its cost by the number of arms; an arm that a stage pilot already
