@@ -78,6 +78,8 @@ from .s_linker77 import SLinker77
 from .s_linker78 import SLinker78
 from .s_linker79 import SLinker79
 from .s_linker80 import SLinker80
+from .s_linker81 import SLinker81
+from .s_linker82 import SLinker82
 
 __all__ = [
     "SLinker21",
@@ -153,4 +155,6 @@ __all__ = [
     "SLinker78",
     "SLinker79",
     "SLinker80",
+    "SLinker81",
+    "SLinker82",
 ]

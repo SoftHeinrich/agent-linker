@@ -191,6 +191,8 @@ CANONICAL_VARIANTS = [
     "s_linker78",  # s77 with the judging rubric stated as one principle
     "s_linker79",  # s78 with no deterministic gate at all
     "s_linker80",  # s79 with no computed evidence either
+    "s_linker81",  # s80 with the two costed deletions restored
+    "s_linker82",  # s81 with the prompt/dead-code audit fixes and one judging pass
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1838,6 +1840,42 @@ VARIANT_SPECS = {
             "removing the field is -10.7 TP and asking the judge for it instead is "
             "-6.7 TP (concept round). Run to price the design law's hardest case on F2 "
             "rather than on TP."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker81": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker81",
+        class_name="SLinker81",
+        description=(
+            "S-Linker81 - s_linker80 with the two deletions the post-mortem costed put "
+            "back and the third left out. `skip_when_named` returns (it adds 140 of the "
+            "161 ungated candidates, and it states which linker owns a case rather than "
+            "gating one); the mention label returns at VIA_ALIAS and CODE_TOKEN only "
+            "(100% and 73% of those approvals were lost against 3% of proper-case ones). "
+            "`unique_owner` and the other three labels stay out, as facts the judge is "
+            "already holding. Priced against s78 on F2."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker82": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker82",
+        class_name="SLinker82",
+        description=(
+            "S-Linker82 - s_linker81 with the prompt audit's fixes. One full-name "
+            "judging pass instead of two AND-ed ones (the passes disagree on 4.0 of "
+            "~196 candidates per five-project run in s81's own recorded runs, and both "
+            "questions are already in the shared rubric), a deduplicated coreference "
+            "batch (one sentence table instead of a pasted window per case), an alias "
+            "judge whose no-answer path is one documented default instead of three "
+            "behaviours (a parse failure approved everything, a keyless reply nothing), "
+            "an extraction "
+            "prompt that no longer states two contradictory admission rules, judged "
+            "claims recorded in the trace, and the dead deterministic layer removed. "
+            "Priced against s81."
         ),
         canonical=False,
         experimental=True,
