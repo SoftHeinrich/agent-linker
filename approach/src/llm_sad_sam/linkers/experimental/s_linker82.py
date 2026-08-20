@@ -127,9 +127,13 @@ ALIAS_EXCLUSION_RULES = """A fragment of a longer identifier is not an alias: if
 #: as ordinary English while demanding every mention "however incidental" -- two
 #: orders at once. The use/mention call is the judge's (`STRICTER_CLAUSE`), so the
 #: extractor is asked for named mentions and nothing else.
-ENTITY_EXTRACTION_RULES = """Report a reference only when the sentence itself writes the component's name, spelled as the COMPONENTS list spells it or as one of the KNOWN ALIASES; count a name written with different spacing, hyphenation or compound joining as that name.
+ENTITY_EXTRACTION_RULES = """Report a reference only when the sentence itself writes the component's name,
+ spelled as the COMPONENTS list spells it or as one of the KNOWN ALIASES; count a name written with different spacing, 
+ hyphenation or compound joining as that name.
 
-Do not report a component that the sentence only implies as a participant in a described interaction without naming it. Among the sentences that do name it, report every one, however incidental the mention: whether the mention carries an architectural claim is decided later."""
+Do not report a component that the sentence only implies as a participant in a described interaction without naming it. 
+Among the sentences that do name it, report every one, however incidental the mention: 
+whether the mention carries an architectural claim is decided later."""
 
 #: The full-name judging question. s81 asked these two halves as separate passes
 #: and AND-ed them; replaying its three runs, the passes disagree on 4.0 of ~196
@@ -152,7 +156,10 @@ COREF_VALIDATION_FOCUS = (
 #: section-topic licence (0.0 of 578 recorded resolutions), the five listed role
 #: phrases, and the terminal-word/abbreviation enumeration (1.7 antecedents per
 #: run), all subsumed by "under any form the document uses for it".
-COREF_RULES = """For each case, decide whether a pronoun or noun phrase that refers back in the target sentence refers back to a component named or aliased earlier in the context. Resolve when the surrounding sentences make one component the clear antecedent, under any form the document uses for it. Avoid resolving when two or more equally plausible antecedents exist."""
+COREF_RULES = """For each case, decide whether a pronoun or noun phrase that refers back in the target sentence 
+refers back to a component named or aliased earlier in the context. 
+Resolve when the surrounding sentences make one component the clear antecedent, 
+under any form the document uses for it. Avoid resolving when two or more equally plausible antecedents exist."""
 
 #: Full-name gate -- lenient: a stated name is a link unless a reject signal fires.
 #: The four numbered reject-conditions this replaces are grounded elsewhere in the
@@ -161,7 +168,7 @@ COREF_RULES = """For each case, decide whether a pronoun or noun phrase that ref
 LAYERED_ENTITY_RULES = (
     "Approve the link by default: the component is named here and the document treats "
     "it as part of the system. A mention that says nothing further about the component "
-    "still counts as a valid link. Reject only on a positive ground -- that the sentence "
+    "still counts as a valid link. Reject only on a positive ground: that the sentence "
     "asserts nothing of this component, because the name is doing some other job here, "
     "or because the sentence denies what it would otherwise say of it."
 )
@@ -190,7 +197,8 @@ WORD_PATTERN = r"[A-Za-z]+[A-Za-z0-9]*|\d+"
 #: characters sit. Deleting the code gate with no compensation is FP +7.0 (p = 0.01);
 #: this sentence in front of the same judge is TP -0.4 / FP -0.2, both n.s.
 #: (`pilot/fold_pilots.py --pilot foldqualified`).
-QUALIFIED_CLAUSE = """An expression that occurs only as part of a longer joined or dotted identifier is naming a piece of that identifier, not a participant in what the sentence describes."""
+QUALIFIED_CLAUSE = """An expression that occurs only as part of a longer joined or dotted identifier 
+is naming a piece of that identifier, not a participant in what the sentence describes."""
 
 #: The case-sensitivity gate, stated as the distinction the judge should draw.
 #: Deleting the code gate is TP +4.0 at FP +1.8 (both p = 0.01); this sentence in
@@ -366,7 +374,7 @@ class SLinker82:
         no_knowledge: bool = False,
     ):
         os.environ.setdefault("CLAUDE_MODEL", "sonnet")
-        os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.4")
+        os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.6-terra")
         real_llm = LLMClient(
             backend=backend or LLMBackend.CLAUDE,
             model=model,

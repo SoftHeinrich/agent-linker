@@ -78,16 +78,17 @@ class LLMClient:
 
         Args:
             backend: LLM backend to use. If None, uses LLM_BACKEND env var or default.
-            model: Model name. For OpenAI: defaults to OPENAI_MODEL_NAME env var or "gpt-5.4".
+            model: Model name. For OpenAI: defaults to OPENAI_MODEL_NAME env var or "gpt-5.6-terra".
                    For Claude CLI: passed as --model flag. Defaults to CLAUDE_MODEL env var (unset = CLI default).
             log_dir: Directory to save logs. Defaults to LLM_LOG_DIR env var or "./results/llm_logs".
             enable_logging: Whether to enable file logging. Defaults to True.
             temperature: Temperature for generation (0.0-1.0). Only works with OpenAI backend.
-                        Lower = more deterministic. Default 0.1 for OpenAI.
+                        Lower = more deterministic. Default 1.0 — the only value gpt-5.x
+                        accepts; anything else is rejected with HTTP 400.
             checkpoint_fallback: Backend used for checkpoint cache misses.
                                  Defaults to CHECKPOINT_FALLBACK env var or "claude".
             checkpoint_fallback_model: Model used on checkpoint cache misses.
-                                       Examples: "sonnet", "gpt", "gpt-5.4".
+                                       Examples: "sonnet", "gpt", "gpt-5.6-terra".
         """
         if backend is not None:
             self.backend = backend
@@ -109,7 +110,7 @@ class LLMClient:
         self._log_file_handle = None
 
         # Model configuration
-        self.openai_model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
+        self.openai_model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.6-terra")
         self.claude_model = os.environ.get("CLAUDE_MODEL", "sonnet")
         if model is not None:
             if self.backend == LLMBackend.OPENAI:
@@ -118,7 +119,7 @@ class LLMClient:
                 self.claude_model = model
             elif self.backend == LLMBackend.CHECKPOINT and checkpoint_fallback_model is None:
                 checkpoint_fallback_model = model
-        self.temperature = temperature if temperature is not None else 0.1
+        self.temperature = temperature if temperature is not None else 1.0
         self._openai_client = None
 
         # Checkpoint backend configuration
@@ -197,9 +198,9 @@ class LLMClient:
         normalized = model_name.strip()
         lowered = normalized.lower()
         if lowered == "gpt":
-            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.6-terra")
         if lowered == "openai":
-            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
+            return LLMBackend.OPENAI, os.environ.get("OPENAI_MODEL_NAME", "gpt-5.6-terra")
         if lowered.startswith("gpt"):
             return LLMBackend.OPENAI, normalized
 
@@ -949,11 +950,11 @@ class LLMClient:
     def _apply_openai_reasoning(self, create_kwargs: dict) -> None:
         """Set reasoning_effort XOR temperature on a chat.completions request.
 
-        gpt-5.x: requesting any reasoning_effort engages reasoning mode, which on these
-        models rejects temperature != 1 (HTTP 400). So when OPENAI_REASONING_EFFORT is
-        set we send reasoning_effort and omit temperature; otherwise we keep the configured
-        temperature (unchanged default — no reasoning). Valid efforts for gpt-5.4:
-        none|low|medium|high|xhigh ('minimal' is rejected by this model)."""
+        Default is no reasoning: OPENAI_REASONING_EFFORT unset means we send the
+        configured temperature (default 1.0, the only value gpt-5.x accepts — any
+        other value is rejected with HTTP 400). When OPENAI_REASONING_EFFORT is set
+        we send reasoning_effort and omit temperature entirely. Valid efforts:
+        none|low|medium|high|xhigh ('minimal' is rejected by these models)."""
         effort = os.environ.get("OPENAI_REASONING_EFFORT")
         if effort:
             create_kwargs["reasoning_effort"] = effort

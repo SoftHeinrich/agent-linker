@@ -2160,7 +2160,7 @@ def get_backend() -> LLMBackend:
     return LLMBackend.CLAUDE
 
 
-os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.4")
+os.environ.setdefault("OPENAI_MODEL_NAME", "gpt-5.6-terra")
 os.environ.setdefault("CLAUDE_MODEL", "sonnet")
 
 
@@ -2169,11 +2169,11 @@ def describe_backend_target(backend: LLMBackend | None = None) -> str:
     if backend == LLMBackend.CLAUDE:
         return f"claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"
     if backend == LLMBackend.OPENAI:
-        return f"openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.4')})"
+        return f"openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.6-terra')})"
     if backend == LLMBackend.CHECKPOINT:
         fallback_model = os.environ.get("CHECKPOINT_FALLBACK_MODEL", "").strip().lower()
         if fallback_model in {"gpt", "openai"} or fallback_model.startswith("gpt"):
-            model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.4")
+            model = os.environ.get("OPENAI_MODEL_NAME", "gpt-5.6-terra")
             if fallback_model.startswith("gpt"):
                 model = fallback_model
             return f"checkpoint -> openai ({model})"
@@ -2184,7 +2184,7 @@ def describe_backend_target(backend: LLMBackend | None = None) -> str:
             return f"checkpoint -> claude ({model})"
         fallback_backend = os.environ.get("CHECKPOINT_FALLBACK", "claude").strip().lower() or "claude"
         if fallback_backend == "openai":
-            return f"checkpoint -> openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.4')})"
+            return f"checkpoint -> openai ({os.environ.get('OPENAI_MODEL_NAME', 'gpt-5.6-terra')})"
         if fallback_backend == "codex":
             return "checkpoint -> codex"
         return f"checkpoint -> claude ({os.environ.get('CLAUDE_MODEL', 'sonnet')})"
