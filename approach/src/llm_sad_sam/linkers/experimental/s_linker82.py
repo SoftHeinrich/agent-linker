@@ -40,12 +40,14 @@ WHAT CHANGED FROM s_linker81
                         change but does not price it: only an e2e run does.
     coreference prompt  s81 pasted a +/-5 window per case, so a batch of 10 targets
                         rendered ~110 sentence copies. The batch now carries one
-                        deduplicated sentence table and each case points into it by
-                        number -- the shape the denotation step already used. Rebuilt
-                        over the 40 coreference batches of a recorded five-project run,
-                        that is 165k prompt characters against 462k. With the second
-                        judging pass gone, the run's prompt volume falls 48% (916k ->
-                        473k characters) and its call count 9% (87 -> 79).
+                        deduplicated sentence table, and each case carries its own
+                        target sentence with its context named by number. The table
+                        alone -- the denotation step's shape, cases that are bare
+                        numbers -- was measured and rejected: it held gold resolutions
+                        (79.3 per five-project run against s81's 80.3) but raised
+                        spurious ones to 60.0 from 45.7 and cost the stage 9.6 approved
+                        gold links. Restoring the target text is 96.7 gold and 51.0
+                        spurious per run, the best of the three arms on both axes.
     alias judge         s81 tested the verdict for truthiness, which gave three
                         behaviours for one event. A reply that did not parse approved
                         *every* proposal; a reply that parsed without an `approved` key
@@ -71,6 +73,39 @@ WHAT CHANGED FROM s_linker81
                         three linkers that never read it. The comments that described
                         them -- an antecedent gate, an admission filter, an `_unlinked`
                         subtraction -- described code s79-s81 had already deleted.
+
+WHAT IT SCORES. Paired against s_linker81, three five-project runs, gpt-5.6-terra/flex
+(`results/audit_e2e_s82hy_r{1,2,3}_20260820`):
+
+    macro F1   92.25 (sd 0.81)  against  91.91 (sd 0.21)   +0.34, p = 0.75
+    macro F2   94.08 (sd 0.64)  against  92.32 (sd 0.38)   +1.76, positive in 3 of 3
+                                                           runs (exact permutation
+                                                           p = 0.25, the floor at n=3)
+    TP 183.0 / FP 30.0 against 176.7 / 27.0; 81 LLM calls per run against 88.
+
+By stage, per run, counting each (sentence, component) pair once: full name TP 148.0 /
+FP 6.0 against 142.3 / 3.7, coreference 41.7 / 11.7 against 33.3 / 12.0, partial name
+18.3 / 12.7 against 17.3 / 11.7.
+
+Replicated on a second model, gpt-5.6-luna/flex, same three-run paired form
+(`results/audit_e2e_s82luna_r{1,2,3}_20260820`). Luna is the looser judge -- both
+variants carry three times the false positives they do on terra -- and the fixes are
+worth more there:
+
+    macro F1   85.38 (sd 0.95)  against  81.80 (sd 1.51)   +3.58, 3 of 3 runs
+    macro F2   91.16 (sd 0.67)  against  87.36 (sd 0.89)   +3.80, 3 of 3 runs
+    TP 184.0 / FP 77.0 against 176.0 / 88.0; 84 LLM calls per run against 93.
+
+Luna moves the stages differently. Its full-name stage is the same on both variants
+(TP 148.3, FP 13.0 against 14.0) and its partial-name stage is where s81 bleeds
+(FP 33.0 against 30.3 at TP 13.7 against 17.7); its coreference stage keeps the same
+gold on both (74.0 against 74.7) and differs on spurious links (37.7 against 47.3).
+Terra's gain is concentrated in coreference recall (41.7 against 33.3), luna's in
+precision everywhere.
+
+The direction is the same on both models and every measure; only the size moves. Neither
+result is significant at n = 3 (0.25 is the exact permutation floor), so what the pair
+establishes is a consistent sign across two models, not a p-value.
 
 MEASUREMENT POLICY. No benchmark vocabulary appears in this module (GATE-06). The only
 word list is `INFLECTIONS`, English inflectional morphology. The experiment log lives in
@@ -671,27 +706,42 @@ JSON only:"""
 
     @staticmethod
     def _prompt_coref(comp_names, sentence_table, targets) -> str:
-        """One batch: the window sentences once, the targets by number.
+        """One batch: the window sentences once, each case carrying its target's text.
 
-        s81 pasted each target's +/-5 window inline, so a batch of 10 targets rendered
-        ~110 copies of ~20 distinct sentences. The denotation step already used the
-        shape below -- one table, cases that point into it -- and this is the same
-        thing for coreference. Nothing about what is asked changes; the window each
-        target gets is still `CONTEXT_SENTENCES` either side.
+        s81 pasted every target's +/-5 window inline, so a batch of 10 targets rendered
+        ~110 copies of ~20 distinct sentences. s82 first replaced that with the
+        denotation step's shape -- one table, cases that are numbers -- and paid for it:
+        gold resolutions held (79.3 per five-project run against 80.3) but spurious ones
+        rose to 60.0 from 45.7, and the strict judge downstream, handed noisier batches,
+        kept 30.7 gold instead of 40.3. The resolutions still landed on a declared
+        target 100% of the time, so nothing was misread; the target sentence had simply
+        stopped being salient next to the question about it.
+
+        The form below is the pilot's third arm, measured on the same stage over three
+        five-project runs: the table stays, and each case shows its target's text with
+        the context named by number. Gold resolutions 96.7 per run against 80.3 (s81)
+        and 79.3 (the table alone), spurious 51.0 against 45.7 and 60.0 -- the best
+        precision of the three at the highest recall.
         """
+        blocks = [
+            f"--- Case {t['case']} ---\n"
+            f"TARGET S{t['target']}: {t['text']}\n"
+            f"CONTEXT: sentences S{min(t['context'])}-S{max(t['context'])} above."
+            for t in targets
+        ]
         return f"""Resolve references (pronouns and noun phrases that refer back) to components.
 
 COMPONENTS: {', '.join(comp_names)}
 
-SENTENCES (the document text these cases are drawn from)
+SENTENCES (the document text the cases are drawn from)
 {json.dumps(sentence_table)}
 
-CASES: each names one TARGET sentence and the window of sentence numbers that is
-its context. Identify any pronoun or noun phrase in the TARGET that refers back to
-a component listed above. If a target has no such reference to a listed component,
-return no resolution for it. Be conservative — only include resolutions you are
-CERTAIN about.
-{json.dumps(targets)}
+For each TARGET sentence below, identify any pronoun or noun phrase in THAT sentence
+that refers back to a component listed above. Read the TARGET's context in SENTENCES.
+If a target sentence has no such reference to a listed component, return no resolution
+for it. Be conservative — only include resolutions you are CERTAIN about.
+
+{chr(10).join(blocks)}
 
 {COREF_RULES}
 
@@ -1291,7 +1341,8 @@ JSON only:
             for i, sent in enumerate(batch, 1):
                 window = [w.number for w in self._window(sent.number, sentences)]
                 window_ids.update(window)
-                targets.append({"case": i, "target": sent.number, "context": window})
+                targets.append({"case": i, "target": sent.number,
+                                "text": sent.text, "context": window})
             sentence_table = [
                 {"sentence": n, "text": sent_map[n].text}
                 for n in sorted(window_ids) if n in sent_map

@@ -1,0 +1,599 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker85, s_linker82
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker85 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: AudioAccess -> MediaAccess
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 24
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S15 -> TagWatermarking
+    Coref reject: S17 -> TagWatermarking
+    Coref reject: S21 -> Reencoding
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_mediastore_20260820_220718.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_mediastore_20260820_220718_calls.json (9 calls)
+
+Final: 27 links (17.4s, 9 LLM calls)
+  s_linker85: P=100.0% R=87.1% F1=93.1% F2=89.4% TP=27 FP=0 FN=4 (17s)
+    Sources: {'full_name': 24, 'coreference': 3}
+    FP by source: {}
+
+  --- Variant: s_linker82 ---
+SLinker82 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 27
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S15 -> TagWatermarking
+    Coref reject: S16 -> Reencoding
+    Coref reject: S17 -> TagWatermarking
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_mediastore_20260820_220739.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_mediastore_20260820_220739_calls.json (10 calls)
+
+Final: 31 links (21.3s, 10 LLM calls)
+  s_linker82: P=96.8% R=96.8% F1=96.8% F2=96.8% TP=30 FP=1 FN=1 (21s)
+    Sources: {'full_name': 27, 'coreference': 4}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker85 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+    Alias: Test Driver Component -> Test Driver
+    Alias: storage layer -> Storage
+    Alias: UI Browser -> UI
+    Alias: E2E -> E2E
+    Alias: E2E end-to-end component -> E2E
+    Alias: Test Driver -> Test Driver
+    Alias: datastore -> GAE Datastore
+    Alias: UI -> UI
+    Alias: GAE -> GAE Datastore
+    Alias: Google's distributed datastore -> GAE Datastore
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 61
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S21 -> Common
+    Coref reject: S24 -> UI
+    Coref reject: S25 -> UI
+    Coref reject: S27 -> UI
+    Coref reject: S29 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S31 -> GAE Datastore
+    Coref reject: S47 -> Logic
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S68 -> Logic
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S85 -> UI
+    Coref reject: S88 -> Storage
+    Coref reject: S92 -> Logic
+    Coref reject: S94 -> Logic
+    Coref reject: S96 -> Logic
+    Coref reject: S101 -> Storage
+    Coref reject: S122 -> GAE Datastore
+    Coref reject: S131 -> Storage
+    Coref reject: S137 -> Storage
+    Coref reject: S163 -> Test Driver
+    Coref reject: S174 -> Common
+    Coref reject: S175 -> Common
+    Coref reject: S176 -> Logic
+    Coref reject: S177 -> Storage
+    Coref reject: S194 -> Client
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_teammates_20260820_220857.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_teammates_20260820_220857_calls.json (33 calls)
+
+Final: 53 links (78.0s, 33 LLM calls)
+  s_linker85: P=96.2% R=89.5% F1=92.7% F2=90.7% TP=51 FP=2 FN=6 (78s)
+    Sources: {'full_name': 48, 'coreference': 5}
+    FP by source: {'coreference': 1, 'full_name': 1}
+
+  --- Variant: s_linker82 ---
+SLinker82 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+    Alias: Logic API -> Logic
+    Alias: storage layer -> Storage
+    Alias: UI Browser -> UI
+    Alias: E2E -> E2E
+    Alias: E2E end-to-end component -> E2E
+    Alias: front-end -> UI
+    Alias: Test Driver -> Test Driver
+    Alias: datastore -> GAE Datastore
+    Alias: UI -> UI
+    Alias: GAE -> GAE Datastore
+    Alias: Google's distributed datastore -> GAE Datastore
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 63
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S9 -> Storage
+    Coref reject: S21 -> Common
+    Coref reject: S24 -> UI
+    Coref reject: S25 -> UI
+    Coref reject: S27 -> UI
+    Coref reject: S29 -> UI
+    Coref reject: S47 -> Logic
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S68 -> Logic
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S85 -> UI
+    Coref reject: S88 -> Storage
+    Coref reject: S92 -> Logic
+    Coref reject: S94 -> Logic
+    Coref reject: S96 -> Logic
+    Coref reject: S97 -> UI
+    Coref reject: S97 -> Logic
+    Coref reject: S101 -> Storage
+    Coref reject: S122 -> GAE Datastore
+    Coref reject: S131 -> Storage
+    Coref reject: S131 -> Logic
+    Coref reject: S136 -> Storage
+    Coref reject: S137 -> Storage
+    Coref reject: S137 -> GAE Datastore
+    Coref reject: S139 -> Storage
+    Coref reject: S155 -> Common
+    Coref reject: S163 -> Test Driver
+    Coref reject: S174 -> Common
+    Coref reject: S175 -> Common
+    Coref reject: S176 -> Logic
+    Coref reject: S177 -> Storage
+    Coref reject: S181 -> Test Driver
+    Coref reject: S183 -> Test Driver
+    Coref reject: S191 -> E2E
+    Coref reject: S192 -> Common
+    Coref reject: S194 -> Client
+    Coref reject: S196 -> Client
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_teammates_20260820_221011.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_teammates_20260820_221011_calls.json (34 calls)
+
+Final: 64 links (73.5s, 34 LLM calls)
+  s_linker82: P=82.8% R=93.0% F1=87.6% F2=90.8% TP=53 FP=11 FN=4 (74s)
+    Sources: {'full_name': 52, 'partial_name': 4, 'coreference': 8}
+    FP by source: {'full_name': 4, 'coreference': 3, 'partial_name': 4}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker85 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: registry -> Registry
+    Alias: PersistenceProvider -> Persistence
+    Alias: WebUi -> WebUI
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 20
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S2 -> WebUI
+    Coref reject: S2 -> ImageProvider
+    Coref reject: S3 -> Auth
+    Coref reject: S4 -> Recommender
+    Coref reject: S5 -> WebUI
+    Coref reject: S7 -> WebUI
+    Coref reject: S7 -> ImageProvider
+    Coref reject: S10 -> ImageProvider
+    Coref reject: S10 -> WebUI
+    Coref reject: S10 -> ImageProvider
+    Coref reject: S25 -> Persistence
+    Coref reject: S32 -> SlopeOneRecommender
+    Coref reject: S33 -> SlopeOneRecommender
+    Coref reject: S36 -> OrderBasedRecommender
+    Coref reject: S37 -> Registry
+    Coref reject: S38 -> Registry
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S41 -> Registry
+    Coref reject: S43 -> Registry
+    Coref reject: S43 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_teastore_20260820_221040.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_teastore_20260820_221040_calls.json (11 calls)
+
+Final: 27 links (29.8s, 11 LLM calls)
+  s_linker85: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=27 FP=0 FN=0 (30s)
+    Sources: {'full_name': 20, 'coreference': 7}
+    FP by source: {}
+
+  --- Variant: s_linker82 ---
+SLinker82 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: registry -> Registry
+    Alias: PersistenceProvider -> Persistence
+    Alias: WebUi -> WebUI
+    Alias: Image Provider -> ImageProvider
+    Alias: UI -> WebUI
+    Alias: Persistence service -> Persistence
+    Alias: persistence provider -> Persistence
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 25
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S2 -> WebUI
+    Coref reject: S2 -> ImageProvider
+    Coref reject: S3 -> Auth
+    Coref reject: S5 -> WebUI
+    Coref reject: S7 -> WebUI
+    Coref reject: S7 -> ImageProvider
+    Coref reject: S10 -> ImageProvider
+    Coref reject: S25 -> Persistence
+    Coref reject: S32 -> SlopeOneRecommender
+    Coref reject: S33 -> SlopeOneRecommender
+    Coref reject: S34 -> SlopeOneRecommender
+    Coref reject: S34 -> PreprocessedSlopeOneRecommender
+    Coref reject: S38 -> Registry
+    Coref reject: S41 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_teastore_20260820_221113.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_teastore_20260820_221113_calls.json (10 calls)
+
+Final: 28 links (32.2s, 10 LLM calls)
+  s_linker82: P=96.4% R=100.0% F1=98.2% F2=99.3% TP=27 FP=1 FN=0 (32s)
+    Sources: {'full_name': 21, 'coreference': 7}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker85 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+    Alias: Apps Akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: BigBlueButton Apps -> Apps
+    Alias: FSESL akka -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: KMS -> kurento
+    Alias: Recording Processor -> Recording Service
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: HTML5 server -> HTML5 Server
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 38
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S4 -> HTML5 Client
+    Coref reject: S5 -> HTML5 Client
+    Coref reject: S6 -> HTML5 Client
+    Coref reject: S6 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S8 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Client
+    Coref reject: S11 -> HTML5 Client
+    Coref reject: S14 -> HTML5 Client
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S21 -> HTML5 Client
+    Coref reject: S22 -> HTML5 Client
+    Coref reject: S24 -> HTML5 Client
+    Coref reject: S25 -> HTML5 Client
+    Coref reject: S26 -> HTML5 Client
+    Coref reject: S27 -> HTML5 Client
+    Coref reject: S28 -> HTML5 Client
+    Coref reject: S29 -> HTML5 Client
+    Coref reject: S30 -> HTML5 Client
+    Coref reject: S31 -> Apps
+    Coref reject: S32 -> Apps
+    Coref reject: S32 -> Apps
+    Coref reject: S32 -> Apps
+    Coref reject: S36 -> BBB web
+    Coref reject: S45 -> HTML5 Client
+    Coref reject: S45 -> BBB web
+    Coref reject: S56 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S59 -> FSESL
+    Coref reject: S70 -> WebRTC-SFU
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S72 -> HTML5 Client
+    Coref reject: S76 -> HTML5 Client
+    Coref reject: S78 -> BBB web
+    Coref reject: S79 -> HTML5 Client
+    Coref reject: S79 -> Redis PubSub
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_bigbluebutton_20260820_221230.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_bigbluebutton_20260820_221230_calls.json (21 calls)
+
+Final: 69 links (77.5s, 21 LLM calls)
+  s_linker85: P=82.6% R=91.9% F1=87.0% F2=89.9% TP=57 FP=12 FN=5 (77s)
+    Sources: {'full_name': 38, 'partial_name': 29, 'coreference': 2}
+    FP by source: {'partial_name': 11, 'full_name': 1}
+
+  --- Variant: s_linker82 ---
+SLinker82 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+    Alias: bbb-html5 -> HTML5 Client
+    Alias: Apps Akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: BigBlueButton client -> HTML5 Client
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton Apps -> Apps
+    Alias: FSESL akka -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: KMS -> kurento
+    Alias: Recording Processor -> Recording Service
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: HTML5 server -> HTML5 Server
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 42
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S14 -> HTML5 Client
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S21 -> HTML5 Client
+    Coref reject: S22 -> HTML5 Client
+    Coref reject: S23 -> HTML5 Client
+    Coref reject: S29 -> HTML5 Client
+    Coref reject: S30 -> HTML5 Client
+    Coref reject: S31 -> Apps
+    Coref reject: S32 -> Apps
+    Coref reject: S32 -> Apps
+    Coref reject: S33 -> BBB web
+    Coref reject: S36 -> BBB web
+    Coref reject: S45 -> BBB web
+    Coref reject: S50 -> Redis DB
+    Coref reject: S54 -> Apps
+    Coref reject: S58 -> FreeSWITCH
+    Coref reject: S59 -> FSESL
+    Coref reject: S67 -> kurento
+    Coref reject: S67 -> WebRTC-SFU
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S73 -> HTML5 Client
+    Coref reject: S78 -> BBB web
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_bigbluebutton_20260820_221330.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_bigbluebutton_20260820_221330_calls.json (21 calls)
+
+Final: 77 links (59.6s, 21 LLM calls)
+  s_linker82: P=72.7% R=90.3% F1=80.6% F2=86.2% TP=56 FP=21 FN=6 (60s)
+    Sources: {'full_name': 42, 'partial_name': 26, 'coreference': 9}
+    FP by source: {'partial_name': 11, 'coreference': 6, 'full_name': 4}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker85 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+    Alias: command line interface -> cli
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 20
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> model
+    Coref reject: S7 -> preferences
+    Coref reject: S8 -> model
+    Coref reject: S8 -> model
+    Coref reject: S12 -> gui
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_jabref_20260820_221344.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker85_openai_jabref_20260820_221344_calls.json (7 calls)
+
+Final: 19 links (14.5s, 7 LLM calls)
+  s_linker85: P=94.7% R=100.0% F1=97.3% F2=98.9% TP=18 FP=1 FN=0 (14s)
+    Sources: {'full_name': 19}
+    FP by source: {'full_name': 1}
+
+  --- Variant: s_linker82 ---
+SLinker82 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+    Alias: command line interface -> cli
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 20
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> model
+    Coref reject: S8 -> model
+    Coref reject: S8 -> logic
+    Coref reject: S8 -> gui
+    Coref reject: S9 -> model
+    Coref reject: S12 -> gui
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_jabref_20260820_221358.json
+  LLM call trace saved: ../results/s85_e2e_terra_r3_20260820/llm_logs/s_linker82_openai_jabref_20260820_221358_calls.json (7 calls)
+
+Final: 20 links (14.0s, 7 LLM calls)
+  s_linker82: P=90.0% R=100.0% F1=94.7% F2=97.8% TP=18 FP=2 FN=0 (14s)
+    Sources: {'full_name': 19, 'coreference': 1}
+    FP by source: {'full_name': 1, 'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker85          |         s_linker82         
+-----------------+-----------------------------+----------------------------
+mediastore       | F1 93.1% F2 89.4% FP   0 | F1 96.8% F2 96.8% FP   1
+teammates        | F1 92.7% F2 90.7% FP   2 | F1 87.6% F2 90.8% FP  11
+teastore         | F1 100.0% F2 100.0% FP   0 | F1 98.2% F2 99.3% FP   1
+bigbluebutton    | F1 87.0% F2 89.9% FP  12 | F1 80.6% F2 86.2% FP  21
+jabref           | F1 97.3% F2 98.9% FP   1 | F1 94.7% F2 97.8% FP   2
+-----------------+-----------------------------+----------------------------
+Macro avg        | F1 94.0% F2 93.8% FP  15 | F1 91.6% F2 94.2% FP  36
+Pooled           | F1 92.3% F2 92.3% FP  15 | F1 88.7% F2 92.0% FP  36
+
+Results saved to ../results/s85_e2e_terra_r3_20260820/ablation_20260820_221358.json

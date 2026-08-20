@@ -193,6 +193,8 @@ CANONICAL_VARIANTS = [
     "s_linker80",  # s79 with no computed evidence either
     "s_linker81",  # s80 with the two costed deletions restored
     "s_linker82",  # s81 with the prompt/dead-code audit fixes and one judging pass
+    "s_linker83",  # s82 with the coreference judge shown the resolution it judges
+    "s_linker85",  # s83's coreference judge composed with WordNet in place of INFLECTIONS
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1875,7 +1877,49 @@ VARIANT_SPECS = {
             "an extraction "
             "prompt that no longer states two contradictory admission rules, judged "
             "claims recorded in the trace, and the dead deterministic layer removed. "
-            "Priced against s81."
+            "Priced against s81 over three paired five-project runs: macro F2 94.08 "
+            "against 92.32 (positive in 3 of 3), macro F1 92.25 against 91.91, 81 LLM "
+            "calls per run against 88. Same direction on gpt-5.6-luna: macro F2 91.16 against "
+            "87.36, macro F1 85.38 against 81.80, both 3 of 3 runs."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker83": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker83",
+        class_name="SLinker83",
+        description=(
+            "S-Linker83 - s_linker82 with three changes at the coreference judge: it is "
+            "shown the resolution it is judging, its rubric distinguishes a component "
+            "from what the component acts on or produces, and it states the strongest "
+            "ground for rejecting a case before deciding. Exact pipeline scoring, three "
+            "runs a side with upstream held fixed: terra F1 93.69 / F2 94.51 against "
+            "92.25 / 94.08, luna 89.20 / 92.43 against 85.38 / 91.16 - the laxer model "
+            "gains most and the stricter does not regress. Seven other judge settings "
+            "were refused; see results/judge_calibration_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker85": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker85",
+        class_name="SLinker85",
+        description=(
+            "S-Linker85 - s_linker83's coreference judge composed with a WordNet "
+            "lemmatizer in place of the INFLECTIONS ending list, so the module "
+            "carries no authored word list at all. The swap was priced span by span "
+            "before it was written: over all 3697 (name, sentence) pairs of the five "
+            "projects the two scans differ on 2, partial-name candidates go 109 -> "
+            "110 at gold 28 -> 28, nothing is lost (pilot/lemma_swap_pilot.py). "
+            "Needs nltk and the wordnet corpus. "
+            "The judge is shown the resolution it is judging, its rubric carries the "
+            "actor/artifact distinction, and it states the ground for rejecting a case "
+            "before deciding. Exact pipeline scoring over three runs a side with "
+            "upstream held fixed: terra F1 93.69 / F2 94.51 against s82's 92.25 / 94.08, "
+            "luna 89.20 / 92.43 against 85.38 / 91.16 - the laxer model gains most and "
+            "the stricter one does not regress."
         ),
         canonical=False,
         experimental=True,

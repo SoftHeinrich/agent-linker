@@ -7,6 +7,8 @@ test -d "$root/benchmark" || { echo "Missing vendored benchmark." >&2; exit 1; }
 python3 -m venv "$root/.venv"
 "$root/.venv/bin/python" -m pip install --upgrade pip
 "$root/.venv/bin/python" -m pip install -e "$root/approach[openai]"
+# s_linker85 lemmatizes with WordNet; the corpus is data, not a pip dependency.
+"$root/.venv/bin/python" -m nltk.downloader -q wordnet
 if [ ! -e "$root/approach/.env" ]; then
   {
     echo "# Created by scripts/bootstrap-approach.sh; add OPENAI_API_KEY separately."
