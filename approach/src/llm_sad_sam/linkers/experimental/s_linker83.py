@@ -40,6 +40,23 @@ decimal.
 TP/FP: terra 182.0 / 22.3 and luna 181.7 / 51.7 against 183.0 / 30.0 and 184.0 / 77.0.
 **Luna gains F1 +3.82 / F2 +1.27 and terra F1 +1.44 / F2 +0.43.**
 
+CONFIRMED END TO END, three paired runs per model, s85 against s82 in the same
+invocations (`../results/s85_e2e_{terra,luna}_r{1,2,3}_20260820`):
+
+    model   arm    macro F1          macro F2          TP      FP     calls
+    terra   s85    93.68 (sd 0.57)   94.24 (sd 0.52)   181.0   21.0      82
+            s82    91.13 (sd 0.32)   93.24 (sd 0.76)   181.7   34.3      82
+    luna    s85    89.48 (sd 0.63)   91.28 (sd 0.91)   174.7   41.3      84
+            s82    83.83 (sd 0.24)   89.91 (sd 1.02)   182.0   80.0      84
+
+Macro F1 +2.55 on terra (3 of 3 runs) and +5.65 on luna (3 of 3); macro F2 +0.99
+(2 of 3) and +1.37 (3 of 3). Both p = 0.25, the exact-permutation floor at n = 3,
+with unanimous sign. **Luna's false positives are halved** -- the model that was
+admitting twice terra's junk now admits 41.3 against terra's 21.0 -- and the
+laxer model gains more than twice what the stricter one does, which is what the
+round was opened to find. The recall cost is real and stated: TP -7.3 on luna and
+-0.7 on terra, which F2 pays for and F1 rewards.
+
 THE ACCOUNTING THAT MADE IT VISIBLE. Seven judge settings were refused before these, all
 scored on the coreference stage's own gold count -- the wrong measure. **57.6% of terra's
 approved coreference gold and 73.9% of luna's are pairs an earlier linker already

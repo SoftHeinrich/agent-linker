@@ -67,6 +67,23 @@ TP/FP: terra 182.0 / 22.3 and luna 181.7 / 51.7, against 183.0 / 30.0 and 184.0 
    only: "approve by default" and "state the strongest ground for rejecting" are
    contradictory standards to put in one prompt.
 
+## Confirmed end to end
+
+Three paired runs per model, s85 against s82 in the same invocations
+(`../s85_e2e_{terra,luna}_r{1,2,3}_20260820`):
+
+| model | arm | macro F1 | macro F2 | TP | FP | calls |
+|---|---|---|---|---|---|---|
+| terra | **s85** | **93.68** (sd 0.57) | **94.24** (sd 0.52) | 181.0 | **21.0** | 82 |
+| terra | s82 | 91.13 (sd 0.32) | 93.24 (sd 0.76) | 181.7 | 34.3 | 82 |
+| luna | **s85** | **89.48** (sd 0.63) | **91.28** (sd 0.91) | 174.7 | **41.3** | 84 |
+| luna | s82 | 83.83 (sd 0.24) | 89.91 (sd 1.02) | 182.0 | 80.0 | 84 |
+
+Macro F1 +2.55 terra (3 of 3 runs) and +5.65 luna (3 of 3); macro F2 +0.99 (2 of 3) and
++1.37 (3 of 3), both at the n=3 permutation floor of p = 0.25 with unanimous sign. Luna's
+false positives are halved and the laxer model gains more than twice what the stricter one
+does. The recall cost is stated rather than buried: TP -7.3 on luna, -0.7 on terra.
+
 ## What stayed refused
 
 | setting | result |

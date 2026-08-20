@@ -1918,8 +1918,10 @@ VARIANT_SPECS = {
             "actor/artifact distinction, and it states the ground for rejecting a case "
             "before deciding. Exact pipeline scoring over three runs a side with "
             "upstream held fixed: terra F1 93.69 / F2 94.51 against s82's 92.25 / 94.08, "
-            "luna 89.20 / 92.43 against 85.38 / 91.16 - the laxer model gains most and "
-            "the stricter one does not regress."
+            "luna 89.20 / 92.43 against 85.38 / 91.16. Confirmed end to end, three "
+            "paired runs per model: terra macro F1 93.68 against 91.13 and luna 89.48 "
+            "against 83.83, with luna's false positives halved (41.3 against 80.0) - "
+            "the laxer model gains most and the stricter one does not regress."
         ),
         canonical=False,
         experimental=True,
