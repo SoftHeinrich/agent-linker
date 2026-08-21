@@ -173,7 +173,120 @@ and spurious pairs, and a judge shown four of its five anchors still answers.
 Every point estimate is in the arm's favour and none is near the n=3 floor of 0.10 —
 which is what removing a repetition should look like. Composition p = 0.80.
 
-*(The remaining tables land here as the arms complete.)*
+Composition risk off the recorded checkpoints (`pilot/composition_from_kept.py`, the
+branch's step-3 gate): the arm adds 0.7 pairs per run, **0.0** of which a later stage
+also proposes and 0.0 of which are already in the recorded final link set, and removes
+1.3, of which **1.3 are in the recorded final link set**. Non-zero, so the end-to-end
+confirmation is paid for; small, so at three runs a side and not six.
+
+### The shipped form on the second model (`fullname6`, luna)
+
+| arm | stage gold | stage spurious | stage bytes/run | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| ctl | 153.0 | 23.0 | 161 699 | 89.08 | 92.40 | 183.0 | 55.7 | — |
+| **`anchorunion`** | 153.3 | 23.0 | **116 122 (−28%)** | **89.42** | **92.75** | **183.3** | **54.0** | **QUALITY-NEUTRAL** (TP +0.3 p=1.00, FP −1.7 p=0.80, F1 +0.3 p=0.60, F2 +0.4 p=0.50) |
+
+**The one cut that holds on both models is the one that deletes no English.** Every
+point estimate favours the arm on terra and on luna, none is near the floor, and the
+judging prompt is 27–28% smaller in both.
+
+### The resolver, terra (`resolve3`)
+
+Both arms replay the resolver AND the strict judge behind it — what a resolver
+proposes is only a link if that gate keeps it.
+
+| arm | stage gold | stage spurious | stage bytes/run | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| ctl | 32.3 | 4.0 | 272 345 | 92.93 | 94.71 | 185.0 | 26.7 | — |
+| `nocasectx` | 36.3 | 2.3 | 248 822 (−8.6%) | 93.03 | 94.74 | 185.0 | 25.0 | **neutral** (gold +4.0 p=0.60, F1 +0.1 p=0.70) |
+| `notargetrows` | **41.0** | **1.7** | **207 518 (−23.8%)** | **93.36** | 94.75 | 184.3 | **24.3** | **composed-neutral** (F1 +0.4 p=0.30, F2 ±0.0 p=1.00), stage **better** (gold +8.7, spurious −2.3, both p=0.20) |
+
+The deterministic screen said the per-case `CONTEXT` range does not bind (16.3
+antecedents a run already sit outside it) and that 159.0 of 186.0 antecedents cite a
+sentence the same call prints as a TARGET. Removing the duplicate table row for those
+sentences does not cost the resolver its antecedents: it **finds more of them** (gold
+32.3 → 41.0) and proposes fewer spurious ones, at a quarter less prompt. Luna decides
+whether either is adopted.
+
+### The lossy forms on the second model (`fullname5`, luna) — refused
+
+| arm | stage gold | stage spurious | stage bytes/run | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| ctl | 152.0 | 16.3 | 157 290 | 89.99 | 93.03 | 183.0 | 49.0 | — |
+| `anchorblock` | 151.0 | 20.3 | 104 992 (−33%) | 89.54 | 92.76 | 182.7 | 52.3 | leans negative (stage spurious +4.0, F1 −0.4) |
+| `anchorref` | 152.0 | **23.0** | 110 151 (−30%) | 89.45 | 92.77 | 183.0 | 53.7 | **refused** — stage spurious **+6.7 (p = 0.10, at the floor)** |
+| `nosource` | 151.0 | 17.3 | 154 014 (−2%) | 89.64 | 92.68 | 182.0 | 50.3 | leans negative on both models |
+
+**This is the round's sharpest result, and it is about losslessness, not about
+compaction.** The two arms that show a later case *someone else's* anchor list are
+neutral on terra and cost luna precision — `anchorref` at stage spurious +6.7, the only
+p at the n=3 floor in the whole group. The arm that shows every case at least its own
+list (`anchorunion`, measured in its own invocation set above) is **FP −1.7 on the same
+model**. Same 27–33% of the prompt removed, opposite sign on the laxer model, and the
+difference is one anchor sentence in five.
+
+The typed round's rule was *a prompt cut that holds on the stricter model says nothing
+about the laxer one*. This round adds the mechanism for one class of cut: **withholding
+evidence reads as neutral where the model is already strict and as a licence where it
+is not.** The invariants test is what separated the two arms; the stage arm on terra
+could not, and the stage arm on luna would have been read as noise without it.
+
+### The strict judge's enumerated ground on the second model (`coref5`, luna) — refused
+
+| arm | stage gold | stage spurious | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|
+| ctl | 50.3 | 8.7 | 89.46 | 92.91 | 184.0 | 53.3 | — |
+| `noartifact` | **43.7** | 13.0 | 88.59 | 92.26 | 183.0 | 57.7 | **refused** — stage gold **−6.7 (p = 0.10, at the floor)**, composed F1 −0.9 |
+
+The recorded objections cite the enumerated ground 1.0 times a run on terra and 1.7 on
+luna, **0 gold in both**, and terra reads its deletion neutral (gold −0.6, F1 −0.1).
+Luna loses 6.7 gold resolutions a run without it. **Fourth instance of the asymmetry
+the typed round named, and the second instance in this round of a clause whose
+measurable effect is not the effect it states**: what the sentence about data,
+artifacts, requests and results buys is not the handful of cases that cite it, it is
+the strict judge's willingness to distinguish a thing from the component that acts on
+it at all.
+
+### What is adopted, and what is still running
+
+**`s_linker88` = `s_linker87` with each component's anchor sentences written once per
+judging call, and no English changed at all.** It is the only arm of the round that is
+neutral-or-better on both models, and it is the largest cut: −27% of the judging prompt
+on terra, −28% on luna, verified lossless case by case (`pilot/test_s88_anchors.py`,
+35 checks).
+
+Refused, each with its number:
+
+| arm | why |
+|---|---|
+| `anchorref` / `anchorblock` | terra-neutral, **luna stage spurious +6.7 (p = 0.10)** — lossy de-duplication |
+| `nosource` | every point estimate negative on both models |
+| `noartifact` | terra-neutral, **luna stage gold −6.7 (p = 0.10)** |
+| `nodenotqual` | terra stage spurious **+15.0**, composed F1 −1.9 — refused before luna was paid for |
+| the strict judge's leniency guard | luna approves 8.3 gold a run over a stated objection; **refused from the checkpoints, 0 API cost** |
+| the alias enumeration's third item | 1.3 / 0.7 aliases a run; the alias table trades recall between two linkers (s46, s60), so a thin yield is not worth the arm |
+
+Still running at the time of writing, and **not** yet a verdict:
+
+- `resolve3` on luna (run 3 of 3). Terra reads `notargetrows` at stage gold +8.7 /
+  spurious −2.3 and composed F1 +0.4, at **−23.8% of the resolver prompt**, and
+  `nocasectx` at composed F1 +0.1 for −8.6%. Neither is adopted until luna lands —
+  this round has already refused three terra-neutral arms on the second model.
+- the `s_linker88` end-to-end batch. Two of three paired runs per model are in
+  (`results/anchors_e2e_{terra,luna}_r{1,2}_20260821`); terra r3 died on a Flex 429 and
+  is queued for a clean re-run.
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls |
+  |---|---|---|---|---|---|---|
+  | terra (n=2) | `s_linker87` | 181.5 | 34.5 | 91.14 | 93.13 | 84 |
+  | terra (n=2) | `s_linker88` | **183.0** | **23.5** | **93.90** | **94.93** | 83.5 |
+  | luna (n=2) | `s_linker87` | 179.5 | **34.0** | **91.05** | 92.70 | 86 |
+  | luna (n=2) | `s_linker88` | **183.0** | 51.0 | 89.76 | **92.84** | 86 |
+
+  Read this as two runs a side, not as the round's answer: terra is +2.8 macro F1 at
+  FP −11.0 and luna is −1.3 macro F1 at FP +17.0 with TP +3.5, and the branch's own
+  floor at n=2 is nothing. **The verdict waits for the third run a side and the paired
+  permutation test.**
 
 ## Reproducing
 

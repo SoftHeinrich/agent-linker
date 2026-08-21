@@ -1,0 +1,99 @@
+prompt parity: re-declared builders render s_linker87's bytes (2 denotation prompts compared)
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 mediastore     ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 mediastore     nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 teastore       ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 teastore       nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 teammates      ctl             3g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 teammates      nodenotqual     3g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 bigbluebutton  ctl            19g/  9n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 bigbluebutton  nodenotqual    20g/ 21n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 jabref         ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run1 jabref         nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 mediastore     ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 mediastore     nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 teastore       ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 teastore       nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 teammates      ctl             0g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 teammates      nodenotqual     0g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 bigbluebutton  ctl            19g/ 10n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 bigbluebutton  nodenotqual    20g/ 27n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 jabref         ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run2 jabref         nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 mediastore     ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 mediastore     nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 teastore       ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 teastore       nodenotqual     0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 teammates      ctl             2g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 teammates      nodenotqual     2g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 bigbluebutton  ctl            19g/ 10n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 bigbluebutton  nodenotqual    20g/ 21n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 jabref         ctl             0g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  run3 jabref         nodenotqual     0g/  0n
+
+denot2 on terra, 3 runs, per five-project run:
+  ctl           gold   20.7  spurious   10.0  calls   5.0  mean prompt    6307 chars  stage bytes/run     31537
+  nodenotqual   gold   21.7  spurious   25.0  calls   5.0  mean prompt    6139 chars  stage bytes/run     30697
+
+denot2 on terra, composed with the recorded full_name + coreference of the same run:
+  ctl           macroF1  93.74  macroF2  95.45  TP  187.0  FP   24.0
+  nodenotqual   macroF1  91.86  macroF2  94.60  TP  187.0  FP   39.0

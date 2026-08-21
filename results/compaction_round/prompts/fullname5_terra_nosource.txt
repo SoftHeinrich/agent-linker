@@ -1,0 +1,167 @@
+# one prompt this arm sent: fullname5 / terra / nosource / run 1 / mediastore / 15557 chars
+
+Validate components in a document.
+
+COMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking
+
+Approve the link by default: the component is named here and the document treats it as part of the system. A mention that says nothing further about the component still counts as a valid link. Reject only on a positive ground -- that the sentence asserts nothing of this component, because the name is doing some other job here, or because the sentence denies what it would otherwise say of it.
+
+An expression that occurs only as part of a longer joined or dotted identifier is naming a piece of that identifier, not a participant in what the sentence describes.
+Some sentences use an ordinary English word that happens to coincide with a component's name. Approve only when the sentence uses that word as the name of the component; if it is used in its ordinary sense and the component is not what the sentence is talking about, reject. Capitalization is evidence for a name and its absence is evidence against, but neither settles it on its own.
+
+For each case, first quote the EXACT words from the sentence that state the
+architectural claim about the component (or write "none" if the sentence makes no
+such claim), then decide approve true/false based on that claim.
+
+CASES:
+Case 1: "Facade" -> Facade
+  "One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management."
+  Evidence: span="Facade"
+  Anchors (confirmed refs):
+    S3: To this end, the Facade component delivers the corresponding registration and log-in pages to users.
+    S6: In addition, users can browse, download, and upload audio files using the Facade component.
+Case 2: "Facade" -> Facade
+  [prev: To meet the user authentication requirement, registration and log-in have to be offered.] "To this end, the Facade component delivers the corresponding registration and log-in pages to users."
+  Evidence: span="Facade"
+  [prev: "To meet the user authentication requirement, registration and log-in have to be offered."]
+  Anchors (confirmed refs):
+    S1: One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.
+    S6: In addition, users can browse, download, and upload audio files using the Facade component.
+Case 3: "Facade" -> Facade
+  [prev: The main functionality, however, is provided by other components.] "In addition, users can browse, download, and upload audio files using the Facade component."
+  Evidence: span="Facade"
+  [prev: "The main functionality, however, is provided by other components."]
+  Anchors (confirmed refs):
+    S1: One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.
+    S3: To this end, the Facade component delivers the corresponding registration and log-in pages to users.
+Case 4: "MediaManagement" -> MediaManagement
+  [prev: In addition, users can browse, download, and upload audio files using the Facade component.] "Application business logic is provided by a central business logic component, called the MediaManagement component."
+  Evidence: span="MediaManagement"
+  [prev: "In addition, users can browse, download, and upload audio files using the Facade component."]
+  Anchors (confirmed refs):
+    S8: The MediaManagement component coordinates the communication of other components.
+    S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.
+Case 5: "MediaManagement" -> MediaManagement
+  [prev: Application business logic is provided by a central business logic component, called the MediaManagement component.] "The MediaManagement component coordinates the communication of other components."
+  Evidence: span="MediaManagement"
+  [prev: "Application business logic is provided by a central business logic component, called the MediaManagement component."]
+  Anchors (confirmed refs):
+    S7: Application business logic is provided by a central business logic component, called the MediaManagement component.
+    S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.
+Case 6: "UserManagement" -> UserManagement
+  [prev: As described above, to communicate with the system, users' registration and authentication are needed.] "The UserManagement component answers the requests for registration and authentication."
+  Evidence: span="UserManagement"
+  [prev: "As described above, to communicate with the system, users' registration and authentication are needed."]
+  Anchors (confirmed refs):
+    S13: When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords.
+Case 7: "UserDBAdapter" -> UserDBAdapter
+  [prev: The UserManagement component answers the requests for registration and authentication.] "The UserDBAdapter component queries the database."
+  Evidence: span="UserDBAdapter"
+  [prev: "The UserManagement component answers the requests for registration and authentication."]
+  Anchors (confirmed refs):
+    S29: By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.
+    S30: The UserDBAdapter component creates a query based on the user's request.
+Case 8: "UserManagement" -> UserManagement
+  [prev: The UserDBAdapter component queries the database.] "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords."
+  Evidence: span="UserManagement"
+  [prev: "The UserDBAdapter component queries the database."]
+  Anchors (confirmed refs):
+    S11: The UserManagement component answers the requests for registration and authentication.
+Case 9: "TagWatermarking" -> TagWatermarking
+  [prev: To this end, the requested files are first reencoded.] "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."
+  Evidence: span="TagWatermarking"
+  [prev: "To this end, the requested files are first reencoded."]
+  Anchors (confirmed refs):
+    S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.
+Case 10: "MediaManagement" -> MediaManagement
+  [prev: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.] "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+  Evidence: span="MediaManagement"
+  [prev: "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."]
+  Anchors (confirmed refs):
+    S7: Application business logic is provided by a central business logic component, called the MediaManagement component.
+    S8: The MediaManagement component coordinates the communication of other components.
+Case 11: "TagWatermarking" -> TagWatermarking
+  [prev: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.] "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+  Evidence: span="TagWatermarking"
+  [prev: "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."]
+  Anchors (confirmed refs):
+    S16: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.
+Case 12: "Packaging" -> Packaging
+  [prev: Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet.] "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file."
+  Evidence: span="Packaging"
+  [prev: "Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet."]
+Case 13: "ReEncoder" -> Reencoding
+  [prev: To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.] "The ReEncoder component converts the bit rates of audio files."
+  Evidence: span="ReEncoder", mention=via known alias
+  [prev: "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file."]
+Case 14: "Database" -> DB
+  [prev: The persistence tier contains components that are concerned with the storage of audio files and their meta-data.] "The Database component represents an actual database (e.g., MySQL)."
+  Evidence: span="Database", mention=via known alias
+  [prev: "The persistence tier contains components that are concerned with the storage of audio files and their meta-data."]
+Case 15: "AudioAccess" -> MediaAccess
+  [prev: It stores user information and meta-data of audio files such as the name and the genre.] "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component."
+  Evidence: span="AudioAccess", mention=via known alias
+  [prev: "It stores user information and meta-data of audio files such as the name and the genre."]
+  Anchors (confirmed refs):
+    S26: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.
+    S27: The MediaAccess component encapsulates database access for meta-data of audio files.
+    S34: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.
+Case 16: "Database" -> DB
+  [prev: It stores user information and meta-data of audio files such as the name and the genre.] "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component."
+  Evidence: span="Database", mention=via known alias
+  [prev: "It stores user information and meta-data of audio files such as the name and the genre."]
+Case 17: "MediaAccess" -> MediaAccess
+  [prev: After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.] "When a user uploads an audio file, the MediaAccess component stores it at the predefined location."
+  Evidence: span="MediaAccess"
+  [prev: "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component."]
+  Anchors (confirmed refs):
+    S27: The MediaAccess component encapsulates database access for meta-data of audio files.
+    S34: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.
+Case 18: "MediaAccess" -> MediaAccess
+  [prev: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.] "The MediaAccess component encapsulates database access for meta-data of audio files."
+  Evidence: span="MediaAccess"
+  [prev: "When a user uploads an audio file, the MediaAccess component stores it at the predefined location."]
+  Anchors (confirmed refs):
+    S26: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.
+    S34: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.
+Case 19: "UserDBAdapter" -> UserDBAdapter
+  [prev: Furthermore, it fetches a list of all available audio files.] "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data."
+  Evidence: span="UserDBAdapter"
+  [prev: "Furthermore, it fetches a list of all available audio files."]
+  Anchors (confirmed refs):
+    S12: The UserDBAdapter component queries the database.
+    S30: The UserDBAdapter component creates a query based on the user's request.
+Case 20: "UserDBAdapter" -> UserDBAdapter
+  [prev: By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.] "The UserDBAdapter component creates a query based on the user's request."
+  Evidence: span="UserDBAdapter"
+  [prev: "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data."]
+  Anchors (confirmed refs):
+    S12: The UserDBAdapter component queries the database.
+    S29: By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.
+Case 21: "Database" -> DB
+  [prev: The UserDBAdapter component creates a query based on the user's request.] "The Database component then executes the actual query for files."
+  Evidence: span="Database", mention=via known alias
+  [prev: "The UserDBAdapter component creates a query based on the user's request."]
+Case 22: "Database" -> DB
+  [prev: The Database component then executes the actual query for files.] "All salted hashes of passwords are also stored in the Database component."
+  Evidence: span="Database", mention=via known alias
+  [prev: "The Database component then executes the actual query for files."]
+Case 23: "DataStorage" -> FileStorage
+  [prev: All salted hashes of passwords are also stored in the Database component.] "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+  Evidence: span="DataStorage", mention=via known alias
+  [prev: "All salted hashes of passwords are also stored in the Database component."]
+Case 24: "MediaAccess" -> MediaAccess
+  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+  Evidence: span="MediaAccess"
+  [prev: "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."]
+  Anchors (confirmed refs):
+    S26: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.
+    S27: The MediaAccess component encapsulates database access for meta-data of audio files.
+Case 25: "Database" -> DB
+  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+  Evidence: span="Database", mention=via known alias
+  [prev: "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."]
+
+Return JSON:
+{"validations": [{"case": 1, "claim": "<exact quote or none>", "approve": true}]}
+JSON only:
