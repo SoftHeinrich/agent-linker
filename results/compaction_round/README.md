@@ -344,4 +344,20 @@ AB_OUT=../results/compaction_round \
 
 # the paired permutation test of every arm against its control
 ../.venv/bin/python pilot/compaction_round_stats.py --group fullname5 --model terra
+
+# the invariants of the two heads
+../.venv/bin/python pilot/test_s88_anchors.py
+../.venv/bin/python pilot/test_s89_compact.py
+
+# the end-to-end batches (each arm needs its own --arm block, with its runs)
+../.venv/bin/python pilot/score_runs.py \
+  --arm s_linker87 ../results/anchors_e2e_terra_r{1,2,3}_20260821 \
+  --arm s_linker88 ../results/anchors_e2e_terra_r{1,2,3}_20260821
+
+# the composed head's batch, when it lands (tag `compact`)
+TYPED_E2E_CONTROL=s_linker87 TYPED_E2E_TAG=compact bash pilot/run_typed_e2e.sh \
+  s_linker89 terra luna
+../.venv/bin/python pilot/score_runs.py \
+  --arm s_linker87 ../results/compact_e2e_terra_r{1,2,3}_* \
+  --arm s_linker89 ../results/compact_e2e_terra_r{1,2,3}_*
 ```
