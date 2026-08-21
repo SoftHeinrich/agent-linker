@@ -112,6 +112,21 @@ RECORDED = {
 ORIG_VALIDATION = SLinker85._prompt_validation
 ORIG_ALIAS_JUDGE_RULES = L85.DOC_KNOWLEDGE_JUDGE_RULES
 ORIG_FOCUS = L85.VALIDATION_FOCUS
+ORIG_COREF_RULES = L85.COREF_RULES
+
+#: The resolver prompt is the module's largest instruction item -- 40 of the ~82 calls
+#: a five-project run makes, 190 kB of prompt. Its preamble already states the question
+#: ("identify any pronoun or noun phrase in THAT sentence that refers back to a
+#: component listed above", "if a target sentence has no such reference ... return no
+#: resolution", "be conservative -- only include resolutions you are CERTAIN about"),
+#: and `COREF_RULES` then restates it. s56 measured deleting the whole preamble at
+#: TP -16.2 because it is also the input-format contract; this arm deletes the
+#: RESTATEMENT instead and keeps the contract, which is the untried half.
+COREF_RULES_DEDUP = (
+    "Resolve when the surrounding sentences make one component the clear antecedent, "
+    "under any form the document uses for it. Avoid resolving when two or more equally "
+    "plausible antecedents exist."
+)
 ORIG_ENTITY_RULES = L85.ENTITY_EXTRACTION_RULES
 ORIG_LAYERED = L85.LAYERED_ENTITY_RULES
 
@@ -263,6 +278,10 @@ ARMS = {
         "nofocus": {"focus": ""},
         "compact": {"focus": "", "layered": NODEAD_LAYERED},
     },
+    "resolve": {
+        "ctl": {},
+        "dedup": {"coref_rules": COREF_RULES_DEDUP},
+    },
     "alias": {
         "ctl": {},
         "typedalias": {"alias_rules": TYPED_ALIAS_RULES},
@@ -290,6 +309,7 @@ class Arm:
             "alias_rules") or ORIG_ALIAS_JUDGE_RULES
         L85.LAYERED_ENTITY_RULES = self.spec.get("layered", ORIG_LAYERED)
         L85.VALIDATION_FOCUS = self.spec.get("focus", ORIG_FOCUS)
+        L85.COREF_RULES = self.spec.get("coref_rules", ORIG_COREF_RULES)
         L85.ENTITY_EXTRACTION_RULES = self.spec.get(
             "entity_rules", ORIG_ENTITY_RULES)
         SLinker85._prompt_validation = staticmethod(
@@ -300,6 +320,7 @@ class Arm:
         L85.DOC_KNOWLEDGE_JUDGE_RULES = ORIG_ALIAS_JUDGE_RULES
         L85.LAYERED_ENTITY_RULES = ORIG_LAYERED
         L85.VALIDATION_FOCUS = ORIG_FOCUS
+        L85.COREF_RULES = ORIG_COREF_RULES
         L85.ENTITY_EXTRACTION_RULES = ORIG_ENTITY_RULES
         SLinker85._prompt_validation = staticmethod(ORIG_VALIDATION)
 
@@ -382,6 +403,12 @@ def run_group(group, model, runs, out_dir):
                     if group.startswith("fullname"):
                         cands = list(shared_candidates.values())
                         pairs = judge_fullname(lk, cands, comps, sent_map)
+                    elif group == "resolve":
+                        # the resolver AND the judge behind it: what a resolver arm
+                        # proposes is only a link if the strict gate keeps it
+                        links, _ = lk._run_coreference_linker(
+                            sents, comps, name_to_id, sent_map)
+                        pairs = {(l.sentence_number, l.component_id) for l in links}
                     elif group == "alias":
                         lk.doc_knowledge = lk._learn_document_knowledge(
                             sents, comps)
@@ -472,6 +499,7 @@ OTHER_STAGES = {
     "coref": ("full_name", "partial_name"),
     "coref2": ("full_name", "partial_name"),
     "alias": ("partial_name", "coreference"),
+    "resolve": ("full_name", "partial_name"),
     "fullname3": ("partial_name", "coreference"),
 }
 

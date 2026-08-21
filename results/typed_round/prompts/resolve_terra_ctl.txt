@@ -1,0 +1,51 @@
+# one prompt this arm sent: resolve / terra / ctl / run 1 / mediastore / 5550 chars
+
+Resolve references (pronouns and noun phrases that refer back) to components.
+
+COMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking
+
+SENTENCES (the document text the cases are drawn from)
+[{"sentence": 6, "text": "In addition, users can browse, download, and upload audio files using the Facade component."}, {"sentence": 7, "text": "Application business logic is provided by a central business logic component, called the MediaManagement component."}, {"sentence": 8, "text": "The MediaManagement component coordinates the communication of other components."}, {"sentence": 9, "text": "Furthermore, it fetches audio files from a specific location (e.g., a dedicated file server or a local disk) when processing download requests."}, {"sentence": 10, "text": "As described above, to communicate with the system, users' registration and authentication are needed."}, {"sentence": 11, "text": "The UserManagement component answers the requests for registration and authentication."}, {"sentence": 12, "text": "The UserDBAdapter component queries the database."}, {"sentence": 13, "text": "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords."}, {"sentence": 14, "text": "To reduce the risk of copyright infringements, all downloaded files are watermarked."}, {"sentence": 15, "text": "To this end, the requested files are first reencoded."}, {"sentence": 16, "text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."}, {"sentence": 17, "text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."}, {"sentence": 18, "text": "Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet."}, {"sentence": 19, "text": "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file."}, {"sentence": 20, "text": "The ReEncoder component converts the bit rates of audio files."}, {"sentence": 21, "text": "This can result in reduction of file sizes."}, {"sentence": 22, "text": "The persistence tier contains components that are concerned with the storage of audio files and their meta-data."}, {"sentence": 23, "text": "The Database component represents an actual database (e.g., MySQL)."}, {"sentence": 24, "text": "It stores user information and meta-data of audio files such as the name and the genre."}, {"sentence": 25, "text": "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component."}]
+
+For each TARGET sentence below, identify any pronoun or noun phrase in THAT sentence
+that refers back to a component listed above. Read the TARGET's context in SENTENCES.
+If a target sentence has no such reference to a listed component, return no resolution
+for it. Be conservative — only include resolutions you are CERTAIN about.
+
+--- Case 1 ---
+TARGET S11: The UserManagement component answers the requests for registration and authentication.
+CONTEXT: sentences S6-S16 above.
+--- Case 2 ---
+TARGET S12: The UserDBAdapter component queries the database.
+CONTEXT: sentences S7-S17 above.
+--- Case 3 ---
+TARGET S13: When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords.
+CONTEXT: sentences S8-S18 above.
+--- Case 4 ---
+TARGET S14: To reduce the risk of copyright infringements, all downloaded files are watermarked.
+CONTEXT: sentences S9-S19 above.
+--- Case 5 ---
+TARGET S15: To this end, the requested files are first reencoded.
+CONTEXT: sentences S10-S20 above.
+--- Case 6 ---
+TARGET S16: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.
+CONTEXT: sentences S11-S21 above.
+--- Case 7 ---
+TARGET S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.
+CONTEXT: sentences S12-S22 above.
+--- Case 8 ---
+TARGET S18: Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet.
+CONTEXT: sentences S13-S23 above.
+--- Case 9 ---
+TARGET S19: To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.
+CONTEXT: sentences S14-S24 above.
+--- Case 10 ---
+TARGET S20: The ReEncoder component converts the bit rates of audio files.
+CONTEXT: sentences S15-S25 above.
+
+For each case, decide whether a pronoun or noun phrase that refers back in the target sentence refers back to a component named or aliased earlier in the context. Resolve when the surrounding sentences make one component the clear antecedent, under any form the document uses for it. Avoid resolving when two or more equally plausible antecedents exist.
+
+Return JSON:
+{"resolutions": [{"case": 1, "sentence": N_INTEGER, "reference": "the server", "component": "Name", "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}]}
+
+JSON only:

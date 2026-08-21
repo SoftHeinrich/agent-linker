@@ -1,0 +1,64 @@
+# one prompt this arm sent: resolve / terra / dedup / run 1 / mediastore / 6110 chars
+
+Validate components in a document. Check coref resolution: does the referring expression in this sentence actually refer to the named component as an architectural participant?
+
+COMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking
+
+These are coreference links: a pronoun or noun phrase in the sentence is claimed to refer back to the component, which is NOT named in the sentence itself. Approve only when the sentence contains a genuine referring expression that unambiguously points to THIS component and makes an architectural claim about it. Reject when there is no such referring expression or when the antecedent could equally be a different component. An expression denoting what a component acts on or produces -- the data, the artifact, the request, the result -- refers to that thing and not to the component, however clearly the component is the one acting on it. When uncertain, reject.
+
+For each case, first quote the EXACT words from the sentence that state the
+architectural claim about the component (or write "none" if the sentence makes no
+such claim), then state the strongest ground there is for rejecting this case under the
+rules above (or "none" if there is none), then decide: approve unless that ground is one
+the rules above make decisive. An objection you could raise against most sentences is not
+a ground for rejecting this one.
+
+CASES:
+Case 1: pronoun/role-ref -> MediaManagement
+  Claimed reference: "it"
+  Claimed antecedent (S8): "The MediaManagement component coordinates the communication of other components."
+  [prev: The MediaManagement component coordinates the communication of other components.] "Furthermore, it fetches audio files from a specific location (e.g., a dedicated file server or a local disk) when processing download requests."
+Case 2: pronoun/role-ref -> Reencoding
+  Claimed reference: "This"
+  Claimed antecedent (S20): "The ReEncoder component converts the bit rates of audio files."
+  [prev: The ReEncoder component converts the bit rates of audio files.] "This can result in reduction of file sizes."
+Case 3: pronoun/role-ref -> DB
+  Claimed reference: "It"
+  Claimed antecedent (S23): "The Database component represents an actual database (e.g., MySQL)."
+  [prev: The Database component represents an actual database (e.g., MySQL).] "It stores user information and meta-data of audio files such as the name and the genre."
+Case 4: pronoun/role-ref -> MediaAccess
+  Claimed reference: "it"
+  Claimed antecedent (S27): "The MediaAccess component encapsulates database access for meta-data of audio files."
+  [prev: The MediaAccess component encapsulates database access for meta-data of audio files.] "Furthermore, it fetches a list of all available audio files."
+Case 5: pronoun/role-ref -> DB
+  Claimed reference: "The Database component"
+  Claimed antecedent (S31): "The Database component then executes the actual query for files."
+  [prev: The UserDBAdapter component creates a query based on the user's request.] "The Database component then executes the actual query for files."
+Case 6: pronoun/role-ref -> DB
+  Claimed reference: "the Database component"
+  Claimed antecedent (S31): "The Database component then executes the actual query for files."
+  [prev: The Database component then executes the actual query for files.] "All salted hashes of passwords are also stored in the Database component."
+Case 7: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S33): "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+  [prev: All salted hashes of passwords are also stored in the Database component.] "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+Case 8: pronoun/role-ref -> MediaAccess
+  Claimed reference: "the MediaAccess component"
+  Claimed antecedent (S27): "The MediaAccess component encapsulates database access for meta-data of audio files."
+  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+Case 9: pronoun/role-ref -> DB
+  Claimed reference: "the Database"
+  Claimed antecedent (S32): "All salted hashes of passwords are also stored in the Database component."
+  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+Case 10: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S33): "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+  [prev: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.] "Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage."
+Case 11: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S35): "Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage."
+  [prev: Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage.] "When a user uploads a file, it will be stored in the DataStorage without any change."
+
+Return JSON:
+{"validations": [{"case": 1, "claim": "<exact quote or none>", "objection": "<strongest ground to reject, or none>", "approve": true}]}
+JSON only:

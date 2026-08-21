@@ -236,3 +236,25 @@ OAI_KEY=... bash pilot/run_typed_e2e.sh s_linker86 terra luna
 - **No in-set null arm**, per the measurement policy: the harness floor is recorded and
   an arm is not spent re-measuring a constant.
 - **The p floor at n=3 is 0.10** and every p in this file is reported against it.
+
+## The end-to-end confirmation
+
+`pilot/run_typed_e2e.sh s_linker86 terra luna`, three paired runs per model, both arms
+in every invocation, `gpt-5.6-{terra,luna}` at `OPENAI_REASONING_EFFORT=none` on Flex.
+`results/typed_e2e_{terra,luna}_r{1,2,3}_20260821`.
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+|---|---|---|---|---|---|---|---|
+| terra | `s_linker85` | 180.7 | 18.7 | 94.11 | 94.53 | 82 | 1.27 |
+| terra | **`s_linker86`** | **184.3** | **18.3** | **94.65** | **95.19** | 81 | 1.23 |
+| terra | delta | +3.7 (p = 0.20) | −0.3 (p = 1.00) | +0.5 (p = 0.40) | +0.7 (p = 0.50) | −1 | |
+| luna | `s_linker85` | 177.7 | 47.7 | 88.75 | 91.22 | 84 | 0.94 |
+| luna | **`s_linker86`** | **179.0** | 49.0 | **89.02** | **91.65** | 84 | 1.99 |
+| luna | delta | +1.3 (p = 0.80) | +1.3 (p = 0.60) | +0.3 (p = 0.80) | +0.4 (p = 0.80) | 0 | |
+
+**QUALITY-NEUTRAL on both models on all four statistics**, composition +0.1 (p = 0.50)
+on terra and −4.6 (p = 1.00) on luna — the two arms' link sets differ no more between
+arms than within them, which is what removing a restatement should look like. Every
+point estimate is in `s_linker86`'s favour on both models and none of them is
+significant at the n=3 floor of 0.10; the honest reading is **243 B of instruction
+removed for no measurable change**, which is what the round set out to buy.

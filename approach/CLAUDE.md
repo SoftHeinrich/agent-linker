@@ -1454,6 +1454,13 @@ checks), runner `pilot/run_typed_e2e.sh`.
   luna TP 174.7 → 175.7 (F1 +0.1 p = 0.90, F2 +0.3 p = 0.60). Composition risk off the
   checkpoints: 0.7 added pairs/run that a later stage also proposes, 0.0 removed pairs in
   the final link set — non-zero, so E2E was paid for; small, so at n = 3.
+- **End to end, three paired runs per model in the same invocations**
+  (`../results/typed_e2e_{terra,luna}_r{1,2,3}_20260821`): terra TP 184.3 against 180.7,
+  FP 18.3 against 18.7, macro F1 94.65 against 94.11, macro F2 95.19 against 94.53;
+  luna TP 179.0 against 177.7, macro F1 89.02 against 88.75, macro F2 91.65 against
+  91.22. **QUALITY-NEUTRAL on both models on all four statistics** (every p >= 0.20),
+  composition +0.1 (p = 0.50) terra and -4.6 (p = 1.00) luna, and every point estimate
+  in s86's favour. 243 B of instruction removed for no measurable change.
 - **`nodead` and `nofocus` are each neutral and negative together** (terra `compact`
   F1 −1.3, luna −0.45 at FP +6.0). Once the focus is gone the inert sentence stops being
   inert, because the focus was carrying the participation requirement the claim-first
