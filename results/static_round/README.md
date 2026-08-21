@@ -431,3 +431,32 @@ valuable single generalization — an enumeration is the clearest recipe in the 
 and its stage evidence is the round's strongest (terra gold 39.0 → 41.0, luna 55.0 →
 56.3, neutral on both). One consumer: the strict judge. `pilot/test_s92_static.py`
 asserts it in 82 checks. Batch tag `solo`.
+
+### `s_linker92` end to end — terra holds, luna is inconclusive at n = 3
+
+| model | arm | TP | FP | macro F1 | macro F2 | verdict |
+|---|---|---|---|---|---|---|
+| terra | `s_linker89` | 181.0 | 28.0 | 92.1 | 93.3 | |
+| terra | `s_linker92` | 178.3 | 27.3 | 92.1 | 93.2 | |
+| terra | delta | −2.7 (p = 0.40) | −0.7 (1.00) | +0.1 (1.00) | −0.1 (0.70) | **QUALITY-NEUTRAL** |
+| luna | `s_linker89` | 180.3 | 41.7 | 90.3 | 92.5 | |
+| luna | `s_linker92` | 177.3 | 45.0 | 89.0 | 91.4 | |
+| luna | delta | **−3.0 (0.20)** | +3.3 (0.90) | −1.2 (0.40) | −1.1 (0.30) | flagged on TP alone |
+
+**Terra is neutral on all four statistics. Luna's only flag is TP at p = 0.20 — the
+boundary of the rule — with false positives, macro F1 and macro F2 all neutral.**
+
+That is thin evidence to refuse on, and the run spreads say why. Luna's **within-arm**
+run-to-run symmetric difference is **51, 66 and 51 links** for the arm and 28, 45, 45
+for the control, against an arm effect of **3**. At n = 3 an end-to-end batch on this
+model cannot resolve a three-link effect in either direction: the flag is as consistent
+with noise as with a real loss. Three further paired luna runs are added (tag `solo2`)
+rather than calling it on one boundary value.
+
+**This is a limit of the design, and it applies to the whole round.** A stage arm holds
+every other stage at what the recorded run produced, so its only variance is the judged
+stage's; an end-to-end batch re-runs every stage. The two are not measuring the same
+quantity to the same precision, and *stage-neutral at n = 3 carries very little
+information about end-to-end neutral at n = 3*. Every composed head this round tried was
+built on stage evidence, and none of them survived — that is the honest summary, and it
+is a statement about what the stage arm can certify, not only about the paraphrases.
