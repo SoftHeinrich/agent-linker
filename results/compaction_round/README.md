@@ -293,23 +293,39 @@ resolver prompt of all five projects s88's minus exactly the `CONTEXT` lines, th
 input-format contract still in the rendering, 324 B a call and 12 961 B a run).
 **Owed: an end-to-end confirmation of the pair.**
 
-Still running at the time of writing, and **not** yet a verdict:
+### `s_linker88` end to end, three paired runs per model
 
-- the `s_linker88` end-to-end batch. Two of three paired runs per model are in
-  (`results/anchors_e2e_{terra,luna}_r{1,2}_20260821`); terra r3 died on a Flex 429 and
-  is queued for a clean re-run.
+`TYPED_E2E_CONTROL=s_linker87 TYPED_E2E_TAG=anchors bash pilot/run_typed_e2e.sh
+s_linker88 terra luna`, both arms in every invocation.
+`results/anchors_e2e_{terra,luna}_r{1,2,3}_20260821`. (terra r3 died on a Flex 429 and
+was re-run alone, same two arms, same invocation form.)
 
-  | model | arm | TP | FP | macro F1 | macro F2 | calls |
-  |---|---|---|---|---|---|---|
-  | terra (n=2) | `s_linker87` | 181.5 | 34.5 | 91.14 | 93.13 | 84 |
-  | terra (n=2) | `s_linker88` | **183.0** | **23.5** | **93.90** | **94.93** | 83.5 |
-  | luna (n=2) | `s_linker87` | 179.5 | **34.0** | **91.05** | 92.70 | 86 |
-  | luna (n=2) | `s_linker88` | **183.0** | 51.0 | 89.76 | **92.84** | 86 |
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+|---|---|---|---|---|---|---|---|
+| terra | `s_linker87` | 182.3 | 29.0 | 92.23 | 93.87 | 84 | 3.55 |
+| terra | **`s_linker88`** | 181.3 | **24.7** | **93.34** | **94.29** | 83 | **1.92** |
+| terra | delta | −1.0 (p = 0.80) | −4.3 (0.50) | **+1.1 (0.40)** | +0.4 (0.80) | −1 | |
+| luna | `s_linker87` | 179.3 | **37.0** | **90.71** | 92.55 | 86 | 1.59 |
+| luna | **`s_linker88`** | **181.7** | 47.3 | 89.90 | **92.58** | 86 | **0.51** |
+| luna | delta | +2.3 (p = 0.50) | +10.3 (0.20) | −0.8 (0.20) | +0.0 (1.00) | 0 | |
 
-  Read this as two runs a side, not as the round's answer: terra is +2.8 macro F1 at
-  FP −11.0 and luna is −1.3 macro F1 at FP +17.0 with TP +3.5, and the branch's own
-  floor at n=2 is nothing. **The verdict waits for the third run a side and the paired
-  permutation test.**
+**Terra is QUALITY-NEUTRAL on all four statistics and macro F1 favours the arm by 1.1.
+On luna nothing reaches the n=3 floor of 0.10 either, and the shape is the one this
+branch has seen a dozen times: recall up (TP +2.3), precision down (FP +10.3), F2 flat
+(+0.0).** The arm's run spread is the tighter of the two on both models (1.92 against
+3.55, 0.51 against 1.59). The honest reading is **27–28% of the largest prompt family
+removed for no measurable change on terra and no significant change on luna, with
+luna's false positives the one number pointing the wrong way** — and it is the number
+to watch if this head is taken further, because the stage arm read FP −1.7 there.
+
+Composition is +3.3 (p = 0.10, at the floor) on terra and +3.2 (p = 0.30) on luna: the
+two arms do produce somewhat different link sets, which is what changing what a judge
+is shown should do.
+
+Still owed:
+
+- **the composed head's end-to-end batch** (`s_linker89` against `s_linker87`, three
+  paired runs per model, tag `compact`). It is queued and running.
 
 ## Reproducing
 
