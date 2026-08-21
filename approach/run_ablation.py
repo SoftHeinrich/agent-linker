@@ -198,6 +198,7 @@ CANONICAL_VARIANTS = [
     "s_linker86",  # s85 with the full-name judge's focus line removed as a restatement
     "s_linker87",  # s86 with the coreference resolver's restated question removed
     "s_linker88",  # s87 with the judging prompt's repeated anchor sentences written once
+    "s_linker89",  # s88 plus the resolver's per-case context range line removed
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1984,6 +1985,24 @@ VARIANT_SPECS = {
             "is shown less - into the first such case and points the rest at it: "
             "-32.8% of the judging prompt, verified lossless case by case in "
             "pilot/test_s88_anchors.py. See results/compaction_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker89": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker89",
+        class_name="SLinker89",
+        description=(
+            "S-Linker89 - the compaction round's composed head: s_linker88 plus the "
+            "resolver's per-case 'CONTEXT: sentences Sx-Sy above.' line removed. That "
+            "line named the +/-5 window of one target while the SENTENCES table is the "
+            "union of ten, and 16.3 antecedents a run on terra (42.7 on luna) already "
+            "cite a sentence outside the range their own case declares. Stage arm on "
+            "both models, resolver AND the strict judge behind it: terra stage gold "
+            "32.3 -> 36.3, macro F1 +0.1 (p = 0.70); luna 47.7 -> 52.3, F1 +0.1 "
+            "(p = 0.90). 324 B off each of the 40 resolver calls a run makes. Neither "
+            "change deletes a rule. E2E owed. See results/compaction_round/README.md."
         ),
         canonical=False,
         experimental=True,

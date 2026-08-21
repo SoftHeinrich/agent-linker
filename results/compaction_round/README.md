@@ -266,12 +266,35 @@ Refused, each with its number:
 | the strict judge's leniency guard | luna approves 8.3 gold a run over a stated objection; **refused from the checkpoints, 0 API cost** |
 | the alias enumeration's third item | 1.3 / 0.7 aliases a run; the alias table trades recall between two linkers (s46, s60), so a thin yield is not worth the arm |
 
+### The resolver on luna (`resolve3`) — one adopted, one refused
+
+| arm | stage gold | stage spurious | stage bytes/run | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| ctl | 47.7 | 7.0 | 314 417 | 89.39 | 92.84 | 183.7 | 51.0 | — |
+| **`nocasectx`** | **52.3** | 7.0 | 296 723 (−5.6%) | **89.48** | 92.52 | 182.7 | 51.3 | **QUALITY-NEUTRAL** (gold +4.7 p=0.50, F1 +0.1 p=0.90) |
+| `notargetrows` | 44.0 | 7.3 | 254 358 (−19%) | 88.64 | 91.53 | 181.3 | 53.0 | **refused** — macro F1 **−0.8 (p = 0.10, at the floor)**, QUALITY-CHANGING |
+
+**`nocasectx` holds on both models and both models resolve MORE gold without it**
+(terra 32.3 → 36.3, luna 47.7 → 52.3). The line named the ±5 window of one target
+while the `SENTENCES` table is the union of ten, and the audit had already found
+16.3 antecedents a run on terra (42.7 on luna) citing a sentence outside the range
+their own case declares. **`notargetrows` is the round's fourth terra-neutral,
+luna-negative arm** — terra reads stage gold +8.7 and composed F1 +0.4 for −23.8% of
+the resolver prompt, luna reads gold −3.7 and F1 −0.8 at the floor. The 25.4% of the
+resolver call that is a duplicated table row stays.
+
+### The composed head
+
+**`s_linker89` = `s_linker87` + the anchor union + the resolver's range line removed.**
+Two changes, **neither of which deletes a rule**; authored rule text is unchanged at
+3079 B. `pilot/test_s89_compact.py` asserts the second change in 15 checks (every rule
+constant and every method body but `_prompt_coref` byte-identical to s88's, every
+resolver prompt of all five projects s88's minus exactly the `CONTEXT` lines, the
+input-format contract still in the rendering, 324 B a call and 12 961 B a run).
+**Owed: an end-to-end confirmation of the pair.**
+
 Still running at the time of writing, and **not** yet a verdict:
 
-- `resolve3` on luna (run 3 of 3). Terra reads `notargetrows` at stage gold +8.7 /
-  spurious −2.3 and composed F1 +0.4, at **−23.8% of the resolver prompt**, and
-  `nocasectx` at composed F1 +0.1 for −8.6%. Neither is adopted until luna lands —
-  this round has already refused three terra-neutral arms on the second model.
 - the `s_linker88` end-to-end batch. Two of three paired runs per model are in
   (`results/anchors_e2e_{terra,luna}_r{1,2}_20260821`); terra r3 died on a Flex 429 and
   is queued for a clean re-run.
