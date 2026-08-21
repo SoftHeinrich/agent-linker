@@ -199,6 +199,7 @@ CANONICAL_VARIANTS = [
     "s_linker87",  # s86 with the coreference resolver's restated question removed
     "s_linker88",  # s87 with the judging prompt's repeated anchor sentences written once
     "s_linker89",  # s88 plus the resolver's per-case context range line removed
+    "s_linker90",  # s89 with five authored clauses paraphrased from recipes to concepts
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1971,6 +1972,16 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "core": dict(
+        aliases=("alinker_core",),
+        module="llm_sad_sam.linkers.experimental.alinker_core",
+        class_name="ALinkerCore",
+        description=(
+            "ALinker/Core - read, propose, resolve. One Claim contract, one "
+            "decomposition axis; replaces the three orthographic linkers and "
+            "their three judges."
+        ),
+    ),
     "s_linker88": dict(
         aliases=(),
         module="llm_sad_sam.linkers.experimental.s_linker88",
@@ -2003,6 +2014,31 @@ VARIANT_SPECS = {
             "32.3 -> 36.3, macro F1 +0.1 (p = 0.70); luna 47.7 -> 52.3, F1 +0.1 "
             "(p = 0.90). 324 B off each of the 40 resolver calls a run makes. Neither "
             "change deletes a rule. E2E owed. See results/compaction_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker90": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker90",
+        class_name="SLinker90",
+        description=(
+            "S-Linker90 - the static round's composed head: s_linker89 with five "
+            "authored clauses paraphrased from recipes into concepts. QUALIFIED_CLAUSE "
+            "drops 'joined or dotted' for 'a fragment of a longer identifier' (the "
+            "screen finds the joined population 13.0 gold of 13.3 a run, so the wording "
+            "over-reached); LAYERED_COREF_RULES drops its four-noun list and keeps the "
+            "ground verbatim; STRICTER_CLAUSE trades 'Capitalization is evidence' for "
+            "'How the word is written is evidence either way' and opens with the shared "
+            "use/mention sentence; DOC_KNOWLEDGE_EXTRACTION_RULES drops the three-shape "
+            "enumeration whose third shape is returned 0.0 times a run; "
+            "ALIAS_EXCLUSION_RULES becomes the same identifier-fragment clause the "
+            "judging prompt carries. Every one measured as a stage arm on both models "
+            "and QUALITY-NEUTRAL. ENTITY_EXTRACTION_RULES is NOT paraphrased: that arm "
+            "cost luna 3.7 gold candidates a run (p = 0.10) and was refused. Authored "
+            "text 2107 -> 2053 B, which is not the point -- the point is that five "
+            "clauses stop describing surfaces. Invariants: pilot/test_s90_static.py "
+            "(90 checks). See results/static_round/README.md."
         ),
         canonical=False,
         experimental=True,

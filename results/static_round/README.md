@@ -241,3 +241,78 @@ costs anything on either model, not that `mergefrag` gains eleven links.
 `mergeord` is the one arm that reduces false positives in both groups it appears in and
 on both models (`qual1` luna FP −1.3, `alias1` luna FP −6.4, `alias1` terra FP −5.0),
 which is why it is the one composed.
+
+### The merged-and-generalized alias rule (`alias2`) — refused
+
+`genalias` and `mergeord` both rewrite `DOC_KNOWLEDGE_EXTRACTION_RULES` and cannot
+compose, so the head needs one constant doing both jobs. `mergealias` is that text:
+the three-shape enumeration replaced by the condition all three satisfy, and the
+use/mention principle stated once and shared with the judging prompt.
+
+| model | arm | stage gold | stage spurious | composed F1 | composed F2 | composed TP | composed FP |
+|---|---|---|---|---|---|---|---|
+| terra | `ctl` | 147.7 | 11.7 | 92.63 | 93.89 | 181.0 | 27.0 |
+| terra | `mergealias` | 143.7 | 8.0 | 91.81 | **92.51** | 179.3 | 23.3 |
+| luna | `ctl` | 150.7 | 24.0 | 87.71 | 90.70 | 176.7 | 51.0 |
+| luna | `mergealias` | 152.3 | 22.0 | 88.91 | 91.92 | 179.7 | 49.3 |
+
+Neutral at the stage on both models and neutral throughout on luna, but terra's
+composed reading is flagged with **macro F2 p = 0.20 in the negative direction** — the
+only downward flag any alias arm produced. `genalias` achieves the generalization
+without it, so `mergealias` is refused and the use/mention sentence is shared only into
+`STRICTER_CLAUSE`.
+
+**A note on the verdict rule, because it is what flags these.** `pilot/ab_stats.py`
+calls an arm QUALITY-NEUTRAL when **every** statistic has p > 0.20 — it is not the
+0.10 permutation floor that decides. At n = 3 the floor is 0.10, so a p of 0.10 or 0.20
+is the strongest evidence the design can produce, and both count as changing.
+
+**And a caution this round earned.** The `alias1` and `alias2` controls are the same
+specification measured twice, and they read **145.7** and **147.7** stage gold on terra
+— a 2.0 spread between identical arms. Every arm in these two groups re-learns document
+knowledge, so the knowledge stage's own stochasticity sits inside every comparison. All
+six alias readings are inside that spread.
+
+## What is adopted
+
+| constant | adopted form | measured by | terra | luna |
+|---|---|---|---|---|
+| `QUALIFIED_CLAUSE` | fragment, not "joined or dotted" | `genqual`, at **both** consumers | neutral | neutral |
+| `LAYERED_COREF_RULES` | ground kept, four-noun list dropped | `genartifact` | neutral, +2.0 gold | neutral, +1.3 gold |
+| `STRICTER_CLAUSE` | "how the word is written", shared use/mention opening | `mergeord` | neutral | neutral, FP −1.3 |
+| `DOC_KNOWLEDGE_EXTRACTION_RULES` | the condition, not the three shapes | `genalias` | above ctl | neutral |
+| `ALIAS_EXCLUSION_RULES` | the judging prompt's own fragment clause | `mergefrag` | above ctl | neutral |
+| `ENTITY_EXTRACTION_RULES` | **unchanged** | `genextract` **refused** | neutral | **−3.7 gold, p = 0.10** |
+
+Composed as **`s_linker90`**. `pilot/test_s90_static.py` asserts the composition in
+**90 checks**: every other module constant byte-identical to s89's, each adopted
+constant byte-identical to the arm text that was measured, every class method's source
+identical modulo the rename, the lenient judging / strict judging / alias-extraction /
+full-name-extraction prompts of all five projects equal to s89's with exactly those five
+substitutions, and no adopted clause writing a benchmark component's word (GATE-06).
+
+Authored text **2107 → 2053 B**. The byte figure is incidental — two of the five
+constants *grew*, because merging states a principle once and then refers to it.
+
+## Reproducing
+
+```bash
+# the deterministic work, no LLM calls
+../.venv/bin/python pilot/static_audit.py
+../.venv/bin/python pilot/static_screen.py --variant s_linker89 \
+    "compact_e2e_terra_r*_20260821"
+
+# one stage group, one model (arms are paired inside the invocation)
+OPENAI_API_KEY="$OAI_KEY" LLM_BACKEND=openai OPENAI_MODEL_NAME=gpt-5.6-terra \
+OPENAI_SERVICE_TIER=flex OPENAI_REASONING_EFFORT=none AB_OUT=../results/static_round \
+  ../.venv/bin/python pilot/static_pilots.py --group qual1 --model terra --runs 3
+../.venv/bin/python pilot/static_round_stats.py --group qual1 --model terra
+
+# the composed head's invariants, and its end-to-end batch
+../.venv/bin/python pilot/test_s90_static.py
+TYPED_E2E_CONTROL=s_linker89 TYPED_E2E_TAG=static bash pilot/run_typed_e2e.sh \
+  s_linker90 terra luna
+../.venv/bin/python pilot/score_runs.py \
+  --arm s_linker89 ../results/static_e2e_terra_r{1,2,3}_* \
+  --arm s_linker90 ../results/static_e2e_terra_r{1,2,3}_*   # and luna
+```

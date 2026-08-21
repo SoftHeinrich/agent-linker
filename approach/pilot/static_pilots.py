@@ -157,6 +157,19 @@ GEN_DOC_EXTRACTION = ("Find surface forms the document uses to refer to a single
 #: gives the alias stage the general clause plus the imperative its stage needs.
 MERGED_ALIAS_EXCLUSION = f"{GEN_QUALIFIED} Do not offer such a fragment as an alias."
 
+#: A6 + A7 in one constant. `genalias` and `mergeord` both rewrite
+#: `DOC_KNOWLEDGE_EXTRACTION_RULES` and cannot compose, so the head needs a form
+#: that does both jobs: the three-shape enumeration replaced by the condition all
+#: three satisfy (`genalias`), and the use/mention principle stated once and shared
+#: with the judging prompt (`mergeord`). Measured as its own arm, because a
+#: composition of two measured texts is not a measured text.
+MERGED_GEN_DOC_EXTRACTION = (
+    "Find surface forms the document uses to refer to a single named component, "
+    f"whatever shape the form takes, when the form alone clearly means that "
+    f"component. {USE_MENTION} Reject a term whose ordinary sense is the one the "
+    "document is using."
+)
+
 ORIG = {name: getattr(L, name) for name in (
     "QUALIFIED_CLAUSE", "STRICTER_CLAUSE", "LAYERED_COREF_RULES",
     "ENTITY_EXTRACTION_RULES", "DOC_KNOWLEDGE_EXTRACTION_RULES",
@@ -187,6 +200,12 @@ ARMS = {
         "mergeord": {"DOC_KNOWLEDGE_EXTRACTION_RULES": MERGED_DOC_EXTRACTION,
                      "STRICTER_CLAUSE": MERGED_STRICTER},
     },
+    # the merged-and-generalized alias rule, the form the head needs
+    "alias2": {
+        "ctl": {},
+        "mergealias": {"DOC_KNOWLEDGE_EXTRACTION_RULES": MERGED_GEN_DOC_EXTRACTION,
+                       "STRICTER_CLAUSE": MERGED_STRICTER},
+    },
     # full-name extraction: 9.0 calls a run
     "extract1": {
         "ctl": {},
@@ -201,6 +220,7 @@ OTHER_STAGES = {
     "strict1": ("full_name", "partial_name"),
     "extract1": ("partial_name", "coreference"),
     "alias1": ("partial_name", "coreference"),
+    "alias2": ("partial_name", "coreference"),
 }
 
 
@@ -342,7 +362,7 @@ def run_group(group, model, runs, out_dir):
                     if group == "qual1":
                         pairs = judge_fullname(lk, list(shared.values()),
                                                comps, sent_map)
-                    elif group == "alias1":
+                    elif group in ("alias1", "alias2"):
                         # The arm's own knowledge, not the recorded one: that is
                         # what it changes. Its consumer is the full-name pair.
                         lk.doc_knowledge = lk._learn_document_knowledge(
