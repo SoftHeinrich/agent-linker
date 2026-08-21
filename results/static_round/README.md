@@ -348,14 +348,56 @@ The two models fail differently, which is itself informative:
 | where | teammates alone: FP +17.0, F1 −12.3 | bigbluebutton −6.0 TP, teammates −3.0 TP |
 | source | **58 of 66 teammates FPs are `partial_name`**, where s89 produces **0** | FP also falls (−6.0): the head is simply more conservative |
 
-**And the terra failure names my own gap.** `QUALIFIED_CLAUSE` enters **three** prompt
-families — lenient judging, full-name extraction, and denotation — which the round's own
-byte inventory states (22.7 calls a run). `genqual` was measured at the first two and
-never at the third, and the third is the `partial_name` stage the failure comes from.
-The previous round had already recorded that deleting this clause from the denotation
-prompt costs 15 spurious partial-name links a run. The number was on the page and the
-group was not built. **A constant must be priced at every consumer it has, not at the
-consumers a group already existed for.**
+### The missing consumer, and what it turned out not to explain
 
-`pilot/static_pilots.py --group denot3` is that missing group: `genqual` and the alias
-pair, priced at the denotation stage on both models.
+`QUALIFIED_CLAUSE` enters **three** prompt families — lenient judging, full-name
+extraction, and denotation — which the round's own byte inventory states (22.7 calls a
+run). `genqual` had been measured at the first two and never at the third, and the third
+is the `partial_name` stage the terra failure comes from. `denot3` is that missing group:
+`genqual` and the alias pair (`genalias` + `mergefrag`), priced at the denotation stage
+on both models.
+
+| model | arm | stage gold | stage spurious | composed F1 | composed TP | composed FP |
+|---|---|---|---|---|---|---|
+| terra | `ctl` | 20.7 | 13.3 | 94.17 | 186.3 | 24.3 |
+| terra | `genqual` | 19.7 | **11.0** | **94.46** | 186.3 | **22.0** |
+| terra | `aliaspair` | 20.7 | 11.7 | 94.39 | 186.3 | 22.7 |
+| luna | `ctl` | 12.3 | 23.0 | 89.82 | 180.7 | 43.3 |
+| luna | `genqual` | 11.7 | **20.3** | **89.95** | 180.0 | **41.0** |
+| luna | `aliaspair` | 9.3 | 21.3 | 89.32 | 176.7 | 41.7 |
+
+**Both arms are QUALITY-NEUTRAL at the denotation stage on both models, and `genqual` is
+the better arm there on both** — fewer spurious denotations and fewer composed false
+positives, the exact opposite of the E2E failure's direction.
+
+**So the missing group does not explain the failure, and the first reading of it was
+wrong.** With `denot3` the round has priced every one of the four consumers these five
+constants have, on both models, and **all eleven stage readings are neutral**. The
+composed head still loses on both. The failure is therefore not any clause at any
+consumer: it is a cross-stage interaction, where `partial_name` sees a different upstream
+state because `full_name` has already answered differently. No single-stage arm can see
+that by construction — each holds the other stages at what the recorded run produced.
+
+**This is the stronger version of the finding, and it is the one to write down.** It is
+not "an arm was mispriced". It is: *every constituent was measured neutral at every
+consumer it has, on both models, and the composition still moved.*
+
+## `s_linker91` — the minimal head the step-3 gate permits
+
+If arms cannot be composed on stage evidence alone, the composition needs its own
+evidence. The branch's step-3 gate asks what the arms' changed link sets have in common:
+
+| model | `mergeord` changes | `genartifact` changes | pairs **both** touch |
+|---|---|---|---|
+| terra | 2.3 /run (+1.7 / −0.7) | 21.0 /run (+11.7 / −9.3) | **0.0** |
+| luna | 3.0 /run (+1.3 / −1.7) | 23.7 /run (+12.7 / −11.0) | **0.0** |
+
+These two are the only adopted constants with **exactly one consumer each**
+(`STRICTER_CLAUSE` → lenient judging, `LAYERED_COREF_RULES` → strict judging), neither
+feeds a vocabulary to a later stage, and they touch disjoint link sets on both models.
+`QUALIFIED_CLAUSE` has three consumers and the two alias constants feed every stage
+downstream of them, which is what `s_linker90` composed and lost.
+
+`s_linker91` is `s_linker89` plus those two paraphrases and nothing else.
+`pilot/test_s91_static.py` asserts it in **84 checks**. Its end-to-end batch, three
+paired runs a side against `s_linker89`, is tag `minimal`.

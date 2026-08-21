@@ -200,6 +200,10 @@ CANONICAL_VARIANTS = [
     "s_linker88",  # s87 with the judging prompt's repeated anchor sentences written once
     "s_linker89",  # s88 plus the resolver's per-case context range line removed
     "s_linker90",  # s89 with five authored clauses paraphrased from recipes to concepts
+    "s_linker91",  # the two of those five whose consumer is a single stage
+    "s_linker91",  # s90 with the extractor and the resolver merged into one reading pass
+    "s_linker92",  # s91 with the merged reading ordered into two sections inside the call
+    "s_linker93",  # s90 with the resolver narrowed to sentences that write no name
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1972,6 +1976,38 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
+    "s_linker91": dict(
+        aliases=("read", "reading"),
+        module="llm_sad_sam.linkers.experimental.s_linker91",
+        class_name="SLinker91",
+        description=(
+            "S-Linker91 - one reading pass proposes for all three linkers. The "
+            "named-reference extractor and the coreference resolver are merged "
+            "into a single question over the same 50-sentence block, carrying a "
+            "per-component note of the last sentence that named it; every judge, "
+            "the alias module and the deterministic scan are inherited unchanged."
+        ),
+    ),
+    "s_linker92": dict(
+        aliases=("readordered",),
+        module="llm_sad_sam.linkers.experimental.s_linker92",
+        class_name="SLinker92",
+        description=(
+            "S-Linker92 - the merged reading with the cascade inside the call: "
+            "a named section first, then refer-backs resolved against the list "
+            "that same call just produced."
+        ),
+    ),
+    "s_linker93": dict(
+        aliases=("narrowcoref",),
+        module="llm_sad_sam.linkers.experimental.s_linker93",
+        class_name="SLinker93",
+        description=(
+            "S-Linker93 - both proposal calls kept; the resolver is asked only "
+            "about sentences that write no name. 44%% fewer resolver calls, "
+            "0.7 gold a project-run at risk."
+        ),
+    ),
     "core": dict(
         aliases=("alinker_core",),
         module="llm_sad_sam.linkers.experimental.alinker_core",
@@ -2039,6 +2075,27 @@ VARIANT_SPECS = {
             "text 2107 -> 2053 B, which is not the point -- the point is that five "
             "clauses stop describing surfaces. Invariants: pilot/test_s90_static.py "
             "(90 checks). See results/static_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker91": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker91",
+        class_name="SLinker91",
+        description=(
+            "S-Linker91 - the static round's minimal head after s_linker90 was refused. "
+            "Only the two paraphrased constants that have exactly ONE consumer each and "
+            "whose changed link sets are disjoint: STRICTER_CLAUSE (lenient judging; "
+            "'Capitalization is evidence' -> 'How the word is written is evidence either "
+            "way', opening with the shared use/mention sentence) and LAYERED_COREF_RULES "
+            "(strict judging; the four-noun list dropped, the ground kept verbatim). "
+            "Step-3 gate: mergeord changes 2.3 pairs a run and genartifact 21.0, and the "
+            "pairs BOTH touch are 0.0 on either model. QUALIFIED_CLAUSE and the two alias "
+            "constants are left at s89's, because s_linker90 carried them and lost on "
+            "both models even though every one was neutral at every consumer. "
+            "Invariants: pilot/test_s91_static.py (84 checks). "
+            "See results/static_round/README.md."
         ),
         canonical=False,
         experimental=True,
