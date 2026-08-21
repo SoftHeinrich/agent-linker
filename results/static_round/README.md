@@ -401,3 +401,33 @@ downstream of them, which is what `s_linker90` composed and lost.
 `s_linker91` is `s_linker89` plus those two paraphrases and nothing else.
 `pilot/test_s91_static.py` asserts it in **84 checks**. Its end-to-end batch, three
 paired runs a side against `s_linker89`, is tag `minimal`.
+
+### `s_linker91` end to end — also refused
+
+Three paired runs a side against `s_linker89`, tag `minimal`.
+
+| model | arm | TP | FP | macro F1 | macro F2 |
+|---|---|---|---|---|---|
+| terra | `s_linker89` | 180.3 | 31.3 | 91.6 | 93.1 |
+| terra | `s_linker91` | 179.7 | **26.7** | **92.7** | **93.5** |
+| terra | delta | −0.7 (p = 0.80) | −4.7 (0.30) | **+1.1 (0.20)** | +0.4 (0.60) |
+| luna | `s_linker89` | **180.7** | **43.7** | **90.0** | **92.5** |
+| luna | `s_linker91` | 177.7 | 50.7 | 88.3 | 91.2 |
+| luna | delta | −3.0 (0.70) | **+7.0 (0.10)** | −1.8 (0.20) | −1.2 (0.40) |
+
+**Terra's only flag points up (macro F1 +1.1) and luna's points down (FP +7.0,
+macro F1 −1.8). Refused: it does not hold on both.**
+
+Two constants, one consumer each, disjoint changed link sets, both neutral at their
+stage on both models — and the pair still moves in opposite directions on the two
+models end to end. The step-3 gate was satisfied and did not predict the outcome.
+
+## `s_linker92` — one constant, the round's last candidate
+
+If two constants cannot be composed, the question left is whether *one* can be adopted
+at all. `s_linker92` is `s_linker89` with **only** `LAYERED_COREF_RULES` paraphrased:
+the four-noun list deleted, the ground kept word for word. It is the round's most
+valuable single generalization — an enumeration is the clearest recipe in the module —
+and its stage evidence is the round's strongest (terra gold 39.0 → 41.0, luna 55.0 →
+56.3, neutral on both). One consumer: the strict judge. `pilot/test_s92_static.py`
+asserts it in 82 checks. Batch tag `solo`.

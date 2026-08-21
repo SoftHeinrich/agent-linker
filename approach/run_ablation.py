@@ -201,6 +201,7 @@ CANONICAL_VARIANTS = [
     "s_linker89",  # s88 plus the resolver's per-case context range line removed
     "s_linker90",  # s89 with five authored clauses paraphrased from recipes to concepts
     "s_linker91",  # the two of those five whose consumer is a single stage
+    "s_linker92",  # only the strict judge's enumeration deletion
     "s_linker91",  # s90 with the extractor and the resolver merged into one reading pass
     "s_linker92",  # s91 with the merged reading ordered into two sections inside the call
     "s_linker93",  # s90 with the resolver narrowed to sentences that write no name
@@ -2096,6 +2097,23 @@ VARIANT_SPECS = {
             "both models even though every one was neutral at every consumer. "
             "Invariants: pilot/test_s91_static.py (84 checks). "
             "See results/static_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker92",
+        class_name="SLinker92",
+        description=(
+            "S-Linker92 - the static round's last candidate: s_linker89 with ONE "
+            "constant paraphrased. LAYERED_COREF_RULES loses its four-noun list ('-- the "
+            "data, the artifact, the request, the result --') and keeps its ground word "
+            "for word. Stage arm on both models: terra gold 39.0 -> 41.0, luna 55.0 -> "
+            "56.3, QUALITY-NEUTRAL on both. One consumer, the strict judge. Tried alone "
+            "because s_linker90 (five constants) and s_linker91 (two) were both refused "
+            "end to end although every constituent was neutral at every consumer. "
+            "Invariants: pilot/test_s92_static.py. See results/static_round/README.md."
         ),
         canonical=False,
         experimental=True,
