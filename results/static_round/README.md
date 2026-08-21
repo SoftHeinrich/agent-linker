@@ -504,3 +504,56 @@ arm here measured effects of 1–3 links. The two instruments are not comparable
 correct procedure is the one the goal already asked for: **price from checkpoints, and
 spend an end-to-end batch only where the expected effect clears the floor.** Of this
 round's three batches, only the first was ever going to be decisive.
+
+## `s_linker92` at n = 6 — the round's one survivor
+
+The n = 3 batches could not resolve this arm in either direction (above), so both models
+were taken to six paired runs (`solo` + `solo2`).
+
+| model | n | TP | FP | macro F1 | macro F2 | verdict |
+|---|---|---|---|---|---|---|
+| terra | 3 | −2.7 (p = 0.40) | −0.7 (1.00) | +0.1 (1.00) | −0.1 (0.70) | neutral |
+| terra | **6** | −1.8 (0.28) | **−3.0 (0.13)** | **+0.5 (0.16)** | +0.2 (0.55) | flagged **upward** |
+| luna | 3 | −3.0 (**0.20**) | +3.3 (0.90) | −1.2 (0.40) | −1.1 (0.30) | flagged on TP alone |
+| luna | **6** | −0.5 (0.79) | +1.2 (0.85) | +0.0 (**0.99**) | −0.2 (0.73) | **neutral on all four** |
+
+**Luna's n = 3 flag was noise, exactly as the power analysis predicted.** TP −3.0 sat
+below luna's n = 3 resolution of 5 links; at n = 6, where the floor is 3, the same
+comparison reads TP −0.5 at p = 0.79 and macro F1 +0.0 at p = 0.99.
+
+**Terra at n = 6 is flagged only by two statistics that both point the favourable way** —
+false positives −3.0 and macro F1 +0.5 — and its FP delta is still under terra's own
+n = 6 floor of 5. Nothing degrades on either model.
+
+**Adopted. `s_linker92` is the head**: `s_linker89` with `LAYERED_COREF_RULES`'
+four-noun list (`-- the data, the artifact, the request, the result --`) deleted and its
+ground kept word for word.
+
+### What the round delivers
+
+| | |
+|---|---|
+| clauses audited | all 10 static constants, 3079 B, every clause classified |
+| recipes found | 6 (4 legislating orthography, 2 enumerating instances) + 3 principles authored twice |
+| arms designed from checkpoints | 9, over 4 consumers, both models — **11 stage readings, all neutral** |
+| refused before any API call | 2 (the strict judge's leniency guard; the alias enumeration's third item) |
+| refused on stage evidence | `genextract` (luna −3.7 gold, p = 0.10) |
+| composed heads refused end to end | `s_linker90` (5 constants), `s_linker91` (2) |
+| **adopted** | **`s_linker92`** — one enumeration deleted, neutral-to-favourable on both models at n = 6 |
+
+**The three findings worth carrying out of this round:**
+
+1. **A clause can carry a concept or supply vocabulary to quote, and only the first is
+   load-bearing.** Deleting this ground entirely cost luna 6.7 gold resolutions a run
+   last round; deleting only its four instances is neutral-to-favourable on both models,
+   even though the judge cited a listed noun in 10.7 objections a run against 0.7
+   phrasing the ground independently. It was quoting the list because it was there.
+2. **An arm is not independently adoptable.** Five paraphrases, each neutral at every
+   consumer it has on both models, composed into a head that loses on both — terra by
+   precision, luna by recall. The step-3 gate was satisfied for `s_linker91` (disjoint
+   changed link sets on both models) and did not predict its outcome.
+3. **An end-to-end batch at n = 3 cannot see what a stage arm measures.** Twelve control
+   runs put this pipeline's noise floor at 5–11 links; every stage arm here measured
+   1–3. Two of this round's three refusals were over-readings of flags below that floor,
+   and the one that was re-measured at n = 6 reversed. **Price from checkpoints; spend a
+   batch only where the expected effect clears the floor, and size it from the floor.**
