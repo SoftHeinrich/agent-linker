@@ -134,3 +134,51 @@ arm differs on the key it names — a misspelled key would otherwise measure not
 **Byte change is not the point and is reported only for completeness: −136 B of 3079
 if every arm is adopted.** What changes is that six clauses stop describing surfaces
 and start describing concepts.
+
+## The stage arms, three paired runs a side on both models
+
+Every arm judges (or extracts from) the same recorded checkpoints, with the two
+stages it does not touch held at what that run recorded, so the paraphrase is the
+only difference. Statistics are the branch's paired sign-flip permutation test,
+p floor 0.10 at n = 3 (`pilot/static_round_stats.py`).
+
+### The lenient judging prompt (`qual1`), 8.7 calls a run on terra, 9.3 on luna
+
+| model | arm | stage gold | stage spurious | composed F1 | composed F2 | composed TP | composed FP |
+|---|---|---|---|---|---|---|---|
+| terra | `ctl` | 151.3 | 8.3 | 94.32 | 95.82 | 186.7 | 23.7 |
+| terra | `genqual` | 152.0 | 10.0 | 94.21 | 95.90 | 187.3 | 25.3 |
+| terra | `genform` | 151.7 | 10.3 | 93.84 | 95.69 | 187.0 | 25.7 |
+| terra | `mergeord` | 152.0 | 8.7 | 94.08 | 95.72 | 186.7 | 23.7 |
+| luna | `ctl` | 152.3 | 19.7 | 89.15 | 91.82 | 178.7 | 47.0 |
+| luna | `genqual` | 153.0 | 22.0 | 89.05 | 91.91 | 179.3 | 48.7 |
+| luna | `genform` | 153.0 | 21.7 | 89.07 | 91.91 | 179.3 | 48.7 |
+| luna | `mergeord` | 153.0 | 18.7 | **89.50** | **92.09** | 179.3 | **45.7** |
+
+**All three arms are QUALITY-NEUTRAL on both models, at stage and composed** — the
+lowest p over the twelve readings is 0.60, six times the floor. Every arm reads
++0.3 to +0.7 gold on both models; `genqual` and `genform` cost 2 spurious a run and
+`mergeord` costs none, and on luna `mergeord` is the only arm of the three that
+*reduces* false positives (−1.3), which is why it is the one composed first.
+
+### The strict judging prompt (`strict1`), 9.0 calls a run on terra, 12.7 on luna
+
+| model | arm | stage gold | stage spurious | composed F1 | composed F2 | composed TP | composed FP |
+|---|---|---|---|---|---|---|---|
+| terra | `ctl` | 39.0 | 3.7 | 93.75 | 95.37 | 185.7 | 25.3 |
+| terra | **`genartifact`** | **41.0** | 4.0 | **94.07** | **95.63** | 186.3 | 25.7 |
+| luna | `ctl` | 55.0 | 5.3 | 89.45 | 91.62 | 177.0 | 44.0 |
+| luna | **`genartifact`** | **56.3** | 5.7 | **89.52** | **91.77** | 177.7 | 44.3 |
+
+QUALITY-NEUTRAL on both models (lowest p 0.80), and **this is the round's
+substantive finding**. Last round's `noartifact` deleted this clause's whole ground
+and luna lost **6.7 gold resolutions a run**. This arm keeps the ground word for word
+and deletes only the four-noun list, and luna reads **+1.3 gold**.
+
+**A clause that carries a concept and a clause that supplies vocabulary to quote are
+not the same thing, and the earlier round could not tell them apart.** The screen
+showed the judge citing a listed noun in 10.7 objections a run against 0.7 stating
+the ground without one — which reads like the list is doing the work, and is exactly
+the inference this arm refutes. Asked to state the ground in its own words, the judge
+finds at least as many correct rejections on both models. Only the concept is
+load-bearing; only the concept is defensible in a paper.
