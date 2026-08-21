@@ -258,3 +258,37 @@ arms than within them, which is what removing a restatement should look like. Ev
 point estimate is in `s_linker86`'s favour on both models and none of them is
 significant at the n=3 floor of 0.10; the honest reading is **243 B of instruction
 removed for no measurable change**, which is what the round set out to buy.
+
+## One more restatement: the resolver's own question (`s_linker87`)
+
+The full-name judge's focus line was a restatement; so is the opening sentence of
+`COREF_RULES`. It tells the resolver to "decide whether a pronoun or noun phrase that
+refers back in the target sentence refers back to a component named or aliased earlier
+in the context" — which the prompt's own preamble, four lines above, already asks, and
+asks together with the input contract the question needs (which block is the TARGET,
+what to return for a target with no referring expression). s56 measured deleting that
+preamble at **TP −16.2**, precisely because it is the contract; this arm deletes the
+restatement and keeps the contract, which is the untried other half.
+
+It is also where the bytes are: the resolver is **40 of the ~82 calls a five-project
+run makes**, so 163 B off its prompt is ~6.5 kB of instruction per run, against 244 B ×
+~8.7 calls for `s_linker86`'s cut.
+
+Arms replay the resolver **and the strict judge behind it** — what a resolver proposes
+is only a link if that gate keeps it — three runs a side, composed with the recorded
+full-name and partial-name stages of the same run:
+
+| model | arm | stage gold | stage spurious | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| terra | ctl | 34.3 | 2.3 | 93.59 | 93.90 | 180.3 | 20.3 | — |
+| terra | `dedup` | 32.7 | 5.3 | 93.43 | 94.09 | 182.0 | 23.3 | **neutral** (F1 −0.2 p=0.80, F2 +0.2 p=0.80) |
+| luna | ctl | 42.7 | 5.7 | 89.20 | 91.02 | 174.7 | 42.0 | — |
+| luna | `dedup` | 42.7 | 6.0 | 89.39 | 91.29 | 174.7 | 42.3 | **neutral** (TP ±0.0 p=1.00, F2 +0.3 p=0.80) |
+
+Adopted as `s_linker87`, the round's head: `s_linker85` minus two restatements, nothing
+else. Authored rule text **3485 → 3079 B (−11.7%)**; `pilot/test_s87_dedup.py` asserts
+the single change in 80 checks, including that the resolver prompt is s86's minus
+exactly those 163 B, that the input-format contract is still in the rendering, and that
+exactly two constants differ from `s_linker85`. The change is at the last linker, so the
+branch's composition precondition is structurally vacuous and the stage arm is the
+pipeline answer; the end-to-end batch below was run because a head is quoted end to end.

@@ -196,6 +196,7 @@ CANONICAL_VARIANTS = [
     "s_linker83",  # s82 with the coreference judge shown the resolution it judges
     "s_linker85",  # s83's coreference judge composed with WordNet in place of INFLECTIONS
     "s_linker86",  # s85 with the full-name judge's focus line removed as a restatement
+    "s_linker87",  # s86 with the coreference resolver's restated question removed
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1943,6 +1944,26 @@ VARIANT_SPECS = {
             "-0.0 (p = 0.80); luna TP 174.7 -> 175.7, macro F1 +0.1 (p = 0.90), macro "
             "F2 +0.3 (p = 0.60). The same round measured typed verdict rubrics at all "
             "three judges and refused every one on the second model; see "
+            "results/typed_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker87": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker87",
+        class_name="SLinker87",
+        description=(
+            "S-Linker87 - the typed round's head: s_linker86 plus one more deleted "
+            "restatement. COREF_RULES opened by asking the resolver the question its "
+            "own prompt preamble already asks; s56 priced deleting that preamble at "
+            "TP -16.2 because it is also the input-format contract, and this is the "
+            "untried other half - the contract stays, the restatement goes. 163 B off "
+            "each of the 40 resolver calls a five-project run makes, the module's "
+            "largest instruction item. Stage arm over the resolver AND the strict "
+            "judge behind it, three runs a side: terra composed TP +1.7, macro F1 "
+            "-0.2 (p = 0.80), F2 +0.2; luna TP +/-0.0 (p = 1.00), F1 +0.2, F2 +0.3. "
+            "With s86's cut, authored rule text 3485 -> 3079 B (-11.7%). See "
             "results/typed_round/README.md."
         ),
         canonical=False,
