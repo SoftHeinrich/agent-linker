@@ -1461,6 +1461,30 @@ checks), runner `pilot/run_typed_e2e.sh`.
   91.22. **QUALITY-NEUTRAL on both models on all four statistics** (every p >= 0.20),
   composition +0.1 (p = 0.50) terra and -4.6 (p = 1.00) luna, and every point estimate
   in s86's favour. 243 B of instruction removed for no measurable change.
+- **`s_linker87` is the round's head: the same cut, made twice.** `COREF_RULES` opened
+  by asking the resolver the question its own prompt preamble already asks -- and the
+  preamble also carries the input-format contract, which is why s56 measured deleting
+  the whole thing at TP -16.2. This deletes the restatement and keeps the contract, the
+  untried half. It is where the bytes are: the resolver is **40 of the ~82 calls a
+  five-project run makes**, so 163 B off it is ~6.5 kB of instruction per run against
+  244 B x ~8.7 calls for s86's cut. Stage arm over the resolver *and* the strict judge
+  behind it: terra composed TP +1.7, macro F1 -0.2 (p = 0.80), F2 +0.2; luna TP +/-0.0
+  (p = 1.00), F1 +0.2, F2 +0.3. E2E, three paired runs per model against s86:
+  terra TP 186.0 vs 182.3, FP 26.3 vs 34.0, macro F1 93.23 vs 92.00, F2 95.03 vs 93.90;
+  luna TP 183.7 vs 181.3, FP 51.0 vs 46.7, macro F1 89.74 vs 89.44, F2 92.89 vs 92.03.
+  **QUALITY-NEUTRAL on both, every p >= 0.20**, F1 and F2 favouring s87 on both, and its
+  run spread the tighter of the two arms in both invocations (0.22 vs 1.55 terra, 0.71
+  vs 1.62 luna); composition +2.8 (p = 0.40) terra and +4.1 (p = 0.10, at the floor)
+  luna. **Authored rule text 3485 -> 3079 B (-11.7%) for two deleted restatements.**
+- **The frontier, priced and refused: the strict judge's focus line.** The argument that
+  removed the lenient judge's focus applies verbatim to `COREF_VALIDATION_FOCUS`, and it
+  does not survive the second model: terra TP +/-0.0 (p = 1.00), macro F1 -0.3; luna
+  **FP +6.3 (p = 0.10, the floor)**, F1 -0.4. **Third instance of one asymmetry: at the
+  lenient gate a restatement is redundant, at the strict gate it is reinforcement.** The
+  typed coreference rubric, the same rubric with its default restated, and this deletion
+  all weaken the same framing, all cost luna precision (+34.0, +34.0, +6.3 FP) and all
+  read neutral on terra. **A prompt cut that holds on the stricter model says nothing
+  about the laxer one** -- which is the round's reason for running every arm twice.
 - **`nodead` and `nofocus` are each neutral and negative together** (terra `compact`
   F1 −1.3, luna −0.45 at FP +6.0). Once the focus is gone the inert sentence stops being
   inert, because the focus was carrying the participation requirement the claim-first

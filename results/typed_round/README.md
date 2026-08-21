@@ -317,3 +317,32 @@ stricter model says nothing about the laxer one.
 
 **The head is `s_linker87`: two deletions, both at places where a sentence was
 restated, and nothing else.**
+
+### `s_linker87` end to end
+
+`TYPED_E2E_CONTROL=s_linker86 TYPED_E2E_TAG=dedup bash pilot/run_typed_e2e.sh
+s_linker87 terra luna`, three paired runs per model, both arms in every invocation.
+`results/dedup_e2e_{terra,luna}_r{1,2,3}_20260821`.
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+|---|---|---|---|---|---|---|---|
+| terra | `s_linker86` | 182.3 | 34.0 | 92.00 | 93.90 | 83 | 1.55 |
+| terra | **`s_linker87`** | **186.0** | **26.3** | **93.23** | **95.03** | 82 | **0.22** |
+| terra | delta | +3.7 (p = 0.50) | −7.7 (p = 0.40) | +1.2 (p = 0.40) | +1.2 (p = 0.50) | −1 | |
+| luna | `s_linker86` | 181.3 | **46.7** | 89.44 | 92.03 | 86 | 1.62 |
+| luna | **`s_linker87`** | **183.7** | 51.0 | **89.74** | **92.89** | 86 | **0.71** |
+| luna | delta | +2.3 (p = 0.50) | +4.3 (p = 0.20) | +0.3 (p = 0.90) | +0.9 (p = 0.40) | 0 | |
+
+**QUALITY-NEUTRAL on both models on all four statistics**; nothing is within reach of
+the n=3 floor of 0.10, macro F1 and macro F2 favour `s_linker87` on both, and its run
+spread is the tighter of the two arms in both invocations (0.22 against 1.55 on terra,
+0.71 against 1.62 on luna). Composition is +2.8 (p = 0.40) on terra and **+4.1 (p = 0.10,
+at the floor)** on luna — the arms do produce somewhat different link sets, which is
+what changing a prompt sent 40 times a run should do; nothing separates them on quality.
+
+## The round in one line
+
+**Two restatements out, 3485 → 3079 B of authored rule text (−11.7%), neutral end to end
+on both models; every attempt to replace a prose rubric with a closed set of typed
+verdicts refused, because typing a rubric deletes the default its judge's asymmetry was
+carrying.**
