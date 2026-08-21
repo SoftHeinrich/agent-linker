@@ -1548,7 +1548,7 @@ checks), runner `pilot/run_typed_e2e.sh`.
   other direction — so the round removes one clause, not two, and the dead sentence
   stays, documented as dead.
 
-### The compaction round (s88) — the prompt is mostly not rules
+### The compaction round (s88, s89) — the prompt is mostly not rules
 
 The goal was the typed round's, sharpened: compact **every** long prompt and hold on
 both models. It starts by measuring what a prompt is made of, and that measurement
@@ -1589,8 +1589,20 @@ gate `pilot/composition_from_kept.py`; invariants `pilot/test_s88_anchors.py` (3
   terra, 51.6%), which `LAYERED_COREF_RULES` opens by saying is not a coreference link.
   Fixing it means *adding* a clause, and 53 of terra's 58 approvals in that population
   are gold, so it is a separate question from compaction.
-- **Open at the time of writing**: `resolve3` on luna (terra reads `notargetrows` at
-  stage gold +8.7 / spurious -2.3, composed F1 +0.4, for **-23.8% of the resolver
-  prompt**, and `nocasectx` at F1 +0.1 for -8.6%), and the `s_linker88` end-to-end batch
-  (two of three paired runs a side; terra +2.8 macro F1 at FP -11.0, luna -1.3 at
-  FP +17.0 with TP +3.5 — **not** a verdict at n=2).
+- **The resolver split on the second model.** Terra read both cuts fine
+  (`notargetrows` stage gold +8.7 / spurious -2.3 for **-23.8%** of the resolver prompt,
+  `nocasectx` F1 +0.1 for -8.6%). Luna refused `notargetrows` and kept `nocasectx`, so
+  only the per-case range line — the smaller cut — is in the head. **A prompt cut that
+  holds on one model says nothing about the other, in either direction**: this round
+  refused four arms on the second model after the first accepted them.
+- **`s_linker89` = s88 + the resolver's range line gone, and it is the head.**
+  `pilot/test_s89_compact.py` (15 checks) pins the deletion to exactly the `CONTEXT`
+  lines on all five projects, 324 B a call / 12 961 B a run. End to end, three paired
+  runs a side, both arms in every invocation: **terra** TP -0.3 (p = 1.00), FP -1.7
+  (1.00), F1 +0.4 (0.60), F2 +0.1 (1.00); **luna** TP +2.3 (0.80), FP +2.0 (0.70),
+  F1 +0.3 (0.90), F2 +0.8 (0.70). **QUALITY-NEUTRAL on both, smallest p 0.60.**
+- **The luna FP number the s88 batch flagged did not reproduce.** There it was +10.3
+  (p = 0.20) against a stage read of -1.7; in the set that decides the head it is +2.0
+  (p = 0.70). Different invocation sets, so this is not a trend — only that the sign is
+  not reproduced where it mattered. Two prompt families compacted, **no authored rule
+  text removed at all** (3079 B, unchanged from s87).

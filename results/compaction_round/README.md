@@ -322,10 +322,40 @@ Composition is +3.3 (p = 0.10, at the floor) on terra and +3.2 (p = 0.30) on lun
 two arms do produce somewhat different link sets, which is what changing what a judge
 is shown should do.
 
-Still owed:
+### `s_linker89` end to end, three paired runs per model
 
-- **the composed head's end-to-end batch** (`s_linker89` against `s_linker87`, three
-  paired runs per model, tag `compact`). It is queued and running.
+`TYPED_E2E_CONTROL=s_linker87 TYPED_E2E_TAG=compact bash pilot/run_typed_e2e.sh
+s_linker89 terra luna`, both arms in every invocation, all six clean.
+`results/compact_e2e_{terra,luna}_r{1,2,3}_20260821`.
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+|---|---|---|---|---|---|---|---|
+| terra | `s_linker87` | 186.7 | 25.7 | 93.83 | 95.54 | 83 | **1.04** |
+| terra | **`s_linker89`** | 186.3 | **24.0** | **94.19** | **95.68** | 83 | 1.96 |
+| terra | delta | −0.3 (p = 1.00) | −1.7 (1.00) | +0.4 (0.60) | +0.1 (1.00) | 0 | |
+| luna | `s_linker87` | 176.3 | **42.0** | 89.05 | 91.07 | 86 | **2.36** |
+| luna | **`s_linker89`** | **178.7** | 44.0 | **89.38** | **91.88** | 85 | 3.20 |
+| luna | delta | +2.3 (p = 0.80) | +2.0 (0.70) | +0.3 (0.90) | +0.8 (0.70) | −1 | |
+
+**QUALITY-NEUTRAL on both models, on all four statistics, with no p anywhere near the
+n=3 floor of 0.10** (the smallest is 0.60). Composition is −3.2 (p = 0.90) on terra and
++0.3 (p = 0.70) on luna — the composed head's link sets are not distinguishable from
+the control's at this n, which for a change that removes only repetition is the
+expected reading, not a null result to explain away.
+
+**The luna false-positive number that the `s88` batch flagged did not persist.** There
+it was +10.3 (p = 0.20) against a stage read of −1.7; here, with the same anchor change
+plus the resolver cut, it is **+2.0 (p = 0.70)**. Two invocation sets, so these are not
+comparable as a trend — the correct statement is that the sign that worried the `s88`
+batch is not reproduced in the set that decides the head, and neither set puts it near
+significance. Watch it again if the head advances.
+
+**Round result: `s_linker89` is the head.** Two prompt families compacted — the judging
+prompt's anchor block written once per call instead of once per case (27–28% of the
+largest family, losslessly, proven case-by-case by `pilot/test_s88_anchors.py`) and the
+resolver's per-case range line deleted (324 B a call, 12 961 B a run) — for no
+measurable quality change on either model, and **no authored rule text removed at all**
+(3079 B, unchanged from `s_linker87`).
 
 ## Reproducing
 
@@ -354,10 +384,10 @@ AB_OUT=../results/compaction_round \
   --arm s_linker87 ../results/anchors_e2e_terra_r{1,2,3}_20260821 \
   --arm s_linker88 ../results/anchors_e2e_terra_r{1,2,3}_20260821
 
-# the composed head's batch, when it lands (tag `compact`)
+# the composed head's batch (tag `compact`), and its score
 TYPED_E2E_CONTROL=s_linker87 TYPED_E2E_TAG=compact bash pilot/run_typed_e2e.sh \
   s_linker89 terra luna
 ../.venv/bin/python pilot/score_runs.py \
   --arm s_linker87 ../results/compact_e2e_terra_r{1,2,3}_* \
-  --arm s_linker89 ../results/compact_e2e_terra_r{1,2,3}_*
+  --arm s_linker89 ../results/compact_e2e_terra_r{1,2,3}_*   # and luna
 ```
