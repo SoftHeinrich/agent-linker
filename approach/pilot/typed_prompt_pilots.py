@@ -113,6 +113,7 @@ ORIG_VALIDATION = SLinker85._prompt_validation
 ORIG_ALIAS_JUDGE_RULES = L85.DOC_KNOWLEDGE_JUDGE_RULES
 ORIG_FOCUS = L85.VALIDATION_FOCUS
 ORIG_COREF_RULES = L85.COREF_RULES
+ORIG_COREF_FOCUS = L85.COREF_VALIDATION_FOCUS
 
 #: The resolver prompt is the module's largest instruction item -- 40 of the ~82 calls
 #: a five-project run makes, 190 kB of prompt. Its preamble already states the question
@@ -278,6 +279,14 @@ ARMS = {
         "nofocus": {"focus": ""},
         "compact": {"focus": "", "layered": NODEAD_LAYERED},
     },
+    # The strict judge's focus line, by the same argument that removed the lenient
+    # one: "does the referring expression in this sentence actually refer to the named
+    # component as an architectural participant?" is what LAYERED_COREF_RULES's
+    # approve-condition already says, in more words and with the ambiguity case.
+    "coref3": {
+        "ctl": {},
+        "nocoreffocus": {"coref_focus": ""},
+    },
     "resolve": {
         "ctl": {},
         "dedup": {"coref_rules": COREF_RULES_DEDUP},
@@ -310,6 +319,8 @@ class Arm:
         L85.LAYERED_ENTITY_RULES = self.spec.get("layered", ORIG_LAYERED)
         L85.VALIDATION_FOCUS = self.spec.get("focus", ORIG_FOCUS)
         L85.COREF_RULES = self.spec.get("coref_rules", ORIG_COREF_RULES)
+        L85.COREF_VALIDATION_FOCUS = self.spec.get(
+            "coref_focus", ORIG_COREF_FOCUS)
         L85.ENTITY_EXTRACTION_RULES = self.spec.get(
             "entity_rules", ORIG_ENTITY_RULES)
         SLinker85._prompt_validation = staticmethod(
@@ -321,6 +332,7 @@ class Arm:
         L85.LAYERED_ENTITY_RULES = ORIG_LAYERED
         L85.VALIDATION_FOCUS = ORIG_FOCUS
         L85.COREF_RULES = ORIG_COREF_RULES
+        L85.COREF_VALIDATION_FOCUS = ORIG_COREF_FOCUS
         L85.ENTITY_EXTRACTION_RULES = ORIG_ENTITY_RULES
         SLinker85._prompt_validation = staticmethod(ORIG_VALIDATION)
 
@@ -500,6 +512,7 @@ OTHER_STAGES = {
     "coref2": ("full_name", "partial_name"),
     "alias": ("partial_name", "coreference"),
     "resolve": ("full_name", "partial_name"),
+    "coref3": ("full_name", "partial_name"),
     "fullname3": ("partial_name", "coreference"),
 }
 

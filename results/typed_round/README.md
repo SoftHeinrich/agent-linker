@@ -292,3 +292,28 @@ exactly those 163 B, that the input-format contract is still in the rendering, a
 exactly two constants differ from `s_linker85`. The change is at the last linker, so the
 branch's composition precondition is structurally vacuous and the stage arm is the
 pipeline answer; the end-to-end batch below was run because a head is quoted end to end.
+
+### The frontier: the strict judge's focus line, priced and refused
+
+The same argument that removed the lenient judge's focus applies verbatim to the strict
+one — `COREF_VALIDATION_FOCUS` ("does the referring expression in this sentence actually
+refer to the named component as an architectural participant?") is what
+`LAYERED_COREF_RULES`'s approve-condition already says, in more words. It does not
+survive the second model:
+
+| model | arm | stage gold | stage spurious | composed F1 | F2 | TP | FP | verdict |
+|---|---|---|---|---|---|---|---|---|
+| terra | ctl | 33.3 | 4.7 | 93.18 | 94.02 | 181.0 | 22.7 | — |
+| terra | `nocoreffocus` | 33.3 | 5.0 | 92.91 | 93.82 | 181.0 | 23.3 | neutral (TP ±0.0, F1 −0.3) |
+| luna | ctl | 53.7 | 4.0 | 89.39 | 91.12 | 174.3 | 39.3 | — |
+| luna | `nocoreffocus` | 54.3 | 5.0 | 88.94 | 91.26 | 175.3 | 45.7 | **refused** (FP +6.3, p = 0.10) |
+
+That is the round's third instance of the same asymmetry: **at the lenient gate a
+restatement is redundant, and at the strict gate it is reinforcement.** The typed coref
+rubric (luna FP +34.0), the typed rubric with the default restated (luna FP +34.0), and
+now the focus deletion (luna FP +6.3) all weaken the same framing and all cost luna
+precision, while terra reads each of them neutral. A prompt cut that holds on the
+stricter model says nothing about the laxer one.
+
+**The head is `s_linker87`: two deletions, both at places where a sentence was
+restated, and nothing else.**
