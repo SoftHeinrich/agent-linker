@@ -182,3 +182,62 @@ the ground without one — which reads like the list is doing the work, and is e
 the inference this arm refutes. Asked to state the ground in its own words, the judge
 finds at least as many correct rejections on both models. Only the concept is
 load-bearing; only the concept is defensible in a paper.
+
+### The full-name extraction prompt (`extract1`), 17.7 calls a run
+
+| model | arm | stage gold | stage spurious | composed F1 | composed TP | composed FP |
+|---|---|---|---|---|---|---|
+| terra | `ctl` | 149.7 | 7.3 | 94.01 | 184.3 | 22.7 |
+| terra | `genextract` | 149.0 | 7.7 | 94.12 | 185.0 | 23.0 |
+| terra | `genqual` | 149.7 | 8.0 | 94.07 | 184.0 | 23.3 |
+| luna | `ctl` | 151.3 | 14.0 | 89.55 | 178.0 | 41.7 |
+| luna | **`genextract`** | **147.7** | 13.7 | 88.97 | 176.0 | 41.0 |
+| luna | `genqual` | 150.0 | 15.0 | 89.24 | 178.3 | 42.7 |
+
+**`genextract` is refused.** Terra reads it neutral on every statistic; luna reads
+**stage gold −3.7 at p = 0.10**, exactly the n = 3 floor, which is QUALITY-CHANGING,
+and this branch reads the stage before the composition. `genqual` is neutral on both
+models at this, its second consumer.
+
+**The refusal is the round's second finding, and it is about the screen, not the arm.**
+S1 priced this clause by the population it *admits* — 1.0 candidate a run written with
+the name's words joined differently, and it is gold — and concluded the recipe was
+nearly free. But the paraphrase also loosened "spelled as the COMPONENTS list **spells**
+it" to "as the list **gives** it", and on the laxer model that costs 3.7 gold candidates
+a run. **A checkpoint screen can price what a clause admits; it cannot price the
+strictness the clause's wording imposes on everything else.** `genqual` changing the
+same prompt neutrally shows this is the specific wording, not paraphrasing as such.
+
+### The alias family (`alias1`), 27–28 calls a run
+
+An alias arm cannot be read at its own stage — its output is a vocabulary, not links —
+so each arm learns its own document knowledge and is read at that knowledge's consumer,
+the full-name extraction and judging pair, composed with the recorded other two stages.
+
+| model | arm | stage gold | stage spurious | composed F1 | composed TP | composed FP |
+|---|---|---|---|---|---|---|
+| terra | `ctl` | 145.7 | 11.3 | 92.48 | 178.7 | 26.3 |
+| terra | `genalias` | 147.7 | 9.3 | 93.36 | 182.3 | 24.7 |
+| terra | `mergefrag` | 153.0 | 11.7 | 94.28 | 190.0 | 27.0 |
+| terra | `mergeord` | 145.7 | 6.0 | 93.13 | 181.0 | **21.3** |
+| luna | `ctl` | 152.0 | 19.3 | 88.40 | 178.0 | 46.7 |
+| luna | `genalias` | 153.3 | 21.3 | 88.84 | 179.0 | 48.0 |
+| luna | `mergefrag` | 153.0 | 18.3 | 88.60 | 178.7 | 45.3 |
+| luna | `mergeord` | 151.7 | 13.0 | **89.36** | 177.3 | **40.3** |
+
+**All three are QUALITY-NEUTRAL on luna.** On terra all three read *above* control and
+two are flagged QUALITY-CHANGING in the positive direction (`mergefrag` stage gold
++7.3, p = 0.10; composed TP +11.3, p = 0.10).
+
+**Those positive flags are not claimed as improvements, for a reason this group makes
+visible.** Every arm here re-learns document knowledge, so the knowledge stage's own
+stochasticity sits inside the comparison — and it is large. This group's control reads
+**145.7** stage gold on terra where `qual1`'s control, same model and same judge, reads
+**151.3**; the only difference is that `qual1` reuses the knowledge the run recorded.
+A fresh knowledge draw is worth about **−5.6 gold** on its own, which is larger than two
+of the three arm effects here. The defensible statement is that no alias paraphrase
+costs anything on either model, not that `mergefrag` gains eleven links.
+
+`mergeord` is the one arm that reduces false positives in both groups it appears in and
+on both models (`qual1` luna FP −1.3, `alias1` luna FP −6.4, `alias1` terra FP −5.0),
+which is why it is the one composed.

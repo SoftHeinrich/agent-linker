@@ -176,6 +176,17 @@ ARMS = {
         "ctl": {},
         "genartifact": {"LAYERED_COREF_RULES": GEN_LAYERED_COREF},
     },
+    # the alias family: one knowledge call a project, then the stages that
+    # consume what it returns. An alias arm cannot be read at its own stage --
+    # its output is a vocabulary, not links -- so it is read at its consumer.
+    "alias1": {
+        "ctl": {},
+        "genalias": {"DOC_KNOWLEDGE_EXTRACTION_RULES": GEN_DOC_EXTRACTION},
+        "mergefrag": {"ALIAS_EXCLUSION_RULES": MERGED_ALIAS_EXCLUSION,
+                      "QUALIFIED_CLAUSE": GEN_QUALIFIED},
+        "mergeord": {"DOC_KNOWLEDGE_EXTRACTION_RULES": MERGED_DOC_EXTRACTION,
+                     "STRICTER_CLAUSE": MERGED_STRICTER},
+    },
     # full-name extraction: 9.0 calls a run
     "extract1": {
         "ctl": {},
@@ -189,6 +200,7 @@ OTHER_STAGES = {
     "qual1": ("partial_name", "coreference"),
     "strict1": ("full_name", "partial_name"),
     "extract1": ("partial_name", "coreference"),
+    "alias1": ("partial_name", "coreference"),
 }
 
 
@@ -329,6 +341,15 @@ def run_group(group, model, runs, out_dir):
                 with Arm(arm, spec):
                     if group == "qual1":
                         pairs = judge_fullname(lk, list(shared.values()),
+                                               comps, sent_map)
+                    elif group == "alias1":
+                        # The arm's own knowledge, not the recorded one: that is
+                        # what it changes. Its consumer is the full-name pair.
+                        lk.doc_knowledge = lk._learn_document_knowledge(
+                            sents, comps)
+                        cands = lk._extract_named_mentions(
+                            sents, comps, name_to_id, sent_map)
+                        pairs = judge_fullname(lk, list(cands.values()),
                                                comps, sent_map)
                     elif group == "extract1":
                         cands = lk._extract_named_mentions(
