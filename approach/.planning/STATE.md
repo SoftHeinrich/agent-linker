@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.6.6
-milestone_name: Standalone RQ3/RQ4 Eval Infra (s_linker20_union)
-status: executing
-stopped_at: 2026-06-21 — Phase 51 prep waves 1-2 done (51-01/02/03), GATE-01 EVIDENCE PASS; paused before live sweep 51-04. Resume with /gsd:execute-phase 51 (it skips done plans, lands on the 51-04 spend gate).
-last_updated: "2026-06-21T21:08:45.539Z"
-last_activity: 2026-07-01 -- Quick 260701-ld4 COMPLETE: promoted agent_router chain to s_linker21_agentrouter (src/), archived pilot/, rewrote CLAUDE.md
+milestone_name: milestone
+status: paused
+stopped_at: context exhaustion at 75% (2026-08-21)
+last_updated: "2026-08-21T09:50:22.081Z"
+last_activity: 2026-06-28 -- Quick 260628-dnl COMPLETE (see below)
 progress:
-  total_phases: 6
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 1
-  percent: 17
+  total_phases: 7
+  completed_phases: 6
+  total_plans: 28
+  completed_plans: 26
+  percent: 86
 ---
 
 # Project State
@@ -127,11 +127,13 @@ promotable seed; does not block the active milestone.
   justification + Mode 1 claim rubric, entity-lenient/coref-strict): recovers thinking-on
   *precision* at effort-0 — Sonnet +1.1 (89.7→90.8), gpt-5.4 +3.8 (89.4→93.2), zero
   implicit-recall cost; FP parity entity 25/coref 7. Modes 2 & 4 rejected. GATE-01 holds.
+
 - **Spike 005 verdict — STOP on extraction.** The same mechanism does NOT transfer to the
   extraction step: extraction-bound gap is 6.2% of gold, 68% run-variance, 44% non-verbatim
   inference. Asymmetry: thinking = precision-discriminator at gates (reconstructable, shipped)
   vs recall-generator at extraction (not reconstructable by a justification field). bbb LLM
   probe NOT worth running.
+
 - **Seed (promotable to milestone / paper RQ):** `.planning/notes/2026-06-27-s20union-layered-SEED.md`
 
 ## Prior Milestone Context (carried, not active)
@@ -147,7 +149,7 @@ promotable seed; does not block the active milestone.
 
 ## Session Continuity
 
-Last session: 2026-06-21T19:44:14.618Z
-Stopped at: Phase 51 prep complete — 51-01 (no_knowledge flag + variant), 51-02 (GATE-01 harness), 51-03 (sweep scripts) all done & committed; GATE-01 EVIDENCE: PASS (structural + frozen-cache 30/30). Paused before 51-04 live sweep by user choice (prep-waves-only).
-Resume file: .planning/phases/51-noknow/51-04-PLAN.md (wave 3 — live sweep, autonomous:false spend gate)
+Last session: 2026-08-21T09:50:22.078Z
+Stopped at: context exhaustion at 75% (2026-08-21)
+Resume file: None
 Next action: /clear then /gsd:execute-phase 51 — resumes at the 51-04 spend gate. Before approving: ensure OPENAI_API_KEY is set (gpt sweep) and the claude/sonnet backend is configured (sonnet sweep). Cost ~$50–65, ~7.5h unattended, resumable via per-(run,dataset) .done markers. Launch scripts: run_s20union_noknow_gpt_n3.sh then run_s20union_noknow_sonnet_n3.sh. After both .ALL_DONE, run 51-05 (extractor extension).
