@@ -1170,9 +1170,11 @@ for minutes. Escalate in this order and stop at the first level that decides:
 
 1. **Deterministic, no LLM calls.** Replay the predicate against recorded checkpoints and
    call logs (`pilot/rule_audit.py`, `bind_audit.py`, `unlinked_audit.py`,
-   `partial_audit.py`, `stage_diff.py`). This settles identities (`_unlinked` removes
-   nothing), reach (a scan frees 12.0 pairs and 0.0 gold), and yields (gold per pair by
-   fidelity). Two of `s_linker69`'s four changes never needed a call.
+   `partial_audit.py`, `stage_diff.py`, `lemma_swap_pilot.py`). This settles identities
+   (`_unlinked` removes nothing), reach (a scan frees 12.0 pairs and 0.0 gold), and yields
+   (gold per pair by fidelity). Two of `s_linker69`'s four changes never needed a call,
+   and `s_linker85` replaced the whole morphology rule on this level alone — 3697 pairs
+   compared, 2 spans different, no runs bought.
 2. **Stage pilot on fixed recorded inputs.** Replay ONE stage with both wordings against
    the same checkpoint inputs, N samples a side (`pilot/prompt_stage_pilots.py`,
    `bind_pilots.py`, `fold_pilots.py`). Minutes, not hours. Always assert first that the
@@ -1333,7 +1335,9 @@ runner: `pilot/run_s75_e2e.sh`.
   `INFLECTIONS` is general English morphology and **5 of its 9 endings never fire on any
   of the 3697 (name, sentence) pairs** — a list fitted to this benchmark would contain
   only the four that do, so its being larger than the benchmark needs is the evidence it
-  was not fitted. `CONTEXT_SENTENCES` and `ANCHOR_LIMIT` are one value, not two;
+  was not fitted. **Superseded from `s_linker85` on**, which deletes the list rather than
+  defending it (see the morphology round below); the argument above is what the finetune
+  round could say while the list was still there. `CONTEXT_SENTENCES` and `ANCHOR_LIMIT` are one value, not two;
   `EXTRACTION_BATCH` is grounded in s27's passage-length effect and `JUDGE_BATCH` in the
   measured neutrality of batching. **A value chosen by unification is defensible; a value
   chosen by search is not** — which is why s76 sets the coreference batch to a number the
@@ -1405,6 +1409,58 @@ structure, at the measure the paper leads with. Four arms, each the previous plu
   entries actually resolve to runnable code here.
 - Default benchmarking backend is set in `.env` (`LLM_BACKEND=openai`,
   `gpt-5.4`). `.env` is untracked.
+
+### The morphology round (s85) — the last authored word list, deleted not defended
+
+The finetune round could only *defend* `INFLECTIONS`: nine English endings, stripped off
+the sentence token, general morphology rather than benchmark vocabulary, and larger than
+the benchmark needs. That is an argument, and a reviewer asking "why those nine" still has
+no answer beyond "they are English". This round removes the question instead. `s_linker85`
+composes `s_linker83`'s coreference judge with WordNet's lemmatizer over noun and verb
+readings, **applied to both sides** — the sentence token and the name's word are the same
+word when any reading of one equals any reading of the other. Tooling:
+`pilot/lemma_swap_pilot.py` (E1 identity, E2 the rules not taken, E3 the ending
+histogram), no LLM calls.
+
+- **Priced at level 1 of the measurement policy, and no E2E is owed.** Both modules' own
+  `_name_spans` and `_scan`, run over every (name, sentence) pair of all five projects:
+  **3697 pairs compared, the spans differ on 2; partial-name candidates 109 → 110, of
+  which gold 28 → 28; 0 lost (0 gold), 1 added (0 gold)**. A one-candidate,
+  zero-gold delta is far inside the run-to-run band this pipeline moves in, so paying for
+  paired runs would have measured model drift and reported it as a result.
+- **The one disagreement is the mechanism.** bigbluebutton S49/S50, `recorded` against
+  `Recording Service`. An ending list strips endings off the *sentence token*, so a name
+  whose own word is already inflected — `Recording` — can never reach the sentence's
+  `recorded`. **Symmetry is the entire gain, and it is the reason both sides are
+  lemmatized**: the one-sided arm (lemmatize the token, compare to the name's word as
+  written) reads 109 candidates and loses exactly that pair.
+- **A context-sensitive lemmatizer is worse, and this is the round's transferable
+  result.** spaCy `en_core_web_sm`, POS-disambiguated in the sentence, reads 103
+  candidates and **loses 7 including 1 gold**: it takes `testing` in the sentence as a
+  verb and lemmatizes it to `test`, while the same word inside a component's name is a
+  noun and stays `testing`, so the two sides stop matching. **Making the deterministic
+  layer depend on a tagger's reading of a sentence buys a defect** — the layer's job is to
+  state facts about a case, and a POS tag is already a judgment.
+- **Why WordNet can be trusted here and a bigger lexicon could not.** It is a lexicon with
+  an identity fallback: a word it does not know comes back unchanged, so the domain tokens
+  this scan actually runs on (`webrtc`, `freeswitch`) are compared by their own surface
+  and nothing is invented for them. That is also why the swap cannot buy much — no
+  dictionary carries the vocabulary the partial-name linker mostly sees.
+- **What was refused: pruning.** Over the population the scan reaches, only four of the
+  nine endings ever fire — `""` 114, `ing` 20, `s` 14, `ed` 1; `es`, `d`, `ings`, `er`,
+  `ers` reach nothing (`--only E3`, reproducing the finetune round's count). **Deleting
+  the five dead ones would have been fitting the list to the benchmark (GATE-07)** — the
+  objection this round exists to answer, not to earn. Deleting the list is the answer;
+  trimming it is the same objection, smaller.
+- **Accounting.** The module carries **no authored word list at all**, and its GATE-07
+  score is unchanged because a word list was never authored *prompt* text. The cost is one
+  dependency — `nltk` plus the `wordnet` corpus, added to `pyproject.toml` and to
+  `scripts/bootstrap-approach.sh`, since the corpus is data and not a pip dependency.
+  **The trade is a nine-item hand-written list for a 155k-lemma general English resource**,
+  which is smaller to defend and larger to audit; it is worth stating in the paper as a
+  choice rather than a cleanup.
+- The head lineage carries it: `s_linker86` and `s_linker87` are forks of `s_linker85` and
+  neither declares `INFLECTIONS`.
 
 ### The typed round (s86) — one contradiction, one clause, and a closed set of verdicts
 
@@ -1491,3 +1547,50 @@ checks), runner `pilot/run_typed_e2e.sh`.
   instruction leans on. **A clause is not independently priceable** — s78's result in the
   other direction — so the round removes one clause, not two, and the dead sentence
   stays, documented as dead.
+
+### The compaction round (s88) — the prompt is mostly not rules
+
+The goal was the typed round's, sharpened: compact **every** long prompt and hold on
+both models. It starts by measuring what a prompt is made of, and that measurement
+redirects the whole round. Report `../results/compaction_round/README.md`; deterministic
+screens `pilot/clause_audit.py` and `pilot/judge_prompt_bytes.py`; arms
+`pilot/compaction_pilots.py`; statistics `pilot/compaction_round_stats.py`; composition
+gate `pilot/composition_from_kept.py`; invariants `pilot/test_s88_anchors.py` (35 checks).
+
+- **Authored rules are 5.3% of a full-name judging call and 4.3% of a resolver call.**
+  What is big is repetition: **27.9%** of the judging call is anchor sentences it has
+  already printed (a batch is 25 cases and several concern one component), and **25.4%**
+  of the resolver call is `SENTENCES` rows for sentences the same call prints inline as a
+  TARGET. Every earlier prompt round spent itself on the 5%.
+- **`s_linker88` writes each component's anchors once per call** — the union of what
+  every case for it in the batch would show, so no case is shown less — and points the
+  later cases at the first. **No English changes at all.** Stage arm, every arm judging
+  the same extraction pass: terra TP +0.7 (p = 0.80), FP -1.3 (0.70), F1 +0.4 (0.60),
+  F2 +0.3 (0.50); luna TP +0.3 (1.00), FP -1.7 (0.80), F1 +0.3 (0.60), F2 +0.4 (0.50);
+  judging bytes 148 199 -> 106 708 (terra, -27%) and 161 699 -> 116 122 (luna, -28%).
+  Composition risk 1.3 pairs/run, so E2E is owed and was paid for.
+- **Lossy and lossless compaction of the same 27% have opposite signs on the laxer
+  model.** Showing later cases the FIRST case's anchor list (`anchorref`) is terra-neutral
+  and luna **stage spurious +6.7 (p = 0.10)**; the union form is luna **FP -1.7**. Only 19
+  of 121 same-component case pairs have equal lists, so the first form withholds about one
+  anchor in five. **The invariants test caught that, not the stage arm** — a stage arm
+  reports gold and spurious, and a judge shown four of its five anchors still answers.
+  *Write the equivalence test before adopting a compaction, not after.*
+- **Two clauses refused from the checkpoints at zero API cost**: the strict judge's
+  leniency guard (terra changes 4 verdicts in 442; luna 28, **25 of them gold
+  approvals**) and the alias enumeration's third item (1.3 / 0.7 aliases a run).
+- **`nodenotqual` is the round's second surface-is-not-cause instance**: the denotation
+  prompt's `QUALIFIED_CLAUSE` speaks about 2.0 candidates a run on both models, 0 gold,
+  and deleting it costs **15 spurious partial-name links a run** (composed F1 -1.9).
+  `noartifact` is the third: the enumerated ground is cited 1.0-1.7 times a run with 0
+  gold, terra reads its deletion neutral, and luna loses **6.7 gold resolutions a run**.
+- **The round's largest open finding, recorded and not acted on**: half the resolver's
+  output is for sentences that *write* the component's name (96.0 judged cases a run on
+  terra, 51.6%), which `LAYERED_COREF_RULES` opens by saying is not a coreference link.
+  Fixing it means *adding* a clause, and 53 of terra's 58 approvals in that population
+  are gold, so it is a separate question from compaction.
+- **Open at the time of writing**: `resolve3` on luna (terra reads `notargetrows` at
+  stage gold +8.7 / spurious -2.3, composed F1 +0.4, for **-23.8% of the resolver
+  prompt**, and `nocasectx` at F1 +0.1 for -8.6%), and the `s_linker88` end-to-end batch
+  (two of three paired runs a side; terra +2.8 macro F1 at FP -11.0, luna -1.3 at
+  FP +17.0 with TP +3.5 — **not** a verdict at n=2).
