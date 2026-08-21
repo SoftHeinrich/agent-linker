@@ -200,6 +200,15 @@ ARMS = {
         "mergeord": {"DOC_KNOWLEDGE_EXTRACTION_RULES": MERGED_DOC_EXTRACTION,
                      "STRICTER_CLAUSE": MERGED_STRICTER},
     },
+    # the denotation stage: QUALIFIED_CLAUSE's THIRD consumer, and the one the
+    # composed head's failure came from. s_linker90's teammates false positives
+    # are 58 of 66 from partial_name, where s_linker89 produces none.
+    "denot3": {
+        "ctl": {},
+        "genqual": {"QUALIFIED_CLAUSE": GEN_QUALIFIED},
+        "aliaspair": {"DOC_KNOWLEDGE_EXTRACTION_RULES": GEN_DOC_EXTRACTION,
+                      "ALIAS_EXCLUSION_RULES": MERGED_ALIAS_EXCLUSION},
+    },
     # the merged-and-generalized alias rule, the form the head needs
     "alias2": {
         "ctl": {},
@@ -221,6 +230,7 @@ OTHER_STAGES = {
     "extract1": ("partial_name", "coreference"),
     "alias1": ("partial_name", "coreference"),
     "alias2": ("partial_name", "coreference"),
+    "denot3": ("full_name", "coreference"),
 }
 
 
@@ -371,6 +381,11 @@ def run_group(group, model, runs, out_dir):
                             sents, comps, name_to_id, sent_map)
                         pairs = judge_fullname(lk, list(cands.values()),
                                                comps, sent_map)
+                    elif group == "denot3":
+                        links, _ = lk._run_partial_name_linker(
+                            sents, comps, sent_map)
+                        pairs = {(l.sentence_number, l.component_id)
+                                 for l in links}
                     elif group == "extract1":
                         cands = lk._extract_named_mentions(
                             sents, comps, name_to_id, sent_map)

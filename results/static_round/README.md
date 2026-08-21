@@ -316,3 +316,46 @@ TYPED_E2E_CONTROL=s_linker89 TYPED_E2E_TAG=static bash pilot/run_typed_e2e.sh \
   --arm s_linker89 ../results/static_e2e_terra_r{1,2,3}_* \
   --arm s_linker90 ../results/static_e2e_terra_r{1,2,3}_*   # and luna
 ```
+
+## `s_linker90` end to end — refused on both models
+
+`TYPED_E2E_CONTROL=s_linker89 TYPED_E2E_TAG=static bash pilot/run_typed_e2e.sh
+s_linker90 terra luna`, three paired runs a side, both arms in every invocation, all
+six clean. `results/static_e2e_{terra,luna}_r{1,2,3}_20260821`.
+
+| model | arm | TP | FP | macro F1 | macro F2 |
+|---|---|---|---|---|---|
+| terra | `s_linker89` | 179.0 | **21.0** | **93.23** | 93.57 |
+| terra | `s_linker90` | 181.0 | 38.3 | 90.72 | 93.05 |
+| terra | delta | +2.0 (p = 0.80) | **+17.3 (0.10)** | **−2.5 (0.10)** | −0.5 (0.70) |
+| luna | `s_linker89` | **180.0** | 51.3 | **89.0** | **91.8** |
+| luna | `s_linker90` | 171.3 | 45.3 | 87.7 | 89.6 |
+| luna | delta | **−8.7 (0.10)** | −6.0 (0.40) | −1.3 (0.30) | **−2.2 (0.10)** |
+
+**QUALITY-CHANGING on both models, downward on both. The composed head is refused.**
+
+**Five paraphrases that are each neutral alone are not neutral together.** That is the
+round's headline and it is a result about method, not about wording: this branch has a
+law that a clause is not independently priceable, and the same holds one level up — an
+*arm* is not independently adoptable. Nothing here was adopted on weak evidence; all
+five held on both models at the stage they were measured.
+
+The two models fail differently, which is itself informative:
+
+| | terra | luna |
+|---|---|---|
+| shape | precision collapse | recall loss |
+| where | teammates alone: FP +17.0, F1 −12.3 | bigbluebutton −6.0 TP, teammates −3.0 TP |
+| source | **58 of 66 teammates FPs are `partial_name`**, where s89 produces **0** | FP also falls (−6.0): the head is simply more conservative |
+
+**And the terra failure names my own gap.** `QUALIFIED_CLAUSE` enters **three** prompt
+families — lenient judging, full-name extraction, and denotation — which the round's own
+byte inventory states (22.7 calls a run). `genqual` was measured at the first two and
+never at the third, and the third is the `partial_name` stage the failure comes from.
+The previous round had already recorded that deleting this clause from the denotation
+prompt costs 15 spurious partial-name links a run. The number was on the page and the
+group was not built. **A constant must be priced at every consumer it has, not at the
+consumers a group already existed for.**
+
+`pilot/static_pilots.py --group denot3` is that missing group: `genqual` and the alias
+pair, priced at the denotation stage on both models.
