@@ -197,6 +197,7 @@ CANONICAL_VARIANTS = [
     "s_linker85",  # s83's coreference judge composed with WordNet in place of INFLECTIONS
     "s_linker86",  # s85 with the full-name judge's focus line removed as a restatement
     "s_linker87",  # s86 with the coreference resolver's restated question removed
+    "s_linker88",  # s87 with the judging prompt's repeated anchor sentences written once
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1965,6 +1966,24 @@ VARIANT_SPECS = {
             "-0.2 (p = 0.80), F2 +0.2; luna TP +/-0.0 (p = 1.00), F1 +0.2, F2 +0.3. "
             "With s86's cut, authored rule text 3485 -> 3079 B (-11.7%). See "
             "results/typed_round/README.md."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker88": dict(
+        aliases=(),
+        module="llm_sad_sam.linkers.experimental.s_linker88",
+        class_name="SLinker88",
+        description=(
+            "S-Linker88 - the compaction round's head: s_linker87 with no English "
+            "changed at all. The byte inventory says the authored rules are 5.3% of a "
+            "full-name judging call and 27.9% of it is anchor sentences the same call "
+            "already printed, because a batch of 25 cases repeats a component's "
+            "naming sentences once per case. s88 writes each component's anchors - "
+            "the union of what every case for it in the batch would show, so no case "
+            "is shown less - into the first such case and points the rest at it: "
+            "-32.8% of the judging prompt, verified lossless case by case in "
+            "pilot/test_s88_anchors.py. See results/compaction_round/README.md."
         ),
         canonical=False,
         experimental=True,
