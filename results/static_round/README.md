@@ -460,3 +460,47 @@ quantity to the same precision, and *stage-neutral at n = 3 carries very little
 information about end-to-end neutral at n = 3*. Every composed head this round tried was
 built on stage evidence, and none of them survived — that is the honest summary, and it
 is a statement about what the stage arm can certify, not only about the paraphrases.
+
+## What an end-to-end batch can resolve (`pilot/e2e_power.py`, no LLM calls)
+
+Before reading three refusals as "the paraphrases hurt", the design deserves its own
+measurement. `s_linker89` was the **control in four separate batches** this session —
+`compact`, `static`, `minimal`, `solo` — three runs each per model, identical code and
+settings throughout. Those twelve runs differ only by sampling, so their spread is the
+pipeline's run-to-run noise, measured rather than assumed.
+
+| model | TP mean | TP sd | TP spread | FP mean | FP sd | FP spread |
+|---|---|---|---|---|---|---|
+| terra | 181.7 | 3.8 | 174–189 (15) | 26.1 | 5.4 | 16–35 (19) |
+| luna | 179.9 | 3.5 | 174–187 (13) | 45.2 | 7.4 | 34–58 (24) |
+
+Smallest effect the paired sign-flip test calls non-flat (p ≤ 0.20) in half of draws
+resampled from those runs against themselves:
+
+| n | terra TP | terra FP | luna TP | luna FP |
+|---|---|---|---|---|
+| **3** | **6** | **7** | **5** | **11** |
+| 4 | 4 | 6 | 4 | 8 |
+| 5 | 4 | 6 | 4 | 7 |
+| 6 | 3 | 5 | 3 | 6 |
+
+**Every E2E verdict in this round, re-read against its own floor:**
+
+| head | the flag that decided it | floor at n = 3 | resolvable |
+|---|---|---|---|
+| `s_linker90`, terra | FP **+17.3** | 7 | **yes** |
+| `s_linker90`, luna | TP **−8.7** | 5 | **yes** |
+| `s_linker91`, luna | FP +7.0 | **11** | **no** |
+| `s_linker92`, luna | TP −3.0 | **5** | **no** |
+
+**`s_linker90`'s refusal stands on its own evidence: both failures are well clear of
+the floor, on both models, and the terra one is more than twice it. `s_linker91` and
+`s_linker92` were refused on flags smaller than the pipeline's own noise, and that was
+an over-reading.** Neither has been shown to hurt; neither has been shown to hold.
+
+**This is the round's most useful output and it cost nothing.** At n = 3 an end-to-end
+batch on this pipeline cannot see an effect below roughly 5–11 links, while every stage
+arm here measured effects of 1–3 links. The two instruments are not comparable, and the
+correct procedure is the one the goal already asked for: **price from checkpoints, and
+spend an end-to-end batch only where the expected effect clears the floor.** Of this
+round's three batches, only the first was ever going to be decisive.
