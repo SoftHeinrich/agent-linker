@@ -16,14 +16,18 @@ regex** — and it is one this branch already states: the whole-name row of the
 surface-realization relation.
 
 **The verdict.** `s_linker92a` — the extraction call deleted, the contract run as a
-scan — **is adopted at the stage level on both models.** It removes 9 of the ~84 LLM
+scan — **is quality-neutral end to end on terra and recall-led on luna**, and it
+closes the branch's "never reached a judge" false-negative bucket almost completely
+(terra 4.7 → 0.0 a run, luna 7.7 → 0.3). It removes 9 of the ~84 LLM
 calls a five-project run makes, adds no deterministic machinery whatsoever, and reads
 macro F2 **+2.0 (terra) / +1.8 (luna)** at macro F1 +0.4 / −0.9 (neither significant).
 The four variants built to repair its expected failure modes are all refused: three
 because the judge does the job they were built for, one because it made things worse.
 
 Tooling: `pilot/regex_extract_audit.py` (level 1, no calls), `pilot/regex_proposer_pilots.py`
-(level 2, the stage arm), `pilot/regex_round_stats.py` (permutation test),
+(level 2, the stage arm), `pilot/run_regex_e2e.sh` (level 4, the E2E batch),
+`pilot/regex_fn_analysis.py` (the false-negative decomposition, no calls),
+`pilot/regex_round_stats.py` and `pilot/score_runs.py` (permutation tests),
 `pilot/test_s92abcd_regex.py` (2316 invariant checks, no calls).
 
 ---
@@ -126,6 +130,53 @@ prompt constant (`ENTITY_EXTRACTION_RULES`) plus two methods leave the module.
 
 ---
 
+## Level 4 — end to end, three runs per model
+
+`pilot/run_regex_e2e.sh`, `../results/regex_e2e_{terra,luna}_r{1,2,3}_20260822`.
+**One arm.** `s_linker92` is byte-unchanged by this round and has three recorded
+five-project runs per model from the same week
+(`../results/solo_e2e_{terra,luna}_r{1,2,3}_20260821`), so it was not re-run.
+**That makes the control cross-set, which this branch normally forbids** — the in-set
+claim is the stage arm's; this batch exists to answer the one thing a stage arm
+structurally cannot, which is composition.
+
+| | terra ctl | terra scan | | luna ctl | luna scan | |
+|---|---|---|---|---|---|---|
+| TP | 178.3 | 181.0 | +2.7 (p 0.40) | 177.3 | **188.7** | +11.3 (p 0.10) |
+| FP | 27.3 | 32.3 | +5.0 (p 0.40) | 45.0 | 71.7 | +26.7 (p 0.20) |
+| macro F1 | 92.14 | 91.36 | −0.8 (p 0.30) | 89.03 | 87.93 | −1.1 (p 0.40) |
+| macro F2 | 93.22 | 93.10 | −0.1 (p 0.80) | 91.45 | **93.30** | **+1.9 (p 0.10)** |
+| calls | 83.2 | **75.3** | −9.5% | 85.2 | **79.0** | −7.3% |
+| F1 run range | 1.64 | 1.29 | | 0.18 | 3.93 | |
+
+**terra is QUALITY-NEUTRAL on all four statistics** (smallest p 0.30). **luna
+reproduces the stage arm's reading**: macro F2 +1.9 at the n=3 floor, TP +11.3, macro
+F1 −1.1 and not significant.
+
+### The E2E is weaker than the stage arm on terra, and the decomposition says why
+
+The stage arm read terra at macro F2 +2.0; the E2E reads −0.1. Per source, from the
+per-variant link CSVs (the phase states of the 0821 runs are not usable for this —
+two variants wrote that namespace):
+
+| source | terra ctl TP/FP | terra scan TP/FP | luna ctl TP/FP | luna scan TP/FP |
+|---|---|---|---|---|
+| `full_name` | 143.3 / 10.3 | **147.7 / 11.3** | 147.7 / 18.7 | **160.3 / 35.7** |
+| `partial_name` | 20.3 / 14.0 | 16.3 / 18.3 | 14.0 / 21.0 | 13.0 / 28.3 |
+| `coreference` | 14.7 / 3.0 | 17.0 / 2.7 | 15.7 / 5.3 | 15.3 / 7.7 |
+| total | 178.3 / 27.3 | 181.0 / 32.3 | 177.3 / 45.0 | 188.7 / 71.7 |
+
+**The change lands where it can reach and is clean there**: on terra the full-name
+stage is **TP +4.4 at FP +1.0**. What eats the gain is downstream — `partial_name`
+gives back 4.0 TP (mostly relabelling: a pair both linkers propose is now tagged by
+the earlier one) and adds 4.3 FP of its own, at a stage this change does not touch and
+whose judge runs at ~0.6 precision. **That is the composition effect the stage arm
+cannot see, and it is why the batch was owed.** On luna the effect is at the full-name
+gate itself (TP +12.6 at FP +17.0), which is the stage arm's 0.736 approve rate on the
+added pairs showing up end to end.
+
+---
+
 ## The three variants the judge made unnecessary
 
 `s_linker92b`, `s_linker92c` and `s_linker92d` were built before the stage arm ran,
@@ -199,21 +250,79 @@ every judging call to recover an F1 point that is neutral on the second model.
 
 ## Caveats
 
-- **n = 3 per model, one invocation set per model.** Every p in the tables is at or
-  near the 0.10 floor. Read the deltas against the recorded harness floor (FP +10.7,
-  TP +4.8) rather than against zero.
-- **The stage arm is not an E2E.** It replays one stage against recorded checkpoints
-  and composes with the same run's other two stages. Composition risk is real here —
-  the scan adds pairs the coreference linker also proposes — so an end-to-end batch is
-  owed before `s_linker92a` becomes the head, and this report does not claim it.
-- **The luna FP level.** The bare scan takes luna from 39.7 to 59.0 false positives a
-  run. F2 rises anyway, and F1 falls 0.9 (p = 0.60), but a reviewer will ask, and
-  `s_linker92f` is the priced answer to that question rather than a hidden one.
+- **n = 3 per model.** Every p in the tables is at or near the 0.10 floor. Read the
+  deltas against the recorded harness floor (FP +10.7, TP +4.8) rather than zero.
+- **The E2E control is cross-set**, by decision: `s_linker92` is byte-unchanged by
+  this round, so its 0821 runs were reused rather than re-bought. The branch's rule is
+  that absolute levels drift between invocation sets (s49's FP mean read 10.7 to 16.8
+  across five sets in one day), so the E2E numbers carry that exposure and the in-set
+  claim rests on the stage arm. The two agree on luna and disagree on terra's F2 by
+  2.1 pp; the per-source decomposition attributes that to `partial_name`, a stage
+  neither arm changes.
+- **The luna FP level.** The scan takes luna from 45.0 to 71.7 false positives a run
+  end to end. F2 rises anyway (+1.9) and F1 falls 1.1 (p = 0.40), but a reviewer will
+  ask. `s_linker92f` is the priced answer rather than a hidden one, and luna's F1 run
+  range of 3.93 (against the control's 0.18) says the arm is also less stable there.
+- **The whole round is measured on gpt-5.6 terra and luna only.** The scan itself is
+  model-independent; what is model-dependent is the gate behind it, and the two models
+  differ by a factor of two on exactly the population the scan adds (approve rate 0.444
+  vs 0.736).
 - The recorded phase states the arms replay were written by `s_linker89`-named
   directories that both `s_linker89` and `s_linker92` wrote to. The two share the
   extraction pass byte for byte, so the recorded candidate sets are one extractor's;
   the coreference stage they compose with may be either variant's, identically for
   every arm.
+
+## The false-negative analysis
+
+`pilot/regex_fn_analysis.py` (no calls). Every gold pair a run misses is labelled by
+**the furthest it got** across all three linkers, read from that run's recorded phase
+states: `fn/rejected` means some stage proposed it and its judge said no — a judging
+failure; `fn/unproposed` means no stage proposed it at all — a proposing failure. Each
+is then asked what could ever have reached it: the sentence writes a **whole name** of
+the component (catalog name or discovered alias, either whole-name fidelity), **one
+word** of it (the partial-name linker's row), or **no surface** at all (coreference
+only). Per five-project run, gold 195:
+
+| | terra ctl | terra scan | | luna ctl | luna scan | |
+|---|---|---|---|---|---|---|
+| linked | 180.3 | **186.7** | +6.3 | 180.0 | **190.7** | +10.7 |
+| `fn/rejected` | 10.0 | 8.3 | −1.7 | 7.3 | 4.0 | −3.3 |
+| **`fn/unproposed`** | **4.7** | **0.0** | **−4.7** | **7.7** | **0.3** | **−7.3** |
+| …@ whole-name | 4.7 | 0.0 | −4.7 | 7.7 | 0.3 | −7.3 |
+| …@ one-word | 0.0 | 0.0 | – | 0.0 | 0.0 | – |
+| …@ no surface | 0.0 | 0.0 | – | 0.0 | 0.0 | – |
+| `fn/rejected` @ whole-name | 5.0 | 3.3 | −1.7 | 3.7 | 0.0 | −3.7 |
+| `fn/rejected` @ one-word | 4.0 | 4.0 | ±0.0 | 3.0 | 3.3 | +0.3 |
+| `fn/rejected` @ no surface | 1.0 | 1.0 | ±0.0 | 0.7 | 0.7 | ±0.0 |
+
+**The scan closes the unproposed bucket.** 4.7 → 0.0 on terra and 7.7 → 0.3 on luna:
+after the swap, essentially **every remaining false negative reached a judge**. This
+inverts the branch's standing error-shape result — "95% of false negatives never
+reached a judge, the proposer is the bottleneck, not the gate" — for this pipeline.
+It is now the gate.
+
+**And every one of those unproposed pairs was reachable by the tightest thing the
+round measures.** The `@ one-word` and `@ no surface` rows of `fn/unproposed` are
+**0.0 in every column**: the extractor never lost a link that needed morphology,
+inflection or context. What it lost, 4.7–7.7 times a run, were sentences that
+**literally write the component's name** and were simply not reported. That is the
+whole case for the swap in one row.
+
+**What is left is judging, and it concentrates.** The residual false negatives are
+dominated by the partial-name denotation judge on sibling components — `HTML5 Server`
+in bigbluebutton is 3 of luna's 4 residual FNs a run and 3 of terra's 8, on sentences
+that write one word of a name two components share. That is the same sibling-confusion
+mechanism the error-shape analysis found on the *precision* side, appearing on the
+recall side, and it is not a proposer problem: those pairs are proposed every run and
+declined every run. The remaining `@ no surface` pairs (0.7–1.0 a run, e.g. teastore
+S26 against `Persistence`) are coreference-only by construction and are the floor no
+lexical layer can move.
+
+Consequence for what to do next: **the round moves the branch's headroom from the
+proposer to the judge**, which makes the error-shape analysis's oracle discriminator
+(macro F1 0.933 → 0.957 over the candidates already produced) the live prize rather
+than a better proposer.
 
 ## What the scan does not reach
 

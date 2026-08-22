@@ -930,6 +930,42 @@ already states: the whole-name row of the surface-realization relation. Report:
   the model writes down the surface or weighs what it could be, and only the second
   moves anything. Nothing enumerates the readings for the model — that is what keeps it
   a template and not a clause.
+- **End to end, three runs per model** (`pilot/run_regex_e2e.sh`,
+  `../results/regex_e2e_{terra,luna}_r{1,2,3}_20260822`; **one arm — the control is
+  byte-unchanged and its 0821 runs are reused, so this comparison is cross-set by
+  decision and the in-set claim stays with the stage arm**): **terra QUALITY-NEUTRAL
+  on all four statistics** — TP 178.3 → 181.0 (p = 0.40), FP 27.3 → 32.3 (0.40), macro
+  F1 92.14 → 91.36 (0.30), macro F2 93.22 → 93.10 (0.80) — at **75.3 calls against
+  83.2 (−9.5%)**. **luna reproduces the stage arm**: TP 177.3 → 188.7 (p = 0.10),
+  **macro F2 91.45 → 93.30 (+1.9, p = 0.10)**, macro F1 −1.1 (0.40), FP 45.0 → 71.7,
+  79.0 calls against 85.2.
+- **The E2E is 2.1 pp of terra F2 below the stage arm, and the per-source
+  decomposition says why.** By `source` over the per-variant link CSVs, terra's
+  **`full_name` stage is TP +4.4 at FP +1.0** — the change is clean where it can
+  reach. `partial_name` gives back 4.0 TP (mostly relabelling — `_union` tags a pair
+  both linkers propose by the earlier one) and adds 4.3 FP of its own, at a stage this
+  change does not touch and whose judge runs at ~0.6 precision. **A stage arm that
+  composes with recorded downstream stages cannot see the downstream stage's own
+  variance**; that is the fifth instance of the composition caveat and the first where
+  it costs the arm rather than flattering it. On luna the effect is at the full-name
+  gate itself (TP +12.6 at FP +17.0), which is the stage arm's 0.736 approve rate on
+  the added pairs, end to end.
+- **The false-negative decomposition inverts the branch's standing error shape**
+  (`pilot/regex_fn_analysis.py`, no calls). Labelling every missed gold pair by the
+  furthest it got across all three linkers, per five-project run: `fn/unproposed`
+  (nothing proposed it) **4.7 → 0.0 on terra and 7.7 → 0.3 on luna**, so after the
+  swap essentially **every remaining false negative reached a judge**. The standing
+  finding — "95% of false negatives never reach a judge; the proposer is the
+  bottleneck" — no longer describes this pipeline. **It is now the gate.** And every
+  pair in that closed bucket was reachable at the tightest row measured: the
+  `@ one-word` and `@ no surface` sub-rows of `fn/unproposed` are **0.0 in every
+  column**, so what the LLM extractor lost was never morphology or context — it was
+  sentences that literally write the name. What is left is judging and it concentrates:
+  `HTML5 Server` in bigbluebutton is 3 of luna's 4 residual FNs a run and 3 of terra's
+  8, declined every run by the partial-name denotation judge — the same
+  sibling-confusion mechanism the error analysis found on the precision side, now on
+  the recall side. **This makes a contrastive discriminator over the existing candidate
+  set the live prize, not a better proposer.**
 - **The false-negative accounting, asked directly.** Of the 44.9 gold pairs a run the
   extractor never proposed, the scan proposes 10.6; of the other 34.3, **30.1 are
   already linked** by the partial-name and coreference linkers. Against the pipeline's
