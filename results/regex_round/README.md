@@ -153,6 +153,43 @@ structurally cannot, which is composition.
 reproduces the stage arm's reading**: macro F2 +1.9 at the n=3 floor, TP +11.3, macro
 F1 −1.1 and not significant.
 
+### Every run, and macro F2 per project
+
+| model | run | ctl TP/FP | ctl F2 | scan TP/FP | scan F2 |
+|---|---|---|---|---|---|
+| terra | r1 | 176 / 28 | 92.40 | 182 / 38 | 92.99 |
+| terra | r2 | 177 / 26 | 93.20 | 180 / 26 | 93.25 |
+| terra | r3 | 182 / 28 | 94.04 | 181 / 33 | 93.07 |
+| terra | **mean** | 178.3 / 27.3 | **93.22** (range 1.64) | 181.0 / 32.3 | **93.10** (range **0.26**) |
+| luna | r1 | 177 / 51 | 91.66 | 191 / 87 | 92.98 |
+| luna | r2 | 175 / 36 | 90.64 | 185 / 78 | 92.13 |
+| luna | r3 | 180 / 48 | 92.03 | 190 / 50 | 94.78 |
+| luna | **mean** | 177.3 / 45.0 | **91.45** (range 1.40) | 188.7 / 71.7 | **93.30** (range 2.66) |
+
+macro F2 per project, mean of three runs:
+
+| project | gold | terra ctl | terra scan | Δ | luna ctl | luna scan | Δ |
+|---|---|---|---|---|---|---|---|
+| mediastore | 31 | 97.40 | 90.32 | **−7.08** | 96.53 | 97.25 | +0.72 |
+| teastore | 27 | 99.00 | 100.00 | +1.00 | 95.12 | 97.80 | +2.67 |
+| teammates | 57 | 88.62 | 86.65 | −1.97 | 85.71 | 87.36 | +1.65 |
+| bigbluebutton | 62 | 82.86 | 89.64 | **+6.78** | 81.69 | 85.89 | +4.20 |
+| jabref | 18 | 98.19 | 98.90 | +0.71 | 98.18 | 98.18 | ±0.00 |
+
+**On luna the scan is F2-positive on four projects of five and negative on none.** On
+terra it is positive on three and its whole macro deficit is one project:
+**mediastore, −7.08, and the cause is three false positives with one name.** On a
+31-gold project the scan links `DB` on three sentences that use the common noun
+"database", which the alias stage bound to that component — every run, both models
+(luna pays the same 3 FP there and still gains, because its control was not at 0 FP).
+That is one alias, one project, and it is `STRICTER_CLAUSE`'s population again, which
+is what `s_linker92f` was built for.
+
+**Terra's run spread collapses from 1.64 to 0.26 F2.** A deterministic proposer removes
+one of the pipeline's two sampled stages, and it shows: the arm is six times tighter
+than the control across runs on terra, though not on luna (2.66 against 1.40), where
+the gate's higher approve rate on the added pairs re-introduces the variance.
+
 ### The E2E is weaker than the stage arm on terra, and the decomposition says why
 
 The stage arm read terra at macro F2 +2.0; the E2E reads −0.1. Per source, from the
