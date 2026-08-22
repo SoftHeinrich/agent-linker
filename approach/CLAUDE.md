@@ -776,3 +776,103 @@ gate `pilot/composition_from_kept.py`; invariants `pilot/test_s88_anchors.py` (3
   (p = 0.70). Different invocation sets, so this is not a trend — only that the sign is
   not reproduced where it mattered. Two prompt families compacted, **no authored rule
   text removed at all** (3079 B, unchanged from s87).
+
+### The reading round (s91) — the two proposal stages merged, judging untouched
+
+The head asks the document two questions in two LLM stages: the named-reference
+extractor and the coreference resolver. This round asks whether they are one question
+at two reference forms. Report: `../results/reading_round/README.md`; invariants:
+`pilot/test_s91_reading.py` (47 checks); variant: `s_linker91`, a subclass of
+`SLinker90` overriding **only** `_extract_named_mentions`, `_resolve_references`,
+`_read_document`, `_prompt_reading` and `link`.
+
+- **This is the cell the s26-s35 line never tried.** Every merge that line refused folds
+  *alias discovery* or *judging* into extraction (s26/s60 alias, s29/s30/s31/s32-35
+  judging, s36/s38 the two full-name judging calls). `grep -i coref` over the ledger
+  returns no merge at all. The merged reading keeps the property every refused merge
+  broke: **a proposer still never approves its own list.**
+- **The two proposers already overlap on half their output** (recorded runs, no LLM
+  calls): extractor 32.2 pairs/run at 0.905 precision, resolver 37.7 at 0.614, **17.5
+  proposed by both at 0.947** — 54% of the extractor's pairs and 46% of the resolver's.
+  The union discards the duplicates, so the resolver spends much of its 8 calls a project
+  re-deriving pairs the extractor already had. **This reproduces the compaction round's
+  largest open finding** (51.6% of resolver output is for sentences that write the name)
+  from a second direction; that round left it because fixing it meant *adding* a clause,
+  and merging the questions removes it by construction.
+- **Anchors are local, so one 50-sentence block suffices.** Over 414 recorded
+  resolutions the antecedent is a median 2 sentences back (mean 2.7, max 14), and only
+  **1.0%** fall outside a fixed 50-sentence block against 21% outside a 10-sentence one.
+  The reading keeps `EXTRACTION_BATCH`, which s27 already grounds, and carries a
+  per-component note of the last sentence that named it for the 1% and the boundaries.
+  `COREFERENCE_BATCH` becomes unused, which is the resource bound s76 could only remove
+  by paying TP -7.0 for it.
+- **The routing shift is 2.1 pairs per project-run.** A claim whose sentence *states* a
+  name routes to the lenient judge instead of the strict one -- by the same relation the
+  head uses, not by the model's choice of field. Of the resolver's 19.5 name-stating
+  pairs a run, 17.5 are already on the named route via the extractor; only 2.1 actually
+  change judge, carrying 0.6 gold, and the strict judge already keeps 0.6 of them.
+  **Inside the recorded null floor** (FP 10.7, TP 4.8).
+- **Cost:** ~16.8 LLM calls a project to ~8.8 (extraction + resolution 9.8 to ~1.8),
+  with authored rule text unchanged at 3079 B -- the reading prompt composes
+  `ENTITY_EXTRACTION_RULES`, `QUALIFIED_CLAUSE` and `COREF_RULES` verbatim, so GATE-07's
+  accounting does not move.
+- **Level 1 is done and level 2 is owed.** The invariants pin what is structurally
+  unchanged; what they cannot answer is whether *one* prompt asking both questions
+  proposes what *two* prompts asking them separately propose. That is a stage pilot on
+  fixed recorded inputs, N samples a side, before anything composed is bought -- and
+  s76 is the standing warning that cutting the resolver's call count has been refused
+  once already on a neighbouring base.
+- **The ladder, built before it was needed.** A merge that loses should not end the
+  round, so each predicted failure mode has a rung behind it, all registered:
+  **`s_linker92`** puts the head's ordering *inside* the merged call (a named section,
+  then refer-backs resolved against the list that same call produced) -- the answer if
+  merging costs precision, which is the direction the standing finding predicts;
+  **union over k readings** is the answer if the merged reading is unstable, and it is
+  the only rung with a measured effect already (a majority vote over three runs of the
+  current head reads micro F1 0.913 against 0.901 for one run); **`s_linker93`** keeps
+  both calls and asks the resolver only about sentences that write no name --
+  **8.0 -> 4.5 resolver calls a project-run (-44%)** for **0.7 gold a run at risk**,
+  and it is the model-robust rung because its prompts are the head's *byte-identically*
+  when the target set is unrestricted (`pilot/test_s9293_ladder.py`, 21/21).
+  s93 is also the design law applied rather than argued: which sentences write a name
+  is a fact about the case, `_states_a_name` already computes it, and the compaction
+  round's open finding only needed a clause because the fact was not being used.
+
+### The reading round's verdict (s94-s100) — two proposers are not one
+
+Six structurally different merges of the **two proposal stages** were built and
+measured as stage arms, five documents, three samples a side, every arm against
+control in its own invocation, on terra and the decisive arm again on luna.
+All six lose, and they lose the same links: bigbluebutton's gold on the 12
+sentences that reference more than one component (26 links). Control finds 19.6 of
+them on terra and 19.3 on luna; no merged arm exceeds 14.7, under any batch size
+(50 or 10), with or without the resolver's per-case obligation, its context table,
+an explicit instruction to report several components, resampling and union, or a
+conditioned gleaning pass.
+
+**The mechanism: two proposal stages are two looks at the same sentence that
+cannot see each other.** The extractor reports the component whose name is
+written; the resolver, which never sees that answer, independently names a second
+component; the union carries both. Rung I (`s_linker100`) proves it by failing
+downward — conditioning the second look on the first's output, GraphRAG-style
+gleaning, added **zero pairs in two of three samples** — because conditioning is
+the opposite of blindness.
+
+Consequences for the ledger:
+
+* Merging two **proposers** *lowers* recall and *raises* precision (terra gold
+  −1.1 to −2.2, spurious −5.5 to −12.5; luna gold −1.7, spurious −14.8), the
+  inverse of the standing finding. **The standing finding is scoped to merging a
+  proposer into a judge**, which is what all twelve of its variants did.
+* The head's two proposal stages are load-bearing. The duplication the round
+  targeted was never in the authored text — `ENTITY_EXTRACTION_RULES` and
+  `COREF_RULES` are already shared constants — it was in the call count, and the
+  call count buys the blindness.
+* The proposers' 54%/46% overlap does not imply low marginal value: the
+  non-overlap is exactly the multi-participant links.
+* `s_linker93` (narrow resolver) carries a correctness defect, found before
+  adoption: 12 gold links (6.2%) sit on sentences naming only *some other*
+  component, unreachable by a per-sentence `_nameless` filter. Filtering per
+  component instead collapses the filter. **Do not adopt.**
+
+Full write-up and per-arm numbers: `results/reading_round/README.md`.
