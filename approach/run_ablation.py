@@ -202,9 +202,13 @@ CANONICAL_VARIANTS = [
     "s_linker90",  # s89 with five authored clauses paraphrased from recipes to concepts
     "s_linker91",  # the two of those five whose consumer is a single stage
     "s_linker92",  # only the strict judge's enumeration deletion
-    "s_linker91",  # s90 with the extractor and the resolver merged into one reading pass
-    "s_linker92",  # s91 with the merged reading ordered into two sections inside the call
+    "s_linker94",  # s90 with the extractor and the resolver merged into one reading pass
+    "s_linker95",  # s94 with the merged reading ordered into two sections inside the call
     "s_linker93",  # s90 with the resolver narrowed to sentences that write no name
+    "s_linker96",  # the merged reading at the resolution question's batch size
+    "s_linker97",  # the merged reading asked case by case
+    "s_linker101",  # the head's two proposers plus the reading, all blind
+    "s_linker103",  # candidates routed by evidence, not by proposing stage
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -1977,26 +1981,65 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
     ),
-    "s_linker91": dict(
+    "s_linker94": dict(
         aliases=("read", "reading"),
-        module="llm_sad_sam.linkers.experimental.s_linker91",
-        class_name="SLinker91",
+        module="llm_sad_sam.linkers.experimental.s_linker94",
+        class_name="SLinker94",
         description=(
-            "S-Linker91 - one reading pass proposes for all three linkers. The "
+            "S-Linker94 - one reading pass proposes for all three linkers. The "
             "named-reference extractor and the coreference resolver are merged "
             "into a single question over the same 50-sentence block, carrying a "
             "per-component note of the last sentence that named it; every judge, "
             "the alias module and the deterministic scan are inherited unchanged."
         ),
     ),
-    "s_linker92": dict(
+    "s_linker95": dict(
         aliases=("readordered",),
-        module="llm_sad_sam.linkers.experimental.s_linker92",
-        class_name="SLinker92",
+        module="llm_sad_sam.linkers.experimental.s_linker95",
+        class_name="SLinker95",
         description=(
-            "S-Linker92 - the merged reading with the cascade inside the call: "
+            "S-Linker95 - the merged reading with the cascade inside the call: "
             "a named section first, then refer-backs resolved against the list "
             "that same call just produced."
+        ),
+    ),
+    "s_linker96": dict(
+        aliases=("readgrain",),
+        module="llm_sad_sam.linkers.experimental.s_linker96",
+        class_name="SLinker96",
+        description=(
+            "S-Linker96 - the merged reading asked at the resolution question's "
+            "batch size. Best macro F2 of the merged arms on terra (+0.5)."
+        ),
+    ),
+    "s_linker97": dict(
+        aliases=("readcases",),
+        module="llm_sad_sam.linkers.experimental.s_linker97",
+        class_name="SLinker97",
+        description=(
+            "S-Linker97 - the merged reading asked case by case, so every sentence "
+            "is accounted for. Macro F1 +2.3 terra / +10.3 luna at the proposal "
+            "stage, F2 -0.1 / +3.4."
+        ),
+    ),
+    "s_linker101": dict(
+        aliases=("thirdlook",),
+        module="llm_sad_sam.linkers.experimental.s_linker101",
+        class_name="SLinker101",
+        description=(
+            "S-Linker101 - the head's two proposers plus the merged reading as a "
+            "third mutually blind proposer. Proposal recall +1.2 to +1.5 terra, "
+            "+4.0 luna; recall-led, for an F2 budget."
+        ),
+    ),
+    "s_linker103": dict(
+        aliases=("evroute",),
+        module="llm_sad_sam.linkers.experimental.s_linker103",
+        class_name="SLinker103",
+        description=(
+            "S-Linker103 - candidates are routed to a judge by the evidence their "
+            "sentence gives, not by the stage that proposed them. Recovers gold the "
+            "coreference judge refuses for being named directly. No new calls."
         ),
     ),
     "s_linker93": dict(

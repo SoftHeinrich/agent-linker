@@ -1,0 +1,74 @@
+
+=== bigbluebutton: 87 sentences, 12 components, 62 gold, 15 aliases held fixed ===
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 1:   70 proposals,  49 gold,  21 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 2:   72 proposals,  50 gold,  22 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 3:   72 proposals,  49 gold,  23 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 1:   47 proposals,  43 gold,   4 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 2:   46 proposals,  43 gold,   3 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 3:   49 proposals,  45 gold,   4 spurious
+
+=== teastore: 43 sentences, 11 components, 27 gold, 6 aliases held fixed ===
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 1:   35 proposals,  27 gold,   8 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 2:   33 proposals,  26 gold,   7 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+  control  sample 3:   33 proposals,  26 gold,   7 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 1:   27 proposals,  27 gold,   0 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 2:   19 proposals,  15 gold,   4 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker102 (membership decisions, batch 10)
+  member   sample 3:   19 proposals,  15 gold,   4 spurious
+
+arm         proposals    gold  spurious  precision
+control          52.5    37.8      14.7      0.721
+member           34.5    31.3       3.2      0.908
+
+member - control: gold -6.5, spurious -11.5 per project-run
+
+proposals dumped to ../results/reading_round/dump_terra_member.json
+Read this against the recorded null floor (FP 10.7, TP 4.8), and run the
+same pilot on the second model before concluding anything.

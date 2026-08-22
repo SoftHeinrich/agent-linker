@@ -1,0 +1,68 @@
+
+=== bigbluebutton: 87 sentences, 12 components, 62 gold, 15 aliases held fixed ===
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 1:   80 proposals,  51 gold,  29 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 2:   86 proposals,  53 gold,  33 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 3:   80 proposals,  51 gold,  29 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 1:   54 proposals,  47 gold,   7 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 2:   57 proposals,  48 gold,   9 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 3:   62 proposals,  49 gold,  13 spurious
+
+=== teastore: 43 sentences, 11 components, 27 gold, 9 aliases held fixed ===
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 1:   44 proposals,  26 gold,  18 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 2:   42 proposals,  26 gold,  16 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+  control  sample 3:   40 proposals,  27 gold,  13 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 1:   30 proposals,  26 gold,   4 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 2:   37 proposals,  27 gold,  10 spurious
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+  cases    sample 3:   33 proposals,  27 gold,   6 spurious
+
+arm         proposals    gold  spurious  precision
+control          62.0    39.0      23.0      0.629
+cases            45.5    37.3       8.2      0.821
+
+cases - control: gold -1.7, spurious -14.8 per project-run
+
+proposals dumped to ../results/reading_round/dump_luna_cases.json
+Read this against the recorded null floor (FP 10.7, TP 4.8), and run the
+same pilot on the second model before concluding anything.
