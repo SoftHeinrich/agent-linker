@@ -202,6 +202,12 @@ CANONICAL_VARIANTS = [
     "s_linker90",  # s89 with five authored clauses paraphrased from recipes to concepts
     "s_linker91",  # the two of those five whose consumer is a single stage
     "s_linker92",  # only the strict judge's enumeration deletion
+    "s_linker92a",  # s92 with the LLM extraction pass replaced by the name scan
+    "s_linker92b",  # s92a, not proposing a name found only inside a dotted identifier
+    "s_linker92c",  # s92b at the spelling-variant fidelity instead of case-folding
+    "s_linker92d",  # s92b at both whole-name fidelities, unioned
+    "s_linker92e",  # s92a with the lenient gate naming the surface before the verdict
+    "s_linker92f",  # s92a with the lenient gate weighing the surface's readings first
     "s_linker94",  # s90 with the extractor and the resolver merged into one reading pass
     "s_linker95",  # s94 with the merged reading ordered into two sections inside the call
     "s_linker93",  # s90 with the resolver narrowed to sentences that write no name
@@ -209,6 +215,8 @@ CANONICAL_VARIANTS = [
     "s_linker97",  # the merged reading asked case by case
     "s_linker101",  # the head's two proposers plus the reading, all blind
     "s_linker103",  # candidates routed by evidence, not by proposing stage
+    "s_linker106",  # resolver deliberates in-reply (self-implemented CoT)
+    "s_linker107",  # antecedent shortlist computed in code, judgement in prompt
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2022,6 +2030,81 @@ VARIANT_SPECS = {
             "stage, F2 -0.1 / +3.4."
         ),
     ),
+    "s_linker92a": dict(
+        aliases=("scan", "regexextract"),
+        module="llm_sad_sam.linkers.experimental.s_linker92a",
+        class_name="SLinker92a",
+        description=(
+            "S-Linker92a - the LLM extraction pass deleted and its own contract run "
+            "as a scan: every pair whose sentence writes a name of the component at "
+            "ANY_CASE, over the catalog and the discovered aliases. 9 of ~16.8 calls "
+            "a run go with it. Proposer ceiling +7.8 net gold a run over the "
+            "extractor, off 30 recorded runs (pilot/regex_extract_audit.py)."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92b": dict(
+        aliases=("scannoqual",),
+        module="llm_sad_sam.linkers.experimental.s_linker92b",
+        class_name="SLinker92b",
+        description=(
+            "S-Linker92b - s92a without the 20.8 pairs a run whose name is written "
+            "only inside a longer dotted identifier. Same gold, 25.0 fewer pairs; "
+            "worth building only if the judge does not apply QUALIFIED_CLAUSE itself."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92c": dict(
+        aliases=("scanspelling",),
+        module="llm_sad_sam.linkers.experimental.s_linker92c",
+        class_name="SLinker92c",
+        description=(
+            "S-Linker92c - s92b at the deleted prompt's other fidelity: spacing, "
+            "hyphenation and compound joining count as the same name. +0.8 gold and "
+            "+1.3 pairs a run for a second relation point in the code."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92d": dict(
+        aliases=("scanboth",),
+        module="llm_sad_sam.linkers.experimental.s_linker92d",
+        class_name="SLinker92d",
+        description=(
+            "S-Linker92d - the whole-name row of the relation: both fidelities "
+            "unioned, as the name-relation table prescribes. Best proposer of the "
+            "family at +1.2 gold over s92b, and the most code."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92e": dict(
+        aliases=("scansurface",),
+        module="llm_sad_sam.linkers.experimental.s_linker92e",
+        class_name="SLinker92e",
+        description=(
+            "S-Linker92e - s92a whose lenient gate quotes the case's own surface "
+            "before the claim and the verdict. No rule added. REFUTED: stage gold "
+            "152.0 -> 147.7 terra, FP 59.0 -> 70.7 luna."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker92f": dict(
+        aliases=("scanreadings",),
+        module="llm_sad_sam.linkers.experimental.s_linker92f",
+        class_name="SLinker92f",
+        description=(
+            "S-Linker92f - s92a whose lenient gate lists the readings the surface "
+            "could have here and names the one it has, then decides. No rule added. "
+            "Best macro F1 of the round on terra (93.07, FP 26.3, below control); "
+            "on luna it cuts the scan's added FP at 6.0 TP."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
     "s_linker101": dict(
         aliases=("thirdlook",),
         module="llm_sad_sam.linkers.experimental.s_linker101",
@@ -2040,6 +2123,26 @@ VARIANT_SPECS = {
             "S-Linker103 - candidates are routed to a judge by the evidence their "
             "sentence gives, not by the stage that proposed them. Recovers gold the "
             "coreference judge refuses for being named directly. No new calls."
+        ),
+    ),
+    "s_linker106": dict(
+        aliases=("deliberate",),
+        module="llm_sad_sam.linkers.experimental.s_linker106",
+        class_name="SLinker106",
+        description=(
+            "S-Linker106 - s101 with the resolver deliberating in-reply: quote the "
+            "referring expression, list the candidates weighed, then commit. "
+            "Chain-of-thought we implement, not vendor reasoning. No extra call."
+        ),
+    ),
+    "s_linker107": dict(
+        aliases=("shortlist",),
+        module="llm_sad_sam.linkers.experimental.s_linker107",
+        class_name="SLinker107",
+        description=(
+            "S-Linker107 - s101 with the antecedent shortlist computed in code and "
+            "handed to the resolver per case (NAMED BEFORE THIS CASE). Deliberation "
+            "tailored to the question: bookkeeping in code, judgement in the prompt."
         ),
     ),
     "s_linker93": dict(

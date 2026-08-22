@@ -876,3 +876,65 @@ Consequences for the ledger:
   component instead collapses the filter. **Do not adopt.**
 
 Full write-up and per-arm numbers: `results/reading_round/README.md`.
+
+### The regex round (s92a–s92f) — the entity extraction pass, replaced by a scan
+
+`ENTITY_EXTRACTION_RULES` states a surface test and defers every weighing to the gate
+one stage later ("whether the mention carries an architectural claim is decided
+later"). A contract with no judgement in it is a regex, and it is one this branch
+already states: the whole-name row of the surface-realization relation. Report:
+`../results/regex_round/README.md`; level 1 `pilot/regex_extract_audit.py`; level 2
+`pilot/regex_proposer_pilots.py`; statistics `pilot/regex_round_stats.py`; invariants
+`pilot/test_s92abcd_regex.py` (2316 checks, no calls).
+
+- **Level 1 settled the proposer question at zero API cost**, off 30 recorded runs of
+  the s89–s92 extractor (15 terra, 15 luna) × 5 projects. Per five-project run against
+  195 gold: LLM extraction 175.3 pairs / 150.1 gold; the scan at `ANY_CASE` over the
+  catalog **and the run's own aliases** 221.9 / 158.3, missing 2.4 of the extractor's
+  gold and adding 10.6. **Ceiling +7.8 net gold a run.** The audit reproduces the
+  branch's own name-relation table exactly (no-alias rows 172/133 and 176/137), so the
+  scan is the relation the module already implements, not a new rule.
+- **The alias table is the load-bearing input.** Catalog-only, the scan loses 25.6 of
+  the extractor's gold. This round replaces the extraction pass, not the knowledge
+  stage — a fourth measurement of the alias table's two jobs.
+- **`s_linker92a` is the head of the round**: the extraction call deleted, no
+  deterministic machinery added at all. Stage arm, four arms in one invocation per
+  model, three runs a side, composed with the same run's untouched other two stages —
+  **terra** TP 180.3 → 186.7, macro F1 91.98 → 92.43, **macro F2 93.09 → 95.12**;
+  **luna** TP 180.0 → 190.7, macro F1 90.46 → 89.61, **macro F2 92.57 → 94.35**.
+  **F2 up on both, F1 neutral on both** (+0.4 / −0.9, neither significant), at
+  **−7.0 of ~84 calls a run** and one whole prompt constant removed. E2E not yet paid
+  for: composition risk is non-zero, so this is a stage result, not the head.
+- **Three variants built to repair predicted failures, all refused because the judge
+  already does their job.** `s_linker92b` (do not propose a name written only inside a
+  dotted identifier — 21.0 pairs a run, 0 gold): the gate rejects them itself, 21/21
+  terra and 12/19 luna with no gold among the approvals, so **`QUALIFIED_CLAUSE`
+  works and the design law holds even when the folded weighing's population grows
+  tenfold**. `s_linker92c` (the deleted prompt's morphology clause as a second
+  fidelity): +0.8 gold a run for ~25 lines. `s_linker92d` (both fidelities unioned, as
+  the relation table prescribes): +1.2 gold, best bracket, most code, and every pair it
+  adds is already linked by another route. **Which whole-name fidelity the scan uses is
+  worth ~1 gold pair a run; whether it is a scan at all is worth ~8.**
+- **The residue is `STRICTER_CLAUSE`'s population, and the repair is a thinking
+  template, not a rule.** What the gate leaks is lowercased ordinary words that
+  coincide with a name, and generic terms the alias stage bound. Restating the clause
+  is refused (s86: a restatement at the lenient gate is redundant), so both repairs
+  change only the order the reply is written in — `s_linker106`'s mechanism at a
+  different question — and both render the strict branch byte for byte.
+  **`s_linker92e` (quote the surface first) is REFUTED**: stage gold 152.0 → 147.7 on
+  terra, FP 59.0 → 70.7 on luna. **`s_linker92f` (list the readings that surface could
+  have, name the one it has, then decide) is real on terra**: macro F1 93.07, the best
+  of the round, at FP 26.3 — *below* the control's 27.3, i.e. it takes the scan's whole
+  added-FP cost back out; on luna it cuts the added FP (59.0 → 51.3) at 6.0 TP.
+  **Echoing what you see is not deliberating about it**: e and f differ only in whether
+  the model writes down the surface or weighs what it could be, and only the second
+  moves anything. Nothing enumerates the readings for the model — that is what keeps it
+  a template and not a clause.
+- **The false-negative accounting, asked directly.** Of the 44.9 gold pairs a run the
+  extractor never proposed, the scan proposes 10.6; of the other 34.3, **30.1 are
+  already linked** by the partial-name and coreference linkers. Against the pipeline's
+  actual 14.4 false negatives a run the scan reaches **10.2 (71%)**; of the 4.2
+  residue, 3.2 are already proposed by the partial-name scan (a judging question) and
+  **0.5 a run is out of reach of any lexical scan at any fidelity or extent**.
+  **Replacing the extractor with a scan removes 71% of the remaining false negatives
+  and moves what is left off the proposer.**
