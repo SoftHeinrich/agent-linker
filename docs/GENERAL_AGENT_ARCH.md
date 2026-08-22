@@ -122,6 +122,25 @@ self-consistency baseline reaches 23.0 on Graph Coloring where three blind
 framings reach 97.0, which is the same separation between framing diversity and
 sampling diversity that we measured.
 
+**The cost falls on exactly one of the merged questions.** Splitting the output by
+question shows the merge is free for the question whose evidence is present in the
+input, and expensive for the question whose evidence is not:
+
+| | proposed/run | precision |
+| --- | ---: | ---: |
+| separate: surface-anchored question | 34.8 | 94.1% |
+| merged: surface-anchored question | **34.9** | **94.3%** |
+| separate: inference question | 31.5 | 43.9% |
+| merged: inference question | **21.7** | **53.9%** |
+
+Fewer claims at higher precision is a **raised evidence threshold**, not lost
+capability. A plausible reading is that the strict, surface-checkable standard of
+one question carries onto a question that has no surface to check -- but whatever
+the cause, **it cannot be instructed away**: telling the model the two kinds are
+judged on their own standards, and giving it the dedicated stage's own search
+instruction verbatim, pushed the threshold *further up* (proposals −17.6,
+precision +17.7).
+
 Consequences, all of which we measured rather than assumed:
 
 * **Resampling is not blindness.** Sampling one proposer k times and unioning

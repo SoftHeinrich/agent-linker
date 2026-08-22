@@ -278,6 +278,48 @@ overlap on 54%/46% of their output, but the **non-overlap is exactly the
 multi-participant links**, and that is where the coreference-heavy document's gold
 concentrates. High overlap did not mean low marginal value.
 
+## The mechanism, at one more level of depth
+
+Splitting every arm's proposals by reference kind shows the loss is not spread
+across the merge at all. It is one question, and one direction.
+
+| arm | kind | proposed/run | correct/run | precision |
+| --- | --- | ---: | ---: | ---: |
+| control | names | 34.8 | 31.5 | 94.1% |
+| merged (F) | names | 34.9 | 31.7 | 94.3% |
+| control | refers back | 31.5 | 12.6 | 43.9% |
+| merged (F) | refers back | **21.7** | 10.2 | **53.9%** |
+
+**Merging costs the naming question nothing measurable.** All of the damage is the
+refer-back question emitting 31% fewer claims at 10 points higher precision --
+the signature of a *raised evidence threshold*, not of lost ability. The merged
+reader becomes more careful about the question it should be least careful about.
+
+Three candidate mechanisms were tested against the recorded proposals and two are
+refuted:
+
+* **Per-sentence output cap — refuted.** Components emitted per proposed sentence:
+  control 1.247, merged 1.223. Nothing is being truncated.
+* **Position decay — not supported.** Gold recall by slot within the 10-sentence
+  block runs 87, 83, 67, 100, 99, 85, 93, 90, 81, 74: a mild late dip, no monotone
+  decline. The published position effect does not reproduce here.
+* **Distraction by a competing name — refuted, and it was our own hypothesis.**
+  The refer-back loss is *larger* on sentences that write no name at all (−16.7
+  points) than on sentences that name some other component (−9.1).
+
+**The threshold is not reachable by instruction.** Two variants tried:
+`s_linker99` told the model a sentence may reference several components (deficit
+metric 14.0 → 14.3 of 26); `s_linker104` added the head's own active search
+instruction verbatim -- *"identify any pronoun or noun phrase in THAT sentence
+that refers back to a component listed above"* -- plus an explicit statement that
+the two kinds are judged on their own standards. It went **further the wrong way**:
+refer-back proposals 37.6 → 20.0 (−17.6) at precision +17.7.
+
+So the sharpened statement of the finding: **asking two questions in one call
+leaves the surface-anchored question untouched and raises the evidence bar on the
+one with no surface anchor, and that bar cannot be lowered by telling the model to
+lower it.** Eight attempts, two of them aimed squarely at the threshold.
+
 ## What this settles for the branch
 
 * The untried cell of the s26–s35 line is now tried. Merging two *proposers* —
