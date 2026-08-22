@@ -212,6 +212,90 @@ cannot see, and it is why the batch was owed.** On luna the effect is at the ful
 gate itself (TP +12.6 at FP +17.0), which is the stage arm's 0.736 approve rate on the
 added pairs showing up end to end.
 
+### Why it regresses where it does — the scan against the extractor, pair by pair
+
+`pilot/regex_regression_analysis.py` (no calls). Every pair in the symmetric
+difference of the two arms' final link sets, pooled over the three paired runs, split
+by **the stage it sits at**. Only `full_name` is a stage this change touches:
+
+| | terra TP+ | TP− | FP+ | FP− | net TP | net FP | | luna net TP | net FP |
+|---|---|---|---|---|---|---|---|---|---|
+| **`full_name`** | 12.0 | 5.7 | 7.7 | 6.7 | **+6.3** | **+1.0** | | **+11.3** | **+18.7** |
+| `partial_name` | 0.0 | 4.7 | 10.3 | 6.0 | −4.7 | +4.3 | | −0.3 | +5.3 |
+| `coreference` | 1.3 | 0.3 | 1.7 | 2.0 | +1.0 | −0.3 | | +0.3 | +2.7 |
+| total | | | | | +2.7 | +5.0 | | +11.3 | +26.7 |
+
+**On terra the change's own stage is TP +6.3 at FP +1.0 and the whole net regression
+is at stages it does not touch.** `partial_name` gives back 4.7 TP and adds 4.3 FP on
+its own, from a judge that runs at ~0.6 precision in a different invocation set. That
+is not the scan; it is what a cross-set control buys you.
+
+What *is* the scan is three mechanisms, and they are separable.
+
+**1. Lowercase surfaces — the use/mention judgement the extractor was doing for free.**
+Of the full-name false positives the scan adds, **6.7 of 7.7 on terra and 24.6 of 27.3
+on luna are lowercase**, recomputed from the proposer itself:
+
+| surface written | matched to | via | terra a run | luna a run |
+|---|---|---|---|---|
+| "database" | `DB` | alias | 3.0 | 3.0 |
+| "common" | `Common` | name | – | 3.7 |
+| "e2e" | `E2E` | name | – | 3.7 |
+| "logic" | `Logic` | name | 1.0 | 3.3 |
+| "client" | `Client` | name | 0.3 | 2.7 |
+| "storage" | `Storage` | name | – | 2.0 |
+| "test driver" | `Test Driver` | name | 1.0 | 1.0 |
+| "front-end" | `UI` | alias | – | 1.3 |
+| "back end" | `Logic` | alias | 0.7 | 1.0 |
+
+**This is the answer to "what does the LLM extractor do that a regex cannot".** Its
+instruction says *"report a reference only when the sentence itself writes the
+component's name"*, and the model reads *the name* as the proper noun rather than the
+homograph — it is applying use/mention judgement at **proposal** time, silently, and
+that was never written down anywhere. The scan cannot: it delegates the distinction to
+`STRICTER_CLAUSE` at the gate, and that gate is lenient by construction ("approve by
+default"). **The precision cost of the swap is exactly the amount of use/mention
+judgement that was implicitly happening inside the extraction call.** It is also why
+the two models differ by a factor of three here: terra's gate applies the clause,
+luna's largely does not.
+
+**2. A hard dependency on the alias table, where the extractor had a soft one.**
+mediastore loses 3.0 TP a run on terra, all `FileStorage`, all "not proposed": S33,
+S35 and S36 write **"DataStorage"**, and this batch's knowledge stage discovered
+`{AudioAccess, ReEncoder, Database}` — **no `DataStorage`**, where the control run's
+table had it. The extractor could still report those sentences; the scan can only
+match `N(c)`. **The swap converts a soft match into a hard dependency on a stage that
+varies by ~2.8 terms a run.** The same three-term table is also what fires "database"
+→ `DB` three times on the same project, so **one alias table costs mediastore 3 TP and
+3 FP at once** — which is the whole of that project's −7.08 F2.
+
+**3. Fidelity, and this one refutes the round's own earlier refusal.**
+bigbluebutton loses `BBB web` on S30 and S78, whose sentences write **"bbb-web"**. The
+alias is `BigBlueButton web application → BBB web`; `ANY_CASE` does not match a
+hyphen-joined writing of a space-separated name and **`ANY_SPELLING` does**. Re-priced
+on this batch's *own* alias tables rather than the recorded control's:
+
+| | pairs | gold | union pairs | union gold | extra gold |
+|---|---|---|---|---|---|
+| terra | 202.7 | 151.7 | 205.0 | 153.7 | **+2.0** (for +2.3 pairs) |
+| luna | 220.0 | 161.0 | 220.7 | 161.0 | ±0.0 (for +0.7 pairs) |
+
+The level-1 audit priced the fidelity axis at **+0.8 gold a run** and this report
+refused `s_linker92c`/`s_linker92d` on that basis. On the alias tables the arm actually
+ran with it is **+2.0 gold on terra at +0.3 non-gold pairs** — a strictly better trade
+than the one that was refused. **The refusal was measured on the control's alias
+tables, and which spellings a table contains is exactly what varies between runs.**
+`s_linker92d` is therefore **re-opened, not refused**: it is the one arm that addresses
+a real terra loss without touching the judge.
+
+**4. Name nesting between siblings, unaddressed by any clause.** bigbluebutton S60
+writes "FreeSWITCH Event Socket Layer (fsels)"; the scan matches the catalog name
+`FreeSWITCH` inside the longer name of a *different* component (`FSESL`), capitalised,
+so neither `QUALIFIED_CLAUSE` (dotted identifiers) nor `STRICTER_CLAUSE` (ordinary
+vocabulary) speaks about it. 1.0 FP a run on terra. The extractor reads the whole
+phrase and does not propose it. This is the sibling-confusion mechanism again, on the
+proposer side, and nothing in the round addresses it.
+
 ---
 
 ## The three variants the judge made unnecessary
@@ -234,7 +318,10 @@ reason is the same in every case: the thing they add is already being done.**
   pair it adds is already in the pipeline's final link set by another route.
 
 All three remain in the tree, registered and priced, because a refusal that cannot be
-reproduced is not a result.
+reproduced is not a result. **`s_linker92d`'s refusal did not survive the E2E** — see
+mechanism 3 above: on the alias tables the arm actually ran with, the union is +2.0
+gold a run on terra rather than +0.8, and it is the only arm that recovers a real terra
+loss without touching the judge. `s_linker92b` and `s_linker92c` stand refused.
 
 ---
 

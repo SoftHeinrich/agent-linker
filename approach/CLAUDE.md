@@ -966,6 +966,32 @@ already states: the whole-name row of the surface-realization relation. Report:
   sibling-confusion mechanism the error analysis found on the precision side, now on
   the recall side. **This makes a contrastive discriminator over the existing candidate
   set the live prize, not a better proposer.**
+- **Why it regresses where it does** (`pilot/regex_regression_analysis.py`, no calls).
+  Splitting the two arms' symmetric difference by the stage it sits at: **on terra the
+  changed stage is TP +6.3 at FP +1.0 and the whole net regression is at stages the
+  change does not touch** (`partial_name` −4.7 TP / +4.3 FP, a ~0.6-precision judge in
+  a different invocation set). Three mechanisms are the scan's own:
+  (1) **lowercase surfaces** — 6.7 of 7.7 added full-name FPs on terra and 24.6 of 27.3
+  on luna are lowercase ("database"→`DB` via an alias, "common"→`Common`,
+  "e2e"→`E2E`, "logic"→`Logic`). **The extractor was applying use/mention judgement at
+  proposal time and nobody wrote it down**; the scan delegates it to `STRICTER_CLAUSE`
+  at a gate that approves by default, which is also why the two models differ threefold
+  here. **The precision cost of the swap is the implicit judgement the extraction call
+  was doing.** (2) **A hard dependency on the alias table where the extractor had a
+  soft one** — mediastore loses 3.0 TP a run because its sentences write `DataStorage`
+  and this batch's knowledge stage did not discover that alias, while the control's
+  did; the same three-term table also fires "database"→`DB` three times, so **one alias
+  table costs that project 3 TP and 3 FP at once**, which is all of its −7.08 F2.
+  (3) **Name nesting between siblings** — a catalog name matched inside a longer name
+  of a *different* component (1.0 FP a run), which no clause in the module speaks about.
+- **The `s_linker92d` refusal did not survive the E2E, and the reason is
+  transferable.** Level 1 priced the fidelity axis at +0.8 gold a run on the *recorded
+  control's* alias tables and the round refused the union arm on that basis. On the
+  alias tables the E2E arm actually ran with it is **+2.0 gold on terra for +0.3
+  non-gold pairs** — the hyphen-joined writings of space-separated alias names that
+  `ANY_CASE` cannot reach. **Which spellings an alias table contains is exactly what
+  varies run to run, so pricing a fidelity against one recorded table under-measures
+  it.** `s_linker92d` is re-opened; `s_linker92b` and `s_linker92c` stand refused.
 - **The false-negative accounting, asked directly.** Of the 44.9 gold pairs a run the
   extractor never proposed, the scan proposes 10.6; of the other 34.3, **30.1 are
   already linked** by the partial-name and coreference linkers. Against the pipeline's
