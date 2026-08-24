@@ -1064,6 +1064,11 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   which readings a lowercased word could have is in no table. This is the design law
   applied to the *alternative set* rather than to the rule, and it is what makes s106
   and s92f agree instead of contradict.
-- **`s_linker110` is built and owes level 2**: s107's shortlist on the head, terra-only
-  so far (proposal spurious 27.0 → 17.0 at gold 45.6 → 45.3), luna side owed via
-  `pilot/reading_pilots.py --arm shortlist`.
+- **`s_linker110` holds at level 2 on both models.** s107's shortlist rebased onto the
+  head, three samples x five projects, both arms in the same invocation per model:
+  **terra spurious 16.9 -> 12.3 at gold 36.7 -> 36.5; luna 38.4 -> 23.1 at 36.4 -> 35.9.**
+  Spurious down on both at a gold cost of 0.2 and 0.5 — luna's -15.3 above the FP floor of
+  10.7, terra's -4.7 inside it. Over the resolver's own windows the list carries 1.8-4.5
+  of a catalog's 6-14 components a case, which is what separates it from `s_linker102`'s
+  mostly-negative checkbox. **Level 4 owed** (`pilot/run_consolidation_e2e.sh`): a
+  refer-back the shortlist withholds is a pair the strict judge never sees.

@@ -134,13 +134,36 @@ GATE-07: the ground is `QUALIFIED_CLAUSE`'s own — *"an expression that appears
 fragment of a longer identifier is naming a piece of that identifier"* — at the second
 way names nest. Not a new rule; the same rule at an extent the module already scans.
 
-## What is built and owing: `s_linker110`
+## What holds at level 2: `s_linker110`
 
 `s_linker107`'s antecedent shortlist, rebased off the retired `s_linker101` onto the head.
-Terra proposal stage, three samples × five projects: **spurious 27.0 → 17.0 at gold 45.6
-→ 45.3**, precision 0.628 → 0.727. It is the only reading-round arm that moved spurious
-without moving gold. **Level 2 owed on luna** (`pilot/reading_pilots.py --arm shortlist`);
-composition risk is the resolver's usual one and is not zero.
+Per case the prompt carries **NAMED BEFORE THIS CASE** — the components the window
+actually names ahead of the target, with the sentence that names each. Measured over the
+resolver's own windows that list carries **1.8 to 4.5 of a catalog's 6 to 14 components a
+case** (`pilot/test_s110_shortlist.py`, 122 checks): a shortlist in fact, not only in
+intent, which is what separates it from `s_linker102`'s mostly-negative checkbox over
+every component in the model.
+
+Three samples × five projects, both arms in the same invocation per model. `control` is
+the head's own resolver — `_prompt_coref` is byte-identical between s90 and s92, so the
+arms differ at the resolver and nowhere else.
+
+| model | arm | proposals | gold | spurious | precision |
+| --- | --- | ---: | ---: | ---: | ---: |
+| terra | control | 53.7 | 36.7 | 16.9 | 0.684 |
+| terra | **shortlist** | 48.8 | **36.5** | **12.3** | **0.749** |
+| luna | control | 74.8 | 36.4 | 38.4 | 0.487 |
+| luna | **shortlist** | 59.1 | **35.9** | **23.1** | **0.608** |
+
+**Spurious down on both models at a gold cost of 0.2 and 0.5.** luna −15.3 is above the
+recorded null floor of FP 10.7; terra −4.7 is inside it. The reading round's one arm that
+moved spurious without moving gold does it again on a second model and a second base.
+
+Level 4 is owed and this round does not claim it: a stage arm screens candidates and does
+not decide them, and a refer-back the shortlist withholds is a pair the strict judge never
+sees. The batch is `pilot/run_consolidation_e2e.sh`, two arms — `s_linker92a` as control
+and `s_linker110` as the composed arm. `s_linker109` is deliberately not a third arm: the
+measurement policy says not to pair-run an arm a checkpoint replay already separates.
 
 ## The transferable result: who enumerates the alternatives
 

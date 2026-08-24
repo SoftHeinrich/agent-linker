@@ -45,11 +45,26 @@ Only `_prompt_coref` changes. The loop, the batch size, the `SENTENCES` table, t
 constants, every judge and the parser are inherited, and the two added reply fields are
 ignored downstream. **No extra call and no vendor reasoning feature.**
 
-**Level 2 is owed and this variant does not claim it.** The 107 measurement is terra
-only and on a base this branch no longer runs; `pilot/reading_pilots.py --arm shortlist`
-is the pilot, and it needs a luna side before anything composed is bought. The
-composition risk is the resolver's usual one and is not zero: a refer-back the shortlist
-withholds is a pair the strict judge never sees.
+**Level 2, measured on both models** (`pilot/reading_pilots.py --arms control
+shortlist2`, three samples x five projects, both arms in the same invocation per model;
+`control` is the head's resolver, whose `_prompt_coref` is byte-identical between s90 and
+s92, so the arms differ at the resolver and nowhere else):
+
+    model  arm         proposals   gold   spurious   precision
+    terra  control        53.7      36.7    16.9       0.684
+    terra  shortlist2     48.8      36.5    12.3       0.749
+    luna   control        74.8      36.4    38.4       0.487
+    luna   shortlist2     59.1      35.9    23.1       0.608
+
+**Spurious down on both models at a gold cost of 0.2 and 0.5** — luna -15.3, above the
+recorded null floor of FP 10.7; terra -4.7, inside it. This is the reading round's
+result reproduced on a second model and a second base: the shortlist is the only arm of
+that round that moved spurious without moving gold, and it does so again here.
+
+**Level 4 is owed and this variant does not claim it.** A stage arm screens candidates
+and does not decide them, and the composition risk is the resolver's usual one: a
+refer-back the shortlist withholds is a pair the strict judge never sees. The batch is
+`pilot/run_consolidation_e2e.sh`.
 
 **Base.** `s_linker109` — the adopted head plus the nesting refusal, which is decided
 at level 1 and owes nothing.
