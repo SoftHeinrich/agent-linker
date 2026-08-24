@@ -7,8 +7,8 @@ spent. Four candidate changes are refused, one is adopted outright, and one is b
 left owing a stage pilot.
 
 Tooling: `approach/pilot/consolidation_audit.py` (the five questions),
-`approach/pilot/test_s109_nesting.py` (129 invariant checks, replays both scans pair by
-pair). Data: `consolidation_audit.json`.
+`approach/pilot/test_s109_nesting.py` (237 invariant checks, replays both scans pair by
+pair over every recorded run of the base). Data: `consolidation_audit.json`.
 
 ## What was refused, and what it cost to find out
 
@@ -105,12 +105,14 @@ a whole name of it: that pair is the full-name linker's."* `s_linker109` adds th
 case beside it: **if every writing of this component's word sits inside a span where the
 sentence writes another component's whole name, the pair is that component's.**
 
-| model | candidates | refused | partial links | links lost | **gold lost** | final FP |
+| model | runs | candidates | refused | partial links | links lost | **gold lost** |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| terra | 101.0 | 12.0 | 34.7 | 5.0 | **0.0** | **−5.0** |
-| luna | 94.3 | 12.0 | 41.3 | 10.3 | **0.0** | **−10.3** |
+| terra | 6 | ~101 | 12.0 | ~34.7 | **5.2** | **0.0** |
+| luna | 6 | ~94 | 12.0 | ~41.3 | **10.8** | **0.0** |
 
-Six runs of six, both models, zero gold. The refusal fires on **exactly 12 candidates in
+Twelve runs of twelve, both models, zero gold — six recorded before the round and six
+more that the consolidation E2E's control arm added afterwards, which the invariant suite
+picked up without a line changing. The refusal fires on **exactly 12 candidates in
 every run of both models**: it reads the catalog and the document and nothing that is
 sampled, so it is the one arm on this branch with no run-to-run band at all.
 
@@ -164,6 +166,51 @@ not decide them, and a refer-back the shortlist withholds is a pair the strict j
 sees. The batch is `pilot/run_consolidation_e2e.sh`, two arms — `s_linker92a` as control
 and `s_linker110` as the composed arm. `s_linker109` is deliberately not a third arm: the
 measurement policy says not to pair-run an arm a checkpoint replay already separates.
+
+## End to end, three paired runs per model, both arms in every invocation
+
+`pilot/run_consolidation_e2e.sh`, `../results/consolidation_e2e_{terra,luna}_r{1,2,3}_20260825`,
+scored by `pilot/score_runs.py` (exact sign-flip permutation test on pooled link sets).
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| terra | `s_linker92a` | 181.7 | 34.0 | 91.92 | 93.93 | 75.0 |
+| terra | **`s_linker110`** | **186.3** | **26.0** | **93.85** | **95.51** | **73.0** |
+| luna | `s_linker92a` | 189.3 | 63.3 | 88.67 | 93.88 | 78.3 |
+| luna | **`s_linker110`** | **189.7** | **58.0** | **89.23** | **94.12** | **75.7** |
+
+**terra is QUALITY-CHANGING in the arm's favour on all four statistics** — TP +4.7,
+FP −8.0, macro F1 **+1.9**, macro F2 **+1.6**, every p at the n=3 floor of 0.10 and every
+one of the three runs ahead of every one of the control's. **luna is QUALITY-NEUTRAL on
+all four with every point estimate in the arm's favour** (TP +0.3 p=1.00, FP −5.3 p=0.60,
+F1 +0.6 p=0.70, F2 +0.2 p=0.90). Cheaper on both models.
+
+This also repairs what the regex round had to concede. That round's terra E2E read macro
+F1 **−0.8** and F2 −0.1 while luna carried the F2 gain; here terra gains **+1.9 F1 and
++1.6 F2** and luna holds. The scan bought recall and paid precision at a stage it did not
+touch; these two changes are precision at exactly the stages the scan disturbed.
+
+### Where it lands, per project
+
+**bigbluebutton, the arm ahead in six runs of six**, both models — which is the project
+whose catalog carries the sibling names the refusal is about:
+
+| model | control F1 | arm F1 | control FP | arm FP |
+| --- | ---: | ---: | ---: | ---: |
+| terra | 85.5 / 84.8 / 84.6 | **89.1 / 90.8 / 86.4** | 13.3 | **10.3** |
+| luna | 80.5 / 74.7 / 85.7 | **86.6 / 93.0 / 90.2** | 25.7 | **8.7** |
+
+teammates: terra ahead 3/3 (79.4→85.7, 81.0→86.0, 82.0→89.4 at FP 17.3 → 12.7). On luna
+it moves both ways (73.8, 74.0, 71.2 against 72.7, 86.2, 74.1) — but **luna's own control
+ranges 72.7 to 86.2 F1 on that project across three runs**, a 13.5-point band, so the
+arm's variation there sits inside the control's own, and macro F2 is flat (86.2→85.9,
+93.0→87.7, 84.4→86.1). mediastore is byte-identical in all six runs; teastore and jabref
+move by at most one pair.
+
+**Adopted.** `s_linker110` is the head: better on one model, not worse on the other,
+cheaper on both, and every part of it is either level-1 decided or measured on both
+models at level 2 and level 4.
+
 
 ## The transferable result: who enumerates the alternatives
 

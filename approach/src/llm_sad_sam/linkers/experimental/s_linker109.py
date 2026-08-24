@@ -29,23 +29,27 @@ quotes the bare shared word, so the surface differs per model while the pair bei
 wrong does not — which is why the repair is a fact in code and not a clause in either
 judge's prompt.
 
-**Priced at level 1, no LLM calls, six recorded five-project runs**
-(`pilot/test_s109_nesting.py`, 129 checks, which replays both `_scan`s pair by pair):
+**Priced at level 1, no LLM calls** (`pilot/test_s109_nesting.py`, 237 checks, which
+replays both `_scan`s pair by pair over every recorded run of the base — twelve now that
+the consolidation E2E has added six more):
 
-    model   candidates   refused   partial links   links lost   gold lost   final FP
-    terra      101.0      12.0         34.7           5.0          0.0        -5.0
-    luna        94.3      12.0         41.3          10.3          0.0       -10.3
+    model   runs   candidates   refused   partial links   links lost   gold lost
+    terra     6       ~101        12.0        ~34.7           5.2         0.0
+    luna      6        ~94        12.0        ~41.3          10.8         0.0
 
-**−5.0 false positives a run on terra and −10.3 on luna, at zero gold, in six runs of
-six.** The refusal fires on **exactly 12 candidates in every run of both models** —
+**−5.2 false positives a run on terra and −10.8 on luna, at zero gold, in twelve runs of
+twelve.** The refusal fires on **exactly 12 candidates in every run of both models** —
 it reads the catalog and the document and nothing that is sampled, so unlike every
 other arm on this branch it has no run-to-run band at all.
 
 **No E2E is owed** (measurement policy, level 3): of the pairs a run this removes,
-**0.0 are proposed by the coreference linker** in any of the six runs, so freeing them
+**0.0 are proposed by the coreference linker** in any recorded run, so freeing them
 from `_unlinked` gives a later stage nothing to re-propose and a paired run would
 measure model drift instead of the change. This is the `s_linker85` precedent — a
-deterministic relation settled by replaying the relation.
+deterministic relation settled by replaying the relation. The composed E2E that
+`s_linker110` pays for confirms it from the other side: bigbluebutton, the one project
+whose catalog carries sibling names, is ahead in six runs of six on both models, at FP
+13.3 -> 10.3 (terra) and 25.7 -> 8.7 (luna).
 
 **What it does not claim.** The same predicate at the *full-name* stage was already
 priced by the regex round at 1.0 pair and 0.0 gold a run and refused as below anything

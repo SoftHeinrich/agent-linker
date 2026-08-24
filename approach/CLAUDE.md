@@ -1023,8 +1023,9 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
 - **`s_linker109` is the head, and it is one refusal in `_scan`.** The partial-name
   scan proposes a pair on one word of a name; if **every** writing of that word sits
   inside a span where the sentence writes *another* component's whole name, the pair is
-  that component's. terra **−5.0 FP a run**, luna **−10.3**, **0.0 gold in six runs of
-  six**, no call added or removed. The refusal fires on **exactly 12 candidates in every
+  that component's. terra **-5.2 FP a run**, luna **-10.8**, **0.0 gold in twelve runs of
+  twelve** (six recorded before the round, six the E2E's control added after), no call
+  added or removed. The refusal fires on **exactly 12 candidates in every
   run of both models** — it reads the catalog and the document and nothing sampled, so
   it is the only arm here with no run-to-run band. **No E2E owed**: 0.0 of the removed
   links are proposed by the coreference linker, so `_unlinked` frees nothing
@@ -1070,5 +1071,18 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   Spurious down on both at a gold cost of 0.2 and 0.5 — luna's -15.3 above the FP floor of
   10.7, terra's -4.7 inside it. Over the resolver's own windows the list carries 1.8-4.5
   of a catalog's 6-14 components a case, which is what separates it from `s_linker102`'s
-  mostly-negative checkbox. **Level 4 owed** (`pilot/run_consolidation_e2e.sh`): a
-  refer-back the shortlist withholds is a pair the strict judge never sees.
+  mostly-negative checkbox. **Level 4, three paired runs a model, both arms in every
+  invocation** (`../results/consolidation_e2e_{terra,luna}_r{1,2,3}_20260825`,
+  `pilot/score_runs.py`): **terra QUALITY-CHANGING in the arm's favour on all four** --
+  TP 181.7 -> 186.3, FP 34.0 -> 26.0, macro F1 91.92 -> **93.85**, macro F2 93.93 ->
+  **95.51**, every p at the n=3 floor and every run ahead of every control run; **luna
+  QUALITY-NEUTRAL on all four with every point estimate favourable** (TP +0.3 p=1.00,
+  FP -5.3 p=0.60, F1 +0.6 p=0.70, F2 +0.2 p=0.90). Calls 75.0 -> 73.0 and 78.3 -> 75.7.
+- **It repairs what the regex round conceded.** That round's terra E2E read macro F1
+  **-0.8** while luna carried the F2 gain, because the scan bought recall and paid
+  precision at `partial_name`, a stage it did not touch. These two changes are precision
+  at exactly the stages the scan disturbed, and terra now reads **+1.9 F1 / +1.6 F2**.
+  **bigbluebutton is ahead in six runs of six on both models** -- the project whose
+  catalog carries the sibling names -- at FP 13.3 -> 10.3 (terra) and **25.7 -> 8.7**
+  (luna). On luna's teammates the arm moves both ways, inside a control that itself
+  ranges 72.7-86.2 F1 across three runs. **`s_linker110` is the head.**

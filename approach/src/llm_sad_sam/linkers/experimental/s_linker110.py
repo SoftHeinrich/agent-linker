@@ -61,10 +61,21 @@ recorded null floor of FP 10.7; terra -4.7, inside it. This is the reading round
 result reproduced on a second model and a second base: the shortlist is the only arm of
 that round that moved spurious without moving gold, and it does so again here.
 
-**Level 4 is owed and this variant does not claim it.** A stage arm screens candidates
-and does not decide them, and the composition risk is the resolver's usual one: a
-refer-back the shortlist withholds is a pair the strict judge never sees. The batch is
-`pilot/run_consolidation_e2e.sh`.
+**Level 4, three paired runs a model, both arms in every invocation**
+(`pilot/run_consolidation_e2e.sh`, `../results/consolidation_e2e_*_20260825`, scored by
+`pilot/score_runs.py`):
+
+    model  arm     TP      FP     macro F1        macro F2        calls
+    terra  s92a   181.7   34.0   91.92           93.93            75.0
+    terra  this   186.3   26.0   93.85 (+1.9)    95.51 (+1.6)     73.0
+    luna   s92a   189.3   63.3   88.67           93.88            78.3
+    luna   this   189.7   58.0   89.23 (+0.6)    94.12 (+0.2)     75.7
+
+**terra QUALITY-CHANGING in this variant's favour on all four**, every p at the n=3 floor
+and every run ahead of every control run; **luna QUALITY-NEUTRAL on all four with every
+point estimate favourable.** Cheaper on both. bigbluebutton -- the project whose catalog
+carries the sibling names `s_linker109` is about -- is ahead in six runs of six, at FP
+13.3 -> 10.3 on terra and 25.7 -> 8.7 on luna.
 
 **Base.** `s_linker109` — the adopted head plus the nesting refusal, which is decided
 at level 1 and owes nothing.
