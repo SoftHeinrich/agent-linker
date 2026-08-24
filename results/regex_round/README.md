@@ -296,6 +296,26 @@ vocabulary) speaks about it. 1.0 FP a run on terra. The extractor reads the whol
 phrase and does not propose it. This is the sibling-confusion mechanism again, on the
 proposer side, and nothing in the round addresses it.
 
+### Two candidate repairs, priced at level 1 and not built
+
+- **Union the alias table across runs — REFUTED, for free.** If the scan's hard
+  dependency on `N(c)` is a sampling problem, unioning the knowledge stage's output
+  over k runs should fix it. Over this batch's own tables: terra gold **151.7 (k=1) →
+  151.3 (k=2) → 151.0 (k=3)** at 202.7 → 218.0 pairs; luna 161.0 → 162.3 → 163.0 at
+  220.0 → 233.0. **It buys pairs and no gold on terra.** The reason is that the term
+  it would need — `DataStorage` — is in **none** of the three draws, while the
+  control's 0821 draw had it: this is not sampling within the batch, it is a
+  knowledge-stage draw that went against the arm. Worth stating precisely, because it
+  narrows mechanism 2: the scan's hard dependency is real, but mediastore's 3 TP would
+  not have been lost with the control's table, and a cheap k-run union does not
+  recover it.
+- **A longest-name-wins gate for sibling nesting — priced, not built.** Pairs whose
+  matched span is strictly inside a longer catalog or alias name of a *different*
+  component: **1.0 a run on terra, 0.0 of them gold** (the `FreeSWITCH` inside
+  `FreeSWITCH Event Socket Layer` case). A free deterministic gate, and one false
+  positive a run is below anything this branch has adopted a rule for. Recorded so the
+  next round does not re-derive it.
+
 ---
 
 ## The three variants the judge made unnecessary
