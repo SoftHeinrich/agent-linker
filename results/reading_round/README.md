@@ -411,3 +411,68 @@ Two recall-led candidates follow directly from the mechanism, both under test:
    Our rung H already showed phrasing is not the lever (14.0 → 14.3 of 26); this
    changes the reply *shape* instead, to one decision per candidate, so an
    omission has no well-formed short form.
+
+---
+
+## Correction: the offline probe was alias-blind
+
+Every offline classification in this round used `SLinker90.__new__(SLinker90)` to
+call `_states_a_name`. That predicate reads `self.doc_knowledge.aliases`, and an
+uninitialised instance has none, so **every measurement below counted canonical
+component names only** — while the running pipeline gives its extractor the
+approved alias table.
+
+Redone with the alias table a recorded run actually approved:
+
+| view | named | refer-back |
+| --- | ---: | ---: |
+| canonical-name-only (as reported above) | 133 | **62** |
+| with the alias table the pipeline has | **157** | **38** |
+
+Per project, the gold that is *named* once aliases count: mediastore 28 of 31,
+teastore 21 of 27, teammates 52 of 57, bigbluebutton 38 of 62, jabref 18 of 18.
+
+What this changes:
+
+* **The refer-back stream is 19.5% of gold, not a third.** Statements in this
+  round that "roughly a third of correct links have no name to find" are wrong.
+* **The `s_linker93` exposure figure is overstated.** The "12 gold links (6.2%)
+  that name only some other component" is 9 once aliases count. The arm's
+  structural defect stands; its size does not.
+* **The `names` vs `refers` splits in the merge analysis share the bias.** Their
+  absolute counts are inflated on the refer-back side. The *direction* survives —
+  every arm was measured with the same instrument, and the merged arms proposed
+  ~10 fewer refer-back claims than control under it — but the absolute
+  composition should not be quoted from those tables.
+
+What survives unchanged, because it never depended on the split: the six-way merge
+refutation, the per-kind proposal counts (measured on arm outputs, not on gold
+classification), the F-beta derivative, and the oracle-union ceiling.
+
+One further finding the corrected view makes sharp: **bigbluebutton holds 17 of the
+29 gold links whose sentence writes no name of any component at all** — 59% of them
+in one of five documents. That is why bigbluebutton decided every arm in this
+round, and it is not a general property of the task.
+
+## Where the alias table does and does not reach
+
+The module discovers, judges and records the names a document gives each
+component, and exactly one stage is told: `_prompt_extraction`. The coreference
+resolver and all three judges never see it.
+
+| blind stage | population it costs | size |
+| --- | --- | ---: |
+| coreference resolver | refer-back gold whose antecedent is written *only* as an alias | **2 of 195** |
+| the three judges | residual FNs whose evidence sentence writes an alias | includes the head's own `S33 -> DB` |
+
+86.8% of refer-back antecedents are written canonically, so the resolver's
+blindness is nearly free. The judges are the exposure: the head misses
+`mediastore S33 -> DB` where S32 reads *"stored in the **Database** component"* and
+S33 reads *"decouple the DataStorage from the **database**"*. `Database` is an
+approved alias for `DB`; the denotation judge is target-blind by design and
+alias-blind by omission, so it sees an ordinary English word and rejects.
+
+`s_linker108` tests passing the table to the judging prompts. The risk runs the
+other way and is recorded before the result: s25 measured that showing the
+denotation judge more about its target traded 5.5 true positives for 2.5 false
+positives, so an alias list may make it approve generic word uses too.

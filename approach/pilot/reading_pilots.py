@@ -60,6 +60,9 @@ from llm_sad_sam.linkers.experimental.s_linker99 import SLinker99  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker100 import SLinker100  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker102 import SLinker102  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker104 import SLinker104  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker106 import SLinker106  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker107 import SLinker107  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker93 import SLinker93  # noqa: E402
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
@@ -211,7 +214,7 @@ def main() -> None:
     ap.add_argument("--model", default=os.environ.get("OPENAI_MODEL_NAME"))
     ap.add_argument("--dump", default="", help="write every arm's proposals here")
     ap.add_argument("--arms", nargs="+", default=["control", "merged"],
-                    choices=["control", "merged", "ordered", "narrow", "grain", "cases", "window", "multi", "glean", "member", "standard"],
+                    choices=["control", "merged", "ordered", "narrow", "grain", "cases", "window", "multi", "glean", "member", "standard", "deliberate", "shortlist", "shortlist2"],
                     help="every arm a claim rests on goes in the SAME invocation")
     args = ap.parse_args()
     backend = (LLMBackend.OPENAI
@@ -244,6 +247,12 @@ def main() -> None:
             "glean": (SLinker100, glean_proposals),
             "member": (SLinker102, merged_proposals),
             "standard": (SLinker104, merged_proposals),
+            "deliberate": (SLinker106, control_proposals),
+            "shortlist": (SLinker107, control_proposals),
+            # the same shortlist rebased onto the adopted head. `control`
+            # is the right control for both: `_prompt_coref` is byte-identical
+            # between s90 and s92, so the arms differ at the resolver only.
+            "shortlist2": (SLinker110, control_proposals),
         }
         for arm in args.arms:
             cls, fn = ARMS[arm]

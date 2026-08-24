@@ -1000,3 +1000,70 @@ already states: the whole-name row of the surface-realization relation. Report:
   **0.5 a run is out of reach of any lexical scan at any fidelity or extent**.
   **Replacing the extractor with a scan removes 71% of the remaining false negatives
   and moves what is left off the proposer.**
+
+### The consolidation round (s109, s110) — the two rounds composed, four refusals for free
+
+The reading round and the regex round ran on different bases and were never measured
+against each other. This round composes them and answers every question at **level 1**,
+off six recorded runs of `s_linker92a`, no LLM calls spent. Report:
+`../results/consolidation_round/README.md`; audit `pilot/consolidation_audit.py`;
+invariants `pilot/test_s109_nesting.py` (129 checks).
+
+- **The third blind proposer is redundant in front of a scan, so `s_linker101` is
+  retired as a base.** Of the 10.3 gold a run it adds over `s_linker90`, the scan
+  proposes **7.0 (68%)** for no call; the remainder is 3.3 pairs against a TP floor of
+  4.8. It costs ~4 calls a project and took luna's FP from 43 to 106. `s_linker107` is
+  rebased onto the head as `s_linker110`; `s_linker108` is dropped.
+- **`s_linker93`'s narrowing is refused a second time, now on the scan base.** The
+  filter saves 44% of resolver cases (378 sentences a run to 212) and costs **3.2 gold
+  a run, 2.5 of it the defect the reading round named** — a sentence that names X and
+  refers back to Y. The scan rescues the rest through the named route; it cannot rescue
+  those. *Measured per (sentence, component) pair first, which read 0.7 gold: the filter
+  is per sentence, and the wrong predicate flattered it fourfold.*
+- **`s_linker109` is the head, and it is one refusal in `_scan`.** The partial-name
+  scan proposes a pair on one word of a name; if **every** writing of that word sits
+  inside a span where the sentence writes *another* component's whole name, the pair is
+  that component's. terra **−5.0 FP a run**, luna **−10.3**, **0.0 gold in six runs of
+  six**, no call added or removed. The refusal fires on **exactly 12 candidates in every
+  run of both models** — it reads the catalog and the document and nothing sampled, so
+  it is the only arm here with no run-to-run band. **No E2E owed**: 0.0 of the removed
+  links are proposed by the coreference linker, so `_unlinked` frees nothing
+  re-proposable (level 3, the `s_linker85` precedent).
+- **The judge could not have been asked instead, and that is the point.** The
+  denotation judge is target-blind by design — its case carries the expression and the
+  sentence, never the component — so it answers `participant` correctly for a
+  participant that is a *different* component. Showing it the target is the design law's
+  own −5.5 gold refusal (s25). **The distinction is a fact about the case whose judge
+  cannot be shown it, so code is not the better place for it but the only one.**
+- **A discovered fact may open a case and may not close one.** The first version of the
+  predicate consulted N(c) — catalog names *and* the run's aliases, as every scan here
+  does — and **cost 3 gold links in one luna run**, each where that run's table bound a
+  term to the sibling of the component the gold names. Scans may use the alias table
+  because a scan only *admits* a case for a judge; this predicate **ends** one, so it
+  rests only on given input. The alias table varies ~2.8 terms a run and would otherwise
+  make one stage's sampling a silent refusal in another's.
+- **The sibling confusion is not one expression judged twice.** 3.2 shared
+  `(sentence, quoted claim)` groups a run holding **0.0 TP and 0.8 FP** — a chooser over
+  identical cases has nothing to choose. **A contrastive discriminator as a new stage is
+  priced and not built**: 8.3 FP and 2.3 FN a run sit in a sibling group another member
+  owns, so its ceiling is −8.3 FP / +2.3 TP, **below the recorded FP floor of 10.7** —
+  an E2E cannot see it and only a stage pilot on fixed candidates could.
+- **The transferable result: who enumerates the alternatives.** Four arms asked one
+  structural question — enumerate the alternatives, then commit — and agree only under
+  one reading:
+
+  | where | who enumerates | result |
+  |---|---|---|
+  | resolver (`s_linker106`) | the model | spurious **+6.6** |
+  | resolver (`s_linker107`) | code | spurious **−10.0** |
+  | lenient gate (`s_linker92e`) | nobody — echo the surface | **refuted** |
+  | lenient gate (`s_linker92f`) | the model | **best terra macro F1** at FP below control |
+
+  **The alternative set is a fact when the case contains it and a weighing when it does
+  not.** Which components the sentences above name is a fact `_states_a_name` computes;
+  which readings a lowercased word could have is in no table. This is the design law
+  applied to the *alternative set* rather than to the rule, and it is what makes s106
+  and s92f agree instead of contradict.
+- **`s_linker110` is built and owes level 2**: s107's shortlist on the head, terra-only
+  so far (proposal spurious 27.0 → 17.0 at gold 45.6 → 45.3), luna side owed via
+  `pilot/reading_pilots.py --arm shortlist`.

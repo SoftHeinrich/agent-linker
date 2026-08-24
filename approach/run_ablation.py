@@ -217,6 +217,9 @@ CANONICAL_VARIANTS = [
     "s_linker103",  # candidates routed by evidence, not by proposing stage
     "s_linker106",  # resolver deliberates in-reply (self-implemented CoT)
     "s_linker107",  # antecedent shortlist computed in code, judgement in prompt
+    "s_linker108",  # approved aliases reach the judges, not only the extractor
+    "s_linker109",  # the partial-name scan refuses a word another name covers
+    "s_linker110",  # s109 + the resolver's antecedent shortlist, computed
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2143,6 +2146,37 @@ VARIANT_SPECS = {
             "S-Linker107 - s101 with the antecedent shortlist computed in code and "
             "handed to the resolver per case (NAMED BEFORE THIS CASE). Deliberation "
             "tailored to the question: bookkeeping in code, judgement in the prompt."
+        ),
+    ),
+    "s_linker109": dict(
+        aliases=("nesting",),
+        module="llm_sad_sam.linkers.experimental.s_linker109",
+        class_name="SLinker109",
+        description=(
+            "S-Linker109 - s92a plus one refusal in the partial-name scan: a word "
+            "written only inside another component's whole name is that component's "
+            "pair, not this one. Level 1 decided, both models, 0 gold at -5.0/-10.3 "
+            "false positives a run; no call added or removed."
+        ),
+    ),
+    "s_linker110": dict(
+        aliases=("shortlist2",),
+        module="llm_sad_sam.linkers.experimental.s_linker110",
+        class_name="SLinker110",
+        description=(
+            "S-Linker110 - s109 with the resolver's candidate antecedents enumerated "
+            "in code per case (NAMED BEFORE THIS CASE). s107's arm rebased off the "
+            "retired s101 onto the adopted head. Level 2 owed on luna."
+        ),
+    ),
+    "s_linker108": dict(
+        aliases=("aliasjudge",),
+        module="llm_sad_sam.linkers.experimental.s_linker108",
+        class_name="SLinker108",
+        description=(
+            "S-Linker108 - s101 with the approved alias table passed to the judging "
+            "prompts, not just the extractor. Targets residual FNs whose evidence "
+            "sentence writes an alias the judge was never told about. No new calls."
         ),
     ),
     "s_linker93": dict(
