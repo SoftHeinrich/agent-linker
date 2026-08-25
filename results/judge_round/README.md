@@ -230,3 +230,49 @@ should stop costing anything as soon as it is sampled more than once and reduced
 same self-consistency the branch already measured as worth +1.2 F1 for free over three
 runs. That is the arm this round would build next, and it is a level-2 question at the
 lenient gate on fixed candidates, exactly like everything above.
+
+## The architecture the round leaves: one structure, three skills
+
+The three judges were three code paths — `_validate_with_evidence`,
+`_classify_denotations`, `_validate_coref_links` — each with its own batching loop, its
+own reply parser, its own bounds check and its own decision record. They do the same
+thing, and the branch had never written that thing down. `s_linker114` does:
+
+> Take candidates. Batch them at `JUDGE_BATCH`. Render the batch's shared evidence once
+> and each case as a numbered block. Compose one prompt — question, rubric, cases, reply
+> schema. Ask once. Parse by case index, bounds-checked. Record one decision per
+> candidate, defaulting to the skill's own polarity. Return what was kept.
+
+A `JudgeSkill` carries only what differs, and every field of it is a measured decision:
+
+| skill | question | withheld | rubric | reply fields, in order | polarity | why that polarity |
+| --- | --- | --- | --- | --- | --- | ---: |
+| `entity` | is this written name doing naming work here? | nothing | layered entity + qualified + stricter | claim, approve | approve unless a ground fires | base rate 0.70 / 0.74 |
+| `denotation` | what does this expression denote? | **target and catalog** | qualified | denotation, claim | keep `participant` | 0.31 / 0.19 |
+| `coref` | does this expression point to this component? | nothing | layered coref | claim, objection, approve | reject when uncertain | 0.57 / 0.46 |
+
+Every difference in that table has a measurement behind it and nothing else differs.
+The target is withheld from `denotation` because showing it is `s_linker25` at −5.5 gold
+and `s_linker108` at −0.40 macro F2. `objection` belongs to the strict skill alone
+because "approve by default" and "state the strongest ground to reject" are
+contradictory in one prompt. `coref` is shown the resolver's committed reference and
+antecedent because `s_linker82` withheld them and the judge then rejected half the gold
+put to it.
+
+**It is byte-identical to the head, and that is the deliverable.**
+`pilot/test_s114_skills.py` runs the head's own methods and the variant's own methods
+side by side over six recorded runs with `_ask` stubbed to record and answer nothing:
+**142/142 judging batches send the same prompt, record the same decision, and keep the
+same set.** A refactor that moves a measured number is not a refactor.
+
+**Honesty about the size:** this is not a code reduction. 133 statements against the
+head's 136. What changes is that the loop exists **once** instead of three times and the
+six ways the judges differ are five declared fields instead of three divergent
+implementations — so the next judging arm is an edit to one field, not a fourth copy of
+the loop, and an arm that forgets to differ where the measurements say it must is now
+visible in a table rather than buried in a method.
+
+One deliberate difference, priced first: the head writes **no decision row at all** for a
+case its reply never answered, so a silent omission leaves no trace. The variant records
+it, rejected. Over the six recorded runs that case occurs **0.0 times a run** against
+79.3–84.7 candidates, so it changes nothing measured and stands as a tripwire.

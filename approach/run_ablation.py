@@ -224,6 +224,7 @@ CANONICAL_VARIANTS = [
     "s_linker111",  # s110 + the lenient gate enumerates the surface's readings
     "s_linker112",  # s110 + the sortal gate quotes before it commits
     "s_linker113",  # s112 + the sortal gate enumerates the readings too
+    "s_linker114",  # the three judges as one pass over three skills
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2222,6 +2223,17 @@ VARIANT_SPECS = {
             "lists the readings the expression could have here and names the one it "
             "has, between the quote and the verdict. The enumerate-then-commit law at "
             "its second judging site."
+        ),
+    ),
+    "s_linker114": dict(
+        aliases=("skills",),
+        module="llm_sad_sam.linkers.experimental.s_linker114",
+        class_name="SLinker114",
+        description=(
+            "S-Linker114 - the head's three judges expressed as one judging pass over "
+            "three JudgeSkill declarations. Byte-identical to s110 by construction: "
+            "142/142 batches over six recorded runs send the same prompt, record the "
+            "same decision and keep the same set. A refactor, not an arm."
         ),
     ),
     "s_linker108": dict(
