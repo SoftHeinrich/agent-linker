@@ -221,6 +221,9 @@ CANONICAL_VARIANTS = [
     "s_linker108",  # approved aliases reach the judges, not only the extractor
     "s_linker109",  # the partial-name scan refuses a word another name covers
     "s_linker110",  # s109 + the resolver's antecedent shortlist, computed
+    "s_linker111",  # s110 + the lenient gate enumerates the surface's readings
+    "s_linker112",  # s110 + the sortal gate quotes before it commits
+    "s_linker113",  # s112 + the sortal gate enumerates the readings too
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2186,6 +2189,39 @@ VARIANT_SPECS = {
             "S-Linker110 - s109 with the resolver's candidate antecedents enumerated "
             "in code per case (NAMED BEFORE THIS CASE). s107's arm rebased off the "
             "retired s101 onto the adopted head. Level 2 owed on luna."
+        ),
+    ),
+    "s_linker111": dict(
+        aliases=("readings",),
+        module="llm_sad_sam.linkers.experimental.s_linker111",
+        class_name="SLinker111",
+        description=(
+            "S-Linker111 - s110 with s92f's lenient gate: the reply enumerates the "
+            "readings the quoted surface could have here and names the one it has "
+            "before it decides. The regex round's best terra macro F1, rebased onto "
+            "the adopted head; the strict branch renders s92's bytes exactly."
+        ),
+    ),
+    "s_linker112": dict(
+        aliases=("quotefirst",),
+        module="llm_sad_sam.linkers.experimental.s_linker112",
+        class_name="SLinker112",
+        description=(
+            "S-Linker112 - s110 with the partial-name denotation gate demanding its "
+            "quote BEFORE its verdict, the order the other two judges already use. "
+            "Two strings, no rule text; s48's separation applied to the one judge "
+            "whose reply committed in the wrong field order."
+        ),
+    ),
+    "s_linker113": dict(
+        aliases=("sortalreadings",),
+        module="llm_sad_sam.linkers.experimental.s_linker113",
+        class_name="SLinker113",
+        description=(
+            "S-Linker113 - s112 plus s92f's enumeration at the sortal gate: the reply "
+            "lists the readings the expression could have here and names the one it "
+            "has, between the quote and the verdict. The enumerate-then-commit law at "
+            "its second judging site."
         ),
     ),
     "s_linker108": dict(
