@@ -1,0 +1,108 @@
+# one prompt this arm sent: strict1 / luna / ctl / run 1 / mediastore / 10134 chars
+
+Validate components in a document. Check coref resolution: does the referring expression in this sentence actually refer to the named component as an architectural participant?
+
+COMPONENTS: UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking
+
+These are coreference links: a pronoun or noun phrase in the sentence is claimed to refer back to the component, which is NOT named in the sentence itself. Approve only when the sentence contains a genuine referring expression that unambiguously points to THIS component and makes an architectural claim about it. Reject when there is no such referring expression or when the antecedent could equally be a different component. An expression denoting what a component acts on or produces -- the data, the artifact, the request, the result -- refers to that thing and not to the component, however clearly the component is the one acting on it. When uncertain, reject.
+
+For each case, first quote the EXACT words from the sentence that state the
+architectural claim about the component (or write "none" if the sentence makes no
+such claim), then state the strongest ground there is for rejecting this case under the
+rules above (or "none" if there is none), then decide: approve unless that ground is one
+the rules above make decisive. An objection you could raise against most sentences is not
+a ground for rejecting this one.
+
+CASES:
+Case 1: pronoun/role-ref -> Facade
+  Claimed reference: "the Facade component"
+  Claimed antecedent (S1): "namely the Facade component"
+  "One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management."
+Case 2: pronoun/role-ref -> Facade
+  Claimed reference: "the Facade component"
+  Claimed antecedent (S1): "namely the Facade component"
+  [prev: To meet the user authentication requirement, registration and log-in have to be offered.] "To this end, the Facade component delivers the corresponding registration and log-in pages to users."
+Case 3: pronoun/role-ref -> Facade
+  Claimed reference: "the Facade component"
+  Claimed antecedent (S1): "namely the Facade component"
+  [prev: The main functionality, however, is provided by other components.] "In addition, users can browse, download, and upload audio files using the Facade component."
+Case 4: pronoun/role-ref -> MediaManagement
+  Claimed reference: "the MediaManagement component"
+  Claimed antecedent (S7): "called the MediaManagement component"
+  [prev: In addition, users can browse, download, and upload audio files using the Facade component.] "Application business logic is provided by a central business logic component, called the MediaManagement component."
+Case 5: pronoun/role-ref -> MediaManagement
+  Claimed reference: "The MediaManagement component"
+  Claimed antecedent (S7): "called the MediaManagement component"
+  [prev: Application business logic is provided by a central business logic component, called the MediaManagement component.] "The MediaManagement component coordinates the communication of other components."
+Case 6: pronoun/role-ref -> MediaManagement
+  Claimed reference: "it"
+  Claimed antecedent (S8): "The MediaManagement component"
+  [prev: The MediaManagement component coordinates the communication of other components.] "Furthermore, it fetches audio files from a specific location (e.g., a dedicated file server or a local disk) when processing download requests."
+Case 7: pronoun/role-ref -> UserManagement
+  Claimed reference: "The UserManagement component"
+  Claimed antecedent (S10): "As described above, to communicate with the system, users' registration and authentication are needed."
+  [prev: As described above, to communicate with the system, users' registration and authentication are needed.] "The UserManagement component answers the requests for registration and authentication."
+Case 8: pronoun/role-ref -> UserDBAdapter
+  Claimed reference: "The UserDBAdapter component"
+  Claimed antecedent (S11): "The UserManagement component answers the requests for registration and authentication."
+  [prev: The UserManagement component answers the requests for registration and authentication.] "The UserDBAdapter component queries the database."
+Case 9: pronoun/role-ref -> UserManagement
+  Claimed reference: "the UserManagement component"
+  Claimed antecedent (S11): "The UserManagement component answers the requests for registration and authentication."
+  [prev: The UserDBAdapter component queries the database.] "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords."
+Case 10: pronoun/role-ref -> Reencoding
+  Claimed reference: "The re-encoded files"
+  Claimed antecedent (S15): "To this end, the requested files are first reencoded."
+  [prev: To this end, the requested files are first reencoded.] "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."
+Case 11: pronoun/role-ref -> TagWatermarking
+  Claimed reference: "the TagWatermarking component"
+  Claimed antecedent (S16): "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."
+  [prev: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.] "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+Case 12: pronoun/role-ref -> MediaManagement
+  Claimed reference: "the MediaManagement component"
+  Claimed antecedent (S8): "The MediaManagement component coordinates the communication of other components."
+  [prev: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.] "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+Case 13: pronoun/role-ref -> Packaging
+  Claimed reference: "the Packaging component"
+  Claimed antecedent (S17): "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+  [prev: Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet.] "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file."
+Case 14: pronoun/role-ref -> Reencoding
+  Claimed reference: "The ReEncoder component"
+  Claimed antecedent (S15): "To this end, the requested files are first reencoded."
+  [prev: To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.] "The ReEncoder component converts the bit rates of audio files."
+Case 15: pronoun/role-ref -> Reencoding
+  Claimed reference: "This"
+  Claimed antecedent (S20): "The ReEncoder component converts the bit rates of audio files."
+  [prev: The ReEncoder component converts the bit rates of audio files.] "This can result in reduction of file sizes."
+Case 16: pronoun/role-ref -> DB
+  Claimed reference: "It"
+  Claimed antecedent (S23): "The Database component represents an actual database (e.g., MySQL)."
+  [prev: The Database component represents an actual database (e.g., MySQL).] "It stores user information and meta-data of audio files such as the name and the genre."
+Case 17: pronoun/role-ref -> MediaAccess
+  Claimed reference: "it"
+  Claimed antecedent (S27): "The MediaAccess component encapsulates database access for meta-data of audio files."
+  [prev: The MediaAccess component encapsulates database access for meta-data of audio files.] "Furthermore, it fetches a list of all available audio files."
+Case 18: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S26): "the predefined location"
+  [prev: All salted hashes of passwords are also stored in the Database component.] "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+Case 19: pronoun/role-ref -> DB
+  Claimed reference: "the database"
+  Claimed antecedent (S31): "The Database component"
+  [prev: All salted hashes of passwords are also stored in the Database component.] "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database."
+Case 20: pronoun/role-ref -> DB
+  Claimed reference: "the Database"
+  Claimed antecedent (S31): "The Database component"
+  [prev: By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.] "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+Case 21: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S33): "a specific location (e.g., a dedicated file server or a local disk)"
+  [prev: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.] "Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage."
+Case 22: pronoun/role-ref -> FileStorage
+  Claimed reference: "the DataStorage"
+  Claimed antecedent (S33): "a specific location (e.g., a dedicated file server or a local disk)"
+  [prev: Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage.] "When a user uploads a file, it will be stored in the DataStorage without any change."
+
+Return JSON:
+{"validations": [{"case": 1, "claim": "<exact quote or none>", "objection": "<strongest ground to reject, or none>", "approve": true}]}
+JSON only:

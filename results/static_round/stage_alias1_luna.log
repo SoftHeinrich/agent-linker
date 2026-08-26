@@ -1,0 +1,776 @@
+parity: control renders the head's constants; every arm differs
+
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 28
+  run1 mediastore     ctl           27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run1 mediastore     genalias      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run1 mediastore     mergefrag     27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run1 mediastore     mergeord      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: front-end -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Extracted: 21
+  run1 teastore       ctl           20g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Persistence service -> Persistence
+    Alias: Image Provider -> ImageProvider
+    Alias: WebUi -> WebUI
+    Alias: front-end -> WebUI
+    Alias: Persistence provider -> Persistence
+    Alias: UI -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run1 teastore       genalias      20g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Persistence service -> Persistence
+    Alias: fallback algorithm based on the general item popularity -> PopularityBasedRecommender
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run1 teastore       mergefrag     19g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Image Provider -> ImageProvider
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 23
+  run1 teastore       mergeord      21g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: UI Server -> UI
+    Alias: storage layer -> Storage
+    Alias: client -> Client
+    Alias: UI Browser -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: datastore -> GAE Datastore
+    Alias: testing component -> Test Driver
+    Alias: back end -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 78
+  run1 teammates      ctl           49g/ 13n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: logic API -> Logic
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: GAE -> GAE Datastore
+    Alias: UI Server -> UI
+    Alias: storage layer -> Storage
+    Alias: test infrastructure -> Test Driver
+    Alias: database -> GAE Datastore
+    Alias: client -> Client
+    Alias: UI Browser -> UI
+    Alias: testing -> Test Driver
+    Alias: datastore -> GAE Datastore
+    Alias: back end logic -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 86
+  run1 teammates      genalias      50g/ 19n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: web API -> UI
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: UI Server -> UI
+    Alias: storage layer -> Storage
+    Alias: database -> GAE Datastore
+    Alias: client -> Client
+    Alias: UI Browser -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: datastore -> GAE Datastore
+    Alias: back end logic -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 69
+  run1 teammates      mergefrag     49g/  8n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: UI Server -> UI
+    Alias: storage layer -> Storage
+    Alias: Client component -> Client
+    Alias: UI -> UI
+    Alias: UI Browser -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: Common utilities -> Common
+    Alias: test driver -> Test Driver
+    Alias: datastore -> GAE Datastore
+    Alias: Logic API -> Logic
+    Alias: end-to-end component -> E2E
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 61
+  run1 teammates      mergeord      46g/  5n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: WebRTC-SFU -> WebRTC-SFU
+    Alias: Apps akka -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: FSESL akka -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: HTML5 server -> HTML5 Server
+    Alias: presentation conversion flow -> Presentation Conversion
+    Alias: MCU -> kurento
+    Alias: BBB web -> BBB web
+    Alias: KMS -> kurento
+    Alias: bbb-web -> BBB web
+    Alias: media server -> kurento
+    Alias: Kurento Media Server -> kurento
+    Alias: HTML5 client -> HTML5 Client
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: client -> HTML5 Client
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Recording Processor -> Recording Service
+    Alias: SFU -> WebRTC-SFU
+    Alias: conversion process -> Presentation Conversion
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 47
+  run1 bigbluebutton  ctl           44g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: client -> HTML5 Client
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: BigBlueButton web -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: WebRTC-SFU -> WebRTC-SFU
+    Alias: HTML5 server -> HTML5 Server
+    Alias: Apps akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    Alias: Redis DB -> Redis DB
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 40
+  run1 bigbluebutton  genalias      39g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Presentation conversion flow -> Presentation Conversion
+    Alias: Apps Akka -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: BigBlueButton web application -> BBB web
+    Alias: BigBlueButton web -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Recording Processor -> Recording Service
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 44
+  run1 bigbluebutton  mergefrag     42g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BigBlueButton client -> HTML5 Client
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: presentation conversion process -> Presentation Conversion
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Recording Processor -> Recording Service
+    Alias: conversion process -> Presentation Conversion
+    Alias: Apps akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 46
+  run1 bigbluebutton  mergeord      42g/  4n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run1 jabref         ctl           18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run1 jabref         genalias      18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run1 jabref         mergefrag     18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run1 jabref         mergeord      18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run2 mediastore     ctl           27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run2 mediastore     genalias      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run2 mediastore     mergefrag     27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run2 mediastore     mergeord      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 20
+  run2 teastore       ctl           19g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: front-end -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run2 teastore       genalias      21g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: fallback algorithm based on the general item popularity -> PopularityBasedRecommender
+    Alias: Image Provider -> ImageProvider
+    Alias: WebUi -> WebUI
+    Alias: Persistence provider -> Persistence
+    Alias: UI -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 23
+  run2 teastore       mergefrag     20g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Persistence service -> Persistence
+    Alias: fallback algorithm based on the general item popularity -> PopularityBasedRecommender
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: WebUi -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run2 teastore       mergeord      19g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: test driver infrastructure -> Test Driver
+    Alias: client scripts -> Client
+    Alias: testing component -> Test Driver
+    Alias: E2E end-to-end component -> E2E
+    Alias: front-end -> UI
+    Alias: UI Server -> UI
+    Alias: data persistence -> Storage
+    Alias: UI Browser -> UI
+    Alias: GAE Datastore -> Storage
+    Alias: datastore -> Storage
+    Alias: back end -> Logic
+    Alias: back-end logic -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 63
+  run2 teammates      ctl           43g/ 19n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: test driver infrastructure -> Test Driver
+    Alias: client component -> Client
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: GAE -> GAE Datastore
+    Alias: UI Server -> UI
+    Alias: logic layer -> Logic
+    Alias: storage layer -> Storage
+    Alias: database -> GAE Datastore
+    Alias: UI Browser -> UI
+    Alias: datastore -> GAE Datastore
+    Alias: testing component -> Test Driver
+    Alias: back end -> Logic
+    Alias: end-to-end component -> E2E
+    Alias: back-end logic -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 75
+  run2 teammates      genalias      49g/ 23n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: UI -> UI
+    Alias: datastore -> GAE Datastore
+    Alias: Logic API -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 60
+  run2 teammates      mergefrag     45g/  9n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: back end -> Logic
+    Alias: storage layer -> Storage
+    Alias: UI -> UI
+    Alias: client -> Client
+    Alias: business logic -> Logic
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: test driver -> Test Driver
+    Alias: datastore -> GAE Datastore
+    Alias: web browser -> UI
+    Alias: end-to-end component -> E2E
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 67
+  run2 teammates      mergeord      47g/ 13n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: Apps Akka -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: media server -> kurento
+    Alias: BigBlueButton web -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: Recording Processor -> Recording Service
+    Alias: HTML5 server -> HTML5 Server
+    Alias: conversion process -> Presentation Conversion
+    Alias: media controller -> WebRTC-SFU
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    Alias: Redis DB -> Redis DB
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 44
+  run2 bigbluebutton  ctl           41g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: bbb-web -> BBB web
+    Alias: bbb-html5 -> HTML5 Client
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: HTML5 server component -> HTML5 Server
+    Alias: conversion process -> Presentation Conversion
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 41
+  run2 bigbluebutton  genalias      38g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Apps akka -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: BigBlueButton API -> BBB web
+    Alias: HTML5 server -> HTML5 Server
+    Alias: presentation conversion flow -> Presentation Conversion
+    Alias: KMS -> kurento
+    Alias: bbb-web -> BBB web
+    Alias: media server -> kurento
+    Alias: Kurento Media Server -> kurento
+    Alias: media controller -> WebRTC-SFU
+    Alias: HTML5 client -> HTML5 Client
+    Alias: Redis DB -> Redis DB
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BigBlueButton Apps -> Apps
+    Alias: SFU -> WebRTC-SFU
+    Alias: conversion process -> Presentation Conversion
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 50
+  run2 bigbluebutton  mergefrag     44g/  6n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BigBlueButton Apps -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: Recording Processor -> Recording Service
+    Alias: SFU -> WebRTC-SFU
+    Alias: HTML5 server -> HTML5 Server
+    Alias: Apps akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 45
+  run2 bigbluebutton  mergeord      40g/  4n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run2 jabref         ctl           18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run2 jabref         genalias      18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run2 jabref         mergefrag     18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: command line interface -> cli
+    Extracted: 19
+  run2 jabref         mergeord      18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run3 mediastore     ctl           27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run3 mediastore     genalias      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run3 mediastore     mergefrag     27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Extracted: 27
+  run3 mediastore     mergeord      27g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: WebUi -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: UI -> WebUI
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: general item popularity -> PopularityBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run3 teastore       ctl           19g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Persistence service -> Persistence
+    Alias: Image Provider -> ImageProvider
+    Alias: WebUi -> WebUI
+    Alias: front-end -> WebUI
+    Alias: Persistence provider -> Persistence
+    Alias: UI -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run3 teastore       genalias      21g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: fallback algorithm based on the general item popularity -> PopularityBasedRecommender
+    Alias: Image Provider -> ImageProvider
+    Alias: WebUi -> WebUI
+    Alias: front-end -> WebUI
+    Alias: Persistence provider -> Persistence
+    Alias: UI -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: order-based nearest-neighbor approach -> OrderBasedRecommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 22
+  run3 teastore       mergefrag     19g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Persistence service -> Persistence
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: registry -> Registry
+    Alias: UI -> WebUI
+    Alias: Registry instance -> Registry
+    Alias: Recommender service -> Recommender
+    Alias: PersistenceProvider -> Persistence
+    Extracted: 21
+  run3 teastore       mergeord      21g/  0n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: Test Driver -> Test Driver
+    Alias: Client -> Client
+    Alias: storage layer -> Storage
+    Alias: Common -> Common
+    Alias: UI -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: testing component -> Test Driver
+    Alias: Storage -> Storage
+    Alias: Logic -> Logic
+    Alias: back end -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 61
+  run3 teammates      ctl           45g/  7n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: GAE -> GAE Datastore
+    Alias: UI Server -> UI
+    Alias: storage layer -> Storage
+    Alias: UI Browser -> UI
+    Alias: datastore -> GAE Datastore
+    Alias: back end logic -> Logic
+    Alias: back end -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 70
+  run3 teammates      genalias      47g/  8n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: front-end -> UI
+    Alias: E2E -> E2E
+    Alias: UI -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: datastore -> GAE Datastore
+    Alias: back end -> Logic
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 65
+  run3 teammates      mergefrag     46g/ 14n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: E2E end-to-end component -> E2E
+    Alias: E2E -> E2E
+    Alias: UI Server -> UI
+    Alias: Client component -> Client
+    Alias: UI Browser -> UI
+    Alias: GAE Datastore -> GAE Datastore
+    Alias: test driver -> Test Driver
+    Alias: Logic API -> Logic
+    Alias: testing component -> Test Driver
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S100 (50 sents)
+    batch 3: S101-S150 (50 sents)
+    batch 4: S151-S198 (48 sents)
+    Extracted: 46
+  run3 teammates      mergeord      43g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: Apps Akka -> Apps
+    Alias: BigBlueButton Apps -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: Recording Processor -> Recording Service
+    Alias: HTML5 server -> HTML5 Server
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 45
+  run3 bigbluebutton  ctl           41g/  4n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: Media controller -> WebRTC-SFU
+    Alias: Presentation conversion -> Presentation Conversion
+    Alias: BigBlueButton Apps -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: WebRTC-SFU -> WebRTC-SFU
+    Alias: HTML5 server -> HTML5 Server
+    Alias: conversion process -> Presentation Conversion
+    Alias: Apps akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    Alias: Redis DB -> Redis DB
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 43
+  run3 bigbluebutton  genalias      40g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BigBlueButton client -> HTML5 Client
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Apps Akka -> Apps
+    Alias: bbb-web -> BBB web
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Kurento Media Server -> kurento
+    Alias: Redis PubSub -> Redis PubSub
+    Alias: conversion process -> Presentation Conversion
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 44
+  run3 bigbluebutton  mergefrag     40g/  4n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: BBB web -> BBB web
+    Alias: Apps Akka -> Apps
+    Alias: BigBlueButton Apps -> Apps
+    Alias: fsels -> FSESL
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: BigBlueButton web application -> BBB web
+    Alias: FSESL akka -> FSESL
+    Alias: BigBlueButton web -> BBB web
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: WebRTC-SFU -> WebRTC-SFU
+    Alias: HTML5 server -> HTML5 Server
+    Alias: HTML5 client -> HTML5 Client
+    Alias: KMS -> kurento
+    Alias: Redis DB -> Redis DB
+    batch 1: S1-S50 (50 sents)
+    batch 2: S51-S87 (37 sents)
+    Extracted: 44
+  run3 bigbluebutton  mergeord      41g/  3n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: outer shell -> gui
+    Alias: command line interface -> cli
+    Alias: intermediate layer -> logic
+    Extracted: 20
+  run3 jabref         ctl           18g/  2n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Alias: command line interface -> cli
+    Extracted: 19
+  run3 jabref         genalias      18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run3 jabref         mergefrag     18g/  1n
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+    Extracted: 19
+  run3 jabref         mergeord      18g/  1n
+
+alias1 on luna, 3 runs, per five-project run:
+  ctl          gold  152.0  spurious   19.3  calls  27.7  mean prompt    7347 chars
+  genalias     gold  153.3  spurious   21.3  calls  27.7  mean prompt    7447 chars
+  mergefrag    gold  153.0  spurious   18.3  calls  27.0  mean prompt    7462 chars
+  mergeord     gold  151.7  spurious   13.0  calls  27.0  mean prompt    7337 chars
+
+alias1 on luna, composed with the recorded partial_name + coreference of the same run:
+  ctl          macroF1  88.40  macroF2  91.13  TP  178.0  FP   46.7
+  genalias     macroF1  88.84  macroF2  91.76  TP  179.0  FP   48.0
+  mergefrag    macroF1  88.60  macroF2  91.46  TP  178.7  FP   45.3
+  mergeord     macroF1  89.36  macroF2  91.59  TP  177.3  FP   40.3

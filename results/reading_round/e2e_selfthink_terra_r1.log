@@ -1,0 +1,139 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker90, s_linker107
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker90 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: DataStorage -> FileStorage
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 26
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> Facade
+    Coref reject: S31 -> DB
+    Coref reject: S32 -> DB
+    Coref reject: S33 -> FileStorage
+    Coref reject: S34 -> MediaAccess
+    Coref reject: S34 -> DB
+    Coref reject: S35 -> FileStorage
+    Coref reject: S36 -> FileStorage
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ./results/llm_logs/s_linker89_openai_mediastore_20260822_104623.json
+  LLM call trace saved: ./results/llm_logs/s_linker89_openai_mediastore_20260822_104623_calls.json (10 calls)
+
+Final: 29 links (17.4s, 10 LLM calls)
+  s_linker90: P=100.0% R=93.5% F1=96.7% F2=94.8% TP=29 FP=0 FN=2 (17s)
+    Sources: {'full_name': 26, 'coreference': 3}
+    FP by source: {}
+
+  --- Variant: s_linker107 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker94 (one reading pass -> three judging routes)
+SLinker96 (one reading pass at batch 10)
+SLinker97 (one reading pass, case by case, batch 10)
+SLinker101 (head's two proposers + the reading as a third blind look)
+SLinker107 (per-case antecedent shortlist computed deterministically)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 27
+    batch 1: S1-S10 (10 sents)
+    batch 2: S11-S20 (10 sents)
+    batch 3: S21-S30 (10 sents)
+    batch 4: S31-S37 (7 sents)
+    Read: 29 named, 3 refer-back
+    Third look added 2 named candidates
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref skip (no antecedent): S33 -> FileStorage
+    Third look added 0 refer-back candidates
+    Coref reject: S8 -> Facade
+    Coref reject: S21 -> Reencoding
+    Coref reject: S26 -> MediaAccess
+    Coref reject: S31 -> DB
+    Coref reject: S32 -> DB
+    Coref reject: S33 -> DB
+    Coref reject: S34 -> MediaAccess
+    Coref reject: S34 -> DB
+    Coref reject: S35 -> FileStorage
+    Coref reject: S36 -> FileStorage
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ./results/llm_logs/s_linker107_openai_mediastore_20260822_104646.json
+  LLM call trace saved: ./results/llm_logs/s_linker107_openai_mediastore_20260822_104646_calls.json (14 calls)
+
+Final: 30 links (23.3s, 14 LLM calls)
+  s_linker107: P=100.0% R=96.8% F1=98.4% F2=97.4% TP=30 FP=0 FN=1 (23s)
+    Sources: {'full_name': 27, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker90 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: Auth service -> Auth
+    Alias: WebUi -> WebUI
+    Alias: Image Provider -> ImageProvider
+    Alias: Persistence service -> Persistence
+    Alias: Recommender service -> Recommender
+    Alias: persistence provider -> Persistence
+    Alias: Image Provider service -> ImageProvider
+    Alias: UI -> WebUI
+    Alias: PersistenceProvider -> Persistence
+    Alias: registry -> Registry
+    Alias: WebUI service -> WebUI
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 23
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    LLM error: OpenAI error after 3 retries: Error code: 429 - {'error': {'message': 'Flex does not have sufficient resources available to fulfill your request. You can try again later in case more resources are available, or change service_tier=default. Visit the docs at https://platform.openai.com/docs/guides/flex-processing to learn more.', 'type': 'resource_unavailable', 'param': None, 'code': 'flex_unavailable'}} — retrying in 3s (attempt 1/3)
