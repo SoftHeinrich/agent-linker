@@ -45,11 +45,11 @@ Its noise rate is $10.4\%$, above \Artemis{}'s $7.2\%$ and below the lexical pip
 This is the trade the entity pass makes deliberately: it scans the sentence for every candidate name rather than extracting one mention, and the judges then reject what the scan over-proposes.
 Therefore \approach{} leads on both balanced and recall-weighted \fone, and \Artemis{} keeps the cleaner output.
 
-Beyond the link-level average, \autoref{tab:rq2} reports the silent-failure mass (SFM), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of documented sentences whose component a system abandons.
-\approach{} reaches a macro SFM of $2.2\%$, against $7.1\%$ for \Artemis{} and $7.4\%$ for the lexical SWATTR pipeline.
-It abandons one documented component on one project, MediaStore's \texttt{FileStorage}, which carries $3$ of that project's $27$ documented sentences; the other four projects have an SFM of $0.0\%$.
+Beyond the link-level average, \autoref{tab:rq2} reports the silent-failure mass (SFM), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of gold sentence--component assignments whose component a system abandons.
+\approach{} reaches a macro SFM of $1.9\%$, against $4.6\%$ for \Artemis{} and $7.1\%$ for the lexical SWATTR pipeline.
+It abandons one documented component on one project, MediaStore's \texttt{FileStorage}, which carries $3$ of that project's $31$ documented sentence--component assignments; the other four projects have an SFM of $0.0\%$.
 \Artemis{} abandons one component on three of five projects: \texttt{GAE Datastore} on Teammates, \texttt{Presentation Conversion} on BigBlueButton, and \texttt{preferences} on JabRef.
-SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage}, and \texttt{Reencoding}---that together carry $37.0\%$ of MediaStore's documented sentences.
+SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage}, and \texttt{Reencoding}---that together carry $35.5\%$ of MediaStore's documented sentence--component assignments.
 
 \paragraph{Smallest-gain case: MediaStore.}
 %SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
@@ -87,7 +87,7 @@ It trades $4$pp of doc-model precision for $18$pp of recall, and abandons one do
 %DONE [scope] suite covers both tasks (doc-model + doc-code).
 \autoref{tab:rq2} reports the size-aware suite for \approach{}, \TransArc{}, and \Artemis{} on both tasks, on the GPT-5.6-terra backend.
 On doc-model, \approach{} covers $0.96$ of the documented sentences, against $0.79$ for both baselines ($+17$pp).
-Combined with the $2.2\%$ silent-failure mass reported above, \approach{} reaches every documented component but one and nearly every documented sentence.
+Combined with the $1.9\%$ silent-failure mass reported above, \approach{} reaches every documented component but one and nearly every documented sentence.
 
 On doc-code, the standard link-level \fone\ shows the \emph{smallest} gap: \approach{} separates from \Artemis{} by $+6.0$pp, because it is driven by the few large components every system recovers.
 The size-aware metrics open the gap.
@@ -104,7 +104,7 @@ Against either baseline the size-aware metrics, not the standard metric, show wh
 
 \begin{rqanswer}
 \paragraph{Answer to RQ2.}
-On doc-model, \approach{} covers $0.96$ of sentences ($+17$pp) at $2.2\%$ silent-failure mass, a third of either baseline's.
+On doc-model, \approach{} covers $0.96$ of sentences ($+17$pp) at $1.9\%$ silent-failure mass, below both baselines'.
 On doc-code the standard \fone\ gap is smallest ($+6.0$pp); the size-aware suite opens it---coverage $+17$pp, worst-component \fone\ $+36$pp, harmonic-mean \fone\ $+41$pp---exposing the tail the baselines drop.
 \end{rqanswer}
 
@@ -182,7 +182,7 @@ Removing a small linker or the knowledge module barely moves link-level \fone\ b
 \approach{} improves over the strongest published baseline, \Artemis{}, at every granularity we measure.
 Doc-model \avgfone\ rises from $0.836$ to $0.914$ ($+7.8$pp), and \avgftwo\ from $0.790$ to $0.931$ ($+14.1$pp), with four of five projects gaining \fone\ and all five gaining \ftwo.
 The doc-code composition inherits the gain: $+6.0$pp \avgfone\ and $+10.8$pp \avgftwo.
-Doc-model sentence coverage reaches $0.96$ ($+17$pp over both baselines) at a silent-failure mass of $2.2\%$, against $7.1\%$ and $7.4\%$.
+Doc-model sentence coverage reaches $0.96$ ($+17$pp over both baselines) at a silent-failure mass of $1.9\%$, against $4.6\%$ and $7.1\%$.
 The doc-code size-aware metrics show a much larger advantage on the tail that the standard metric hides: worst-component \fone\ $+36$pp, harmonic-mean per-component \fone\ $+41$pp, and sentence coverage $+17$pp over \Artemis{}.
 The three judges remove $164.3$ distinct false positives at a cost of $14.0$ true links---worth $14.5$pp of \fone\ but only $4.9$pp of \ftwo, since a judge buys precision and never recall---and each of the three linkers catches a non-overlapping slice of true positives.
 The knowledge module is worth $6.2$pp \avgfone, and $33$pp of worst-component \fone: like the size-aware suite itself, its value is concentrated in the tail.

@@ -21,13 +21,14 @@ Panel
                              (the MICRO per-component F1 collapses onto link F1 with
                              no enrolment, so it is dropped; SFM/SFC do NOT collapse
                              — they are the doc-model size-aware metric, added
-                             2026-06-30, distinct-sentence denominator)
+                             2026-06-30, component--sentence denominator)
 
 The worst-component + harmonic pair is the paper's ``metric.tex`` size-aware
 headline for DOC-CODE (weight each architecture component equally, not each link
 pair); they stay doc-code-only (redundant with link-F1 on doc-model). The
 doc-model size-aware metric is instead SFM/SFC (silent component failure: the
-share of documented sentences whose component recovers no correct link), added
+share of documented component--sentence links whose component recovers no correct
+link), added
 to ``compute_sad_sam`` only — ``compute_sad_code`` is untouched.
 ``mini-src/check.py`` pins every cell to a frozen golden table (validated at
 retirement against the then-canonical ``metrics_api`` and the interface-dropped
@@ -396,18 +397,18 @@ def compute_sad_sam(project, res):
     Silent-Failure Mass (SFM) / Count (SFC) is the doc-model size-aware metric
     (the doc-code worst/harmonic tail is redundant with link-F1 here, so it is
     NOT reported on doc-model; see the module docstring). Definitions, over GOLD
-    components and DISTINCT documentation sentences:
+    components and gold documentation assignments:
 
       * component c is ABANDONED iff ``recall_c == 0`` -- it recovers no correct
         link (zero correct sentences for c), reusing ``prf``'s convention that an
         empty/all-wrong prediction scores recall 0.
       * SFC = #{abandoned gold components}                              (integer)
-      * SFM = |distinct documented sentences belonging to >=1 abandoned component|
-              / |distinct documented sentences| * 100                  (%, [0,100])
+      * SFM = sum(|gold sentences for c| for abandoned c)
+              / sum(|gold sentences for c| for gold c) * 100            (%, [0,100])
 
-    The denominator and numerator are DISTINCT sentences (a sentence gold-linked
-    to two components is counted once) -- NOT the prototype's (sentence,component)
-    decision grain. Empty gold -> SFM 0.0, SFC 0.
+    This is a sentence-weighted SFC: every gold (sentence, component) assignment
+    contributes one unit of mass. Thus, a sentence documented for two components
+    contributes twice, once for each component. Empty gold -> SFM 0.0, SFC 0.
     """
     gold = load_gs_sad_sam(project)
     lp, lr, lf1 = prf(gold, res)
@@ -418,17 +419,30 @@ def compute_sad_sam(project, res):
     for c, s in res:
         res_by_s[s].add(c)
 
-    # SFM/SFC: comp -> distinct gold sentences; abandoned = comp with no CORRECT
-    # link (gold & res), per the recall_c == 0 definition.
-    gold_by_c, correct_by_c = defaultdict(set), defaultdict(set)
+    # Group gold assignments by component, then retain only exact gold hits. A
+    # component is abandoned when its set of correct sentences remains empty.
+    gold_sentences_by_component = defaultdict(set)
+    correct_sentences_by_component = defaultdict(set)
     for c, s in gold:
-        gold_by_c[c].add(s)
+        gold_sentences_by_component[c].add(s)
     for c, s in (gold & res):
-        correct_by_c[c].add(s)
-    abandoned = {c for c in gold_by_c if not correct_by_c.get(c)}
-    abandoned_sents = set().union(*(gold_by_c[c] for c in abandoned)) if abandoned else set()
-    all_sents = set().union(*gold_by_c.values()) if gold_by_c else set()
-    sfm = len(abandoned_sents) / len(all_sents) * 100 if all_sents else 0.0
+        correct_sentences_by_component[c].add(s)
+    abandoned_components = {
+        c for c in gold_sentences_by_component
+        if not correct_sentences_by_component.get(c)
+    }
+
+    # Each (sentence, component) assignment contributes one unit of mass. Do
+    # not union the sentence sets: shared sentences deliberately retain one unit
+    # for every documented component.
+    abandoned_assignment_count = sum(
+        len(gold_sentences_by_component[c]) for c in abandoned_components
+    )
+    total_assignment_count = sum(
+        len(sentences) for sentences in gold_sentences_by_component.values()
+    )
+    sfm = (abandoned_assignment_count / total_assignment_count * 100
+           if total_assignment_count else 0.0)
 
     return {
         "project": project,
@@ -436,7 +450,7 @@ def compute_sad_sam(project, res):
         "sentence_coverage": sentence_coverage(gold_by_s, res_by_s),
         "noise_rate": noise_rate(gold_by_s, res_by_s),
         "silent_failure_mass": sfm,
-        "silent_failure_count": len(abandoned),
+        "silent_failure_count": len(abandoned_components),
     }
 
 

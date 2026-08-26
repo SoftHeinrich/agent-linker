@@ -21,7 +21,7 @@ This motivates us to define a suite that weights each component equally exposes 
 \subsection{The Metric Suite}
 \label{sec:metric:suite}
 
-we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, the \cmrname{}, and sentence coverage, each giving every component the same weight.
+we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, the \cmrname{}, and sentence coverage, each exposing a component miss that a link-level average can hide.
 Our suite also keeps link-level $F_\beta$ as the reference metric. 
 We define the family over the $F_\beta$ score,
 \begin{equation}
@@ -55,12 +55,12 @@ It down-weights every low-scoring component, not just the worst.
 Doc-model links are sentence-to-component links, which are with no directory expansion. 
 The per-component distribution is not long-tailed, so the worst-component and harmonic $F_\beta$ are redundant.
 But a system can still miss a component entirely, leaving its documented sentences with no correct link.
-The \cmrname{} (\cmr) measures the share of documented sentences belonging to such components:
+The \cmrname{} (\cmr) is a sentence-weighted component-miss rate: it measures the share of gold sentence--component assignments belonging to such components:
 \begin{equation}
-\cmr = \frac{\bigl|\bigcup_{k:\,R_k=0}\, \mathcal{S}_k\bigr|}{\bigl|\bigcup_{k \in \mathcal{K}}\, \mathcal{S}_k\bigr|} \in [0,1],
+\cmr = \frac{\sum_{k:\,R_k=0} |\mathcal{S}_k|}{\sum_{k \in \mathcal{K}} |\mathcal{S}_k|} \in [0,1],
 \label{eq:sfm}
 \end{equation}
-\cmr{} = 0 means every documented component is linked at least onece, so no component's documentation is silently lost.
+Here, a sentence linked to two components contributes once for each gold assignment. \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
 
 \paragraph{Sentence coverage.}
 Sentence coverage is the fraction of sentences for which the system recovers at least one correct link:

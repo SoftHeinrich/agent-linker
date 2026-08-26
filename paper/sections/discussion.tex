@@ -28,7 +28,7 @@ To show the gains do not depend on one model, we run \approach{} on two backends
 %TODO [backend] numbers are in the appendix mirror; just pin the exact Claude Sonnet version string in the appendix caption.
 
 \paragraph{Construct validity.}
-\ref{rq:metrics} assumes that recovering every documented component matters to developers; our size-aware metrics express this through sentence coverage on both tasks, worst-component and harmonic-mean per-component \fone{} on doc-code, and the silent-failure mass (SFM) on doc-model, the share of documented sentences whose component a system abandons.
+\ref{rq:metrics} assumes that recovering every documented component matters to developers; our size-aware metrics express this through sentence coverage on both tasks, worst-component and harmonic-mean per-component \fone{} on doc-code, and the silent-failure mass (SFM) on doc-model, the share of gold sentence--component assignments whose component a system abandons.
 These are proxies, so we keep the standard link-level \fone{} as the reference and report the size-aware view beside it.
 They are also not a relabeling of \fone{}: a system can score well on \fone{} and still leave whole documented components untraced, which is exactly what the size-aware view exposes.
 % To avoid depending on one tail summary, we also computed the wider family of worst-group and long-tailed-recognition measures~\cite{du2023noone,sagawa2020distributionally}, which agree on the ranking.
