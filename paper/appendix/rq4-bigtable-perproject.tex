@@ -4,67 +4,84 @@
 \caption{RQ4 module ablation per project, with the per-variant average, both backends.}
 \label{tab:rq4-perproject}
 \centering\footnotesize
-\begin{tabular}{@{}lll rrrrrrrrr@{}}
+\setlength{\tabcolsep}{3pt}
+\adjustbox{max width=\textwidth}{
+\begin{tabular}{@{}lll rrrrrrrrrrr@{}}
 \toprule
- &  &  & \multicolumn{3}{c}{doc-model (link \fone)} & \multicolumn{3}{c}{doc-code (link \fone)} & \multicolumn{3}{c}{size-aware} \\
-\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-12}
-Backend & Variant & Project & P & R & \fone & P & R & \fone & Cov & Worst & Harm \\
+ &  &  & \multicolumn{4}{c}{doc-model (link)} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{3}{c}{size-aware} \\
+\cmidrule(lr){4-7}\cmidrule(lr){8-11}\cmidrule(lr){12-14}
+Backend & Variant & Project & P & R & \fone & \ftwo & P & R & \fone & \ftwo & Cov & Worst & Harm \\
 \midrule
-GPT-5.4 & Full & mediastore & 1.00 & .92 & .961 & 1.00 & .82 & .901 & .95 & .91 & .99 \\
- &  & teastore & 1.00 & .93 & .962 & 1.00 & .93 & .964 & .96 & .91 & .97 \\
- &  & teammates & .96 & .85 & .901 & .92 & .74 & .818 & .42 & .33 & .59 \\
- &  & bigbluebutton & .99 & .76 & .857 & .89 & .81 & .849 & .88 & .61 & .87 \\
- &  & jabref & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.00 \\
- & \textbf{Full} & \textbf{Average} & \textbf{.99} & \textbf{.89} & \textbf{.936} & \textbf{.96} & \textbf{.86} & \textbf{.906} & \textbf{.84} & \textbf{.75} & \textbf{.88} \\
+GPT-5.6-terra & Full & mediastore & .90 & .90 & .903 & .903 & .85 & .88 & .867 & .875 & 1.00 & .82 & .98 \\
+ &  & teastore & 1.00 & 1.00 & 1.000 & 1.000 & 1.00 & 1.00 & 1.000 & 1.000 & 1.00 & 1.00 & 1.00 \\
+ &  & teammates & .75 & .90 & .820 & .867 & .90 & .77 & .828 & .791 & .46 & .33 & .58 \\
+ &  & bigbluebutton & .83 & .91 & .871 & .896 & .79 & .92 & .852 & .893 & .94 & .57 & .84 \\
+ &  & jabref & .95 & 1.00 & .973 & .989 & 1.00 & 1.00 & .999 & .999 & 1.00 & .80 & .96 \\
+ & \textbf{Full} & \textbf{Average} & \textbf{.89} & \textbf{.94} & \textbf{.914} & \textbf{.931} & \textbf{.91} & \textbf{.91} & \textbf{.909} & \textbf{.912} & \textbf{.88} & \textbf{.71} & \textbf{.87} \\
 \addlinespace[2pt]
- & \linkerB{} only & mediastore & 1.00 & .83 & .906 & 1.00 & .72 & .835 & .83 & .81 & .94 \\
- &  & teastore & 1.00 & .74 & .851 & 1.00 & .71 & .829 & .74 & .67 & .84 \\
- &  & teammates & .99 & .74 & .849 & 1.00 & .68 & .809 & .36 & .33 & .54 \\
- &  & bigbluebutton & .99 & .66 & .793 & .92 & .75 & .827 & .76 & .67 & .84 \\
- &  & jabref & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.00 \\
- & \textbf{\linkerB{} only} & \textbf{Average} & \textbf{1.00} & \textbf{.79} & \textbf{.880} & \textbf{.98} & \textbf{.77} & \textbf{.860} & \textbf{.74} & \textbf{.69} & \textbf{.83} \\
+ & \linkerB{} only & mediastore & .89 & .81 & .847 & .822 & .84 & .78 & .807 & .790 & .88 & .75 & .94 \\
+ &  & teastore & 1.00 & .75 & .859 & .792 & 1.00 & .72 & .836 & .761 & .71 & .67 & .85 \\
+ &  & teammates & .91 & .80 & .848 & .815 & .92 & .73 & .815 & .763 & .40 & .33 & .56 \\
+ &  & bigbluebutton & .94 & .63 & .752 & .673 & .85 & .80 & .827 & .811 & .73 & .57 & .81 \\
+ &  & jabref & .95 & 1.00 & .973 & .989 & 1.00 & 1.00 & .999 & .999 & 1.00 & .80 & .96 \\
+ & \textbf{\linkerB{} only} & \textbf{Average} & \textbf{.94} & \textbf{.80} & \textbf{.856} & \textbf{.818} & \textbf{.92} & \textbf{.81} & \textbf{.857} & \textbf{.825} & \textbf{.74} & \textbf{.62} & \textbf{.82} \\
 \addlinespace[2pt]
- & \linkerC{} only & mediastore & 1.00 & .13 & .229 & 1.00 & .10 & .185 & .12 & .00 & .00 \\
- &  & teastore & 1.00 & .19 & .312 & 1.00 & .22 & .363 & .22 & .00 & .00 \\
- &  & teammates & .86 & .21 & .338 & .75 & .18 & .287 & .13 & .00 & .00 \\
- &  & bigbluebutton & .97 & .13 & .226 & .70 & .08 & .143 & .16 & .00 & .00 \\
- &  & jabref & 1.00 & .06 & .105 & 1.00 & .12 & .210 & .10 & .00 & .00 \\
- & \textbf{\linkerC{} only} & \textbf{Average} & \textbf{.97} & \textbf{.14} & \textbf{.242} & \textbf{.89} & \textbf{.14} & \textbf{.238} & \textbf{.15} & \textbf{.00} & \textbf{.00} \\
+ & \linkerD{} only & mediastore & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ &  & teastore & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ &  & teammates & .33 & .02 & .033 & .022 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ &  & bigbluebutton & .64 & .25 & .356 & .282 & .56 & .12 & .191 & .138 & .25 & .00 & .00 \\
+ &  & jabref & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ & \textbf{\linkerD{} only} & \textbf{Average} & \textbf{.20} & \textbf{.05} & \textbf{.078} & \textbf{.061} & \textbf{.11} & \textbf{.02} & \textbf{.038} & \textbf{.028} & \textbf{.05} & \textbf{.00} & \textbf{.00} \\
 \addlinespace[2pt]
- & No knowledge & mediastore & 1.00 & .67 & .798 & 1.00 & .56 & .710 & .77 & .00 & .00 \\
- &  & teastore & 1.00 & .77 & .867 & 1.00 & .73 & .844 & .81 & .67 & .86 \\
- &  & teammates & .99 & .86 & .919 & 1.00 & .74 & .847 & .43 & .33 & .60 \\
- &  & bigbluebutton & .98 & .69 & .807 & .90 & .81 & .854 & .81 & .67 & .84 \\
- &  & jabref & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.000 & 1.00 & 1.00 & 1.00 \\
- & \textbf{No knowledge} & \textbf{Average} & \textbf{.99} & \textbf{.80} & \textbf{.878} & \textbf{.98} & \textbf{.77} & \textbf{.851} & \textbf{.77} & \textbf{.53} & \textbf{.66} \\
+ & \linkerC{} only & mediastore & 1.00 & .10 & .176 & .118 & 1.00 & .10 & .185 & .124 & .12 & .00 & .00 \\
+ &  & teastore & 1.00 & .30 & .455 & .344 & 1.00 & .31 & .473 & .360 & .35 & .00 & .00 \\
+ &  & teammates & .79 & .19 & .299 & .220 & .91 & .14 & .246 & .172 & .13 & .02 & .07 \\
+ &  & bigbluebutton & .94 & .08 & .148 & .099 & .74 & .04 & .081 & .053 & .09 & .00 & .00 \\
+ &  & jabref & 1.00 & .13 & .226 & .156 & 1.00 & .19 & .322 & .231 & .17 & .00 & .00 \\
+ & \textbf{\linkerC{} only} & \textbf{Average} & \textbf{.95} & \textbf{.16} & \textbf{.261} & \textbf{.187} & \textbf{.93} & \textbf{.16} & \textbf{.261} & \textbf{.188} & \textbf{.17} & \textbf{.00} & \textbf{.01} \\
 \addlinespace[2pt]
-Claude & Full & mediastore & .98 & .91 & .944 & .99 & .81 & .888 & .96 & .74 & .95 \\
- &  & teastore & .95 & .99 & .970 & .99 & .99 & .993 & .99 & .94 & .99 \\
- &  & teammates & .94 & .88 & .912 & .97 & .75 & .846 & .43 & .33 & .61 \\
- &  & bigbluebutton & .96 & .72 & .824 & .90 & .75 & .816 & .84 & .00 & .00 \\
- &  & jabref & .96 & 1.00 & .982 & 1.00 & 1.00 & .999 & 1.00 & .87 & .97 \\
- & \textbf{Full} & \textbf{Average} & \textbf{.96} & \textbf{.90} & \textbf{.926} & \textbf{.97} & \textbf{.86} & \textbf{.908} & \textbf{.84} & \textbf{.58} & \textbf{.70} \\
+ & No knowledge & mediastore & 1.00 & .65 & .784 & .694 & 1.00 & .53 & .689 & .581 & .76 & .00 & .00 \\
+ &  & teastore & .98 & .75 & .853 & .790 & 1.00 & .53 & .692 & .585 & .88 & .33 & .72 \\
+ &  & teammates & .78 & .86 & .816 & .840 & .95 & .76 & .842 & .790 & .44 & .33 & .57 \\
+ &  & bigbluebutton & .78 & .89 & .831 & .864 & .79 & .90 & .843 & .877 & .91 & .40 & .77 \\
+ &  & jabref & .95 & 1.00 & .973 & .989 & 1.00 & 1.00 & .999 & .999 & 1.00 & .80 & .96 \\
+ & \textbf{No knowledge} & \textbf{Average} & \textbf{.90} & \textbf{.83} & \textbf{.851} & \textbf{.835} & \textbf{.95} & \textbf{.74} & \textbf{.813} & \textbf{.766} & \textbf{.80} & \textbf{.37} & \textbf{.60} \\
 \addlinespace[2pt]
- & \linkerB{} only & mediastore & 1.00 & .82 & .898 & 1.00 & .71 & .828 & .84 & .78 & .93 \\
- &  & teastore & .96 & .72 & .817 & 1.00 & .70 & .820 & .68 & .67 & .83 \\
- &  & teammates & .95 & .80 & .866 & .98 & .71 & .819 & .38 & .33 & .57 \\
- &  & bigbluebutton & .96 & .60 & .739 & .91 & .68 & .776 & .72 & .00 & .00 \\
- &  & jabref & .96 & 1.00 & .982 & 1.00 & 1.00 & .999 & 1.00 & .87 & .97 \\
- & \textbf{\linkerB{} only} & \textbf{Average} & \textbf{.97} & \textbf{.79} & \textbf{.861} & \textbf{.98} & \textbf{.76} & \textbf{.849} & \textbf{.72} & \textbf{.53} & \textbf{.66} \\
+GPT-5.6-luna & Full & mediastore & .91 & .99 & .948 & .972 & .85 & .88 & .863 & .871 & .99 & .82 & .97 \\
+ &  & teastore & .94 & .99 & .964 & .978 & 1.00 & .99 & .990 & .988 & .99 & .97 & .99 \\
+ &  & teammates & .61 & .98 & .751 & .874 & .74 & .88 & .803 & .848 & .60 & .44 & .69 \\
+ &  & bigbluebutton & .67 & .92 & .777 & .859 & .68 & .93 & .789 & .869 & .96 & .49 & .77 \\
+ &  & jabref & .92 & 1.00 & .956 & .982 & .93 & 1.00 & .962 & .984 & 1.00 & .80 & .95 \\
+ & \textbf{Full} & \textbf{Average} & \textbf{.81} & \textbf{.98} & \textbf{.879} & \textbf{.933} & \textbf{.84} & \textbf{.94} & \textbf{.882} & \textbf{.912} & \textbf{.91} & \textbf{.71} & \textbf{.87} \\
 \addlinespace[2pt]
- & \linkerC{} only & mediastore & .85 & .22 & .328 & .92 & .19 & .310 & .24 & .00 & .00 \\
- &  & teastore & .99 & .80 & .884 & 1.00 & .90 & .945 & .86 & .61 & .85 \\
- &  & teammates & .92 & .49 & .637 & .97 & .39 & .549 & .29 & .14 & .27 \\
- &  & bigbluebutton & .96 & .23 & .365 & .85 & .19 & .309 & .26 & .00 & .00 \\
- &  & jabref & 1.00 & .72 & .839 & 1.00 & .76 & .866 & .80 & .67 & .79 \\
- & \textbf{\linkerC{} only} & \textbf{Average} & \textbf{.94} & \textbf{.49} & \textbf{.610} & \textbf{.95} & \textbf{.49} & \textbf{.596} & \textbf{.49} & \textbf{.28} & \textbf{.38} \\
+ & \linkerB{} only & mediastore & .90 & .90 & .903 & .903 & .84 & .78 & .807 & .790 & .88 & .75 & .94 \\
+ &  & teastore & .95 & .75 & .841 & .786 & 1.00 & .72 & .834 & .760 & .71 & .67 & .85 \\
+ &  & teammates & .67 & .91 & .770 & .849 & .75 & .85 & .798 & .830 & .55 & .45 & .67 \\
+ &  & bigbluebutton & .92 & .68 & .780 & .715 & .81 & .84 & .824 & .831 & .79 & .60 & .83 \\
+ &  & jabref & .92 & 1.00 & .956 & .982 & .93 & 1.00 & .962 & .984 & 1.00 & .80 & .95 \\
+ & \textbf{\linkerB{} only} & \textbf{Average} & \textbf{.87} & \textbf{.85} & \textbf{.850} & \textbf{.847} & \textbf{.86} & \textbf{.84} & \textbf{.845} & \textbf{.839} & \textbf{.79} & \textbf{.65} & \textbf{.85} \\
 \addlinespace[2pt]
- & No knowledge & mediastore & 1.00 & .70 & .820 & 1.00 & .56 & .714 & .79 & .28 & .32 \\
- &  & teastore & .92 & .89 & .901 & .99 & .84 & .910 & .87 & .89 & .95 \\
- &  & teammates & .93 & .91 & .920 & .98 & .77 & .863 & .46 & .33 & .62 \\
- &  & bigbluebutton & .98 & .62 & .760 & .89 & .72 & .790 & .73 & .17 & .27 \\
- &  & jabref & .96 & 1.00 & .982 & 1.00 & 1.00 & .999 & 1.00 & .87 & .97 \\
- & \textbf{No knowledge} & \textbf{Average} & \textbf{.96} & \textbf{.82} & \textbf{.877} & \textbf{.97} & \textbf{.78} & \textbf{.855} & \textbf{.77} & \textbf{.51} & \textbf{.63} \\
+ & \linkerD{} only & mediastore & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ &  & teastore & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ &  & teammates & .17 & .01 & .011 & .007 & .17 & .00 & .001 & .001 & .00 & .00 & .00 \\
+ &  & bigbluebutton & .38 & .20 & .263 & .224 & .49 & .16 & .238 & .182 & .35 & .00 & .00 \\
+ &  & jabref & .00 & .00 & .000 & .000 & .00 & .00 & .000 & .000 & .00 & .00 & .00 \\
+ & \textbf{\linkerD{} only} & \textbf{Average} & \textbf{.11} & \textbf{.04} & \textbf{.055} & \textbf{.046} & \textbf{.13} & \textbf{.03} & \textbf{.048} & \textbf{.037} & \textbf{.07} & \textbf{.00} & \textbf{.00} \\
+\addlinespace[2pt]
+ & \linkerC{} only & mediastore & 1.00 & .23 & .352 & .263 & 1.00 & .19 & .306 & .221 & .28 & .00 & .00 \\
+ &  & teastore & .92 & .38 & .531 & .430 & .99 & .39 & .551 & .439 & .45 & .00 & .00 \\
+ &  & teammates & .77 & .20 & .315 & .233 & .75 & .17 & .276 & .201 & .14 & .03 & .07 \\
+ &  & bigbluebutton & .78 & .28 & .405 & .319 & .62 & .26 & .361 & .294 & .36 & .00 & .00 \\
+ &  & jabref & 1.00 & .22 & .343 & .258 & 1.00 & .32 & .465 & .367 & .33 & .00 & .00 \\
+ & \textbf{\linkerC{} only} & \textbf{Average} & \textbf{.89} & \textbf{.26} & \textbf{.389} & \textbf{.301} & \textbf{.87} & \textbf{.27} & \textbf{.392} & \textbf{.304} & \textbf{.31} & \textbf{.01} & \textbf{.01} \\
+\addlinespace[2pt]
+ & No knowledge & mediastore & 1.00 & .67 & .799 & .714 & 1.00 & .56 & .714 & .612 & .77 & .00 & .00 \\
+ &  & teastore & .91 & .83 & .865 & .842 & .98 & .66 & .786 & .704 & .97 & .57 & .86 \\
+ &  & teammates & .66 & .99 & .792 & .899 & .87 & .83 & .849 & .838 & .54 & .39 & .66 \\
+ &  & bigbluebutton & .72 & .95 & .821 & .892 & .73 & .94 & .821 & .890 & .99 & .50 & .82 \\
+ &  & jabref & .90 & 1.00 & .947 & .978 & .89 & 1.00 & .943 & .977 & 1.00 & .80 & .94 \\
+ & \textbf{No knowledge} & \textbf{Average} & \textbf{.84} & \textbf{.89} & \textbf{.845} & \textbf{.865} & \textbf{.89} & \textbf{.80} & \textbf{.823} & \textbf{.804} & \textbf{.86} & \textbf{.45} & \textbf{.65} \\
 \bottomrule
 \end{tabular}
+}
 \end{table*}

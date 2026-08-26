@@ -29,23 +29,44 @@ Outputs (reports/tex_src/):
 from __future__ import annotations
 
 import csv
+import os
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 EVAL = HERE.parent                                  # .../transarc-emp
 REPORTS = EVAL / "reports"
-RQ34 = EVAL / "mini-rq34" / "reports"
+# RQ3/RQ4 engine outputs for the arm the paper reports (s_linker92a; see rq34.py ARM).
+RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", "reports_s92a")
 RQ34_NOKNOW = {                                     # backend -> no-knowledge rq34_rq2 report dir
-    "openai": EVAL / "mini-rq34" / "reports_s21_noknow",
-    "claude": EVAL / "mini-rq34" / "reports_s21_noknow_sonnet",
+    "terra": EVAL / "mini-rq34" / "reports_s92a_noknow",
+    "luna": EVAL / "mini-rq34" / "reports_s92a_noknow_luna",
 }
 TEX_SRC = REPORTS / "tex_src"
 
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 
+# The reported arm: body backend first, mirror second (rq34.py's BACKENDS for this arm).
+BODY_BACKEND = "terra"
+BACKENDS = ["terra", "luna"]
+BODY_SYSTEM = "approach (GPT-5.6-terra)"
+MIRROR_SYSTEM = "approach (GPT-5.6-luna)"
+
+# The judges/linkers this arm records, in pipeline order. Keys match rq34.py PHASES.
+JUDGES = ["full_name", "partial_name", "coref"]
+LINKER_SETS = ["FullName", "PartialName", "Coref"]     # rq34_rq2 doc-code set names
+LINKER_LABELS = ["FullName", "PartialName", "Coref"]   # rq4_linkers.csv linker column
+RQ4_VARIANTS = ["Full", "FullName", "PartialName", "Coref", "No knowledge"]
+
+# The no-knowledge arm has NOT been re-run for s_linker92a: only the s21 lineage has
+# noknow runs (results/v2.6.6_s21_noknow_*). Rather than mix arms in one table, the
+# "No knowledge" row is dropped whenever its inputs are absent -- and its absence is
+# printed, so a missing row is never mistaken for a measured zero.
+def noknow_available(backend):
+    return (RQ34_NOKNOW[backend] / "rq4_variants.csv").is_file()
+
 # Whole doc-to-code suite, in display order (matches rq34_rq2 PANEL / RQ12 columns).
-DC_SUITE = ["file_precision", "file_recall", "file_f1", "component_micro_f1",
+DC_SUITE = ["file_precision", "file_recall", "file_f1", "file_f2", "component_micro_f1",
             "worst_component_f1", "harmonic_component_f1", "sentence_coverage", "noise_rate"]
 
 
@@ -84,10 +105,10 @@ def i(v):
 # --------------------------------------------------------------------------- #
 def build_rq1(big):
     """One row per display system; SWATTR/TransArC split the bundled TransArc row."""
-    ap = big[("approach (GPT-5.4)", "average")]
+    ap = big[(BODY_SYSTEM, "average")]
     ar = big[("Artemis (GPT-5.4)", "single")]
     tx = big[("TransArC", "single")]
-    cols = ["dm_p", "dm_r", "dm_f1", "dc_p", "dc_r", "dc_f1"]
+    cols = ["dm_p", "dm_r", "dm_f1", "dm_f2", "dc_p", "dc_r", "dc_f1", "dc_f2"]
 
     def row(label, src, dm=True, dc=True):
         return {
@@ -95,9 +116,11 @@ def build_rq1(big):
             "dm_p": src["doc_to_model_link_precision"] if dm else "",
             "dm_r": src["doc_to_model_link_recall"] if dm else "",
             "dm_f1": src["doc_to_model_link_f1"] if dm else "",
+            "dm_f2": src["doc_to_model_link_f2"] if dm else "",
             "dc_p": src["doc_to_code_file_precision"] if dc else "",
             "dc_r": src["doc_to_code_file_recall"] if dc else "",
             "dc_f1": src["doc_to_code_file_f1"] if dc else "",
+            "dc_f2": src["doc_to_code_file_f2"] if dc else "",
         }
 
     rows = [
@@ -113,21 +136,23 @@ def build_rq2(big):
     """RQ2 size-aware suite clustered by task: doc-model (link \\fone + sent cov + SFM) and
     doc-code (file \\fone + the doc-code size-aware metrics), GPT-5.4."""
     rows = []
-    for label, key in (("approach", ("approach (GPT-5.4)", "average")),
+    for label, key in (("approach", (BODY_SYSTEM, "average")),
                        ("Artemis", ("Artemis (GPT-5.4)", "single")),
                        ("TransArC", ("TransArC", "single"))):
         s = big[key]
         rows.append({"system": label,
                      "dm_link_f1": s["doc_to_model_link_f1"],
+                     "dm_link_f2": s["doc_to_model_link_f2"],
                      "dm_sentence_coverage": s["doc_to_model_sentence_coverage"],
                      "silent_failure_mass": s["doc_to_model_silent_failure_mass"],
                      "dc_file_f1": s["doc_to_code_file_f1"],
+                     "dc_file_f2": s["doc_to_code_file_f2"],
                      "dc_sentence_coverage": s["doc_to_code_sentence_coverage"],
                      "worst_component_f1": s["doc_to_code_worst_component_f1"],
                      "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"]})
     write_csv("rq2.csv",
-              ["system", "dm_link_f1", "dm_sentence_coverage", "silent_failure_mass",
-               "dc_file_f1", "dc_sentence_coverage",
+              ["system", "dm_link_f1", "dm_link_f2", "dm_sentence_coverage", "silent_failure_mass",
+               "dc_file_f1", "dc_file_f2", "dc_sentence_coverage",
                "worst_component_f1", "harmonic_component_f1"],
               rows)
 
@@ -140,97 +165,118 @@ PROJ_DISPLAY = {"mediastore": "MediaStore", "teastore": "TeaStore", "teammates":
                 "bigbluebutton": "BigBlueButton", "jabref": "JabRef"}
 
 RQ3_RUNS = ["run1", "run2", "run3"]
-RQ3_COLS = ["ent_reject", "ent_keep", "coref_reject", "coref_keep"]
+# One row per judge (plus the whole stack); counts then the \fone/\ftwo the pipeline
+# loses when that judge is switched off.
+RQ3_COLS = ["rej_fp", "rej_tp", "keep_tp", "keep_fp", "d_f1", "d_f2"]
+# judge key -> (display key, the rq3_variants row that switches it off)
+RQ3_ROW_ORDER = JUDGES + ["all_combined"]
+RQ3_OFF_VARIANT = {"full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
+                   "coref": "NoCitation", "all_combined": "NoValidator"}
 
 
-def _rq3_matrix(ent, cor, extra=None):
-    """The two-row FP/TP confusion matrix shared by the mean and per-run tables.
+def _rq3_rows(audits, variants, extra=None):
+    """One row per judge: what it rejected and kept, and what switching it off costs.
 
-    rows = true class, cols = judge x {REJECT, KEEP}. The TP-REJECT cell reports the
-    *unique* rejected true positives (those this judge rejects that the other judge would
-    keep) — the recall cost attributable to it alone. Raw counts pass through unrounded;
-    csv_to_tex rounds per column kind (per-run = integer, mean = one decimal). ``extra``
-    prepends fixed columns (e.g. the run label) to every row.
+    ``audits`` maps judge key -> its rq3_validators row; ``variants`` maps RQ3 variant
+    name -> its rq3_variants row. ``rej_tp`` is the *unique* rejected true positives --
+    the ones no other linker recovers -- so it is the recall the judge costs outright,
+    and the all_combined row is measured on the union, not summed (two judges can reject
+    the same link). ``d_f1``/``d_f2`` are percentage points against \fullVariant{}:
+    negative means the judge is worth that much. ``extra`` prepends fixed columns.
     """
-    base = extra or {}
-    return [
-        {**base, "true_class": "False positive (FP)",
-         "ent_reject": ent["rejected_fp"], "ent_keep": ent["kept_fp"],
-         "coref_reject": cor["rejected_fp"], "coref_keep": cor["kept_fp"]},
-        {**base, "true_class": "True positive (TP)",
-         "ent_reject": ent["unique_rejected_tp"], "ent_keep": ent["kept_tp"],
-         "coref_reject": cor["unique_rejected_tp"], "coref_keep": cor["kept_tp"]},
-    ]
+    full = variants["Full"]
+    rows = []
+    for j in RQ3_ROW_ORDER:
+        a = audits[j]
+        off = variants[RQ3_OFF_VARIANT[j]]
+        rows.append({**(extra or {}), "judge": j,
+                     "rej_fp": a["rejected_fp"], "rej_tp": a["unique_rejected_tp"],
+                     "keep_tp": a["kept_tp"], "keep_fp": a["kept_fp"],
+                     "d_f1": 100 * (float(off["macro_f1"]) - float(full["macro_f1"])),
+                     "d_f2": 100 * (float(off["macro_f2"]) - float(full["macro_f2"]))})
+    return rows
 
 
 def build_rq3(backend, out):
-    """Per-judge confusion matrix for one backend, averaged over the three runs
-    (the body table; called for GPT-5.4 only)."""
+    """Per-judge table for one backend, averaged over the three runs (the body table)."""
     val = index(read_csv(RQ34 / "rq3_validators.csv"), "backend", "run", "validator")
-    rows = _rq3_matrix(val[(backend, "average", "entity")], val[(backend, "average", "coref")])
-    write_csv(out, ["true_class"] + RQ3_COLS, rows)
+    var = index(read_csv(RQ34 / "rq3_variants.csv"), "backend", "run", "variant")
+    rows = _rq3_rows({j: val[(backend, "average", j)] for j in RQ3_ROW_ORDER},
+                     {v: var[(backend, "average", v)] for v in ["Full"] + list(RQ3_OFF_VARIANT.values())})
+    write_csv(out, ["judge"] + RQ3_COLS, rows)
 
 
 def build_rq3_runs(out):
-    """Per-judge confusion matrix, both backends, every run plus the average in ONE table
-    (grouped by backend, then run = Run 1/2/3 then the mean)."""
+    """The same table, both backends, every run plus the average in ONE table."""
     val = index(read_csv(RQ34 / "rq3_validators.csv"), "backend", "run", "validator")
+    var = index(read_csv(RQ34 / "rq3_variants.csv"), "backend", "run", "variant")
     rows = []
-    for backend in ("openai", "claude"):
+    for backend in BACKENDS:
         for run in RQ3_RUNS + ["average"]:
-            rows += _rq3_matrix(val[(backend, run, "entity")], val[(backend, run, "coref")],
-                                extra={"backend": backend, "run": run})
-    write_csv(out, ["backend", "run", "true_class"] + RQ3_COLS, rows)
+            rows += _rq3_rows(
+                {j: val[(backend, run, j)] for j in RQ3_ROW_ORDER},
+                {v: var[(backend, run, v)] for v in ["Full"] + list(RQ3_OFF_VARIANT.values())},
+                extra={"backend": backend, "run": run})
+    write_csv(out, ["backend", "run", "judge"] + RQ3_COLS, rows)
 
 
 # --------------------------------------------------------------------------- #
 # RQ4 body table (GPT-5.4): the four ablation variants on the size-aware suite
 # --------------------------------------------------------------------------- #
 def _rq4_variant_cells(backend, run, dm_full, dm_noknow, size_link, size_noknow, uniq):
-    """Assemble the four RQ4 variant rows for one backend and run ('average' or runN).
+    """Assemble the RQ4 variant rows for one backend and run ('average' or runN):
+    Full, then each linker alone, then No knowledge when that slot exists.
 
     dm_full/dm_noknow: rq4_variants.csv (linker_set->macro_f1) for full / no-knowledge slot.
-    size_link: rq34_rq2_linkers.csv rows (linker_set Full/EntityOnly/CorefOnly).
-    size_noknow: no-knowledge rq34_rq2_variants.csv 'Full' row (both linkers, knowledge off).
-    uniq: rq4_linkers.csv rows (Entity/Coref unique_tps) -- a diagnostic, never displayed,
+    size_link: rq34_rq2_linkers.csv rows (linker_set Full + one per linker).
+    size_noknow: no-knowledge rq34_rq2_variants.csv 'Full' row (all linkers, knowledge off).
+    uniq: rq4_linkers.csv rows (per-linker unique_tps) -- a diagnostic, never displayed,
     so it stays on the run-average slot.
     """
     def panel(src):
         return {f"dc_{c}": src[f"doc_to_code_{c}"] for c in DC_SUITE}
 
-    return [
-        {"variant": "Full", "doc_to_model_macro_f1": dm_full["full"],
-         **panel(size_link[(backend, run, "Full")]), "unique_tps": ""},
-        {"variant": "Direct", "doc_to_model_macro_f1": dm_full["entity_only"],
-         **panel(size_link[(backend, run, "EntityOnly")]),
-         "unique_tps": i(uniq[(backend, "average", "Entity")]["unique_tps"])},
-        {"variant": "Indirect", "doc_to_model_macro_f1": dm_full["coref_only"],
-         **panel(size_link[(backend, run, "CorefOnly")]),
-         "unique_tps": i(uniq[(backend, "average", "Coref")]["unique_tps"])},
-        {"variant": "No knowledge", "doc_to_model_macro_f1": dm_noknow["full"],
-         **panel(size_noknow), "unique_tps": ""},
-    ]
+    rows = [{"variant": "Full", "doc_to_model_macro_f1": dm_full["full"][0],
+             "doc_to_model_macro_f2": dm_full["full"][1],
+             **panel(size_link[(backend, run, "Full")]), "unique_tps": ""}]
+    for label, key in zip(LINKER_LABELS, JUDGES):
+        rows.append({"variant": label,
+                     "doc_to_model_macro_f1": dm_full[f"{key}_only"][0],
+                     "doc_to_model_macro_f2": dm_full[f"{key}_only"][1],
+                     **panel(size_link[(backend, run, f"{label}Only")]),
+                     "unique_tps": i(uniq[(backend, "average", label)]["unique_tps"])})
+    if dm_noknow and size_noknow:
+        rows.append({"variant": "No knowledge",
+                     "doc_to_model_macro_f1": dm_noknow["full"][0],
+                     "doc_to_model_macro_f2": dm_noknow["full"][1],
+                     **panel(size_noknow), "unique_tps": ""})
+    return rows
 
 
 def _load_rq4_sources(backend, run="average"):
-    dm_full = {r["linker_set"]: r["macro_f1"]
+    dm_full = {r["linker_set"]: (r["macro_f1"], r["macro_f2"])
                for r in read_csv(RQ34 / "rq4_variants.csv")
                if r["backend"] == backend and r["run"] == run}
-    dm_noknow = {r["linker_set"]: r["macro_f1"]
+    size_link = index(read_csv(RQ34 / "rq34_rq2_linkers.csv"), "backend", "run", "linker_set")
+    uniq = index(read_csv(RQ34 / "rq4_linkers.csv"), "backend", "run", "linker")
+    if not noknow_available(backend):
+        print(f"[rq_tables] NOTE: no no-knowledge run for the reported arm on {backend} "
+              f"({RQ34_NOKNOW[backend]}); the RQ4 'No knowledge' row is omitted.")
+        return dm_full, {}, size_link, None, uniq
+    dm_noknow = {r["linker_set"]: (r["macro_f1"], r["macro_f2"])
                  for r in read_csv(RQ34_NOKNOW[backend] / "rq4_variants.csv")
                  if r["backend"] == backend and r["run"] == run}
-    size_link = index(read_csv(RQ34 / "rq34_rq2_linkers.csv"), "backend", "run", "linker_set")
     size_noknow = index(read_csv(RQ34_NOKNOW[backend] / "rq34_rq2_variants.csv"),
                         "backend", "run", "variant")[(backend, run, "Full")]
-    uniq = index(read_csv(RQ34 / "rq4_linkers.csv"), "backend", "run", "linker")
     return dm_full, dm_noknow, size_link, size_noknow, uniq
 
 
 def build_rq4():
-    dm_full, dm_noknow, size_link, size_noknow, uniq = _load_rq4_sources("openai")
-    rows = _rq4_variant_cells("openai", "average", dm_full, dm_noknow, size_link, size_noknow, uniq)
-    fields = (["variant", "doc_to_model_macro_f1"]
-              + [f"dc_{c}" for c in ("file_f1", "sentence_coverage",
+    dm_full, dm_noknow, size_link, size_noknow, uniq = _load_rq4_sources(BODY_BACKEND)
+    rows = _rq4_variant_cells(BODY_BACKEND, "average", dm_full, dm_noknow, size_link,
+                              size_noknow, uniq)
+    fields = (["variant", "doc_to_model_macro_f1", "doc_to_model_macro_f2"]
+              + [f"dc_{c}" for c in ("file_f1", "file_f2", "sentence_coverage",
                                      "worst_component_f1", "harmonic_component_f1")]
               + ["unique_tps"])
     # Body table shows only the headline tail metrics; keep the four key ones.
@@ -242,13 +288,13 @@ def build_rq4():
 # RQ1+RQ2 big tables (whole suite, both backends): average + per-project
 # --------------------------------------------------------------------------- #
 SUITE_COLS = (["doc_to_model_link_precision", "doc_to_model_link_recall", "doc_to_model_link_f1",
-               "doc_to_model_sentence_coverage", "doc_to_model_noise_rate",
-               "doc_to_model_silent_failure_mass"]
+               "doc_to_model_link_f2", "doc_to_model_sentence_coverage",
+               "doc_to_model_noise_rate", "doc_to_model_silent_failure_mass"]
               + [f"doc_to_code_{c}" for c in DC_SUITE])
 
 BIG_SYSTEMS = [  # (display label, (system, run) key into RQ12_BIGTABLE)
-    ("approach (GPT-5.4)", ("approach (GPT-5.4)", "average")),
-    ("approach (Claude)",  ("approach (Claude)", "average")),
+    (BODY_SYSTEM,          (BODY_SYSTEM, "average")),
+    (MIRROR_SYSTEM,        (MIRROR_SYSTEM, "average")),
     ("Artemis (GPT-5.4)",  ("Artemis (GPT-5.4)", "single")),
     ("TransArC",           ("TransArC", "single")),
 ]
@@ -270,8 +316,8 @@ def build_bigtable_rq12_perproject(big):
 
 # (display label, key, runs) -- the approach is run three times; the baselines are deterministic.
 PERRUN_SYSTEMS = [
-    ("approach (GPT-5.4)", "approach (GPT-5.4)", ["run1", "run2", "run3", "average"]),
-    ("approach (Claude)",  "approach (Claude)",  ["run1", "run2", "run3", "average"]),
+    (BODY_SYSTEM,          BODY_SYSTEM,          ["run1", "run2", "run3", "average"]),
+    (MIRROR_SYSTEM,        MIRROR_SYSTEM,        ["run1", "run2", "run3", "average"]),
     ("Artemis (GPT-5.4)",  "Artemis (GPT-5.4)",  ["single"]),
     ("TransArC",           "TransArC",           ["single"]),
 ]
@@ -291,11 +337,9 @@ def build_bigtable_rq12_perrun(big):
 # --------------------------------------------------------------------------- #
 # RQ4 big tables (whole suite, both backends): average + per-project
 # --------------------------------------------------------------------------- #
-RQ4_DISPLAY = [("Full", "Full"), ("Direct", "Direct"),
-               ("Indirect", "Indirect"), ("No knowledge", "No knowledge")]
+RQ4_DISPLAY = [(v, v) for v in RQ4_VARIANTS]
 
-
-DM_SUITE = ["link_precision", "link_recall", "link_f1"]
+DM_SUITE = ["link_precision", "link_recall", "link_f1", "link_f2"]
 
 
 def build_bigtable_rq4_perproject():
@@ -310,17 +354,20 @@ def build_bigtable_rq4_perproject():
                   "backend", "run", "linker_set", "project")
     fields = ["backend", "variant", "project"] + [f"dm_{c}" for c in DM_SUITE] \
         + [f"dc_{c}" for c in DC_SUITE]
-    setmap = {"Full": "Full", "Direct": "EntityOnly", "Indirect": "CorefOnly"}
-    dm_setmap = {"Full": "full", "Direct": "entity_only", "Indirect": "coref_only"}
+    setmap = {"Full": "Full", **{l: f"{l}Only" for l in LINKER_LABELS}}
+    dm_setmap = {"Full": "full", **{l: f"{k}_only" for l, k in zip(LINKER_LABELS, JUDGES)}}
     rows = []
-    for backend in ("openai", "claude"):
+    for backend in BACKENDS:
+        has_noknow = noknow_available(backend)
         noknow_pp = index(read_csv(RQ34_NOKNOW[backend] / "rq34_rq2_variants_perproject.csv"),
-                          "backend", "run", "variant", "project")
+                          "backend", "run", "variant", "project") if has_noknow else {}
         noknow_dm = index(read_csv(RQ34_NOKNOW[backend] / "rq4_variants_perproject.csv"),
-                          "backend", "run", "linker_set", "project")
+                          "backend", "run", "linker_set", "project") if has_noknow else {}
         avg = {r["variant"]: r
                for r in _rq4_variant_cells(backend, "average", *_load_rq4_sources(backend))}
         for variant, _ in RQ4_DISPLAY:
+            if variant not in avg:
+                continue
             dm_acc = {c: [] for c in DM_SUITE}
             for proj in PROJECTS:
                 if variant == "No knowledge":
@@ -344,19 +391,21 @@ def build_bigtable_rq4_perproject():
 # RQ4 per-run aggregate: one CSV per run (+ the mean), each = both backends x four variants.
 RQ4_PERRUN = [("run1", "rq4_run1.csv"), ("run2", "rq4_run2.csv"),
               ("run3", "rq4_run3.csv"), ("average", "rq4_runavg.csv")]
-RQ4_RUN_DC = ["file_precision", "file_recall", "file_f1",
+RQ4_RUN_DC = ["file_precision", "file_recall", "file_f1", "file_f2",
               "sentence_coverage", "worst_component_f1", "harmonic_component_f1"]
 
 
 def build_rq4_perrun():
-    fields = ["backend", "variant", "doc_to_model_macro_f1"] + [f"dc_{c}" for c in RQ4_RUN_DC]
+    fields = (["backend", "variant", "doc_to_model_macro_f1", "doc_to_model_macro_f2"]
+              + [f"dc_{c}" for c in RQ4_RUN_DC])
     for run, out in RQ4_PERRUN:
         rows = []
-        for backend in ("openai", "claude"):
+        for backend in BACKENDS:
             cells = _rq4_variant_cells(backend, run, *_load_rq4_sources(backend, run))
             for r in cells:
                 rows.append({"backend": backend, "variant": r["variant"],
                              "doc_to_model_macro_f1": r["doc_to_model_macro_f1"],
+                             "doc_to_model_macro_f2": r["doc_to_model_macro_f2"],
                              **{f"dc_{c}": r[f"dc_{c}"] for c in RQ4_RUN_DC}})
         write_csv(out, fields, rows)
 
@@ -366,7 +415,7 @@ def main():
     big = index(read_csv(REPORTS / "RQ12_BIGTABLE.csv"), "system", "run")
     build_rq1(big)
     build_rq2(big)
-    build_rq3("openai", "rq3.csv")                  # body confusion (GPT-5.4, mean of 3)
+    build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()
     build_bigtable_rq12_perproject(big)             # RQ1/RQ2 per-project + Average (both backends)

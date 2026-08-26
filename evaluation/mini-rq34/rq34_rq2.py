@@ -73,6 +73,7 @@ PANEL = [
     "doc_to_code_file_precision",
     "doc_to_code_file_recall",
     "doc_to_code_file_f1",
+    "doc_to_code_file_f2",
     "doc_to_code_component_micro_f1",
     "doc_to_code_worst_component_f1",
     "doc_to_code_harmonic_component_f1",
@@ -81,6 +82,7 @@ PANEL = [
 ]
 DELTA_COLS = [
     "doc_to_code_file_f1",
+    "doc_to_code_file_f2",
     "doc_to_code_worst_component_f1",
     "doc_to_code_harmonic_component_f1",
     "doc_to_code_sentence_coverage",
@@ -116,6 +118,13 @@ def prf(gold: Set[DocCodeLink], res: Set[DocCodeLink]) -> Tuple[float, float, fl
     recall = tp / len(gold) if gold else 0.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0.0
     return precision, recall, f1
+
+
+def fbeta(precision: float, recall: float, beta: float = 2.0) -> float:
+    """Recall-weighted F-beta (beta=2 = the paper's \\ftwo); mirrors mini-src/metrics.py."""
+    b2 = beta * beta
+    denom = b2 * precision + recall
+    return (1 + b2) * precision * recall / denom if denom > 0 else 0.0
 
 
 def sentence_coverage(gold_by_s: Dict[str, Set[str]], res_by_s: Dict[str, Set[str]]) -> float:
@@ -216,6 +225,7 @@ def compute_sad_code(project: str, res: Set[DocCodeLink]) -> Dict[str, float]:
         "doc_to_code_file_precision": fp_,
         "doc_to_code_file_recall": fr_,
         "doc_to_code_file_f1": ff1,
+        "doc_to_code_file_f2": fbeta(fp_, fr_),
         "doc_to_code_component_micro_f1": comp_f1,
         "doc_to_code_worst_component_f1": worst,
         "doc_to_code_harmonic_component_f1": harmonic,
@@ -301,6 +311,10 @@ def add_average_perproject(rows: List[Dict[str, str]], keys: List[str]) -> List[
     return out
 
 
+# RQ4 doc-to-code set names, in display order: the pipeline output then each linker alone.
+LINKER_SET_NAMES = ["Full"] + [f"{ph['linker']}Only" for ph in rq.PHASES]
+
+
 def build_rows(backends: List[str], runs: List[str]):
     """Returns (variant macro, linker macro, variant per-project, linker per-project)."""
     variant_rows: List[Dict[str, str]] = []
@@ -309,7 +323,7 @@ def build_rows(backends: List[str], runs: List[str]):
     linker_pp: List[Dict[str, str]] = []
 
     for backend in backends:
-        slot = rq.SLOTS[backend]
+        slot = rq.SLOTS.get(backend, Path("/nonexistent"))   # s92 resolves per-run dirs
         for run in runs:
             variant_project_rows = defaultdict(list)
             linker_project_rows = defaultdict(list)
@@ -324,11 +338,9 @@ def build_rows(backends: List[str], runs: List[str]):
                                        "project": project,
                                        **{c: f"{score[c]:.6f}" for c in PANEL}})
 
-                linker_sets = {
-                    "Full": cell.final,
-                    "EntityOnly": cell.ent_kept,
-                    "CorefOnly": cell.cor_kept,
-                }
+                linker_sets = {"Full": cell.final}
+                linker_sets.update({f"{ph['linker']}Only": cell.kept[ph["key"]]
+                                    for ph in rq.PHASES})
                 linker_scores = score_project_sets(project, linker_sets)
                 for name, score in linker_scores.items():
                     linker_project_rows[name].append(score)
@@ -337,7 +349,7 @@ def build_rows(backends: List[str], runs: List[str]):
                                       **{c: f"{score[c]:.6f}" for c in PANEL}})
 
             full_variant = macro(variant_project_rows["Full"])
-            for name in ("Full", "NoEntityValid", "NoCitation", "NoValidator"):
+            for name in rq.RQ3_VARIANTS:
                 score = macro(variant_project_rows[name])
                 row = {"backend": backend, "run": run, "variant": name}
                 row.update({c: f"{score[c]:.6f}" for c in PANEL})
@@ -346,7 +358,7 @@ def build_rows(backends: List[str], runs: List[str]):
                 variant_rows.append(row)
 
             full_linker = macro(linker_project_rows["Full"])
-            for name in ("Full", "EntityOnly", "CorefOnly"):
+            for name in LINKER_SET_NAMES:
                 score = macro(linker_project_rows[name])
                 row = {"backend": backend, "run": run, "linker_set": name}
                 row.update({c: f"{score[c]:.6f}" for c in PANEL})
@@ -376,31 +388,28 @@ def write_summary(path: Path, variant_rows: List[Dict[str, str]], linker_rows: L
     ]
     for backend in sorted({r["backend"] for r in variant_rows}):
         no_all = row_by(variant_rows, backend=backend, run="average", variant="NoValidator")
-        no_ent = row_by(variant_rows, backend=backend, run="average", variant="NoEntityValid")
-        no_cit = row_by(variant_rows, backend=backend, run="average", variant="NoCitation")
         lines.append(f"- **{backend} NoValidator vs Full:** "
                      f"file-F1 {no_all['delta_doc_to_code_file_f1_vs_full']}, "
+                     f"file-F2 {no_all['delta_doc_to_code_file_f2_vs_full']}, "
                      f"worst-component F1 {no_all['delta_doc_to_code_worst_component_f1_vs_full']}, "
                      f"harmonic-component F1 {no_all['delta_doc_to_code_harmonic_component_f1_vs_full']}, "
                      f"coverage {no_all['delta_doc_to_code_sentence_coverage_vs_full']}, "
                      f"noise {no_all['delta_doc_to_code_noise_rate_vs_full']}.")
-        lines.append(f"- **{backend} validator split:** "
-                     f"NoEntityValid file-F1 {no_ent['delta_doc_to_code_file_f1_vs_full']} vs "
-                     f"NoCitation file-F1 {no_cit['delta_doc_to_code_file_f1_vs_full']}; "
-                     f"NoEntityValid noise {no_ent['delta_doc_to_code_noise_rate_vs_full']} vs "
-                     f"NoCitation noise {no_cit['delta_doc_to_code_noise_rate_vs_full']}.")
+        for ph in rq.PHASES:
+            r = row_by(variant_rows, backend=backend, run="average", variant=ph["variant"])
+            lines.append(f"- **{backend} {ph['variant']} (judge off) vs Full:** "
+                         f"file-F1 {r['delta_doc_to_code_file_f1_vs_full']}, "
+                         f"file-F2 {r['delta_doc_to_code_file_f2_vs_full']}, "
+                         f"noise {r['delta_doc_to_code_noise_rate_vs_full']}.")
     lines += ["", "## RQ4 Linker Sets", ""]
     for backend in sorted({r["backend"] for r in linker_rows}):
-        ent = row_by(linker_rows, backend=backend, run="average", linker_set="EntityOnly")
-        coref = row_by(linker_rows, backend=backend, run="average", linker_set="CorefOnly")
-        lines.append(f"- **{backend} EntityOnly vs Full:** "
-                     f"file-F1 {ent['delta_doc_to_code_file_f1_vs_full']}, "
-                     f"worst-component F1 {ent['delta_doc_to_code_worst_component_f1_vs_full']}, "
-                     f"coverage {ent['delta_doc_to_code_sentence_coverage_vs_full']}.")
-        lines.append(f"- **{backend} CorefOnly vs Full:** "
-                     f"file-F1 {coref['delta_doc_to_code_file_f1_vs_full']}, "
-                     f"worst-component F1 {coref['delta_doc_to_code_worst_component_f1_vs_full']}, "
-                     f"coverage {coref['delta_doc_to_code_sentence_coverage_vs_full']}.")
+        for name in LINKER_SET_NAMES[1:]:
+            r = row_by(linker_rows, backend=backend, run="average", linker_set=name)
+            lines.append(f"- **{backend} {name} vs Full:** "
+                         f"file-F1 {r['delta_doc_to_code_file_f1_vs_full']}, "
+                         f"file-F2 {r['delta_doc_to_code_file_f2_vs_full']}, "
+                         f"worst-component F1 {r['delta_doc_to_code_worst_component_f1_vs_full']}, "
+                         f"coverage {r['delta_doc_to_code_sentence_coverage_vs_full']}.")
     lines += [
         "",
         "Reading rule: negative deltas mean the counterfactual/linker-only set is worse than Full; "
@@ -415,8 +424,9 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--csv-root", type=Path, default=HERE / "reports",
                     help="output root (default: mini-rq34/reports)")
-    ap.add_argument("--backends", nargs="+", default=["claude", "openai"],
-                    choices=["claude", "openai"])
+    ap.add_argument("--backends", nargs="+", default=list(rq.BACKENDS),
+                    choices=list(rq.BACKENDS),
+                    help=f"backends of the {rq.ARM} arm (default: all)")
     ap.add_argument("--runs", nargs="+", default=list(rq.RUNS), choices=rq.RUNS,
                     help="runs to score (default: run1 run2 run3)")
     args = ap.parse_args()

@@ -146,6 +146,20 @@ def prf(gold, res):
     return precision, recall, f1
 
 
+def fbeta(precision, recall, beta=2.0):
+    """F-beta from a precision/recall pair; ``beta=2`` is the paper's \\ftwo.
+
+    Recall-weighted: a missed gold link costs beta^2 = 4x what a spurious one
+    does. Reported next to every link-level and file-level F1 because a
+    developer reading recovered links can discard a wrong one but cannot see a
+    link that was never proposed. Same empty-prediction convention as ``prf``:
+    precision = recall = 0 -> 0.0, never vacuously perfect.
+    """
+    b2 = beta * beta
+    denom = b2 * precision + recall
+    return (1 + b2) * precision * recall / denom if denom > 0 else 0.0
+
+
 def sentence_coverage(gold_by_s, res_by_s):
     """Fraction of gold sentences with >=1 correct prediction."""
     if not gold_by_s:
@@ -367,7 +381,7 @@ def compute_sad_code(project, res):
 
     return {
         "project": project,
-        "file_p": fp_, "file_r": fr_, "file_f1": ff1,
+        "file_p": fp_, "file_r": fr_, "file_f1": ff1, "file_f2": fbeta(fp_, fr_),
         "component_f1": comp_f1,
         "worst_component_f1": worst,
         "harmonic_component_f1": harmonic,
@@ -418,7 +432,7 @@ def compute_sad_sam(project, res):
 
     return {
         "project": project,
-        "link_p": lp, "link_r": lr, "link_f1": lf1,
+        "link_p": lp, "link_r": lr, "link_f1": lf1, "link_f2": fbeta(lp, lr),
         "sentence_coverage": sentence_coverage(gold_by_s, res_by_s),
         "noise_rate": noise_rate(gold_by_s, res_by_s),
         "silent_failure_mass": sfm,
@@ -429,16 +443,16 @@ def compute_sad_sam(project, res):
 # ── CLI / output ──────────────────────────────────────────────────────────────
 
 PANELS = {
-    "sad-code": ["file_p", "file_r", "file_f1", "component_f1",
+    "sad-code": ["file_p", "file_r", "file_f1", "file_f2", "component_f1",
                  "worst_component_f1", "harmonic_component_f1",
                  "sentence_coverage", "noise_rate"],
-    "sad-sam":  ["link_p", "link_r", "link_f1",
+    "sad-sam":  ["link_p", "link_r", "link_f1", "link_f2",
                  "sentence_coverage", "noise_rate",
                  "silent_failure_mass", "silent_failure_count"],
 }
 HEADERS = {
-    "file_p": "file_P", "file_r": "file_R", "file_f1": "file_F1",
-    "link_p": "link_P", "link_r": "link_R", "link_f1": "link_F1",
+    "file_p": "file_P", "file_r": "file_R", "file_f1": "file_F1", "file_f2": "file_F2",
+    "link_p": "link_P", "link_r": "link_R", "link_f1": "link_F1", "link_f2": "link_F2",
     "component_f1": "comp_F1", "worst_component_f1": "worst_C",
     "harmonic_component_f1": "harm_C", "sentence_coverage": "sent_cov",
     "noise_rate": "noise",

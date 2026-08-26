@@ -108,6 +108,8 @@
 \renewcommand{\subsectionautorefname}{Section}
 \renewcommand{\subsubsectionautorefname}{Section}
 \newcommand{\fone}{F\textsubscript{1}\xspace}
+\newcommand{\ftwo}{F\textsubscript{2}\xspace}% recall-weighted (beta=2); reported beside every \fone
+\newcommand{\avgftwo}{average \ftwo}
 \newcommand{\avgfone}{average \fone}% headline aggregate (macro-averaged across projects); NOT for the standard-vs-size-aware contrast, which stays "link-level \fone".
 \newcommand{\cmrname}{component miss rate}
 \newcommand{\cmr}{\ensuremath{\mathrm{CMR}}}
@@ -135,19 +137,19 @@
 
 % Compiled from sections/intro.tex via writing-kb ABSTRACT_PLAYBOOK (Wang A1-A9 skeleton).
 % NOTE: headline gains are over \Artemis, the strongest published baseline. Lead = doc-model
-% macro \fone\ +10.0pp (.936-.836); then doc-code link \fone\ +5.7pp (.906-.849); size-aware
-% deltas 13/41/42pp (coverage / worst-component / harmonic per-component), matching results.tex
+% macro \fone\ +7.8pp (.914-.836); then doc-code link \fone\ +6.0pp (.909-.849); size-aware
+% deltas 17/36/41pp (coverage / worst-component / harmonic per-component), matching results.tex
 % and tab:rq2. Units: spell out "percentage points" on first use, "pp" after. Keep intro.tex l.48 in sync.
 \begin{abstract}
 Trace links between software architecture artifacts and code support impact analysis, change propagation, and compliance review, yet they are the hardest to recover: the artifacts describe the system on a higher level of abstraction and rarely directly match the names in the code.
 Lexical recovery overlooks aliases and implicit references, while a per-sentence \ac{LLM} rebuilds that knowledge on every call and accepts plausible-but-wrong links.
 We present \approach, the first training-free, multi-stage \ac{LLM} workflow for architecture-to-code traceability link recovery that keeps the runtime knowledge module separate from the linker.
-A first stage derives an ambiguity map and an alias table over the document and component set; a second runs two linkers specialized by reference form, one for named mentions and one for implicit references checked against earlier sentences, each with a judge that rejects hallucinated links.
+A first stage derives an alias table over the document and component set; a second runs three linkers specialized by reference form---a whole name, one word of a name, and an implicit reference checked against earlier sentences---each with a judge that rejects hallucinated links.
 On five open-source benchmark projects, we evaluate \approach against the state of the art. %under both the standard metric and a new one.
-\approach improves performance in comparison to the strongest published approach by 10.0 percentage points in architecture doc-model \avgfone.
-This gain carries through to 5.7\,pp of \avgfone on the downstream doc-code task.
+\approach improves performance in comparison to the strongest published approach by 7.8 percentage points in architecture doc-model \avgfone, and by 14.1\,pp in the recall-weighted \avgftwo.
+This gain carries through to 6.0\,pp of \avgfone on the downstream doc-code task.
 %The doc-code \avgfone is the metric on which the advantage is \emph{smallest}.
-Under an architecture-driven suite that adds sentence coverage and a per-component tail, the gap widens to 13, 41, and 42\,pp.
+Under an architecture-driven suite that adds sentence coverage and a per-component tail, the gap widens to 17, 36, and 41\,pp.
 %A replication package provides prompts, module code, raw \ac{LLM} responses, and per-project results.
 \end{abstract}
 

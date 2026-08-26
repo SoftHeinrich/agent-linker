@@ -203,6 +203,7 @@ CANONICAL_VARIANTS = [
     "s_linker91",  # the two of those five whose consumer is a single stage
     "s_linker92",  # only the strict judge's enumeration deletion
     "s_linker92a",  # s92 with the LLM extraction pass replaced by the name scan
+    "s_linker92a_noknow",  # RQ4 knowledge A/B for the reported arm: s92a, alias table off
     "s_linker92b",  # s92a, not proposing a name found only inside a dotted identifier
     "s_linker92c",  # s92b at the spelling-variant fidelity instead of case-folding
     "s_linker92d",  # s92b at both whole-name fidelities, unioned
@@ -2046,6 +2047,24 @@ VARIANT_SPECS = {
         ),
         canonical=False,
         experimental=True,
+    ),
+    "s_linker92a_noknow": dict(
+        aliases=("scannoknow",),
+        module="llm_sad_sam.linkers.experimental.s_linker92a",
+        class_name="SLinker92a",
+        description=(
+            "S-Linker92a NO-KNOWLEDGE - RQ4 knowledge A/B for the arm the paper reports "
+            "(experimental=True, NOT canonical). s_linker92a with no_knowledge=True: the "
+            "document-alias stage is skipped and an empty DocumentKnowledge is set directly, "
+            "so both the scan and the partial-name linker see canonical component names only. "
+            "All other phases run unchanged. Mirrors s_linker21_noknow one lineage over. "
+            "LANDMINE: _VARIANT_NAME stays 's_linker92a', so its phase states nest under "
+            "phase_states/s_linker92a/ -- give every run its own PHASE_CACHE_DIR or it "
+            "clobbers the Full arm's states."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
     ),
     "s_linker92b": dict(
         aliases=("scannoqual",),

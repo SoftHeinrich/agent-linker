@@ -63,8 +63,8 @@ All baselines are run with their authors' released configurations.
 % %TODO, maybe separate the table so have some basic stat here, but space limited.
 % \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
 % We use this benchmark because it is the standard evaluation set for this task~\cite{keim_recovering_2024,fuchs_lissa_2025,fuchs_whos_2025}.
-For each task, we repeat our approach running three times and report average to avoid bias by LLM running variance. 
-To avoid single, we run experiments with diverse language-model backends, GPT-5.4, GPT-5.5 and Claude Sonnet.
+For each task, we repeat our approach running three times and report average to avoid bias by LLM running variance.
+To avoid depending on one model, we run \approach{} on two language-model backends, GPT-5.6-terra and GPT-5.6-luna; the body reports terra and the appendix mirrors every table on luna.
 
 \subsubsection{Experiments for \ref{rq:sota}}
 \label{sec:exp:rq1}
@@ -82,8 +82,9 @@ The two evaluations are:
     It combines its doc-model links with the architecture model's component-to-file link recovery via ArCoTL~\cite{keim_recovering_2024}. 
     We compare \approach{} with two baselines: \TransArc{}~\cite{keim_recovering_2024}, the strongest heuristic-based approach; and \Artemis{} composed through the same \TransArc{} file mapping, as an \ac{LLM} baseline at the doc-code grain.
 \end{enumerate}
-For each task we use the same metrics \TransArc{} and \Artemis{} use. 
+For each task we use the same metrics \TransArc{} and \Artemis{} use.
 We report link level precision, recall, and \fone per project and averaged across projects.
+We report \ftwo\ beside \fone\ throughout: a spurious link is visible to the developer who reads it, while a link the system never proposes is not, so recall and precision are not equally costly here.
 The outcome of \ref{rq:sota} tells us whether \approach{} improves over existing tools on the link task it targets directly (doc-model) and on the downstream task that developers care about (doc-code).
 
 
@@ -101,17 +102,20 @@ We read the size-aware metrics beside link-level \fone: where a system scores we
 
 \subsubsection{Experiments for \ref{rq:validators}}
 \label{sec:exp:rq3}
-We build three ablations of \approach{} that remove judges.
+We build four ablations of \approach{} that remove judges, one per judge plus the union.
 Running on the same benchmark, we compare each ablation against \emph{\fullVariant{}}, the full pipeline.
 
 \begin{enumerate}[leftmargin=*]
-\item \emph{\noEntityValid{}}: skip the \entValidator{} (\autoref{sec:validators}); accept all candidates from \linkerB without the 
+\item \emph{\noEntityValid{}}: skip the \entValidator{} (\autoref{sec:validators}); accept all candidates from \linkerB{} without the
 \entValidator{}.
+
+\item \emph{\noPartialValid{}}: skip the \partValidator{}; accept all candidates from \linkerD{} without the \partValidator{}.
 
 \item \emph{\noCitation{}}: skip the \corefValidator{}; accept all implicit-reference candidates without \corefValidator{}.
 
-\item \emph{\noValidator{}}: skip both judges (the two above combined).
+\item \emph{\noValidator{}}: skip all three judges (the three above combined).
 \end{enumerate}
+Each judge logs a verdict per candidate it sees, so we read the ablations off the full pipeline's own decision log rather than re-running it three times.
 
 
 % For each ablation we report (i) the change in macro \fone\ over the five projects against \fullVariant{}, 
@@ -122,13 +126,13 @@ Running on the same benchmark, we compare each ablation against \emph{\fullVaria
 \subsubsection{Experiments for \ref{rq:ablation}}
 \label{sec:exp:rq4}
 We ablate \approach{} at the module level.
-The workflow has three modules: the knowledge module and the two linker modules \linkerB{} and \linkerC{}.
+The workflow has four modules: the knowledge module and the three linker modules \linkerB{}, \linkerD{}, and \linkerC{}.
 We measure their contributions with different methods.
-For the knowledge module we run a leave-one-out variant: we strip the knowledge module, re-run both linkers, and compare against the full workflow.
+For each linker we score the links it alone kept, and we measure it by set overlap, decomposing the gold links it catches into the ones no other linker catches and the ones at least two share.
+This reports how many true positives each linker contributes that the others do not.
+For the knowledge module we run a leave-one-out variant: we switch off the document-alias stage, re-run every linker on canonical component names only, and compare against the full workflow over the same three runs.
 This isolates how much of the gain comes from the shared knowledge rather than from the linkers themselves.
-We compare every ablation variant: each linker on its own and the no-knowledge variant.
-We also measure each linker by set overlap, decomposing the gold links it catches into the cells \texttt{|only\_E|}, \texttt{|both|}, and \texttt{|only\_C|}, so we can report how many true positives each linker contributes that the other does not.
-\autoref{tab:rq4} reports the size-aware suite for the full workflow and for each module removed.
+\autoref{tab:rq4} reports the size-aware suite for the full workflow, for each linker on its own, and for the no-knowledge variant.
 
 
 % \subsection{Dataset}

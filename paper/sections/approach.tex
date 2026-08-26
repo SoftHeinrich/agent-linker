@@ -360,7 +360,7 @@ The target-blind step is worth $12$ false positives.
 The grounded review that follows it, which shows the model the target together with the sentences naming it and asks whether the two denote the same participant, trades recall for precision at a bad rate: it rejects $8.0$ candidates per run of which $5.5$ are gold.
 Dropping it leaves F1 unchanged ($+0.2$, $p=0.53$) and improves F2 by $1.3$ ($p=0.01$) over six paired runs, and it helps only one of the five documents, the one that proposes the most partial names, while costing recall on the one where partial names carry the most links.
 
-Second, the two linkers pose different questions, so their judges do different work.
+Second, the named-mention and coreference linkers pose different questions, so their judges do different work.
 A named mention has to clear two bars: the sentence must be \emph{relevant}, an architectural action that belongs to the component, and it must be \emph{unique}, pointing to that component rather than another or to a generic use of the word.
 A coreference link is simpler, because the alias lookup in \linkerC has already dropped every candidate whose earlier sentence does not name the component, so one question remains: whether the resolution fits the content of that earlier sentence.
 Giving \linkerC{} a second pass as well confirms this rather than improving on it: it moves neither score ($\mathrm{TP}$ $-0.6$, $p=0.40$; $\mathrm{FP}$ $-0.8$, $p=0.17$).

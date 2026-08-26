@@ -107,6 +107,29 @@ LISSA = {"label": "LiSSA (gpt-5-mini)", "backend": "gpt-5-mini", "runs": None,
          "sad-sam":  "model-doc/lissa-{project}-gpt-5-mini.csv",
          "sad-code": "doc-code/lissa-{project}-gpt-5-mini.csv"}
 
+# The s_linker92a arms from the agent-linker regex round (entity extraction as a scan),
+# scored through the same roster machinery.  Their slots are built by
+# mini-src/build_alinker_extracts.py (run CSVs -> neutral extracts) piped into
+# build_s21_dump.py, exactly as the s21 slots are.
+#
+# THESE ARE THE ARMS THE PAPER REPORTS (2026-08-26): terra = main body, luna = the
+# second-backend mirror, replacing the s21 GPT-5.4/Claude pair.  The s21 rows stay in
+# the roster as the prior canonical, for the side-by-side the rebase has to justify.
+S92A = [
+    {"label": "approach (GPT-5.6-terra)", "backend": "gpt-5.6-terra",
+     "runs": ["run1", "run2", "run3"],
+     "sad-sam":  "model-doc/aalinker/terra_s92a/{run}/{project}.csv",
+     "sad-code": "doc-code/aalinker-composed/terra_s92a/{run}/{project}.csv"},
+    {"label": "approach (GPT-5.6-luna)", "backend": "gpt-5.6-luna",
+     "runs": ["run1", "run2", "run3"],
+     "sad-sam":  "model-doc/aalinker/luna_s92a/{run}/{project}.csv",
+     "sad-code": "doc-code/aalinker-composed/luna_s92a/{run}/{project}.csv"},
+]
+
+# The arm the paper's body tables report, and the mirror backend beside it.
+BODY_ARM = "approach (GPT-5.6-terra)"
+MIRROR_ARM = "approach (GPT-5.6-luna)"
+
 # The paper's RQ2 approach numbers (working/table/rq2-results.tex) came from the
 # WRONG-CONFIG run: the deleted v2.6.5_s20union_gpt_re_medium slot, i.e. gpt-5.4
 # with reasoning=medium (run_s20union_gpt_re_medium_n3.sh), scored by the deleted
@@ -116,15 +139,23 @@ LISSA = {"label": "LiSSA (gpt-5-mini)", "backend": "gpt-5-mini", "runs": None,
 # to flag these as OUTDATED next to the reproducible no-reasoning values.
 PAPER_RQ2_OUTDATED = {  # approach, gpt-5.4 reasoning=medium, doc-to-code
     "doc_to_code_file_f1": 0.87,
+    "doc_to_code_file_f2": "",      # not recoverable: the run that produced it is deleted
     "doc_to_code_sentence_coverage": 0.80,
     "doc_to_code_worst_component_f1": 0.62,
     "doc_to_code_harmonic_component_f1": 0.71,
 }
 
 # RQ2 size-aware panel: doc-to-code, both approach backends + the two baselines.
-RQ2_SYSTEMS = ["TransArC", "Artemis (GPT-5.4)", "approach (GPT-5.4)", "approach (Claude)", "approach s20union (GPT-5.4)", "approach s20union (Claude)"]
+RQ2_SYSTEMS = ["TransArC", "Artemis (GPT-5.4)", "approach (GPT-5.6-terra)", "approach (GPT-5.6-luna)", "approach (GPT-5.4)", "approach (Claude)", "approach s20union (GPT-5.4)", "approach s20union (Claude)"]
+# The approach rows build_rq2_panel emits, in order: the two reported s92a arms first,
+# then the prior canonical s21 pair and the s20union pair for comparison.
+RQ2_APPROACH_LABELS = ["approach (GPT-5.6-terra)", "approach (GPT-5.6-luna)",
+                       "approach (GPT-5.4)", "approach (Claude)",
+                       "approach s20union (GPT-5.4)", "approach s20union (Claude)"]
+
 RQ2_COLS = [
     "doc_to_code_file_f1",
+    "doc_to_code_file_f2",
     "doc_to_code_sentence_coverage",
     "doc_to_code_worst_component_f1",
     "doc_to_code_harmonic_component_f1",
@@ -137,6 +168,7 @@ COLUMNS = [
     ("doc_to_model_link_precision", SS, "link_p"),
     ("doc_to_model_link_recall", SS, "link_r"),
     ("doc_to_model_link_f1", SS, "link_f1"),
+    ("doc_to_model_link_f2", SS, "link_f2"),
     ("doc_to_model_sentence_coverage", SS, "sentence_coverage"),
     ("doc_to_model_noise_rate", SS, "noise_rate"),
     ("doc_to_model_silent_failure_mass", SS, "silent_failure_mass"),
@@ -144,6 +176,7 @@ COLUMNS = [
     ("doc_to_code_file_precision", SC, "file_p"),
     ("doc_to_code_file_recall", SC, "file_r"),
     ("doc_to_code_file_f1", SC, "file_f1"),
+    ("doc_to_code_file_f2", SC, "file_f2"),
     ("doc_to_code_component_micro_f1", SC, "component_f1"),
     ("doc_to_code_worst_component_f1", SC, "worst_component_f1"),
     ("doc_to_code_harmonic_component_f1", SC, "harmonic_component_f1"),
@@ -329,7 +362,7 @@ def build_rq2_panel(rows):
                       **{c: r[c] for c in RQ2_COLS}, "note": ""})
 
     approach_runs = ["run1", "run2", "run3", "average"]
-    for label in ("approach (GPT-5.4)", "approach (Claude)", "approach s20union (GPT-5.4)", "approach s20union (Claude)"):
+    for label in RQ2_APPROACH_LABELS:
         for run in approach_runs:
             r = row_for(rows, label, run)
             if r is not None:
@@ -338,7 +371,7 @@ def build_rq2_panel(rows):
 
     art = row_for(rows, "Artemis (GPT-5.4)", "single")
     if art is not None:
-        for label in ("approach (GPT-5.4)", "approach (Claude)", "approach s20union (GPT-5.4)", "approach s20union (Claude)"):
+        for label in RQ2_APPROACH_LABELS:
             for run in approach_runs:
                 r = row_for(rows, label, run)
                 if r is None:
@@ -386,15 +419,18 @@ def main():
                          "(default: reports/RQ12_PERPROJECT.csv, or next to --csv)")
     ap.add_argument("--lissa", action="store_true",
                     help="also include LiSSA; aborts unless all required project files are present")
+    ap.add_argument("--s92a", action="store_true",
+                    help="deprecated no-op: the s_linker92a arms are always scored now")
     args = ap.parse_args()
 
-    roster = ROSTER + ([LISSA] if args.lissa else [])
+    roster = S92A + ROSTER + ([LISSA] if args.lissa else [])
     rows = [row for system in roster for row in build_rows(system)]
 
     big = list(rows)
-    d = delta_row(rows, "approach (GPT-5.4)", "Artemis (GPT-5.4)")
-    if d:
-        big.append(d)
+    for arm in (BODY_ARM, MIRROR_ARM):
+        d = delta_row(rows, arm, "Artemis (GPT-5.4)")
+        if d:
+            big.append(d)
     print_table(big)
     print(f"\nProvenance: {SOTA_LINKS}  (approach rows = run1/run2/run3 plus average)")
     print("RQ1 doc-to-model = doc_to_model_link_precision/recall/f1; "

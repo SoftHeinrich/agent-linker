@@ -4,21 +4,23 @@
 \caption{RQ4 module ablation, run 3, both backends.}
 \label{tab:rq4-run3}
 \centering\small
-\begin{tabular}{@{}ll rrrrrrr@{}}
+\begin{tabular}{@{}ll rrrrrrrrr@{}}
 \toprule
- &  & \multicolumn{1}{c}{doc-model} & \multicolumn{3}{c}{doc-code (link \fone)} & \multicolumn{3}{c}{size-aware} \\
-\cmidrule(lr){3-3}\cmidrule(lr){4-6}\cmidrule(lr){7-9}
-Backend & Variant & \fone & P & R & \fone & Cov & Worst & Harm \\
+ &  & \multicolumn{2}{c}{doc-model} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{3}{c}{size-aware} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-8}\cmidrule(lr){9-11}
+Backend & Variant & \fone & \ftwo & P & R & \fone & \ftwo & Cov & Worst & Harm \\
 \midrule
-GPT-5.4 & Full & \textbf{.934} & .96 & \textbf{.86} & \textbf{.905} & \textbf{.84} & \textbf{.77} & \textbf{.88} \\
- & \linkerB{} only & .880 & .98 & .77 & .859 & .74 & .70 & .83 \\
- & \linkerC{} only & .231 & .89 & .14 & .230 & .14 & .00 & .00 \\
- & No knowledge & .869 & \textbf{.99} & .75 & .841 & .75 & .53 & .66 \\
+GPT-5.6-terra & Full & \textbf{.913} & .931 & .92 & .92 & \textbf{.915} & \textbf{.915} & .88 & \textbf{.71} & \textbf{.87} \\
+ & \linkerB{} only & .854 & .816 & .93 & .81 & .862 & .828 & .74 & .62 & .82 \\
+ & \linkerD{} only & .078 & .062 & .11 & .02 & .040 & .029 & .05 & .00 & .00 \\
+ & \linkerC{} only & .315 & .233 & \textbf{.97} & .19 & .299 & .219 & .20 & .01 & .04 \\
+ & No knowledge & .839 & .818 & .95 & .73 & .803 & .754 & .78 & .37 & .60 \\
 \addlinespace[2pt]
-Claude & Full & .910 & .97 & .83 & .891 & .83 & .60 & .71 \\
- & \linkerB{} only & .851 & .97 & .74 & .833 & .72 & .55 & .67 \\
- & \linkerC{} only & .599 & .94 & .47 & .575 & .49 & .33 & .43 \\
- & No knowledge & .892 & .96 & .81 & .875 & .80 & .57 & .70 \\
+GPT-5.6-luna & Full & .904 & \textbf{.948} & .85 & \textbf{.92} & .882 & .906 & \textbf{.89} & .69 & .86 \\
+ & \linkerB{} only & .857 & .849 & .86 & .82 & .836 & .827 & .76 & .62 & .82 \\
+ & \linkerD{} only & .066 & .054 & .21 & .04 & .053 & .041 & .08 & .00 & .00 \\
+ & \linkerC{} only & .306 & .228 & .93 & .18 & .294 & .213 & .21 & .02 & .04 \\
+ & No knowledge & .856 & .875 & .90 & .82 & .840 & .823 & .87 & .45 & .65 \\
 \bottomrule
 \end{tabular}
 \end{table*}

@@ -48,10 +48,14 @@
 %     out once then "pp". Active voice. No hedging in claim positions (no "we believe/may/might").
 %   MACROS: \approach \linkerB(DLinker) \linkerC(ILinker) \Artemis \TransArc \ac{LLM}.
 % Verified numbers to use:
-%   doc-model avgF1: Artemis .836, SWATTR .799, \approach .936 (+10.0pp).
-%   doc-code  avgF1: TransArc .803, Artemis .849, \approach .906 (+5.7pp link-level).
-%   doc-code size-aware (tab:rq2, \approach vs Artemis): sent.cov .84 vs .71 (+13pp),
-%     worst-comp F1 .75 vs .35 (+41pp), harmonic per-comp F1 .88 vs .47 (+42pp).
+%   [2026-08-26 rebase to s_linker92a / GPT-5.6-terra]
+%   doc-model avgF1: Artemis .836, SWATTR .799, \approach .914 (+7.8pp);
+%     avgF2: Artemis .790, SWATTR .778, \approach .931 (+14.1pp).
+%   doc-code  avgF1: TransArc .803, Artemis .849, \approach .909 (+6.0pp link-level);
+%     avgF2: TransArc .782, Artemis .804, \approach .912 (+10.8pp).
+%   doc-code size-aware (tab:rq2, \approach vs Artemis): sent.cov .88 vs .71 (+17pp),
+%     worst-comp F1 .71 vs .35 (+36pp), harmonic per-comp F1 .87 vs .47 (+41pp).
+%   doc-model SFM: \approach 2.2%, Artemis 7.1%, SWATTR 7.4%.
 %   doc-model SFM (silent-failure mass): \approach 0.0% on every project; Artemis macro 7.1%
 %     (abandons one component on 3/5 projects); SWATTR macro 7.4%.
 %   long-tailed links (motivation; data: table/gold_concentration): ~99% of doc-code links in a few
@@ -204,13 +208,13 @@ The decision cannot be trusted.
 % Para 3 -- single bold thesis (decision altitude) + proposal + result, with hand-off to Para 4.
 \textbf{The recovery power lies in how each link is decided: rather than committing in one unchecked step, \approach makes a link earn its place: grounded in disambiguated knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
 We present \approach, the first multi-stage \ac{LLM} workflow for doc-model trace-link recovery that carries an ambiguity-aware knowledge layer into the decision and checks every link with a context-augmented \ac{LLM}-as-a-judge.
-Three modules work together to make this decision: a knowledge module computed once, and two linkers, each paired with a judge.
-\linkerB targets named references; \linkerC resolves an implicit reference against its antecedent.
+Four modules work together to make this decision: a knowledge module computed once, and three linkers, each paired with a judge.
+\linkerB targets sentences that state a component's whole name, \linkerD those that carry only one word of it, and \linkerC resolves an implicit reference against its antecedent.
 Each judge is a context-augmented \ac{LLM}-as-a-judge: a plain judge scores an output alone, but ours receives the evidence the link rests on, such as the matched span, the form of the reference, and, for an implicit reference, the antecedent sentence.
 So, it can reject trace links the evidence does not support.
 % Running \approach takes one invocation over the documentation and model, with no labeled links and no per-project tuning.
-On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.936$, $10.0$ percentage points above the strongest baseline \Artemis, and every project gains~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
-On doc-code it reaches an \avgfone of $0.906$ ($+5.7$pp). 
+On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.914$, $7.8$ percentage points above the strongest baseline \Artemis, and $0.931$ \avgftwo, $14.1$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+On doc-code it reaches an \avgfone of $0.909$ ($+6.0$pp) and an \avgftwo of $0.912$ ($+10.8$pp). 
 % ; link-level \fone\ understates this gain, as the size-aware suite below shows.
 
 % Para 4 -- second contribution: the measure, motivated from the long-tailed task property; ends on the key finding.
@@ -223,8 +227,8 @@ We therefore add an architecture-driven evaluation suite of four size-aware metr
 \Artemis{}, the \ac{LLM} pipeline credited with beating \TransArc{} by $4.6$pp link-level F1, in fact covers fewer sentences ($-4$pp) and abandons more components ($-20$pp worst-component \fone).
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
-On doc-code \approach{} clears it: it leads \TransArc{} by $9$pp on sentence coverage, $21$pp on the worst component, and $21$pp on the harmonic per-component \fone.
-On doc-model, \approach{} abandons no documented component on any project, while both \Artemis{} and SWATTR abandon at least one.
+On doc-code \approach{} clears it: it leads \TransArc{} by $13$pp on sentence coverage, $16$pp on the worst component, and $20$pp on the harmonic per-component \fone.
+On doc-model, \approach{} abandons one documented component on one of the five projects, where \Artemis{} abandons one on three of them and SWATTR abandons three on a single project.
 Exactly where link-level \fone{} is blind, \approach{} covers the components every prior tool drops.
 
 % Para 5 -- contributions (3 bullets) + roadmap.
@@ -232,7 +236,7 @@ This work makes three contributions:
 \begin{itemize}[leftmargin=*]
     \item \textbf{\approach}, a training-free, multi-stage \ac{LLM} workflow for doc-model trace-link recovery (\autoref{sec:approach}).
     \item an \textbf{architecture-driven evaluation suite} of four size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
-    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $10.0$pp on doc-model and $5.7$pp on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
+    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $7.8$pp \fone\ ($14.1$pp \ftwo) on doc-model and $6.0$pp \fone\ ($10.8$pp \ftwo) on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
 \end{itemize}
 
 \autoref{sec:motivation} motivates the task and its long-tailed distribution.

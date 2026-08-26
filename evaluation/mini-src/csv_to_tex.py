@@ -177,11 +177,18 @@ def render(spec):
 # --------------------------------------------------------------------------- #
 SYS_MAP = {"approach": "\\approach{}", "Artemis": "\\Artemis{}",
            "SWATTR": "SWATTR$^{\\dagger}$", "TransArC": "\\TransArc{}"}
-BIGSYS_MAP = {"approach (GPT-5.4)": "\\approach{} (GPT-5.4)", "approach (Claude)": "\\approach{} (Claude)",
+BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
+              "approach (GPT-5.6-luna)": "\\approach{} (GPT-5.6-luna)",
+              "approach (GPT-5.4)": "\\approach{} (GPT-5.4)", "approach (Claude)": "\\approach{} (Claude)",
               "Artemis (GPT-5.4)": "\\Artemis{} (GPT-5.4)", "TransArC": "\\TransArc{}$^{\\dagger}$"}
-VAR_MAP = {"Full": "Full", "Direct": "\\linkerB{} only",
-           "Indirect": "\\linkerC{} only", "No knowledge": "No knowledge"}
-BACKEND_MAP = {"openai": "GPT-5.4", "claude": "Claude"}
+JUDGE_MAP = {"full_name": "\\entValidator{}", "partial_name": "\\partValidator{}",
+             "coref": "\\corefValidator{}", "all_combined": "all three"}
+VAR_MAP = {"Full": "Full", "FullName": "\\linkerB{} only", "PartialName": "\\linkerD{} only",
+           "Coref": "\\linkerC{} only", "No knowledge": "No knowledge",
+           # retired s21 variant labels, kept so old CSVs still render
+           "Direct": "\\linkerB{} only", "Indirect": "\\linkerC{} only"}
+BACKEND_MAP = {"terra": "GPT-5.6-terra", "luna": "GPT-5.6-luna",
+               "openai": "GPT-5.4", "claude": "Claude"}
 RUN_MAP = {"run1": "Run 1", "run2": "Run 2", "run3": "Run 3", "average": "Avg", "single": "--"}
 
 # the curated "whole suite" shown in the big tables (link P/R/F1 + file P/R/F1 + size-aware)
@@ -189,21 +196,23 @@ SUITE9 = [
     {"field": "doc_to_model_link_precision", "header": "P", "kind": "f2", "bold": "max"},
     {"field": "doc_to_model_link_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "doc_to_model_link_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+    {"field": "doc_to_model_link_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
     {"field": "doc_to_model_silent_failure_mass", "header": "SFM", "kind": "f1", "bold": "min"},
     {"field": "doc_to_code_file_precision", "header": "P", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_file_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+    {"field": "doc_to_code_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
     {"field": "doc_to_code_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},
 ]
-SUITE9_GROUPS = [("doc-model (link \\fone)", 4), ("doc-code (link \\fone)", 3),
+SUITE9_GROUPS = [("doc-model (link)", 5), ("doc-code (file)", 4),
                  ("size-aware (doc-code)", 3)]
 
 # Same suite without the doc-model SFM column: the per-run big table reports SFM in the
 # body RQ2 + per-project detailed tables instead, so it is omitted here (co-author design).
 SUITE_NOSFM = [c for c in SUITE9 if c["field"] != "doc_to_model_silent_failure_mass"]
-SUITE_NOSFM_GROUPS = [("doc-model (link \\fone)", 3), ("doc-code (link \\fone)", 3),
+SUITE_NOSFM_GROUPS = [("doc-model (link)", 4), ("doc-code (file)", 4),
                       ("size-aware (doc-code)", 3)]
 
 
@@ -212,34 +221,38 @@ SUITE_NOSFM_GROUPS = [("doc-model (link \\fone)", 3), ("doc-code (link \\fone)",
 # --------------------------------------------------------------------------- #
 SPECS = [
     # ---- RQ1 body ----
-    {"csv": "rq1.csv", "out": "rq1-results.tex", "label": "tab:rq1", "size": "%\\footnotesize", "colsep": "4pt",
-     "colspec": "l ZZZZZZ", "tabularx": "\\columnwidth",
-     "caption": "RQ1 macro precision, recall, and \\fone\\ on the GPT-5.4 backend.",
+    {"csv": "rq1.csv", "out": "rq1-results.tex", "label": "tab:rq1", "size": "\\footnotesize", "colsep": "3pt",
+     "colspec": "@{}l ZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
+     "caption": "RQ1 macro precision, recall, \\fone\\ and \\ftwo\\ on the GPT-5.6-terra backend.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
-     "groups": [("doc-model (link \\fone)", 3), ("doc-code (link \\fone)", 3)],
+     "groups": [("doc-model (link)", 4), ("doc-code (file)", 4)],
      "cols": [
          {"field": "dm_p", "header": "P", "kind": "f2"},
          {"field": "dm_r", "header": "R", "kind": "f2"},
          {"field": "dm_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+         {"field": "dm_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dc_p", "header": "P", "kind": "f2"},
          {"field": "dc_r", "header": "R", "kind": "f2"},
          {"field": "dc_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+         {"field": "dc_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
      ],
      "footnote": "$^{\\dagger}$SWATTR is the deterministic doc-model stage of \\TransArc{}; "
                  "\\TransArc{} has no standalone doc-model output."},
 
     # ---- RQ2 body (was fig:rq2-profile) ----
     {"csv": "rq2.csv", "out": "rq2-results.tex", "label": "tab:rq2", "colsep": "3pt",
-     "colspec": "@{}l ZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
-     "caption": "RQ2 size-aware suite, both tasks: reference \\fone\\ with sentence "
-                "coverage (Cov) and the size-aware metrics on each task. GPT-5.4 backend.",
+     "colspec": "@{}l ZZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
+     "caption": "RQ2 size-aware suite, both tasks: reference \\fone/\\ftwo\\ with sentence "
+                "coverage (Cov) and the size-aware metrics on each task. GPT-5.6-terra backend.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
-     "groups": [("doc-model (link \\fone)", 3), ("doc-code (link \\fone)", 4)],
+     "groups": [("doc-model (link)", 4), ("doc-code (file)", 5)],
      "cols": [
          {"field": "dm_link_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+         {"field": "dm_link_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dm_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
          {"field": "silent_failure_mass", "header": "SFM\\%", "kind": "f1", "bold": "min"},
          {"field": "dc_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+         {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
          {"field": "worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
          {"field": "harmonic_component_f1", "header": "Harm.", "kind": "f2", "bold": "max"},
@@ -247,43 +260,53 @@ SPECS = [
 
     # ---- RQ3 body confusion matrix (mean of 3 runs) ----
     {"csv": "rq3.csv", "out": "rq3-confusion.tex", "label": "tab:rq3-confusion",
-     "colspec": "l YY @{\\hskip 2.2em} YY", "tabularx": "\\columnwidth",
-     "caption": "RQ3 judge confusion on the GPT-5.4 backend, averaged over the three runs.",
-     "labels": [{"field": "true_class", "header": "True class"}],
-     "groups": [("\\entValidator{}", 2), ("\\corefValidator{}", 2)],
+     "size": "\\footnotesize", "colsep": "3pt", "fit": True,
+     "colspec": "@{}l ZZ @{\\hskip 1em} ZZ @{\\hskip 1em} ZZ@{}", "tabularx": "\\columnwidth",
+     "caption": "RQ3 per judge on the GPT-5.6-terra backend, averaged over the three runs: "
+                "the links it rejects and keeps, and the \\fone/\\ftwo\\ the pipeline loses "
+                "when it is switched off. REJ-TP counts only true links no other linker "
+                "recovers; the \\emph{all three} row is measured on the union, not summed.",
+     "labels": [{"field": "judge", "header": "Judge", "map": JUDGE_MAP}],
+     "groups": [("rejects", 2), ("keeps", 2), ("judge off (pp)", 2)],
      "cols": [
-         {"field": "ent_reject", "header": "REJECT", "kind": "f1"},
-         {"field": "ent_keep", "header": "KEEP", "kind": "f1"},
-         {"field": "coref_reject", "header": "REJECT", "kind": "f1"},
-         {"field": "coref_keep", "header": "KEEP", "kind": "f1"},
+         {"field": "rej_fp", "header": "FP", "kind": "f1", "bold": "max"},
+         {"field": "rej_tp", "header": "TP", "kind": "f1", "bold": "min"},
+         {"field": "keep_tp", "header": "TP", "kind": "f1"},
+         {"field": "keep_fp", "header": "FP", "kind": "f1"},
+         {"field": "d_f1", "header": "$\\Delta$\\fone", "kind": "f1", "bold": "min"},
+         {"field": "d_f2", "header": "$\\Delta$\\ftwo", "kind": "f1", "bold": "min"},
      ]},
 
     # ---- RQ3 confusion, both backends, each run + the average in ONE table (appendix) ----
     {"csv": "rq3_runs.csv", "out": "rq3-runs.tex", "label": "tab:rq3-runs", "no_bold": True,
-     "colspec": "@{}lll cc @{\\hskip 2.2em} cc@{}",
+     "colspec": "@{}lll cc @{\\hskip 1.4em} cc @{\\hskip 1.4em} cc@{}",
      "block_by": ["backend", "run"], "summary": {"field": "run", "value": "average"},
-     "caption": "RQ3 judge confusion per run and averaged, both backends "
+     "caption": "RQ3 per judge, per run and averaged, both backends "
                 "(the runs behind body \\autoref{tab:rq3-confusion}).",
      "labels": [{"field": "backend", "header": "Backend", "map": BACKEND_MAP, "group_by": True},
                 {"field": "run", "header": "Run", "map": RUN_MAP, "group_by": True},
-                {"field": "true_class", "header": "True class"}],
-     "groups": [("\\entValidator{}", 2), ("\\corefValidator{}", 2)],
+                {"field": "judge", "header": "Judge", "map": JUDGE_MAP}],
+     "groups": [("rejects", 2), ("keeps", 2), ("judge off (pp)", 2)],
      "cols": [
-         {"field": "ent_reject", "header": "REJECT", "kind": "num"},
-         {"field": "ent_keep", "header": "KEEP", "kind": "num"},
-         {"field": "coref_reject", "header": "REJECT", "kind": "num"},
-         {"field": "coref_keep", "header": "KEEP", "kind": "num"},
+         {"field": "rej_fp", "header": "FP", "kind": "num"},
+         {"field": "rej_tp", "header": "TP", "kind": "num"},
+         {"field": "keep_tp", "header": "TP", "kind": "num"},
+         {"field": "keep_fp", "header": "FP", "kind": "num"},
+         {"field": "d_f1", "header": "$\\Delta$\\fone", "kind": "f1"},
+         {"field": "d_f2", "header": "$\\Delta$\\ftwo", "kind": "f1"},
      ]},
 
     # ---- RQ4 body (was fig:rq4-ablation) ----
     {"csv": "rq4.csv", "out": "rq4-results.tex", "label": "tab:rq4", "size": "%\\footnotesize",
-     "colsep": "3pt", "fit": True, "colspec": "l ZZZZZ", "tabularx": "\\columnwidth",
-     "caption": "RQ4 module ablation on the GPT-5.4 backend.",
+     "colsep": "3pt", "fit": True, "colspec": "l ZZZZZZZ", "tabularx": "\\columnwidth",
+     "caption": "RQ4 module ablation on the GPT-5.6-terra backend.",
      "labels": [{"field": "variant", "header": "Variant", "map": VAR_MAP}],
-     "groups": [("doc-model", 1), ("doc-code (size-aware)", 4)],
+     "groups": [("doc-model", 2), ("doc-code (size-aware)", 5)],
      "cols": [
          {"field": "doc_to_model_macro_f1", "header": "Macro\\ \\fone", "kind": "f3", "bold": "max"},
+         {"field": "doc_to_model_macro_f2", "header": "Macro\\ \\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dc_file_f1", "header": "File\\ \\fone", "kind": "f3", "bold": "max"},
+         {"field": "dc_file_f2", "header": "File\\ \\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
          {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
          {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},
@@ -291,9 +314,9 @@ SPECS = [
 
     # ---- RQ1+RQ2 big table: per project + per-system Average row, both backends ----
     {"csv": "bigtable_rq12_perproject.csv", "out": "big-table-perproject.tex",
-     "label": "tab:detailed-perproject", "star": True, "size": "\\footnotesize", "no_bold": True,
+     "label": "tab:detailed-perproject", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "summary": {"field": "project", "value": "Average"},
-     "caption": "Full s21 comparison per project, with the five-project Average per system, both backends.",
+     "caption": "Full s\\_linker92a comparison per project, with the five-project Average per system, both backends.",
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
                 {"field": "project", "header": "Project"}],
      "groups": SUITE9_GROUPS,
@@ -305,9 +328,9 @@ SPECS = [
 
     # ---- RQ1+RQ2 big table: per run + the average, both backends (SFM omitted here) ----
     {"csv": "bigtable_rq12_perrun.csv", "out": "big-table-perrun.tex",
-     "label": "tab:detailed-perrun", "star": True, "size": "\\footnotesize", "no_bold": True,
+     "label": "tab:detailed-perrun", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "summary": {"field": "run", "value": "average"},
-     "caption": "Full s21 comparison per run for \\approach{} (stochastic; the baselines are "
+     "caption": "Full s\\_linker92a comparison per run for \\approach{} (stochastic; the baselines are "
                 "deterministic, one run), both backends, five-project average.",
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
                 {"field": "run", "header": "Run", "map": RUN_MAP}],
@@ -320,21 +343,23 @@ SPECS = [
 
     # ---- RQ4 big table: per project + per-variant Average row, both backends ----
     {"csv": "bigtable_rq4_perproject.csv", "out": "rq4-bigtable-perproject.tex",
-     "label": "tab:rq4-perproject", "star": True, "size": "\\footnotesize", "no_bold": True,
+     "label": "tab:rq4-perproject", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "block_by": ["backend", "variant"], "summary": {"field": "project", "value": "Average"},
      "summary_label": "variant",
      "caption": "RQ4 module ablation per project, with the per-variant average, both backends.",
      "labels": [{"field": "backend", "header": "Backend", "map": BACKEND_MAP, "group_by": True},
                 {"field": "variant", "header": "Variant", "map": VAR_MAP, "group_by": True},
                 {"field": "project", "header": "Project"}],
-     "groups": [("doc-model (link \\fone)", 3), ("doc-code (link \\fone)", 3), ("size-aware", 3)],
+     "groups": [("doc-model (link)", 4), ("doc-code (file)", 4), ("size-aware", 3)],
      "cols": [
          {"field": "dm_link_precision", "header": "P", "kind": "f2"},
          {"field": "dm_link_recall", "header": "R", "kind": "f2"},
          {"field": "dm_link_f1", "header": "\\fone", "kind": "f3"},
+         {"field": "dm_link_f2", "header": "\\ftwo", "kind": "f3"},
          {"field": "dc_file_precision", "header": "P", "kind": "f2"},
          {"field": "dc_file_recall", "header": "R", "kind": "f2"},
          {"field": "dc_file_f1", "header": "\\fone", "kind": "f3"},
+         {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3"},
          {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2"},
          {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2"},
          {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2"},
@@ -343,12 +368,14 @@ SPECS = [
 
 
 # ---- RQ4 per-run aggregate tables: one per run + the average (both backends x variants) ----
-_RQ4_RUN_GROUPS = [("doc-model", 1), ("doc-code (link \\fone)", 3), ("size-aware", 3)]
+_RQ4_RUN_GROUPS = [("doc-model", 2), ("doc-code (file)", 4), ("size-aware", 3)]
 _RQ4_RUN_COLS = [
     {"field": "doc_to_model_macro_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+    {"field": "doc_to_model_macro_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
     {"field": "dc_file_precision", "header": "P", "kind": "f2", "bold": "max"},
     {"field": "dc_file_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "dc_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
+    {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
     {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
     {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
     {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},

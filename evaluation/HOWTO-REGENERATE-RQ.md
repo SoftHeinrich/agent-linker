@@ -11,6 +11,77 @@ Run all commands from the evaluation repo root (`transarc-emp/`, i.e.
 
 ---
 
+## Current configuration (2026-08-26): s_linker92a on GPT-5.6
+
+The paper reports the **s_linker92a** arm (entity extraction as a scan), not s21:
+terra = body, luna = mirror. Both engines below are pointed at it by default.
+
+| what | where |
+|---|---|
+| doc-model / doc-code link dumps | `sota-links/model-doc/aalinker/{terra,luna}_s92a/run{1,2,3}/` |
+| per-phase state (RQ3/RQ4) | `results/regex_e2e_{terra,luna}_r{1,2,3}_20260822/phase_states/s_linker92a/` |
+| RQ1/RQ2 output | `evaluation/reports/RQ12_{BIGTABLE,PERPROJECT}.csv`, `RQ2_PANEL.csv` |
+| RQ3/RQ4 output | `evaluation/mini-rq34/reports_s92a/` |
+
+Full regeneration from the recorded runs (no LLM calls, ~1 min):
+
+```bash
+cd /mnt/hostshare/ardoco-home/agent-linker
+export TRANSARC_BENCHMARK=/mnt/hostshare/ardoco-home/ardoco/core/tests-base/src/main/resources/benchmark
+export SOTA_LINKS=$PWD/sota-links
+export TRANSARC_RESULTS_DIR=$PWD/evaluation/mini-data
+
+# (a) the sota slots for this arm, if absent: run CSVs -> extracts -> dump
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker92a \
+    --out results/s92a_extracts \
+    --model terra results/regex_e2e_terra_r{1,2,3}_20260822 \
+    --model luna  results/regex_e2e_luna_r{1,2,3}_20260822
+
+# (b) RQ1 + RQ2
+python3 evaluation/mini-src/rq12.py --csv evaluation/reports/RQ12_BIGTABLE.csv
+
+# (c) RQ3 + RQ4 (RQ34_ARM defaults to s92; set RQ34_ARM=s21 for the retired arm)
+python3 evaluation/mini-rq34/rq34.py      --csv-root evaluation/mini-rq34/reports_s92a
+python3 evaluation/mini-rq34/rq34_rq2.py  --csv-root evaluation/mini-rq34/reports_s92a
+
+# (d) paper tables
+python3 evaluation/mini-src/rq_tables.py
+python3 evaluation/mini-src/csv_to_tex.py
+PAPER_DIR=$PWD/paper python3 evaluation/mini-src/sync_paper.py --only rq
+```
+
+### The RQ4 no-knowledge row
+
+Measured on this arm by `approach/pilot/run_regex_e2e_noknow.sh <terra|luna>`
+(variant `s_linker92a_noknow`, three five-project runs per model, live calls), then
+scored with the same two engines pointed at that sweep:
+
+```bash
+export RQ34_S92_DIR_TMPL='regex_noknow_e2e_{model}_r{i}_20260826'
+export RQ34_ABLATION_KEY=s_linker92a_noknow
+python3 evaluation/mini-rq34/rq34.py     --csv-root evaluation/mini-rq34/reports_s92a_noknow      --backends terra
+python3 evaluation/mini-rq34/rq34_rq2.py --csv-root evaluation/mini-rq34/reports_s92a_noknow      --backends terra
+# luna goes to reports_s92a_noknow_luna (RQ34_NOKNOW in rq_tables.py)
+```
+
+`rq_tables.py` picks the row up automatically per backend and prints a NOTE for any
+backend whose no-knowledge slot is absent, so a missing row is never mistaken for a
+measured zero.
+
+Both backends are measured (2026-08-26): the alias table is worth **6.2pp macro F1 /
+9.6pp macro F2** on terra and **3.5 / 6.8pp** on luna, and **33pp of worst-component
+F1** on terra. Flex tier returned `flex_unavailable` (429) partway in, so the luna
+half ran with `OPENAI_SERVICE_TIER=default OPENAI_ENFORCE_FLEX=0`; terra completed on
+flex. Both sweeps validate cell-for-cell against their own `ablation_*.json`.
+
+**Env-var notes for this (nested) layout.** `evaluation/` lives *inside*
+`agent-linker/`, so the scripts' default sibling paths do not resolve: always export
+`TRANSARC_BENCHMARK`, `SOTA_LINKS`, `TRANSARC_RESULTS_DIR` as above and pass
+`--csv` / `--csv-root` explicitly. `rq34.py` finds the run root via `ALINKER_RESULTS`
+(auto-detected for both layouts).
+
+---
+
 ## 0. What lives where (the two data forms)
 
 The RQs are computed by **two** scoring engines that read **two different
