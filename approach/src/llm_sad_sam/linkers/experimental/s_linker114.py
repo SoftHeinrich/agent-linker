@@ -36,9 +36,10 @@ to it.
 
 **This variant is byte-identical to the head and is meant to be.** It changes no prompt,
 no rubric, no batch size, no field and no polarity; `pilot/test_s114_skills.py` rebuilds
-every prompt all three skills would send over the recorded runs and asserts equality with
-the head's own builders, case block by case block, and matches the byte lengths against
-what the recorded calls actually sent. A refactor that moves a measured number is not a
+every prompt all three skills would send over six recorded runs and asserts equality with
+the head's own builders, case block by case block — under a reply that answers nothing
+*and* one that answers every case, so the kept rows are compared and not only each
+judge's default (284/284 batches, 1444 kept rows). A refactor that moves a measured number is not a
 refactor, so the test is the deliverable and the code is what it licenses: after this,
 a judging arm is an edit to one `JudgeSkill` field rather than a fourth copy of the loop.
 
@@ -49,10 +50,9 @@ string is imported from the module that measured it.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable
 
-from llm_sad_sam.core.data_types_v2 import SadSamLink
 from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names
 from llm_sad_sam.linkers.experimental.s_linker92 import (
     COREF_VALIDATION_FOCUS, QUALIFIED_CLAUSE,
@@ -68,7 +68,6 @@ class JudgeSkill:
     `SLinker114._judge` and it is the same loop for every skill.
     """
 
-    name: str
     #: The phase tag the client records this pass under.
     phase: str
     #: How the phase reaches the client: the strict and lenient gates set it on the
@@ -85,8 +84,10 @@ class JudgeSkill:
     case: Callable
     #: The whole prompt. (linker, comp_names, cases, shared, context) -> str.
     prompt: Callable
-    #: A parsed reply row -> the verdict dict this skill records.
-    verdict: Callable
+    #: The reply field the verdict is written in, and the readings it may take.
+    #: `None` readings mean the head's boolean `approve` contract.
+    verdict_field: str
+    verdict_values: frozenset | None
     #: The polarity, as one expression over a verdict.
     keep: Callable
     #: The decision record. (item, verdict, kept, context) -> dict. The strict
@@ -96,8 +97,6 @@ class JudgeSkill:
     shows_catalog: bool = True
     #: Case numbers the head accepts: integers only, or digit strings too.
     digit_case_numbers: bool = False
-    #: What a case the model did not answer records.
-    missing: dict = field(default_factory=dict)
 
 
 class SLinker114(SLinker110):
@@ -119,8 +118,9 @@ class SLinker114(SLinker110):
             return [], {}
         context = context or {}
         comp_names = get_comp_names(components) if skill.shows_catalog else []
-        # The entity skill is reached from two call sites with two phase tags, so the
-        # caller may name the phase; every other skill has exactly one.
+        # `_validate_with_evidence` takes its phase tag as an argument (the head's
+        # signature, one call site in this chain), so the caller may name the phase;
+        # the other two skills carry their own.
         phase = context.get("phase") or skill.phase
         if skill.phase_on_client:
             self.llm.set_phase(phase)
@@ -141,9 +141,9 @@ class SLinker114(SLinker110):
                 index = self._case_index(row.get("case"), len(batch),
                                          skill.digit_case_numbers)
                 if index is not None:
-                    verdicts[index] = skill.verdict(row)
+                    verdicts[index] = self._verdict(skill, row)
             for index, item in enumerate(batch):
-                verdict = verdicts.get(index, skill.missing)
+                verdict = verdicts.get(index, self._missing(skill))
                 keep = skill.keep(verdict)
                 decisions[(item.sentence_number, item.component_id)] = \
                     skill.decision(item, verdict, keep, context)
@@ -246,26 +246,42 @@ JSON only:
 """
 
     @staticmethod
-    def _validation_verdict(row):
-        value = row.get("approve", False)
-        return {
-            "approve": value is True or (isinstance(value, str)
-                                         and value.lower() == "true"),
-            "claim": str(row.get("claim", "")).strip(),
-            "objection": str(row.get("objection", "")).strip(),
-        }
+    def _verdict(skill, row):
+        """One reply row, read the way the row's own skill declares.
+
+        The head had two parsers for this: `_run_validation_pass` read a boolean
+        `approve` that may arrive as the string "true", and `_classify_denotations`
+        read an enum and checked it against its two readings. Both are the same
+        thing -- a verdict field, a set of readings it may take, and a quote -- so
+        the difference is `verdict_field` and `verdict_values` and not code.
+        """
+        claim = str(row.get("claim", "")).strip()
+        objection = str(row.get("objection", "")).strip()
+        if skill.verdict_values is None:
+            value = row.get(skill.verdict_field, False)
+            verdict = "approve" if (value is True or (
+                isinstance(value, str) and value.lower() == "true")) else "reject"
+            return {"claim": claim, "objection": objection,
+                    "verdict": verdict, "valid": True}
+        # The enum contract, and the response contract only. The substring check that
+        # used to follow it voided 0 of 380 verdicts over six five-project runs --
+        # `s_linker48`'s separation: demanding a committed quote is worth 35.2 TP,
+        # verifying it is worth nothing.
+        verdict = str(row.get(skill.verdict_field, "")).strip()
+        return {"claim": claim.strip("\"'\u201c\u201d\u2018\u2019"),
+                "objection": objection, "verdict": verdict,
+                "valid": verdict in skill.verdict_values and bool(claim)}
 
     @staticmethod
-    def _denotation_verdict(row):
-        claim = str(row.get("claim", "")).strip().strip("\"'“”‘’")
-        denotation = str(row.get("denotation", "")).strip()
-        # The response contract only. The substring check that used to follow it
-        # voided 0 of 380 verdicts over six five-project runs -- `s_linker48`'s
-        # separation: demanding a committed quote is worth 35.2 TP, verifying it
-        # is worth nothing.
-        return {"claim": claim, "denotation": denotation,
-                "evidence_valid": denotation in {"participant", "associated"}
-                and bool(claim)}
+    def _missing(skill):
+        """What a case the reply never answered records: the skill's own polarity.
+
+        Rejection for the two boolean gates, an unreadable verdict for the enum one --
+        which its `keep` refuses, so all three default to no link and each says so in
+        its own vocabulary rather than by a `dict.get` fallback at the call site.
+        """
+        return {"claim": "", "objection": "", "valid": skill.verdict_values is None,
+                "verdict": "reject" if skill.verdict_values is None else ""}
 
     @staticmethod
     def _entity_decision(item, verdict, keep, context):
@@ -284,9 +300,14 @@ JSON only:
 
     @staticmethod
     def _denotation_decision(item, verdict, keep, context):
-        return {"approved": keep, "requested_keep": keep,
-                "evidence_valid": verdict["evidence_valid"],
-                "claim": verdict["claim"], "denotation": verdict["denotation"],
+        # Not `keep`: this row is what `_classify_denotations` returns, and the head
+        # returns False here for every case and lets `_judge_partial_names` -- its
+        # own, inherited unchanged -- write the keep onto the participants. Writing
+        # it here too would end at the same place through a different intermediate,
+        # and an intermediate no test can see is where a refactor hides a change.
+        return {"approved": False, "requested_keep": False,
+                "evidence_valid": verdict["valid"],
+                "claim": verdict["claim"], "denotation": verdict["verdict"],
                 "alternative": "not reviewed", "path": "denotation",
                 "stage": "partial_name"}
 
@@ -319,43 +340,38 @@ JSON only:
 
 
 SLinker114.ENTITY = JudgeSkill(
-    name="entity",
     phase="phase_25_full_name_judge", phase_on_client=True,
     reply_key="validations", require_kwarg="require",
     label="Validation pass", timeout=120,
     shared=SLinker114._entity_shared, case=SLinker114._entity_case,
     prompt=lambda linker, names, cases, shared, ctx:
         linker._prompt_validation(names, cases, "", strict=False),
-    verdict=SLinker114._validation_verdict,
-    keep=lambda v: v["approve"],
+    verdict_field="approve", verdict_values=None,
+    keep=lambda v: v["verdict"] == "approve",
     decision=SLinker114._entity_decision,
-    missing={"approve": False, "claim": "", "objection": ""},
 )
 
 SLinker114.COREF = JudgeSkill(
-    name="coref",
     phase="phase_25_coreference_judge", phase_on_client=True,
     reply_key="validations", require_kwarg="require",
     label="Validation pass", timeout=120,
     shared=lambda linker, batch, ctx: None, case=SLinker114._coref_case,
     prompt=lambda linker, names, cases, shared, ctx:
         linker._prompt_validation(names, cases, COREF_VALIDATION_FOCUS, strict=True),
-    verdict=SLinker114._validation_verdict,
-    keep=lambda v: v["approve"],
+    verdict_field="approve", verdict_values=None,
+    keep=lambda v: v["verdict"] == "approve",
     decision=SLinker114._coref_decision,
-    missing={"approve": False, "claim": "", "objection": ""},
 )
 
 SLinker114.DENOTATION = JudgeSkill(
-    name="denotation",
     phase="phase_25_partial_denotation", phase_on_client=False,
     reply_key="judgments", require_kwarg="require_present",
     label="Denotation", timeout=240,
     shared=SLinker114._denotation_shared, case=SLinker114._denotation_case,
     prompt=SLinker114._denotation_prompt,
-    verdict=SLinker114._denotation_verdict,
-    keep=lambda v: v["denotation"] == "participant" and v["evidence_valid"],
+    verdict_field="denotation",
+    verdict_values=frozenset({"participant", "associated"}),
+    keep=lambda v: v["verdict"] == "participant" and v["valid"],
     decision=SLinker114._denotation_decision,
     shows_catalog=False, digit_case_numbers=True,
-    missing={"claim": "", "denotation": "", "evidence_valid": False},
 )

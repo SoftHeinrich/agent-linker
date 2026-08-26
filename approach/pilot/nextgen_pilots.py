@@ -7,10 +7,17 @@ is the cleanest single-step measurement on this branch: the only thing that vari
 the judging prompt, and the only calls spent are that gate's.
 
     gate `lenient`   the full-name gate            control = the head
-                     `readings`  s111: the reply enumerates the surface's readings
+                     `readings`      s111: the reply enumerates the surface's readings
+                     `skills`        s114: the head's judging, refactored (null arm)
+                     `ground`        s116: the reply carries the strict gate's field
+                     `verdictfirst`  s117: the verdict is written before the quote
     gate `sortal`    the partial-name denotation gate
-                     `order`     s112: the quote is demanded before the verdict
-                     `readings`  s113: the readings are enumerated between the two
+                     `order`         s112: the quote is demanded before the verdict
+                     `readings`      s113: the readings are enumerated between the two
+                     `skills`        s114: the head's judging, refactored (null arm)
+                     `ground`        s118: the reply carries a ground for the other
+                                     reading
+                     `unify`         s119: the whole reply is the other two judges'
 
 Why these two gates and not the third: `pilot/judge_census.py` puts the F2-weighted
 headroom at 27.3/43.3 (terra/luna) for the lenient gate and 20.0/27.7 for the sortal
@@ -44,6 +51,11 @@ from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110  # noqa: E40
 from llm_sad_sam.linkers.experimental.s_linker111 import SLinker111  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker112 import SLinker112  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker113 import SLinker113  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker114 import SLinker114  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker116 import SLinker116  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker117 import SLinker117  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker118 import SLinker118  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker119 import SLinker119  # noqa: E402
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
 
@@ -54,8 +66,15 @@ from reading_pilots import BENCH, DATASETS, gold_pairs  # noqa: E402
 DEFAULT_RUN = ROOT.parent / "results/consolidation_e2e_terra_r1_20260825"
 
 GATES = {
-    "lenient": {"control": SLinker110, "readings": SLinker111},
-    "sortal": {"control": SLinker110, "order": SLinker112, "readings": SLinker113},
+    "lenient": {"control": SLinker110, "readings": SLinker111,
+                # The uniform-schema round. `control` is s110 and `skills` is s114,
+                # which is s110's judging expressed as three `JudgeSkill`s and
+                # byte-identical to it -- carried as its own arm so the refactor the
+                # arms are declared on is measured next to them and not assumed.
+                "skills": SLinker114, "ground": SLinker116,
+                "verdictfirst": SLinker117},
+    "sortal": {"control": SLinker110, "order": SLinker112, "readings": SLinker113,
+               "skills": SLinker114, "ground": SLinker118, "unify": SLinker119},
 }
 
 

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# The uniform-schema round: can all three judges reply in one structure?
+#
+# One gate at a time, fixed candidates, every arm of that gate in the SAME invocation,
+# and `skills` (s114, byte-identical to the head by test) carried as the null arm so
+# every delta is read against a linker that changed nothing rather than against zero.
+#
+#     pilot/run_uniform_round.sh terra
+#     pilot/run_uniform_round.sh luna
+set -u
+MODEL=${1:?usage: run_uniform_round.sh <terra|luna>}
+SAMPLES=${2:-3}
+OUT=../results/uniform_round
+mkdir -p "${OUT}"
+declare -A ARMS=(
+  [lenient]="control skills ground verdictfirst"
+  [sortal]="control skills ground unify"
+)
+for GATE in sortal lenient; do
+  echo "=== ${GATE} gate on ${MODEL}: ${ARMS[$GATE]}"
+  OPENAI_API_KEY="$OAI_KEY" \
+  LLM_BACKEND=openai \
+  OPENAI_MODEL_NAME=gpt-5.6-${MODEL} \
+  OPENAI_REASONING_EFFORT=none \
+  OPENAI_SERVICE_TIER=flex \
+  OPENAI_ENFORCE_FLEX=1 \
+  LLM_LOG_DIR="${OUT}/llm_logs_${GATE}_${MODEL}" \
+    ../.venv/bin/python pilot/nextgen_pilots.py \
+      --gate "${GATE}" --arms ${ARMS[$GATE]} --samples "${SAMPLES}" \
+      --dump "${OUT}/dump_${GATE}_${MODEL}.json" \
+      > "${OUT}/stage_${MODEL}_${GATE}.log" 2>&1
+  echo "    exit $?"
+done
+echo "UNIFORM ROUND DONE (${MODEL})"

@@ -261,12 +261,27 @@ put to it.
 
 **It is byte-identical to the head, and that is the deliverable.**
 `pilot/test_s114_skills.py` runs the head's own methods and the variant's own methods
-side by side over six recorded runs with `_ask` stubbed to record and answer nothing:
-**142/142 judging batches send the same prompt, record the same decision, and keep the
-same set.** A refactor that moves a measured number is not a refactor.
+side by side over six recorded runs, under two stubbed replies — one that answers nothing
+and one that answers every case, alternating the verdict: **284/284 judging batches send
+the same prompt, record the same decision, and keep the same set, over 1444 kept decision
+rows.** A refactor that moves a measured number is not a refactor.
 
-**Honesty about the size:** this is not a code reduction. 133 statements against the
-head's 136. What changes is that the loop exists **once** instead of three times and the
+**The first version of that test proved less than it claimed, and the fix is the general
+lesson.** With `_ask` answering nothing no case is ever kept, so every decision row came
+from each judge's default and the kept-set assertion compared two empty sets: 142/142
+covered the prompts and the reject path only. Under that test the variant's
+`_classify_denotations` returned `approved: True` on kept rows where the head returns
+`False` and lets `_judge_partial_names` write the keep — an intermediate difference that
+ends at the same place and that no assertion could see. **A refactor's equivalence test
+has to exercise the polarity it is preserving, not only the default.**
+
+**Honesty about the size, corrected.** This is not a code reduction and the first
+statement of it was wrong. Counted with `ast`, docstrings and imports excluded, the
+variant is **114 statements against the 81** the head spends on the three judges and the
+validation pass they share (`_validate_with_evidence` 25, `_classify_denotations` 22,
+`_validate_coref_links` 22, `_run_validation_pass` 12) — **+40%, not −3.** The earlier
+"133 against 136" does not reproduce under any count that excludes the helpers both
+share. What changes is that the loop exists **once** instead of three times and the
 six ways the judges differ are five declared fields instead of three divergent
 implementations — so the next judging arm is an edit to one field, not a fourth copy of
 the loop, and an arm that forgets to differ where the measurements say it must is now

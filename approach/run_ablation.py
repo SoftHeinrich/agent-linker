@@ -225,6 +225,10 @@ CANONICAL_VARIANTS = [
     "s_linker112",  # s110 + the sortal gate quotes before it commits
     "s_linker113",  # s112 + the sortal gate enumerates the readings too
     "s_linker114",  # the three judges as one pass over three skills
+    "s_linker116",  # s114 + the lenient gate's reply carries the strict gate's ground
+    "s_linker117",  # s114 + the lenient gate writes the verdict before the quote
+    "s_linker118",  # s114 + the sortal gate's reply carries a ground too
+    "s_linker119",  # s114 + one reply schema at all three judges
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2223,6 +2227,38 @@ VARIANT_SPECS = {
             "lists the readings the expression could have here and names the one it "
             "has, between the quote and the verdict. The enumerate-then-commit law at "
             "its second judging site."
+        ),
+    ),
+    "s_linker116": dict(
+        aliases=("lenientground",),
+        module="llm_sad_sam.linkers.experimental.s_linker116",
+        class_name="SLinker116",
+        description=(
+            "S-Linker116 - s114 with the lenient gate's reply carrying the strict gate's `objection` field, using that gate's own decide clause verbatim. First half of the uniform-schema question: the head refuses this field here by argument (approve-by-default and name-the-ground contradict), never by measurement."
+        ),
+    ),
+    "s_linker117": dict(
+        aliases=("verdictfirst",),
+        module="llm_sad_sam.linkers.experimental.s_linker117",
+        class_name="SLinker117",
+        description=(
+            "S-Linker117 - s114 with the lenient gate writing the verdict before the quote, which is the sortal gate's field order. s112 asked the same question at the sortal gate, where one project carries the whole population; this asks it where 150 gold links a run do."
+        ),
+    ),
+    "s_linker118": dict(
+        aliases=("sortalground",),
+        module="llm_sad_sam.linkers.experimental.s_linker118",
+        class_name="SLinker118",
+        description=(
+            "S-Linker118 - s114 with the sortal gate's reply carrying a ground for the other reading. The second half of the `objection` question, at the gate with the least room to move."
+        ),
+    ),
+    "s_linker119": dict(
+        aliases=("uniformschema",),
+        module="llm_sad_sam.linkers.experimental.s_linker119",
+        class_name="SLinker119",
+        description=(
+            "S-Linker119 - s114 with all three judges replying in ONE structure: the sortal gate adopts the other two's reply key, field order and boolean verdict. Composed with s116 at the lenient gate this is the whole uniform design; the polarity, the withheld target and the withheld catalog do not move."
         ),
     ),
     "s_linker114": dict(

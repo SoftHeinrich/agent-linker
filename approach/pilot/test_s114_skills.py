@@ -6,9 +6,14 @@ methods** side by side over recorded inputs -- with `_ask` replaced by a stub th
 records the prompt and answers nothing -- and asserts:
 
   1. the prompt each judge would send is byte-identical, batch by batch;
-  2. the decision recorded for every candidate is identical when the reply is empty,
-     which is where each judge's default polarity shows;
+  2. the decision recorded for every candidate is identical -- under an empty reply,
+     where each judge's default polarity shows, AND under a reply that answers every
+     case, alternating the verdict, where the kept rows are written;
   3. the kept set is identical.
+
+The second reply matters: with `_ask` answering nothing no case is ever kept, so the
+kept sets are both empty and the decision rows all come from the default. That proves
+the prompts and the reject path and nothing about a kept row.
 
 Inputs are real: the scan's candidates under each recorded run's own alias table for the
 two scan-fed judges, and the recorded resolutions and their metadata for the strict one.
@@ -17,6 +22,7 @@ two scan-fed judges, and the recorded resolutions and their metadata for the str
 """
 from __future__ import annotations
 
+import itertools
 import pickle
 import sys
 from pathlib import Path
@@ -31,19 +37,41 @@ from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110  # noqa: E40
 from llm_sad_sam.linkers.experimental.s_linker114 import SLinker114  # noqa: E402
 
 
-class Recorder:
-    """A linker whose `_ask` answers nothing and remembers what it was asked."""
+def empty_reply(_prompt, **_kwargs):
+    """Answers nothing: every case falls to its judge's own default polarity."""
+    return {}
 
-    def __init__(self, cls, knowledge):
+
+def alternating_reply(prompt, **kwargs):
+    """Answers every case, approving the odd ones, in the schema the gate asked for.
+
+    Both reply keys are written, so one stub serves all three skills: each judge reads
+    the key its own prompt demanded and ignores the other.
+    """
+    count = prompt.count("Case ") or prompt.count('"case":')
+    rows = [{"case": n,
+             "claim": f"quote {n}",
+             "objection": "none" if n % 2 else "a ground",
+             "approve": bool(n % 2),
+             "denotation": "participant" if n % 2 else "associated"}
+            for n in range(1, count + 1)]
+    return {"validations": rows, "judgments": rows}
+
+
+class Recorder:
+    """A linker whose `_ask` answers as told and remembers what it was asked."""
+
+    def __init__(self, cls, knowledge, reply=empty_reply):
         self.linker = cls.__new__(cls)
         self.linker.doc_knowledge = knowledge
         self.linker.llm = type("Phase", (), {"set_phase": lambda _s, _p: None})()
         self.prompts: list[str] = []
+        self.reply = reply
         self.linker._ask = self._ask
 
-    def _ask(self, prompt, **_kwargs):
+    def _ask(self, prompt, **kwargs):
         self.prompts.append(prompt)
-        return {}
+        return self.reply(prompt, **kwargs)
 
 
 def compare(label, head, arm, call, results):
@@ -71,6 +99,7 @@ def compare(label, head, arm, call, results):
     results["tripwire"] += len(extra)
     if any(arm_decisions[k]["approved"] for k in extra):
         results["failures"].append(f"{label}: an unanswered case was kept")
+    results["kept"] += len(head_kept)
     if {(k.sentence_number, k.component_id) for k in head_kept} != \
             {(k.sentence_number, k.component_id) for k in arm_kept}:
         results["failures"].append(f"{label}: kept set differs")
@@ -78,18 +107,20 @@ def compare(label, head, arm, call, results):
 
 def main() -> int:
     projects = load_projects()
-    results = {"batches": 0, "tripwire": 0, "failures": []}
+    results = {"batches": 0, "tripwire": 0, "kept": 0, "failures": []}
     runs = 0
     for base in runs_of("s_linker110"):
         runs += 1
-        for project, data in projects.items():
+        for (project, data), reply in itertools.product(
+                projects.items(), (empty_reply, alternating_reply)):
             knowledge = pickle.load(
                 open(base / project / "knowledge.pkl", "rb"))["doc_knowledge"]
             sentences, components = data["sentences"], data["components"]
             sent_map = {s.number: s for s in sentences}
             name_to_id = data["name_to_id"]
 
-            head, arm = Recorder(SLinker110, knowledge), Recorder(SLinker114, knowledge)
+            head = Recorder(SLinker110, knowledge, reply)
+            arm = Recorder(SLinker114, knowledge, reply)
 
             named = head.linker._extract_named_mentions(
                 sentences, components, name_to_id, sent_map)
@@ -125,9 +156,11 @@ def main() -> int:
         print("  FAIL", failure)
     print(f"{total - len(results['failures'])}/{total} judging batches identical "
           f"across {runs} recorded runs, three skills each")
+    print(f"{results['kept']} kept rows compared, so the approve path is covered and "
+          f"not just each judge's default")
     print(f"{results['tripwire']} rows the head would record nothing for, all "
-          f"rejected -- the stub answers nothing, so this is every denotation case "
-          f"here; in the six recorded runs the count is 0.0 a run")
+          f"rejected -- every denotation case the empty stub leaves unanswered; in "
+          f"the six recorded runs the count is 0.0 a run")
     return 1 if results["failures"] or not total else 0
 
 

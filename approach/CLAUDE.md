@@ -1086,3 +1086,66 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   catalog carries the sibling names -- at FP 13.3 -> 10.3 (terra) and **25.7 -> 8.7**
   (luna). On luna's teammates the arm moves both ways, inside a control that itself
   ranges 72.7-86.2 F1 across three runs. **`s_linker110` is the head.**
+
+### The uniform-schema round (s116–s119) — a reply schema carries the verdict's default
+
+`s_linker114` expressed the three judges as one loop over three `JudgeSkill`
+declarations, which put their differences in a table and made the next question
+askable: two judges reply `{"validations":[{case, claim[, objection], approve}]}` and
+the third replies `{"judgments":[{case, denotation, claim}]}`. Can all three write one
+thing? Report: `../results/uniform_round/README.md`; level 1
+`pilot/objection_audit.py`; invariants `pilot/test_uniform_schema_arms.py` (104
+prompts, no calls); arms `pilot/nextgen_pilots.py --gate {lenient,sortal}` driven by
+`pilot/run_uniform_round.sh`; statistics `pilot/judge_round_stats.py`.
+
+- **No, and the sortal gate is where it fails.** `s_linker119` — that gate replying in
+  the other two's key, order and boolean — is the worst arm of the round on **both**
+  models: net (`3*gold − spurious`) **−9.0 terra / −16.0 luna** against the in-set null,
+  gold −4.7 / −7.7, both at the n = 3 floor. It keeps 17.3 and 14.7 links where the null
+  keeps 27.0 and 29.3, at precision 0.904 and 0.773. **It became a stricter judge, not a
+  worse one.**
+- **The typed round's mechanism, running backwards.** That round found typing a rubric
+  deletes its default; this finds **untyping one imports a different default.**
+  `participant`/`associated` and `approve`/`reject` are not two spellings of one
+  question — the enum keeps only a positive classification, the boolean is the lenient
+  gate's vocabulary, and that gate's default is the opposite of this one's. The judge
+  round's polarity clause predicted it: this stream is 0.31 / 0.19 gold, the dirtiest of
+  the three, so its default has to be reject-by-default.
+- **The field set is nearly free to unify and buys nothing.** `objection` at the sortal
+  gate (`s_linker118`): net ±0.0 / −0.3, every p = 1.00. Priced first with no calls
+  (`pilot/objection_audit.py`): the strict gate's ground is 78 / 85 chars — 5 / 22 on
+  approvals, 112 / 104 on rejections — and the two gates that would gain it judge 300.3
+  / 305.7 cases a run, so a uniform schema is **+5.9k / +6.5k completion tokens a run
+  against 28.6k, i.e. +20% / +23%. Uniformity is not a token saving**; it has to pay in
+  verdicts.
+- **`objection` at the lenient gate is the round's frontier, refused by the sign-flip
+  rule.** terra −2.7 gold to save 5.7 spurious (0.47 FP per gold, a loss under F2); luna
+  −7.3 gold to save **26.3** (3.6 per gold, net **+4.3**, precision 0.817 → 0.948). Same
+  direction on both models, different exchange rate — which is `s_linker111`'s trade at a
+  much better rate. **Unlike `s111` it also stabilises the gate it changes**: luna's
+  lenient gate moves 22, 18, 4 links between identical samples under the null and 3, 6, 5
+  under the arm (`s111` was 2–5× *less* stable). **Asking for the ground is not the same
+  kind of change as asking for the readings** — one adds a field the rubric already
+  licenses, the other adds a step the model resamples. The whole luna gain is teammates,
+  the one project whose lenient stream is half spurious.
+- **Field order is refused in both directions.** `s_linker112` (sortal takes the lenient
+  order) flipped sign between models; `s_linker117` (lenient takes the sortal order) is
+  **−5.0 / −6.3 net with gold down on both**, measured at the gate with 150 gold a run and
+  five contributing projects. `s_linker48`'s separation — the committed quote *before* the
+  verdict is what pays — now has a measurement at a gate that can carry it.
+- **What is unifiable is in code, not on the wire.** `s_linker114` now declares each
+  skill's verdict as `verdict_field` + `verdict_values` (`None` = the boolean contract),
+  so the enum and boolean parsers are one function and each polarity is one expression.
+- **A refactor's equivalence test must exercise the polarity it preserves, not only the
+  default.** The first `test_s114_skills.py` stubbed `_ask` to answer nothing, so nothing
+  was ever kept: its 142/142 covered the prompts and the reject path, and its kept-set
+  assertion compared two empty sets — while the variant returned `approved: True` on kept
+  denotation rows where the head returns `False` and corrects it downstream. With a second
+  stub that answers every case, alternating the verdict: **284/284 batches and 1444 kept
+  rows identical.**
+- **The in-set null earned its slot in one invocation.** `skills` (s114, byte-identical
+  by test) reads net **−9.3 against the control it copies** on luna's sortal gate — so
+  every delta here is read against it, and the measurement policy's "no in-set null"
+  guidance is about *E2E batches*, not about a five-call stage gate where the null is one
+  arm of four.
+- **The head does not move. `s_linker110` stands.** No arm composed, no E2E owed.
