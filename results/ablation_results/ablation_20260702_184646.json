@@ -1,0 +1,888 @@
+{
+  "mediastore": {
+    "s_linker21": {
+      "variant": "s_linker21",
+      "P": 0.9655172413793104,
+      "R": 0.9032258064516129,
+      "F1": 0.9333333333333333,
+      "tp": 28,
+      "fp": 1,
+      "fn": 3,
+      "n_links": 29,
+      "time": 43.414870738983154,
+      "sources": {
+        "entity": 26,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "FileStorage",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 1.0,
+      "R": 0.9354838709677419,
+      "F1": 0.9666666666666666,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 29,
+      "time": 63.71595311164856,
+      "sources": {
+        "entity": 26,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "FileStorage",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teastore": {
+    "s_linker21": {
+      "variant": "s_linker21",
+      "P": 1.0,
+      "R": 0.9259259259259259,
+      "F1": 0.9615384615384615,
+      "tp": 25,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 25,
+      "time": 28.480244874954224,
+      "sources": {
+        "entity": 20,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "Persistence",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 0.6428571428571429,
+      "R": 1.0,
+      "F1": 0.782608695652174,
+      "tp": 27,
+      "fp": 15,
+      "fn": 0,
+      "n_links": 42,
+      "time": 75.46366238594055,
+      "sources": {
+        "entity": 20,
+        "coreference": 5,
+        "llmrouter": 17
+      },
+      "fp_by_source": {
+        "llmrouter": 15
+      },
+      "fp_details": [
+        {
+          "sentence": 13,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+        },
+        {
+          "sentence": 14,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The scaled image is stored for later use."
+        },
+        {
+          "sentence": 15,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name and size is found, the image will be loaded and delivered."
+        },
+        {
+          "sentence": 16,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+        },
+        {
+          "sentence": 17,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Before loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered"
+        },
+        {
+          "sentence": 19,
+          "component": "Auth",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Passwords are hashed using BCrypt."
+        },
+        {
+          "sentence": 20,
+          "component": "Auth",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+        },
+        {
+          "sentence": 20,
+          "component": "WebUI",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+        },
+        {
+          "sentence": 29,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the u"
+        },
+        {
+          "sentence": 30,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The item rating of the users are based on their purchases."
+        },
+        {
+          "sentence": 33,
+          "component": "SlopeOneRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "We implemented two versions of the algorithm."
+        },
+        {
+          "sentence": 34,
+          "component": "SlopeOneRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 34,
+          "component": "PreprocessedSlopeOneRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 35,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": []
+    }
+  },
+  "teammates": {
+    "s_linker21": {
+      "variant": "s_linker21",
+      "P": 0.96,
+      "R": 0.8421052631578947,
+      "F1": 0.8971962616822429,
+      "tp": 48,
+      "fp": 2,
+      "fn": 9,
+      "n_links": 50,
+      "time": 108.77057361602783,
+      "sources": {
+        "entity": 44,
+        "coreference": 6
+      },
+      "fp_by_source": {
+        "coreference": 1,
+        "entity": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 87,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 0.8947368421052632,
+      "R": 0.8947368421052632,
+      "F1": 0.8947368421052632,
+      "tp": 51,
+      "fp": 6,
+      "fn": 6,
+      "n_links": 57,
+      "time": 273.81086349487305,
+      "sources": {
+        "entity": 43,
+        "coreference": 6,
+        "llmrouter": 8
+      },
+      "fp_by_source": {
+        "llmrouter": 4,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 27,
+          "component": "UI",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "It is written in Angular framework and consists of HTML, SCSS, and TypeScript files."
+        },
+        {
+          "sentence": 79,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Managing relationships between entities, e.g. cascade logic for create/update/delete."
+        },
+        {
+          "sentence": 80,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Managing transactions, e.g. ensuring atomicity of a transaction."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 101,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker21": {
+      "variant": "s_linker21",
+      "P": 0.9361702127659575,
+      "R": 0.7096774193548387,
+      "F1": 0.8073394495412844,
+      "tp": 44,
+      "fp": 3,
+      "fn": 18,
+      "n_links": 47,
+      "time": 67.2692403793335,
+      "sources": {
+        "entity": 45,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "entity": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 0.6857142857142857,
+      "R": 0.7741935483870968,
+      "F1": 0.7272727272727272,
+      "tp": 48,
+      "fp": 22,
+      "fn": 14,
+      "n_links": 70,
+      "time": 120.68762636184692,
+      "sources": {
+        "entity": 64,
+        "coreference": 5,
+        "llmrouter": 1
+      },
+      "fp_by_source": {
+        "entity": 21,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 2,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "FSESL",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "Redis DB",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "Apps",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "kurento",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 2,
+          "component": "WebRTC-SFU",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram provides a high-level view of how BigBlueButton's components work together."
+        },
+        {
+          "sentence": 3,
+          "component": "HTML5 Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "Redis PubSub",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "FSESL",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "Redis DB",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "Apps",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "kurento",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "WebRTC-SFU",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 3,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We'll break down each component in more detail below."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker21": {
+      "variant": "s_linker21",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 27.082924842834473,
+      "sources": {
+        "entity": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": []
+    },
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 34.62049651145935,
+      "sources": {
+        "entity": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": []
+    }
+  }
+}

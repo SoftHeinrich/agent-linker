@@ -1,0 +1,412 @@
+{
+  "teastore": {
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 0.7428571428571429,
+      "R": 0.9629629629629629,
+      "F1": 0.8387096774193549,
+      "tp": 26,
+      "fp": 9,
+      "fn": 1,
+      "n_links": 35,
+      "time": 63.12330913543701,
+      "sources": {
+        "entity": 19,
+        "coreference": 5,
+        "llmrouter": 11
+      },
+      "fp_by_source": {
+        "llmrouter": 9
+      },
+      "fp_details": [
+        {
+          "sentence": 13,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+        },
+        {
+          "sentence": 14,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The scaled image is stored for later use."
+        },
+        {
+          "sentence": 15,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name and size is found, the image will be loaded and delivered."
+        },
+        {
+          "sentence": 16,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+        },
+        {
+          "sentence": 17,
+          "component": "ImageProvider",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Before loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered"
+        },
+        {
+          "sentence": 29,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the u"
+        },
+        {
+          "sentence": 30,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "The item rating of the users are based on their purchases."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        },
+        {
+          "sentence": 39,
+          "component": "Registry",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "WebUI",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.9310344827586207,
+      "R": 1.0,
+      "F1": 0.9642857142857143,
+      "tp": 27,
+      "fp": 2,
+      "fn": 0,
+      "n_links": 29,
+      "time": 68.73772096633911,
+      "sources": {
+        "entity": 19,
+        "coreference": 5,
+        "llmrouter": 5
+      },
+      "fp_by_source": {
+        "llmrouter": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 29,
+          "component": "Recommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the u"
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": []
+    }
+  },
+  "bigbluebutton": {
+    "s_linker23": {
+      "variant": "s_linker23",
+      "P": 0.94,
+      "R": 0.7580645161290323,
+      "F1": 0.8392857142857143,
+      "tp": 47,
+      "fp": 3,
+      "fn": 15,
+      "n_links": 50,
+      "time": 118.80462884902954,
+      "sources": {
+        "entity": 43,
+        "coreference": 3,
+        "llmrouter": 4
+      },
+      "fp_by_source": {
+        "entity": 1,
+        "llmrouter": 1,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "llmrouter",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    },
+    "s_linker23_verify": {
+      "variant": "s_linker23_verify",
+      "P": 0.9056603773584906,
+      "R": 0.7741935483870968,
+      "F1": 0.8347826086956522,
+      "tp": 48,
+      "fp": 5,
+      "fn": 14,
+      "n_links": 53,
+      "time": 114.29607915878296,
+      "sources": {
+        "entity": 47,
+        "coreference": 4,
+        "llmrouter": 2
+      },
+      "fp_by_source": {
+        "entity": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 20,
+          "component": "HTML5 Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  }
+}

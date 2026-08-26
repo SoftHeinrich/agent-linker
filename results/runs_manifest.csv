@@ -1,0 +1,20 @@
+status,location,version,variant,backend,knowledge,files,size,consumer,note
+CACHE,ablation_results,-,-,-,-,21,112K,run_ablation.py,per-run ablation metric JSON
+CACHE,llm_checkpoint,-,-,-,-,36,288K,LLM_BACKEND=checkpoint,replay cache
+CACHE,llm_checkpoint_dotted_sonnet,-,-,-,-,1,48K,-,replay cache (probe)
+CACHE,llm_logs,-,-,-,-,1017,54M,run_ablation.py (writes),raw LLM call logs (regenerable)
+CACHE,llm_sessions,-,-,-,-,0,28K,-,session traces
+CACHE,phase_cache,-,-,-,-,341,4.2M,run_ablation.py,pickled layer caches (regenerable)
+CANONICAL,v2.6.5_s20union,v2.6.5,s20union,gpt,full,181,4.9M,noenroll.py ($S20U_SLOT),raw N=3 doc-model CSV runs
+CANONICAL,v2.6.5_s20union_sonnet,v2.6.5,s20union,sonnet,full,180,4.9M,noenroll.py (DEFAULT slot),raw N=3 doc-model CSV runs
+CANONICAL,v2.6.6_extracts,v2.6.6,s20union,gpt+sonnet,full,30,3.1M,build_unified.py (recovered-links),clean doc-model link set (final.links)
+CANONICAL,v2.6.6_extracts_noknow,v2.6.6,s20union,gpt,noknow,15,1.5M,-,clean noknow extracts (gpt only; sonnet pending)
+CANONICAL,v2.6.6_s20union_noknow,v2.6.6,s20union,gpt,noknow,108,1.1M,-,raw noknow sweep (gpt only)
+EXPERIMENTAL,experimental/s19_proxy_ablation,v2.6.5,s19_proxy,-,full,3,16K,-,proxy ablation probe
+EXPERIMENTAL,experimental/v2.6.5_s19U,v2.6.5,s19U,gpt,full,180,4.9M,-,un-minimized parent; s19U-vs-s20union head-to-head
+EXPERIMENTAL,experimental/v2.6.5_s19U_sonnet,v2.6.5,s19U,sonnet,full,180,4.8M,-,un-minimized parent (sonnet)
+EXPERIMENTAL,experimental/v2.6.5_s20union_gpt_re_medium,v2.6.5,s20union,gpt,full,180,5.4M,-,reasoning-effort=medium re-run probe
+EXPERIMENTAL,experimental/v2.6.5_union_aliasb,v2.6.5,s20union_aliasb,gpt+sonnet,full,27,184K,-,aliasb prompt-swap variant
+EXPERIMENTAL,experimental/voyager_v4_beta,v2.6.x,voyager,-,-,8,40K,-,voyager skill-bank training probe
+EXPERIMENTAL,v2.6.5,v2.6.5,mixed,mixed,full,162,1.1M,-,"earlier per-project ablations - IN PLACE (host-owned uid1000, unmovable)"
+MANUAL,manual,-,s20union,gpt+sonnet,full+noknow,519,15M,-,ad-hoc hand-runs incl. early noknow
