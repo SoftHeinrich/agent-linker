@@ -1,23 +1,38 @@
 #!/usr/bin/env python3
-"""Build the S21 (canonical Full = s_linker21) aalinker dump for RQ1/RQ2.
+"""Build one aalinker config slot (doc-model + composed doc-code) in the sota dump.
 
-Self-contained, stdlib only. Reads the S21 gpt-5.4 neutral extracts
-(agent-linker/results/v2.6.6_extracts_s21) and writes a NEW `gpt-5.4_s21` config
-slot under the sota recovered-links tree:
+Self-contained, stdlib only. Reads one arm's neutral extracts — one JSON per
+(backend, run, project) cell, of which only ``final.links`` is used — and writes a
+config slot under the sota recovered-links tree:
 
-    <ardoco-home>/sota/recovered-links/model-doc/aalinker/gpt-5.4_s21/<run>/<proj>.csv
-    <ardoco-home>/sota/recovered-links/doc-code/aalinker-composed/gpt-5.4_s21/<run>/<proj>.csv
+    <sota>/model-doc/aalinker/<config>/<run>/<proj>.csv
+    <sota>/doc-code/aalinker-composed/<config>/<run>/<proj>.csv
 
 composing model-doc -> code via the prebuilt ArCoTL bridge
-(model-code/arcotl/<proj>.csv). The existing `gpt-5.4_full` (s20_union) slot is left
-untouched, so rq12.py can score S21 and s20_union side by side.
+(model-code/arcotl/<proj>.csv). Writing is additive: each run creates or refreshes
+exactly the one slot its env names, so arms sit side by side and rq12.py can score
+whichever the roster lists.
+
+Defaults build the CANONICAL arm's body backend: s_linker92a on GPT-5.6-terra
+(``terra_s92a``), whose extracts come from ``build_alinker_extracts.py``. Every
+knob is env-overridable, so the SAME builder serves every other cell — the mirror
+backend, the no-knowledge sweep, and the retired s21 lineage:
+
+    # mirror backend (luna)
+    EXTRACTS_DIR=$PWD/results/s92a_extracts DUMP_BE_DIR=luna \
+      DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s92a DUMP_MANIFEST_TAG=s92a_luna \
+      python3 mini-src/build_dump.py
+
+    # a no-knowledge sweep: tags the manifest rows knowledge=noknow
+    EXTRACTS_DIR=<...noknow extracts> DUMP_CONFIG=terra_s92a_noknow \
+      DUMP_MANIFEST_TAG=s92a_noknow DUMP_KNOW=noknow python3 mini-src/build_dump.py
 
 This is the version-controlled companion to sota/recovered-links/build_unified.py
 (that tree is not a git repo). The four helpers below (sha256/write_norm/write_raw/f1)
 are copied verbatim from build_unified.py so the dump is byte-identical; gold and bridge
 are read from the already-built sota dump rather than rebuilt from raw sources.
 
-    python3 mini-src/build_s21_dump.py
+    python3 mini-src/build_dump.py
 """
 import csv, glob, hashlib, json, os
 from pathlib import Path
@@ -25,26 +40,20 @@ from pathlib import Path
 _HERE = Path(__file__).resolve().parent              # .../transarc-emp/mini-src
 _ARDOCO_HOME = _HERE.parents[1]                       # .../ardoco-home
 ROOT = os.environ.get("SOTA_LINKS", str(_ARDOCO_HOME / "sota/recovered-links"))
-EXTRACTS_S21 = os.environ.get(
-    "EXTRACTS_S21", str(_ARDOCO_HOME / "agent-linker/results/v2.6.6_extracts_s21"))
+EXTRACTS = os.environ.get(
+    "EXTRACTS_DIR", str(_ARDOCO_HOME / "agent-linker/results/s92a_extracts"))
 
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 RUNS = ["run1", "run2", "run3"]
-# Backend knobs are env-overridable so the SAME builder serves both S21 backends
-# (D-04 REVISED: gpt-5.4 = body, Claude/Sonnet = appendix mirror). Defaults keep the
-# original gpt-5.4 behaviour byte-identical. For the Sonnet appendix dump, run with
-#   EXTRACTS_S21=<…/v2.6.6_extracts_s21_sonnet> S21_BE_DIR=sonnet S21_BE_TAG=claude
-#   S21_CONFIG=sonnet_s21 S21_MANIFEST_TAG=s21_sonnet
-# so it writes a NEW sonnet_s21 config slot and a distinct manifest (no gpt clobber).
-BE_DIR = os.environ.get("S21_BE_DIR", "gpt")
-BE_TAG = os.environ.get("S21_BE_TAG", "gpt-5.4")
-CONFIG = os.environ.get("S21_CONFIG", "gpt-5.4_s21")
-MANIFEST_TAG = os.environ.get("S21_MANIFEST_TAG", "s21")
-# Knowledge tier recorded in the manifest. Default "full" keeps the canonical S21
-# build byte-identical. For the no-knowledge sweep, run with S21_KNOW=noknow plus
-# the noknow EXTRACTS_S21/S21_CONFIG/S21_MANIFEST_TAG overrides so it writes a
-# distinct *_s21_noknow config slot and tags the rows knowledge=noknow.
-KNOW = os.environ.get("S21_KNOW", "full")
+# Which cell of the extracts tree to read, and what to call the slot it writes.
+# Defaults = the canonical arm's body backend (s_linker92a / GPT-5.6-terra); see the
+# module docstring for the mirror-backend and no-knowledge invocations.
+BE_DIR = os.environ.get("DUMP_BE_DIR", "terra")          # <extracts>/<BE_DIR>/<run>/<proj>.json
+BE_TAG = os.environ.get("DUMP_BE_TAG", "gpt-5.6-terra")  # backend column in the manifest
+CONFIG = os.environ.get("DUMP_CONFIG", "terra_s92a")     # the sota config slot to write
+MANIFEST_TAG = os.environ.get("DUMP_MANIFEST_TAG", "s92a_terra")   # _manifest_<tag>.csv
+# Knowledge tier recorded in the manifest; set DUMP_KNOW=noknow for a no-knowledge sweep.
+KNOW = os.environ.get("DUMP_KNOW", "full")
 
 
 # ---- helpers (verbatim from sota/recovered-links/build_unified.py) ----------
@@ -120,11 +129,11 @@ def load_bridge():
     return bridge
 
 
-def build_s21(md_gold, arcotl_bridge):
+def build_slot(md_gold, arcotl_bridge):
     md_man, dc_man = [], []
     for run in RUNS:
         for proj in PROJECTS:
-            jpath = os.path.join(EXTRACTS_S21, BE_DIR, run, f"{proj}.json")
+            jpath = os.path.join(EXTRACTS, BE_DIR, run, f"{proj}.json")
             if not os.path.exists(jpath):
                 print(f"  MISSING {run}/{proj}: {jpath}")
                 continue
@@ -166,12 +175,12 @@ def build_s21(md_gold, arcotl_bridge):
 def rebuild_unified(root):
     """Aggregate every per-task manifest into UNIFIED_MANIFEST.csv.
 
-    Globs `_manifest.csv` (the s20_union/full + arcotl base, written by
-    build_unified.py) plus all `_manifest_*.csv` add-ons (S21 backends, written
-    here) under each task dir, in canonical task order
+    Globs `_manifest.csv` (the arcotl + baseline base, written by build_unified.py)
+    plus all `_manifest_*.csv` add-ons (one per arm/backend slot, written here)
+    under each task dir, in canonical task order
     (model-doc -> doc-code -> model-code). Decoupled from which builder produced
     each manifest, so the unified file is complete regardless of run order and a
-    fresh `build_s21_dump.py` run alone refreshes it from the persisted dump.
+    fresh `build_dump.py` run alone refreshes it from the persisted dump.
     Idempotent; dedupes on (task, config, run, project)."""
     task_dirs = [
         ("model-doc",  f"{root}/model-doc/aalinker"),
@@ -196,7 +205,14 @@ def rebuild_unified(root):
 def main():
     md_gold = load_gold()
     arcotl_bridge = load_bridge()
-    md_man, dc_man = build_s21(md_gold, arcotl_bridge)
+    md_man, dc_man = build_slot(md_gold, arcotl_bridge)
+    if not md_man:
+        # Nothing was read: almost always a wrong EXTRACTS_DIR/DUMP_BE_DIR. Bail out
+        # BEFORE writing, or the empty result overwrites a good manifest with a bare
+        # header and then rebuilds UNIFIED_MANIFEST.csv without the slot's rows.
+        raise SystemExit(
+            f"no cells found under {EXTRACTS}/{BE_DIR}/<run>/<project>.json "
+            f"— nothing written. Check EXTRACTS_DIR / DUMP_BE_DIR.")
 
     write_manifest(f"{ROOT}/model-doc/aalinker/_manifest_{MANIFEST_TAG}.csv", md_man)
     write_manifest(f"{ROOT}/doc-code/aalinker-composed/_manifest_{MANIFEST_TAG}.csv", dc_man)
@@ -204,9 +220,9 @@ def main():
     n_unified = rebuild_unified(ROOT)
 
     fs = [float(r["F1"]) for r in md_man]
-    print(f"\n== S21 model-doc F1 vs gold (integrity) ==")
+    print(f"\n== {CONFIG} model-doc F1 vs gold (integrity) ==")
     print(f"  {CONFIG:14s} macro-F1 = {sum(fs)/len(fs):.4f}  ({len(fs)} cells)")
-    print(f"wrote {len(md_man)} model-doc + {len(dc_man)} doc-code(composed) S21 entries into {ROOT}.")
+    print(f"wrote {len(md_man)} model-doc + {len(dc_man)} doc-code(composed) entries into {ROOT}.")
     print(f"rebuilt UNIFIED_MANIFEST.csv: {n_unified} rows (all per-task manifests aggregated).")
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Neutral extracts for an agent-linker ablation arm, from its per-project link CSVs.
 
-``build_s21_dump.py`` reads one JSON per (backend, run, project) cell and uses exactly
+``build_dump.py`` reads one JSON per (backend, run, project) cell and uses exactly
 one field of it — ``final.links`` — to write the sota ``model-doc`` slot and compose the
 ``doc-code`` slot through the ArCoTL bridge.  ``approach/scripts/extract_s20union_caches.py``
 produces those JSONs for the s20U/s21 sweep by walking that pipeline's phase pickles, and

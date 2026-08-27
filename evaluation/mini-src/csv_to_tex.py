@@ -179,16 +179,15 @@ SYS_MAP = {"approach": "\\approach{}", "Artemis": "\\Artemis{}",
            "SWATTR": "SWATTR$^{\\dagger}$", "TransArC": "\\TransArc{}"}
 BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
               "approach (GPT-5.6-luna)": "\\approach{} (GPT-5.6-luna)",
-              "approach (GPT-5.4)": "\\approach{} (GPT-5.4)", "approach (Claude)": "\\approach{} (Claude)",
+              "Artemis (GPT-5.6-terra)": "\\Artemis{} (GPT-5.6-terra)",
               "Artemis (GPT-5.4)": "\\Artemis{} (GPT-5.4)", "TransArC": "\\TransArc{}$^{\\dagger}$"}
+
 JUDGE_MAP = {"full_name": "\\entValidator{}", "partial_name": "\\partValidator{}",
              "coref": "\\corefValidator{}", "all_combined": "all three"}
 VAR_MAP = {"Full": "Full", "FullName": "\\linkerB{} only", "PartialName": "\\linkerD{} only",
-           "Coref": "\\linkerC{} only", "No knowledge": "No knowledge",
-           # retired s21 variant labels, kept so old CSVs still render
-           "Direct": "\\linkerB{} only", "Indirect": "\\linkerC{} only"}
-BACKEND_MAP = {"terra": "GPT-5.6-terra", "luna": "GPT-5.6-luna",
-               "openai": "GPT-5.4", "claude": "Claude"}
+           "Coref": "\\linkerC{} only", "No knowledge": "No knowledge"}
+
+BACKEND_MAP = {"terra": "GPT-5.6-terra", "luna": "GPT-5.6-luna"}
 RUN_MAP = {"run1": "Run 1", "run2": "Run 2", "run3": "Run 3", "average": "Avg", "single": "--"}
 
 # the curated "whole suite" shown in the big tables (link P/R/F1 + file P/R/F1 + size-aware)
@@ -197,23 +196,27 @@ SUITE9 = [
     {"field": "doc_to_model_link_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "doc_to_model_link_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
     {"field": "doc_to_model_link_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-    {"field": "doc_to_model_silent_failure_mass", "header": "SFM", "kind": "f1", "bold": "min"},
+    {"field": "doc_to_model_component_miss_rate", "header": "CMR", "kind": "f1", "bold": "min"},
     {"field": "doc_to_code_file_precision", "header": "P", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_file_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
     {"field": "doc_to_code_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-    {"field": "doc_to_code_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
-    {"field": "doc_to_code_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
-    {"field": "doc_to_code_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},
+    {"field": "doc_to_code_worst_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+    {"field": "doc_to_code_worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
+    {"field": "doc_to_code_harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+    {"field": "doc_to_code_harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
 ]
+# The size-aware pair gets one band each rather than a single 4-wide band: the
+# column headers are then just \fone/\ftwo, exactly as under the P/R bands, and
+# the band name says which component statistic they summarise.
 SUITE9_GROUPS = [("doc-model (link)", 5), ("doc-code (file)", 4),
-                 ("size-aware (doc-code)", 3)]
+                 ("worst comp.", 2), ("harm. comp.", 2)]
 
-# Same suite without the doc-model SFM column: the per-run big table reports SFM in the
+# Same suite without the doc-model CMR column: the per-run big table reports CMR in the
 # body RQ2 + per-project detailed tables instead, so it is omitted here (co-author design).
-SUITE_NOSFM = [c for c in SUITE9 if c["field"] != "doc_to_model_silent_failure_mass"]
-SUITE_NOSFM_GROUPS = [("doc-model (link)", 4), ("doc-code (file)", 4),
-                      ("size-aware (doc-code)", 3)]
+SUITE_NOCMR = [c for c in SUITE9 if c["field"] != "doc_to_model_component_miss_rate"]
+SUITE_NOCMR_GROUPS = [("doc-model (link)", 4), ("doc-code (file)", 4),
+                      ("worst comp.", 2), ("harm. comp.", 2)]
 
 
 # --------------------------------------------------------------------------- #
@@ -223,7 +226,8 @@ SPECS = [
     # ---- RQ1 body ----
     {"csv": "rq1.csv", "out": "rq1-results.tex", "label": "tab:rq1", "size": "\\footnotesize", "colsep": "3pt",
      "colspec": "@{}l ZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
-     "caption": "RQ1 macro precision, recall, \\fone\\ and \\ftwo\\ on the GPT-5.6-terra backend.",
+     "caption": "RQ1 macro precision, recall, \\fone\\ and \\ftwo. "
+                "Both \\ac{LLM} systems run on GPT-5.6-terra and are reported as the mean of three runs; \\TransArc{} is deterministic.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
      "groups": [("doc-model (link)", 4), ("doc-code (file)", 4)],
      "cols": [
@@ -242,20 +246,23 @@ SPECS = [
     # ---- RQ2 body (was fig:rq2-profile) ----
     {"csv": "rq2.csv", "out": "rq2-results.tex", "label": "tab:rq2", "colsep": "3pt",
      "colspec": "@{}l ZZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
-     "caption": "RQ2 size-aware suite, both tasks: reference \\fone/\\ftwo\\ with sentence "
-                "coverage (Cov) and the size-aware metrics on each task. GPT-5.6-terra backend.",
+     "caption": "RQ2 size-aware suite, both tasks: reference \\fone/\\ftwo\\ beside the "
+                "size-aware metric of each task -- the \\cmrname{} (CMR) on doc-model, the "
+                "worst- and harmonic-component \\fone/\\ftwo\\ on doc-code. "
+                "Both \\ac{LLM} systems run on GPT-5.6-terra and are reported as the mean of three runs; \\TransArc{} is deterministic.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
-     "groups": [("doc-model (link)", 4), ("doc-code (file)", 5)],
+     "groups": [("doc-model (link)", 3), ("doc-code (file)", 2),
+                ("worst comp.", 2), ("harm. comp.", 2)],
      "cols": [
          {"field": "dm_link_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
          {"field": "dm_link_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-         {"field": "dm_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
-         {"field": "silent_failure_mass", "header": "SFM\\%", "kind": "f1", "bold": "min"},
+         {"field": "component_miss_rate", "header": "CMR\\%", "kind": "f1", "bold": "min"},
          {"field": "dc_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
          {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-         {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
-         {"field": "worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
-         {"field": "harmonic_component_f1", "header": "Harm.", "kind": "f2", "bold": "max"},
+         {"field": "worst_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+         {"field": "worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
+         {"field": "harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+         {"field": "harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
      ]},
 
     # ---- RQ3 body confusion matrix (mean of 3 runs) ----
@@ -298,18 +305,20 @@ SPECS = [
 
     # ---- RQ4 body (was fig:rq4-ablation) ----
     {"csv": "rq4.csv", "out": "rq4-results.tex", "label": "tab:rq4", "size": "%\\footnotesize",
-     "colsep": "3pt", "fit": True, "colspec": "l ZZZZZZZ", "tabularx": "\\columnwidth",
+     "colsep": "3pt", "fit": True, "colspec": "l ZZZZZZZZ", "tabularx": "\\columnwidth",
      "caption": "RQ4 module ablation on the GPT-5.6-terra backend.",
      "labels": [{"field": "variant", "header": "Variant", "map": VAR_MAP}],
-     "groups": [("doc-model", 2), ("doc-code (size-aware)", 5)],
+     "groups": [("doc-model", 2), ("doc-code (file)", 2),
+                ("worst comp.", 2), ("harm. comp.", 2)],
      "cols": [
          {"field": "doc_to_model_macro_f1", "header": "Macro\\ \\fone", "kind": "f3", "bold": "max"},
          {"field": "doc_to_model_macro_f2", "header": "Macro\\ \\ftwo", "kind": "f3", "bold": "max"},
          {"field": "dc_file_f1", "header": "File\\ \\fone", "kind": "f3", "bold": "max"},
          {"field": "dc_file_f2", "header": "File\\ \\ftwo", "kind": "f3", "bold": "max"},
-         {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
-         {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
-         {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},
+         {"field": "dc_worst_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+         {"field": "dc_worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
+         {"field": "dc_harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+         {"field": "dc_harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
      ]},
 
     # ---- RQ1+RQ2 big table: per project + per-system Average row, both backends ----
@@ -323,10 +332,11 @@ SPECS = [
      "cols": SUITE9,
      "footnote": "$^{\\dagger}$The doc-model columns for \\TransArc{} are SWATTR, its deterministic "
                  "doc-model stage (\\TransArc{} has no standalone doc-model system). The size-aware "
-                 "(doc-code) suite is Cov/Worst/Harm; the doc-model Silent-Failure Mass (SFM) sits "
-                 "with the doc-model columns."},
+                 "(doc-code) suite is the worst- and harmonic-component bands, each as "
+                 "\\fone/\\ftwo; the doc-model Component Miss Rate (CMR) sits with the doc-model "
+                 "columns."},
 
-    # ---- RQ1+RQ2 big table: per run + the average, both backends (SFM omitted here) ----
+    # ---- RQ1+RQ2 big table: per run + the average, both backends (CMR omitted here) ----
     {"csv": "bigtable_rq12_perrun.csv", "out": "big-table-perrun.tex",
      "label": "tab:detailed-perrun", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "summary": {"field": "run", "value": "average"},
@@ -334,12 +344,13 @@ SPECS = [
                 "deterministic, one run), both backends, five-project average.",
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
                 {"field": "run", "header": "Run", "map": RUN_MAP}],
-     "groups": SUITE_NOSFM_GROUPS,
-     "cols": SUITE_NOSFM,
+     "groups": SUITE_NOCMR_GROUPS,
+     "cols": SUITE_NOCMR,
      "footnote": "$^{\\dagger}$The doc-model columns for \\TransArc{} are SWATTR, its deterministic "
                  "doc-model stage (\\TransArc{} has no standalone doc-model system). The size-aware "
-                 "columns shown here are the doc-code \\fone-tail (worst/harmonic); SFM is the "
-                 "doc-model member, reported in \\autoref{tab:rq2} and \\autoref{tab:detailed-perproject}."},
+                 "columns shown here are the doc-code component tail (worst and harmonic, each as "
+                 "\\fone/\\ftwo); CMR is the doc-model member, reported in \\autoref{tab:rq2} and "
+                 "\\autoref{tab:detailed-perproject}."},
 
     # ---- RQ4 big table: per project + per-variant Average row, both backends ----
     {"csv": "bigtable_rq4_perproject.csv", "out": "rq4-bigtable-perproject.tex",
@@ -350,7 +361,8 @@ SPECS = [
      "labels": [{"field": "backend", "header": "Backend", "map": BACKEND_MAP, "group_by": True},
                 {"field": "variant", "header": "Variant", "map": VAR_MAP, "group_by": True},
                 {"field": "project", "header": "Project"}],
-     "groups": [("doc-model (link)", 4), ("doc-code (file)", 4), ("size-aware", 3)],
+     "groups": [("doc-model (link)", 4), ("doc-code (file)", 4),
+                ("worst comp.", 2), ("harm. comp.", 2)],
      "cols": [
          {"field": "dm_link_precision", "header": "P", "kind": "f2"},
          {"field": "dm_link_recall", "header": "R", "kind": "f2"},
@@ -360,15 +372,17 @@ SPECS = [
          {"field": "dc_file_recall", "header": "R", "kind": "f2"},
          {"field": "dc_file_f1", "header": "\\fone", "kind": "f3"},
          {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3"},
-         {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2"},
-         {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2"},
-         {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2"},
+         {"field": "dc_worst_component_f1", "header": "\\fone", "kind": "f2"},
+         {"field": "dc_worst_component_f2", "header": "\\ftwo", "kind": "f2"},
+         {"field": "dc_harmonic_component_f1", "header": "\\fone", "kind": "f2"},
+         {"field": "dc_harmonic_component_f2", "header": "\\ftwo", "kind": "f2"},
      ]},
 ]
 
 
 # ---- RQ4 per-run aggregate tables: one per run + the average (both backends x variants) ----
-_RQ4_RUN_GROUPS = [("doc-model", 2), ("doc-code (file)", 4), ("size-aware", 3)]
+_RQ4_RUN_GROUPS = [("doc-model", 2), ("doc-code (file)", 4),
+                   ("worst comp.", 2), ("harm. comp.", 2)]
 _RQ4_RUN_COLS = [
     {"field": "doc_to_model_macro_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
     {"field": "doc_to_model_macro_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
@@ -376,9 +390,10 @@ _RQ4_RUN_COLS = [
     {"field": "dc_file_recall", "header": "R", "kind": "f2", "bold": "max"},
     {"field": "dc_file_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
     {"field": "dc_file_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-    {"field": "dc_sentence_coverage", "header": "Cov", "kind": "f2", "bold": "max"},
-    {"field": "dc_worst_component_f1", "header": "Worst", "kind": "f2", "bold": "max"},
-    {"field": "dc_harmonic_component_f1", "header": "Harm", "kind": "f2", "bold": "max"},
+    {"field": "dc_worst_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+    {"field": "dc_worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
+    {"field": "dc_harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
+    {"field": "dc_harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
 ]
 SPECS += [
     {"csv": csv, "out": out, "label": label, "star": True, "caption": caption,
@@ -393,6 +408,28 @@ SPECS += [
          "RQ4 module ablation, average of the three runs, both backends."),
     ]
 ]
+
+def check_specs():
+    """Assert every spec's \\multicolumn bands cover exactly its columns.
+
+    A band row that is one span short of the column count is not a TeX error -- it
+    renders, shifted, and the wrong header sits over each number. Adding a column
+    without widening its band is the easy mistake (it happened when the size-aware
+    band split into worst/harmonic), so the registry checks itself on import.
+    """
+    for spec in SPECS:
+        ncol = len(spec["cols"])
+        if spec.get("groups"):
+            span = sum(n for _, n in spec["groups"])
+            assert span == ncol, (
+                f"{spec['out']}: bands cover {span} columns but there are {ncol}")
+        z = spec.get("colspec", "").count("Z")
+        assert not z or z == ncol, (
+            f"{spec['out']}: colspec has {z} Z columns but there are {ncol}")
+
+
+check_specs()
+
 
 
 def main():

@@ -14,21 +14,20 @@ sentence-F1/per-component-macro.
 Panel
 -----
     sad-code (doc-to-code) : file P/R/F1, per-component F1 (micro),
-                             worst-component F1, harmonic-mean component F1,
-                             sentence coverage, noise rate
-    sad-sam  (doc-to-model): link P/R/F1, sentence coverage, noise rate,
-                             Silent-Failure Mass (SFM%) + Silent-Failure Count (SFC)
+                             worst-component F1, harmonic-mean component F1
+    sad-sam  (doc-to-model): link P/R/F1,
+                             Component Miss Rate (CMR%) + Component Miss Count (CMC)
                              (the MICRO per-component F1 collapses onto link F1 with
-                             no enrolment, so it is dropped; SFM/SFC do NOT collapse
+                             no enrolment, so it is dropped; CMR/CMC do NOT collapse
                              — they are the doc-model size-aware metric, added
                              2026-06-30, component--sentence denominator)
 
 The worst-component + harmonic pair is the paper's ``metric.tex`` size-aware
 headline for DOC-CODE (weight each architecture component equally, not each link
 pair); they stay doc-code-only (redundant with link-F1 on doc-model). The
-doc-model size-aware metric is instead SFM/SFC (silent component failure: the
-share of documented component--sentence links whose component recovers no correct
-link), added
+doc-model size-aware metric is instead CMR/CMC (a missed component: the share of
+documented component--sentence links whose component recovers no correct link),
+added
 to ``compute_sad_sam`` only — ``compute_sad_code`` is untouched.
 ``mini-src/check.py`` pins every cell to a frozen golden table (validated at
 retirement against the then-canonical ``metrics_api`` and the interface-dropped
@@ -37,8 +36,6 @@ retirement against the then-canonical ``metrics_api`` and the interface-dropped
 Definitions: see ``compute_sad_code`` (per-component grouping D-01, interface
 drop D-12, worst/harmonic) and ``load_file_to_comps``. Briefly:
   * per-component F1 (micro) = one P/R/F1 over all (sentence, component) pairs.
-  * sentence coverage = fraction of gold sentences with >=1 *correct* hit.
-  * noise rate = mean over *predicted* sentences of FP/(TP+FP); lower is better.
 
 Usage
 -----
@@ -161,28 +158,44 @@ def fbeta(precision, recall, beta=2.0):
     return (1 + b2) * precision * recall / denom if denom > 0 else 0.0
 
 
-def sentence_coverage(gold_by_s, res_by_s):
-    """Fraction of gold sentences with >=1 correct prediction."""
-    if not gold_by_s:
-        return 0.0
-    covered = sum(1 for s in gold_by_s if gold_by_s[s] & res_by_s.get(s, set()))
-    return covered / len(gold_by_s)
+def _avg_ranks(xs):
+    """1-based ranks with ties resolved to the average of the tied positions."""
+    order = sorted(range(len(xs)), key=lambda i: xs[i])
+    ranks = [0.0] * len(xs)
+    i = 0
+    while i < len(xs):
+        j = i
+        while j + 1 < len(xs) and xs[order[j + 1]] == xs[order[i]]:
+            j += 1
+        avg = (i + j) / 2.0 + 1.0  # mean of 0-based positions i..j, made 1-based
+        for k in range(i, j + 1):
+            ranks[order[k]] = avg
+        i = j + 1
+    return ranks
 
 
-def noise_rate(gold_by_s, res_by_s):
-    """Mean FP/(TP+FP) across predicted sentences; lower is better."""
-    vals = []
-    for s, r in res_by_s.items():
-        g = gold_by_s.get(s, set())
-        tp = len(g & r)
-        fp = len(r - g)
-        if tp + fp > 0:
-            vals.append(fp / (tp + fp))
-    return sum(vals) / len(vals) if vals else 0.0
+def spearman(xs, ys):
+    """Spearman's rho (Pearson on average ranks; tie-aware). Stdlib only.
+
+    Not part of any reported panel: it is the shared rank-correlation primitive
+    the side analyses (``studies/explore-tail/``) use to check whether a candidate
+    metric carries ranking signal the reference F1 does not. Lives here so those
+    studies have one implementation to import, alongside the loaders.
+    """
+    n = len(xs)
+    rx, ry = _avg_ranks(xs), _avg_ranks(ys)
+    mx, my = sum(rx) / n, sum(ry) / n
+    cov = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
+    vx = sum((a - mx) ** 2 for a in rx)
+    vy = sum((b - my) ** 2 for b in ry)
+    if vx == 0 or vy == 0:
+        return float("nan")
+    return cov / (vx * vy) ** 0.5
 
 
 def normalize_path(path):
     """Drop the leading 'Implementation/' segment used in the gold standard."""
+
     prefix = "Implementation/"
     return path[len(prefix):] if path.startswith(prefix) else path
 
@@ -331,12 +344,24 @@ def compute_sad_code(project, res):
 
     Size-aware suite (the paper's ``metric.tex`` headline, weighting each
     architecture component equally rather than each link pair):
-      * ``component_f1``           -- micro F1 over all (sentence, component) pairs
-      * ``worst_component_f1``     -- min per-component F1 over GOLD components;
-                                      one abandoned component drives it to 0
-      * ``harmonic_component_f1``  -- harmonic mean of per-component F1 over GOLD
-                                      components; also 0 if any component is missed
-      * ``sentence_coverage``      -- fraction of gold sentences with >=1 hit
+      * ``component_f1``           -- micro F1 over all (sentence, component) pairs.
+                                      NOTE this one IS the projected grain (a sentence
+                                      counts once per component it reaches); it is a
+                                      CSV-only diagnostic and feeds no paper float.
+      * ``worst_component_f1``     -- min per-component F1 over GOLD components, each
+                                      scored on the (sentence, file) links whose target
+                                      belongs to it (eq:worst); one abandoned component
+                                      drives it to 0
+      * ``harmonic_component_f1``  -- harmonic mean of the same per-component F1 over
+                                      GOLD components; also 0 if any component is missed
+
+    Each of the three component F1s ships with its recall-weighted twin
+    (``component_f2``, ``worst_component_f2``, ``harmonic_component_f2``), computed
+    the same way but closing with ``fbeta`` instead of F1, so every F1 this module
+    reports has an \ftwo beside it. The aggregation is over the F2 scores, not the
+    F2 of the worst-F1 component: worst-F2 is the min of the per-component F2s and
+    harmonic-F2 their harmonic mean. The two usually name the same component, and
+    both flavours zero out on the same abandoned one.
     """
     code_files = load_code_model_files(project)
     gold = enroll(load_gs_sad_code_raw(project), code_files)
@@ -356,45 +381,61 @@ def compute_sad_code(project, res):
                 out.add((s, comp))
         return out
     gold_c, res_c = to_comp(gold), to_comp(res)
-    comp_f1 = prf(gold_c, res_c)[2]
+    comp_p, comp_r, comp_f1 = prf(gold_c, res_c)
 
-    # Per-component F1 over the GOLD-only component universe -> worst + harmonic.
+    # Per-component scores over the GOLD-only component universe -> worst + harmonic.
+    # GRAIN (metric.tex eq:worst / eq:harm, literally): "each component k owns a set
+    # of code files; F_beta(k) is F_beta computed over only the LINKS whose target
+    # belongs to k". So each component is scored on its own slice of the (sentence,
+    # file) link set -- NOT on a (sentence, component) projection. The distinction is
+    # load-bearing: under a projection, recovering ONE file of k scores the same as
+    # recovering all of them, which makes the tail metrics blind to how much of a
+    # component was actually reached (and, empirically, invariant across runs). A file
+    # realizing two components contributes its link to both slices, as eq:worst implies.
     gold_by_c, res_by_c = defaultdict(set), defaultdict(set)
-    for s, c in gold_c:
-        gold_by_c[c].add(s)
-    for s, c in res_c:
-        res_by_c[c].add(s)
+    for s, f in gold:
+        for comp in file_to_comps.get(f, ()):
+            gold_by_c[comp].add((s, f))
+    for s, f in res:
+        for comp in file_to_comps.get(f, ()):
+            res_by_c[comp].add((s, f))
 
     def comp_score(c):
-        g = {(s, c) for s in gold_by_c.get(c, set())}
-        r = {(s, c) for s in res_by_c.get(c, set())}
-        return prf(g, r)[2]
-    per_gold = [comp_score(c) for c in gold_by_c]
-    worst = min(per_gold) if per_gold else 0.0
-    harmonic = (len(per_gold) / sum(1.0 / x for x in per_gold)
-                if per_gold and all(x > 0 for x in per_gold) else 0.0)
+        """(F1, F2) for one gold component, over the links whose target belongs to c."""
+        p, rec, f1 = prf(gold_by_c.get(c, set()), res_by_c.get(c, set()))
+        return f1, fbeta(p, rec)
 
-    gold_by_s, res_by_s = defaultdict(set), defaultdict(set)
-    for s, c in gold:
-        gold_by_s[s].add(c)
-    for s, c in res:
-        res_by_s[s].add(c)
+    def tail(scores):
+        """(worst, harmonic mean) of the per-component scores.
+
+        Both collapse to 0 as soon as one gold component is abandoned: ``prf`` and
+        ``fbeta`` score an empty prediction 0, and a single 0 zeroes a harmonic mean.
+        That is what the pair buys over link-level F -- which absorbs a missed small
+        component -- and it holds for the F1 and the F2 flavour alike.
+        """
+        if not scores:
+            return 0.0, 0.0
+        harmonic = (len(scores) / sum(1.0 / x for x in scores)
+                    if all(x > 0 for x in scores) else 0.0)
+        return min(scores), harmonic
+
+    per_gold = [comp_score(c) for c in gold_by_c]
+    worst_f1, harmonic_f1 = tail([f1 for f1, _ in per_gold])
+    worst_f2, harmonic_f2 = tail([f2 for _, f2 in per_gold])
 
     return {
         "project": project,
         "file_p": fp_, "file_r": fr_, "file_f1": ff1, "file_f2": fbeta(fp_, fr_),
-        "component_f1": comp_f1,
-        "worst_component_f1": worst,
-        "harmonic_component_f1": harmonic,
-        "sentence_coverage": sentence_coverage(gold_by_s, res_by_s),
-        "noise_rate": noise_rate(gold_by_s, res_by_s),
+        "component_f1": comp_f1, "component_f2": fbeta(comp_p, comp_r),
+        "worst_component_f1": worst_f1, "worst_component_f2": worst_f2,
+        "harmonic_component_f1": harmonic_f1, "harmonic_component_f2": harmonic_f2,
     }
 
 
 def compute_sad_sam(project, res):
-    """Primary panel + Silent-Failure Mass/Count for one doc-to-model result set.
+    """Primary panel + Component Miss Rate/Count for one doc-to-model result set.
 
-    Silent-Failure Mass (SFM) / Count (SFC) is the doc-model size-aware metric
+    Component Miss Rate (CMR) / Count (CMC) is the doc-model size-aware metric
     (the doc-code worst/harmonic tail is redundant with link-F1 here, so it is
     NOT reported on doc-model; see the module docstring). Definitions, over GOLD
     components and gold documentation assignments:
@@ -402,22 +443,20 @@ def compute_sad_sam(project, res):
       * component c is ABANDONED iff ``recall_c == 0`` -- it recovers no correct
         link (zero correct sentences for c), reusing ``prf``'s convention that an
         empty/all-wrong prediction scores recall 0.
-      * SFC = #{abandoned gold components}                              (integer)
-      * SFM = sum(|gold sentences for c| for abandoned c)
+      * CMC = #{abandoned gold components}                              (integer)
+      * CMR = sum(|gold sentences for c| for abandoned c)
               / sum(|gold sentences for c| for gold c) * 100            (%, [0,100])
 
-    This is a sentence-weighted SFC: every gold (sentence, component) assignment
+    NOTE the unit: ``metric.tex`` defines CMR as a share in [0,1]; this returns the
+    same quantity in PERCENT, which is what every table and every prose figure in
+    the paper prints ("1.9%"). Do not divide again downstream.
+
+    This is a sentence-weighted CMC: every gold (sentence, component) assignment
     contributes one unit of mass. Thus, a sentence documented for two components
-    contributes twice, once for each component. Empty gold -> SFM 0.0, SFC 0.
+    contributes twice, once for each component. Empty gold -> CMR 0.0, CMC 0.
     """
     gold = load_gs_sad_sam(project)
     lp, lr, lf1 = prf(gold, res)
-
-    gold_by_s, res_by_s = defaultdict(set), defaultdict(set)
-    for c, s in gold:
-        gold_by_s[s].add(c)
-    for c, s in res:
-        res_by_s[s].add(c)
 
     # Group gold assignments by component, then retain only exact gold hits. A
     # component is abandoned when its set of correct sentences remains empty.
@@ -441,36 +480,34 @@ def compute_sad_sam(project, res):
     total_assignment_count = sum(
         len(sentences) for sentences in gold_sentences_by_component.values()
     )
-    sfm = (abandoned_assignment_count / total_assignment_count * 100
+    cmr = (abandoned_assignment_count / total_assignment_count * 100
            if total_assignment_count else 0.0)
 
     return {
         "project": project,
         "link_p": lp, "link_r": lr, "link_f1": lf1, "link_f2": fbeta(lp, lr),
-        "sentence_coverage": sentence_coverage(gold_by_s, res_by_s),
-        "noise_rate": noise_rate(gold_by_s, res_by_s),
-        "silent_failure_mass": sfm,
-        "silent_failure_count": len(abandoned_components),
+        "component_miss_rate": cmr,
+        "component_miss_count": len(abandoned_components),
     }
 
 
 # ── CLI / output ──────────────────────────────────────────────────────────────
 
 PANELS = {
-    "sad-code": ["file_p", "file_r", "file_f1", "file_f2", "component_f1",
-                 "worst_component_f1", "harmonic_component_f1",
-                 "sentence_coverage", "noise_rate"],
+    "sad-code": ["file_p", "file_r", "file_f1", "file_f2",
+                 "component_f1", "component_f2",
+                 "worst_component_f1", "worst_component_f2",
+                 "harmonic_component_f1", "harmonic_component_f2"],
     "sad-sam":  ["link_p", "link_r", "link_f1", "link_f2",
-                 "sentence_coverage", "noise_rate",
-                 "silent_failure_mass", "silent_failure_count"],
+                 "component_miss_rate", "component_miss_count"],
 }
 HEADERS = {
     "file_p": "file_P", "file_r": "file_R", "file_f1": "file_F1", "file_f2": "file_F2",
     "link_p": "link_P", "link_r": "link_R", "link_f1": "link_F1", "link_f2": "link_F2",
-    "component_f1": "comp_F1", "worst_component_f1": "worst_C",
-    "harmonic_component_f1": "harm_C", "sentence_coverage": "sent_cov",
-    "noise_rate": "noise",
-    "silent_failure_mass": "SFM%", "silent_failure_count": "SFC",
+    "component_f1": "comp_F1", "component_f2": "comp_F2",
+    "worst_component_f1": "worst_C_F1", "worst_component_f2": "worst_C_F2",
+    "harmonic_component_f1": "harm_C_F1", "harmonic_component_f2": "harm_C_F2",
+    "component_miss_rate": "CMR%", "component_miss_count": "CMC",
 }
 
 def average_row(rows, cols):
@@ -485,16 +522,19 @@ def average_row(rows, cols):
 def print_table(task, rows):
     cols = PANELS[task]
     w = max(13, max((len(r["project"]) for r in rows), default=7) + 1)
-    head = "project".ljust(w) + "".join(HEADERS[c].rjust(10) for c in cols)
+    # Derived, not fixed: the F1/F2 header pairs are long enough that a hardcoded
+    # width silently runs them together.
+    cw = max(10, max(len(HEADERS[c]) for c in cols) + 1)
+    head = "project".ljust(w) + "".join(HEADERS[c].rjust(cw) for c in cols)
     print(head)
     print("-" * len(head))
     for r in rows:
-        line = r["project"].ljust(w) + "".join(f"{r[c]:10.4f}" for c in cols)
+        line = r["project"].ljust(w) + "".join(f"{r[c]:{cw}.4f}" for c in cols)
         print(line)
     if len(rows) > 1:   # an average over a single project is just that project
         avg = average_row(rows, cols)
         print("-" * len(head))
-        print(avg["project"].ljust(w) + "".join(f"{avg[c]:10.4f}" for c in cols))
+        print(avg["project"].ljust(w) + "".join(f"{avg[c]:{cw}.4f}" for c in cols))
 
 
 def write_csv(task, rows, path):

@@ -11,7 +11,8 @@ checkouts or Git submodules.
 | Path | Contents |
 | --- | --- |
 | `approach/` | ALinker SAD-to-SAM implementation and experiment runner |
-| `evaluation/` | Stdlib-only metric studies plus the recorded TransArC results |
+| `evaluation/` | Stdlib-only pipeline that scores the runs and renders the paper's tables |
+| `studies/` | Side analyses that informed the paper's choices but write none of its tables |
 | `sota-links/` | Normalized recovered links and provenance for SOTA baselines |
 | `benchmark/` | ARDoCo benchmark inputs and gold standards required by evaluation |
 | `paper/` | LaTeX source, figures, tables, and bibliography |

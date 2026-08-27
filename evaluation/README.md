@@ -1,9 +1,15 @@
 # TransArc-EMP — mini studies
 
-A set of small, **self-contained, stdlib-only** Python studies that compute the
-trace-link-recovery paper's research-question metrics directly from the ARDoCo
-benchmark and the recorded TransArc / agent-linker run results. Each study is one
-directory, runs on a bare `python3`, and verifies itself against a frozen panel.
+The **table pipeline** for the trace-link-recovery paper: small, **self-contained,
+stdlib-only** Python studies that compute the research-question metrics directly
+from the ARDoCo benchmark and the recorded TransArc / agent-linker run results, and
+render them into the paper's floats. Each study is one directory, runs on a bare
+`python3`, and verifies itself against a frozen panel.
+
+Everything here earns its place by feeding a float in `paper/{table,appendix}/`
+(`mini-src/sync_paper.py --check` guards that bridge). Side analyses that answered a
+design question without producing a reported number live in
+[`../studies/`](../studies/README.md).
 
 > **Branch layout.** This is the **`mini`** branch — the active, cleaned-up
 > workspace. The full historical two-pillar workspace (the retired `src/`
@@ -16,13 +22,20 @@ directory, runs on a bare `python3`, and verifies itself against a frozen panel.
 
 | Dir | Question | What it does | Entry points |
 |-----|----------|--------------|--------------|
-| [`mini-src/`](mini-src/README.md) | **RQ1 / RQ2** — link & component metrics | The project's sole metrics implementation: file/link P/R/F1, per-component F1, worst-component & harmonic-mean F1, sentence coverage, noise rate, for `sad-code` (doc-to-code) and `sad-sam` (doc-to-model). Plus the RQ1/RQ2 big table and the no-enroll inflation baseline. | `metrics.py`, `check.py`, `rq12.py`, `noenroll.py` |
-| [`mini-inequality/`](mini-inequality/README.md) | **RQ2 motivation** — data inequality | Concentration inequality of the gold links (Gini, Lorenz, top-k share, enrollment expansion) — why micro-F1 needs the size-aware suite. Self-contained GSD sub-project (own `.planning/`). | `inequality.py`, `motivation.py`, `claim_check.py` |
+| [`mini-src/`](mini-src/README.md) | **RQ1 / RQ2** — link & component metrics | The project's sole metrics implementation: file/link P/R, per-component, worst-component and harmonic-mean scores — each F1 reported with its recall-weighted F2 — plus the component miss rate (CMR), for `sad-code` (doc-to-code) and `sad-sam` (doc-to-model). Plus the RQ1/RQ2 big table and the CSV→TeX paper-table pipeline. | `metrics.py`, `check.py`, `rq12.py`, `rq_tables.py`, `csv_to_tex.py` |
+| [`mini-inequality/`](mini-inequality/README.md) | **RQ2 motivation** — data inequality | Concentration inequality of the gold links (Gini, Lorenz, top-k share, enrollment expansion) — why micro-F1 needs the size-aware suite. Writes `paper/table/gold_concentration.tex` via `sync_paper.py`. Self-contained GSD sub-project (own `.planning/`). | `inequality.py`, `motivation.py` |
 | [`mini-rq34/`](mini-rq34/README.md) | **RQ3 / RQ4** — validators & ablation | Validator contribution (cost/benefit, counterfactual macro-F1) and per-module linker ablation (unique TPs, leave-one-out delta, overlap decomposition), at the doc-to-model grain. | `rq34.py` |
 | `mini-data/` | — | Pruned canonical data: the 15 TransArc result CSVs the studies actually read (`<project>/{sad-code,sad-sam,sam-code}/...Tlr_*.csv`, 5 projects). | (data) |
 
-`reports/` holds the top-level mini outputs (`RQ12_BIGTABLE.csv`, `RQ2_PANEL.csv`,
-`NOENROLL_DOC_CODE.{csv,md}`); each study also writes to its own `*/reports/`.
+`reports/` holds the top-level mini outputs (`RQ12_BIGTABLE.csv`,
+`RQ12_PERPROJECT.csv`, and the generated `tex_src/` + `tex/` paper tables); each
+study also writes to its own `*/reports/`.
+
+> Frozen leftovers. `RQ2_PANEL.csv`, `RQ2_CELLS.csv`, `RQ2_CORR.csv` and
+> `NOENROLL_DOC_CODE.{csv,md}` are the last outputs of scripts retired with the
+> s21 arm (`rq2_corr.py`, `noenroll.py`) — nothing regenerates them now. They are
+> kept as the provenance for the archived paper floats that cite them; their
+> generators are recoverable from git history.
 
 ## Prerequisites
 
@@ -43,8 +56,9 @@ directory, runs on a bare `python3`, and verifies itself against a frozen panel.
 python3 mini-src/metrics.py --task sad-code
 python3 mini-src/metrics.py --task sad-sam
 python3 mini-src/check.py            # golden-panel regression, asserts to 1e-4
-python3 mini-src/rq12.py             # -> reports/RQ12_BIGTABLE.csv, RQ2_PANEL.csv
-python3 mini-src/noenroll.py         # no-enroll doc-to-code inflation baseline
+python3 mini-src/rq12.py             # -> reports/RQ12_BIGTABLE.csv, RQ12_PERPROJECT.csv
+python3 mini-src/rq_tables.py        # -> reports/tex_src/*.csv (one per paper float)
+python3 mini-src/csv_to_tex.py       # -> reports/tex/*.tex
 
 # RQ2 motivation (inequality) — runs its own sanity check vs frozen literals
 python3 mini-inequality/inequality.py
@@ -60,7 +74,9 @@ See each study's own `README.md` for definitions, provenance, and full options.
 
 - **Stdlib only; no cross-module imports.** Each `mini-*` study copies shared
   definitions (and sanity-checks them for agreement) rather than importing, so it
-  stays runnable in isolation.
+  stays runnable in isolation. The side analyses in `../studies/` are the exception
+  and import `mini-src/metrics.py` directly — they must track the reported scorer,
+  and they are not part of the pipeline this rule protects.
 - **No benchmark leakage** — no benchmark-derived word lists in any code
   (workspace rule); distributional / structural stats only.
 - See [CLAUDE.md](CLAUDE.md) for agent guidance and the workspace

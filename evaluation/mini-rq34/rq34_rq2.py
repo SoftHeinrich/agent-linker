@@ -75,18 +75,19 @@ PANEL = [
     "doc_to_code_file_f1",
     "doc_to_code_file_f2",
     "doc_to_code_component_micro_f1",
+    "doc_to_code_component_micro_f2",
     "doc_to_code_worst_component_f1",
+    "doc_to_code_worst_component_f2",
     "doc_to_code_harmonic_component_f1",
-    "doc_to_code_sentence_coverage",
-    "doc_to_code_noise_rate",
+    "doc_to_code_harmonic_component_f2",
 ]
 DELTA_COLS = [
     "doc_to_code_file_f1",
     "doc_to_code_file_f2",
     "doc_to_code_worst_component_f1",
+    "doc_to_code_worst_component_f2",
     "doc_to_code_harmonic_component_f1",
-    "doc_to_code_sentence_coverage",
-    "doc_to_code_noise_rate",
+    "doc_to_code_harmonic_component_f2",
 ]
 
 
@@ -125,24 +126,6 @@ def fbeta(precision: float, recall: float, beta: float = 2.0) -> float:
     b2 = beta * beta
     denom = b2 * precision + recall
     return (1 + b2) * precision * recall / denom if denom > 0 else 0.0
-
-
-def sentence_coverage(gold_by_s: Dict[str, Set[str]], res_by_s: Dict[str, Set[str]]) -> float:
-    if not gold_by_s:
-        return 0.0
-    covered = sum(1 for s in gold_by_s if gold_by_s[s] & res_by_s.get(s, set()))
-    return covered / len(gold_by_s)
-
-
-def noise_rate(gold_by_s: Dict[str, Set[str]], res_by_s: Dict[str, Set[str]]) -> float:
-    vals = []
-    for s, r in res_by_s.items():
-        g = gold_by_s.get(s, set())
-        tp = len(g & r)
-        fp = len(r - g)
-        if tp + fp > 0:
-            vals.append(fp / (tp + fp))
-    return sum(vals) / len(vals) if vals else 0.0
 
 
 def load_code_model_files(project: str) -> Set[str]:
@@ -197,29 +180,34 @@ def compute_sad_code(project: str, res: Set[DocCodeLink]) -> Dict[str, float]:
         return out
 
     gold_c, res_c = to_comp(gold), to_comp(res)
-    comp_f1 = prf(gold_c, res_c)[2]
+    comp_p, comp_r, comp_f1 = prf(gold_c, res_c)
 
+    # Per-component slices at the LINK grain (metric.tex eq:worst / eq:harm); mirrors
+    # mini-src/metrics.py compute_sad_code -- keep the two in step.
     gold_by_c, res_by_c = defaultdict(set), defaultdict(set)
-    for s, c in gold_c:
-        gold_by_c[c].add(s)
-    for s, c in res_c:
-        res_by_c[c].add(s)
+    for s, f in gold:
+        for comp in file_to_comps.get(f, ()):
+            gold_by_c[comp].add((s, f))
+    for s, f in res:
+        for comp in file_to_comps.get(f, ()):
+            res_by_c[comp].add((s, f))
 
     def comp_score(c):
-        g = {(s, c) for s in gold_by_c.get(c, set())}
-        r = {(s, c) for s in res_by_c.get(c, set())}
-        return prf(g, r)[2]
+        """(F1, F2) for one gold component, over the links whose target belongs to c."""
+        p, rec, f1 = prf(gold_by_c.get(c, set()), res_by_c.get(c, set()))
+        return f1, fbeta(p, rec)
+
+    def tail(scores):
+        """(worst, harmonic mean) of the per-component scores; 0 if any is 0."""
+        if not scores:
+            return 0.0, 0.0
+        harmonic = (len(scores) / sum(1.0 / x for x in scores)
+                    if all(x > 0 for x in scores) else 0.0)
+        return min(scores), harmonic
 
     per_gold = [comp_score(c) for c in gold_by_c]
-    worst = min(per_gold) if per_gold else 0.0
-    harmonic = (len(per_gold) / sum(1.0 / x for x in per_gold)
-                if per_gold and all(x > 0 for x in per_gold) else 0.0)
-
-    gold_by_s, res_by_s = defaultdict(set), defaultdict(set)
-    for s, c in gold:
-        gold_by_s[s].add(c)
-    for s, c in res:
-        res_by_s[s].add(c)
+    worst_f1, harmonic_f1 = tail([f1 for f1, _ in per_gold])
+    worst_f2, harmonic_f2 = tail([f2 for _, f2 in per_gold])
 
     return {
         "doc_to_code_file_precision": fp_,
@@ -227,10 +215,11 @@ def compute_sad_code(project: str, res: Set[DocCodeLink]) -> Dict[str, float]:
         "doc_to_code_file_f1": ff1,
         "doc_to_code_file_f2": fbeta(fp_, fr_),
         "doc_to_code_component_micro_f1": comp_f1,
-        "doc_to_code_worst_component_f1": worst,
-        "doc_to_code_harmonic_component_f1": harmonic,
-        "doc_to_code_sentence_coverage": sentence_coverage(gold_by_s, res_by_s),
-        "doc_to_code_noise_rate": noise_rate(gold_by_s, res_by_s),
+        "doc_to_code_component_micro_f2": fbeta(comp_p, comp_r),
+        "doc_to_code_worst_component_f1": worst_f1,
+        "doc_to_code_worst_component_f2": worst_f2,
+        "doc_to_code_harmonic_component_f1": harmonic_f1,
+        "doc_to_code_harmonic_component_f2": harmonic_f2,
     }
 
 
@@ -392,15 +381,12 @@ def write_summary(path: Path, variant_rows: List[Dict[str, str]], linker_rows: L
                      f"file-F1 {no_all['delta_doc_to_code_file_f1_vs_full']}, "
                      f"file-F2 {no_all['delta_doc_to_code_file_f2_vs_full']}, "
                      f"worst-component F1 {no_all['delta_doc_to_code_worst_component_f1_vs_full']}, "
-                     f"harmonic-component F1 {no_all['delta_doc_to_code_harmonic_component_f1_vs_full']}, "
-                     f"coverage {no_all['delta_doc_to_code_sentence_coverage_vs_full']}, "
-                     f"noise {no_all['delta_doc_to_code_noise_rate_vs_full']}.")
+                     f"harmonic-component F1 {no_all['delta_doc_to_code_harmonic_component_f1_vs_full']}.")
         for ph in rq.PHASES:
             r = row_by(variant_rows, backend=backend, run="average", variant=ph["variant"])
             lines.append(f"- **{backend} {ph['variant']} (judge off) vs Full:** "
                          f"file-F1 {r['delta_doc_to_code_file_f1_vs_full']}, "
-                         f"file-F2 {r['delta_doc_to_code_file_f2_vs_full']}, "
-                         f"noise {r['delta_doc_to_code_noise_rate_vs_full']}.")
+                         f"file-F2 {r['delta_doc_to_code_file_f2_vs_full']}.")
     lines += ["", "## RQ4 Linker Sets", ""]
     for backend in sorted({r["backend"] for r in linker_rows}):
         for name in LINKER_SET_NAMES[1:]:
@@ -408,12 +394,10 @@ def write_summary(path: Path, variant_rows: List[Dict[str, str]], linker_rows: L
             lines.append(f"- **{backend} {name} vs Full:** "
                          f"file-F1 {r['delta_doc_to_code_file_f1_vs_full']}, "
                          f"file-F2 {r['delta_doc_to_code_file_f2_vs_full']}, "
-                         f"worst-component F1 {r['delta_doc_to_code_worst_component_f1_vs_full']}, "
-                         f"coverage {r['delta_doc_to_code_sentence_coverage_vs_full']}.")
+                         f"worst-component F1 {r['delta_doc_to_code_worst_component_f1_vs_full']}.")
     lines += [
         "",
-        "Reading rule: negative deltas mean the counterfactual/linker-only set is worse than Full; "
-        "positive noise deltas mean more false-positive mass per predicted sentence.",
+        "Reading rule: negative deltas mean the counterfactual/linker-only set is worse than Full.",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")

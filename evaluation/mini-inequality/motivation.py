@@ -3,9 +3,11 @@
 
 Shows that trivial baselines exploit the benchmark's distributional inequality:
 a content-blind Top-3 (most-gold-linked) baseline scores a surprisingly high
-file-/link-level micro-F1, while the four-metric suite (per-component macro F1,
-sentence coverage, noise rate, file-level F1) exposes it as content-blind. This
-motivates the suite (MOTIV-01). It also emits the paper-ready component link-
+file-/link-level micro-F1, while the size-aware suite (per-component macro F1
+and the components it reaches) exposes it as content-blind. This motivates the
+suite (MOTIV-01). Sentence coverage and noise rate were dropped from the paper's
+suite on 2026-08-27 and are no longer computed here either -- this study must
+describe the suite that is actually reported. It also emits the paper-ready component link-
 concentration table (with Gini) + Lorenz figure source (OUT-02).
 
 GOLD ONLY — no system/result files. Reuses the study's own engine
@@ -28,7 +30,7 @@ P = list(ineq.PROJECTS)
 TASKS = ["sad-code", "sad-sam"]
 
 
-# ── Metric helpers (copied: mini-src/metrics.py prf; prestudy macro/coverage/noise) ──
+# ── Metric helpers (copied: mini-src/metrics.py prf; prestudy macro/component coverage) ──
 def prf(gold, res):
     """Micro (precision, recall, f1) over link sets (mini-src/metrics.py)."""
     if not res:
@@ -63,23 +65,11 @@ def per_component_macro_f1(gold, result):
     return sum(f1s) / len(f1s) if f1s else 0.0
 
 
-def sentence_coverage(gold, result):
-    """Fraction of gold sentences with >=1 correct link (prestudy:284)."""
-    gold_by_s, res_by_s = defaultdict(set), defaultdict(set)
-    for s, c in gold:
-        gold_by_s[s].add(c)
-    for s, c in result:
-        res_by_s[s].add(c)
-    sents = list(gold_by_s)
-    if not sents:
-        return 0.0
-    return sum(1 for s in sents if gold_by_s[s] & res_by_s.get(s, set())) / len(sents)
-
 
 def component_coverage(gold, result):
-    """Fraction of gold components with >=1 correct link (component analogue of
-    sentence_coverage). The simple "components reached" proxy used in the paper's
-    motivation; per-component macro F1 is its precision-aware refinement."""
+    """Fraction of gold components with >=1 correct link -- the complement of the
+    component miss rate (CMR) reported in the paper. The simple "components reached" proxy used in
+    the paper's motivation; per-component macro F1 is its precision-aware refinement."""
     gold_by_c, res_by_c = defaultdict(set), defaultdict(set)
     for s, c in gold:
         gold_by_c[c].add(s)
@@ -90,21 +80,6 @@ def component_coverage(gold, result):
         return 0.0
     return sum(1 for c in comps if gold_by_c[c] & res_by_c.get(c, set())) / len(comps)
 
-
-def noise_rate(gold, result):
-    """Mean FP/(TP+FP) over predicted sentences (prestudy:301)."""
-    gold_by_s, res_by_s = defaultdict(set), defaultdict(set)
-    for s, c in gold:
-        gold_by_s[s].add(c)
-    for s, c in result:
-        res_by_s[s].add(c)
-    vals = []
-    for s, r in res_by_s.items():
-        g = gold_by_s.get(s, set())
-        tp, fp = len(g & r), len(r - g)
-        if tp + fp > 0:
-            vals.append(fp / (tp + fp))
-    return sum(vals) / len(vals) if vals else 0.0
 
 
 # ── Baselines (copied: rq2_doc_to_model_prestudy.py:181,205) ──────────────────
@@ -181,7 +156,7 @@ def _collapse(pairs, file_to_comps):
 
 def measure(name, result, gold, task, file_to_comps):
     # micro_f1 IS the file-level F1 (sad-code) / link-level F1 (sad-sam) — the
-    # standard ruler. The suite adds per-component macro F1, coverage, noise.
+    # standard ruler. The suite adds per-component macro F1 and component coverage.
     micro = prf(gold, result)[2]
     if task == "sad-code":
         g_c = _collapse(gold, file_to_comps)
@@ -194,13 +169,11 @@ def measure(name, result, gold, task, file_to_comps):
     return {
         "baseline": name, "micro_f1": micro, "comp_f1": comp_f1,
         "comp_cov": comp_cov,
-        "coverage": sentence_coverage(gold, result),
-        "noise": noise_rate(gold, result),
     }
 
 
 BASE_COLS = ["task", "project", "baseline", "micro_f1", "comp_f1",
-             "comp_cov", "coverage", "noise"]
+             "comp_cov"]
 
 
 def _fmt(v):
@@ -245,8 +218,7 @@ def write_baselines_csv(rows):
             for bl in ("top3", "random", "gold"):
                 w.writerow([task, "AVG", bl]
                            + [_fmt(_avg(rows, task, bl, c))
-                              for c in ("micro_f1", "comp_f1", "comp_cov",
-                                        "coverage", "noise")])
+                              for c in ("micro_f1", "comp_f1", "comp_cov")])
 
 
 DRIVER_MAP = [
@@ -255,9 +227,9 @@ DRIVER_MAP = [
     ("Component concentration (files-per-component Gini 0.400→0.694)",
      "per-component macro F1", "size-blind: small components count as much as the giants"),
     ("Long-tail per-sentence distribution (Gini 0.331→0.645)",
-     "sentence coverage", "exposes whether the tail of sentences is covered at all"),
-    ("Narrative / non-link sentences",
-     "noise rate", "penalises false positives on the large non-link-bearing part of the doc"),
+     "worst-component F1", "reports the single worst component, which any average hides"),
+    ("Tail components carrying few documented sentences",
+     "component miss rate (CMR)", "prices a component abandoned outright, which costs a link-level average almost nothing"),
 ]
 
 
@@ -275,13 +247,13 @@ def write_motivation(rows):
         L.append(f"## {task} — Top-3 micro-F1 {t3:.3f} vs random {rd:.3f} "
                  f"({ratio:.1f}× random)\n")
         L.append(f"micro-F1 is the standard {ruler} ruler; the suite adds the next "
-                 "three columns.\n")
+                 "two columns.\n")
         L.append("| Baseline | micro-F1 ("
-                 + ruler + ") | per-comp macro F1 | comp-cov | coverage | noise |")
-        L.append("|----------|----------------|-------------------|----------|----------|-------|")
+                 + ruler + ") | per-comp macro F1 | comp-cov |")
+        L.append("|----------|----------------|-------------------|----------|")
         for bl in ("top3", "random", "gold"):
             cells = [f"{_avg(rows, task, bl, c):.3f}" for c in
-                     ("micro_f1", "comp_f1", "comp_cov", "coverage", "noise")]
+                     ("micro_f1", "comp_f1", "comp_cov")]
             L.append(f"| {bl} | " + " | ".join(cells) + " |")
         L.append("")
     L.append("**Reading:** Top-3 posts a respectable micro-F1 (≈2× random) but a "
@@ -289,19 +261,14 @@ def write_motivation(rows):
              "— it nails the few popular components and scores ~0 on the long tail "
              "of small ones. The large micro−macro gap, not micro-F1 itself, is the "
              "tell: micro-F1 alone cannot separate this content-blind baseline from "
-             "a real-but-weak linker; per-component F1 (plus coverage and noise "
-             "rate) can.\n")
+             "a real-but-weak linker; per-component F1 and component coverage can.\n")
     L.append("## What each metric carries (which are load-bearing here)\n")
-    L.append("- **components covered** and **sentences covered** are the simple "
-             "discriminators used in the paper's motivation: on sad-code they *flip "
-             "the ranking* — random reaches more of each than Top-3 (components 0.758 "
-             "vs 0.398; sentences 0.659 vs 0.486) — exposing the popularity baseline "
-             "that micro-F1 rewards. **Per-component macro F1** flips too (0.243 vs "
-             "0.186); it is the precision-aware refinement reported in the metric "
-             "suite.\n")
-    L.append("- **noise rate** is an independent axis (FP rate on predicted "
-             "sentences); it does not flip in this comparison but catches "
-             "over-prediction in general.\n")
+    L.append("- **components covered** is the simple discriminator used in the "
+             "paper's motivation: on sad-code it *flips the ranking* — random "
+             "reaches more components than Top-3 (0.758 vs 0.398) — exposing the "
+             "popularity baseline that micro-F1 rewards. **Per-component macro F1** "
+             "flips too (0.243 vs 0.186); it is the precision-aware refinement "
+             "reported in the metric suite.\n")
     L.append("- **micro-F1 = file/link F1** is the standard ruler being corrected "
              "— kept once (no separate redundant file-F1 column).\n")
     L.append("## Why each suite metric is needed (driver → metric)\n")

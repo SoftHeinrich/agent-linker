@@ -4,7 +4,9 @@ Doc→code scored under the **no-enroll** regime (each gold package = one atomic
 target) next to the **enrolled** regime that the benchmark/TransArc papers report.
 The gap between them is the enrollment inflation this study critiques.
 
-Reproduce: `python3 mini-src/noenroll.py` (machine-readable: `reports/NOENROLL_DOC_CODE.csv`).
+Reproduce: `mini-src/noenroll.py` — **retired 2026-08-26** with the s21 arm; this
+file is the frozen last output (machine-readable: `reports/NOENROLL_DOC_CODE.csv`).
+Recover the script from git history to re-run it.
 
 ## Macro over covered projects
 

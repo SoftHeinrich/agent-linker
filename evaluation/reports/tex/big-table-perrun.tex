@@ -6,27 +6,32 @@
 \centering\footnotesize
 \setlength{\tabcolsep}{3pt}
 \adjustbox{max width=\textwidth}{
-\begin{tabular}{@{}ll rrrrrrrrrrr@{}}
+\begin{tabular}{@{}ll rrrrrrrrrrrr@{}}
 \toprule
- &  & \multicolumn{4}{c}{doc-model (link)} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{3}{c}{size-aware (doc-code)} \\
-\cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-13}
-System & Run & P & R & \fone & \ftwo & P & R & \fone & \ftwo & Cov & Worst & Harm \\
+ &  & \multicolumn{4}{c}{doc-model (link)} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{2}{c}{worst comp.} & \multicolumn{2}{c}{harm. comp.} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-12}\cmidrule(lr){13-14}
+System & Run & P & R & \fone & \ftwo & P & R & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo \\
 \midrule
-\approach{} (GPT-5.6-terra) & Run 1 & .88 & .95 & .908 & .930 & .91 & .91 & .911 & .912 & .88 & .71 & .86 \\
- & Run 2 & .90 & .94 & .920 & .932 & .89 & .91 & .900 & .908 & .88 & .71 & .88 \\
- & Run 3 & .89 & .94 & .913 & .931 & .92 & .92 & .915 & .915 & .88 & .71 & .87 \\
- & \textbf{Avg} & \textbf{.89} & \textbf{.94} & \textbf{.914} & \textbf{.931} & \textbf{.91} & \textbf{.91} & \textbf{.909} & \textbf{.912} & \textbf{.88} & \textbf{.71} & \textbf{.87} \\
+\approach{} (GPT-5.6-terra) & Run 1 & .88 & .95 & .908 & .930 & .91 & .91 & .911 & .912 & .70 & .74 & .89 & .91 \\
+ & Run 2 & .90 & .94 & .920 & .932 & .89 & .91 & .900 & .908 & .76 & .74 & .91 & .91 \\
+ & Run 3 & .89 & .94 & .913 & .931 & .92 & .92 & .915 & .915 & .72 & .74 & .90 & .91 \\
+ & \textbf{Avg} & \textbf{.89} & \textbf{.94} & \textbf{.914} & \textbf{.931} & \textbf{.91} & \textbf{.91} & \textbf{.909} & \textbf{.912} & \textbf{.73} & \textbf{.74} & \textbf{.90} & \textbf{.91} \\
 \addlinespace[2pt]
-\approach{} (GPT-5.6-luna) & Run 1 & .79 & .98 & .868 & .930 & .84 & .94 & .884 & .915 & .92 & .69 & .87 \\
- & Run 2 & .79 & .97 & .865 & .921 & .83 & .94 & .880 & .915 & .92 & .74 & .89 \\
- & Run 3 & .84 & .98 & .904 & .948 & .85 & .92 & .882 & .906 & .89 & .69 & .86 \\
- & \textbf{Avg} & \textbf{.81} & \textbf{.98} & \textbf{.879} & \textbf{.933} & \textbf{.84} & \textbf{.94} & \textbf{.882} & \textbf{.912} & \textbf{.91} & \textbf{.71} & \textbf{.87} \\
+\approach{} (GPT-5.6-luna) & Run 1 & .79 & .98 & .868 & .930 & .84 & .94 & .884 & .915 & .70 & .77 & .88 & .92 \\
+ & Run 2 & .79 & .97 & .865 & .921 & .83 & .94 & .880 & .915 & .76 & .81 & .89 & .93 \\
+ & Run 3 & .84 & .98 & .904 & .948 & .85 & .92 & .882 & .906 & .75 & .79 & .90 & .92 \\
+ & \textbf{Avg} & \textbf{.81} & \textbf{.98} & \textbf{.879} & \textbf{.933} & \textbf{.84} & \textbf{.94} & \textbf{.882} & \textbf{.912} & \textbf{.74} & \textbf{.79} & \textbf{.89} & \textbf{.92} \\
 \addlinespace[2pt]
-\Artemis{} (GPT-5.4) & -- & .93 & .76 & .836 & .790 & .94 & .78 & .849 & .804 & .71 & .35 & .47 \\
+\Artemis{} (GPT-5.6-terra) & Run 1 & .82 & .83 & .809 & .818 & .80 & .87 & .806 & .837 & .41 & .45 & .60 & .62 \\
+ & Run 2 & .79 & .84 & .796 & .816 & .80 & .87 & .811 & .840 & .45 & .53 & .64 & .69 \\
+ & Run 3 & .80 & .88 & .824 & .851 & .79 & .88 & .821 & .853 & .55 & .59 & .66 & .69 \\
+ & \textbf{Avg} & \textbf{.81} & \textbf{.85} & \textbf{.809} & \textbf{.828} & \textbf{.80} & \textbf{.87} & \textbf{.813} & \textbf{.844} & \textbf{.47} & \textbf{.52} & \textbf{.63} & \textbf{.66} \\
 \addlinespace[2pt]
-\TransArc{}$^{\dagger}$ & -- & .87 & .77 & .799 & .778 & .89 & .78 & .803 & .782 & .75 & .54 & .67 \\
+\Artemis{} (GPT-5.4) & -- & .93 & .76 & .836 & .790 & .94 & .78 & .849 & .804 & .41 & .35 & .51 & .47 \\
+\addlinespace[2pt]
+\TransArc{}$^{\dagger}$ & -- & .87 & .77 & .799 & .778 & .89 & .78 & .803 & .782 & .51 & .51 & .68 & .67 \\
 \bottomrule
 \end{tabular}
 }
-\par\smallskip\footnotesize $^{\dagger}$The doc-model columns for \TransArc{} are SWATTR, its deterministic doc-model stage (\TransArc{} has no standalone doc-model system). The size-aware columns shown here are the doc-code \fone-tail (worst/harmonic); SFM is the doc-model member, reported in \autoref{tab:rq2} and \autoref{tab:detailed-perproject}.
+\par\smallskip\footnotesize $^{\dagger}$The doc-model columns for \TransArc{} are SWATTR, its deterministic doc-model stage (\TransArc{} has no standalone doc-model system). The size-aware columns shown here are the doc-code component tail (worst and harmonic, each as \fone/\ftwo); CMR is the doc-model member, reported in \autoref{tab:rq2} and \autoref{tab:detailed-perproject}.
 \end{table*}

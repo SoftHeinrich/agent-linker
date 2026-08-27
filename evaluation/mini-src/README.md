@@ -17,14 +17,23 @@ system-pair reversals).
 
 | Task       | Metrics                                                                |
 |------------|-----------------------------------------------------------------------|
-| `sad-code` | file P/R/F1; per-component F1 (micro); **worst-component F1**; **harmonic-mean component F1**; sentence coverage; noise rate |
-| `sad-sam`  | link P/R/F1; sentence coverage; noise rate                            |
+| `sad-code` | file P/R/F1+F2; per-component F1+F2 (micro); **worst-component F1+F2**; **harmonic-mean component F1+F2** |
+| `sad-sam`  | link P/R/F1+F2; **component miss rate/count** (CMR%/CMC) |
 
-The **size-aware suite** (worst-component F1 + harmonic mean) is the paper's
+**Every F1 ships with its F2.** F2 is recall-weighted (a missed gold link costs
+4× a spurious one), which is the asymmetry that matters for recovered links: a
+reader can discard a wrong link but cannot see one that was never proposed. The
+paper reports the pair in every table, so each F1 key here has an `_f2` twin
+computed by the same aggregation — for the tail metrics that means the min and
+the harmonic mean *of the per-component F2s*, not the F2 of the worst-F1
+component.
+
+The **size-aware suite** (worst-component + harmonic mean) is the paper's
 `metric.tex` headline: it weights each architecture component equally rather
 than each link pair, so a system that abandons one documented component scores
-0 even when file-level F1 stays high. `sad-sam` keeps no per-component view —
-without enrolment it collapses onto link F1 (ρ = +1.00).
+0 even when file-level F1 stays high. Both flavours zero out on the same
+abandoned component. `sad-sam` keeps no per-component view — without enrolment it
+collapses onto link F1 (ρ = +1.00).
 
 Dropped as redundant (appendix-only): sentence F1, decision F1, weighted F1,
 MCC, MAP, ACF1, NDG, HUS, and the per-component *macro* mean (washes the tail
@@ -42,13 +51,21 @@ back out; ρ ≈ 0.85–0.96 with file F1).
   dropping them makes the component count the distinct architectural units
   (7/10/6/9/6) and removes a per-component distortion on MediaStore/TeaStore. The
   tail metrics are invariant to it (they don't change on any project).
-- **per-component F1 (micro):** one P/R/F1 over all `(sentence, component)` pairs.
-- **worst-component F1:** minimum per-component F1 over a project's gold
-  components — one abandoned component drives it to 0.
-- **harmonic-mean component F1:** harmonic mean of per-component F1 over gold
-  components; also 0 if any component is missed.
-- **sentence coverage:** fraction of gold sentences with ≥1 *correct* hit.
-- **noise rate:** mean over *predicted* sentences of FP/(TP+FP); lower is better.
+- **per-component F1 (micro):** one P/R/F1 over all `(sentence, component)` pairs;
+  `component_f2` is F2 of that same P/R pair.
+- **worst-component F1/F2:** minimum per-component F1 (resp. F2) over a project's
+  gold components — one abandoned component drives either to 0.
+- **harmonic-mean component F1/F2:** harmonic mean of per-component F1 (resp. F2)
+  over gold components; also 0 if any component is missed.
+- **component miss rate (CMR%) / count (CMC):** the doc-model size-aware metric —
+  share of gold (sentence, component) assignments whose component recovers no
+  correct link, and the integer count of such components. Reported in **percent**
+  (the paper's `\cmr` is the same quantity as a share in [0,1]); named
+  *silent-failure mass / SFM* until 2026-08-27.
+
+> A per-sentence **noise rate** (mean FP/(TP+FP) over predicted sentences) was
+> reported here until 2026-08-27. It was dropped: the paper never defined it, and
+> it is not 1 − precision, so the two figures could not be reconciled by a reader.
 
 ## Usage
 
@@ -81,6 +98,6 @@ to 1e-4. The goldens were validated at retirement against the then-canonical
 python3 mini-src/check.py     # → PASS
 ```
 
-Bundled TransArc headline averages: sad-code file F1 .80 / comp F1 .82 /
-worst-comp .54 / harmonic .67 / cov .75 / noise .13; sad-sam link F1 .80 /
-cov .79 / noise .14.
+Bundled TransArc headline averages: sad-code file F1 .80 (F2 .78) / comp F1 .82
+(F2 .77) / worst-comp F1 .54 (F2 .51) / harmonic F1 .67 (F2 .65) / cov .75;
+sad-sam link F1 .80 (F2 .78) / cov .79 / CMR 7.1%.

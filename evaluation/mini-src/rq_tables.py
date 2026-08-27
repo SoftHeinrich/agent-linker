@@ -12,13 +12,13 @@ on its own and the TeX step stays dumb.
 It performs NO metric computation; every cell is copied from an upstream CSV.
 Run the upstream generators first (see HOWTO-REGENERATE-RQ.md):
 
-    python3 mini-src/rq12.py            # RQ12_BIGTABLE.csv, RQ12_PERPROJECT.csv, RQ2_PANEL.csv
+    python3 mini-src/rq12.py            # RQ12_BIGTABLE.csv, RQ12_PERPROJECT.csv
     python3 mini-rq34/rq34.py           # rq3_validators.csv, rq4_variants.csv, rq4_linkers.csv, runs_summary
     python3 mini-rq34/rq34_rq2.py       # rq34_rq2_linkers.csv (+ _perproject); FULL slots
     #   + the two no-knowledge rq34_rq2 runs (see HOWTO §4) for the RQ4 "No knowledge" row
 
 Outputs (reports/tex_src/):
-    rq1.csv  rq2.csv  rq3.csv  rq4.csv                 -- the four BODY tables (GPT-5.4; rq3 = mean of 3 runs)
+    rq1.csv  rq2.csv  rq3.csv  rq4.csv                 -- the four BODY tables (body backend; rq3 = mean of 3 runs)
     rq3_runs.csv                   -- RQ3 appendix: both backends, each run + avg in ONE table
     bigtable_rq12_perproject.csv   -- RQ1+RQ2 appendix: per-project + Average row, both backends
     bigtable_rq12_perrun.csv       -- RQ1+RQ2 appendix: per-run + avg (approach), both backends
@@ -51,23 +51,33 @@ BODY_BACKEND = "terra"
 BACKENDS = ["terra", "luna"]
 BODY_SYSTEM = "approach (GPT-5.6-terra)"
 MIRROR_SYSTEM = "approach (GPT-5.6-luna)"
+# ArTEMiS on the body backend is the baseline the body tables compare against; the
+# released GPT-5.4 arm stays in the appendix big tables (see BIG_SYSTEMS).
+BASELINE_SYSTEM = "Artemis (GPT-5.6-terra)"
+BASELINE_RELEASED = "Artemis (GPT-5.4)"
+# The re-run baseline is stochastic exactly like \approach, so it is scored the same way:
+# three runs, and the tables read their mean. The released GPT-5.4 arm is a single
+# recorded run ("single") -- there is no second one to average.
+BASELINE_RUN = "average"
 
 # The judges/linkers this arm records, in pipeline order. Keys match rq34.py PHASES.
 JUDGES = ["full_name", "partial_name", "coref"]
-LINKER_SETS = ["FullName", "PartialName", "Coref"]     # rq34_rq2 doc-code set names
 LINKER_LABELS = ["FullName", "PartialName", "Coref"]   # rq4_linkers.csv linker column
+                                                       # (also the rq34_rq2 doc-code set names)
 RQ4_VARIANTS = ["Full", "FullName", "PartialName", "Coref", "No knowledge"]
 
-# The no-knowledge arm has NOT been re-run for s_linker92a: only the s21 lineage has
-# noknow runs (results/v2.6.6_s21_noknow_*). Rather than mix arms in one table, the
-# "No knowledge" row is dropped whenever its inputs are absent -- and its absence is
-# printed, so a missing row is never mistaken for a measured zero.
+# The no-knowledge sweep is measured per backend and lands in its own report dir.
+# A backend whose slot is absent has its "No knowledge" row dropped rather than
+# filled from another arm -- and the absence is printed, so a missing row is never
+# mistaken for a measured zero.
 def noknow_available(backend):
     return (RQ34_NOKNOW[backend] / "rq4_variants.csv").is_file()
 
 # Whole doc-to-code suite, in display order (matches rq34_rq2 PANEL / RQ12 columns).
-DC_SUITE = ["file_precision", "file_recall", "file_f1", "file_f2", "component_micro_f1",
-            "worst_component_f1", "harmonic_component_f1", "sentence_coverage", "noise_rate"]
+DC_SUITE = ["file_precision", "file_recall", "file_f1", "file_f2",
+            "component_micro_f1", "component_micro_f2",
+            "worst_component_f1", "worst_component_f2",
+            "harmonic_component_f1", "harmonic_component_f2"]
 
 
 # --------------------------------------------------------------------------- #
@@ -101,12 +111,12 @@ def i(v):
 
 
 # --------------------------------------------------------------------------- #
-# RQ1 / RQ2 body tables (GPT-5.4)
+# RQ1 / RQ2 body tables (body backend)
 # --------------------------------------------------------------------------- #
 def build_rq1(big):
     """One row per display system; SWATTR/TransArC split the bundled TransArc row."""
     ap = big[(BODY_SYSTEM, "average")]
-    ar = big[("Artemis (GPT-5.4)", "single")]
+    ar = big[(BASELINE_SYSTEM, BASELINE_RUN)]
     tx = big[("TransArC", "single")]
     cols = ["dm_p", "dm_r", "dm_f1", "dm_f2", "dc_p", "dc_r", "dc_f1", "dc_f2"]
 
@@ -133,37 +143,36 @@ def build_rq1(big):
 
 
 def build_rq2(big):
-    """RQ2 size-aware suite clustered by task: doc-model (link \\fone + sent cov + SFM) and
-    doc-code (file \\fone + the doc-code size-aware metrics), GPT-5.4."""
+    """RQ2 size-aware suite clustered by task: doc-model (link \\fone/\\ftwo + CMR)
+    and doc-code (file \\fone/\\ftwo + the doc-code size-aware metrics, each also as
+    an \\ftwo), body backend."""
     rows = []
     for label, key in (("approach", (BODY_SYSTEM, "average")),
-                       ("Artemis", ("Artemis (GPT-5.4)", "single")),
+                       ("Artemis", (BASELINE_SYSTEM, BASELINE_RUN)),
                        ("TransArC", ("TransArC", "single"))):
         s = big[key]
         rows.append({"system": label,
                      "dm_link_f1": s["doc_to_model_link_f1"],
                      "dm_link_f2": s["doc_to_model_link_f2"],
-                     "dm_sentence_coverage": s["doc_to_model_sentence_coverage"],
-                     "silent_failure_mass": s["doc_to_model_silent_failure_mass"],
+                     "component_miss_rate": s["doc_to_model_component_miss_rate"],
                      "dc_file_f1": s["doc_to_code_file_f1"],
                      "dc_file_f2": s["doc_to_code_file_f2"],
-                     "dc_sentence_coverage": s["doc_to_code_sentence_coverage"],
                      "worst_component_f1": s["doc_to_code_worst_component_f1"],
-                     "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"]})
+                     "worst_component_f2": s["doc_to_code_worst_component_f2"],
+                     "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"],
+                     "harmonic_component_f2": s["doc_to_code_harmonic_component_f2"]})
     write_csv("rq2.csv",
-              ["system", "dm_link_f1", "dm_link_f2", "dm_sentence_coverage", "silent_failure_mass",
-               "dc_file_f1", "dc_file_f2", "dc_sentence_coverage",
-               "worst_component_f1", "harmonic_component_f1"],
+              ["system", "dm_link_f1", "dm_link_f2", "component_miss_rate",
+               "dc_file_f1", "dc_file_f2",
+               "worst_component_f1", "worst_component_f2",
+               "harmonic_component_f1", "harmonic_component_f2"],
               rows)
 
 
 # --------------------------------------------------------------------------- #
 # RQ3 confusion matrix (per-judge): mean over the three runs for the body table
-# and the Claude mirror, plus a per-run breakdown for the appendix. Both backends.
+# and the mirror backend, plus a per-run breakdown for the appendix. Both backends.
 # --------------------------------------------------------------------------- #
-PROJ_DISPLAY = {"mediastore": "MediaStore", "teastore": "TeaStore", "teammates": "Teammates",
-                "bigbluebutton": "BigBlueButton", "jabref": "JabRef"}
-
 RQ3_RUNS = ["run1", "run2", "run3"]
 # One row per judge (plus the whole stack); counts then the \fone/\ftwo the pipeline
 # loses when that judge is switched off.
@@ -221,7 +230,7 @@ def build_rq3_runs(out):
 
 
 # --------------------------------------------------------------------------- #
-# RQ4 body table (GPT-5.4): the four ablation variants on the size-aware suite
+# RQ4 body table (body backend): the ablation variants on the size-aware suite
 # --------------------------------------------------------------------------- #
 def _rq4_variant_cells(backend, run, dm_full, dm_noknow, size_link, size_noknow, uniq):
     """Assemble the RQ4 variant rows for one backend and run ('average' or runN):
@@ -276,10 +285,11 @@ def build_rq4():
     rows = _rq4_variant_cells(BODY_BACKEND, "average", dm_full, dm_noknow, size_link,
                               size_noknow, uniq)
     fields = (["variant", "doc_to_model_macro_f1", "doc_to_model_macro_f2"]
-              + [f"dc_{c}" for c in ("file_f1", "file_f2", "sentence_coverage",
-                                     "worst_component_f1", "harmonic_component_f1")]
+              + [f"dc_{c}" for c in ("file_f1", "file_f2",
+                                     "worst_component_f1", "worst_component_f2",
+                                     "harmonic_component_f1", "harmonic_component_f2")]
               + ["unique_tps"])
-    # Body table shows only the headline tail metrics; keep the four key ones.
+    # Body table shows only the headline tail metrics (each as \fone + \ftwo).
     rows = [{k: r[k] for k in fields} for r in rows]
     write_csv("rq4.csv", fields, rows)
 
@@ -288,14 +298,14 @@ def build_rq4():
 # RQ1+RQ2 big tables (whole suite, both backends): average + per-project
 # --------------------------------------------------------------------------- #
 SUITE_COLS = (["doc_to_model_link_precision", "doc_to_model_link_recall", "doc_to_model_link_f1",
-               "doc_to_model_link_f2", "doc_to_model_sentence_coverage",
-               "doc_to_model_noise_rate", "doc_to_model_silent_failure_mass"]
+               "doc_to_model_link_f2", "doc_to_model_component_miss_rate"]
               + [f"doc_to_code_{c}" for c in DC_SUITE])
 
 BIG_SYSTEMS = [  # (display label, (system, run) key into RQ12_BIGTABLE)
     (BODY_SYSTEM,          (BODY_SYSTEM, "average")),
     (MIRROR_SYSTEM,        (MIRROR_SYSTEM, "average")),
-    ("Artemis (GPT-5.4)",  ("Artemis (GPT-5.4)", "single")),
+    (BASELINE_SYSTEM,      (BASELINE_SYSTEM, BASELINE_RUN)),
+    (BASELINE_RELEASED,    (BASELINE_RELEASED, "single")),
     ("TransArC",           ("TransArC", "single")),
 ]
 
@@ -314,18 +324,20 @@ def build_bigtable_rq12_perproject(big):
     write_csv("bigtable_rq12_perproject.csv", ["system", "project"] + SUITE_COLS, rows)
 
 
-# (display label, key, runs) -- the approach is run three times; the baselines are deterministic.
+# (display label, key, runs) -- \approach and the re-run \Artemis{} baseline are both
+# stochastic and run three times; TransArC and the released GPT-5.4 arm are single runs.
 PERRUN_SYSTEMS = [
     (BODY_SYSTEM,          BODY_SYSTEM,          ["run1", "run2", "run3", "average"]),
     (MIRROR_SYSTEM,        MIRROR_SYSTEM,        ["run1", "run2", "run3", "average"]),
-    ("Artemis (GPT-5.4)",  "Artemis (GPT-5.4)",  ["single"]),
+    (BASELINE_SYSTEM,      BASELINE_SYSTEM,      ["run1", "run2", "run3", "average"]),
+    (BASELINE_RELEASED,    BASELINE_RELEASED,    ["single"]),
     ("TransArC",           "TransArC",           ["single"]),
 ]
 
 
 def build_bigtable_rq12_perrun(big):
-    """Whole suite per run for the (stochastic) approach on both backends, with the mean,
-    plus the deterministic baselines once. Aggregate over the five projects."""
+    """Whole suite per run for the stochastic systems (the approach on both backends and
+    the re-run \\Artemis{} baseline), each with its mean, plus the single-run baselines. Aggregate over the five projects."""
     rows = []
     for label, sys_key, runs in PERRUN_SYSTEMS:
         for run in runs:
@@ -392,7 +404,8 @@ def build_bigtable_rq4_perproject():
 RQ4_PERRUN = [("run1", "rq4_run1.csv"), ("run2", "rq4_run2.csv"),
               ("run3", "rq4_run3.csv"), ("average", "rq4_runavg.csv")]
 RQ4_RUN_DC = ["file_precision", "file_recall", "file_f1", "file_f2",
-              "sentence_coverage", "worst_component_f1", "harmonic_component_f1"]
+              "worst_component_f1", "worst_component_f2",
+              "harmonic_component_f1", "harmonic_component_f2"]
 
 
 def build_rq4_perrun():

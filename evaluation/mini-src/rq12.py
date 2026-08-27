@@ -12,23 +12,21 @@ and writes ONE wide CSV whose columns are the union of both tasks.
 That single big table is a superset of every RQ1/RQ2 cell:
   * RQ1 doc-to-model (tab:rq1-sadsam) = columns
     ``doc_to_model_link_precision``, ``doc_to_model_link_recall``,
-    ``doc_to_model_link_f1``. The doc-model group also carries the size-aware
-    Silent-Failure Mass: ``doc_to_model_silent_failure_mass`` (%) +
-    ``doc_to_model_silent_failure_count`` (added 2026-06-30, doc-model only;
-    the doc-code suite keeps worst/harmonic and gets NO SFM column).
+    ``doc_to_model_link_f1``/``_f2``. The doc-model group also carries the size-aware
+    Component Miss Rate: ``doc_to_model_component_miss_rate`` (%) +
+    ``doc_to_model_component_miss_count`` (added 2026-06-30, doc-model only;
+    the doc-code suite keeps worst/harmonic and gets NO CMR column).
   * RQ1 doc-to-code  (tab:rq1-sadcode) = columns
     ``doc_to_code_file_precision``, ``doc_to_code_file_recall``,
-    ``doc_to_code_file_f1``.
-  * RQ2 size-aware panel (tab:rq2-summary) =
-    ``doc_to_code_file_f1``, ``doc_to_code_sentence_coverage``,
-    ``doc_to_code_worst_component_f1``, ``doc_to_code_harmonic_component_f1``.
+    ``doc_to_code_file_f1``/``_f2``.
+  * RQ2 size-aware panel (tab:rq2) =
+    ``doc_to_code_file_f1``, ``doc_to_code_worst_component_f1``,
+    ``doc_to_code_harmonic_component_f1``.
 
-A second, focused CSV (``reports/RQ2_PANEL.csv``) is also emitted for RQ2: it
-lists those four columns for BOTH approach backends (GPT-5.4 **and Claude/sonnet**,
-the latter not in the current paper table), the deltas vs the strongest baseline,
-and a row flagged ``OUTDATED`` carrying the paper's archived approach numbers
-(.62/.71) — produced from a deleted run set, kept only so the stale values are
-visibly marked against the reproducible ones.
+Every F1 column above has an ``_f2`` twin beside it (recall-weighted \ftwo, the
+paper reports the pair everywhere): file, link, component-micro, worst-component
+and harmonic-component. Both flavours come out of the same
+``metrics.compute_sad_{code,sam}`` call, so nothing here re-derives an F.
 
 It generates only the numbers (CSVs); it does not write .tex. No new metric
 code lives here — every cell comes from ``metrics.compute_sad_{code,sam}``, so
@@ -45,14 +43,11 @@ Usage
 -----
     python3 mini-src/rq12.py                      # -> reports/RQ12_BIGTABLE.csv (+ stdout)
     python3 mini-src/rq12.py --csv /tmp/big.csv
-    python3 mini-src/rq12.py --lissa              # also include the LiSSA row(s)
 
 Provenance note (worst/harmonic, the approach rows): these are recomputed here
-from the bundled three-run ``aalinker-composed`` dump (mean of the three runs).
-The paper's RQ2 worst/harmonic for the approach (.62/.71) were produced by a
-now-deleted script over a now-deleted run set (``v2.6.5_s20union_gpt_re_medium``);
-the file-F1 still matches (~.874), but the run-sensitive tail does not. The
-values emitted here are the reproducible ones from surviving data.
+from the recorded three-run ``aalinker-composed`` dump (mean of the three runs),
+not copied from any earlier table — the tail metrics are run-sensitive, so they
+are only meaningful next to the run set they came from.
 """
 
 import argparse
@@ -67,55 +62,23 @@ import metrics as m   # noqa: E402  (mini-src/metrics.py — sole metric impl + 
 
 SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", m._ARDOCO_HOME / "sota/recovered-links"))
 
-# ── System roster (matches tables/cross_system.tex) ───────────────────────────
+# ── System roster ─────────────────────────────────────────────────────────────
 # Each entry resolves a per-(run,)project file path for both tasks. `runs=None`
 # means single-shot (deterministic / SOTA); a run list means mean-of-runs.
 # `aalinker`/`aalinker-composed` are the recovered doc-to-model / composed
 # doc-to-code dumps. SWATTR is TransArC's deterministic doc-to-model stage
 # (TransArC has no standalone doc-to-model system).
 #
-# CANONICAL = S21 (s_linker21, layered no-reasoning validator), N=3. The bare
-# "approach (...)" rows are S21 — the configuration the paper reports (GPT-5.4 =
-# main body, Claude = appendix mirror); the `*_s21` aalinker slots are built by
-# build_s21_dump.py. The prior canonical s_linker20_union (the `*_full` slots,
-# the NO-REASONING extract from agent-linker/results/v2.6.6_extracts) is kept as
-# the "approach s20union (...)" rows for side-by-side comparison only. The paper's
-# RQ2 numbers came from a now-deleted reasoning=medium slot — see PAPER_RQ2_OUTDATED.
-ROSTER = [
-    # Canonical: s_linker21 (S21), N=3 — bare "approach" = S21 everywhere downstream.
-    {"label": "approach (GPT-5.4)", "backend": "gpt-5.4", "runs": ["run1", "run2", "run3"],
-     "sad-sam":  "model-doc/aalinker/gpt-5.4_s21/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/gpt-5.4_s21/{run}/{project}.csv"},
-    {"label": "approach (Claude)",  "backend": "claude",  "runs": ["run1", "run2", "run3"],
-     "sad-sam":  "model-doc/aalinker/sonnet_s21/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/sonnet_s21/{run}/{project}.csv"},
-    # Prior canonical, kept for side-by-side comparison: s_linker20_union (`*_full`).
-    {"label": "approach s20union (GPT-5.4)", "backend": "gpt-5.4", "runs": ["run1", "run2", "run3"],
-     "sad-sam":  "model-doc/aalinker/gpt-5.4_full/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/gpt-5.4_full/{run}/{project}.csv"},
-    {"label": "approach s20union (Claude)", "backend": "claude", "runs": ["run1", "run2", "run3"],
-     "sad-sam":  "model-doc/aalinker/sonnet_full/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/sonnet_full/{run}/{project}.csv"},
-    {"label": "Artemis (GPT-5.4)",  "backend": "gpt-5.4", "runs": None,
-     "sad-sam":  "model-doc/artemis-{project}-gpt-5.4.csv",
-     "sad-code": "doc-code/artemis-{project}-gpt-5.4.csv"},
-    {"label": "TransArC",           "backend": "deterministic", "runs": None,
-     "sad-sam":  "model-doc/swattr-{project}.csv",        # SWATTR = TransArC doc-model
-     "sad-code": "doc-code/transarc-{project}.csv"},
-]
-LISSA = {"label": "LiSSA (gpt-5-mini)", "backend": "gpt-5-mini", "runs": None,
-         "sad-sam":  "model-doc/lissa-{project}-gpt-5-mini.csv",
-         "sad-code": "doc-code/lissa-{project}-gpt-5-mini.csv"}
-
-# The s_linker92a arms from the agent-linker regex round (entity extraction as a scan),
-# scored through the same roster machinery.  Their slots are built by
-# mini-src/build_alinker_extracts.py (run CSVs -> neutral extracts) piped into
-# build_s21_dump.py, exactly as the s21 slots are.
+# CANONICAL = s_linker92a (entity extraction as a scan), N=3, on two GPT-5.6
+# backends: terra = paper body, luna = the second-backend mirror. Their sota slots
+# are built by mini-src/build_alinker_extracts.py (run CSVs -> neutral extracts)
+# piped into mini-src/build_dump.py.
 #
-# THESE ARE THE ARMS THE PAPER REPORTS (2026-08-26): terra = main body, luna = the
-# second-backend mirror, replacing the s21 GPT-5.4/Claude pair.  The s21 rows stay in
-# the roster as the prior canonical, for the side-by-side the rebase has to justify.
-S92A = [
+# The retired arms (s_linker21 `*_s21`, s_linker20_union `*_full`) were dropped
+# from the roster on 2026-08-26: nothing downstream read their rows once the paper
+# rebased onto s92a. Their slots are still in the sota dump, so scoring them again
+# is a matter of restoring the entries — see this file's git history.
+ROSTER = [
     {"label": "approach (GPT-5.6-terra)", "backend": "gpt-5.6-terra",
      "runs": ["run1", "run2", "run3"],
      "sad-sam":  "model-doc/aalinker/terra_s92a/{run}/{project}.csv",
@@ -124,42 +87,31 @@ S92A = [
      "runs": ["run1", "run2", "run3"],
      "sad-sam":  "model-doc/aalinker/luna_s92a/{run}/{project}.csv",
      "sad-code": "doc-code/aalinker-composed/luna_s92a/{run}/{project}.csv"},
+    # ArTEMiS twice: once on the backend \approach uses, once at the authors' released
+    # configuration. The matched-backend row is the one the body reports -- comparing a
+    # GPT-5.6 approach against a GPT-5.4 baseline confounds the workflow with the model.
+    # The released row stays in the roster so the appendix keeps the published arm and a
+    # reader can see what the backend change alone costs the baseline (it trades precision
+    # for recall: F1 down, F2 up). The matched-backend arm is run three times like the
+    # approach rows -- each with its own LLM cache dir, or the runs replay each other --
+    # while the released GPT-5.4 arm is the authors' single published run.
+    {"label": "Artemis (GPT-5.6-terra)", "backend": "gpt-5.6-terra",
+     "runs": ["run1", "run2", "run3"],
+     "sad-sam":  "model-doc/artemis/terra_5.6/{run}/{project}.csv",
+     "sad-code": "doc-code/artemis/terra_5.6/{run}/{project}.csv"},
+    {"label": "Artemis (GPT-5.4)",  "backend": "gpt-5.4", "runs": None,
+     "sad-sam":  "model-doc/artemis-{project}-gpt-5.4.csv",
+     "sad-code": "doc-code/artemis-{project}-gpt-5.4.csv"},
+    {"label": "TransArC",           "backend": "deterministic", "runs": None,
+     "sad-sam":  "model-doc/swattr-{project}.csv",        # SWATTR = TransArC doc-model
+     "sad-code": "doc-code/transarc-{project}.csv"},
 ]
 
 # The arm the paper's body tables report, and the mirror backend beside it.
 BODY_ARM = "approach (GPT-5.6-terra)"
 MIRROR_ARM = "approach (GPT-5.6-luna)"
-
-# The paper's RQ2 approach numbers (working/table/rq2-results.tex) came from the
-# WRONG-CONFIG run: the deleted v2.6.5_s20union_gpt_re_medium slot, i.e. gpt-5.4
-# with reasoning=medium (run_s20union_gpt_re_medium_n3.sh), scored by the deleted
-# /tmp/v265.py. The correct input is the newest NO-REASONING run (v2.6.6_extracts
-# /gpt; see the roster note above). file-F1 is config-robust so it still matches
-# (~.87), but the run-sensitive tail (worst/harmonic) does not. Carried here ONLY
-# to flag these as OUTDATED next to the reproducible no-reasoning values.
-PAPER_RQ2_OUTDATED = {  # approach, gpt-5.4 reasoning=medium, doc-to-code
-    "doc_to_code_file_f1": 0.87,
-    "doc_to_code_file_f2": "",      # not recoverable: the run that produced it is deleted
-    "doc_to_code_sentence_coverage": 0.80,
-    "doc_to_code_worst_component_f1": 0.62,
-    "doc_to_code_harmonic_component_f1": 0.71,
-}
-
-# RQ2 size-aware panel: doc-to-code, both approach backends + the two baselines.
-RQ2_SYSTEMS = ["TransArC", "Artemis (GPT-5.4)", "approach (GPT-5.6-terra)", "approach (GPT-5.6-luna)", "approach (GPT-5.4)", "approach (Claude)", "approach s20union (GPT-5.4)", "approach s20union (Claude)"]
-# The approach rows build_rq2_panel emits, in order: the two reported s92a arms first,
-# then the prior canonical s21 pair and the s20union pair for comparison.
-RQ2_APPROACH_LABELS = ["approach (GPT-5.6-terra)", "approach (GPT-5.6-luna)",
-                       "approach (GPT-5.4)", "approach (Claude)",
-                       "approach s20union (GPT-5.4)", "approach s20union (Claude)"]
-
-RQ2_COLS = [
-    "doc_to_code_file_f1",
-    "doc_to_code_file_f2",
-    "doc_to_code_sentence_coverage",
-    "doc_to_code_worst_component_f1",
-    "doc_to_code_harmonic_component_f1",
-]
+# The baseline the Delta rows subtract: ArTEMiS on the SAME backend as BODY_ARM.
+BASELINE_ARM = "Artemis (GPT-5.6-terra)"
 
 # Combined big-table column layout: friendly name -> (task, metric key in PANELS).
 SS = "sad-sam"
@@ -169,19 +121,18 @@ COLUMNS = [
     ("doc_to_model_link_recall", SS, "link_r"),
     ("doc_to_model_link_f1", SS, "link_f1"),
     ("doc_to_model_link_f2", SS, "link_f2"),
-    ("doc_to_model_sentence_coverage", SS, "sentence_coverage"),
-    ("doc_to_model_noise_rate", SS, "noise_rate"),
-    ("doc_to_model_silent_failure_mass", SS, "silent_failure_mass"),
-    ("doc_to_model_silent_failure_count", SS, "silent_failure_count"),
+    ("doc_to_model_component_miss_rate", SS, "component_miss_rate"),
+    ("doc_to_model_component_miss_count", SS, "component_miss_count"),
     ("doc_to_code_file_precision", SC, "file_p"),
     ("doc_to_code_file_recall", SC, "file_r"),
     ("doc_to_code_file_f1", SC, "file_f1"),
     ("doc_to_code_file_f2", SC, "file_f2"),
     ("doc_to_code_component_micro_f1", SC, "component_f1"),
+    ("doc_to_code_component_micro_f2", SC, "component_f2"),
     ("doc_to_code_worst_component_f1", SC, "worst_component_f1"),
+    ("doc_to_code_worst_component_f2", SC, "worst_component_f2"),
     ("doc_to_code_harmonic_component_f1", SC, "harmonic_component_f1"),
-    ("doc_to_code_sentence_coverage", SC, "sentence_coverage"),
-    ("doc_to_code_noise_rate", SC, "noise_rate"),
+    ("doc_to_code_harmonic_component_f2", SC, "harmonic_component_f2"),
 ]
 
 
@@ -308,9 +259,6 @@ def summary_row(rows, label):
     return next((r for r in rows if r["system"] == label and r["run"] in ("average", "single")), None)
 
 
-def row_for(rows, label, run):
-    return next((r for r in rows if r["system"] == label and r["run"] == run), None)
-
 
 def delta_row(rows, a_label, b_label):
     """Δ row (a − b), per the RQ2 panel's Δ = approach − Artemis column."""
@@ -351,108 +299,40 @@ def write_csv(rows, path):
             w.writerow([fmt(r[k]) for k in fields])
 
 
-def build_rq2_panel(rows):
-    """RQ2 size-aware rows (doc-to-code), approach runs + averages + deltas."""
-    panel = []
-    for label in ("TransArC", "Artemis (GPT-5.4)"):
-        r = row_for(rows, label, "single")
-        if r is None:
-            continue
-        panel.append({"system": label, "run": "single",
-                      **{c: r[c] for c in RQ2_COLS}, "note": ""})
-
-    approach_runs = ["run1", "run2", "run3", "average"]
-    for label in RQ2_APPROACH_LABELS:
-        for run in approach_runs:
-            r = row_for(rows, label, run)
-            if r is not None:
-                panel.append({"system": label, "run": run,
-                              **{c: r[c] for c in RQ2_COLS}, "note": ""})
-
-    art = row_for(rows, "Artemis (GPT-5.4)", "single")
-    if art is not None:
-        for label in RQ2_APPROACH_LABELS:
-            for run in approach_runs:
-                r = row_for(rows, label, run)
-                if r is None:
-                    continue
-                panel.append({"system": f"Delta ({label} - Artemis)",
-                              "run": run,
-                              **{c: r[c] - art[c] for c in RQ2_COLS}, "note": ""})
-    panel.append({"system": "paper approach (GPT-5.4)", "run": "paper", **PAPER_RQ2_OUTDATED,
-                  "note": "OUTDATED: gpt reasoning=medium (deleted v2.6.5_s20union_gpt_re_medium); live rows = no-reasoning v2.6.6"})
-    return panel
-
-
-def print_rq2(panel):
-    print("\nRQ2 size-aware panel (doc-to-code) -- now incl. the Claude/sonnet row")
-    w = max(len(r["system"]) for r in panel) + 1
-    widths = [max(len(c), 8) + 2 for c in RQ2_COLS]
-    head = "system".ljust(w) + "run".rjust(9) + "".join(c.rjust(width) for c, width in zip(RQ2_COLS, widths)) + "  note"
-    print(head)
-    print("-" * (len(head)))
-    for r in panel:
-        print(r["system"].ljust(w) + r["run"].rjust(9)
-              + "".join(fmt(r[c]).rjust(width) for c, width in zip(RQ2_COLS, widths))
-              + ("  " + r["note"] if r["note"] else ""))
-
-
-def write_rq2_csv(panel, path):
-    fields = ["system", "run"] + RQ2_COLS + ["note"]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="") as f:
-        w = csv.writer(f, lineterminator="\n")
-        w.writerow(fields)
-        for r in panel:
-            w.writerow([fmt(r[k]) for k in fields])
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--csv", default=None,
                     help="output CSV path (default: <evaluation>/reports/RQ12_BIGTABLE.csv)")
-    ap.add_argument("--rq2-csv", default=None,
-                    help="RQ2 panel CSV path (default: reports/RQ2_PANEL.csv, or next to --csv)")
     ap.add_argument("--perproject-csv", default=None,
                     help="per-project full-suite CSV path "
                          "(default: reports/RQ12_PERPROJECT.csv, or next to --csv)")
-    ap.add_argument("--lissa", action="store_true",
-                    help="also include LiSSA; aborts unless all required project files are present")
-    ap.add_argument("--s92a", action="store_true",
-                    help="deprecated no-op: the s_linker92a arms are always scored now")
     args = ap.parse_args()
 
-    roster = S92A + ROSTER + ([LISSA] if args.lissa else [])
-    rows = [row for system in roster for row in build_rows(system)]
+    rows = [row for system in ROSTER for row in build_rows(system)]
 
     big = list(rows)
     for arm in (BODY_ARM, MIRROR_ARM):
-        d = delta_row(rows, arm, "Artemis (GPT-5.4)")
+        d = delta_row(rows, arm, BASELINE_ARM)
         if d:
             big.append(d)
     print_table(big)
     print(f"\nProvenance: {SOTA_LINKS}  (approach rows = run1/run2/run3 plus average)")
-    print("RQ1 doc-to-model = doc_to_model_link_precision/recall/f1; "
-          "RQ1 doc-to-code = doc_to_code_file_precision/recall/f1.")
-    print("RQ2 panel = doc_to_code_file_f1, doc_to_code_sentence_coverage, "
-          "doc_to_code_worst_component_f1, doc_to_code_harmonic_component_f1.")
-
-    panel = build_rq2_panel(rows)
-    print_rq2(panel)
+    print("RQ1 doc-to-model = doc_to_model_link_precision/recall/f1/f2; "
+          "RQ1 doc-to-code = doc_to_code_file_precision/recall/f1/f2.")
+    print("RQ2 size-aware = doc_to_code_file_f1/f2, "
+          "doc_to_code_{worst,harmonic}_component_f1/f2, "
+          "doc_to_model_component_miss_rate.")
 
     reports = m._ARDOCO_HOME / "transarc-emp/reports"
     out = Path(args.csv) if args.csv else reports / "RQ12_BIGTABLE.csv"
     write_csv(big, out)
-    out2 = Path(args.rq2_csv) if args.rq2_csv else (
-        out.parent / "RQ2_PANEL.csv" if args.csv else reports / "RQ2_PANEL.csv")
-    write_rq2_csv(panel, out2)
 
-    pp_rows = [row for system in roster for row in build_perproject_rows(system)]
-    out3 = Path(args.perproject_csv) if args.perproject_csv else (
+    pp_rows = [row for system in ROSTER for row in build_perproject_rows(system)]
+    out2 = Path(args.perproject_csv) if args.perproject_csv else (
         out.parent / "RQ12_PERPROJECT.csv" if args.csv else reports / "RQ12_PERPROJECT.csv")
-    write_perproject_csv(pp_rows, out3)
-    print(f"\n[rq12] wrote {out}\n[rq12] wrote {out2}\n[rq12] wrote {out3}", file=sys.stderr)
+    write_perproject_csv(pp_rows, out2)
+    print(f"\n[rq12] wrote {out}\n[rq12] wrote {out2}", file=sys.stderr)
 
 
 if __name__ == "__main__":

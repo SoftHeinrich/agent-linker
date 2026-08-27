@@ -72,8 +72,9 @@ the prior `s_linker20_union` / `v2.6.5_s20union*` slots for a side-by-side).
 - **RQ2-lens companion.** `rq34_rq2.py` composes the RQ3/RQ4 SAD-SAM link sets
   through recovered SAM-CODE links and scores them with the RQ2 doc-to-code
   metric suite, exposing whether validator/linker effects remain visible in
-  file F1, sentence coverage, noise, worst-component F1, and harmonic-component
-  F1.
+  file F1/F2, sentence coverage, noise, worst-component F1/F2, and
+  harmonic-component F1/F2 (the panel is copied from `mini-src/metrics.py`, which
+  pairs every F1 with its recall-weighted F2).
 
 ## Vendored types (copied, not imported)
 
