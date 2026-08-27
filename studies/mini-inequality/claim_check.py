@@ -6,18 +6,22 @@ computed value, labels it MATCH / MISMATCH / STALE (or SYSTEM-SPECIFIC for the
 excluded TransArc cascade), resolves the gold-derivable `XX` placeholders in
 `intro.tex`, and writes `CLAIM_CHECK.md`.
 
-It REUSES the study's own engine (`import inequality`) — self-contained reuse, not
-a cross-module import. It imports nothing from `src/` or `mini-src/` and performs
-no new dataset measurement (the numbers come from the Phase-1 engine, which is
-itself gate-verified against writing/eval.tex).
+It REUSES the study's engine (`import inequality` from `evaluation/mini-inequality/`)
+and performs no new dataset measurement: the numbers are the Phase-1 engine's, which
+is itself gate-verified against writing/eval.tex. Nothing from `src/` or `mini-src/`.
 
     python3 claim_check.py        # write CLAIM_CHECK.md; exit 1 on unexpected mismatch
 """
 
 import sys
 from collections import Counter, defaultdict
+from pathlib import Path
 
-import inequality as ineq
+# The engine stayed in ``evaluation/`` because ``motivation.py`` beside it writes a paper
+# table; this audit did not, so it lives here. Reach back for the engine rather than
+# forking it, or the audited values stop being the reported ones.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "evaluation" / "mini-inequality"))
+import inequality as ineq  # noqa: E402
 
 P = list(ineq.PROJECTS)
 REPORT = ineq.Path(__file__).resolve().parent / "CLAIM_CHECK.md"

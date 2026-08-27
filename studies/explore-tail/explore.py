@@ -17,14 +17,13 @@ import math
 import sys
 from collections import defaultdict
 from pathlib import Path
+from _roots import MINI_SRC, SOTA    # shared roots (see _roots.py)
 
 HERE = Path(__file__).resolve().parent
-MINI = HERE.parent / "mini-src"
-sys.path.insert(0, str(MINI))
+sys.path.insert(0, str(MINI_SRC))
 import metrics as m            # loaders, prf, enrollment chain
-from rq2_corr import spearman  # tie-aware stdlib Spearman
+from metrics import spearman   # tie-aware stdlib Spearman
 
-SOTA = Path("/mnt/hostshare/ardoco-home/sota-recovered-links")
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 
 # 6 systems x 5 projects = 30 cells (aalinker = mean of 3 runs; baselines single).

@@ -11,11 +11,11 @@ bar just trades independence for sharpness. Stdlib only."""
 import sys
 from collections import defaultdict
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-src"))
+from _roots import MINI_SRC, SOTA    # shared roots (see _roots.py)
+sys.path.insert(0, str(MINI_SRC))
 import metrics as m
-from rq2_corr import spearman
+from metrics import spearman
 
-SOTA = Path("/mnt/hostshare/ardoco-home/sota-recovered-links")
 PROJECTS = ["mediastore","teastore","teammates","bigbluebutton","jabref"]
 SYSTEMS = [
     ("S21 GPT","gpt-5.4_s21",["run1","run2","run3"]),

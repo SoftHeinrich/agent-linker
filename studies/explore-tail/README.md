@@ -6,8 +6,10 @@ correlation to the reference **link/file F1**, across 30 (system, project) cells
 (6 systems × 5 projects; aalinker = mean of 3 runs, baselines single-shot), for
 both `sad-sam` (doc-model) and `sad-code` (doc-code).
 
-Run: `python3 explore-tail/explore.py` → `reports/{cells,corr}_{sad-sam,sad-code}.csv`.
-Stdlib only; reuses `mini-src/metrics.py` loaders + `rq2_corr.spearman`.
+Run: `python3 studies/explore-tail/explore.py` → `reports/{cells,corr}_{sad-sam,sad-code}.csv`.
+Stdlib only; reuses `evaluation/mini-src/metrics.py` loaders + `metrics.spearman`.
+Roots (scorer, phase-state reader, link dump) come from `_roots.py`; override the
+dump with `$SOTA_LINKS`.
 
 ## Question
 

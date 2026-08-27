@@ -9,12 +9,12 @@ saturated). 30 cells, 6 systems x 5 projects."""
 import math, sys
 from collections import defaultdict
 from pathlib import Path
+from _roots import MINI_SRC, SOTA    # shared roots (see _roots.py)
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent / "mini-src"))
+sys.path.insert(0, str(MINI_SRC))
 import metrics as m
-from rq2_corr import spearman
+from metrics import spearman
 
-SOTA = Path("/mnt/hostshare/ardoco-home/sota-recovered-links")
 PROJECTS = ["mediastore","teastore","teammates","bigbluebutton","jabref"]
 SYSTEMS = [
     ("S21 GPT","gpt-5.4_s21",["run1","run2","run3"]),

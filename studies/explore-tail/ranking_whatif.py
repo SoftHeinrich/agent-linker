@@ -19,10 +19,10 @@ GPT-5.4 S21, mean of run1/run2/run3, doc-model (SAD-SAM)."""
 import os, sys
 from collections import defaultdict
 from pathlib import Path
+from _roots import MINI_RQ34, SOTA    # shared roots (see _roots.py)
 
-SOTA = Path("/mnt/hostshare/ardoco-home/sota-recovered-links")
 os.environ.setdefault("RQ34_OPENAI_SLOT", str(SOTA / "phase-cache-s21/v2.6.6_s21_gpt"))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-rq34"))
+sys.path.insert(0, str(MINI_RQ34))
 import rq34
 rq34.install_unpickler()
 

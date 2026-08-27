@@ -7,10 +7,10 @@ Emits ASCII + a LaTeX float."""
 import sys
 from collections import defaultdict
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-src"))
+from _roots import MINI_SRC, SOTA    # shared roots (see _roots.py)
+sys.path.insert(0, str(MINI_SRC))
 import metrics as m
 
-SOTA = Path("/mnt/hostshare/ardoco-home/sota-recovered-links")
 PROJ = ["mediastore","teastore","teammates","bigbluebutton","jabref"]
 SHORT = {"mediastore":"MS","teastore":"TS","teammates":"TM","bigbluebutton":"BBB","jabref":"JR"}
 SYS = [("\\approach{}","gpt-5.4_s21",["run1","run2","run3"]),

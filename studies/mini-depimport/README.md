@@ -5,7 +5,7 @@ it owns) predict its *importance* (how much of the codebase depends on it)? For 
 ARDoCo JabRef benchmark the answer is **no**, and that is the point: file/link-level
 metrics under-weight small-footprint components that the rest of the system leans on.
 
-This is the code-side companion to [`mini-inequality/`](../mini-inequality/README.md)
+This is the code-side companion to [`mini-inequality/`](../../evaluation/mini-inequality/README.md)
 (which shows the doc-link side: small components own almost none of the links but are
 documented as much as any other).
 

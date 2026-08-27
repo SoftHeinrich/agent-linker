@@ -7,7 +7,8 @@ Gini + top-1 share, per project + macro + pooled. Contrast with doc-code."""
 import sys
 from collections import Counter
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-src"))
+from _roots import MINI_SRC    # shared roots (see _roots.py)
+sys.path.insert(0, str(MINI_SRC))
 import metrics as m
 
 PROJ = ["mediastore","teastore","teammates","bigbluebutton","jabref"]
