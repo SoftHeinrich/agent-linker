@@ -103,10 +103,13 @@ The bottom panel shows that documentation sentence share and dependency importan
 \end{figure}
 
 %SPEC [ev-tools] role: ground in the Artemis/TransArc contrast; minimum figures needed.
-The long-tailed distribution affects published tools.
+%NOTE [arm] These are the RELEASED GPT-5.4 \Artemis{} numbers, because the claim being
+%  examined is the published one. sec:results reports \Artemis{} re-run on GPT-5.6-terra,
+%  which drops a component on three of five projects but not always JabRef's -- so this
+%  paragraph must keep saying "as released" or it contradicts tab:rq2.
+The long-tailed distribution affects published tools, and we take \Artemis{} here as released.
 \Artemis, an \ac{LLM} pipeline, recovers the three large components almost perfectly and reaches $0.998$ link-level \fone, above \TransArc's $0.943$.
-Yet \Artemis{} never links a \texttt{preferences} sentence, scoring zero on that component.
-20\% of of JabRef's document sentences describe it, and XXX dependency. 
+Yet \Artemis{} never links a \texttt{preferences} sentence, scoring zero on that component---the one component a fifth of the document describes.
 \TransArc, by contrast, recovers every component, its weakest at $0.800$ (\autoref{fig:motivation}, bottom).
 Link-level \fone{} therefore ranks the tool Artemis that covers less of the architecture above TransArc, the one that covers more.
 % %SPEC [ev-docmodel] role: separate the doc-model consequence; show the same silent-failure principle without conflating task granularity.

@@ -59,11 +59,15 @@ A module-level ablation shows what each module contributes.
 To answer the four research questions we run four families of experiments on the the \ardoco benchmark, the largest benchmark to the best of our knowledge~\cite{fuchs_establishing_2023}.  
 % It is the largest architectural traceability benchmark to the best of our knowledge.
 % It contains five Java open-source systems with hand-curated architecture docs, an architecture model, and a gold standard at two grains, document-to-component and document-to-code.
-All baselines are run with their authors' released configurations.
+All baselines are run with their authors' released configurations, with one
+deliberate exception: \Artemis{} is an \ac{LLM} pipeline, so we re-run it on
+GPT-5.6-terra, the backend \approach{} uses, changing nothing but the model id.
+Comparing across backends would confound the workflow with the model. Its
+released GPT-5.4 arm is reported alongside in the appendix.
 % %TODO, maybe separate the table so have some basic stat here, but space limited.
 % \emph{MediaStore}, \emph{TeaStore}, \emph{Teammates}, \emph{BigBlueButton}, and \emph{JabRef}.
 % We use this benchmark because it is the standard evaluation set for this task~\cite{keim_recovering_2024,fuchs_lissa_2025,fuchs_whos_2025}.
-For each task, we repeat our approach running three times and report average to avoid bias by LLM running variance.
+For each task, we run both \ac{LLM} systems---\approach{} and the re-run \Artemis{}---three times and report the mean, so neither is credited with a lucky draw; the deterministic baselines are run once.
 To avoid depending on one model, we run \approach{} on two language-model backends, GPT-5.6-terra and GPT-5.6-luna; the body reports terra and the appendix mirrors every table on luna.
 
 \subsubsection{Experiments for \ref{rq:sota}}
