@@ -1,0 +1,106 @@
+diff --git a/Replication-Package-TAAS25/pom.xml b/Replication-Package-TAAS25/pom.xml
+index 1d0a48a..44e63f3 100644
+--- a/Replication-Package-TAAS25/pom.xml
++++ b/Replication-Package-TAAS25/pom.xml
+@@ -402,6 +402,10 @@
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>flatten-maven-plugin</artifactId>
++          <!-- Pinned: unversioned, Maven resolves the newest release, and 1.8.0 fails the
++               flatten goal on this reactor ("Cannot invoke CharSequence.toString() because
++               s is null"). 1.7.3 is the version that produced the released baseline dumps. -->
++          <version>1.7.3</version>
+           <configuration>
+             <updatePomFile>true</updatePomFile>
+             <flattenMode>resolveCiFriendliesOnly</flattenMode>
+diff --git a/Replication-Package-TAAS25/tlr/stages-tlr/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/tlr/models/informants/LargeLanguageModel.java b/Replication-Package-TAAS25/tlr/stages-tlr/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/tlr/models/informants/LargeLanguageModel.java
+index d9a4f88..a6fe484 100644
+--- a/Replication-Package-TAAS25/tlr/stages-tlr/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/tlr/models/informants/LargeLanguageModel.java
++++ b/Replication-Package-TAAS25/tlr/stages-tlr/model-provider/src/main/java/edu/kit/kastel/mcse/ardoco/tlr/models/informants/LargeLanguageModel.java
+@@ -24,6 +24,7 @@ public enum LargeLanguageModel {
+     GPT_5("GPT-5", () -> createOpenAiModel("gpt-5-2025-08-07", 1.0)), //
+     GPT_5_4("GPT-5.4", () -> createOpenAiModel("gpt-5.4-2026-03-05", 1.0, "flex")), //
+     GPT_5_5("GPT-5.5", () -> createOpenAiModel("gpt-5.5-2026-04-23", 1.0, gpt55ServiceTier())), // tier via OPENAI_SERVICE_TIER (see gpt55ServiceTier)
++    GPT_5_6("GPT-5.6", () -> createOpenAiModel(gpt56ModelName(), 1.0, gpt55ServiceTier())), // backend via OPENAI_MODEL_NAME_5_6 (see gpt56ModelName)
+     OPENAI_GENERIC(Environment.getEnv("OPENAI_MODEL_NAME"), () -> createOpenAiModel(Environment.getEnv("OPENAI_MODEL_NAME"))), //
+     // OLLAMA
+     // GPT_OSS_20B("GPT OSS 20b", () -> createOllamaModel("gpt-oss:20b")), //
+@@ -135,6 +136,21 @@ private static String gpt55ServiceTier() {
+         return tier;
+     }
+ 
++    /**
++     * Backend for {@link #GPT_5_6}, chosen via the {@code OPENAI_MODEL_NAME_5_6} env var so the
++     * two GPT-5.6 backends (terra / luna) are reachable by configuration rather than by adding an
++     * enum constant per backend. Defaults to {@code gpt-5.6-terra}. Everything else -- temperature,
++     * seed, service tier -- is identical to {@link #GPT_5_5}, so switching backends changes only
++     * the model id.
++     */
++    private static String gpt56ModelName() {
++        String model = Environment.getEnv("OPENAI_MODEL_NAME_5_6");
++        if (model == null || model.isBlank()) {
++            return "gpt-5.6-terra";
++        }
++        return model;
++    }
++
+     private static ChatModel createOllamaModel(String model) {
+         String host = Environment.getEnv("OLLAMA_HOST");
+         String user = Environment.getEnv("OLLAMA_USER");
+diff --git a/Replication-Package-TAAS25/tlr/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/tlr/tests/integration/RawTraceLinksIT.java b/Replication-Package-TAAS25/tlr/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/tlr/tests/integration/RawTraceLinksIT.java
+index 4a8e723..5e15387 100644
+--- a/Replication-Package-TAAS25/tlr/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/tlr/tests/integration/RawTraceLinksIT.java
++++ b/Replication-Package-TAAS25/tlr/tests-tlr/src/test/java/edu/kit/kastel/mcse/ardoco/tlr/tests/integration/RawTraceLinksIT.java
+@@ -37,29 +37,43 @@
+ import edu.kit.kastel.mcse.ardoco.tlr.tests.approach.TransArCEvaluationProject;
+ 
+ /**
+- * Runs the ArTEMiS + TransArC pipeline once per project with GPT-5.4 (flex tier)
+- * and writes raw recovered trace links to disk:
+- *   target/raw-tracelinks/&lt;project&gt;-sad-sam.tsv
+- *   target/raw-tracelinks/&lt;project&gt;-sad-code.tsv
++ * Runs the ArTEMiS + TransArC pipeline once per project and writes raw recovered trace
++ * links to disk:
++ *   target/raw-tracelinks/&lt;llm&gt;/&lt;project&gt;-sad-sam.tsv
++ *   target/raw-tracelinks/&lt;llm&gt;/&lt;project&gt;-sad-code.tsv
++ *
++ * The backend is selected by the {@code ARTEMIS_LLM} env var, naming a
++ * {@link LargeLanguageModel} constant (default {@code GPT_5_5}, the previously dumped
++ * arm). For {@code GPT_5_6} the concrete backend comes from {@code OPENAI_MODEL_NAME_5_6}
++ * (terra / luna). Output is written under a per-backend subdirectory so dumping a second
++ * backend never clobbers the first.
+  *
+  * No precision/recall is computed.
+  */
+ class RawTraceLinksIT {
+-    private static final File OUTPUT_ROOT = new File("target", "raw-tracelinks");
++    private static final LargeLanguageModel LLM = selectLlm();
++    private static final File OUTPUT_ROOT = new File(new File("target", "raw-tracelinks"), LLM.name());
++
++    private static LargeLanguageModel selectLlm() {
++        String name = Environment.getEnv("ARTEMIS_LLM");
++        if (name == null || name.isBlank()) {
++            return LargeLanguageModel.GPT_5_5;
++        }
++        return LargeLanguageModel.valueOf(name.trim());
++    }
+ 
+     @BeforeAll
+     static void beforeAll() throws IOException {
+         Assumptions.assumeTrue(Environment.getEnv("OPENAI_API_KEY") != null,
+-                "OPENAI_API_KEY must be set for live gpt-5.4 calls");
++                "OPENAI_API_KEY must be set for live OpenAI calls");
+         Files.createDirectories(OUTPUT_ROOT.toPath());
+     }
+ 
+-    @DisplayName("Dump raw SAD-SAM and SAD-Code trace links (ArTEMiS + TransArC, gpt-5.5 flex)")
++    @DisplayName("Dump raw SAD-SAM and SAD-Code trace links (ArTEMiS + TransArC)")
+     @ParameterizedTest(name = "{0}")
+     @MethodSource("projects")
+     void dumpTraceLinks(TransArCEvaluationProject project) throws IOException {
+-        LargeLanguageModel llm = LargeLanguageModel.GPT_5_5;
+-        ArDoCoRunner runner = createPipeline(project, llm);
++        ArDoCoRunner runner = createPipeline(project, LLM);
+         ArDoCoResult result = runner.run();
+         Assertions.assertNotNull(result);
+ 

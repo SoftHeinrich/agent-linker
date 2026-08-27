@@ -220,10 +220,10 @@ def rebuild_unified():
 
     Globs each task dir's `_manifest.csv` (this builder's s20_union/full + arcotl
     base) plus all `_manifest_*.csv` add-ons (the S21 backends, written by the
-    git-tracked transarc-emp/mini-src/build_s21_dump.py companion), in canonical
+    git-tracked transarc-emp/mini-src/build_dump.py companion), in canonical
     task order. Decoupled from which builder produced each manifest, so the unified
     file is complete regardless of run order. Idempotent; dedupes on
-    (task, config, run, project). Kept byte-identical to build_s21_dump.rebuild_unified."""
+    (task, config, run, project). Kept byte-identical to build_dump.rebuild_unified."""
     task_dirs = [
         ("model-doc",  f"{ROOT}/model-doc/aalinker"),
         ("doc-code",   f"{ROOT}/doc-code/aalinker-composed"),

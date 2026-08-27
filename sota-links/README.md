@@ -152,16 +152,17 @@ Config is encoded in the path — `backend` ∈ {`gpt-5.4`, `sonnet`}, `knowledg
 `full` (full-knowledge only; no-knowledge pending the paused Phase-51 sweep),
 `run` ∈ {run1,run2,run3}. Two source variants are tracked side by side:
 
-| config slot | source variant | role (D-04 REVISED) | builder |
-|-------------|----------------|---------------------|---------|
-| `gpt-5.4_full`, `sonnet_full` | `s_linker20_union` (v2.6.6 extracts) | baseline | `build_unified.py` |
-| `gpt-5.4_s21`, `sonnet_s21`   | **`s_linker21`** canonical Full (v2.6.6_extracts_s21[_sonnet]) | **paper Full** (gpt = body, sonnet = appendix mirror) | `build_s21_dump.py` |
+| config slot | source variant | role | builder |
+|-------------|----------------|------|---------|
+| `terra_s92a`, `luna_s92a`     | **`s_linker92a`** (results/s92a_extracts) | **paper Full** (terra = body, luna = mirror) | `build_dump.py` |
+| `gpt-5.4_s21`, `sonnet_s21`   | `s_linker21` (v2.6.6_extracts_s21[_sonnet]) | retired: the prior paper Full | `build_dump.py` (env-overridden) |
+| `gpt-5.4_full`, `sonnet_full` | `s_linker20_union` (v2.6.6 extracts) | retired baseline | `build_unified.py` |
 
 The `_manifest.csv` in each `aalinker*` dir records the `*_full` baseline config +
-provenance + row count + sha + (for model-doc) P/R/F1 vs gold; the S21 add-ons land in
-`_manifest_s21.csv` (gpt-5.4) and `_manifest_s21_sonnet.csv` (Claude).
+provenance + row count + sha + (for model-doc) P/R/F1 vs gold; each later arm adds its
+own `_manifest_<tag>.csv` (`s92a_terra`, `s92a_luna`, `s21`, `s21_sonnet`).
 `UNIFIED_MANIFEST.csv` aggregates **every** per-task manifest (`_manifest.csv` +
-`_manifest_*.csv`), so it holds all four aalinker configs + arcotl (125 rows).
+`_manifest_*.csv`), so it holds all six aalinker configs + arcotl (185 rows).
 
 ## raw + normalized coexist
 
@@ -194,7 +195,7 @@ numbers a lot. Three modes exist; pick deliberately.
 | Mode | What it does | Implementation | Use |
 |------|--------------|----------------|-----|
 | **Enrolled** *(the standard — what the benchmark & TransArc/ARDoCo papers report)* | Expands each package gold row into one `(sentence, file)` pair per concrete code-model file under that prefix, then set P/R/F1. Recovering files under a package matches the enrolled pairs. | `metrics.enroll(gold, code_files)` → `metrics.prf`; headline `file_f1` in `metrics.compute_sad_code` | Headline numbers, comparability with prior work |
-| **No-enroll (atomic-package)** *(the un-inflated diagnostic)* | Each gold package counts as **one** atomic target. A predicted file collapses to the most-specific gold package it falls under (naming a package once satisfies it once — no multi-credit); predictions under no gold target stay as FPs. | `noenroll.py:noenroll_prf` | Measuring how much headline F1 is enrollment artifact |
+| **No-enroll (atomic-package)** *(the un-inflated diagnostic)* | Each gold package counts as **one** atomic target. A predicted file collapses to the most-specific gold package it falls under (naming a package once satisfies it once — no multi-credit); predictions under no gold target stay as FPs. | `noenroll.py:noenroll_prf` (retired 2026-08-26; see git history) | Measuring how much headline F1 is enrollment artifact |
 | **Strict / file-exact** *(naive; undercounts)* | Direct `(sentence, exact_file)` set equality, no expansion. A concrete predicted file never equals a package gold row, so package targets are unmatchable. | plain `prf` on raw gold | Not for headlines — illustrates why some reconciliation is needed |
 
 **Standard = enrolled.** The "others" are *no-enroll* (the honest middle ground
@@ -212,15 +213,17 @@ inflation gap `Δ = enrolled_F1 − noenroll_F1` is the quantity Ch2 critiques.
 
 Full per-project breakdown + interpretation:
 `transarc-emp/reports/NOENROLL_DOC_CODE.md` (regenerate with
-`python3 transarc-emp/mini-src/noenroll.py`). Note enrollment does **not** preserve
+`transarc-emp/mini-src/noenroll.py`, retired 2026-08-26 — see git history). Note
+enrollment does **not** preserve
 ranking — TransArc and artemis look close enrolled (.80/.85) but separate sharply
 no-enroll (.39/.63).
 
 ## Integrity check (built in)
 
 Both builders recompute our model-doc P/R/F1 vs gold while building. `build_unified.py`
-reproduces the `s_linker20_union` band (gpt-5.4 ≈0.894, sonnet ≈0.928); `build_s21_dump.py`
-reproduces the canonical S21 Full band (gpt-5.4 **0.9360**, sonnet/Claude **0.9265**),
+reproduces the `s_linker20_union` band (gpt-5.4 ≈0.894, sonnet ≈0.928); `build_dump.py`
+reproduces the canonical s92a band (terra **0.9136**, luna **0.8793**) and, with the
+retired-arm env, the S21 band (gpt-5.4 **0.9360**, sonnet/Claude **0.9265**),
 confirming the vendored links match the source runs.
 
 ## Regenerate
@@ -229,20 +232,22 @@ confirming the vendored links match the source runs.
 # baseline + s20_union full slots + arcotl bridge + gold (reads transarc-emp/results + benchmark)
 python3 build_unified.py
 
-# canonical S21 Full slots (gpt body + Claude appendix mirror); each pass also rebuilds
+# canonical s92a Full slots (terra body + luna mirror); each pass also rebuilds
 # UNIFIED_MANIFEST.csv by aggregating every per-task manifest, so run order does not matter.
-# (git-tracked companion: transarc-emp/mini-src/build_s21_dump.py)
+# (git-tracked companion: transarc-emp/mini-src/build_dump.py)
 cd ../../transarc-emp
-python3 mini-src/build_s21_dump.py                                          # gpt-5.4_s21
-EXTRACTS_S21=../agent-linker/results/v2.6.6_extracts_s21_sonnet \
-  S21_BE_DIR=sonnet S21_BE_TAG=claude S21_CONFIG=sonnet_s21 \
-  S21_MANIFEST_TAG=s21_sonnet python3 mini-src/build_s21_dump.py            # sonnet_s21
+EXTRACTS_DIR=../agent-linker/results/s92a_extracts \
+  python3 mini-src/build_dump.py                                            # terra_s92a
+EXTRACTS_DIR=../agent-linker/results/s92a_extracts \
+  DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
+  DUMP_CONFIG=luna_s92a DUMP_MANIFEST_TAG=s92a_luna \
+  python3 mini-src/build_dump.py                                            # luna_s92a
 ```
 
-`build_s21_dump.py` reads gold + the ArCoTL bridge from the already-built dump here
-(not from `transarc-emp/results`), so it regenerates the S21 slots and the unified
+`build_dump.py` reads gold + the ArCoTL bridge from the already-built dump here
+(not from `transarc-emp/results`), so it regenerates an arm's slots and the unified
 manifest even when the upstream `results/` tree is absent. End the regenerate sequence
-with `build_s21_dump.py` so `UNIFIED_MANIFEST.csv` includes the S21 rows.
+with `build_dump.py` so `UNIFIED_MANIFEST.csv` includes every arm's rows.
 
 ## Caveats specific to the unified additions
 
