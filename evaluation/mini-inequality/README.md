@@ -11,8 +11,10 @@ Its purpose is twofold:
 1. **Quantify** the dataset's intrinsic inequality (a property of the gold standard).
 2. **Ground the paper** — verify every distributional-inequality claim the
    `alinker-paper` makes, fill its open `XX` placeholders, and demonstrate empirically
-   why file/link micro-F1 needs the proposed four-metric suite (per-component F1,
-   sentence coverage, noise rate, file-level F1).
+   why file/link micro-F1 needs the proposed size-aware suite (worst-component
+   $F_\beta$ and harmonic-mean $F_\beta$ on doc-code, the component miss rate on
+   doc-model). Sentence coverage and noise rate were part of that suite until
+   2026-08-27 and are no longer computed anywhere.
 
 ## Status
 

@@ -237,7 +237,7 @@ def write_motivation(rows):
     L = ["# Motivation — Trivial Baselines Exploit the Inequality\n"]
     L.append("> Gold-only. A content-blind Top-3 (most-gold-linked) baseline scores "
              "a high file-/link-level micro-F1 *because* a few large components own "
-             "most of the gold mass; the four-metric suite exposes it. No system "
+             "most of the gold mass; the size-aware suite exposes it. No system "
              f"results are used; randomness is seeded ({SEED}).\n")
     for task in TASKS:
         t3 = _avg(rows, task, "top3", "micro_f1")
