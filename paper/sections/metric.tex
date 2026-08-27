@@ -2,7 +2,7 @@
 \label{sec:metric}
 
 The link distribution is long-tailed, so link-level averaged metrics hide whether a system covers every documented component.
-This section quantifies that long tail across all five projects and builds a metric suite that exposes silent component failures.
+This section quantifies that long tail across all five projects and builds a metric suite that exposes the components a system leaves untraced.
 
 \subsection{Link Concentration in the Benchmark}
 \label{sec:metric:prestudy}
@@ -21,7 +21,7 @@ This motivates us to define a suite that weights each component equally exposes 
 \subsection{The Metric Suite}
 \label{sec:metric:suite}
 
-we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, the \cmrname{}, and sentence coverage, each exposing a component miss that a link-level average can hide.
+we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, and the \cmrname{}, each exposing a component miss that a link-level average can hide.
 Our suite also keeps link-level $F_\beta$ as the reference metric. 
 We define the family over the $F_\beta$ score,
 \begin{equation}
@@ -36,6 +36,7 @@ On the doc-code task, directory expansion maps each directory annotation into fi
 Therefore, we propose finer-grained metric on component level.
 Each component~$k$ owns a set of code files; 
 $F_\beta(k)$ denotes $F_\beta$ computed over only the links whose target belongs to~$k$.
+A file realizing two components contributes its links to both, so every gold link is scored under each component it reaches.
 The worst-component $F_\beta$ is the minimum over the gold components:
 \begin{equation}
 F_\beta^{\min} = \min_{k \in \mathcal{K}} F_\beta(k).
@@ -58,21 +59,11 @@ But a system can still miss a component entirely, leaving its documented sentenc
 The \cmrname{} (\cmr) is a sentence-weighted component-miss rate: it measures the share of gold sentence--component assignments belonging to such components:
 \begin{equation}
 \cmr = \frac{\sum_{k:\,R_k=0} |\mathcal{S}_k|}{\sum_{k \in \mathcal{K}} |\mathcal{S}_k|} \in [0,1],
-\label{eq:sfm}
+\label{eq:cmr}
 \end{equation}
 Here, a sentence linked to two components contributes once for each gold assignment. \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
+We report \cmr{} as a percentage throughout.
 
-\paragraph{Sentence coverage.}
-Sentence coverage is the fraction of sentences for which the system recovers at least one correct link:
-It measures developer-facing reach: whether the system finds something for each documented sentence, regardless of how many links that sentence carries.
-Sentence coverage applies to both tasks. 
-
-\begin{equation}
-\mathrm{cov} = \frac{1}{|\mathcal{S}|}\sum_{s \in \mathcal{S}} \mathbf{1}\!\left[\text{the system recovers a correct link for } s\right],
-\label{eq:cov}
-\end{equation}
-
-
-On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$, plus sentence coverage.
-On doc-model it reports the \cmrname{} and sentence coverage.
+On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$.
+On doc-model it reports the \cmrname{}.
 \autoref{sec:exp:rq2} applies this suite to all systems on the benchmark.

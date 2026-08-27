@@ -1,7 +1,19 @@
 \section{Results}
 \label{sec:results}
 
-%DONE: doc-model sentence coverage added to tab:rq2 (both tasks now); table redesigned with 7 data columns.
+%DONE (2026-08-27): sentence coverage is REMOVED from the metric suite, the code
+%  (mini-src/metrics.py) and every table; RQ2 now leads on the worst-component tail.
+%DONE (2026-08-27): \Artemis{} is re-run on GPT-5.6-terra, three runs, mean reported --
+%  the body baseline is now backend-matched to \approach{}. The released GPT-5.4 arm is
+%  kept in the appendix big tables only. Every \Artemis{}-relative number below moved.
+%DONE (2026-08-27): the doc-model size-aware metric is named \cmrname{} (\cmr) throughout,
+%  matching sec:metric:suite; the "silent-failure mass / SFM" spelling is retired paper-wide.
+%DONE (2026-08-27): the noise-rate figure is dropped from RQ1 -- the metric was never
+%  defined in the paper, and it is no longer computed by mini-src/metrics.py.
+%DONE (2026-08-27): worst-/harmonic-component \fone/\ftwo are now computed the way
+%  eq:worst states it -- per component, over the LINKS whose target file belongs to it --
+%  instead of over a (sentence, component) projection. Every tail number in RQ2 and RQ4
+%  moved; the rankings and the argument did not.
 %DONE (2026-08-26): every RQ number in this section is now the s\_linker92a arm on the
 %  GPT-5.6-terra backend (mean of 3 runs), replacing the s21/GPT-5.4 arm. Sources:
 %  evaluation/reports/tex_src/rq{1,2,3,4}.csv <- rq12.py (RQ1/RQ2) + mini-rq34/reports_s92a
@@ -34,43 +46,44 @@ Every \approach{} number is the mean of three runs.
 %  the one this arm is designed for (a link never proposed cannot be repaired downstream).
 
 \autoref{tab:rq1} reports macro precision, recall, \fone, and \ftwo\ for every system on both tasks, doc-model and doc-code.
-On doc-model, \approach{} lifts the \avgfone\ from \Artemis{}'s $0.836$ to $0.914$, a gain of $+7.8$pp; the lexical SWATTR pipeline reaches $0.799$.
-The gain is larger under the recall-weighted \avgftwo: $0.790 \rightarrow 0.931$ ($+14.1$pp).
+Both \ac{LLM} systems run on the same backend and are reported as the mean of three runs, so the comparison isolates the workflow from the model.
+On doc-model, \approach{} lifts the \avgfone\ from \Artemis{}'s $0.809$ to $0.914$, a gain of $+10.4$pp; the lexical SWATTR pipeline reaches $0.799$.
+The recall-weighted \avgftwo\ moves by the same margin: $0.828 \rightarrow 0.931$ ($+10.3$pp).
 This is because \approach{} builds the alias table once and reuses it across every sentence, then filters each link through the judge stack, so it proposes a link wherever a name or a reference occurs instead of only where a single extraction pass fires.
 \Artemis{} extracts entities with no reusable architecture knowledge and no judging, so it neither reaches the alias-heavy mentions nor removes the plausible-but-wrong links an \ac{LLM} produces.
 
-The two systems miss in opposite directions.
-\approach{} recovers $0.94$ of the gold links against \Artemis{}'s $0.76$ ($+18.1$pp recall), and pays for it with precision: $0.89$ against \Artemis{}'s $0.93$.
-Its noise rate is $10.4\%$, above \Artemis{}'s $7.2\%$ and below the lexical pipeline's $13.7\%$.
-This is the trade the entity pass makes deliberately: it scans the sentence for every candidate name rather than extracting one mention, and the judges then reject what the scan over-proposes.
-Therefore \approach{} leads on both balanced and recall-weighted \fone, and \Artemis{} keeps the cleaner output.
+The gain is not a precision-for-recall trade.
+On doc-model \approach{} leads on both components of the score, precision $0.89$ against $0.81$ ($+8.2$pp) and recall $0.94$ against $0.85$ ($+9.4$pp); on doc-code it leads by $+11.2$pp precision and $+4.1$pp recall.
+The scan-plus-judge split is what makes both possible at once: the entity pass over-proposes by design, scanning each sentence for every candidate name rather than extracting one mention, and the judges remove what it over-proposes before the link set is emitted.
+A single extraction pass has to make that trade in one decision and cannot recover a mention it did not emit.
 
-Beyond the link-level average, \autoref{tab:rq2} reports the silent-failure mass (SFM), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of gold sentence--component assignments whose component a system abandons.
-\approach{} reaches a macro SFM of $1.9\%$, against $4.6\%$ for \Artemis{} and $7.1\%$ for the lexical SWATTR pipeline.
-It abandons one documented component on one project, MediaStore's \texttt{FileStorage}, which carries $3$ of that project's $31$ documented sentence--component assignments; the other four projects have an SFM of $0.0\%$.
-\Artemis{} abandons one component on three of five projects: \texttt{GAE Datastore} on Teammates, \texttt{Presentation Conversion} on BigBlueButton, and \texttt{preferences} on JabRef.
+Beyond the link-level average, \autoref{tab:rq2} reports the \cmrname{} (\cmr), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of gold sentence--component assignments whose component a system abandons.
+\approach{} reaches a macro \cmr{} of $1.9\%$, against $3.3\%$ for \Artemis{} and $7.1\%$ for the lexical SWATTR pipeline.
+It abandons one documented component, MediaStore's \texttt{FileStorage}, which carries $3$ of that project's $31$ documented sentence--component assignments; the same component in all three runs, and the other four projects have a \cmr{} of $0.0\%$.
+\Artemis{} abandons two components per run on average, and only one of them consistently: Teammates' \texttt{GAE Datastore} in every run, plus Teammates' \texttt{Common}, BigBlueButton's \texttt{Presentation Conversion}, or JabRef's \texttt{preferences} depending on the run.
+Which components a single \Artemis{} run drops is therefore not stable, which is itself the finding---a re-run repairs one hole and opens another.
 SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage}, and \texttt{Reencoding}---that together carry $35.5\%$ of MediaStore's documented sentence--component assignments.
 
 \paragraph{Smallest-gain case: MediaStore.}
 %SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
 %  datum, name the cause, close on the aggregate. The datum moved from Teammates
 %  (component \fone) to MediaStore (the only doc-model \fone\ regression on this arm).
-MediaStore is the one project where \approach{} does not beat \Artemis{} on doc-model \fone: $0.903$ against $0.931$, a regression of $-2.8$pp.
-It is also the project carrying the arm's only silent failure, and the two facts share one cause.
+MediaStore is the one project where \approach{} does not beat \Artemis{}, and it loses on every view of the score: doc-model \fone\ $0.903$ against $0.933$ ($-3.0$pp), doc-model \ftwo\ $0.903$ against $0.954$ ($-5.0$pp), and doc-code \fone\ $0.867$ against $0.927$ ($-6.1$pp).
+It is also the project carrying the arm's only missed component, and the two facts share one cause.
 All three of \texttt{FileStorage}'s documented sentences call the component ``the DataStorage'', a name the architecture model does not use, so neither name pass matches it and the alias table never learns the pair.
 \linkerC{} does propose all three links, and the \corefValidator{} rejects all three on the grounds that an explicitly named mention is not a coreference---correct by its own rule, and wrong for this component.
 On MediaStore the judges therefore reject $8$ true links and $0$ false ones, the mirror image of their aggregate behaviour.
-The regression does not survive the recall-weighted view---MediaStore gains $+0.9$pp \ftwo---and the other four projects gain between $+3.2$pp (JabRef) and $+16.7$pp (TeaStore) of \fone.
+MediaStore is also the smallest and least enrolled project in the benchmark, so a handful of links moves its score further than anywhere else; the other four projects gain between $+6.5$pp (Teammates) and $+27.9$pp (TeaStore) of doc-model \fone.
 The fix is an alias source that covers names the model does not contain, which the current knowledge module derives only from model element names.
 
 The same picture holds on the downstream doc-code task, where \approach{} reaches code files transitively.
-\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.849$ to $0.909$ ($+6.0$pp) and the \avgftwo\ from $0.804$ to $0.912$ ($+10.8$pp); the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
+\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.813$ to $0.909$ ($+9.6$pp) and the \avgftwo\ from $0.844$ to $0.912$ ($+6.8$pp); the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
 This is because the composition step inherits the doc-model gain at every sentence, so the advantage \approach{} earns over \Artemis{} upstream carries through to the task developers care about.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ1.}
-\approach{} improves over \Artemis{}, the strongest baseline, by $+7.8$pp \avgfone\ and $+14.1$pp \avgftwo\ on doc-model, and $+6.0$pp \avgfone\ and $+10.8$pp \avgftwo\ on doc-code.
-It trades $4$pp of doc-model precision for $18$pp of recall, and abandons one documented component where each baseline abandons three.
+Against \Artemis{} on the same backend, \approach{} gains $+10.4$pp \avgfone\ and $+10.3$pp \avgftwo\ on doc-model, and $+9.6$pp \avgfone\ and $+6.8$pp \avgftwo\ on doc-code.
+It leads on precision and recall at both grains, and abandons one component to \Artemis{}'s two and SWATTR's three.
 \end{rqanswer}
 
 \subsection{Answer to RQ2}
@@ -81,31 +94,29 @@ It trades $4$pp of doc-model precision for $18$pp of recall, and abandons one do
 \input{table/rq2-results}
 
 %SPEC [rq2] tab:rq2 = the suite (sec:metric:suite) for approach/\TransArc{}/\Artemis{} on BOTH tasks
-%  (doc-model: link \fone/\ftwo + sentence coverage + SFM; doc-code: link \fone/\ftwo + size-aware
-%  metrics), GPT-5.6-terra backend; the per-(system,project) cells live in the appendix big table
+%  (doc-model: link \fone/\ftwo + \cmr; doc-code: link \fone/\ftwo + the worst- and harmonic-component
+%  \fone/\ftwo), GPT-5.6-terra backend; the per-(system,project) cells live in the appendix big table
 %  tab:detailed-perproject (both backends).
 %DONE [scope] suite covers both tasks (doc-model + doc-code).
 \autoref{tab:rq2} reports the size-aware suite for \approach{}, \TransArc{}, and \Artemis{} on both tasks, on the GPT-5.6-terra backend.
-On doc-model, \approach{} covers $0.96$ of the documented sentences, against $0.79$ for both baselines ($+17$pp).
-Combined with the $1.9\%$ silent-failure mass reported above, \approach{} reaches every documented component but one and nearly every documented sentence.
+On doc-model, the \cmrname{} reported above already separates the systems: $1.9\%$ for \approach{} against $3.3\%$ and $7.1\%$.
 
-On doc-code, the standard link-level \fone\ shows the \emph{smallest} gap: \approach{} separates from \Artemis{} by $+6.0$pp, because it is driven by the few large components every system recovers.
-The size-aware metrics open the gap.
-\approach{} reaches a sentence coverage of $0.88$ against \Artemis{}'s $0.71$ ($+17$pp), because the judges reject links whose anchor is absent from the document while the linkers collectively visit every sentence at least once.
+On doc-code, the standard link-level \fone\ shows the \emph{smaller} gap: \approach{} separates from \Artemis{} by $+9.6$pp, because it is driven by the few large components every system recovers.
+The size-aware metrics open it.
+\approach{} reaches a worst-component \fone\ of $0.73$ against \Artemis{}'s $0.47$ ($+25.8$pp, roughly $2.7$ times the link-level \fone\ gap), and a harmonic per-component \fone\ of $0.90$ against $0.63$ ($+26.4$pp).
+Against the deterministic \TransArc{} pipeline the same pattern holds with a smaller spread: $+10.6$pp link-level, $+21.2$pp worst-component, $+22.3$pp harmonic.
 
-The difference is largest on the tail metrics.
-\approach{} reaches a worst-component \fone\ of $0.71$ against \Artemis{}'s $0.35$ ($+36$pp, six times the link-level \fone\ gap).
-\Artemis{} scores \fone\ $0$ on at least one gold component on two of five projects, BigBlueButton and JabRef, missing it entirely.
-\approach{} never drops a doc-code component to zero; its lowest per-component \fone\ is $0.33$, on Teammates.
-The harmonic mean of the per-component \fone\ tells the same story without relying on a single component: $0.87$ for \approach{} against \Artemis{}'s $0.47$ ($+41$pp).
+Averaging over runs understates how far \Artemis{} drops.
+On three of five projects---Teammates, BigBlueButton, and JabRef---at least one \Artemis{} run scores \fone\ $0$ on a gold component, missing it entirely; a different project each run, which is why no single project's mean falls to zero.
+\approach{} never drops a doc-code component to zero on any project in any run; its lowest per-component \fone\ is $0.40$, on Teammates.
 This is the failure mode link-level \fone\ cannot show: a missed small component costs almost nothing in a volume-weighted average, but a developer who reads the architecture still sees the hole.
-The gap is largest against the \ac{LLM} baseline \Artemis{}, whose per-pass extraction drops whole components; it narrows against the deterministic \TransArc{} pipeline, which is more stable on the tail but trails on coverage.
+The gap is largest against the \ac{LLM} baseline \Artemis{}, whose per-pass extraction drops whole components and drops different ones on re-run; it narrows against \TransArc{}, which is more stable on the tail but trails on the link level.
 Against either baseline the size-aware metrics, not the standard metric, show where the systems differ.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ2.}
-On doc-model, \approach{} covers $0.96$ of sentences ($+17$pp) at $1.9\%$ silent-failure mass, below both baselines'.
-On doc-code the standard \fone\ gap is smallest ($+6.0$pp); the size-aware suite opens it---coverage $+17$pp, worst-component \fone\ $+36$pp, harmonic-mean \fone\ $+41$pp---exposing the tail the baselines drop.
+On doc-model, \approach{} reaches a $1.9\%$ \cmrname{}, below both baselines'.
+On doc-code the standard \fone\ gap is $+9.6$pp; the size-aware suite opens it to $+25.8$pp worst-component and $+26.4$pp harmonic-mean \fone, exposing the tail the baselines drop.
 \end{rqanswer}
 
 \subsection{Answer to RQ3}
@@ -160,30 +171,30 @@ The two smaller linkers are worth twice as much under \ftwo\ as under \fone: \av
 The three linkers catch different slices of gold links---\linkerB{} contributes $137$ unique true positives, \linkerD{} another $15$, and \linkerC{} another $17$---so the decomposition is not redundant.
 
 The table tells the RQ2 story from inside the approach.
-Removing \linkerD{} or \linkerC{} barely moves the standard link-level \fone---$-0.4$pp and $-5.0$pp---but each one lowers the tail: with \linkerB{} alone, worst-component \fone\ falls from $0.71$ to $0.62$ and sentence coverage from $0.88$ to $0.74$.
+Removing \linkerD{} or \linkerC{} barely moves the standard link-level \fone---$-0.4$pp and $-5.0$pp---but each one lowers the tail: with \linkerB{} alone, worst-component \fone\ falls from $0.73$ to $0.65$ and the harmonic per-component \fone\ from $0.90$ to $0.85$.
 Removing \linkerB{} is different---it collapses every metric, link-level \fone\ included, by $60.0$pp, because \linkerB{} recovers most of the direct links.
-Neither of the two smaller linkers is usable alone: \linkerD{} reaches $0.078$ \avgfone\ and \linkerC{} $0.261$, and both drop at least one component to zero.
+Read as whole systems the two smaller linkers score far lower---\linkerD{} $0.078$ \avgfone\ and \linkerC{} $0.261$---but that is their scope, not their quality: each fires only on the sentences its evidence form applies to (\linkerD{} skips any sentence that states a whole name, \linkerC{} only sentences carrying a referring expression), so a row scored against the whole gold standard charges it for every sentence it was never meant to see.
 
 The knowledge module is ablated as the no-knowledge variant of \ref{rq:ablation}: the document-alias stage is switched off and every linker sees canonical component names only.
 Removing the alias table costs $6.2$pp \avgfone\ ($0.914 \rightarrow 0.851$) and $9.6$pp \avgftwo\ ($0.931 \rightarrow 0.835$) on doc-model, a contribution no linker recovers on its own.
-Its real weight is on the tail, exactly where \autoref{tab:rq2} says the standard metric is blind: worst-component \fone\ falls from $0.71$ to $0.37$ ($-33$pp) and the harmonic per-component \fone\ from $0.87$ to $0.60$ ($-27$pp), against $-9.6$pp of doc-code file \fone.
+Its real weight is on the tail, exactly where \autoref{tab:rq2} says the standard metric is blind: worst-component \fone\ falls from $0.73$ to $0.42$ ($-30$pp) and the harmonic per-component \fone\ from $0.90$ to $0.64$ ($-26$pp), against $-9.6$pp of doc-code file \fone.
 This is because an alias is the only route to a component the document never names canonically, and those components are small: losing them costs little link volume and a whole architectural unit.
-Therefore the modules are complementary rather than interchangeable, and the knowledge module and the two cheap linkers all buy tail coverage that the standard metric does not price.
+Therefore the modules are complementary rather than interchangeable, and the knowledge module and the two cheap linkers all buy tail accuracy that the standard metric does not price.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ4.}
 \linkerB{} alone beats SWATTR; \linkerD{} and \linkerC{} lift \avgfone\ from $0.856$ to $0.914$ and \avgftwo\ from $0.818$ to $0.931$; the knowledge module is worth $6.2$pp \avgfone\ and $9.6$pp \avgftwo.
-Removing a small linker or the knowledge module barely moves link-level \fone\ but lowers the tail---the alias table alone is worth $33$pp of worst-component \fone---while removing \linkerB{} collapses every metric.
+Removing a small linker or the knowledge module barely moves link-level \fone\ but lowers the tail---the alias table alone is worth $30$pp of worst-component \fone---while removing \linkerB{} collapses every metric.
 \end{rqanswer}
 
 \subsection{Summary}
 \label{sec:results:summary}
 
-\approach{} improves over the strongest published baseline, \Artemis{}, at every granularity we measure.
-Doc-model \avgfone\ rises from $0.836$ to $0.914$ ($+7.8$pp), and \avgftwo\ from $0.790$ to $0.931$ ($+14.1$pp), with four of five projects gaining \fone\ and all five gaining \ftwo.
-The doc-code composition inherits the gain: $+6.0$pp \avgfone\ and $+10.8$pp \avgftwo.
-Doc-model sentence coverage reaches $0.96$ ($+17$pp over both baselines) at a silent-failure mass of $1.9\%$, against $4.6\%$ and $7.1\%$.
-The doc-code size-aware metrics show a much larger advantage on the tail that the standard metric hides: worst-component \fone\ $+36$pp, harmonic-mean per-component \fone\ $+41$pp, and sentence coverage $+17$pp over \Artemis{}.
+\approach{} improves over the strongest baseline, \Artemis{}, run on the same backend, at every granularity we measure.
+Doc-model \avgfone\ rises from $0.809$ to $0.914$ ($+10.4$pp) and \avgftwo\ from $0.828$ to $0.931$ ($+10.3$pp), with four of five projects gaining on both.
+The doc-code composition inherits the gain: $+9.6$pp \avgfone\ and $+6.8$pp \avgftwo.
+The \cmrname{} is $1.9\%$, against $3.3\%$ for \Artemis{} and $7.1\%$ for SWATTR.
+The doc-code size-aware metrics show a much larger advantage on the tail that the standard metric hides: worst-component \fone\ $+25.8$pp and harmonic-mean per-component \fone\ $+26.4$pp over \Artemis{}, against $+9.6$pp at the link level.
 The three judges remove $164.3$ distinct false positives at a cost of $14.0$ true links---worth $14.5$pp of \fone\ but only $4.9$pp of \ftwo, since a judge buys precision and never recall---and each of the three linkers catches a non-overlapping slice of true positives.
-The knowledge module is worth $6.2$pp \avgfone, and $33$pp of worst-component \fone: like the size-aware suite itself, its value is concentrated in the tail.
+The knowledge module is worth $6.2$pp \avgfone, and $30$pp of worst-component \fone: like the size-aware suite itself, its value is concentrated in the tail.
 We discuss the threats to validity in~\autoref{sec:threats}.

@@ -12,7 +12,10 @@ We report our system as the mean of three runs and release every raw response~\c
 %TODO [run-counts] reconcile with results.tex:10 OPEN decision -- if RQ3/RQ4 are upgraded
 %  to mean-of-3 at the numbers pass, soften the within-run justification above accordingly.
 Second, the backend may have seen the five public projects during pre-training, so memorization rather than the workflow could explain the gain.
-The strongest baseline \Artemis{} runs on the same backend and shares this exposure, so the comparison stays fair.
+We therefore re-ran \Artemis{} on GPT-5.6-terra, the backend \approach{} uses, and report that arm: the two systems then share the same exposure and the same model, so what separates them is the workflow.
+We run it three times, as we run \approach{}, so neither system is credited with a lucky draw; its own runs differ enough to matter, abandoning a different component each time.
+We keep \Artemis{} at its released GPT-5.4 configuration in the appendix, because the backend change is not neutral for it---it gains recall and loses precision, so its \fone\ falls while its \ftwo\ rises.
+That released arm is a single recorded run, which is why it stays out of the body comparison.
 Third, an implementation detail of the span test that excludes matches inside qualified identifiers treats a sentence-initial match as if it were inside one, so one span per sentence is suppressed.
 We found this while auditing the deterministic layer and measured its repair over six paired runs: correcting it leaves recall unchanged and \emph{costs} $1.2$ false positives per run ($p=0.01$).
 We therefore report it rather than silently keeping or silently fixing it.
@@ -28,7 +31,7 @@ To show the gains do not depend on one model, we run \approach{} on two backends
 %TODO [backend] numbers are in the appendix mirror; just pin the exact Claude Sonnet version string in the appendix caption.
 
 \paragraph{Construct validity.}
-\ref{rq:metrics} assumes that recovering every documented component matters to developers; our size-aware metrics express this through sentence coverage on both tasks, worst-component and harmonic-mean per-component \fone{} on doc-code, and the silent-failure mass (SFM) on doc-model, the share of gold sentence--component assignments whose component a system abandons.
+\ref{rq:metrics} assumes that recovering every documented component matters to developers; our size-aware metrics express this through worst-component and harmonic-mean per-component \fone{} on doc-code, and the \cmrname{} (\cmr) on doc-model, the share of gold sentence--component assignments whose component a system abandons.
 These are proxies, so we keep the standard link-level \fone{} as the reference and report the size-aware view beside it.
 They are also not a relabeling of \fone{}: a system can score well on \fone{} and still leave whole documented components untraced, which is exactly what the size-aware view exposes.
 % To avoid depending on one tail summary, we also computed the wider family of worst-group and long-tailed-recognition measures~\cite{du2023noone,sagawa2020distributionally}, which agree on the ranking.

@@ -90,7 +90,7 @@ so each link must be checked against its own evidence.
 It first builds a runtime \emph{knowledge module}, an alias table computed once from the components and the document.
 A sentence then gives a component's whole name, part of it, or only a reference to it, and \approach runs three linkers in that order: the \linkerB, the \linkerD, and the \linkerC, each enhanced by the knowledge and each seeing only what the earlier ones left unlinked.
 Each proposed link is checked by an \evidenceBacked judge, and the surviving links are merged into the output.
-By recovering the references other tools silently drop, \approach{} aims to leave no documented component abandoned---the silent component failure that the doc-model silent-failure mass (SFM) of \autoref{sec:metric} measures.
+By recovering the references other tools silently drop, \approach{} aims to leave no documented component abandoned---the abandonment that the doc-model \cmrname{} (\cmr) of \autoref{sec:metric} measures.
 % Because the knowledge is built once, \approach resolves each alias the same way for every sentence instead of re-deciding it on every call.
 
 % -----------------------------------------------------------------
