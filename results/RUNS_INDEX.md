@@ -10,8 +10,8 @@ Layout: canonical + cache + `manual/` at top level (stable paths scripts depend 
 
 | location | version | variant | backend | knowledge | files | size | consumer | note |
 |---|---|---|---|---|---|---|---|---|
-| `v2.6.5_s20union` | v2.6.5 | s20union | gpt | full | 181 | 4.9M | noenroll.py ($S20U_SLOT) | raw N=3 doc-model CSV runs |
-| `v2.6.5_s20union_sonnet` | v2.6.5 | s20union | sonnet | full | 180 | 4.9M | noenroll.py (DEFAULT slot) | raw N=3 doc-model CSV runs |
+| `v2.6.5_s20union` | v2.6.5 | s20union | gpt | full | 181 | 4.9M | none (noenroll.py retired 2026-08-26) | raw N=3 doc-model CSV runs |
+| `v2.6.5_s20union_sonnet` | v2.6.5 | s20union | sonnet | full | 180 | 4.9M | none (noenroll.py retired 2026-08-26) | raw N=3 doc-model CSV runs |
 | `v2.6.6_extracts` | v2.6.6 | s20union | gpt+sonnet | full | 30 | 3.1M | build_unified.py (recovered-links) | clean doc-model link set (final.links) |
 | `v2.6.6_extracts_noknow` | v2.6.6 | s20union | gpt | noknow | 15 | 1.5M | - | clean noknow extracts (gpt only; sonnet pending) |
 | `v2.6.6_s20union_noknow` | v2.6.6 | s20union | gpt | noknow | 108 | 1.1M | - | raw noknow sweep (gpt only) |
