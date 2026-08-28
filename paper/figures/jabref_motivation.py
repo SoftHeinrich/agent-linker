@@ -36,7 +36,6 @@ ardoco-home) and may be overridden:
 Requires matplotlib (figure tooling only; not a dependency of the paper build).
 """
 import csv
-import json
 import sys
 import os
 import tempfile
@@ -55,11 +54,15 @@ def _plt():
     return plt
 
 # ── Repo layout ───────────────────────────────────────────────────────────────
-HERE = Path(__file__).resolve().parent                 # …/alinker-paper/figures
-ARDOCO_HOME = HERE.parents[1]                           # …/ardoco-home
-BENCHMARK = Path(os.environ.get(
-    "TRANSARC_BENCHMARK",
-    ARDOCO_HOME / "ardoco/core/tests-base/src/main/resources/benchmark"))
+HERE = Path(__file__).resolve().parent                 # …/paper/figures
+ARDOCO_HOME = HERE.parents[1]                           # …/agent-linker
+# The evaluation tree's shared core supplies the benchmark root, the gold path
+# maps, the gold loaders, the enrolment rule and the F-measure, so this figure
+# describes the same gold the reported metrics score.
+sys.path.insert(0, str(ARDOCO_HOME / "evaluation" / "mini-src"))
+import metrics as m  # noqa: E402
+
+BENCHMARK = m.BENCHMARK                                 # $TRANSARC_BENCHMARK overrides
 # Recovered doc-code links for the two reference systems live in the unified sota store
 # (sota/recovered-links/doc-code, schema: sentence_id,target_id). Earlier runs read them from
 # transarc-emp/{results,results_artemis_gpt54}/...; that layout is gone, so default to the store.
@@ -73,9 +76,6 @@ RECOVERED = Path(os.environ.get("RECOVERED_LINKS", SOTA_LINKS / "doc-code"))
 DEPSHARE_CSV = HERE / "jabref_depshare.csv"
 
 PROJECT = "jabref"
-GS_SAM_CODE = f"{PROJECT}/goldstandards/goldstandard_sam_2021-code_2023.csv"
-GS_SAD_CODE = f"{PROJECT}/goldstandards/goldstandard_sad_2021-code_2023.csv"
-ACM_FILE = f"{PROJECT}/model_2023/code/codeModel.acm"
 
 # (label, [recovered sad-code links csv, ...]) — order = plotting order in the legend.
 # A label with several paths is scored per run and AVERAGED, which is how sec:results
@@ -92,36 +92,13 @@ SYS_STYLE = {
 }
 DROPPED = "preferences"                                  # the component Artemis misses
 
-# ── Loaders (copied verbatim from mini-inequality/inequality.py — same semantics) ──
-def normalize_path(path):
-    prefix = "Implementation/"
-    return path[len(prefix):] if path.startswith(prefix) else path
-
-
-def enroll(gold, code_files):
-    """Expand directory-level gold entries (trailing '/') to individual files."""
-    enrolled = set()
-    for gid, gpath in gold:
-        if gpath.endswith("/"):
-            enrolled.update((gid, fp) for fp in code_files if fp.startswith(gpath))
-        else:
-            enrolled.add((gid, gpath))
-    return enrolled
+# ── Loaders: the shared core's, except where this figure needs another grain ──
+normalize_path = m.normalize_path
+enroll = m.enroll
 
 
 def load_code_model_files():
-    with open(BENCHMARK / ACM_FILE) as f:
-        repo = json.load(f).get("codeItemRepository", {}).get("repository", {})
-    files = set()
-    for item in repo.values():
-        if item.get("type") != "CodeCompilationUnit":
-            continue
-        parts, name, ext = (item.get("pathElements", []),
-                            item.get("name", ""), item.get("extension", ""))
-        if parts and name:
-            files.add(normalize_path(
-                "/".join(parts) + "/" + name + (f".{ext}" if ext else "")))
-    return files
+    return m.load_code_model_files(PROJECT)
 
 
 def _short(c):
@@ -129,22 +106,23 @@ def _short(c):
 
 
 def load_file_to_comps(code_files):
-    """SAM-CODE gold -> {file: {component}} (enrolled, mapped-only)."""
-    names, raw = {}, set()
-    with open(BENCHMARK / GS_SAM_CODE) as f:
-        for r in csv.DictReader(f):
-            names[r["ae_id"]] = _short(r["ae_name"])
-            raw.add((r["ae_id"], normalize_path(r.get("ce_ids") or r.get("ce_id"))))
+    """SAM-CODE gold -> {file: {component}} (enrolled, mapped-only).
+
+    NOT ``metrics.load_file_to_comps``, deliberately: this figure keys components
+    by their short DISPLAY name (it labels an axis with them) and keeps
+    interfaces, where the suite keys by ``ae_id`` and applies the D-12 interface
+    drop. The read itself is shared -- ``metrics.load_sam_code`` -- so only the
+    keying differs.
+    """
+    names, sam_enrolled = m.load_sam_code(PROJECT, code_files)
     file_to_comps = defaultdict(set)
-    for ae, fp in enroll(raw, code_files):
-        file_to_comps[fp].add(names[ae])
+    for ae, fp in sam_enrolled:
+        file_to_comps[fp].add(_short(names[ae]))
     return file_to_comps
 
 
 def load_gold_sad_code(code_files):
-    with open(BENCHMARK / GS_SAD_CODE) as f:
-        raw = {(r["sentenceID"], normalize_path(r["codeID"])) for r in csv.DictReader(f)}
-    return enroll(raw, code_files)                       # set[(sentence, file)]
+    return enroll(m.load_gs_sad_code_raw(PROJECT), code_files)   # set[(sentence, file)]
 
 
 def load_links(path, code_files):
@@ -176,13 +154,15 @@ def load_dep_share():
 
 # ── Metric: per-component F1 (set-overlap over the component's sentence set) ───
 def f1(gold_sents, pred_sents):
-    if not gold_sents and not pred_sents:
-        return 1.0
-    tp = len(gold_sents & pred_sents)
-    if not pred_sents or not gold_sents:
-        return 0.0
-    p, r = tp / len(pred_sents), tp / len(gold_sents)
-    return 2 * p * r / (p + r) if p + r else 0.0
+    """``metrics.prf``'s F1, applied at this figure's grain.
+
+    The grain is the difference from the RQ2 tail metrics, not the arithmetic:
+    here a component is scored over its SENTENCE set (which sentences mentioning
+    it were recovered), matching the component suite's mapped-only universe. The
+    F1 itself is the shared one, so the figure and the tables agree on what an F1
+    is. Only gold components are scored, so the empty-gold case never arises.
+    """
+    return m.prf(gold_sents, pred_sents)[2]
 
 
 def collapse(pairs, file_to_comps):

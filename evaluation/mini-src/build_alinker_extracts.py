@@ -31,7 +31,9 @@ import json
 import os
 from pathlib import Path
 
-PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
+import metrics as m   # same directory: the shared core (the project list)
+
+PROJECTS = m.PROJECTS
 
 
 def load_links(run_dir: Path, variant: str, project: str):

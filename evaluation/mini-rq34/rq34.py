@@ -35,9 +35,11 @@ Method (faithful to alinker-paper working/sections/results.tex):
     (the surviving linker recovers some removed hits), so overlap is headline.
 
 Conventions (inherited from the mini-* studies):
-  * stdlib only; no cross-module imports — the gold loader is inlined and the
-    agent-linker dataclasses are *vendored* (see ``_alinker_types.py``), not
-    imported from the approach package.
+  * stdlib only; the benchmark layout, the gold loader and the F-measures come
+    from the tree's shared core (``mini-src/metrics.py``) so RQ3/RQ4 score with
+    the same arithmetic as RQ1/RQ2. The agent-linker dataclasses are still
+    *vendored* (see ``_alinker_types.py``), never imported from the approach
+    package.
   * Roots derive from this file's location; override via ``$TRANSARC_BENCHMARK``,
     ``$RQ34_CLAUDE_SLOT``, ``$RQ34_OPENAI_SLOT``.
 """
@@ -45,7 +47,6 @@ Conventions (inherited from the mini-* studies):
 from __future__ import annotations
 
 import argparse
-import csv
 import importlib.abc
 import importlib.machinery
 import json
@@ -59,15 +60,16 @@ from typing import Dict, List, Optional, Set, Tuple
 # --------------------------------------------------------------------------- #
 # Roots (derived from file location; env-overridable).
 # --------------------------------------------------------------------------- #
-_HERE = Path(__file__).resolve().parent           # .../transarc-emp/mini-rq34
+_HERE = Path(__file__).resolve().parent           # .../evaluation/mini-rq34
 _ARDOCO_HOME = _HERE.parents[1]                    # .../ardoco-home
+sys.path.insert(0, str(_HERE.parent / "mini-src"))
+import metrics as m  # noqa: E402  (shared core: benchmark layout, gold, F-measures)
 
-BENCHMARK = Path(os.environ.get(
-    "TRANSARC_BENCHMARK",
-    _ARDOCO_HOME / "ardoco/core/tests-base/src/main/resources/benchmark",
-))
-
-PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
+# Re-exported under this module's names: rq34_rq2.py and rq_tables.py read them
+# from here, and $TRANSARC_BENCHMARK still selects the benchmark root.
+BENCHMARK = m.BENCHMARK
+PROJECTS = m.PROJECTS
+fbeta = m.fbeta                                   # recall-weighted F-beta (\ftwo)
 RUNS = ["run1", "run2", "run3"]
 # The phase subdir name = the linker's _VARIANT_NAME. Defaults to the arm the paper
 # reports (s_linker92a); override via $RQ34_VARIANT.
@@ -146,14 +148,6 @@ SLOTS: Dict[str, Path] = {
     "openai": Path(os.environ.get("RQ34_OPENAI_SLOT", _RESULTS / "v2.6.6_s21_gpt")),
 }
 
-GS_SAD_SAM = {
-    "mediastore":    "mediastore/goldstandards/goldstandard_sad_2016-sam_2016.csv",
-    "teastore":      "teastore/goldstandards/goldstandard_sad_2020-sam_2020.csv",
-    "teammates":     "teammates/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-    "bigbluebutton": "bigbluebutton/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-    "jabref":        "jabref/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-}
-
 LinkKey = Tuple[int, str]  # (sentence_number, component_id)
 
 
@@ -205,15 +199,17 @@ def install_unpickler() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Gold standard (inlined; SAD-SAM grain).
+# Gold standard (shared reader; SAD-SAM grain).
 # --------------------------------------------------------------------------- #
 def load_gold(project: str) -> Set[LinkKey]:
-    """SAD-SAM gold as {(sentence_number:int, component_id:str)}."""
-    gold: Set[LinkKey] = set()
-    with (BENCHMARK / GS_SAD_SAM[project]).open(encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            gold.add((int(row["sentence"]), row["modelElementID"]))
-    return gold
+    """SAD-SAM gold as {(sentence_number:int, component_id:str)}.
+
+    ``metrics.load_gs_sad_sam`` reads the file; RQ3/RQ4 key their links the other
+    way round and numerically (the phase caches carry int sentence numbers), so
+    this only re-shapes its pairs.
+    """
+    return {(int(sentence), component)
+            for component, sentence in m.load_gs_sad_sam(project)}
 
 
 # --------------------------------------------------------------------------- #
@@ -223,28 +219,19 @@ import pickle  # noqa: E402  (after the unpickler classes are defined)
 
 
 def prf(pred: Set[LinkKey], gold: Set[LinkKey]) -> Tuple[int, int, int, float]:
-    tp = len(pred & gold)
-    fp = len(pred - gold)
-    fn = len(gold - pred)
-    p = tp / (tp + fp) if (tp + fp) else 0.0
-    r = tp / (tp + fn) if (tp + fn) else 0.0
-    f1 = 2 * p * r / (p + r) if (p + r) else 0.0
+    """(tp, fp, fn, f1) -- the count-carrying view of ``metrics.prf_counts``.
+
+    Mind the argument order: RQ3/RQ4 pass the prediction first, the shared core
+    takes the gold first.
+    """
+    tp, fp, fn, _p, _r, f1 = m.prf_counts(gold, pred)
     return tp, fp, fn, f1
-
-
-def fbeta(precision: float, recall: float, beta: float = 2.0) -> float:
-    """Recall-weighted F-beta (beta=2 = the paper's \\ftwo); mirrors mini-src/metrics.py."""
-    b2 = beta * beta
-    denom = b2 * precision + recall
-    return (1 + b2) * precision * recall / denom if denom > 0 else 0.0
 
 
 def prf3(pred: Set[LinkKey], gold: Set[LinkKey]) -> Tuple[float, float, float, float]:
     """(precision, recall, f1, f2) for a predicted link set against the gold set."""
-    tp, fp, fn, f1 = prf(pred, gold)
-    p = tp / (tp + fp) if (tp + fp) else 0.0
-    r = tp / (tp + fn) if (tp + fn) else 0.0
-    return p, r, f1, fbeta(p, r)
+    _tp, _fp, _fn, p, r, f1 = m.prf_counts(gold, pred)
+    return p, r, f1, m.fbeta(p, r)
 
 
 def _key(obj) -> LinkKey:
@@ -421,12 +408,7 @@ def pick_canonical(per_run: Dict[str, Dict[str, Cell]]) -> str:
     return scored[len(scored) // 2][1]
 
 
-def _write_csv(path: Path, fieldnames: List[str], rows: List[Dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
+_write_csv = m.write_dict_csv   # the tree's one dict-row CSV writer
 
 
 def read_ablation_full(slot: Path, run: str, project: str, backend: str = "") -> Optional[Dict]:

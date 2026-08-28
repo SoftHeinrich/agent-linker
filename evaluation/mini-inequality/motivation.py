@@ -11,18 +11,22 @@ describe the suite that is actually reported. It also emits the paper-ready comp
 concentration table (with Gini) + Lorenz figure source (OUT-02).
 
 GOLD ONLY — no system/result files. Reuses the study's own engine
-(`import inequality`) and copies the metric/baseline definitions verbatim from
-`mini-src/metrics.py` and `src/bias/rq2_doc_to_model_prestudy.py` (isolation rule:
-no imports from `src/`/`mini-src/`). Randomness is seeded (deterministic).
+(`import inequality`) and the tree's shared P/R/F1 (`metrics.prf`); the baseline
+definitions are the only thing still copied here, from the retired
+`src/bias/rq2_doc_to_model_prestudy.py`. Randomness is seeded (deterministic).
 
     python3 motivation.py     # write MOTIVATION.md, baselines.csv, OUT-02 source
 """
 
+import csv
 import random
 import sys
 from collections import defaultdict
+from pathlib import Path
 
-import inequality as ineq
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-src"))
+import inequality as ineq     # noqa: E402  (this study's gold engine)
+from metrics import prf       # noqa: E402  (the tree's one P/R/F1 over link sets)
 
 SEED = 0
 REPORTS = ineq.REPORTS
@@ -30,19 +34,7 @@ P = list(ineq.PROJECTS)
 TASKS = ["sad-code", "sad-sam"]
 
 
-# ── Metric helpers (copied: mini-src/metrics.py prf; prestudy macro/component coverage) ──
-def prf(gold, res):
-    """Micro (precision, recall, f1) over link sets (mini-src/metrics.py)."""
-    if not res:
-        return 0.0, 0.0, 0.0
-    tp = len(gold & res)
-    precision = tp / len(res)
-    recall = tp / len(gold) if gold else 0.0
-    f1 = (2 * precision * recall / (precision + recall)
-          if precision + recall > 0 else 0.0)
-    return precision, recall, f1
-
-
+# ── Metric helpers (prf imported above; prestudy macro/component coverage) ────
 def per_component_macro_f1(gold, result):
     """Macro F1 over targets (binary per target); rq2_doc_to_model_prestudy.py:227."""
     gold_by_c, res_by_c = defaultdict(set), defaultdict(set)
@@ -53,15 +45,11 @@ def per_component_macro_f1(gold, result):
     comps = set(gold_by_c) | set(res_by_c)
     if not comps:
         return 0.0
-    f1s = []
-    for c in comps:
-        g, r = gold_by_c.get(c, set()), res_by_c.get(c, set())
-        tp, fp, fn = len(g & r), len(r - g), len(g - r)
-        if tp + fp + fn == 0:
-            continue
-        p = tp / (tp + fp) if (tp + fp) else 0.0
-        rc = tp / (tp + fn) if (tp + fn) else 0.0
-        f1s.append(2 * p * rc / (p + rc) if (p + rc) else 0.0)
+    # One F1 per target, through the shared `prf`; a target with neither a gold
+    # nor a predicted sentence is not scored at all (it is in neither universe).
+    f1s = [prf(gold_by_c.get(c, set()), res_by_c.get(c, set()))[2]
+           for c in comps
+           if gold_by_c.get(c) or res_by_c.get(c)]
     return sum(f1s) / len(f1s) if f1s else 0.0
 
 
@@ -208,7 +196,6 @@ def _avg(rows, task, baseline, col):
 
 def write_baselines_csv(rows):
     REPORTS.mkdir(parents=True, exist_ok=True)
-    import csv
     with open(REPORTS / "baselines.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(BASE_COLS)
@@ -353,7 +340,6 @@ def _out02_rows():
 
 
 def write_out02_concentration():
-    import csv
     rows = _out02_rows()
 
     def csv_num(v):

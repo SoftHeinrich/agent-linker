@@ -16,9 +16,11 @@ NO results/ files and contains NO TransArc-/system-specific logic. INEQ-03's
 eval.tex tab:amplification (36->3,457) is a system-specific quantity excluded from
 this dataset study (user directive 2026-06-21).
 
-Definitions are COPIED verbatim from mini-src/metrics.py (enroll, normalize_path,
-gold loaders, path maps) and src/bias/component_suite.py (_gini) — never imported
-— and sanity-checked for agreement (OUT-01 isolation rule).
+The gold loaders, the enrolment rule and the benchmark path maps are IMPORTED
+from the tree's shared core (mini-src/metrics.py), so the inequality this study
+reports is measured on exactly the gold the suite scores — no hand-checked copies.
+``_gini`` is the study's own primitive (src/bias/component_suite.py, where it came
+from, is retired to archive/).
 
 Usage:
     python3 inequality.py                 # all gold inequality + sanity CHECK
@@ -33,140 +35,43 @@ override the benchmark root with $TRANSARC_BENCHMARK.
 
 import argparse
 import csv
-import json
-import os
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-# -- Benchmark layout (mirrors mini-src/metrics.py) ----------------------------
-# study-root/inequality.py -> parents[2] is <ardoco-home>.
-_ARDOCO_HOME = Path(__file__).resolve().parents[2]
-BENCHMARK = Path(os.environ.get(
-    "TRANSARC_BENCHMARK",
-    _ARDOCO_HOME / "ardoco/core/tests-base/src/main/resources/benchmark",
-))
-REPORTS = Path(__file__).resolve().parent / "reports"
+# -- Benchmark layout + gold loaders: the tree's shared core -------------------
+# study-root/inequality.py -> parents[2] is <ardoco-home>, the same root
+# mini-src/metrics.py derives; $TRANSARC_BENCHMARK overrides it there.
+_HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(_HERE.parent / "mini-src"))
+import metrics as m  # noqa: E402  (shared core: roots, path maps, gold loaders)
+
+BENCHMARK = m.BENCHMARK
+PROJECTS = m.PROJECTS
+REPORTS = _HERE / "reports"
 # NOTE: no RESULTS constant — this engine reads no system results.
 
-PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
-
-GS_SAD_SAM = {
-    "mediastore":    "mediastore/goldstandards/goldstandard_sad_2016-sam_2016.csv",
-    "teastore":      "teastore/goldstandards/goldstandard_sad_2020-sam_2020.csv",
-    "teammates":     "teammates/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-    "bigbluebutton": "bigbluebutton/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-    "jabref":        "jabref/goldstandards/goldstandard_sad_2021-sam_2021.csv",
-}
-GS_SAM_CODE = {
-    "mediastore":    "mediastore/goldstandards/goldstandard_sam_2016-code_2016.csv",
-    "teastore":      "teastore/goldstandards/goldstandard_sam_2020-code_2022.csv",
-    "teammates":     "teammates/goldstandards/goldstandard_sam_2021-code_2023.csv",
-    "bigbluebutton": "bigbluebutton/goldstandards/goldstandard_sam_2021-code_2023.csv",
-    "jabref":        "jabref/goldstandards/goldstandard_sam_2021-code_2023.csv",
-}
-GS_SAD_CODE = {
-    "mediastore":    "mediastore/goldstandards/goldstandard_sad_2016-code_2016.csv",
-    "teastore":      "teastore/goldstandards/goldstandard_sad_2020-code_2022.csv",
-    "teammates":     "teammates/goldstandards/goldstandard_sad_2021-code_2023.csv",
-    "bigbluebutton": "bigbluebutton/goldstandards/goldstandard_sad_2021-code_2023.csv",
-    "jabref":        "jabref/goldstandards/goldstandard_sad_2021-code_2023.csv",
-}
-ACM_FILES = {
-    "mediastore":    "mediastore/model_2016/code/codeModel.acm",
-    "teastore":      "teastore/model_2022/code/codeModel.acm",
-    "teammates":     "teammates/model_2023/code/codeModel.acm",
-    "bigbluebutton": "bigbluebutton/model_2023/code/codeModel.acm",
-    "jabref":        "jabref/model_2023/code/codeModel.acm",
-}
-
-# ── Copied primitives (verbatim — do NOT import) ──────────────────────────────
-
-
-def normalize_path(path):
-    """Drop the leading 'Implementation/' segment used in the gold standard."""
-    prefix = "Implementation/"
-    return path[len(prefix):] if path.startswith(prefix) else path
-
-
-def enroll(gold, code_files):
-    """Expand directory-level gold entries (trailing '/') to individual files."""
-    enrolled = set()
-    for gid, gpath in gold:
-        if gpath.endswith("/"):
-            for fp in code_files:
-                if fp.startswith(gpath):
-                    enrolled.add((gid, fp))
-        else:
-            enrolled.add((gid, gpath))
-    return enrolled
-
-
-def _cell(row, keys):
-    """First non-empty value among `keys` in a DictReader row, else None."""
-    for k in keys:
-        v = row.get(k)
-        if v is not None and str(v).strip():
-            return str(v).strip()
-    return None
+# Re-exported so this study's own functions (and motivation.py) read one
+# definition of the gold: the scorer's. `load_sam_code` is the unfiltered
+# model->code pair -- the interface drop belongs to the suite, not to a
+# distribution over every architecture element.
+normalize_path = m.normalize_path
+enroll = m.enroll
+load_code_model_files = m.load_code_model_files
+load_gs_sad_sam = m.load_gs_sad_sam
+load_gs_sad_code_raw = m.load_gs_sad_code_raw
+load_sam_code = m.load_sam_code
 
 
 def _gini(values):
-    """Gini coefficient (copied verbatim from src/bias/component_suite.py)."""
+    """Gini coefficient — this study's own primitive, and the tree's only one
+    (src/bias/component_suite.py, its origin, is retired to archive/)."""
     xs = sorted(values)
     n = len(xs)
     if n == 0 or sum(xs) == 0:
         return 0.0
     cum = sum((i + 1) * x for i, x in enumerate(xs))
     return (2 * cum) / (n * sum(xs)) - (n + 1) / n
-
-
-# ── Gold loaders (benchmark only) ─────────────────────────────────────────────
-
-
-def load_code_model_files(project):
-    """All compilation-unit paths from the .acm code model (normalized)."""
-    files = set()
-    with open(BENCHMARK / ACM_FILES[project]) as f:
-        data = json.load(f)
-    repo = data.get("codeItemRepository", {}).get("repository", {})
-    for item in repo.values():
-        if item.get("type") != "CodeCompilationUnit":
-            continue
-        parts, name, ext = (item.get("pathElements", []),
-                            item.get("name", ""), item.get("extension", ""))
-        if parts and name:
-            full = "/".join(parts) + "/" + name + (f".{ext}" if ext else "")
-            files.add(normalize_path(full))
-    return files
-
-
-def load_gs_sad_sam(project):
-    """set[(modelElementID, sentence)]."""
-    with open(BENCHMARK / GS_SAD_SAM[project]) as f:
-        return {(r["modelElementID"], r["sentence"]) for r in csv.DictReader(f)}
-
-
-def load_gs_sad_code_raw(project):
-    """set[(sentenceID, normalized_path)] — pre-enrolment."""
-    with open(BENCHMARK / GS_SAD_CODE[project]) as f:
-        return {(r["sentenceID"], normalize_path(r["codeID"]))
-                for r in csv.DictReader(f)}
-
-
-def load_sam_code(project, code_files):
-    """(names: ae_id->ae_name, sam_enrolled: set[(ae_id, file)]).
-
-    Mirrors mini-src/metrics.py load_file_to_comps: read the SAM-CODE gold, then
-    enroll directory entries against the code model.
-    """
-    names, raw = {}, set()
-    with open(BENCHMARK / GS_SAM_CODE[project]) as f:
-        for r in csv.DictReader(f):
-            names[r["ae_id"]] = r["ae_name"]
-            raw.add((r["ae_id"], normalize_path(r.get("ce_ids") or r.get("ce_id"))))
-    sam_enrolled = enroll(raw, code_files)
-    return names, sam_enrolled
 
 
 # ── Generic inequality helpers ────────────────────────────────────────────────

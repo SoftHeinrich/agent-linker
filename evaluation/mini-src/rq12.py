@@ -136,54 +136,63 @@ COLUMNS = [
 ]
 
 
-def run_panels(system, task):
-    """Per-run macro-averaged metric vectors for one system on one task.
+def score_cells(system, task):
+    """Every (run, project) cell of one system on one task, scored.
 
-    Scores every project through ``metrics.compute_*`` (failing if any required
-    result file is absent or empty), then macro-averages over projects. Returns
-    ``[(run_label, vector_dict), ...]``. Single-shot systems use ``run=single``.
+    The single loader behind both aggregation axes below. Scores each project
+    through ``metrics.compute_*``, failing loud if a required result file is
+    absent or empty -- so a panel is always complete by construction, never
+    silently short a project. Returns ``[(run_label, {project: vector}), ...]``
+    in run order; single-shot systems yield one ``single`` entry.
     """
-    cols = m.PANELS[task]
     compute = m.compute_sad_code if task == SC else m.compute_sad_sam
     pattern = system[task]
-    runs = system["runs"] or [None]
 
-    run_vectors = []
-    for run in runs:
-        rows = []
+    cells = []
+    for run in (system["runs"] or [None]):
+        by_project = {}
         for proj in m.PROJECTS:
             rel = pattern.format(run=run, project=proj) if run else pattern.format(project=proj)
             path = SOTA_LINKS / rel
+            cell = f"{system['label']} {run or 'single'} {proj}: {path}"
             if not path.exists():
-                raise SystemExit(f"missing required {task} result for {system['label']} "
-                                 f"{run or 'single'} {proj}: {path}")
+                raise SystemExit(f"missing required {task} result for {cell}")
             res = m.load_result(path, task)
             if not res:
-                raise SystemExit(f"empty/unparseable required {task} result for "
-                                 f"{system['label']} {run or 'single'} {proj}: {path}")
-            rows.append(compute(proj, res))
-        if len(rows) != len(m.PROJECTS):
-            raise SystemExit(f"incomplete {task} panel for {system['label']} "
-                             f"{run or 'single'}: {len(rows)}/{len(m.PROJECTS)} projects")
-        run_vectors.append((run or "single", {c: sum(r[c] for r in rows) / len(rows) for c in cols}))
-    if len(run_vectors) != len(runs):
-        raise SystemExit(f"incomplete {task} run set for {system['label']}: "
-                         f"{len(run_vectors)}/{len(runs)} runs")
-    return run_vectors
+                raise SystemExit(f"empty/unparseable required {task} result for {cell}")
+            by_project[proj] = compute(proj, res)
+        cells.append((run or "single", by_project))
+    return cells
+
+
+def _mean(vectors, cols):
+    return {c: sum(v[c] for v in vectors) / len(vectors) for c in cols}
+
+
+def run_panels(system, task):
+    """Per-run vectors, macro-averaged over the five projects.
+
+    ``[(run_label, vector_dict), ...]``; the row axis of the big table.
+    """
+    cols = m.PANELS[task]
+    return [(run, _mean(list(by_project.values()), cols))
+            for run, by_project in score_cells(system, task)]
 
 
 def average_vec(run_vectors, task):
-    cols = m.PANELS[task]
-    return {c: sum(v[c] for _run, v in run_vectors) / len(run_vectors) for c in cols}
+    return _mean([v for _run, v in run_vectors], m.PANELS[task])
+
+
+def metric_cells(ss_vec, sc_vec):
+    """The COLUMNS projection: column name -> value from the right task's vector."""
+    return {name: (ss_vec if task == SS else sc_vec)[key] for name, task, key in COLUMNS}
 
 
 def build_row(system, run_label, ss_vec, sc_vec):
-    row = {"system": system["label"], "backend": system["backend"], "run": run_label,
-           "doc_to_model_projects": len(m.PROJECTS), "doc_to_code_projects": len(m.PROJECTS)}
-    for name, task, key in COLUMNS:
-        vec = ss_vec if task == SS else sc_vec
-        row[name] = vec[key]
-    return row
+    return {"system": system["label"], "backend": system["backend"], "run": run_label,
+            "doc_to_model_projects": len(m.PROJECTS),
+            "doc_to_code_projects": len(m.PROJECTS),
+            **metric_cells(ss_vec, sc_vec)}
 
 
 def build_rows(system):
@@ -205,54 +214,23 @@ def project_panels(system, task):
     """Per-*project* metric vectors for one system on one task, averaged over runs.
 
     The orthogonal aggregation to ``run_panels`` (which macro-averages over
-    projects per run): here we keep the project axis and average each project's
-    vector over the system's runs. Feeds the per-project big table. Single-shot
+    projects per run): here the project axis is kept and each project's vector is
+    averaged over the system's runs. Feeds the per-project big table. Single-shot
     systems contribute their one run unchanged.
     """
     cols = m.PANELS[task]
-    compute = m.compute_sad_code if task == SC else m.compute_sad_sam
-    pattern = system[task]
-    runs = system["runs"] or [None]
-
-    per_proj = {proj: [] for proj in m.PROJECTS}
-    for run in runs:
-        for proj in m.PROJECTS:
-            rel = pattern.format(run=run, project=proj) if run else pattern.format(project=proj)
-            path = SOTA_LINKS / rel
-            if not path.exists():
-                raise SystemExit(f"missing required {task} result for {system['label']} "
-                                 f"{run or 'single'} {proj}: {path}")
-            res = m.load_result(path, task)
-            if not res:
-                raise SystemExit(f"empty/unparseable required {task} result for "
-                                 f"{system['label']} {run or 'single'} {proj}: {path}")
-            per_proj[proj].append(compute(proj, res))
-    return {proj: {c: sum(r[c] for r in vecs) / len(vecs) for c in cols}
-            for proj, vecs in per_proj.items()}
+    cells = score_cells(system, task)
+    return {proj: _mean([by_project[proj] for _run, by_project in cells], cols)
+            for proj in m.PROJECTS}
 
 
 def build_perproject_rows(system):
     """One row per (system, project): the full suite, mean over the system's runs."""
     ss = project_panels(system, SS)
     sc = project_panels(system, SC)
-    rows = []
-    for proj in m.PROJECTS:
-        row = {"system": system["label"], "backend": system["backend"], "project": proj}
-        for name, task, key in COLUMNS:
-            vec = ss[proj] if task == SS else sc[proj]
-            row[name] = vec[key]
-        rows.append(row)
-    return rows
-
-
-def write_perproject_csv(rows, path):
-    fields = ["system", "backend", "project"] + [c[0] for c in COLUMNS]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="") as f:
-        w = csv.writer(f, lineterminator="\n")
-        w.writerow(fields)
-        for r in rows:
-            w.writerow([fmt(r[k]) for k in fields])
+    return [{"system": system["label"], "backend": system["backend"], "project": proj,
+             **metric_cells(ss[proj], sc[proj])}
+            for proj in m.PROJECTS]
 
 
 def summary_row(rows, label):
@@ -289,8 +267,15 @@ def print_table(rows):
               + "".join(fmt(r[n]).rjust(width) for n, width in zip(names, widths)))
 
 
-def write_csv(rows, path):
-    fields = ["system", "backend", "run", "doc_to_model_projects", "doc_to_code_projects"] + [c[0] for c in COLUMNS]
+# The two big tables differ only in their leading row-axis columns.
+METRIC_FIELDS = [c[0] for c in COLUMNS]
+BIGTABLE_FIELDS = ["system", "backend", "run",
+                   "doc_to_model_projects", "doc_to_code_projects"] + METRIC_FIELDS
+PERPROJECT_FIELDS = ["system", "backend", "project"] + METRIC_FIELDS
+
+
+def write_csv(rows, fields, path):
+    """Write `rows` as `fields`, every cell through ``fmt`` (LF line endings)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
@@ -326,12 +311,12 @@ def main():
 
     reports = m._ARDOCO_HOME / "transarc-emp/reports"
     out = Path(args.csv) if args.csv else reports / "RQ12_BIGTABLE.csv"
-    write_csv(big, out)
+    write_csv(big, BIGTABLE_FIELDS, out)
 
     pp_rows = [row for system in ROSTER for row in build_perproject_rows(system)]
     out2 = Path(args.perproject_csv) if args.perproject_csv else (
         out.parent / "RQ12_PERPROJECT.csv" if args.csv else reports / "RQ12_PERPROJECT.csv")
-    write_perproject_csv(pp_rows, out2)
+    write_csv(pp_rows, PERPROJECT_FIELDS, out2)
     print(f"\n[rq12] wrote {out}\n[rq12] wrote {out2}", file=sys.stderr)
 
 

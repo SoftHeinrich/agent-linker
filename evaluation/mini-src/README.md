@@ -1,10 +1,14 @@
 # mini-src — the trace-link metrics
 
-A single self-contained, stdlib-only module (`metrics.py`, ~450 lines, zero
-cross-module imports) that computes **the paper's metrics** for doc-to-code
-(`sad-code`) and doc-to-model (`sad-sam`) trace-link recovery.
+A single self-contained, stdlib-only module (`metrics.py`) that computes **the
+paper's metrics** for doc-to-code (`sad-code`) and doc-to-model (`sad-sam`)
+trace-link recovery.
 
-This is now the project's **sole** metrics implementation. The former canonical
+This is now the project's **sole** metrics implementation, and the shared core
+of the whole `evaluation/` tree: the benchmark layout, the confusion matrix and
+F-measures, the gold loaders and the dict-row CSV writer live here once, and
+`rq12.py`, `build_dump.py`, `mini-rq34/`, `mini-inequality/` and `../studies/`
+all import them. Nothing outside it re-derives an F-measure. The former canonical
 stack (`src/lib/metrics_api.py`, `src/bias/component_suite.py`, the RQ2/bias
 side-analyses, and the `generate_tables.py` table pipeline) has been retired —
 it is preserved on the `master` (legacy) branch (`git show master:<path>`), not

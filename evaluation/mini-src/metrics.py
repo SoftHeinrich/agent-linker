@@ -2,7 +2,12 @@
 """The metrics for ARDoCo doc-to-code / doc-to-model trace-link recovery.
 
 A single, self-contained, stdlib-only module — the project's SOLE metrics
-implementation. The former canonical stack it was reduced from
+implementation AND the shared core of the whole ``evaluation/`` tree: the
+benchmark layout (roots, project list, gold-standard paths), the confusion
+matrix / F-measures, the gold loaders and the CSV writer live here once and
+every other engine imports them (``rq12``, ``build_dump``, ``mini-rq34/rq34``,
+``mini-rq34/rq34_rq2``, ``mini-inequality/inequality``, ``../studies/``). Import
+it; never re-copy a definition out of it. The former canonical stack it was reduced from
 (``src/lib/metrics_api.py``, ``src/bias/component_suite.py``, the RQ2/bias
 side-analyses, ``generate_tables.py``) has been retired to ``archive/``; only
 the base loaders (``src/lib/transarc_error_analysis.py``) are kept. The
@@ -125,23 +130,36 @@ _SADCODE_CODE_KEYS = ("codeId", "codeID", "code_path", "target_id")
 
 # ── Core metric primitives ────────────────────────────────────────────────────
 
-def prf(gold, res):
-    """(precision, recall, f1) treating gold/res as sets of links.
+def prf_counts(gold, res):
+    """(tp, fp, fn, precision, recall, f1) for two link sets.
 
-    Convention: an empty prediction always scores (0, 0, 0) — including the
-    degenerate empty-gold/empty-res case. This is deliberate and load-bearing:
-    the worst/harmonic suite relies on an abandoned component (empty ``res``)
+    The tree's ONE confusion-matrix + F1 computation. Every engine reads it --
+    ``prf`` below (RQ1/RQ2), ``rq34.prf``/``rq34.prf3`` (RQ3/RQ4, which also
+    report the raw counts) and ``build_dump``'s manifest integrity figure -- so
+    no caller re-derives an F-measure.
+
+    Convention: an empty prediction always scores 0 -- including the degenerate
+    empty-gold/empty-res case. This is deliberate and load-bearing: the
+    worst/harmonic suite relies on an abandoned component (empty ``res``)
     yielding F1 = 0, so "predicted nothing" is never treated as vacuously
     perfect.
     """
-    if not res:
-        return 0.0, 0.0, 0.0
     tp = len(gold & res)
-    precision = tp / len(res)
-    recall = tp / len(gold) if gold else 0.0
+    fp = len(res - gold)
+    fn = len(gold - res)
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else 0.0
     f1 = (2 * precision * recall / (precision + recall)
           if precision + recall > 0 else 0.0)
-    return precision, recall, f1
+    return tp, fp, fn, precision, recall, f1
+
+
+def prf(gold, res):
+    """(precision, recall, f1) treating gold/res as sets of links.
+
+    Thin projection of ``prf_counts``; see it for the empty-prediction rule.
+    """
+    return prf_counts(gold, res)[3:]
 
 
 def fbeta(precision, recall, beta=2.0):
@@ -254,6 +272,22 @@ def load_gs_sad_code_raw(project):
                 for r in csv.DictReader(f)}
 
 
+def load_sam_code(project, code_files):
+    """(names: ae_id -> ae_name, enrolled: set[(ae_id, file)]) from the SAM-CODE gold.
+
+    The raw model->code mapping with directory entries enrolled against the code
+    model and nothing dropped. ``load_file_to_comps`` layers the suite's D-12
+    interface drop on top; ``mini-inequality`` reads the unfiltered pair (its
+    files-per-element skew counts every architecture element).
+    """
+    names, raw = {}, set()
+    with open(BENCHMARK / GS_SAM_CODE[project]) as f:
+        for r in csv.DictReader(f):
+            names[r["ae_id"]] = r["ae_name"]
+            raw.add((r["ae_id"], normalize_path(r.get("ce_ids") or r.get("ce_id"))))
+    return names, enroll(raw, code_files)
+
+
 def load_file_to_comps(project, code_files):
     """file_path -> {component ae_id}, from the enrolled SAM-CODE gold.
 
@@ -263,15 +297,10 @@ def load_file_to_comps(project, code_files):
     suite. (``ae_id`` <-> ``ae_name`` is currently 1:1 for every non-interface
     component, so this keying does not change any panel value.)
     """
-    names, raw = {}, set()
-    with open(BENCHMARK / GS_SAM_CODE[project]) as f:
-        for r in csv.DictReader(f):
-            names[r["ae_id"]] = r["ae_name"]
-            raw.add((r["ae_id"], normalize_path(r.get("ce_ids") or r.get("ce_id"))))
+    names, sam_enrolled = load_sam_code(project, code_files)
     file_to_comps = defaultdict(set)
-    for ae, fp in enroll(raw, code_files):
-        name = names.get(ae, ae)
-        if name.startswith("Interface:"):   # D-12: see compute_sad_code docstring
+    for ae, fp in sam_enrolled:
+        if names.get(ae, ae).startswith("Interface:"):  # D-12: see compute_sad_code
             continue
         file_to_comps[fp].add(ae)
     return file_to_comps
@@ -544,6 +573,21 @@ def write_csv(task, rows, path):
         w.writerow(["project"] + cols)
         for r in list(rows) + ([average_row(rows, cols)] if len(rows) > 1 else []):
             w.writerow([r["project"]] + [f"{r[c]:.4f}" for c in cols])
+
+
+def write_dict_csv(path, fieldnames, rows):
+    """Write dict rows to `path`: parents created, LF line endings, UTF-8.
+
+    The tree's one CSV writer for dict rows -- ``rq34``, ``rq34_rq2`` and
+    ``rq_tables`` all emit through it, so the dialect cannot drift between the
+    engines that feed the same paper tables.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
 
 
 def main():

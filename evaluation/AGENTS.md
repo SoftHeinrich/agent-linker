@@ -52,9 +52,15 @@ Scope rule: a directory belongs here only if it feeds a float in
 
 ## Conventions
 
-- **Self-contained, copy-not-import.** Each `mini-*` study copies shared
-  definitions and sanity-checks them for agreement rather than importing across
-  directories. Keep it that way — a study must run on its own.
+- **One shared core, imported — never re-copied.** `mini-src/metrics.py` holds
+  the benchmark layout (roots, project list, gold-standard paths), the confusion
+  matrix and F-measures (`prf`, `prf_counts`, `fbeta`), the gold loaders and the
+  dict-row CSV writer. Every study imports it (`sys.path.insert` on
+  `mini-src/`, `import metrics as m`) instead of vendoring a copy: the copies
+  had drifted and had to be hand-checked for agreement, and only one of them was
+  pinned by `check.py`. Studies still run on their own — the import is
+  in-tree, stdlib-only, no package install. When you need a definition that
+  lives there, import it; when you add one two studies need, put it there.
 - **Verify after editing metrics:** `python3 mini-src/check.py` must print PASS.
 - **No benchmark leakage:** no benchmark-derived word lists in any code
   (workspace rule). Stopwords / generic English only.

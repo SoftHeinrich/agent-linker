@@ -72,11 +72,12 @@ See each study's own `README.md` for definitions, provenance, and full options.
 
 ## Conventions
 
-- **Stdlib only; no cross-module imports.** Each `mini-*` study copies shared
-  definitions (and sanity-checks them for agreement) rather than importing, so it
-  stays runnable in isolation. The side analyses in `../studies/` are the exception
-  and import `mini-src/metrics.py` directly — they must track the reported scorer,
-  and they are not part of the pipeline this rule protects.
+- **Stdlib only; one shared core.** `mini-src/metrics.py` is the tree's single
+  implementation of the benchmark layout, the F-measures and the gold loaders;
+  every study — and the side analyses in `../studies/` — imports it rather than
+  keeping a copy, so every reported number is scored by the arithmetic
+  `mini-src/check.py` pins. Each study still runs on a bare `python3` with no
+  install: the import is in-tree.
 - **No benchmark leakage** — no benchmark-derived word lists in any code
   (workspace rule); distributional / structural stats only.
 - See [CLAUDE.md](CLAUDE.md) for agent guidance and the workspace

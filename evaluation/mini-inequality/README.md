@@ -35,9 +35,10 @@ When running GSD phase commands for this study, target this subdir's planning
 ## Conventions (inherited)
 
 - Python 3, **stdlib only** — no `requirements.txt`, no pandas/numpy/matplotlib.
-- **No cross-module imports**: definitions are copied from `src/bias/component_suite.py`
-  (`_gini`, `gold_gini`) and `mini-src/metrics.py` (enrollment, gold loaders) and
-  sanity-checked for agreement, not imported.
+- **The gold is the scorer's gold**: the path maps, enrollment rule and gold
+  loaders are imported from `mini-src/metrics.py`, so this study measures the
+  inequality of exactly the gold the suite scores. `_gini` is the study's own
+  primitive (`src/bias/component_suite.py`, where it came from, is retired).
 - Benchmark/result roots derive from file location; override via `$TRANSARC_BENCHMARK` /
   `$TRANSARC_RESULTS_DIR`.
 - No benchmark-derived word lists (workspace leakage rule) — distributional stats only.

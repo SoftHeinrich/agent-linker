@@ -130,6 +130,7 @@ median-macro run per backend) is reproduced from the s21 sweep's phase cache.
 ## Conventions (inherited)
 
 - Python 3, **stdlib only** — no `requirements.txt`, no third-party deps.
-- No cross-module imports: the gold loader is inlined; the agent-linker types
-  are vendored (above).
+- The benchmark layout, the gold loader and the F-measures are imported from
+  `mini-src/metrics.py` (the tree's shared core), so RQ3/RQ4 score with the same
+  arithmetic as RQ1/RQ2; only the agent-linker types are vendored (above).
 - No benchmark-derived word lists (workspace leakage rule) — IDs and counts only.

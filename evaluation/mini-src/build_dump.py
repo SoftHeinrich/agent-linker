@@ -28,22 +28,26 @@ backend, the no-knowledge sweep, and the retired s21 lineage:
       DUMP_MANIFEST_TAG=s92a_noknow DUMP_KNOW=noknow python3 mini-src/build_dump.py
 
 This is the version-controlled companion to sota/recovered-links/build_unified.py
-(that tree is not a git repo). The four helpers below (sha256/write_norm/write_raw/f1)
-are copied verbatim from build_unified.py so the dump is byte-identical; gold and bridge
-are read from the already-built sota dump rather than rebuilt from raw sources.
+(that tree is not a git repo). The three writer helpers below (sha256/write_norm/
+write_raw) are copied verbatim from build_unified.py so the dump is byte-identical;
+the manifest's P/R/F1 integrity figure comes from ``metrics.prf``, the tree's one
+F-measure. Gold and bridge are read from the already-built sota dump rather than
+rebuilt from raw sources.
 
     python3 mini-src/build_dump.py
 """
 import csv, glob, hashlib, json, os
 from pathlib import Path
 
-_HERE = Path(__file__).resolve().parent              # .../transarc-emp/mini-src
+import metrics as m   # same directory: the tree's one P/R/F1 (see metrics.prf)
+
+_HERE = Path(__file__).resolve().parent              # .../evaluation/mini-src
 _ARDOCO_HOME = _HERE.parents[1]                       # .../ardoco-home
 ROOT = os.environ.get("SOTA_LINKS", str(_ARDOCO_HOME / "sota/recovered-links"))
 EXTRACTS = os.environ.get(
     "EXTRACTS_DIR", str(_ARDOCO_HOME / "agent-linker/results/s92a_extracts"))
 
-PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
+PROJECTS = m.PROJECTS
 RUNS = ["run1", "run2", "run3"]
 # Which cell of the extracts tree to read, and what to call the slot it writes.
 # Defaults = the canonical arm's body backend (s_linker92a / GPT-5.6-terra); see the
@@ -56,7 +60,7 @@ MANIFEST_TAG = os.environ.get("DUMP_MANIFEST_TAG", "s92a_terra")   # _manifest_<
 KNOW = os.environ.get("DUMP_KNOW", "full")
 
 
-# ---- helpers (verbatim from sota/recovered-links/build_unified.py) ----------
+# ---- writers (verbatim from sota/recovered-links/build_unified.py) ----------
 def sha256(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -82,15 +86,6 @@ def write_raw(path, header, rows):
         w = csv.writer(f, lineterminator="\n")
         w.writerow(header)
         w.writerows(rows)
-
-
-def f1(pred, gold):
-    pred, gold = set(pred), set(gold)
-    tp = len(pred & gold)
-    p = tp / len(pred) if pred else 0.0
-    rec = tp / len(gold) if gold else 0.0
-    fm = 2 * p * rec / (p + rec) if (p + rec) else 0.0
-    return p, rec, fm, tp, len(pred), len(gold)
 
 
 def write_manifest(path, rows):
@@ -148,7 +143,7 @@ def build_slot(md_gold, arcotl_bridge):
                       ["sentence", "component_id", "component_name", "confidence", "source"],
                       [[l["s"], l["c"], l.get("component_name", ""),
                         l.get("confidence", ""), l.get("source", "")] for l in links])
-            P, R, F, tp, npred, ngold = f1(md_pairs, md_gold[proj])
+            P, R, F = m.prf(md_gold[proj], set(md_pairs))
             md_man.append(dict(task="model-doc", system="aalinker", config=CONFIG,
                                backend=BE_TAG, knowledge=KNOW, run=run, project=proj,
                                n_links=n_md, P=f"{P:.4f}", R=f"{R:.4f}", F1=f"{F:.4f}",

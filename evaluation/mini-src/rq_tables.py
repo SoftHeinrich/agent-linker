@@ -33,8 +33,10 @@ import os
 import sys
 from pathlib import Path
 
+import metrics as m   # same directory: the shared core (project list, CSV writer)
+
 HERE = Path(__file__).resolve().parent
-EVAL = HERE.parent                                  # .../transarc-emp
+EVAL = HERE.parent                                  # .../evaluation
 REPORTS = EVAL / "reports"
 # RQ3/RQ4 engine outputs for the arm the paper reports (s_linker92a; see rq34.py ARM).
 RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", "reports_s92a")
@@ -44,7 +46,7 @@ RQ34_NOKNOW = {                                     # backend -> no-knowledge rq
 }
 TEX_SRC = REPORTS / "tex_src"
 
-PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
+PROJECTS = m.PROJECTS
 
 # The reported arm: body backend first, mirror second (rq34.py's BACKENDS for this arm).
 BODY_BACKEND = "terra"
@@ -96,12 +98,8 @@ def index(rows, *keys):
 
 
 def write_csv(name, fieldnames, rows):
-    TEX_SRC.mkdir(parents=True, exist_ok=True)
     path = TEX_SRC / name
-    with path.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
+    m.write_dict_csv(path, fieldnames, rows)         # the tree's one dict-row writer
     print(f"[rq_tables] wrote {path}")
 
 
