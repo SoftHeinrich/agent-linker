@@ -2,17 +2,18 @@
 """mini-rq34 — paper RQ3 (validator contribution) + RQ4 (per-module ablation)
 metrics, computed from the agent-linker running results.
 
-Self-contained, stdlib-only. Reads the canonical N=3 ``s_linker21`` sweep
-(``v2.6.6_s21_gpt`` -> GPT-5.4 / paper main body; ``v2.6.6_s21_sonnet``
--> Claude / appendix mirror), reconstructs each validator's per-link decisions and
-each linker's provenance from the ``phase_cache`` pickles (``layer3``,
-``layer4``, ``final``), scores every link against the SAD-SAM gold standard, and
-writes:
+Self-contained, stdlib-only. Reads the canonical N=3 ``s_linker92a`` sweep
+(``$RQ34_ARM=s92``, the default: terra -> paper body, luna -> mirror; set
+``RQ34_ARM=s21`` for the retired GPT-5.4/Claude arm), reconstructs each judge's
+per-link decisions and each linker's provenance from the run's phase state (see
+the arm layout below), scores every link against the SAD-SAM gold standard, and
+writes -- with one row per phase, so the row counts follow ``PHASES`` (3 on s92,
+2 on s21):
 
-    reports/<backend>/<project>/rq3.csv         (4 variant rows)
-    reports/<backend>/<project>/rq3_audit.csv   (2 validator rows)
-    reports/<backend>/<project>/rq4.csv         (2 linker rows)
-    reports/<backend>/<project>/rq4_upset.csv   (3 overlap-cell rows)
+    reports/<backend>/<project>/rq3.csv         (Full + one per judge + NoValidator)
+    reports/<backend>/<project>/rq3_audit.csv   (one row per judge)
+    reports/<backend>/<project>/rq4.csv         (one row per linker)
+    reports/<backend>/<project>/rq4_upset.csv   (one row per linker + shared)
     reports/<backend>/runs_summary.csv          (all 3 runs, canonical marked)
     reports/rq3_validators.csv  reports/rq3_variants.csv   (run-aware aggregates, both backends)
     reports/rq4_linkers.csv     reports/rq4_variants.csv   (run-aware aggregates, both backends)
