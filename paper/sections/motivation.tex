@@ -81,37 +81,48 @@ Three large components expand into $99.3\%$ of the gold links, while
 \texttt{preferences} component expands into only $0.44\%$ (\autoref{fig:motivation}, top).
 Link-level \fone\ is therefore settled by those three.
 Yet \texttt{preferences} is described by $20\%$ of the documented sentences, $46\times$ its
-share of links.
-A component a reader meets in one sentence out of five is nearly invisible to the score.
+share of links, and $17.6\%$ of the code's cross-component dependencies point at it, $40\times$ its share of links.
+A component that a reader meets in one sentence out of five, and that a sixth of the code depends on, is nearly invisible to the score.
 %TODO also state from other metrics. 
 
 % NOTE: $46\times$ = 20 / 0.4352 (exact preferences link-pair share). Displayed value is now
 % $0.44\%$ (was $0.4\%$), so the page reads consistently: 20 / 0.44 = 45.5 ~= 46. Do NOT revert
 % to 0.4 (that invites 20/0.4 = 50). See REVIEW [data-verification DONE] above.
+% NOTE: $17.6\%$ = preferences' share of all cross-component afferent coupling (Ca / sum Ca),
+% from studies/mini-depimport (reports/IMPORTANCE.csv, Ca=270); $40\times$ = 17.5667 / 0.4352.
+% It is the third series in fig:motivation (figures/jabref_depshare.csv). Cannot be recomputed
+% from the benchmark alone. This filled the "XXX dependency" placeholder on 2026-08-28.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/jabref_motivation_linear}
-\caption{doc-code links: small components own almost none of the links (grey bars),
-but the documentation describes each of them equally (orange) and several are
-depended on by much of the code (purple): two importance axes the link-level metric ignores.}
-\Description{A two-panel chart for JabRef component importance. 
-The top panel shows that three large components dominate the number of doc-code links, 
-while small components contribute almost none. 
-The bottom panel shows that documentation sentence share and dependency importance are much more evenly spread across components, so link-count-weighted evaluation hides important small components.}
+\caption{JabRef components, ordered by link share. \emph{Top:} small components own
+almost none of the doc-code links (grey) although the documentation describes them
+(orange) and much of the code depends on them (purple)---two importance axes the
+link-level metric ignores. \emph{Bottom:} per-component \fone\ for \TransArc{} and
+\Artemis{} (mean of three GPT-5.6-terra runs); \Artemis{} is weakest precisely on
+\texttt{preferences}, the component that owns $0.44\%$ of the links.}
+\Description{A two-panel chart for JabRef component importance.
+The top panel shows that three large components dominate the number of doc-code links
+while small components contribute almost none, yet documentation sentence share and
+code-dependency share are spread much more evenly across all six components.
+The bottom panel plots per-component F1 for TransArc and Artemis, showing that Artemis
+scores lowest on the small preferences component, which the link-weighted average hides.}
 \label{fig:motivation}
 \end{figure}
 
 %SPEC [ev-tools] role: ground in the Artemis/TransArc contrast; minimum figures needed.
-%NOTE [arm] These are the RELEASED GPT-5.4 \Artemis{} numbers, because the claim being
-%  examined is the published one. sec:results reports \Artemis{} re-run on GPT-5.6-terra,
-%  which drops a component on three of five projects but not always JabRef's -- so this
-%  paragraph must keep saying "as released" or it contradicts tab:rq2.
-The long-tailed distribution affects published tools, and we take \Artemis{} here as released.
-\Artemis, an \ac{LLM} pipeline, recovers the three large components almost perfectly and reaches $0.998$ link-level \fone, above \TransArc's $0.943$.
-Yet \Artemis{} never links a \texttt{preferences} sentence, scoring zero on that component---the one component a fifth of the document describes.
-\TransArc, by contrast, recovers every component, its weakest at $0.800$ (\autoref{fig:motivation}, bottom).
-Link-level \fone{} therefore ranks the tool Artemis that covers less of the architecture above TransArc, the one that covers more.
+%NOTE [arm] (2026-08-28) \Artemis{} here is the GPT-5.6-terra re-run, mean of 3 -- the same
+%  system sec:results reports, so the two sections describe one tool. The released gpt-5.4 arm
+%  scored 0.998 on JabRef and exactly 0 on preferences, which made the ranking inversion
+%  visible inside JabRef alone; the re-run scores 0.916 on JabRef, BELOW TransArc's 0.943, so
+%  that single-project version of the claim is gone. The inversion is now stated over the
+%  benchmark, where it still holds (+1.0pp link-level, -4.7pp worst, -4.1pp harmonic).
+The long-tailed distribution affects published tools.
+On JabRef, \Artemis{} is weakest on exactly this component: it scores $0.53$ on \texttt{preferences} against \TransArc{}'s $0.800$, and abandons it outright in one run of three (\autoref{fig:motivation}, bottom).
+Its \fone\ on the three large components stays near $0.9$, so the link-level average barely registers the hole---\texttt{preferences} carries $0.44\%$ of the links.
+Across the benchmark this inverts the ranking: \Artemis{} leads \TransArc{} by $1.0$pp of link-level \fone\ while trailing it by $4.7$pp on the worst component and $4.1$pp on the harmonic mean.
+Link-level \fone{} therefore ranks the tool that covers less of the architecture above the one that covers more.
 % %SPEC [ev-docmodel] role: separate the doc-model consequence; show the same silent-failure principle without conflating task granularity.
 % The same principle reappears on the doc-model task.
 % A system can score well on link-level \fone\ yet abandon a documented component's

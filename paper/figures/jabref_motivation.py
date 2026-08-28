@@ -14,9 +14,11 @@ Two stacked panels over JabRef's gold components, ordered by link-pair share:
          depends on them. The link-level metric under-weights them by orders of
          magnitude relative to both importance axes.
 
-  BOTTOM Per-component F1 for two real, strong recovery tools (TransArc, Artemis).
-         Artemis drops the small `preferences` component to 0 while its file-level
-         \\fone still edges TransArc's, because preferences owns only 0.44% of the
+  BOTTOM Per-component F1 for two real, strong recovery tools (TransArc, Artemis;
+         Artemis = mean of the three GPT-5.6-terra runs). Artemis scores lowest on the
+         small `preferences` component -- 0.53 against TransArc's 0.80, and 0 outright
+         in one run of three -- while the link-level average barely moves, because
+         preferences owns only 0.44% of the
          link pairs the link-level metric counts.
 
 Every number is COMPUTED from the ARDoCo benchmark gold standard and the two
@@ -35,15 +37,22 @@ Requires matplotlib (figure tooling only; not a dependency of the paper build).
 """
 import csv
 import json
+import sys
 import os
 import tempfile
 from collections import defaultdict
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir() + "/mpl-jabref-motiv")
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+
+
+def _plt():
+    """Import matplotlib lazily. compute() and the CSV dump are stdlib-only, so
+    `--data-only` regenerates the provenance data on a machine without it."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    return plt
 
 # ── Repo layout ───────────────────────────────────────────────────────────────
 HERE = Path(__file__).resolve().parent                 # …/alinker-paper/figures
@@ -54,7 +63,10 @@ BENCHMARK = Path(os.environ.get(
 # Recovered doc-code links for the two reference systems live in the unified sota store
 # (sota/recovered-links/doc-code, schema: sentence_id,target_id). Earlier runs read them from
 # transarc-emp/{results,results_artemis_gpt54}/...; that layout is gone, so default to the store.
-RECOVERED = Path(os.environ.get("RECOVERED_LINKS", ARDOCO_HOME / "sota/recovered-links/doc-code"))
+SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", ARDOCO_HOME / "sota-links"))
+# The old sota/recovered-links/doc-code layout is gone; the normalized dump is the
+# sota-links store this repo ships (see HOWTO-REGENERATE-RQ.md).
+RECOVERED = Path(os.environ.get("RECOVERED_LINKS", SOTA_LINKS / "doc-code"))
 # Per-component code-dependency share (share of all cross-component afferent coupling).
 # Provenanced static-analysis result — see jabref_depshare.csv header and the replication
 # package transarc-emp/mini-depimport. Cannot be recomputed from the benchmark alone.
@@ -65,10 +77,14 @@ GS_SAM_CODE = f"{PROJECT}/goldstandards/goldstandard_sam_2021-code_2023.csv"
 GS_SAD_CODE = f"{PROJECT}/goldstandards/goldstandard_sad_2021-code_2023.csv"
 ACM_FILE = f"{PROJECT}/model_2023/code/codeModel.acm"
 
-# (label, recovered sad-code links csv) — order = plotting order in the legend
+# (label, [recovered sad-code links csv, ...]) — order = plotting order in the legend.
+# A label with several paths is scored per run and AVERAGED, which is how sec:results
+# reports it. \Artemis{} moved from the released single gpt-5.4 run to the GPT-5.6-terra
+# re-run (mean of 3) on 2026-08-27, so that this figure and tab:rq2 describe one system.
 SYSTEMS = [
-    ("TransArc", RECOVERED / "transarc-jabref.csv"),
-    ("Artemis", RECOVERED / "artemis-jabref-gpt-5.4.csv"),
+    ("TransArc", [RECOVERED / "transarc-jabref.csv"]),
+    ("Artemis", [SOTA_LINKS / f"doc-code/artemis/terra_5.6/run{i}/jabref.csv"
+                 for i in (1, 2, 3)]),
 ]
 SYS_STYLE = {
     "TransArc": dict(color="#159e8c", marker="o"),
@@ -199,11 +215,15 @@ def compute():
 
     # per-system per-component F1
     sys_f1 = {}
-    for label, path in SYSTEMS:
-        pred_by_c = defaultdict(set)
-        for s, c in collapse(load_links(path, code), file_to_comps):
-            pred_by_c[c].add(s)
-        sys_f1[label] = {c: f1(gold_by_c.get(c, set()), pred_by_c.get(c, set()))
+    for label, paths in SYSTEMS:
+        per_run = []
+        for path in paths:
+            pred_by_c = defaultdict(set)
+            for s, c in collapse(load_links(path, code), file_to_comps):
+                pred_by_c[c].add(s)
+            per_run.append({c: f1(gold_by_c.get(c, set()), pred_by_c.get(c, set()))
+                            for c in gold_by_c})
+        sys_f1[label] = {c: sum(r[c] for r in per_run) / len(per_run)
                          for c in gold_by_c}
 
     dep = load_dep_share()                                # component -> code-dependency share %
@@ -231,6 +251,7 @@ def draw(rows, logscale):
     have_ds = all(v is not None for v in ds)
     drop_i = comps.index(DROPPED) if DROPPED in comps else None
 
+    plt = _plt()
     fig, (ax0, ax1) = plt.subplots(
         2, 1, figsize=(6.6, 5.0), sharex=True,
         gridspec_kw=dict(height_ratios=[1.05, 1.0], hspace=0.12))
@@ -336,6 +357,7 @@ def draw(rows, logscale):
 
 
 def main():
+    data_only = "--data-only" in sys.argv
     rows = compute()
     print(f"{'component':12}{'link%':>8}{'sent_n':>8}{'sent%':>8}"
           + "".join(f"{lbl:>10}" for lbl, _ in SYSTEMS))
@@ -354,6 +376,11 @@ def main():
             w.writerow([r["component"], f"{r['linkpair_pct']:.4f}", r["sent_n"],
                         f"{r['sent_pct']:.4f}", ds] + [f"{r[l]:.4f}" for l, _ in SYSTEMS])
 
+    if data_only:
+        print("\n[jabref_motivation] --data-only: wrote jabref_motivation_data.csv; "
+              "figures NOT rebuilt (needs matplotlib).")
+        return
+    plt = _plt()
     for stem, logscale in [("jabref_motivation_linear", False),
                            ("jabref_motivation_log", True)]:
         fig = draw(rows, logscale)

@@ -59,8 +59,10 @@
 %   doc-code size-aware (tab:rq2, \approach vs Artemis): worst-comp F1 .73 vs .47
 %     (+25.8pp), harmonic per-comp F1 .90 vs .63 (+26.4pp).
 %     [2026-08-27: tail metrics re-cut at the link grain of eq:worst.]
-%   published-claim para: Artemis-5.4 dc F1 .849 vs TransArc .803 (+4.6pp), but worst-comp
-%     .411 vs .515 (-10.4pp) and harmonic .506 vs .676 (-16.9pp).
+%   Artemis-vs-TransArc para (2026-08-28: NOW THE RE-RUN ARM, not gpt-5.4, so the intro,
+%     the motivation and sec:results all mean one system): Artemis-5.6 dc F1 .8127 vs
+%     TransArc .8026 (+1.0pp), worst-comp .4684 vs .5149 (-4.7pp), harmonic .6347 vs
+%     .6756 (-4.1pp). The released gpt-5.4 arm was +4.6/-10.4/-16.9 -- do not mix them.
 %   \approach vs TransArc on doc-code: +10.6pp link, +21.2pp worst, +22.3pp harmonic.
 %   doc-model CMR: \approach 1.9%, Artemis 3.3%, SWATTR 7.1%.
 %   abandoned components: \approach 1 (same one all 3 runs), Artemis-5.6 2/run (only 1
@@ -200,7 +202,7 @@ Recovering these links automatically is a long-standing open problem.
 Recent \ac{LLM}-based approaches push recovery scores up to 84\% \fone. %, and the task looks solved. % use soften words?
 However, can practitioners rely on these links? %But does a high score mean the links a practitioner can rely on?
 On an established benchmark~\cite{fuchs_establishing_2023}, we found that trace link distribution is long tailed:
-a few large components hold about $69-99\%$ of the scored links.
+a few large components hold $69.3$--$99.3\%$ of the scored links.
 A tool can therefore top the benchmark yet never link a whole component that a fifth of the documentation describes, and the score fails to present this miss sufficiently. %never shows the miss.
 This paper answers the question with both an improved traceability link recovery method and a measure that exposes these misses.
 
@@ -230,11 +232,11 @@ On doc-code it reaches an \avgfone of $0.909$ ($+9.6$pp) and an \avgftwo of $0.9
 % Para 4 -- second contribution: the measure, motivated from the long-tailed task property; ends on the key finding.
 Our second contribution starts from a fact about the task itself: trace links are long tailed.
 A few large components hold most of the links, while a long tail of small components hold only a handful.
-On the benchmark, the three largest components hold $69$--$99\%$ of the doc-code links (\autoref{sec:motivation}).
+On the benchmark, the three largest components hold $69.3$--$99.3\%$ of the doc-code links (\autoref{sec:motivation}).
 Standard link-level \fone\ rewards the large components, so the average hides the tail.
 We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare.
 % These adapt established ideas (macro-averaging, worst-group reporting, and harmonic-mean aggregation) to the architecture, so the contribution is the adaptation, not new statistics.
-\Artemis{} in its released configuration, the \ac{LLM} pipeline credited with beating \TransArc{} by $4.6$pp link-level \fone, in fact scores $10.4$pp lower on the worst component and $16.9$pp lower on the harmonic per-component \fone.
+\Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
 On doc-code \approach{} clears it: it leads \TransArc{} by $21.2$pp on the worst component and $22.3$pp on the harmonic per-component \fone, against $10.6$pp at the link level.
