@@ -49,7 +49,7 @@ We measure how much each check helps by calculating the confusion matrix.
     \item \label{rq:ablation} \emph{What does each linker module of \approach{} contribute on its own?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
-\approach{} is built from three modules: the knowledge module and the two linker modules \linkerB{} and \linkerC{}.
+\approach{} is built from four modules: the knowledge module and the three linker modules \linkerB{}, \linkerD{}, and \linkerC{}.
 A module-level ablation shows what each module contributes.
 
 
@@ -98,8 +98,8 @@ The outcome of \ref{rq:sota} tells us whether \approach{} improves over existing
 The pre-study (\autoref{sec:metric:prestudy}) shows these metrics are limited because of the benchmark's extreme inequality.
 \ref{rq:metrics} re-runs the same comparisons under the metric suite of \autoref{sec:metric:suite}.
 
-%TODO, since \cmr is already justified within the suite, just plainly say apply the suite.
-%  Reworded below to match. \cmr is the doc-model-only size-aware metric; not used on the file grain.
+%DONE, \cmr is justified within the suite, so this reads as "apply the suite" and nothing
+%  more. \cmr is the doc-model-only size-aware metric; it is not used on the file grain.
 For each (system, project) cell on the doc-code task we compute the \fone-tail of the suite: reference link-level \fone\ and the two component-size aware metrics (worst-component and harmonic-mean per-component \fone).
 On the doc-model task, we instead report the \cmrname{} (\cmr, \autoref{eq:cmr}), the share of gold sentence--component assignments whose component a system abandons.
 We read the size-aware metrics beside link-level \fone: where a system scores well on the standard metric yet poorly on the size-aware ones, it has recovered the bulk of the links while leaving whole components untraced.

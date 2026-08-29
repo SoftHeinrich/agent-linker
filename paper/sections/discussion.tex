@@ -7,10 +7,12 @@
 \paragraph{Internal validity.}
 Three factors could bias our measurements.
 First, the \ac{LLM} backend is non-deterministic.
-We report our system as the mean of three runs and release every raw response~\cite{replication}.
-% The ablations (\ref{rq:validators}, \ref{rq:ablation}) come from one \fullVariant{} run's logged decisions; each is a within-run comparison, so run-to-run variance is common-mode and cancels in the reported deltas.
-%TODO [run-counts] reconcile with results.tex:10 OPEN decision -- if RQ3/RQ4 are upgraded
-%  to mean-of-3 at the numbers pass, soften the within-run justification above accordingly.
+We report every measured system as the mean of three runs---\approach{}, the re-run \Artemis{} baseline, and the RQ3/RQ4 ablations alike---and release every raw response~\cite{replication}.
+%DONE [run-counts] (2026-08-29) resolved: RQ3 and RQ4 are mean-of-3 on this arm, not
+%  single-run, so the old "within-run comparison, variance is common-mode" justification is
+%  obsolete and has been dropped rather than softened. The s92a runs record per-phase state
+%  for all three runs (mini-rq34/reports_s92a/rq3_runs.csv carries run1/run2/run3/average),
+%  which is what the sentence above now claims for every reported number.
 Second, the backend may have seen the five public projects during pre-training, so memorization rather than the workflow could explain the gain.
 We therefore re-ran \Artemis{} on GPT-5.6-terra, the backend \approach{} uses, and report that arm: the two systems then share the same exposure and the same model, so what separates them is the workflow.
 We run it three times, as we run \approach{}, so neither system is credited with a lucky draw; its own runs differ enough to matter, abandoning a different component each time.
@@ -28,7 +30,10 @@ We mitigate this by using all five projects, which span two orders of magnitude 
 One choice is worth stating precisely under this heading: which form of the writing relation each linker scans (\autoref{tab:forms}) rests on a property of English---a capitalized token is a proper noun where the same token in lower case is often ordinary vocabulary---and we confirmed the resulting precision ordering on the benchmark rather than deriving it there.
 The relation itself contains no project vocabulary, and its only word list is a closed set of English inflectional suffixes, so it carries nothing from these five documents to a sixth.
 To show the gains do not depend on one model, we run \approach{} on two backends, GPT-5.6-terra and GPT-5.6-luna, and repeat the module ablation on both: the knowledge module is worth $6.2$pp \avgfone\ on the first and $3.5$pp on the second.
-%TODO [backend] numbers are in the appendix mirror; just pin the exact Claude Sonnet version string in the appendix caption.
+%TODO [backend] (rewritten 2026-08-29) the mirror backend is GPT-5.6-luna, not Claude
+%  Sonnet -- Sonnet belonged to the retired s21 arm and appears nowhere in the paper now.
+%  The open item is unchanged in kind: pin the exact GPT-5.6-terra and GPT-5.6-luna version
+%  strings in the appendix caption so the mirror is reproducible.
 
 \paragraph{Construct validity.}
 \ref{rq:metrics} assumes that recovering every documented component matters to developers; our size-aware metrics express this through worst-component and harmonic-mean per-component \fone{} on doc-code, and the \cmrname{} (\cmr) on doc-model, the share of gold sentence--component assignments whose component a system abandons.

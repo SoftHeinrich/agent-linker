@@ -67,7 +67,10 @@ SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage},
 \paragraph{Smallest-gain case: MediaStore.}
 %SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
 %  datum, name the cause, close on the aggregate. The datum moved from Teammates
-%  (component \fone) to MediaStore (the only doc-model \fone\ regression on this arm).
+%  (component \fone) to MediaStore.
+%DONE (2026-08-29) against the matched-backend baseline MediaStore is no longer only a
+%  doc-model \fone\ regression -- it loses on doc-model \fone, doc-model \ftwo\ and
+%  doc-code \fone\ alike, so the paragraph states all three instead of leaning on \ftwo.
 MediaStore is the one project where \approach{} does not beat \Artemis{}, and it loses on every view of the score: doc-model \fone\ $0.903$ against $0.933$ ($-3.0$pp), doc-model \ftwo\ $0.903$ against $0.954$ ($-5.0$pp), and doc-code \fone\ $0.867$ against $0.927$ ($-6.1$pp).
 It is also the project carrying the arm's only missed component, and the two facts share one cause.
 All three of \texttt{FileStorage}'s documented sentences call the component ``the DataStorage'', a name the architecture model does not use, so neither name pass matches it and the alias table never learns the pair.

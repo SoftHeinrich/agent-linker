@@ -140,7 +140,11 @@
 % (mean of 3) so the backend matches \approach. Lead = doc-model macro \fone\ +10.4pp
 % (.914-.809); then doc-code link \fone\ +9.6pp (.909-.813); size-aware deltas 25.8/26.4pp
 % (worst-component / harmonic per-component), matching results.tex and tab:rq2.
-% [2026-08-27: sentence coverage retired from the suite; its delta is gone from the abstract.] Units: spell out "percentage points" on first use, "pp" after. Keep intro.tex l.48 in sync.
+% [2026-08-27] Sentence coverage is retired from the suite, so the abstract carries two
+% size-aware deltas, not three.
+% Units: spell out "percentage points" on first use, "pp" after.
+% Keep in sync with the "Verified numbers to use" block in sections/intro.tex (search for
+% that phrase -- do not cite a line number, it drifts).
 \begin{abstract}
 Trace links between software architecture artifacts and code support impact analysis, change propagation, and compliance review, yet they are the hardest to recover: the artifacts describe the system on a higher level of abstraction and rarely directly match the names in the code.
 Lexical recovery overlooks aliases and implicit references, while a per-sentence \ac{LLM} rebuilds that knowledge on every call and accepts plausible-but-wrong links.

@@ -207,9 +207,12 @@ An earlier design instead graded each alias by how distinctive it was and withhe
 %   the extraction prompt, and dropping it is worth +3.0 TP (p=0.01) at +1.0 FP (p=0.59). The
 %   ambiguity map it used to be paired with is gone too (see sec:knowledge), so the "trailing word"
 %   machinery and the two-module framing both leave with it.
-%TODO [downstream] intro.tex, results.tex, eval.tex and conclusion.tex still describe a knowledge
-%   module of TWO tables and a no-knowledge ablation measured with the ambiguity map in place
-%   (results.tex: 5.8pp). Those numbers predate this design and must be re-measured before submission.
+%DONE [downstream] (2026-08-29) resolved on both counts. (a) No section describes a two-table
+%   knowledge module any more: intro.tex, eval.tex and results.tex all say "the knowledge module
+%   and the three linker modules", matching "holds one table, the alias table" above. (b) The
+%   no-knowledge ablation was re-measured without the ambiguity map, on this arm
+%   (s_linker92a_noknow, three GPT-5.6-terra runs); the retired 5.8pp is gone and results.tex
+%   reads 6.2pp \fone / 9.6pp \ftwo. See the %DONE [noknow] block in results.tex.
 
 \begin{promptL}{Alias Extraction (Document Understanding)}{alias}\\
 {\scriptsize\ttfamily\raggedright
