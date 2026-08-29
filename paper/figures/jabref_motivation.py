@@ -90,6 +90,7 @@ SYS_STYLE = {
     "TransArc": dict(color="#159e8c", marker="o"),
     "Artemis":  dict(color="#9b2226", marker="s"),
 }
+ARTEMIS_LABEL = "Artemis"
 DROPPED = "preferences"                                  # the component Artemis misses
 
 # ── Loaders: the shared core's, except where this figure needs another grain ──
@@ -153,24 +154,38 @@ def load_dep_share():
 
 
 # ── Metric: per-component F1 (set-overlap over the component's sentence set) ───
-def f1(gold_sents, pred_sents):
-    """``metrics.prf``'s F1, applied at this figure's grain.
+def f1(gold_links, pred_links):
+    """``metrics.prf``'s F1 at the grain ``metric.tex`` eq:worst defines.
 
-    The grain is the difference from the RQ2 tail metrics, not the arithmetic:
-    here a component is scored over its SENTENCE set (which sentences mentioning
-    it were recovered), matching the component suite's mapped-only universe. The
-    F1 itself is the shared one, so the figure and the tables agree on what an F1
-    is. Only gold components are scored, so the empty-gold case never arises.
+    A component owns a set of code files; its F1 is computed over the LINKS whose
+    target file belongs to it -- the same grain, and the same shared ``prf``, as
+    the worst-/harmonic-component metrics in tab:rq2. (Until 2026-08-29 this
+    figure scored a component over its SENTENCE set instead; on JabRef the two
+    agree to four decimals, but the definitions had drifted apart.) Only gold
+    components are scored, so the empty-gold case never arises.
     """
-    return m.prf(gold_sents, pred_sents)[2]
+    return m.prf(gold_links, pred_links)[2]
 
 
 def collapse(pairs, file_to_comps):
-    """(sentence, file) -> {(sentence, component)} (mapped-only)."""
+    """(sentence, file) -> {(sentence, component)} (mapped-only).
+
+    Used for the documentation-footprint columns (sent_n / sent_pct), which ask
+    which SENTENCES mention a component and are independent of the F1 grain.
+    """
     out = set()
     for s, fp in pairs:
         for c in file_to_comps.get(fp, ()):
             out.add((s, c))
+    return out
+
+
+def links_by_comp(pairs, file_to_comps):
+    """(sentence, file) -> {component: {(sentence, file)}} -- the eq:worst slice."""
+    out = defaultdict(set)
+    for s, fp in pairs:
+        for c in file_to_comps.get(fp, ()):
+            out[c].add((s, fp))
     return out
 
 
@@ -194,14 +209,14 @@ def compute():
     tot_sent = len({s for s, _ in gold_sc}) or 1
 
     # per-system per-component F1
+    gold_links_by_c = links_by_comp(gold_pairs, file_to_comps)      # eq:worst grain
     sys_f1 = {}
     for label, paths in SYSTEMS:
         per_run = []
         for path in paths:
-            pred_by_c = defaultdict(set)
-            for s, c in collapse(load_links(path, code), file_to_comps):
-                pred_by_c[c].add(s)
-            per_run.append({c: f1(gold_by_c.get(c, set()), pred_by_c.get(c, set()))
+            pred_links_by_c = links_by_comp(load_links(path, code), file_to_comps)
+            per_run.append({c: f1(gold_links_by_c.get(c, set()),
+                                  pred_links_by_c.get(c, set()))
                             for c in gold_by_c})
         sys_f1[label] = {c: sum(r[c] for r in per_run) / len(per_run)
                          for c in gold_by_c}
@@ -253,10 +268,14 @@ def draw(rows, logscale):
         # sub-1% shares get 2 decimals so preferences reads 0.44 (matches the
         # motivation prose: 20 / 0.4352 = 46x; 0.4 would invite the wrong 20/0.4=50).
         return f"{v:.2f}" if v < 1 else f"{v:.1f}"
+    # The bar labels sit under two series lines; a tight white box keeps them legible
+    # where a line crosses (gui's 34.2 sat directly under the 40% sentence-share line).
     for xi, v in zip(x, lp):
         ax0.annotate(_fmt_lp(v), (xi, v + bar_bottom), textcoords="offset points",
                      xytext=(0, 2), ha="center", va="bottom", fontsize=8,
-                     color="#555555")
+                     color="#555555", zorder=6,
+                     bbox=dict(boxstyle="square,pad=0.12", fc="white", ec="none",
+                               alpha=0.85))
     for xi, v in zip(x, sp):
         ax0.annotate(f"{v:.0f}", (xi, v), textcoords="offset points",
                      xytext=(7, 4), ha="left", va="bottom", fontsize=8,
@@ -314,10 +333,16 @@ def draw(rows, logscale):
     ax1.axhline(0, color="#cccccc", linewidth=0.8, zorder=1)
     ax1.legend(loc="lower left", fontsize=9, framealpha=0.9)
     if drop_i is not None:
+        # Anchor on the value actually plotted. The released gpt-5.4 arm scored a flat
+        # 0 here, so this used to read "entire component missed" and point at the zero
+        # line; the mean of three GPT-5.6-terra runs scores 0.53 (0 in one run of three),
+        # so an arrow to 0.0 would point at empty axis.
+        drop_y = rows[drop_i][ARTEMIS_LABEL]
         ax1.annotate(
-            f"entire component missed\n({_fmt_lp(rows[drop_i]['linkpair_pct'])}% of links,"
-            f" {rows[drop_i]['sent_pct']:.0f}% of doc sentences)",
-            xy=(drop_i, 0.0), xycoords="data", xytext=(drop_i - 1.9, 0.34),
+            f"weakest component\n({_fmt_lp(rows[drop_i]['linkpair_pct'])}% of links,"
+            f" {rows[drop_i]['sent_pct']:.0f}% of doc sentences,"
+            f" {rows[drop_i]['dep_share']:.0f}% of code deps)",
+            xy=(drop_i, drop_y), xycoords="data", xytext=(drop_i - 2.1, 0.22),
             textcoords="data", fontsize=8.0, color="#9b2226", ha="left",
             arrowprops=dict(arrowstyle="->", color="#9b2226", lw=1.0))
 
