@@ -91,7 +91,12 @@ SYS_STYLE = {
     "Artemis":  dict(color="#9b2226", marker="s"),
 }
 ARTEMIS_LABEL = "Artemis"
-DROPPED = "preferences"                                  # the component Artemis misses
+DROPPED = "preferences"
+
+# These figures are committed, so re-running must not dirty the tree. matplotlib
+# stamps a wall-clock CreationDate into every PDF, which makes a byte-different
+# file out of an identical plot; suppressing it keeps the rebuild reproducible.
+_META = {"pdf": {"CreationDate": None}, "png": {}}                                  # the component Artemis misses
 
 # ── Loaders: the shared core's, except where this figure needs another grain ──
 normalize_path = m.normalize_path
@@ -390,12 +395,14 @@ def main():
                            ("jabref_motivation_log", True)]:
         fig = draw(rows, logscale)
         for ext in ("pdf", "png"):
-            fig.savefig(HERE / f"{stem}.{ext}", dpi=150, bbox_inches="tight")
+            fig.savefig(HERE / f"{stem}.{ext}", dpi=150, bbox_inches="tight",
+                        metadata=_META[ext])
         plt.close(fig)
     # generic name = the linear variant the paper \includegraphics
     fig = draw(rows, logscale=False)
     for ext in ("pdf", "png"):
-        fig.savefig(HERE / f"jabref_motivation.{ext}", dpi=150, bbox_inches="tight")
+        fig.savefig(HERE / f"jabref_motivation.{ext}", dpi=150, bbox_inches="tight",
+                    metadata=_META[ext])
     plt.close(fig)
     print(f"\n[jabref_motivation] wrote figures + jabref_motivation_data.csv to {HERE}")
 
