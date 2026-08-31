@@ -29,7 +29,14 @@ F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
 \label{eq:fbeta}
 \end{equation}
 where $F_1$ ($\beta = 1$) weights precision and recall equally, and $F_2$ ($\beta = 2$) weights recall twice as heavily.
-Previous study has suggested that both are essential in trace-link recovery task/ %TODO cite paper
+Previous studies have suggested that both are essential in the trace-link recovery task.
+%TODO [fbeta-cite] (rewritten 2026-08-31) the sentence above appeals to the literature and
+%  cites nothing, which is the kind of claim a reviewer stops on. Two ways to close it, pick
+%  one: (a) cite a specific trace-recovery paper that reports both \fone\ and a
+%  recall-weighted measure, or (b) delete the sentence -- the paper does not need it, because
+%  eval.tex already argues the point from the task itself ("a spurious link is visible to the
+%  developer who reads it, while a link the system never proposes is not"), which is stronger
+%  than an uncited appeal. Fixed here regardless: a stray "/" was rendering as "task/".
 
 \paragraph{Doc-code: worst-component and harmonic-mean \texorpdfstring{$F_\beta$}{F-beta}.}
 On the doc-code task, directory expansion maps each directory annotation into file-level links, creating the long-tailed distribution that lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
@@ -50,7 +57,13 @@ F_\beta^{H} = \frac{|\mathcal{K}|}{\sum_{k \in \mathcal{K}} 1/F_\beta(k)}.
 \label{eq:harm}
 \end{equation}
 It down-weights every low-scoring component, not just the worst.
-%TODO small sum + promotion sent
+%TODO [suite-close] (rewritten 2026-08-31) the original shorthand was "small sum + promotion
+%  sent"; read as: close this paragraph with (i) a one-line summary of what the two doc-code
+%  metrics jointly buy and (ii) a sentence promoting why they belong in the suite. NOTE this
+%  reading is an interpretation of the shorthand -- confirm before acting. If it is right,
+%  the content already exists in results.tex ("a missed small component costs almost nothing
+%  in a volume-weighted average, but a developer who reads the architecture still sees the
+%  hole") and would only need condensing to one sentence here.
 
 \paragraph{Doc-model: \cmrname.}
 Doc-model links are sentence-to-component links, which are with no directory expansion. 

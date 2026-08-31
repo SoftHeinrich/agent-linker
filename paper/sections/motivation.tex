@@ -42,11 +42,19 @@ Documentation does not always work that way.
 After a component is introduced, later sentences can refer to it by aliases and pronouns, not by its full name.
 This gap between how a document refers and how a name match works cuts both ways: it misses true links and it admits false ones.
 
-%TODO the doc is batched as a whole to be sent, so here is not no see, but not understand the context6+. 
+%TODO [scope of the miss] (rewritten 2026-08-31; the original note was garbled) The point
+%  it was making: \approach{} and \Artemis{} send the document as a whole, so an \ac{LLM}
+%  reader is NOT blind to Sentence 6 -- for those systems the failure is not seeing the
+%  antecedent but resolving it. The per-sentence framing below is therefore scoped to the
+%  regime it holds in (a name match, and LiSSA's per-pair call), and must not be read as
+%  "the \ac{LLM} cannot see Sentence 6" -- that would contradict sec:approach, where
+%  \linkerC{} exists precisely because the context is available and still needs resolving.
+%  OPEN: if space allows, say in one clause that whole-document context does not by itself
+%  resolve the reference, which is the finding \linkerC{} and the \corefValidator{} rest on.
 \autoref{fig:example} shows the miss.
 Sentence~6 introduces the \texttt{gui} component under the alias ``the UI.''
 Sentence~7 then refers to it only through the pronoun ``it.''
-A tool that reads Sentence~7 alone finds no component name, because neither \texttt{gui} nor ``UI'' appears.
+A name match on Sentence~7 finds no component name, because neither \texttt{gui} nor ``UI'' appears in it.
 The trace link to \texttt{gui} is missed.
 
 %SPEC [fp] role: the false-positive face, grounded in the same S7.
@@ -62,7 +70,15 @@ A recovery method must therefore (i)~carry references across sentences and (ii)~
 
 %SPEC [ev] job: show why aggregate link-level scoring hides architecturally important misses; open with the task property (long-tailed distribution), not a paradox.
 \subsection{Architecture-Driven Evaluation}
-%TODO, make explicit this is our empirical study finding that previous work ignored 
+%TODO [ownership] (rewritten 2026-08-31) two separable asks; only one is safe to assert.
+%  (a) OURS: the long-tailed shape is measured by us -- expansion 1.0x (MediaStore) to
+%  217.6x (JabRef), Gini 0.474-0.591, top-3 share 69.3-99.3% -- in sec:metric:prestudy and
+%  tab:gold_concentration. The close of this section already says "This motivates us to
+%  quantify ...", so ownership is stated; strengthen only if a reviewer misses it.
+%  (b) "previous work IGNORED it" is a claim about the literature and is NOT currently
+%  supported by a citation anywhere in the paper. Either cite a specific paper that reports
+%  only link-level averages on this benchmark, or keep the weaker, defensible form already
+%  used in intro.tex -- that the standard metric hides the tail -- and let RQ2 carry it.
 
 %SPEC [ev-open] role: open with the long-tailed distribution as a task property intrinsic to the architecture.
 Trace links follow a long-tailed distribution across components.
