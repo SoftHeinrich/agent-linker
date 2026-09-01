@@ -22,7 +22,7 @@ system-pair reversals).
 | Task       | Metrics                                                                |
 |------------|-----------------------------------------------------------------------|
 | `sad-code` | file P/R/F1+F2; per-component F1+F2 (micro); **worst-component F1+F2**; **harmonic-mean component F1+F2** |
-| `sad-sam`  | link P/R/F1+F2; **component miss rate/count** (CMR%/CMC) |
+| `sad-sam`  | link P/R/F1+F2; **component miss rate** (CMR%) |
 
 **Every F1 ships with its F2.** F2 is recall-weighted (a missed gold link costs
 4× a spurious one), which is the asymmetry that matters for recovered links: a
@@ -61,11 +61,15 @@ back out; ρ ≈ 0.85–0.96 with file F1).
   gold components — one abandoned component drives either to 0.
 - **harmonic-mean component F1/F2:** harmonic mean of per-component F1 (resp. F2)
   over gold components; also 0 if any component is missed.
-- **component miss rate (CMR%) / count (CMC):** the doc-model size-aware metric —
-  share of gold (sentence, component) assignments whose component recovers no
-  correct link, and the integer count of such components. Reported in **percent**
-  (the paper's `\cmr` is the same quantity as a share in [0,1]); named
-  *silent-failure mass / SFM* until 2026-08-27.
+- **component miss rate (CMR%):** the doc-model size-aware metric — share of gold
+  (sentence, component) assignments whose component recovers no correct link.
+  Reported in **percent** (the paper's `\cmr` is the same quantity as a share in
+  [0,1]); named *silent-failure mass / SFM* until 2026-08-27.
+
+> The integer **component miss count (CMC)** was reported beside CMR until
+> 2026-09-01. It was dropped: no `.tex` table and no downstream engine read the
+> column, and CMR prices the same abandonment. CSVs written before that date keep
+> the column; readers select by name, so they still load.
 
 > A per-sentence **noise rate** (mean FP/(TP+FP) over predicted sentences) was
 > reported here until 2026-08-27. It was dropped: the paper never defined it, and

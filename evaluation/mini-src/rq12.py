@@ -13,9 +13,11 @@ That single big table is a superset of every RQ1/RQ2 cell:
   * RQ1 doc-to-model (tab:rq1-sadsam) = columns
     ``doc_to_model_link_precision``, ``doc_to_model_link_recall``,
     ``doc_to_model_link_f1``/``_f2``. The doc-model group also carries the size-aware
-    Component Miss Rate: ``doc_to_model_component_miss_rate`` (%) +
-    ``doc_to_model_component_miss_count`` (added 2026-06-30, doc-model only;
-    the doc-code suite keeps worst/harmonic and gets NO CMR column).
+    Component Miss Rate: ``doc_to_model_component_miss_rate`` (%) (added
+    2026-06-30, doc-model only; the doc-code suite keeps worst/harmonic and gets
+    NO CMR column). The ``..._component_miss_count`` twin was dropped 2026-09-01
+    unread -- CSVs written before that date still carry the column, and every
+    reader here selects columns by name, so old and new dumps interoperate.
   * RQ1 doc-to-code  (tab:rq1-sadcode) = columns
     ``doc_to_code_file_precision``, ``doc_to_code_file_recall``,
     ``doc_to_code_file_f1``/``_f2``.
@@ -44,6 +46,9 @@ Usage
     python3 mini-src/rq12.py                      # -> reports/RQ12_BIGTABLE.csv (+ stdout)
     python3 mini-src/rq12.py --csv /tmp/big.csv
 
+Every root defaults to the in-repo layout, so a bare run (or an IDE Run button)
+needs no environment variables; $SOTA_LINKS / $TRANSARC_BENCHMARK still override.
+
 Provenance note (worst/harmonic, the approach rows): these are recomputed here
 from the recorded three-run ``aalinker-composed`` dump (mean of the three runs),
 not copied from any earlier table — the tail metrics are run-sensitive, so they
@@ -60,7 +65,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import metrics as m   # noqa: E402  (mini-src/metrics.py — sole metric impl + loaders)
 
-SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", m._ARDOCO_HOME / "sota/recovered-links"))
+SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", m.REPO / "sota-links"))
+REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 
 # ── System roster ─────────────────────────────────────────────────────────────
 # Each entry resolves a per-(run,)project file path for both tasks. `runs=None`
@@ -122,7 +128,6 @@ COLUMNS = [
     ("doc_to_model_link_f1", SS, "link_f1"),
     ("doc_to_model_link_f2", SS, "link_f2"),
     ("doc_to_model_component_miss_rate", SS, "component_miss_rate"),
-    ("doc_to_model_component_miss_count", SS, "component_miss_count"),
     ("doc_to_code_file_precision", SC, "file_p"),
     ("doc_to_code_file_recall", SC, "file_r"),
     ("doc_to_code_file_f1", SC, "file_f1"),
@@ -134,6 +139,13 @@ COLUMNS = [
     ("doc_to_code_harmonic_component_f1", SC, "harmonic_component_f1"),
     ("doc_to_code_harmonic_component_f2", SC, "harmonic_component_f2"),
 ]
+
+# The two big tables carry the same metric columns and differ only in their
+# leading row-axis columns: (system, backend, run) vs (system, backend, project).
+METRIC_FIELDS = [name for name, _task, _key in COLUMNS]
+BIGTABLE_FIELDS = ["system", "backend", "run",
+                   "doc_to_model_projects", "doc_to_code_projects"] + METRIC_FIELDS
+PERPROJECT_FIELDS = ["system", "backend", "project"] + METRIC_FIELDS
 
 
 def score_cells(system, task):
@@ -165,123 +177,193 @@ def score_cells(system, task):
     return cells
 
 
-def _mean(vectors, cols):
-    return {c: sum(v[c] for v in vectors) / len(vectors) for c in cols}
+def mean_vector(vectors, cols):
+    """Element-wise mean of metric vectors, over `cols`."""
+    vectors = list(vectors)
+    mean = {}
+    for col in cols:
+        mean[col] = sum(v[col] for v in vectors) / len(vectors)
+    return mean
 
 
-def run_panels(system, task):
-    """Per-run vectors, macro-averaged over the five projects.
+def macro_by_run(system, task):
+    """One vector per run, macro-averaged over the five projects.
 
-    ``[(run_label, vector_dict), ...]``; the row axis of the big table.
+    The big table's row axis: ``[(run_label, vector), ...]`` in run order.
     """
     cols = m.PANELS[task]
-    return [(run, _mean(list(by_project.values()), cols))
-            for run, by_project in score_cells(system, task)]
+    panels = []
+    for run, by_project in score_cells(system, task):
+        macro = mean_vector(by_project.values(), cols)
+        panels.append((run, macro))
+    return panels
 
 
-def average_vec(run_vectors, task):
-    return _mean([v for _run, v in run_vectors], m.PANELS[task])
+def mean_by_project(system, task):
+    """One vector per project, averaged over the system's runs.
 
-
-def metric_cells(ss_vec, sc_vec):
-    """The COLUMNS projection: column name -> value from the right task's vector."""
-    return {name: (ss_vec if task == SS else sc_vec)[key] for name, task, key in COLUMNS}
-
-
-def build_row(system, run_label, ss_vec, sc_vec):
-    return {"system": system["label"], "backend": system["backend"], "run": run_label,
-            "doc_to_model_projects": len(m.PROJECTS),
-            "doc_to_code_projects": len(m.PROJECTS),
-            **metric_cells(ss_vec, sc_vec)}
-
-
-def build_rows(system):
-    """Big-table rows for one system: per-run rows plus average for multi-run systems."""
-    ss_runs = run_panels(system, SS)
-    sc_runs = run_panels(system, SC)
-    if [r for r, _v in ss_runs] != [r for r, _v in sc_runs]:
-        raise SystemExit(f"run labels differ between tasks for {system['label']}")
-    if system["runs"] is None:
-        return [build_row(system, "single", ss_runs[0][1], sc_runs[0][1])]
-
-    rows = [build_row(system, run, ss_vec, sc_vec)
-            for (run, ss_vec), (_run2, sc_vec) in zip(ss_runs, sc_runs)]
-    rows.append(build_row(system, "average", average_vec(ss_runs, SS), average_vec(sc_runs, SC)))
-    return rows
-
-
-def project_panels(system, task):
-    """Per-*project* metric vectors for one system on one task, averaged over runs.
-
-    The orthogonal aggregation to ``run_panels`` (which macro-averages over
-    projects per run): here the project axis is kept and each project's vector is
-    averaged over the system's runs. Feeds the per-project big table. Single-shot
-    systems contribute their one run unchanged.
+    The orthogonal aggregation to ``macro_by_run``: the project axis is kept and
+    the run axis collapses. Feeds the per-project table. Single-shot systems
+    contribute their one run unchanged.
     """
     cols = m.PANELS[task]
     cells = score_cells(system, task)
-    return {proj: _mean([by_project[proj] for _run, by_project in cells], cols)
-            for proj in m.PROJECTS}
+    panels = {}
+    for proj in m.PROJECTS:
+        over_runs = [by_project[proj] for _run, by_project in cells]
+        panels[proj] = mean_vector(over_runs, cols)
+    return panels
+
+
+def metric_columns(dm_vec, dc_vec):
+    """The COLUMNS projection: column name -> value from the right task's vector."""
+    cells = {}
+    for name, task, key in COLUMNS:
+        vector = dm_vec if task == SS else dc_vec
+        cells[name] = vector[key]
+    return cells
+
+
+def build_rows(system):
+    """Big-table rows for one system: one per run, plus `average` if it has runs."""
+    dm = macro_by_run(system, SS)
+    dc = macro_by_run(system, SC)
+    dm_runs = [run for run, _vec in dm]
+    dc_runs = [run for run, _vec in dc]
+    if dm_runs != dc_runs:
+        raise SystemExit(f"run labels differ between tasks for {system['label']}")
+
+    # (row label, doc-model vector, doc-code vector), in printed order. A
+    # single-shot system yields one "single" panel and has nothing to average.
+    panels = []
+    for (run, dm_vec), (_run, dc_vec) in zip(dm, dc):
+        panels.append((run, dm_vec, dc_vec))
+    if system["runs"] is not None:
+        dm_average = mean_vector([vec for _run, vec in dm], m.PANELS[SS])
+        dc_average = mean_vector([vec for _run, vec in dc], m.PANELS[SC])
+        panels.append(("average", dm_average, dc_average))
+
+    rows = []
+    for label, dm_vec, dc_vec in panels:
+        row = {"system": system["label"], "backend": system["backend"], "run": label,
+               "doc_to_model_projects": len(m.PROJECTS),
+               "doc_to_code_projects": len(m.PROJECTS)}
+        row.update(metric_columns(dm_vec, dc_vec))
+        rows.append(row)
+    return rows
 
 
 def build_perproject_rows(system):
     """One row per (system, project): the full suite, mean over the system's runs."""
-    ss = project_panels(system, SS)
-    sc = project_panels(system, SC)
-    return [{"system": system["label"], "backend": system["backend"], "project": proj,
-             **metric_cells(ss[proj], sc[proj])}
-            for proj in m.PROJECTS]
+    dm = mean_by_project(system, SS)
+    dc = mean_by_project(system, SC)
+    rows = []
+    for proj in m.PROJECTS:
+        row = {"system": system["label"], "backend": system["backend"], "project": proj}
+        row.update(metric_columns(dm[proj], dc[proj]))
+        rows.append(row)
+    return rows
 
 
-def summary_row(rows, label):
-    return next((r for r in rows if r["system"] == label and r["run"] in ("average", "single")), None)
+def delta_row(rows, arm_label, baseline_label):
+    """The Δ (arm − baseline) row: the RQ2 panel's Δ = approach − Artemis column.
 
-
-
-def delta_row(rows, a_label, b_label):
-    """Δ row (a − b), per the RQ2 panel's Δ = approach − Artemis column."""
-    a = summary_row(rows, a_label)
-    b = summary_row(rows, b_label)
-    if not a or not b:
+    Each operand is that system's summary row -- ``average`` for a multi-run
+    system, ``single`` for a single-shot one. None if either label is absent.
+    """
+    summary = {}
+    for row in rows:
+        if row["run"] in ("average", "single"):
+            summary[row["system"]] = row
+    arm = summary.get(arm_label)
+    baseline = summary.get(baseline_label)
+    if not arm or not baseline:
         return None
-    out = {"system": f"Delta ({a_label} - {b_label})", "backend": "", "run": "delta",
-           "doc_to_model_projects": "", "doc_to_code_projects": ""}
-    for name, _, _ in COLUMNS:
-        out[name] = (a[name] - b[name]) if (a[name] is not None and b[name] is not None) else None
-    return out
+
+    delta = {"system": f"Delta ({arm_label} - {baseline_label})",
+             "backend": "", "run": "delta",
+             "doc_to_model_projects": "", "doc_to_code_projects": ""}
+    for name in METRIC_FIELDS:
+        delta[name] = arm[name] - baseline[name]
+    return delta
 
 
 def fmt(v):
     return "" if v is None or v == "" else (f"{v:.4f}" if isinstance(v, float) else str(v))
 
 
+# Short headers + task band for the stdout table ONLY. The CSVs keep the long
+# machine names of COLUMNS -- nothing downstream reads this print, and printing a
+# 35-character column name over a 6-character number made the table unreadable.
+SHORT = {
+    "doc_to_model_link_precision": "P",
+    "doc_to_model_link_recall": "R",
+    "doc_to_model_link_f1": "F1",
+    "doc_to_model_link_f2": "F2",
+    "doc_to_model_component_miss_rate": "CMR%",
+    "doc_to_code_file_precision": "P",
+    "doc_to_code_file_recall": "R",
+    "doc_to_code_file_f1": "F1",
+    "doc_to_code_file_f2": "F2",
+    "doc_to_code_component_micro_f1": "cF1",
+    "doc_to_code_component_micro_f2": "cF2",
+    "doc_to_code_worst_component_f1": "wF1",
+    "doc_to_code_worst_component_f2": "wF2",
+    "doc_to_code_harmonic_component_f1": "hF1",
+    "doc_to_code_harmonic_component_f2": "hF2",
+}
+BAND = {SS: "doc-model (link + CMR%)", SC: "doc-code (file + per-component)"}
+
+
 def print_table(rows):
-    names = [c[0] for c in COLUMNS]
-    w = max(len(r["system"]) for r in rows) + 1
-    widths = [max(len(n), 8) + 2 for n in names]
-    head = "system".ljust(w) + "run".rjust(9) + "".join(n.rjust(width) for n, width in zip(names, widths))
+    """The stdout view: two header lines -- a task band over short metric names.
+
+    Same rows, same values, same order as the CSV; only the header shortens, and
+    P/R/F1/F2 repeat per task because the band above says which task they belong
+    to. The doc-model block comes first because COLUMNS orders it first.
+    """
+    names = METRIC_FIELDS
+    widths = []
+    for name in names:
+        widths.append(max(len(SHORT[name]), 7) + 1)
+    label_w = max(len(row["system"]) for row in rows) + 2
+    run_w = max(len(row["run"]) for row in rows) + 2
+
+    # Line 1: one band per task, centred over that task's columns.
+    band = " " * (label_w + run_w)
+    for task in (SS, SC):
+        span = 0
+        for (_name, column_task, _key), width in zip(COLUMNS, widths):
+            if column_task == task:
+                span += width
+        band += BAND[task].center(span)
+
+    # Line 2: the short metric names.
+    head = "system".ljust(label_w) + "run".rjust(run_w)
+    for name, width in zip(names, widths):
+        head += SHORT[name].rjust(width)
+
+    print(band.rstrip())
     print(head)
     print("-" * len(head))
-    for r in rows:
-        print(r["system"].ljust(w) + r["run"].rjust(9)
-              + "".join(fmt(r[n]).rjust(width) for n, width in zip(names, widths)))
-
-
-# The two big tables differ only in their leading row-axis columns.
-METRIC_FIELDS = [c[0] for c in COLUMNS]
-BIGTABLE_FIELDS = ["system", "backend", "run",
-                   "doc_to_model_projects", "doc_to_code_projects"] + METRIC_FIELDS
-PERPROJECT_FIELDS = ["system", "backend", "project"] + METRIC_FIELDS
+    for row in rows:
+        line = row["system"].ljust(label_w) + row["run"].rjust(run_w)
+        for name, width in zip(names, widths):
+            line += fmt(row[name]).rjust(width)
+        print(line)
 
 
 def write_csv(rows, fields, path):
     """Write `rows` as `fields`, every cell through ``fmt`` (LF line endings)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="") as f:
-        w = csv.writer(f, lineterminator="\n")
-        w.writerow(fields)
-        for r in rows:
-            w.writerow([fmt(r[k]) for k in fields])
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerow(fields)
+        for row in rows:
+            cells = []
+            for field in fields:
+                cells.append(fmt(row[field]))
+            writer.writerow(cells)
 
 
 def main():
@@ -294,30 +376,41 @@ def main():
                          "(default: reports/RQ12_PERPROJECT.csv, or next to --csv)")
     args = ap.parse_args()
 
-    rows = [row for system in ROSTER for row in build_rows(system)]
+    rows = []
+    for system in ROSTER:
+        rows.extend(build_rows(system))
 
     big = list(rows)
     for arm in (BODY_ARM, MIRROR_ARM):
-        d = delta_row(rows, arm, BASELINE_ARM)
-        if d:
-            big.append(d)
+        delta = delta_row(rows, arm, BASELINE_ARM)
+        if delta:
+            big.append(delta)
     print_table(big)
     print(f"\nProvenance: {SOTA_LINKS}  (approach rows = run1/run2/run3 plus average)")
-    print("RQ1 doc-to-model = doc_to_model_link_precision/recall/f1/f2; "
-          "RQ1 doc-to-code = doc_to_code_file_precision/recall/f1/f2.")
-    print("RQ2 size-aware = doc_to_code_file_f1/f2, "
-          "doc_to_code_{worst,harmonic}_component_f1/f2, "
-          "doc_to_model_component_miss_rate.")
+    print("Columns: P/R/F1/F2 = link (doc-model) resp. file (doc-code) scores; "
+          "CMR% = component miss rate;")
+    print("         cF1/cF2 = per-component micro, wF1/wF2 = worst component, "
+          "hF1/hF2 = harmonic-mean component.")
+    print("RQ1 = the two P/R/F1/F2 blocks. RQ2 size-aware = CMR% (doc-model) and "
+          "w*/h* + file F1/F2 (doc-code).")
 
-    reports = m._ARDOCO_HOME / "transarc-emp/reports"
-    out = Path(args.csv) if args.csv else reports / "RQ12_BIGTABLE.csv"
-    write_csv(big, BIGTABLE_FIELDS, out)
+    # Both CSVs land in one directory: REPORTS by default, or beside --csv.
+    if args.csv:
+        big_csv = Path(args.csv)
+    else:
+        big_csv = REPORTS / "RQ12_BIGTABLE.csv"
+    if args.perproject_csv:
+        perproject_csv = Path(args.perproject_csv)
+    else:
+        perproject_csv = big_csv.parent / "RQ12_PERPROJECT.csv"
 
-    pp_rows = [row for system in ROSTER for row in build_perproject_rows(system)]
-    out2 = Path(args.perproject_csv) if args.perproject_csv else (
-        out.parent / "RQ12_PERPROJECT.csv" if args.csv else reports / "RQ12_PERPROJECT.csv")
-    write_csv(pp_rows, PERPROJECT_FIELDS, out2)
-    print(f"\n[rq12] wrote {out}\n[rq12] wrote {out2}", file=sys.stderr)
+    perproject_rows = []
+    for system in ROSTER:
+        perproject_rows.extend(build_perproject_rows(system))
+
+    write_csv(big, BIGTABLE_FIELDS, big_csv)
+    write_csv(perproject_rows, PERPROJECT_FIELDS, perproject_csv)
+    print(f"\n[rq12] wrote {big_csv}\n[rq12] wrote {perproject_csv}", file=sys.stderr)
 
 
 if __name__ == "__main__":

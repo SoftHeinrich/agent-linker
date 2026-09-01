@@ -1,5 +1,13 @@
 # explore-tail — tail/coverage metric family vs link-F1 correlation
 
+> **Naming (2026-09-01).** This study says *Silent-Failure Mass (SFM)* and
+> *Silent-Failure Count (SFC)*; the shipped metric is the mass form, renamed
+> **component miss rate (CMR)** on 2026-08-27. The count form was shipped beside it
+> as CMC and dropped on 2026-09-01 — no table or engine read it — so the suite now
+> reports the rate only. `sfm_vs_worst.py` calls `metrics.compute_sad_sam` for CMR;
+> the other scripts here still re-derive their own candidate metrics, which is the
+> point of the exploration (`abandmass_*` matches CMR exactly on `sad-sam`).
+
 Exploration (not a frozen study): sweep a broad family of **tail** and **coverage**
 summaries over the per-component F1 distribution and measure each one's Spearman
 correlation to the reference **link/file F1**, across 30 (system, project) cells

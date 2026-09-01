@@ -20,20 +20,24 @@ Panel
 -----
     sad-code (doc-to-code) : file P/R/F1, per-component F1 (micro),
                              worst-component F1, harmonic-mean component F1
-    sad-sam  (doc-to-model): link P/R/F1,
-                             Component Miss Rate (CMR%) + Component Miss Count (CMC)
+    sad-sam  (doc-to-model): link P/R/F1, Component Miss Rate (CMR%)
                              (the MICRO per-component F1 collapses onto link F1 with
-                             no enrolment, so it is dropped; CMR/CMC do NOT collapse
-                             — they are the doc-model size-aware metric, added
+                             no enrolment, so it is dropped; CMR does NOT collapse
+                             — it is the doc-model size-aware metric, added
                              2026-06-30, component--sentence denominator)
+
+The companion Component Miss Count (CMC, the integer number of abandoned
+components) was dropped 2026-09-01: no .tex table and no downstream engine ever
+read the column, and CMR already prices the same abandonment. The paper's prose
+counts ("abandons one documented component") were taken from it; nothing
+regenerates them now.
 
 The worst-component + harmonic pair is the paper's ``metric.tex`` size-aware
 headline for DOC-CODE (weight each architecture component equally, not each link
 pair); they stay doc-code-only (redundant with link-F1 on doc-model). The
-doc-model size-aware metric is instead CMR/CMC (a missed component: the share of
+doc-model size-aware metric is instead CMR (a missed component: the share of
 documented component--sentence links whose component recovers no correct link),
-added
-to ``compute_sad_sam`` only — ``compute_sad_code`` is untouched.
+added to ``compute_sad_sam`` only — ``compute_sad_code`` is untouched.
 ``mini-src/check.py`` pins every cell to a frozen golden table (validated at
 retirement against the then-canonical ``metrics_api`` and the interface-dropped
 ``component_suite``). The whole computation lives here, in ~450 lines.
@@ -65,18 +69,15 @@ from collections import defaultdict
 from pathlib import Path
 
 # ── Benchmark layout (mirrors src/lib/transarc_error_analysis.py) ─────────────
-# Defaults are derived from this file's location rather than hardcoded:
-#   <ardoco-home>/transarc-emp/mini-src/metrics.py  →  parents[2] is ardoco-home.
-# Env vars still override for out-of-tree benchmark / result roots.
-_ARDOCO_HOME = Path(__file__).resolve().parents[2]
-BENCHMARK = Path(os.environ.get(
-    "TRANSARC_BENCHMARK",
-    _ARDOCO_HOME / "ardoco/core/tests-base/src/main/resources/benchmark",
-))
-DEFAULT_RESULTS = Path(os.environ.get(
-    "TRANSARC_RESULTS_DIR",
-    _ARDOCO_HOME / "transarc-emp/mini-data",
-))
+# Defaults are derived from this file's location, so pressing Run on any script
+# here works with no environment set:
+#   <repo>/evaluation/mini-src/metrics.py  →  parents[2] is the repo root.
+# Env vars still override, for an out-of-tree benchmark or result root. (Until
+# 2026-09-01 these defaults pointed at the pre-nesting `<ardoco-home>/transarc-emp`
+# layout, i.e. at nothing, so every bare run died on a missing path.)
+REPO = Path(__file__).resolve().parents[2]
+BENCHMARK = Path(os.environ.get("TRANSARC_BENCHMARK", REPO / "benchmark"))
+DEFAULT_RESULTS = Path(os.environ.get("TRANSARC_RESULTS_DIR", REPO / "evaluation/mini-data"))
 
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 
@@ -462,17 +463,16 @@ def compute_sad_code(project, res):
 
 
 def compute_sad_sam(project, res):
-    """Primary panel + Component Miss Rate/Count for one doc-to-model result set.
+    """Primary panel + Component Miss Rate for one doc-to-model result set.
 
-    Component Miss Rate (CMR) / Count (CMC) is the doc-model size-aware metric
-    (the doc-code worst/harmonic tail is redundant with link-F1 here, so it is
-    NOT reported on doc-model; see the module docstring). Definitions, over GOLD
-    components and gold documentation assignments:
+    The Component Miss Rate (CMR) is the doc-model size-aware metric (the doc-code
+    worst/harmonic tail is redundant with link-F1 here, so it is NOT reported on
+    doc-model; see the module docstring). Definitions, over GOLD components and
+    gold documentation assignments:
 
       * component c is ABANDONED iff ``recall_c == 0`` -- it recovers no correct
         link (zero correct sentences for c), reusing ``prf``'s convention that an
         empty/all-wrong prediction scores recall 0.
-      * CMC = #{abandoned gold components}                              (integer)
       * CMR = sum(|gold sentences for c| for abandoned c)
               / sum(|gold sentences for c| for gold c) * 100            (%, [0,100])
 
@@ -480,9 +480,12 @@ def compute_sad_sam(project, res):
     same quantity in PERCENT, which is what every table and every prose figure in
     the paper prints ("1.9%"). Do not divide again downstream.
 
-    This is a sentence-weighted CMC: every gold (sentence, component) assignment
+    CMR is sentence-weighted: every gold (sentence, component) assignment
     contributes one unit of mass. Thus, a sentence documented for two components
-    contributes twice, once for each component. Empty gold -> CMR 0.0, CMC 0.
+    contributes twice, once for each component. Empty gold -> CMR 0.0.
+
+    The integer count of abandoned components (CMC) was returned here until
+    2026-09-01; it was dropped unread (see the module docstring).
     """
     gold = load_gs_sad_sam(project)
     lp, lr, lf1 = prf(gold, res)
@@ -516,7 +519,6 @@ def compute_sad_sam(project, res):
         "project": project,
         "link_p": lp, "link_r": lr, "link_f1": lf1, "link_f2": fbeta(lp, lr),
         "component_miss_rate": cmr,
-        "component_miss_count": len(abandoned_components),
     }
 
 
@@ -528,7 +530,7 @@ PANELS = {
                  "worst_component_f1", "worst_component_f2",
                  "harmonic_component_f1", "harmonic_component_f2"],
     "sad-sam":  ["link_p", "link_r", "link_f1", "link_f2",
-                 "component_miss_rate", "component_miss_count"],
+                 "component_miss_rate"],
 }
 HEADERS = {
     "file_p": "file_P", "file_r": "file_R", "file_f1": "file_F1", "file_f2": "file_F2",
@@ -536,7 +538,7 @@ HEADERS = {
     "component_f1": "comp_F1", "component_f2": "comp_F2",
     "worst_component_f1": "worst_C_F1", "worst_component_f2": "worst_C_F2",
     "harmonic_component_f1": "harm_C_F1", "harmonic_component_f2": "harm_C_F2",
-    "component_miss_rate": "CMR%", "component_miss_count": "CMC",
+    "component_miss_rate": "CMR%",
 }
 
 def average_row(rows, cols):

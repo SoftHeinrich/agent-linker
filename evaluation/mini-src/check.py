@@ -20,10 +20,13 @@ Provenance of the frozen numbers (validated at retirement, 2026-06):
     projection. Only Teammates and BigBlueButton move -- the other three projects
     have per-component slices the projection did not collapse. Every non-tail column
     was re-asserted unchanged in the same run.
-  * CMR/CMC (sad-sam only) added 2026-06-30: Component Miss Rate (%) + Count, the
-    doc-model size-aware metric, component--sentence denominator. Frozen from the
-    bundled TransArc doc-model results; sad-code goldens are unchanged. (Named
-    SFM/SFC until 2026-08-27; the values are unchanged by the rename.)
+  * CMR (sad-sam only) added 2026-06-30: Component Miss Rate (%), the doc-model
+    size-aware metric, component--sentence denominator. Frozen from the bundled
+    TransArc doc-model results; sad-code goldens are unchanged. (Named SFM until
+    2026-08-27; the values are unchanged by the rename.)
+  * The CMC column (Component Miss Count, frozen beside CMR since 2026-06-30) was
+    dropped 2026-09-01 -- no table or engine read it. Every other cell was
+    re-asserted unchanged in the same run, so this is a deletion, not a re-freeze.
   * The noise-rate column was dropped 2026-08-27 -- it was never defined in the
     paper and nothing downstream reads it. Every other cell was re-asserted
     unchanged in the same run, so this is a deletion, not a re-freeze.
@@ -56,12 +59,12 @@ GOLDEN = {
         "jabref":        (0.8927, 1.0000, 0.9433, 0.9765, 0.9565, 0.9821, 0.8000, 0.9091, 0.9412, 0.9756),
     },
     "sad-sam": {
-        # link_P   link_R   link_F1  link_F2  CMR%      CMC
-        "mediastore":    (0.9444, 0.5484, 0.6939, 0.5986, 35.4839, 3.0000),
-        "teastore":      (1.0000, 0.7407, 0.8511, 0.7812, 0.0000, 0.0000),
-        "teammates":     (0.6049, 0.8596, 0.7101, 0.7929, 0.0000, 0.0000),
-        "bigbluebutton": (0.8980, 0.7097, 0.7928, 0.7407, 0.0000, 0.0000),
-        "jabref":        (0.9000, 1.0000, 0.9474, 0.9783, 0.0000, 0.0000),
+        # link_P   link_R   link_F1  link_F2  CMR%
+        "mediastore":    (0.9444, 0.5484, 0.6939, 0.5986, 35.4839),
+        "teastore":      (1.0000, 0.7407, 0.8511, 0.7812, 0.0000),
+        "teammates":     (0.6049, 0.8596, 0.7101, 0.7929, 0.0000),
+        "bigbluebutton": (0.8980, 0.7097, 0.7928, 0.7407, 0.0000),
+        "jabref":        (0.9000, 1.0000, 0.9474, 0.9783, 0.0000),
     },
 }
 

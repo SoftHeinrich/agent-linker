@@ -9,7 +9,7 @@ it is.
 
 | Dir | Question it answered | Status |
 |-----|----------------------|--------|
-| [`explore-tail/`](explore-tail/README.md) | Is any tail/coverage summary more independent of link-F1 than worst-comp / harmonic-comp F1? | Answered: independence lives in coverage-*counting*, which is why the reported suite carries Silent-Failure Mass/Count and dropped component coverage. |
+| [`explore-tail/`](explore-tail/README.md) | Is any tail/coverage summary more independent of link-F1 than worst-comp / harmonic-comp F1? | Answered: independence lives in coverage-*counting*, which is why the reported suite carries the component miss rate (CMR, called Silent-Failure Mass here) and dropped component coverage. The count twin (CMC/SFC) was reported beside it until 2026-09-01, then dropped unread. |
 | [`mini-depimport/`](mini-depimport/README.md) | Does a component's code footprint predict how much of the codebase depends on it? | Answered: no. Cited as frozen provenance by `paper/figures/jabref_motivation.py`; not recomputable from the benchmark alone. |
 | [`mini-inequality/`](mini-inequality/CLAIM_CHECK.md) | Does every distributional-inequality claim in the paper match the computed value? | One-off audit (`claim_check.py`). The engine it audits stayed in `evaluation/mini-inequality/`, because `motivation.py` beside it writes `paper/table/gold_concentration.tex`. |
 
