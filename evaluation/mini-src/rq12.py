@@ -68,11 +68,12 @@ import metrics as m   # noqa: E402  (mini-src/metrics.py — sole metric impl + 
 SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", m.REPO / "sota-links"))
 REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 
-# The \approach arm whose dump slots the roster reads. The paper reports s92a; a
-# candidate arm (e.g. s110) is scored by pointing this at its slot and writing the
-# output beside the incumbent's, then diffing the two with ../studies/compare_arms.py. Only the
-# \approach rows move -- the baselines are arm-independent and stay pinned.
-# Precedence: --arm > $ALINKER_ARM > s92a.
+# The \approach arm whose dump slots the roster reads. The paper reports s110; a
+# candidate arm is scored by pointing this at its slot and writing the output beside the
+# incumbent's, then diffing the two with ../studies/compare_arms.py (whose --base is the
+# arm s110 replaced, s92a). Only the \approach rows move -- the baselines are
+# arm-independent and stay pinned.
+# Precedence: --arm > $ALINKER_ARM > DEFAULT_ARM.
 DEFAULT_ARM = "s110"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
@@ -104,25 +105,30 @@ def set_arm(arm):
 # The retired arms (s_linker21 `*_s21`, s_linker20_union `*_full`) were dropped
 # from the roster on 2026-08-26: nothing downstream read their rows once the paper
 # rebased onto s92a. Their slots are still in the sota dump, so scoring them again
-# is a matter of restoring the entries — see this file's git history.
+# is a matter of restoring the entries — see this file's git history. s92a's own slots
+# stay built for a different reason: ../studies/compare_arms.py --base s92a reads them,
+# and the promotion decision is only reproducible while they exist.
 ROSTER = [
-    # `_arm_paths` is the arm-templated source of `sad-sam`/`sad-code`; set_arm() renders
-    # it. The rendered defaults below are the s92a paths, so importing this module without
-    # calling set_arm() behaves exactly as it did before the arm knob existed.
+    # `_arm_paths` is the arm-templated source of `sad-sam`/`sad-code`, rendered by
+    # set_arm() -- which is now called at import (below the roster), so these literals are
+    # overwritten before anything can read them. They stayed on s92a through the s110
+    # promotion and were the last reader of the retired arm: check.py's guard reads
+    # DEFAULT_ARM, which had moved, so nothing caught them. They are pinned to
+    # DEFAULT_ARM and kept only so the shape of an entry is readable here.
     {"label": "approach (GPT-5.6-terra)", "backend": "gpt-5.6-terra",
      "runs": ["run1", "run2", "run3"],
      "_arm_paths": {
          "sad-sam":  "model-doc/aalinker/terra_{arm}/{run}/{project}.csv",
          "sad-code": "doc-code/aalinker-composed/terra_{arm}/{run}/{project}.csv"},
-     "sad-sam":  "model-doc/aalinker/terra_s92a/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/terra_s92a/{run}/{project}.csv"},
+     "sad-sam":  "model-doc/aalinker/terra_s110/{run}/{project}.csv",
+     "sad-code": "doc-code/aalinker-composed/terra_s110/{run}/{project}.csv"},
     {"label": "approach (GPT-5.6-luna)", "backend": "gpt-5.6-luna",
      "runs": ["run1", "run2", "run3"],
      "_arm_paths": {
          "sad-sam":  "model-doc/aalinker/luna_{arm}/{run}/{project}.csv",
          "sad-code": "doc-code/aalinker-composed/luna_{arm}/{run}/{project}.csv"},
-     "sad-sam":  "model-doc/aalinker/luna_s92a/{run}/{project}.csv",
-     "sad-code": "doc-code/aalinker-composed/luna_s92a/{run}/{project}.csv"},
+     "sad-sam":  "model-doc/aalinker/luna_s110/{run}/{project}.csv",
+     "sad-code": "doc-code/aalinker-composed/luna_s110/{run}/{project}.csv"},
     # ArTEMiS twice: once on the backend \approach uses, once at the authors' released
     # configuration. The matched-backend row is the one the body reports -- comparing a
     # GPT-5.6 approach against a GPT-5.4 baseline confounds the workflow with the model.
@@ -144,6 +150,11 @@ ROSTER = [
 ]
 
 # The arm the paper's body tables report, and the mirror backend beside it.
+# Render the roster now, so an importer that never reaches main() still reads the
+# reported arm. Before this call the roster's literals were the only thing in the
+# pipeline still resolving to s92a after the s110 promotion.
+set_arm(ARM)
+
 BODY_ARM = "approach (GPT-5.6-terra)"
 MIRROR_ARM = "approach (GPT-5.6-luna)"
 # The baseline the Delta rows subtract: ArTEMiS on the SAME backend as BODY_ARM.

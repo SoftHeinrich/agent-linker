@@ -42,7 +42,7 @@ export TRANSARC_RESULTS_DIR=$PWD/evaluation/mini-data
 `rq34.py` and `rq4_floor.py` find the run root via `ALINKER_RESULTS` (auto-detected
 for both layouts). The reported arm is one knob: `rq34.py`'s `ARMS` table maps
 `$ALINKER_ARM` to the phase-state variant *and* the run sweep together, so a bare run
-of any engine writes the arm it read. Six modules declare `DEFAULT_ARM` and `check.py`
+of any engine writes the arm it read. Seven modules declare `DEFAULT_ARM` and `check.py`
 fails if any two disagree.
 
 ---
@@ -198,7 +198,9 @@ agent-linker runs ──► link CSVs ──► extracts ──► sota-links du
 
 | Config slot | Backend | Arm | Built by |
 |-------------|---------|-----|----------|
-| `terra_s92a`, `luna_s92a` | GPT-5.6-terra / -luna | **`s_linker92a` — canonical** | `build_dump.py` |
+| `terra_s110`, `luna_s110` | GPT-5.6-terra / -luna | **`s_linker110` — canonical** | `build_dump.py` (all defaults) |
+| `terra_s92a`, `luna_s92a` | GPT-5.6-terra / -luna | `s_linker92a` — the arm s110 replaced; kept because `../studies/compare_arms.py --base s92a` reads it | `build_dump.py` (env-overridden) |
+| `terra_s92actl`, `luna_s92actl` | GPT-5.6-terra / -luna | `s_linker92a` scored **in-set**, off the consolidation runs — the honest base for the promotion | `build_dump.py` (env-overridden) |
 | `gpt-5.4_s21`, `sonnet_s21` (+ `_noknow`) | gpt-5.4 / claude | `s_linker21` — retired | `build_dump.py` (env-overridden) |
 | `gpt-5.4_full`, `sonnet_full` | gpt-5.4 / claude | `s_linker20_union` — retired | `build_unified.py` |
 
@@ -221,10 +223,11 @@ so run order does not matter.
 #     The dump build below depends on the gold + bridge this produces, so run it first.
 python3 sota-links/build_unified.py
 
-# (b) the canonical s92a slots, from the extracts built in the quick reference
-EXTRACTS_DIR=$PWD/results/s92a_extracts python3 evaluation/mini-src/build_dump.py
-EXTRACTS_DIR=$PWD/results/s92a_extracts DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
-  DUMP_CONFIG=luna_s92a DUMP_MANIFEST_TAG=s92a_luna \
+# (b) the canonical s110 slots, from the extracts built in the quick reference.
+#     terra is every default, so it needs no env at all; luna names its own cell.
+python3 evaluation/mini-src/build_dump.py
+EXTRACTS_DIR=$PWD/results/s110_extracts DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
+  DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
   python3 evaluation/mini-src/build_dump.py
 ```
 
@@ -235,7 +238,9 @@ extracts tree to read), `DUMP_BE_TAG` (manifest backend column), `DUMP_CONFIG`
 extracts cell it was pointed at is empty.
 
 Each run prints a `model-doc F1 vs gold` integrity figure. At time of writing:
-terra_s92a **0.9136**, luna_s92a **0.8793** (15 cells each).
+terra_s110 **0.9385**, luna_s110 **0.8923** (15 cells each). The arm s110 replaced reads
+terra_s92a **0.9136**, luna_s92a **0.8793**; the ~2.5pp gap on terra is a useful tell
+that a slot was built from the wrong extracts.
 
 ---
 
@@ -368,8 +373,8 @@ explain it.
 any backend whose no-knowledge slot is absent, so a missing row is never mistaken
 for a measured zero.
 
-Both backends are measured (2026-08-26): the alias table is worth **6.2pp macro F1
-/ 9.6pp macro F2** on terra and **3.5 / 6.8pp** on luna, and **30pp of
+Both backends are measured (2026-09-02, on s110): the alias table is worth **7.6pp
+macro F1 / 11.9pp macro F2** on terra and **3.3 / 8.4pp** on luna, and **37.8pp of
 worst-component F1** on terra. Flex tier returned `flex_unavailable` (429) partway
 in, so the luna half ran with `OPENAI_SERVICE_TIER=default OPENAI_ENFORCE_FLEX=0`;
 terra completed on flex. Both sweeps validate cell-for-cell against their own
@@ -461,8 +466,8 @@ panel showing one without the other is a stale generator.
 Everything the paper reports rebuilds from a clone of this repo plus the public
 ARDoCo benchmark tree — no dev-machine-only state. The recorded runs are
 committed: the normalized link dumps (`sota-links/`), the neutral extracts
-(`results/s92a_extracts/`), and the per-phase state RQ3/RQ4 reads
-(`results/regex_e2e_*/phase_states/`, `results/regex_noknow_e2e_*/`).
+(`results/s110_extracts/`), and the per-phase state RQ3/RQ4 reads
+(`results/consolidation_e2e_*/phase_states/`, `results/consolidation_noknow_e2e_*/`).
 
 | Layer | Beyond the clone | Available? |
 |-------|------------------|------------|

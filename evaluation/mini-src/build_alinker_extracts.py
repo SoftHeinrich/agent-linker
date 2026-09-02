@@ -19,11 +19,11 @@ recoverable from a link CSV, and RQ1/RQ2 never read them.
 
 Stdlib only.  No LLM calls.  Deterministic: re-running produces byte-identical output.
 
-    python3 mini-src/build_alinker_extracts.py --variant s_linker92a \
-        --out ../results/s92a_extracts \
-        --model terra ../results/regex_e2e_terra_r1_20260822 \
-                      ../results/regex_e2e_terra_r2_20260822 \
-                      ../results/regex_e2e_terra_r3_20260822
+    python3 mini-src/build_alinker_extracts.py --variant s_linker110 \
+        --out ../results/s110_extracts \
+        --model terra ../results/consolidation_e2e_terra_r1_20260825 \
+                      ../results/consolidation_e2e_terra_r2_20260825 \
+                      ../results/consolidation_e2e_terra_r3_20260825
 """
 import argparse
 import csv
