@@ -29,7 +29,7 @@ quotes the bare shared word, so the surface differs per model while the pair bei
 wrong does not — which is why the repair is a fact in code and not a clause in either
 judge's prompt.
 
-**Priced at level 1, no LLM calls** (`pilot/test_s109_nesting.py`, 237 checks, which
+**Priced at level 1, no LLM calls** (`pilot/test_s109_nesting.py`, 345 checks, which
 replays both `_scan`s pair by pair over every recorded run of the base — twelve now that
 the consolidation E2E has added six more):
 

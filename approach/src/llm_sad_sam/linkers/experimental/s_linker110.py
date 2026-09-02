@@ -34,7 +34,7 @@ actually names ahead of the target, with the sentence that names it, nearest fir
 The model quotes the referring expression, says which entries of that list it could
 point to, and names the one it does — or none. A refer-back's antecedent sits a median
 of 2 sentences back, so the true answer is almost always on it. Measured over the
-resolver's own windows (`pilot/test_s110_shortlist.py`, 122 checks, no calls), the list
+resolver's own windows (`pilot/test_s110_shortlist.py`, 224 checks, no calls), the list
 carries **1.8 to 4.5 of a catalog's 6 to 14 components a case** — mediastore 2.8/14,
 teastore 1.8/11, teammates 2.2/8, bigbluebutton 2.2/12, jabref 4.5/6. It is a shortlist
 in fact and not only in intent, which is what separates it from `s_linker102`: that

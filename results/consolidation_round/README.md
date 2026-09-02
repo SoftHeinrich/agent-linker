@@ -142,7 +142,7 @@ way names nest. Not a new rule; the same rule at an extent the module already sc
 Per case the prompt carries **NAMED BEFORE THIS CASE** — the components the window
 actually names ahead of the target, with the sentence that names each. Measured over the
 resolver's own windows that list carries **1.8 to 4.5 of a catalog's 6 to 14 components a
-case** (`pilot/test_s110_shortlist.py`, 122 checks): a shortlist in fact, not only in
+case** (`pilot/test_s110_shortlist.py`, 224 checks): a shortlist in fact, not only in
 intent, which is what separates it from `s_linker102`'s mostly-negative checkbox over
 every component in the model.
 

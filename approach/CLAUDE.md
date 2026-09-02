@@ -1098,12 +1098,14 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   by block against all three sources and the composed behaviour against them over
   five projects, under an empty alias table and a populated one.
 - **RQ4's floor arm is `s_linker110_onecall`, alone.** `s_linker110_noevidence` and
-  `s_linker110_nocoderef` are killed -- modules, invariant tests and registrations
-  gone. Nothing in the paper read either; the RQ4 floor table reads only
-  `s_linker110` and `s_linker110_onecall` (`evaluation/mini-rq34/rq4_floor.py`). The
-  recorded `results/noevidence_e2e_*_20260902` runs stay, because that is where the
-  floor table's `s_linker110` control comes from, and `pilot/run_noevidence_e2e.sh`
-  stays with them as the provenance record, banner-marked RETIRED and not runnable.
+  `s_linker110_nocoderef` are killed -- modules, invariant tests, registrations and
+  `pilot/run_noevidence_e2e.sh`, the batch runner, all gone. Nothing in the paper read
+  either arm: the RQ4 floor table reads `s_linker110` and `s_linker110_onecall` only
+  (`evaluation/mini-rq34/rq4_floor.py`), so it is unaffected. The recorded
+  `results/noevidence_e2e_*_20260902` runs DO stay and are still read -- that batch ran
+  `s_linker110` as its in-set control, and `RQ4_FLOOR_HEAD_TMPL` points the floor
+  table's control at it, which is why those directories carry a dead arm's name.
+  Recover the arm or its runner from git history (`e160a76f^`) if it is ever wanted.
 
 ### The uniform-schema round (s116–s119) — a reply schema carries the verdict's default
 

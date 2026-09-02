@@ -278,9 +278,12 @@ A sentence reading ``events are published on the \texttt{Redis PubSub} channel''
 The refusal reads the model catalog and not the alias table, and the asymmetry is deliberate: a scan only ever proposes, so it may rest on a sampled \ac{LLM} output, whereas this predicate is the one thing in the layer that \emph{ends} a case and so may rest only on what is given.
 The judge behind the scan cannot be asked instead, because it is shown no component: it calls a real participant a participant and is right, with no way to know that the participant is a different one.
 Replayed pair by pair over twelve recorded runs, the refusal fires on exactly $12$ candidates in every run of both backends and removes $5.2$ false positives a run on GPT-5.6-terra and $10.8$ on GPT-5.6-luna, at no cost in true links.
-%DONE [nesting] (2026-09-02, arm rebase) the refusal arrives with s_linker109, which the reported
-%   s_linker110 subclasses; it is `_only_inside_another_name` filtering `_scan`. Numbers from
-%   pilot/test_s109_nesting.py (237 checks, 12 recorded runs, no LLM calls). The catalog-only
+%DONE [nesting] (2026-09-02, arm rebase; standalone 2026-09-02) the refusal arrives with
+%   s_linker109 and is INLINED in the reported s_linker110, which is now a standalone file with
+%   no linker base class: it is HEAD DELTA 2 there, `_only_inside_another_name` filtering
+%   `_scan`, block-identical to s_linker109's and checked as such by
+%   pilot/test_s110_shortlist.py. Numbers from pilot/test_s109_nesting.py (345 checks, 12
+%   recorded runs, no LLM calls). The catalog-only
 %   restriction is load-bearing: the alias form of the same predicate costs 3 gold links in one
 %   recorded luna run. The Redis PubSub / Redis DB and HTML5 Server / HTML5 Client cases above
 %   were replayed against the predicate itself, not paraphrased from the docstring.
@@ -320,11 +323,13 @@ Each case carries, computed in code from the same writing relation, the componen
 The division is between what is a fact and what is a weighing: which components the earlier sentences name is settled exactly by the relation, and asking the model to re-derive it from the raw catalog is asking it to do lookup by attention, which it does by inventing---whereas which reading a referring expression carries in its sentence is in no table, so only the model can weigh it.
 The list is a shortlist in fact and not only in intent: over the resolver's own windows it names $1.8$ to $4.5$ of a catalog's $6$ to $14$ components per case, and a refer-back's antecedent sits a median of two sentences behind it.
 Handing it over costs no extra call and cuts spurious resolutions from $16.9$ to $12.3$ a project-run on GPT-5.6-terra and from $38.4$ to $23.1$ on GPT-5.6-luna, at a gold cost of $0.2$ and $0.5$.
-%DONE [shortlist] (2026-09-02, arm rebase) this IS s_linker110, the reported arm: `_prompt_coref` is
-%   the only method it overrides, and `_named_before` builds the list with `_states_a_name`, the same
-%   whole-name row of the relation sec:arch defines. Stage numbers: pilot/reading_pilots.py --arms
+%DONE [shortlist] (2026-09-02, arm rebase; standalone 2026-09-02) this IS s_linker110, the reported
+%   arm: `_prompt_coref` and `_named_before` are the only two methods it adds over the workflow it
+%   carries (HEAD DELTA 3 -- the file is standalone now, so they are declared rather than overridden),
+%   and `_named_before` builds the list with `_states_a_name`, the same whole-name row of the relation
+%   sec:arch defines. Stage numbers: pilot/reading_pilots.py --arms
 %   control shortlist2, 3 samples x 5 projects per model. Shortlist size and the median-2 antecedent
-%   distance: pilot/test_s110_shortlist.py, 122 checks, no calls. E2E (three paired runs a model,
+%   distance: pilot/test_s110_shortlist.py, 224 checks, no calls. E2E (three paired runs a model,
 %   pilot/run_consolidation_e2e.sh) is what results.tex reports; do not restate it here.
 %DONE [sec:coref-linker] (2026-09-01, code audit) the "pick ONE home for the alias gate" question is
 %   moot: the gate is not in either home any more. s80 removed it after measuring it at TP +/-0.0 and
