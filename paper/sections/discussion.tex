@@ -10,9 +10,12 @@ First, the \ac{LLM} backend is non-deterministic.
 We report every measured system as the mean of three runs---\approach{}, the re-run \Artemis{} baseline, and the RQ3/RQ4 ablations alike---and release every raw response~\cite{replication}.
 %DONE [run-counts] (2026-08-29) resolved: RQ3 and RQ4 are mean-of-3 on this arm, not
 %  single-run, so the old "within-run comparison, variance is common-mode" justification is
-%  obsolete and has been dropped rather than softened. The s92a runs record per-phase state
-%  for all three runs (mini-rq34/reports_s92a/rq3_runs.csv carries run1/run2/run3/average),
-%  which is what the sentence above now claims for every reported number.
+%  obsolete and has been dropped rather than softened. The reported arm's runs record per-phase
+%  state for all three (rebased 2026-09-02: mini-rq34/reports_s110/rq3_validators.csv carries
+%  run1/run2/run3/average per backend; the derived per-run view is reports/tex_src/rq3_runs.csv).
+%  The old pointer here named mini-rq34/reports_s92a/rq3_runs.csv, which no arm's directory has
+%  ever contained -- the arm was stale AND the filename was wrong.
+%  This is what the sentence above now claims for every reported number.
 Second, the backend may have seen the five public projects during pre-training, so memorization rather than the workflow could explain the gain.
 We therefore re-ran \Artemis{} on GPT-5.6-terra, the backend \approach{} uses, and report that arm: the two systems then share the same exposure and the same model, so what separates them is the workflow.
 We run it three times, as we run \approach{}, so neither system is credited with a lucky draw; its own runs differ enough to matter, abandoning a different component each time.

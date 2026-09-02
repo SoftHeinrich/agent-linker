@@ -14,10 +14,14 @@
 %  eq:worst states it -- per component, over the LINKS whose target file belongs to it --
 %  instead of over a (sentence, component) projection. Every tail number in RQ2 and RQ4
 %  moved; the rankings and the argument did not.
-%DONE (2026-08-26): every RQ number in this section is now the s\_linker92a arm on the
-%  GPT-5.6-terra backend (mean of 3 runs), replacing the s21/GPT-5.4 arm. Sources:
-%  evaluation/reports/tex_src/rq{1,2,3,4}.csv <- rq12.py (RQ1/RQ2) + mini-rq34/reports_s92a
-%  (RQ3/RQ4). Both engines are independent and agree on the arm's macro \fone\ (0.9385).
+%DONE (2026-08-26, rebased 2026-09-02): every RQ number in this section is the reported arm on
+%  the GPT-5.6-terra backend (mean of 3 runs) -- s\_linker92a when this note was written,
+%  s\_linker110 since the arm swap. Sources: evaluation/reports/tex_src/rq{1,2,3,4}.csv <-
+%  rq12.py (RQ1/RQ2) + mini-rq34/reports_s110 (RQ3/RQ4). Both engines are independent and agree
+%  on the arm's macro \fone\ (0.9385).
+%  TRAP: 0.9385 is ALSO what s92a scored, so this line reads unchanged across the swap and is no
+%  evidence the section was rebased. Check a number the arms disagree on -- rq3.csv's 143.67
+%  (s92a: 164.33) is the cheapest one.
 
 
 %==================== SPEC (section-wide) ====================
@@ -25,8 +29,9 @@
 %  boxes = <=2 sentences, each <=15 words. (absorbs the old inline "simplify" todos)
 %SPEC reporting: GPT-5.6-terra in the body, GPT-5.6-luna in the appendix mirror; dataset
 %  average in the body, per-project breakdown in the appendix.
-%SPEC [run-counts] RQ1-4 are all mean-of-3 on this arm (the s92a runs record per-phase
-%  state for all three runs, so RQ3/RQ4 are no longer single-run).
+%SPEC [run-counts] RQ1-4 are all mean-of-3 on this arm (the s110 runs --
+%  results/consolidation_e2e_terra_r{1,2,3}_20260825 -- record per-phase state for all three,
+%  so RQ3/RQ4 are no longer single-run).
 %SPEC: do not refer appendix, the submitted version will be trimed.
 %============================================================
  
@@ -130,13 +135,13 @@ On doc-code the standard \fone\ gap is $+9.3$pp; the size-aware suite opens it t
 %  \fone/\ftwo the pipeline loses with that judge switched off. Terminology = TP/FP throughout.
 %DONE [3-judge] this arm judges three linkers, not two: the named-mention stage is split into
 %  a full-name and a partial-name pass, each with its own judge. Mean of 3 runs
-%  (mini-rq34/reports_s92a/rq3_validators.csv + rq3_variants.csv).
+%  (mini-rq34/reports_s110/rq3_validators.csv + rq3_variants.csv).
 %DONE [f2] the table now carries the counterfactual in BOTH \fone and \ftwo, which is what
 %  separates the judges' precision effect from their net effect (see the second paragraph).
 \autoref{tab:rq3-confusion} reports, for each judge, the links it rejects and keeps and what the pipeline loses when it is switched off, averaged over the three runs.
-The \entValidator{} rejects $39.7$ false positives while outright costing $3.3$ true ones; the \partValidator{} rejects $58.0$ against $7.0$; the \corefValidator{} rejects $72.0$ against $9.3$.
+The \entValidator{} rejects $48.0$ false positives while outright costing $3.3$ true ones; the \partValidator{} rejects $48.0$ against $4.3$; the \corefValidator{} rejects $52.7$ against $4.7$.
 The REJ-TP column counts only the true links no other linker recovers, so it is the recall each judge costs the pipeline outright.
-Together the three judges reject $164.3$ distinct false positives and lose $14.0$ true links; the per-judge counts overlap, so they do not sum to these totals.
+Together the three judges reject $143.7$ distinct false positives and lose $8.7$ true links; the per-judge counts overlap, so they do not sum to these totals.
 This is because each judge targets a different failure mode: a full name that matches no model element, a partial name that denotes something else, and an implicit reference whose antecedent the linker could not quote.
 
 The judges are what makes the scan usable, and \ftwo\ prices how much of that is precision.
@@ -157,12 +162,18 @@ They target separate failure modes---an unmatched full name, a misdenoting parti
 \label{sec:results:rq4}
 
 %SPEC [rq4] Body float = tab:rq4: the size-aware suite (doc-code) for the full approach and
-%  each linker alone. Numbers: mini-rq34/reports_s92a/rq4_variants.csv (doc-model macro \fone)
+%  each linker alone. Numbers: mini-rq34/reports_s110/rq4_variants.csv (doc-model macro \fone)
 %  + rq34_rq2_linkers.csv (doc-code suite) + rq4_linkers.csv (unique TPs).
-%DONE [noknow] the knowledge ablation is measured ON THIS ARM: s_linker92a_noknow, three
-%  five-project runs, GPT-5.6-terra (results/regex_noknow_e2e_terra_r{1,2,3}_20260826, scored
-%  into mini-rq34/reports_s92a_noknow). Launcher: approach/pilot/run_regex_e2e_noknow.sh.
-%  The retired s21 lineage's 5.8pp is gone; this arm reads 6.2pp \fone / 9.6pp \ftwo.
+%DONE [noknow] (rebased 2026-09-02) the knowledge ablation is measured ON THIS ARM:
+%  s_linker110_noknow, three five-project runs, GPT-5.6-terra
+%  (results/consolidation_noknow_e2e_terra_r{1,2,3}_20260902, scored into
+%  mini-rq34/reports_s110_noknow). Launcher: approach/pilot/run_consolidation_e2e_noknow.sh.
+%  The control is IN-SET: results/consolidation_e2e_terra_r{1,2,3}_20260825, same variant and
+%  model with the alias table on. This arm reads 7.6pp \fone / 11.9pp \ftwo (the s21 lineage's
+%  5.8pp and s92a's 6.2pp / 9.6pp are both retired).
+%  LANDMINE (from the launcher): s_linker110_noknow's _VARIANT_NAME is "s_linker110", so its
+%  phase states nest under <run>/phase_states/s_linker110/ -- PHASE_CACHE_DIR must stay per-run
+%  or it overwrites the Full arm's states that RQ3/RQ4 read.
 \input{table/rq4-results}
 \approach{} has four modules: the knowledge module and the three linker modules \linkerB{}, \linkerD{}, and \linkerC{}.
 We ablate each one and score the result with the size-aware suite.
