@@ -77,6 +77,87 @@ PAPER_DIR=$PWD/paper python3 evaluation/mini-src/sync_paper.py --check
 
 ---
 
+## Quick reference — scoring a candidate arm against the incumbent
+
+The paper reports one arm (`s92a`). Every generator resolves its inputs from
+`$ALINKER_ARM` (default `s92a`), so a candidate is scored by setting one variable
+instead of editing paths in four files. The incumbent keeps the historical filenames;
+a candidate is written *beside* it, never over it:
+
+| | incumbent (`s92a`) | candidate (e.g. `s110`) |
+|---|---|---|
+| dump slots | `sota-links/**/{terra,luna}_s92a` | `…/{terra,luna}_s110` |
+| RQ1/RQ2 CSVs | `reports/RQ12_BIGTABLE.csv` | `reports/RQ12_BIGTABLE_s110.csv` |
+| RQ3/RQ4 reports | `mini-rq34/reports_s92a` | `mini-rq34/reports_s110` |
+| reshaped + rendered | `reports/tex_src`, `reports/tex` | `reports/tex_src_s110`, `reports/tex_s110` |
+
+Nothing is synced into the paper until the arm decision is made — `sync_paper.py`
+always reads the incumbent directories.
+
+```bash
+# (1) extracts from the candidate's recorded E2E runs. s110's are the consolidation
+#     round's (they carry an in-set s_linker92a control -- see "the control" note below),
+#     so no LLM calls are needed. A round whose runs were never recorded is the one case
+#     that does cost calls; rq12.py --arm <arm> then stops with a "no dump slots" error
+#     naming the four missing directories rather than scoring a partial set.
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker110 \
+    --out $PWD/results/s110_extracts \
+    --model terra results/consolidation_e2e_terra_r{1,2,3}_20260825 \
+    --model luna  results/consolidation_e2e_luna_r{1,2,3}_20260825
+
+# (1b) THE CONTROL. The consolidation runs scored s_linker92a in the SAME invocations,
+#      so build that as its own arm and compare against it. Comparing s110 against the
+#      paper's s92a instead is cross-set: the two differ by three days of API drift as
+#      well as by the arm, and on CMR that difference is larger than the arm's.
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker92a \
+    --out $PWD/results/s92actl_extracts \
+    --model terra results/consolidation_e2e_terra_r{1,2,3}_20260825 \
+    --model luna  results/consolidation_e2e_luna_r{1,2,3}_20260825
+# $SOTA_LINKS is REQUIRED here: build_dump.py otherwise defaults its root to
+# $ARDOCO_HOME/sota/recovered-links, which is not this repo's dump, and the pass dies on
+# a missing gold CSV. (The s92a recipe in §1 has the same requirement.)
+SOTA_LINKS=$PWD/sota-links EXTRACTS_DIR=$PWD/results/s110_extracts \
+  DUMP_CONFIG=terra_s110 DUMP_MANIFEST_TAG=s110_terra \
+  python3 evaluation/mini-src/build_dump.py
+SOTA_LINKS=$PWD/sota-links EXTRACTS_DIR=$PWD/results/s110_extracts DUMP_BE_DIR=luna \
+  DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
+  python3 evaluation/mini-src/build_dump.py
+
+# (2) score both arms (no LLM calls)
+python3 evaluation/mini-src/rq12.py                      # incumbent, unsuffixed
+python3 evaluation/mini-src/rq12.py --arm s110           # candidate,  _s110
+
+# (3) the verdict: per-run deltas + sign agreement, not just the Average row
+python3 evaluation/mini-src/compare_arms.py s110 --base s92actl \
+    --csv evaluation/reports/ARM_COMPARE_s110_vs_inset.csv   # the read to trust
+python3 evaluation/mini-src/compare_arms.py s110 --base s92a \
+    --csv evaluation/reports/ARM_COMPARE_s110_vs_paper.csv   # vs the arm the paper ships
+```
+
+`compare_arms.py` exists because the Average row cannot settle this question: on this
+benchmark one run moves the headline metrics by more than a typical arm delta, so a
+mean whose runs disagree on the sign is reported as `INSIDE NOISE` however large it is.
+Read the verdicts as:
+
+- `BETTER` / `WORSE` — every run agrees on the sign and |mean| ≥ sd.
+- `WEAK` — signs agree, but the mean sits inside one sd.
+- `INSIDE NOISE` — the runs disagree on the sign; the mean is not evidence.
+- `NO CHANGE` — every per-run delta is exactly zero.
+
+The size-aware block (`dm CMR%`, `dc worst F1`, `dc harm F1`) is reported next to the
+headline block on purpose: the paper's own argument is that link-level F1 is the wrong
+place to read an architecture-traceability result, and that applies to picking an arm too.
+
+### Promoting the winner
+
+If the candidate wins, promote it by moving the default rather than by renaming data —
+set `DEFAULT_ARM` in `mini-src/rq12.py`, `mini-src/rq_tables.py`, and
+`mini-src/csv_to_tex.py` (the three are asserted to agree by `check.py`), then re-run the
+full-rebuild quick reference above and `sync_paper.py`. The losing arm keeps its
+suffixed CSVs, so the comparison stays reproducible after the promotion.
+
+---
+
 ## 0. What lives where (the two data forms)
 
 The RQs are computed by **two** scoring engines that read **two different forms**

@@ -68,6 +68,27 @@ import metrics as m   # noqa: E402  (mini-src/metrics.py — sole metric impl + 
 SOTA_LINKS = Path(os.environ.get("SOTA_LINKS", m.REPO / "sota-links"))
 REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 
+# The \approach arm whose dump slots the roster reads. The paper reports s92a; a
+# candidate arm (e.g. s110) is scored by pointing this at its slot and writing the
+# output beside the incumbent's, then diffing the two with compare_arms.py. Only the
+# \approach rows move -- the baselines are arm-independent and stay pinned.
+# Precedence: --arm > $ALINKER_ARM > s92a.
+DEFAULT_ARM = "s110"
+ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
+
+
+def set_arm(arm):
+    """Repoint the roster's \approach rows at `arm`'s dump slots (paths only, labels fixed).
+
+    Labels stay ``approach (GPT-5.6-<backend>)`` across arms on purpose: rq_tables.py
+    matches on them, so an arm swap must not rename a row. The arm is identified by the
+    output file it is written to and by the provenance line, not by the row label."""
+    global ARM
+    ARM = arm
+    for system in ROSTER:
+        for task, template in system.get("_arm_paths", {}).items():
+            system[task] = template.format(arm=arm, run="{run}", project="{project}")
+
 # ── System roster ─────────────────────────────────────────────────────────────
 # Each entry resolves a per-(run,)project file path for both tasks. `runs=None`
 # means single-shot (deterministic / SOTA); a run list means mean-of-runs.
@@ -85,12 +106,21 @@ REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 # rebased onto s92a. Their slots are still in the sota dump, so scoring them again
 # is a matter of restoring the entries — see this file's git history.
 ROSTER = [
+    # `_arm_paths` is the arm-templated source of `sad-sam`/`sad-code`; set_arm() renders
+    # it. The rendered defaults below are the s92a paths, so importing this module without
+    # calling set_arm() behaves exactly as it did before the arm knob existed.
     {"label": "approach (GPT-5.6-terra)", "backend": "gpt-5.6-terra",
      "runs": ["run1", "run2", "run3"],
+     "_arm_paths": {
+         "sad-sam":  "model-doc/aalinker/terra_{arm}/{run}/{project}.csv",
+         "sad-code": "doc-code/aalinker-composed/terra_{arm}/{run}/{project}.csv"},
      "sad-sam":  "model-doc/aalinker/terra_s92a/{run}/{project}.csv",
      "sad-code": "doc-code/aalinker-composed/terra_s92a/{run}/{project}.csv"},
     {"label": "approach (GPT-5.6-luna)", "backend": "gpt-5.6-luna",
      "runs": ["run1", "run2", "run3"],
+     "_arm_paths": {
+         "sad-sam":  "model-doc/aalinker/luna_{arm}/{run}/{project}.csv",
+         "sad-code": "doc-code/aalinker-composed/luna_{arm}/{run}/{project}.csv"},
      "sad-sam":  "model-doc/aalinker/luna_s92a/{run}/{project}.csv",
      "sad-code": "doc-code/aalinker-composed/luna_s92a/{run}/{project}.csv"},
     # ArTEMiS twice: once on the backend \approach uses, once at the authors' released
@@ -366,15 +396,44 @@ def write_csv(rows, fields, path):
             writer.writerow(cells)
 
 
+def arm_slots(arm):
+    """The dump directories `arm` must provide, one per \approach row and task."""
+    slots = []
+    for system in ROSTER:
+        for template in system.get("_arm_paths", {}).values():
+            slots.append(SOTA_LINKS / template.format(arm=arm, run="", project="").split("//")[0])
+    return slots
+
+
+def check_arm(arm):
+    """Fail fast, and by name, when an arm has no measured run set yet.
+
+    Without this an unbuilt arm surfaces as five per-project "missing file" errors that
+    read like a corrupt dump rather than "this arm was never run"."""
+    missing = [d for d in dict.fromkeys(arm_slots(arm)) if not d.is_dir()]
+    if missing:
+        raise SystemExit(
+            f"[rq12] arm {arm!r} has no dump slots:\n" +
+            "\n".join(f"  missing: {d}" for d in missing) +
+            f"\n[rq12] build the arm first (build_alinker_extracts.py -> build_dump.py), "
+            f"or pick a built arm: --arm {DEFAULT_ARM}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--arm", default=ARM,
+                    help=f"\\approach arm to score, i.e. the dump slot suffix "
+                         f"(default: $ALINKER_ARM or {DEFAULT_ARM}). Baselines are "
+                         f"arm-independent and are unaffected.")
     ap.add_argument("--csv", default=None,
                     help="output CSV path (default: <evaluation>/reports/RQ12_BIGTABLE.csv)")
     ap.add_argument("--perproject-csv", default=None,
                     help="per-project full-suite CSV path "
                          "(default: reports/RQ12_PERPROJECT.csv, or next to --csv)")
     args = ap.parse_args()
+    check_arm(args.arm)
+    set_arm(args.arm)
 
     rows = []
     for system in ROSTER:
@@ -386,7 +445,8 @@ def main():
         if delta:
             big.append(delta)
     print_table(big)
-    print(f"\nProvenance: {SOTA_LINKS}  (approach rows = run1/run2/run3 plus average)")
+    print(f"\nProvenance: {SOTA_LINKS}  arm={ARM}  "
+          f"(approach rows = run1/run2/run3 plus average)")
     print("Columns: P/R/F1/F2 = link (doc-model) resp. file (doc-code) scores; "
           "CMR% = component miss rate;")
     print("         cF1/cF2 = per-component micro, wF1/wF2 = worst component, "
@@ -395,14 +455,17 @@ def main():
           "w*/h* + file F1/F2 (doc-code).")
 
     # Both CSVs land in one directory: REPORTS by default, or beside --csv.
+    # The default arm keeps the historical filenames (the paper syncs against them);
+    # any other arm is suffixed so scoring a candidate cannot clobber the incumbent.
+    suffix = "" if args.arm == DEFAULT_ARM else f"_{args.arm}"
     if args.csv:
         big_csv = Path(args.csv)
     else:
-        big_csv = REPORTS / "RQ12_BIGTABLE.csv"
+        big_csv = REPORTS / f"RQ12_BIGTABLE{suffix}.csv"
     if args.perproject_csv:
         perproject_csv = Path(args.perproject_csv)
     else:
-        perproject_csv = big_csv.parent / "RQ12_PERPROJECT.csv"
+        perproject_csv = big_csv.parent / f"RQ12_PERPROJECT{suffix}.csv"
 
     perproject_rows = []
     for system in ROSTER:

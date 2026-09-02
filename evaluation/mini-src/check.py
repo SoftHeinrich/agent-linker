@@ -38,6 +38,7 @@ Provenance of the frozen numbers (validated at retirement, 2026-06):
     python3 mini-src/check.py        # -> PASS
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -71,8 +72,43 @@ GOLDEN = {
 COMPUTE = {"sad-code": mini.compute_sad_code, "sad-sam": mini.compute_sad_sam}
 
 
+def check_arm_defaults():
+    """The three generators must agree on which arm is the incumbent.
+
+    rq12.py names the RQ12 CSVs from its DEFAULT_ARM, rq_tables.py reads those CSVs and
+    the RQ3/RQ4 dirs from its own, and csv_to_tex.py renders from the directory named by
+    a third. If they drift apart the pipeline does not fail -- it silently reshapes one
+    arm's numbers into another arm's tables. Promoting a winning arm means moving all
+    three, so this asserts it was not done by halves.
+
+    Read out of the source text, not by importing: the arm names are all the same length
+    ("s92a" -> "s110"), so an edit and a check inside the same second leave a stale .pyc
+    that Python happily reuses -- and the guard would then report the pre-edit arm."""
+    here = Path(__file__).resolve().parent
+    pat = re.compile(r'^DEFAULT_ARM\s*=\s*["\'](?P<arm>[^"\']+)["\']', re.M)
+    defaults = {}
+    for name in ("rq12.py", "rq_tables.py", "csv_to_tex.py"):
+        src = here / name
+        if not src.is_file():
+            print(f"SKIP  arm-default {name:14} (not found at {src})")
+            continue
+        found = pat.search(src.read_text(encoding="utf-8"))
+        if not found:
+            print(f"FAIL  arm-default {name:14} declares no DEFAULT_ARM")
+            return 1
+        defaults[name] = found.group("arm")
+    if len(set(defaults.values())) > 1:
+        shown = "  ".join(f"{k}={v!r}" for k, v in defaults.items())
+        print(f"FAIL  arm-default   the incumbent arm disagrees across generators: {shown}")
+        return 1
+    if defaults:
+        print(f"OK    arm-default   every generator reports arm "
+              f"{next(iter(defaults.values()))!r} ({len(defaults)}/3 found)")
+    return 0
+
+
 def run():
-    failures = 0
+    failures = check_arm_defaults()
     checked = 0
     for task in ("sad-code", "sad-sam"):
         cols = mini.PANELS[task]

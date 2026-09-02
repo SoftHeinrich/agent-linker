@@ -38,13 +38,23 @@ import metrics as m   # same directory: the shared core (project list, CSV write
 HERE = Path(__file__).resolve().parent
 EVAL = HERE.parent                                  # .../evaluation
 REPORTS = EVAL / "reports"
-# RQ3/RQ4 engine outputs for the arm the paper reports (s_linker92a; see rq34.py ARM).
-RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", "reports_s92a")
+# Every input below is arm-scoped, so a candidate arm is reshaped by setting one knob
+# instead of editing four paths. $ALINKER_ARM selects the arm (default s92a, the arm the
+# paper reports; see rq34.py ARM and rq12.py DEFAULT_ARM -- keep the three in step).
+# $RQ34_REPORTS still overrides the RQ3/RQ4 dir outright, for a report dir named off-pattern.
+DEFAULT_ARM = "s110"
+ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
+ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"   # matches rq12.py's output naming
+
+RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", f"reports_{ARM}")
 RQ34_NOKNOW = {                                     # backend -> no-knowledge rq34_rq2 report dir
-    "terra": EVAL / "mini-rq34" / "reports_s92a_noknow",
-    "luna": EVAL / "mini-rq34" / "reports_s92a_noknow_luna",
+    "terra": EVAL / "mini-rq34" / f"reports_{ARM}_noknow",
+    "luna": EVAL / "mini-rq34" / f"reports_{ARM}_noknow_luna",
 }
-TEX_SRC = REPORTS / "tex_src"
+# rq12.py writes the incumbent arm to the unsuffixed name and any candidate beside it.
+RQ12_BIGTABLE = REPORTS / f"RQ12_BIGTABLE{ARM_SUFFIX}.csv"
+RQ12_PERPROJECT = REPORTS / f"RQ12_PERPROJECT{ARM_SUFFIX}.csv"
+TEX_SRC = REPORTS / f"tex_src{ARM_SUFFIX}"    # csv_to_tex.py derives the same path
 
 PROJECTS = m.PROJECTS
 
@@ -311,7 +321,7 @@ BIG_SYSTEMS = [  # (display label, (system, run) key into RQ12_BIGTABLE)
 def build_bigtable_rq12_perproject(big):
     """Per-project suite for every system, both backends, with a per-system ``Average``
     summary row carrying the five-project aggregate (the former standalone avg table)."""
-    pp = index(read_csv(REPORTS / "RQ12_PERPROJECT.csv"), "system", "project")
+    pp = index(read_csv(RQ12_PERPROJECT), "system", "project")
     rows = []
     for label, key in BIG_SYSTEMS:
         for proj in PROJECTS:
@@ -423,7 +433,7 @@ def build_rq4_perrun():
 
 # --------------------------------------------------------------------------- #
 def main():
-    big = index(read_csv(REPORTS / "RQ12_BIGTABLE.csv"), "system", "run")
+    big = index(read_csv(RQ12_BIGTABLE), "system", "run")
     build_rq1(big)
     build_rq2(big)
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)

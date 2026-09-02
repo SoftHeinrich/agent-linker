@@ -21,8 +21,17 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 EVAL = HERE.parent
-TEX_SRC = EVAL / "reports" / "tex_src"
-TEX_OUT = EVAL / "reports" / "tex"
+# Arm-scoped like rq_tables.py: the incumbent arm keeps the historical directories (the
+# paper syncs against them), a candidate arm renders beside it. Keep $ALINKER_ARM's default
+# in step with rq12.py / rq_tables.py.
+import os
+
+DEFAULT_ARM = "s110"
+ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
+ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"
+
+TEX_SRC = EVAL / "reports" / f"tex_src{ARM_SUFFIX}"
+TEX_OUT = EVAL / "reports" / f"tex{ARM_SUFFIX}"
 
 
 # --------------------------------------------------------------------------- #
