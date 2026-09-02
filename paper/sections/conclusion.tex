@@ -9,9 +9,9 @@ This paper presents \approach, the first training-free, multi-stage \ac{LLM} wor
 of a component's name the sentence gives. 
 Each linker behind an \ac{LLM}-based judge that rejects links with no supporting evidence.
 Alongside it we introduce an architecture-driven evaluation suite that adds a per-component tail to the standard link-level metric on doc-code, and the \cmrname{} (\cmr) on doc-model.
-On the established ARDoCo benchmark, \approach{} reaches a doc-model \avgfone of $0.914$, $10.4$pp above the strongest baseline run on the same backend, and $0.931$ \avgftwo, $10.3$pp above it,
- and carries this gain through to a doc-code \avgfone of $0.909$ ($+9.6$pp).
+On the established ARDoCo benchmark, \approach{} reaches a doc-model \avgfone of $0.939$, $12.9$pp above the strongest baseline run on the same backend, and $0.955$ \avgftwo, $12.7$pp above it,
+ and carries this gain through to a doc-code \avgfone of $0.906$ ($+9.3$pp).
 The standard metric is where this lead is smallest.
-Under the size-aware suite it widens to $+25.8$pp worst-component \fone\ and $+26.4$pp harmonic-mean per-component \fone.
-\approach{} worst component still sits at \fone\ $0.73$, well below the link-level \fone, and it still abandons one documented component outright.
+Under the size-aware suite it widens to $+33.8$pp worst-component \fone\ and $+29.3$pp harmonic-mean per-component \fone.
+\approach{} worst component still sits at \fone\ $0.81$, well below the link-level \fone, even though it no longer abandons any documented component outright.
 So the suite earns its place by keeping this headroom visible, where the standard metric would call the task solved.

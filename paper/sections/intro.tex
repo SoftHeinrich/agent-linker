@@ -52,24 +52,34 @@
 %   [2026-08-27: Artemis re-run on GPT-5.6-terra, mean of 3 -- the body baseline is now
 %    backend-matched. The released GPT-5.4 arm survives only where a PUBLISHED claim is
 %    being cited (the Artemis-vs-TransArc para below). Sentence coverage is retired.]
-%   doc-model avgF1: Artemis .809, SWATTR .799, \approach .914 (+10.4pp);
-%     avgF2: Artemis .828, SWATTR .778, \approach .931 (+10.3pp).
-%   doc-code  avgF1: TransArc .803, Artemis .813, \approach .909 (+9.6pp link-level);
-%     avgF2: TransArc .782, Artemis .844, \approach .912 (+6.8pp).
-%   doc-code size-aware (tab:rq2, \approach vs Artemis): worst-comp F1 .73 vs .47
-%     (+25.8pp), harmonic per-comp F1 .90 vs .63 (+26.4pp).
+%   [2026-09-02 REBASE TO s_linker110. The reported arm is now s110, not s92a; every
+%    \approach number below moved and the BASELINES did not. s110's E2E is the
+%    consolidation round (results/consolidation_e2e_{terra,luna}_r{1,2,3}_20260825),
+%    which scored s92a in the SAME invocations -- that in-set control, not the paper's
+%    old s92a, is what s110 was judged against. Regenerate, never hand-edit:
+%    evaluation/mini-src/rq12.py -> rq_tables.py -> csv_to_tex.py -> sync_paper.py.]
+%   doc-model avgF1: Artemis .809, SWATTR .799, \approach .939 (+12.9pp);
+%     avgF2: Artemis .828, SWATTR .778, \approach .955 (+12.7pp).
+%   doc-code  avgF1: TransArc .803, Artemis .813, \approach .906 (+9.3pp link-level);
+%     avgF2: TransArc .782, Artemis .844, \approach .909 (+6.6pp).
+%   doc-code size-aware (tab:rq2, \approach vs Artemis): worst-comp F1 .81 vs .47
+%     (+33.8pp), harmonic per-comp F1 .93 vs .63 (+29.3pp).
 %     [2026-08-27: tail metrics re-cut at the link grain of eq:worst.]
+%   per-project: all 5 projects gain on BOTH doc-model F1 and F2 (was 4/5 on s92a).
 %   Artemis-vs-TransArc para (2026-08-28: NOW THE RE-RUN ARM, not gpt-5.4, so the intro,
 %     the motivation and sec:results all mean one system): Artemis-5.6 dc F1 .8127 vs
 %     TransArc .8026 (+1.0pp), worst-comp .4684 vs .5149 (-4.7pp), harmonic .6347 vs
 %     .6756 (-4.1pp). The released gpt-5.4 arm was +4.6/-10.4/-16.9 -- do not mix them.
-%   \approach vs TransArc on doc-code: +10.6pp link, +21.2pp worst, +22.3pp harmonic.
-%   doc-model CMR: \approach 1.9%, Artemis 3.3%, SWATTR 7.1%.
-%   abandoned components: \approach 1 (same one all 3 runs), Artemis-5.6 2/run (only 1
-%     consistently), SWATTR 3 (all MediaStore).
-%   doc-model CMR (component miss rate; called SFM until 2026-08-27):
-%     \approach has one missed component on MediaStore;
-%     Artemis misses one component on 3/5 projects; SWATTR misses three on MediaStore.
+%   \approach vs TransArc on doc-code: +10.4pp link, +29.1pp worst, +25.2pp harmonic.
+%   doc-model CMR: \approach 0.0%, Artemis 3.3%, SWATTR 7.1%.
+%   abandoned components: \approach 0 (none, on every project, in all 3 runs),
+%     Artemis-5.6 2/run (only 1 consistently), SWATTR 3 (all MediaStore).
+%   [CMR WARNING, measured 2026-09-02: CMR is stable WITHIN an invocation set and flips
+%    ACROSS them. s92a scored CMR 1.9355 in all three of the paper's 20260822 runs and
+%    0.0000 in all three 20260825 re-runs of the identical variant. So "the same component
+%    in every run" is NOT evidence of robustness -- it was the claim this file used to make.
+%    Any CMR sentence needs a cross-set check before it ships; threats should carry the
+%    instability. s110 is 0.0% on both backends, which is why the claim is now "abandons none".]
 %   long-tailed links (motivation; data: table/gold_concentration): ~99% of doc-code links in a few
 %     large components; the preferences component = 0.4% of links yet described by 20% of sentences.
 % ----------------------------------------------------------------------------
@@ -141,12 +151,12 @@
 %   S5. INTERFACE simplicity (P6, collapse no-tuning synonyms): one invocation over the document
 %       and model -- no labeled links, no per-project tuning.
 %   S6. RESULT forward-ref (headline pair, link-level): \approach reaches doc-model \avgfone .936,
-%       +10.0pp over \Artemis (all five projects gaining), and doc-code \avgfone .906 (+5.7pp).
-%       END S6 with a HAND-OFF clause so +5.7pp does not read as weak: "but link-level \fone understates
+%       +12.9pp over \Artemis (all five projects gaining), and doc-code \avgfone .906 (+9.3pp).
+%       END S6 with a HAND-OFF clause so +9.3pp does not read as weak: "but link-level \fone understates
 %       this doc-code gain -- see Para 4" (Wang M12 forward-pointer; reviewer fix #1).
 %       [cite fuchs_whos_2025,keim_recovering_2024,replication]
 %   [NO size-aware numbers in Para 3 -- the size-aware standout is the KEY FINDING in Para 4.
-%    C1 is satisfied across Para 3->4: the +5.7pp link-level doc-code number is immediately
+%    C1 is satisfied across Para 3->4: the +9.3pp link-level doc-code number is immediately
 %    re-contextualized by Para 4's size-aware finding, so it is never left as the sole doc-code story.]
 % ----------------------------------------------------------------------------
 % PARA 4 -- Second contribution: the measure. Motivate from a TASK PROPERTY, not a competitor's gap.
@@ -186,15 +196,15 @@
 %       ideas (macro-averaging, worst-group/minimax, GMAP); our contribution is the architecture-aware
 %       adaptation, NOT new statistics. [keep TLR-specific]
 %   S6. KEY FINDING (the C1 payoff): under this suite -- exactly where link-level \fone
-%       is blind -- \approach stands out most. Its lead over \Artemis on doc-code widens from +5.7pp
-%       link-level to +41pp worst-component \fone and +42pp harmonic per-component \fone
+%       is blind -- \approach stands out most. Its lead over \Artemis on doc-code widens from +9.3pp
+%       link-level to +33.8pp worst-component \fone and +29.3pp harmonic per-component \fone
 %       (\autoref{tab:rq2}). The suite does not just expose failures; it reveals our largest advantage.
 % ----------------------------------------------------------------------------
 % PARA 5 -- Contributions (3 bullets) + roadmap.
 %   Lead: "This work makes three contributions:"
 %   B1. \textbf{\approach}, a , multi-stage \ac{LLM} workflow for doc-model recovery (\autoref{sec:approach}).
 %   B2. an \textbf{architecture-driven evaluation suite} of size-aware metrics for architecture TLR (\autoref{sec:metric}). [TLR-scoped wording]
-%   B3. an \textbf{empirical study} on five projects with ablations: +10.0pp doc-model, +5.7pp doc-code, with a much larger tail gap (\autoref{sec:exp-design},\autoref{sec:results}).
+%   B3. an \textbf{empirical study} on five projects with ablations: +12.9pp doc-model, +9.3pp doc-code, with a much larger tail gap (\autoref{sec:exp-design},\autoref{sec:results}).
 %   [replication CITED in prose, not a bullet.]
 %   Roadmap: restore one-sentence-per-section roadmap (Wang T5; currently commented below).
 % ----------------------------------------------------------------------------
@@ -237,8 +247,8 @@ Four modules work together to make this decision: a knowledge module computed on
 Each judge is a context-augmented \ac{LLM}-as-a-judge: a plain judge scores an output alone, but ours receives the evidence the link rests on, such as the matched span, the form of the reference, and, for an implicit reference, the antecedent sentence.
 So, it can reject trace links the evidence does not support.
 % Running \approach takes one invocation over the documentation and model, with no labeled links and no per-project tuning.
-On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.914$, $10.4$ percentage points above the strongest baseline \Artemis{} re-run on the same backend, and $0.931$ \avgftwo, $10.3$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
-On doc-code it reaches an \avgfone of $0.909$ ($+9.6$pp) and an \avgftwo of $0.912$ ($+6.8$pp). 
+On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.939$, $12.9$ percentage points above the strongest baseline \Artemis{} re-run on the same backend, and $0.955$ \avgftwo, $12.7$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+On doc-code it reaches an \avgfone of $0.906$ ($+9.3$pp) and an \avgftwo of $0.909$ ($+6.6$pp). 
 % ; link-level \fone\ understates this gain, as the size-aware suite below shows.
 
 % Para 4 -- second contribution: the measure. Para 1 OWNS the long-tailed fact and the 69.3--99.3% number;
@@ -250,8 +260,8 @@ We therefore add an architecture-driven evaluation suite of three size-aware met
 \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
-On doc-code \approach{} clears it: it leads \TransArc{} by $21.2$pp on the worst component and $22.3$pp on the harmonic per-component \fone, against $10.6$pp at the link level.
-On doc-model, CMR tells the same story: \approach{} abandons one documented component and the same one in every run, where \Artemis{} abandons two per run and SWATTR abandons three on a single project.
+On doc-code \approach{} clears it: it leads \TransArc{} by $29.1$pp on the worst component and $25.2$pp on the harmonic per-component \fone, against $10.4$pp at the link level.
+On doc-model, CMR tells the same story: \approach{} abandons no documented component in any run, where \Artemis{} abandons two per run and SWATTR abandons three on a single project.
 Exactly where link-level \fone{} is blind, \approach{} covers the components every prior tool drops.
 
 % Para 5 -- contributions (3 bullets) + roadmap.
@@ -259,7 +269,7 @@ This work makes three contributions:
 \begin{itemize}[leftmargin=*]
     \item \textbf{\approach}, a training-free, multi-stage \ac{LLM} workflow for doc-model trace-link recovery (\autoref{sec:approach}).
     \item an \textbf{architecture-driven evaluation suite} of three size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
-    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $10.4$pp \fone\ ($10.3$pp \ftwo) on doc-model and $9.6$pp \fone\ ($6.8$pp \ftwo) on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
+    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $12.9$pp \fone\ ($12.7$pp \ftwo) on doc-model and $9.3$pp \fone\ ($6.6$pp \ftwo) on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
 \end{itemize}
 
 \autoref{sec:motivation} motivates the task and its long-tailed distribution.
