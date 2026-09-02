@@ -284,9 +284,9 @@ def write_motivation(rows):
 #
 # The .tex output is PAPER-READY (project aliases + thousands separators baked in)
 # so reports/out02_concentration.tex is copied VERBATIM into the paper's
-# table/gold_concentration.tex; check_paper_table.py guards that they stay equal.
+# table/gold_concentration.tex; sync_paper.py --check guards that they stay equal.
 # Both paper-side artifacts are copied into alinker-paper/table/ and guarded byte-
-# for-byte by check_paper_table.py: the .tex (aliases) and the machine-readable
+# for-byte by sync_paper.py --check: the .tex (aliases) and the machine-readable
 # .csv companion (full project names).
 OUT02_CSV_COLS = ["project", "sentences", "components_model", "components_gold",
                   "links", "median", "max", "gini", "top3_pct"]
@@ -385,7 +385,7 @@ def write_out02_concentration():
         "% K components. (# code files per project is computed but not reported here.)",
         "% PAPER-READY (project aliases + thousands separators baked in): copy verbatim",
         "% into working/table/gold_concentration.tex. DO NOT hand-edit -- regenerate; the",
-        "% two files are kept identical by mini-inequality/check_paper_table.py.",
+        "% two files are kept identical by mini-src/sync_paper.py --check.",
         "% Project aliases (MS/TS/TM/BBB/JR) are defined in the running text.",
         "% Companion data (machine-readable): table/gold_concentration.csv",
         "\\begin{table}[t]", "\\centering\\footnotesize\\setlength{\\tabcolsep}{3pt}",

@@ -2,7 +2,7 @@
 """Consolidate the canonical RQ CSVs into per-table "this is the table" CSVs.
 
 The numbers behind the paper's research questions are produced by several
-engines (``rq12.py`` for RQ1/RQ2, ``rq34.py`` + ``rq34_rq2.py`` for RQ3/RQ4)
+engines (``rq12.py`` for RQ1/RQ2, ``rq34.py`` + ``rq34_rq2.py`` + ``rq4_floor.py`` for RQ3/RQ4)
 and land in wide, machine-oriented CSVs. This driver is the *reshape* layer: it
 selects the exact rows/columns each paper float needs and writes one small,
 human-readable CSV per table under ``reports/tex_src/``. ``csv_to_tex.py`` then
@@ -13,8 +13,9 @@ It performs NO metric computation; every cell is copied from an upstream CSV.
 Run the upstream generators first (see HOWTO-REGENERATE-RQ.md):
 
     python3 mini-src/rq12.py            # RQ12_BIGTABLE.csv, RQ12_PERPROJECT.csv
-    python3 mini-rq34/rq34.py           # rq3_validators.csv, rq4_variants.csv, rq4_linkers.csv, runs_summary
-    python3 mini-rq34/rq34_rq2.py       # rq34_rq2_linkers.csv (+ _perproject); FULL slots
+    python3 mini-src/rq34.py            # rq3_validators.csv, rq4_variants.csv, rq4_linkers.csv, runs_summary
+    python3 mini-src/rq34_rq2.py        # rq34_rq2_linkers.csv (+ _perproject); FULL slots
+    python3 mini-src/rq4_floor.py       # rq4_floor.csv (RQ4's one-call floor)
     #   + the two no-knowledge rq34_rq2 runs (see HOWTO §4) for the RQ4 "No knowledge" row
 
 Outputs (reports/tex_src/):
@@ -39,18 +40,18 @@ HERE = Path(__file__).resolve().parent
 EVAL = HERE.parent                                  # .../evaluation
 REPORTS = EVAL / "reports"
 # Every input below is arm-scoped, so a candidate arm is reshaped by setting one knob
-# instead of editing four paths. $ALINKER_ARM selects the arm (default s92a, the arm the
-# paper reports; see rq34.py ARM and rq12.py DEFAULT_ARM -- keep the three in step).
-# $RQ34_REPORTS still overrides the RQ3/RQ4 dir outright, for a report dir named off-pattern.
+# instead of editing four paths. $ALINKER_ARM selects the arm (default below is the arm
+# the paper reports; check.py asserts every generator declares the same DEFAULT_ARM).
+# $RQ34_REPORTS still names the RQ3/RQ4 directory outright, for one named off-pattern.
 DEFAULT_ARM = "s110"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"   # matches rq12.py's output naming
 
-RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", f"reports_{ARM}")
-RQ34_FLOOR = EVAL / "mini-rq34" / f"reports_{ARM}_floor"   # rq4_floor.py's output
+RQ34 = m.RQ34_REPORTS / os.environ.get("RQ34_REPORTS", ARM)
+RQ34_FLOOR = m.RQ34_REPORTS / f"{ARM}_floor"        # rq4_floor.py's output
 RQ34_NOKNOW = {                                     # backend -> no-knowledge rq34_rq2 report dir
-    "terra": EVAL / "mini-rq34" / f"reports_{ARM}_noknow",
-    "luna": EVAL / "mini-rq34" / f"reports_{ARM}_noknow_luna",
+    "terra": m.RQ34_REPORTS / f"{ARM}_noknow",
+    "luna": m.RQ34_REPORTS / f"{ARM}_noknow_luna",
 }
 # rq12.py writes the incumbent arm to the unsuffixed name and any candidate beside it.
 RQ12_BIGTABLE = REPORTS / f"RQ12_BIGTABLE{ARM_SUFFIX}.csv"

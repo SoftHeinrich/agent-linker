@@ -13,10 +13,10 @@ made off the Average row alone.
 
 Run order (both arms must already be scored by rq12.py):
 
-    python3 mini-src/rq12.py                     # incumbent -> RQ12_BIGTABLE.csv
-    python3 mini-src/rq12.py --arm s110          # candidate  -> RQ12_BIGTABLE_s110.csv
-    python3 mini-src/compare_arms.py s110        # -> the verdict table
-    python3 mini-src/compare_arms.py s110 --csv reports/ARM_COMPARE_s110.csv
+    python3 evaluation/mini-src/rq12.py               # incumbent -> RQ12_BIGTABLE.csv
+    python3 evaluation/mini-src/rq12.py --arm s110    # candidate  -> RQ12_BIGTABLE_s110.csv
+    python3 studies/compare_arms.py s110              # -> the verdict table
+    python3 studies/compare_arms.py s110 --csv evaluation/reports/ARM_COMPARE_s110.csv
 
 Exit 0 always: this reports, it does not gate. The call is the author's.
 """
@@ -30,8 +30,8 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-import metrics as m   # noqa: E402
+sys.path.insert(0, str(HERE.parent / "evaluation" / "mini-src"))
+import metrics as m   # noqa: E402  (the tree's one P/R/F1; never re-derived here)
 
 REPORTS = m.REPO / "evaluation" / "reports"
 

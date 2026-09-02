@@ -12,7 +12,13 @@ self-validates every Full-variant tp/fp/fn against the run's `ablation_*.json`
 (`validate=OK, 15 checked, 0 mismatches`). `rq34_rq2.py` then composes each
 variant's SAD-SAM links through recovered SAM-CODE links and scores them with
 the RQ2 doc-to-code panel. Both reproduce on a fresh run. All deltas below are
-read from `reports/rq34_rq2_variants.csv` and `reports/rq34_rq2_linkers.csv`.
+read from `rq34_rq2_variants.csv` and `rq34_rq2_linkers.csv`.
+
+> Frozen record. It was decided on the retired `s_linker20_union` arm and the numbers
+> below are that arm's; the *verdict* is what the paper still follows. Those CSVs now
+> live at `evaluation/reports/rq34/s21/`, and the current arm's are under
+> `evaluation/reports/rq34/s110/`. The engines moved to `evaluation/mini-src/` on
+> 2026-09-02.
 
 Reading rule: a delta is `(variant − Full)`. For RQ3 the variant removes the
 validators, so a **negative** delta means the validators **helped** that metric.

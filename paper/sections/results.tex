@@ -17,7 +17,7 @@
 %DONE (2026-08-26, rebased 2026-09-02): every RQ number in this section is the reported arm on
 %  the GPT-5.6-terra backend (mean of 3 runs) -- s\_linker92a when this note was written,
 %  s\_linker110 since the arm swap. Sources: evaluation/reports/tex_src/rq{1,2,3,4}.csv <-
-%  rq12.py (RQ1/RQ2) + mini-rq34/reports_s110 (RQ3/RQ4). Both engines are independent and agree
+%  rq12.py (RQ1/RQ2) + evaluation/reports/rq34/s110 (RQ3/RQ4). Both engines are independent and agree
 %  on the arm's macro \fone\ (0.9385).
 %  TRAP: 0.9385 is ALSO what s92a scored, so this line reads unchanged across the swap and is no
 %  evidence the section was rebased. Check a number the arms disagree on -- rq3.csv's 143.67
@@ -135,7 +135,7 @@ On doc-code the standard \fone\ gap is $+9.3$pp; the size-aware suite opens it t
 %  \fone/\ftwo the pipeline loses with that judge switched off. Terminology = TP/FP throughout.
 %DONE [3-judge] this arm judges three linkers, not two: the named-mention stage is split into
 %  a full-name and a partial-name pass, each with its own judge. Mean of 3 runs
-%  (mini-rq34/reports_s110/rq3_validators.csv + rq3_variants.csv).
+%  (evaluation/reports/rq34/s110/rq3_validators.csv + rq3_variants.csv).
 %DONE [f2] the table now carries the counterfactual in BOTH \fone and \ftwo, which is what
 %  separates the judges' precision effect from their net effect (see the second paragraph).
 \autoref{tab:rq3-confusion} reports, for each judge, the links it rejects and keeps and what the pipeline loses when it is switched off, averaged over the three runs.
@@ -162,12 +162,12 @@ They target separate failure modes---an unmatched full name, a misdenoting parti
 \label{sec:results:rq4}
 
 %SPEC [rq4] Body float = tab:rq4: the size-aware suite (doc-code) for the full approach and
-%  each linker alone. Numbers: mini-rq34/reports_s110/rq4_variants.csv (doc-model macro \fone)
+%  each linker alone. Numbers: evaluation/reports/rq34/s110/rq4_variants.csv (doc-model macro \fone)
 %  + rq34_rq2_linkers.csv (doc-code suite) + rq4_linkers.csv (unique TPs).
 %DONE [noknow] (rebased 2026-09-02) the knowledge ablation is measured ON THIS ARM:
 %  s_linker110_noknow, three five-project runs, GPT-5.6-terra
 %  (results/consolidation_noknow_e2e_terra_r{1,2,3}_20260902, scored into
-%  mini-rq34/reports_s110_noknow). Launcher: approach/pilot/run_consolidation_e2e_noknow.sh.
+%  evaluation/reports/rq34/s110_noknow). Launcher: approach/pilot/run_consolidation_e2e_noknow.sh.
 %  The control is IN-SET: results/consolidation_e2e_terra_r{1,2,3}_20260825, same variant and
 %  model with the alias table on. This arm reads 7.6pp \fone / 11.9pp \ftwo (the s21 lineage's
 %  5.8pp and s92a's 6.2pp / 9.6pp are both retired).

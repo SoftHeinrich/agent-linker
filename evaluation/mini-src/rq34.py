@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
-"""mini-rq34 — paper RQ3 (validator contribution) + RQ4 (per-module ablation)
-metrics, computed from the agent-linker running results.
+"""Paper RQ3 (judge contribution) + RQ4 (per-module ablation) metrics, computed
+from the agent-linker running results.
 
-Self-contained, stdlib-only. Reads the canonical N=3 ``s_linker92a`` sweep
-(``$RQ34_ARM=s92``, the default: terra -> paper body, luna -> mirror; set
-``RQ34_ARM=s21`` for the retired GPT-5.4/Claude arm), reconstructs each judge's
+Self-contained, stdlib-only. Reads the canonical N=3 sweep of the reported arm
+(``$ALINKER_ARM``, default below; terra -> paper body, luna -> mirror; set
+``RQ34_ARM=s21`` for the retired GPT-5.4/Claude phase layout), reconstructs each judge's
 per-link decisions and each linker's provenance from the run's phase state (see
 the arm layout below), scores every link against the SAD-SAM gold standard, and
 writes -- with one row per phase, so the row counts follow ``PHASES`` (3 on s92,
 2 on s21):
 
-    reports/<backend>/<project>/rq3.csv         (Full + one per judge + NoValidator)
-    reports/<backend>/<project>/rq3_audit.csv   (one row per judge)
-    reports/<backend>/<project>/rq4.csv         (one row per linker)
-    reports/<backend>/<project>/rq4_upset.csv   (one row per linker + shared)
-    reports/<backend>/runs_summary.csv          (all 3 runs, canonical marked)
-    reports/rq3_validators.csv  reports/rq3_variants.csv   (run-aware aggregates, both backends)
-    reports/rq4_linkers.csv     reports/rq4_variants.csv   (run-aware aggregates, both backends)
+    <backend>/<project>/rq3.csv         (Full + one per judge + NoValidator)
+    <backend>/<project>/rq3_audit.csv   (one row per judge)
+    <backend>/<project>/rq4.csv         (one row per linker)
+    <backend>/<project>/rq4_upset.csv   (one row per linker + shared)
+    <backend>/runs_summary.csv          (all 3 runs, canonical marked)
+    rq3_validators.csv  rq3_variants.csv   (run-aware aggregates, both backends)
+    rq4_linkers.csv     rq4_variants.csv   (run-aware aggregates, both backends)
+
+all written under ``--csv-root`` (default ``reports/rq34/<arm>/``).
 
 CSV only — no TeX, no markdown. Top-level aggregates include run1/run2/run3
 and an average row; each run sums counts over the 5 projects (RQ4 also averages
@@ -43,6 +45,10 @@ Conventions (inherited from the mini-* studies):
     package.
   * Roots derive from this file's location; override via ``$TRANSARC_BENCHMARK``,
     ``$RQ34_CLAUDE_SLOT``, ``$RQ34_OPENAI_SLOT``.
+  * Which runs to score is ``--runs-from`` / ``--variant`` (or the matching env vars).
+    Naming either, or a subset of the backends or a forced run, makes ``--csv-root``
+    required -- the default output directory is the one ``rq_tables.py`` publishes as
+    the arm's reported numbers, so only the default run may write to it.
 """
 
 from __future__ import annotations
@@ -61,9 +67,9 @@ from typing import Dict, List, Optional, Set, Tuple
 # --------------------------------------------------------------------------- #
 # Roots (derived from file location; env-overridable).
 # --------------------------------------------------------------------------- #
-_HERE = Path(__file__).resolve().parent           # .../evaluation/mini-rq34
-_ARDOCO_HOME = _HERE.parents[1]                    # .../ardoco-home
-sys.path.insert(0, str(_HERE.parent / "mini-src"))
+_HERE = Path(__file__).resolve().parent           # .../evaluation/mini-src
+_ARDOCO_HOME = _HERE.parents[1]                    # .../alinker-replication-package
+sys.path.insert(0, str(_HERE))
 import metrics as m  # noqa: E402  (shared core: benchmark layout, gold, F-measures)
 
 # Re-exported under this module's names: rq34_rq2.py and rq_tables.py read them
@@ -72,9 +78,21 @@ BENCHMARK = m.BENCHMARK
 PROJECTS = m.PROJECTS
 fbeta = m.fbeta                                   # recall-weighted F-beta (\ftwo)
 RUNS = ["run1", "run2", "run3"]
-# The phase subdir name = the linker's _VARIANT_NAME. Defaults to the arm the paper
-# reports (s_linker92a); override via $RQ34_VARIANT.
-DEFAULT_VARIANT = {"s21": "s_linker21", "s92": "s_linker92a"}
+
+# ── Which arm, and where its runs are ────────────────────────────────────────
+# One knob. The reported arm names three things at once -- the phase-state subdirectory
+# (= the linker's _VARIANT_NAME), the run sweep to read, and the output directory --
+# because setting them apart is exactly how a report directory ends up holding another
+# arm's numbers. $ALINKER_ARM picks a row; $RQ34_VARIANT / $RQ34_S92_DIR_TMPL still
+# override one field each, which is what the no-knowledge A/B needs (HOWTO §4).
+# check.py reads the DEFAULT_ARM literal out of every generator and fails if any two
+# disagree, so an arm cannot be promoted by halves.
+DEFAULT_ARM = "s110"
+ARMS = {                       # reported arm -> (phase-state variant, run-sweep template)
+    "s110": ("s_linker110", "consolidation_e2e_{model}_r{i}_20260825"),
+    "s92a": ("s_linker92a", "regex_e2e_{model}_r{i}_20260822"),
+}
+REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
 # ── Arm layout ───────────────────────────────────────────────────────────────
 # A "phase" is one linker plus the judge that filters its candidates. The two arms
@@ -91,9 +109,12 @@ DEFAULT_VARIANT = {"s21": "s_linker21", "s92": "s_linker92a"}
 #        arm has three judges, not two.
 #
 # Every downstream row is keyed by phase name, so the third phase adds a row/column
-# instead of a special case. $RQ34_ARM selects the layout.
-ARM = os.environ.get("RQ34_ARM", "s92")
-VARIANT = os.environ.get("RQ34_VARIANT", DEFAULT_VARIANT[ARM])
+# instead of a special case. $RQ34_ARM selects the layout -- separate from the arm above,
+# because every s25-lineage arm shares the s92 layout.
+LAYOUT = os.environ.get("RQ34_ARM", "s92")
+VARIANT = os.environ.get(
+    "RQ34_VARIANT",
+    ARMS[REPORTED_ARM][0] if LAYOUT == "s92" and REPORTED_ARM in ARMS else "s_linker21")
 
 PHASE_SETS = {
     "s21": [
@@ -111,7 +132,7 @@ PHASE_SETS = {
          "variant": "NoCitation"},
     ],
 }
-PHASES = PHASE_SETS[ARM]
+PHASES = PHASE_SETS[LAYOUT]
 PHASE_KEYS = [ph["key"] for ph in PHASES]
 LINKERS = [ph["linker"] for ph in PHASES]
 KEY_OF_LINKER = {ph["linker"]: ph["key"] for ph in PHASES}
@@ -129,20 +150,55 @@ _RESULTS = Path(os.environ.get(
     else _ARDOCO_HOME / "agent-linker/results"))
 
 # The s92 arm keeps each run in its own top-level directory rather than <slot>/run<i>/.
-# $RQ34_S92_DIR_TMPL selects WHICH sweep to score -- the Full arm by default, or the
-# no-knowledge sweep (RQ4's knowledge A/B) with
-#   RQ34_S92_DIR_TMPL='regex_noknow_e2e_{model}_r{i}_20260826' RQ34_ABLATION_KEY=s_linker92a_noknow
-# Note the split naming: the phase-state directory carries _VARIANT_NAME (s_linker92a for
-# both arms), while the links CSV and the ablation JSON key carry the registry variant.
-S92_DIR_TMPL = os.environ.get("RQ34_S92_DIR_TMPL", "regex_e2e_{model}_r{i}_20260822")
-S92_RUN_DIRS: Dict[str, Dict[str, Path]] = {
-    model: {run: _RESULTS / S92_DIR_TMPL.format(model=model, i=i)
-            for i, run in enumerate(RUNS, 1)}
-    for model in ("terra", "luna")
-}
+# The sweep to score is the arm's by default; --runs-from / $RQ34_S92_DIR_TMPL points at
+# another one, which is how the no-knowledge A/B is measured (HOWTO §4):
+#   --runs-from 'consolidation_noknow_e2e_{model}_r{i}_20260902' --ablation-key s_linker110_noknow
+# Note the split naming: the phase-state directory carries _VARIANT_NAME (the same for the
+# Full and no-knowledge arms), while the links CSV and the ablation JSON key carry the
+# registry variant.
+DEFAULT_RUNS_TMPL = ARMS.get(REPORTED_ARM, ARMS[DEFAULT_ARM])[1]
+S92_DIR_TMPL = os.environ.get("RQ34_S92_DIR_TMPL", DEFAULT_RUNS_TMPL)
+S92_RUN_DIRS: Dict[str, Dict[str, Path]] = {}
 # Key under which the run's ablation JSON records the Full result (the tp/fp/fn oracle).
 ABLATION_KEY = os.environ.get("RQ34_ABLATION_KEY", VARIANT)
-BACKENDS = {"s21": ["claude", "openai"], "s92": ["terra", "luna"]}[ARM]
+BACKENDS = {"s21": ["claude", "openai"], "s92": ["terra", "luna"]}[LAYOUT]
+
+
+def select_runs(tmpl: str, variant: str, ablation_key: str) -> None:
+    """Point the module at one sweep. Called once at import and again per CLI override.
+
+    These four names are module-level because a dozen call sites read them; resolving
+    them in one function keeps the override in one place instead of threading a config
+    object through every reader.
+    """
+    global S92_DIR_TMPL, S92_RUN_DIRS, VARIANT, ABLATION_KEY
+    S92_DIR_TMPL, VARIANT, ABLATION_KEY = tmpl, variant, ablation_key
+    S92_RUN_DIRS = {
+        model: {run: _RESULTS / tmpl.format(model=model, i=i)
+                for i, run in enumerate(RUNS, 1)}
+        for model in ("terra", "luna")
+    }
+
+
+select_runs(S92_DIR_TMPL, VARIANT, ABLATION_KEY)
+
+
+def resolve_out(ap, csv_root, default_path: Path, deviations: List[str]) -> Path:
+    """The default output directory is for the default run, and only for it.
+
+    `rq_tables.py` reads `default_path` for this arm, so writing a differently-scoped run
+    there silently republishes it as the arm's numbers -- and a partial one (`--backends
+    terra`) truncates the file to the backends it just scored rather than merging. Any
+    deviation therefore has to name its own `--csv-root`.
+    """
+    if csv_root is not None:
+        return csv_root
+    if deviations:
+        ap.error("this run is not the default one (" + "; ".join(deviations) + "), so it "
+                 f"needs an explicit --csv-root: writing it to {default_path} would "
+                 "publish it as the arm's reported numbers. Pass e.g. "
+                 f"--csv-root {default_path}_<label>.")
+    return default_path
 
 SLOTS: Dict[str, Path] = {
     "claude": Path(os.environ.get("RQ34_CLAUDE_SLOT", _RESULTS / "v2.6.6_s21_sonnet")),
@@ -270,7 +326,7 @@ class Cell:
 
 
 def _phase_dir(slot: Path, run: str, backend: str, project: str) -> Path:
-    if ARM == "s92":
+    if LAYOUT == "s92":
         return S92_RUN_DIRS[backend][run] / "phase_states" / VARIANT / "openai" / project
     return slot / run / "phase_cache" / VARIANT / PCACHE_BACKEND[backend] / project
 
@@ -301,7 +357,7 @@ def compute_cell(slot: Path, run: str, backend: str, project: str) -> Cell:
     for ph in PHASES:
         with (pdir / ph["file"]).open("rb") as f:
             state = pickle.load(f)
-        if ARM == "s92":
+        if LAYOUT == "s92":
             kept, rejected = _judged_sets(state)
         else:
             kept, rejected = _validated_sets(state[ph["cand"]], state[ph["kept"]])
@@ -417,7 +473,7 @@ def read_ablation_full(slot: Path, run: str, project: str, backend: str = "") ->
 
     s21 writes one JSON per (run, project); s92 writes one per run directory, keyed by
     project. Both carry ``{project: {variant: {tp, fp, fn, ...}}}``."""
-    root = S92_RUN_DIRS[backend][run] if ARM == "s92" else slot / run / project
+    root = S92_RUN_DIRS[backend][run] if LAYOUT == "s92" else slot / run / project
     files = sorted(root.glob("ablation_*.json"))
     if not files:
         return None
@@ -729,24 +785,47 @@ def write_aggregates(csv_root: Path, aggs: Dict[str, List[BackendAgg]]) -> None:
 # --------------------------------------------------------------------------- #
 def main() -> int:
     ap = argparse.ArgumentParser(description="Compute RQ3/RQ4 paper metrics from running results.")
-    ap.add_argument("--csv-root", type=Path, default=_HERE / "reports",
-                    help="output root (default: mini-rq34/reports)")
+    ap.add_argument("--csv-root", type=Path, default=None,
+                    help=f"output root (default: reports/rq34/{REPORTED_ARM}; required "
+                         "for any run that is not the default one)")
+    ap.add_argument("--runs-from", default=S92_DIR_TMPL, metavar="TMPL",
+                    help="run-directory template to score, with {model} and {i} "
+                         f"(default: {DEFAULT_RUNS_TMPL})")
+    ap.add_argument("--variant", default=VARIANT,
+                    help=f"phase-state subdirectory = the linker's _VARIANT_NAME "
+                         f"(default: {VARIANT})")
+    ap.add_argument("--ablation-key", default=None,
+                    help="key under which the ablation JSON records the Full result "
+                         "(default: the variant)")
     ap.add_argument("--backends", nargs="+", default=list(BACKENDS), choices=list(BACKENDS),
-                    help=f"backends of the {ARM} arm (default: all)")
+                    help=f"backends of the {LAYOUT} layout (default: all)")
     ap.add_argument("--run", default=None, choices=RUNS,
                     help="force a run instead of the median-macro run")
     ap.add_argument("--no-validate", action="store_true",
                     help="skip cross-check of Full vs ablation_*.json")
     args = ap.parse_args()
 
+    select_runs(args.runs_from, args.variant, args.ablation_key or args.variant)
+    deviations = []
+    if args.runs_from != DEFAULT_RUNS_TMPL:
+        deviations.append(f"--runs-from {args.runs_from}")
+    if args.variant != ARMS.get(REPORTED_ARM, ARMS[DEFAULT_ARM])[0]:
+        deviations.append(f"--variant {args.variant}")
+    if set(args.backends) != set(BACKENDS):
+        deviations.append(f"--backends {' '.join(args.backends)}")
+    if args.run:
+        deviations.append(f"--run {args.run}")
+    csv_root = resolve_out(ap, args.csv_root, m.RQ34_REPORTS / REPORTED_ARM, deviations)
+
     install_unpickler()
-    print(f"[mini-rq34] benchmark = {BENCHMARK}")
-    print(f"[mini-rq34] csv-root  = {args.csv_root}")
+    print(f"[rq34] benchmark = {BENCHMARK}")
+    print(f"[rq34] runs-from = {S92_DIR_TMPL}  (variant {VARIANT})")
+    print(f"[rq34] csv-root  = {csv_root}")
 
     aggs: Dict[str, List[BackendAgg]] = {}
     for backend in args.backends:
         backend_aggs, canonical, warns, mismatch, checked, skipped = process_backend(
-            backend, args.csv_root, args.run, validate=not args.no_validate)
+            backend, csv_root, args.run, validate=not args.no_validate)
         aggs[backend] = backend_aggs
         if args.no_validate:
             flag = "skipped (--no-validate)"
@@ -755,14 +834,14 @@ def main() -> int:
         else:
             flag = f"OK ({checked} checked, {skipped} no-ref)"
         run_bits = ", ".join(f"{agg.run}={agg.macro_full:.4f}" for agg in backend_aggs)
-        print(f"[mini-rq34] {backend}: canonical={canonical} macro-F1[{run_bits}] "
+        print(f"[rq34] {backend}: canonical={canonical} macro-F1[{run_bits}] "
               f"validate={flag}")
         for w in warns:
             print(w)
 
-    write_aggregates(args.csv_root, aggs)
-    print(f"[mini-rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + "
-          f"rq4_linkers.csv + rq4_variants.csv under {args.csv_root}")
+    write_aggregates(csv_root, aggs)
+    print(f"[rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + "
+          f"rq4_linkers.csv + rq4_variants.csv under {csv_root}")
     return 0
 
 

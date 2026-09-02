@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Thin wrapper: guard the paper's gold_concentration.{tex,csv} against drift.
 
-The full table guard now lives in ``mini-src/sync_paper.py`` (it covers every paper-bound
+The full table guard now lives in ``evaluation/mini-src/sync_paper.py`` (it covers every paper-bound
 table, deriving the set from ``csv_to_tex.SPECS``). This entry point is kept for back-compat
 and delegates the gold_concentration (OUT-02) check to it via ``--only gold``. Same exit
 codes: 0 in sync, 1 drift (prints a unified diff), 2 paper dir not found.
@@ -10,14 +10,14 @@ codes: 0 in sync, 1 drift (prints a unified diff), 2 paper dir not found.
     PAPER_TABLE_DIR=/path/to/alinker-paper/table python3 check_paper_table.py
     python3 check_paper_table.py /path/to/alinker-paper/table
 
-For the complete guard (RQ tables + gold): ``python3 mini-src/sync_paper.py --check``.
+For the complete guard (RQ tables + gold): ``python3 evaluation/mini-src/sync_paper.py --check``.
 """
 import os
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent / "mini-src"))
+sys.path.insert(0, str(HERE.parents[1] / "evaluation" / "mini-src"))
 import sync_paper  # noqa: E402
 
 

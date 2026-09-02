@@ -1,7 +1,7 @@
 # phase-cache-s21 — RQ3/RQ4 reproduction inputs
 
 The minimal run artifacts needed to **recompute RQ3 and RQ4** of the eval study
-(`transarc-emp/mini-rq34/`) from scratch. RQ1/RQ2 read the link CSVs elsewhere
+(`evaluation/mini-src/rq34.py`) from scratch. RQ1/RQ2 read the link CSVs elsewhere
 in this repo; RQ3/RQ4 instead need the per-linker / per-validator decisions that
 only survive in the linker's `phase_cache` pickles, which is what lives here.
 
@@ -43,11 +43,11 @@ SOTA=/path/to/sota/recovered-links    # this repo's clone
 TRANSARC_BENCHMARK=/path/to/ardoco/.../benchmark \
 RQ34_OPENAI_SLOT=$SOTA/phase-cache-s21/v2.6.6_s21_gpt \
 RQ34_CLAUDE_SLOT=$SOTA/phase-cache-s21/v2.6.6_s21_sonnet \
-  python3 mini-rq34/rq34.py && \
+  python3 evaluation/mini-src/rq34.py && \
 TRANSARC_BENCHMARK=/path/to/ardoco/.../benchmark RQ34_VARIANT=s_linker21 \
 RQ34_OPENAI_SLOT=$SOTA/phase-cache-s21/v2.6.6_s21_gpt \
 RQ34_CLAUDE_SLOT=$SOTA/phase-cache-s21/v2.6.6_s21_sonnet \
-  python3 mini-rq34/rq34_rq2.py
+  python3 evaluation/mini-src/rq34_rq2.py
 
 # no-knowledge slots (the RQ4 "No knowledge" row) — see transarc-emp HOWTO §4
 ```

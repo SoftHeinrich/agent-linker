@@ -22,14 +22,14 @@ design question without producing a reported number live in
 
 | Dir | Question | What it does | Entry points |
 |-----|----------|--------------|--------------|
-| [`mini-src/`](mini-src/README.md) | **RQ1 / RQ2** — link & component metrics | The project's sole metrics implementation: file/link P/R, per-component, worst-component and harmonic-mean scores — each F1 reported with its recall-weighted F2 — plus the component miss rate (CMR), for `sad-code` (doc-to-code) and `sad-sam` (doc-to-model). Plus the RQ1/RQ2 big table and the CSV→TeX paper-table pipeline. | `metrics.py`, `check.py`, `rq12.py`, `rq_tables.py`, `csv_to_tex.py` |
+| [`mini-src/`](mini-src/README.md) | **RQ1–RQ4** — every results table | The whole pipeline, and nothing else. `metrics.py` is the sole metrics implementation: file/link P/R, per-component, worst-component and harmonic-mean scores — each F1 with its recall-weighted F2 — plus the component miss rate (CMR), for `sad-code` and `sad-sam`. Four engines compute (RQ1/RQ2; judge contribution, module ablation and the one-call floor for RQ3/RQ4), then the CSV→TeX reshape/render stages and the paper bridge. | `metrics.py`, `check.py`, `rq12.py`, `rq34.py`, `rq4_floor.py`, `rq_tables.py`, `csv_to_tex.py`, `sync_paper.py` |
 | [`mini-inequality/`](mini-inequality/README.md) | **RQ2 motivation** — data inequality | Concentration inequality of the gold links (Gini, Lorenz, top-k share, enrollment expansion) — why micro-F1 needs the size-aware suite. Writes `paper/table/gold_concentration.tex` via `sync_paper.py`. Self-contained GSD sub-project (own `.planning/`). | `inequality.py`, `motivation.py` |
-| [`mini-rq34/`](mini-rq34/README.md) | **RQ3 / RQ4** — validators & ablation | Validator contribution (cost/benefit, counterfactual macro-F1) and per-module linker ablation (unique TPs, leave-one-out delta, overlap decomposition), at the doc-to-model grain. | `rq34.py` |
 | `mini-data/` | — | Pruned canonical data: the 15 TransArc result CSVs the studies actually read (`<project>/{sad-code,sad-sam,sam-code}/...Tlr_*.csv`, 5 projects). | (data) |
 
-`reports/` holds the top-level mini outputs (`RQ12_BIGTABLE.csv`,
-`RQ12_PERPROJECT.csv`, and the generated `tex_src/` + `tex/` paper tables); each
-study also writes to its own `*/reports/`.
+`reports/` holds every engine's output: `RQ12_BIGTABLE.csv` and
+`RQ12_PERPROJECT.csv` for RQ1/RQ2, the arm-scoped `rq34/<arm>/` directories for
+RQ3/RQ4, and the generated `tex_src/` + `tex/` paper tables. `mini-inequality/`
+keeps its own.
 
 > Frozen leftovers. `RQ2_PANEL.csv`, `RQ2_CELLS.csv`, `RQ2_CORR.csv` and
 > `NOENROLL_DOC_CODE.{csv,md}` are the last outputs of scripts retired with the
@@ -46,8 +46,8 @@ study also writes to its own `*/reports/`.
   (5 projects: `mediastore`, `teastore`, `teammates`, `bigbluebutton`, `jabref`).
   Override with `$TRANSARC_BENCHMARK`.
 - **Bundled run data** is `mini-data/` (TransArc results). Override the results
-  root with `$TRANSARC_RESULTS_DIR` or `--results-dir`. `mini-rq34/` and some of
-  `mini-src/` additionally read agent-linker run dumps from sibling repos.
+  root with `$TRANSARC_RESULTS_DIR` or `--results-dir`. The RQ3/RQ4 engines and
+  some of `mini-src/` additionally read agent-linker run dumps from sibling repos.
 
 ## Run & verify
 
@@ -64,11 +64,18 @@ python3 mini-src/csv_to_tex.py       # -> reports/tex/*.tex
 python3 mini-inequality/inequality.py
 python3 mini-inequality/motivation.py
 
-# RQ3/RQ4 (validators + ablation)
-python3 mini-rq34/rq34.py
+# RQ3/RQ4 (judges, module ablation, the one-call floor)
+python3 mini-src/rq34.py             # -> reports/rq34/<arm>/
+python3 mini-src/rq34_rq2.py         # the same variants under the doc-to-code lens
+python3 mini-src/rq4_floor.py        # -> reports/rq34/<arm>_floor/
+
+# gates
+python3 mini-src/gen_csv_to_temp.py  # every engine reproduces its committed CSVs
+PAPER_DIR=$PWD/../paper python3 mini-src/sync_paper.py --check
 ```
 
-See each study's own `README.md` for definitions, provenance, and full options.
+See `mini-src/README.md` and `HOWTO-REGENERATE-RQ.md` for definitions,
+provenance, and full options.
 
 ## Conventions
 

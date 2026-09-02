@@ -13,5 +13,5 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]      # studies/explore-tail -> <repo>
 MINI_SRC = REPO / "evaluation" / "mini-src"     # metrics.py: loaders + the RQ panels
-MINI_RQ34 = REPO / "evaluation" / "mini-rq34"   # rq34.py: phase-state reader
+MINI_RQ34 = MINI_SRC                            # rq34.py: phase-state reader (same dir)
 SOTA = Path(os.environ.get("SOTA_LINKS", REPO / "sota-links"))

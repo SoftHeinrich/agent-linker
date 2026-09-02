@@ -22,7 +22,7 @@
 # 84.1). A macro loss here is partly that effect, and the smoke run already shows the
 # floor AHEAD on mediastore (37 sentences).
 #
-# The arm has no linker_* phases, so mini-rq34 cannot read it; score with score_runs.py.
+# The arm has no linker_* phases, so rq34.py cannot read it; score with score_runs.py.
 # Invariants: pilot/test_s110_onecall.py (27 checks, no calls) -- run it first.
 #
 #     pilot/run_onecall_e2e.sh terra

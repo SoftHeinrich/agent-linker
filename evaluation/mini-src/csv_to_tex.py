@@ -359,7 +359,7 @@ SPECS = [
     {"csv": "bigtable_rq12_perproject.csv", "out": "big-table-perproject.tex",
      "label": "tab:detailed-perproject", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "summary": {"field": "project", "value": "Average"},
-     "caption": "Full s\\_linker92a comparison per project, with the five-project Average per system, both backends.",
+     "caption": "Full comparison per project, with the five-project Average per system, both backends.",
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
                 {"field": "project", "header": "Project"}],
      "groups": SUITE9_GROUPS,
@@ -374,7 +374,7 @@ SPECS = [
     {"csv": "bigtable_rq12_perrun.csv", "out": "big-table-perrun.tex",
      "label": "tab:detailed-perrun", "star": True, "size": "\\footnotesize", "no_bold": True, "fit": True, "colsep": "3pt",
      "summary": {"field": "run", "value": "average"},
-     "caption": "Full s\\_linker92a comparison per run for \\approach{} (stochastic; the baselines are "
+     "caption": "Full comparison per run for \\approach{} (stochastic; the baselines are "
                 "deterministic, one run), both backends, five-project average.",
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
                 {"field": "run", "header": "Run", "map": RUN_MAP}],

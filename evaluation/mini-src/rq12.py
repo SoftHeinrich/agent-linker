@@ -70,7 +70,7 @@ REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 
 # The \approach arm whose dump slots the roster reads. The paper reports s92a; a
 # candidate arm (e.g. s110) is scored by pointing this at its slot and writing the
-# output beside the incumbent's, then diffing the two with compare_arms.py. Only the
+# output beside the incumbent's, then diffing the two with ../studies/compare_arms.py. Only the
 # \approach rows move -- the baselines are arm-independent and stay pinned.
 # Precedence: --arm > $ALINKER_ARM > s92a.
 DEFAULT_ARM = "s110"

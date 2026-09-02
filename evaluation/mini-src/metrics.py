@@ -5,8 +5,8 @@ A single, self-contained, stdlib-only module — the project's SOLE metrics
 implementation AND the shared core of the whole ``evaluation/`` tree: the
 benchmark layout (roots, project list, gold-standard paths), the confusion
 matrix / F-measures, the gold loaders and the CSV writer live here once and
-every other engine imports them (``rq12``, ``build_dump``, ``mini-rq34/rq34``,
-``mini-rq34/rq34_rq2``, ``mini-inequality/inequality``, ``../studies/``). Import
+every other engine imports them (``rq12``, ``rq34``, ``rq34_rq2``, ``rq4_floor``,
+``build_dump``, ``mini-inequality/inequality``, ``../studies/``). Import
 it; never re-copy a definition out of it. The former canonical stack it was reduced from
 (``src/lib/metrics_api.py``, ``src/bias/component_suite.py``, the RQ2/bias
 side-analyses, ``generate_tables.py``) has been retired to ``archive/``; only
@@ -78,6 +78,13 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 BENCHMARK = Path(os.environ.get("TRANSARC_BENCHMARK", REPO / "benchmark"))
 DEFAULT_RESULTS = Path(os.environ.get("TRANSARC_RESULTS_DIR", REPO / "evaluation/mini-data"))
+
+# Where the engines write. RQ1/RQ2 land straight in `reports/`; RQ3/RQ4 are arm-scoped,
+# one directory per arm under `reports/rq34/`, because three engines (`rq34`, `rq34_rq2`,
+# `rq4_floor`) write into the same arm directory and `rq_tables.py` reads all three from
+# it. Kept here so the four modules cannot disagree about the layout.
+REPORTS = REPO / "evaluation" / "reports"
+RQ34_REPORTS = REPORTS / "rq34"
 
 PROJECTS = ["mediastore", "teastore", "teammates", "bigbluebutton", "jabref"]
 

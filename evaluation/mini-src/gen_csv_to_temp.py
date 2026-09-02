@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Regenerate the RQ *data* CSVs into a temp dir and diff them against the repo.
 
-A no-overwrite "data walkthrough": runs the three metric-computing generators
-(rq12.py, rq34.py, rq34_rq2.py) with their outputs redirected to a scratch dir,
-then byte-compares every produced file against the committed copy under the eval
-repo's reports/ (RQ1/RQ2) and mini-rq34/reports_s92a/ (RQ3/RQ4, the reported arm).
+A no-overwrite "data walkthrough": runs the four metric-computing generators
+(rq12.py, rq34.py, rq34_rq2.py, rq4_floor.py) with their outputs redirected to a
+scratch dir, then byte-compares every produced file against the committed copy under
+the eval repo's reports/ (RQ1/RQ2) and reports/rq34/<arm>/ (RQ3/RQ4, the reported arm).
 Your working tree is never written.
 
     python3 mini-src/gen_csv_to_temp.py                  # default temp dir, diff vs repo
@@ -32,11 +32,10 @@ from pathlib import Path
 
 # Default to the repo this script lives in (mini-src/ -> repo root); EVAL_ROOT overrides.
 DEFAULT_EVAL = Path(os.environ.get("EVAL_ROOT") or Path(__file__).resolve().parent.parent)
-# Committed RQ3/RQ4 baseline for the reported arm. rq34.py defaults to ARM=s92, so the
-# committed copies to diff against are mini-rq34/reports_s92a -- NOT mini-rq34/reports,
-# which still holds the retired s21 arm. Keep these two in step (as rq_tables.py does,
-# via the same env var) or every rq34 cell reads as DIFFERS.
-RQ34_REPORTS = os.environ.get("RQ34_REPORTS", "reports_s92a")
+# Committed RQ3/RQ4 baseline for the reported arm: reports/rq34/<arm>/. NOT reports/rq34/s21,
+# which holds the retired arm. Keep this in step with rq_tables.py (it reads the same env
+# var) or every rq34 cell reads as DIFFERS.
+ARM = os.environ.get("RQ34_REPORTS") or os.environ.get("ALINKER_ARM", "s110")
 
 
 def jobs(eval_root: Path, out: Path):
@@ -49,11 +48,14 @@ def jobs(eval_root: Path, out: Path):
           "--perproject-csv", str(out / "rq12" / "RQ12_PERPROJECT.csv")],
          out / "rq12", eval_root / "reports"),
         ("rq34  (RQ3 + RQ4)",
-         [py, "mini-rq34/rq34.py", "--csv-root", str(out / "rq34")],
-         out / "rq34", eval_root / "mini-rq34" / RQ34_REPORTS),
+         [py, "mini-src/rq34.py", "--csv-root", str(out / "rq34")],
+         out / "rq34", eval_root / "reports" / "rq34" / ARM),
         ("rq34_rq2  (RQ3/RQ4 size-aware)",
-         [py, "mini-rq34/rq34_rq2.py", "--csv-root", str(out / "rq34_rq2")],
-         out / "rq34_rq2", eval_root / "mini-rq34" / RQ34_REPORTS),
+         [py, "mini-src/rq34_rq2.py", "--csv-root", str(out / "rq34_rq2")],
+         out / "rq34_rq2", eval_root / "reports" / "rq34" / ARM),
+        ("rq4_floor  (RQ4 one-call floor)",
+         [py, "mini-src/rq4_floor.py", "--csv-root", str(out / "rq4_floor")],
+         out / "rq4_floor", eval_root / "reports" / "rq34" / f"{ARM}_floor"),
     ]
 
 

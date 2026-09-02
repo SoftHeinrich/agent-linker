@@ -2276,7 +2276,7 @@ VARIANT_SPECS = {
             "no quote is demanded (worth 35.2 TP on its own), and whole-document calls "
             "carry s27's length effect (jabref 13 sentences vs teammates 198), so a loss "
             "is an UPPER BOUND on what the workflow is worth. Has no linker_* phases, so "
-            "the mini-rq34 engines cannot read it; score end to end with score_runs.py."
+            "the RQ3/RQ4 engines cannot read it; score end to end with score_runs.py."
         ),
         canonical=False,
         experimental=True,

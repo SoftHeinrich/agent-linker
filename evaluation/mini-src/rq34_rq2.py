@@ -4,15 +4,15 @@
 RQ3/RQ4 are native SAD-SAM (doc-to-model) analyses. This companion asks whether
 their conclusions survive the RQ2 doc-to-code lens: compose each phase-cache
 doc-to-model link set through the recovered SAM-CODE links, then score the
-resulting doc-to-code links with the RQ2 panel from ``mini-src/metrics.py``.
+resulting doc-to-code links with the RQ2 panel from ``metrics.py``.
 
-Outputs:
-    reports/rq34_rq2_variants.csv   RQ3 variants: Full / validators removed
-    reports/rq34_rq2_linkers.csv    RQ4 linker sets: Full / EntityOnly / CorefOnly
-    reports/RQ34_RQ2_INVESTIGATION.md
+Outputs (under ``--csv-root``, default ``reports/rq34/<arm>/``):
+    rq34_rq2_variants.csv   RQ3 variants: Full / validators removed
+    rq34_rq2_linkers.csv    RQ4 linker sets: Full / EntityOnly / CorefOnly
+    RQ34_RQ2_INVESTIGATION.md
 
-No metric code lives here: ``mini-src/metrics.py`` is the sole implementation
-(pinned by ``mini-src/check.py``) and this module only renames its panel keys to
+No metric code lives here: ``metrics.py`` is the sole implementation
+(pinned by ``check.py``) and this module only renames its panel keys to
 the paper's doc-to-code column names. The phase-cache reader is reused from this
 mini-study's own ``rq34.py``.
 """
@@ -28,9 +28,14 @@ from typing import Dict, List, Set, Tuple
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parent / "mini-src"))
 import metrics as m  # noqa: E402  (shared core: benchmark layout + the RQ2 panel)
-import rq34 as rq  # noqa: E402  (same mini-study; phase-cache reader)
+import rq34 as rq  # noqa: E402  (same directory; phase-cache reader)
+
+# The *reported arm*: it only names the output directory. Declared per module rather
+# than imported, matching rq12/rq_tables/csv_to_tex -- check.py reads the literal out of
+# each file's source text and fails if any two disagree.
+DEFAULT_ARM = "s110"
+
 
 
 LinkKey = Tuple[int, str]
@@ -239,14 +244,38 @@ def write_summary(path: Path, variant_rows: List[Dict[str, str]], linker_rows: L
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--csv-root", type=Path, default=HERE / "reports",
-                    help="output root (default: mini-rq34/reports)")
+    ap.add_argument("--csv-root", type=Path, default=None,
+                    help=f"output root (default: reports/rq34/{DEFAULT_ARM}; required "
+                         "for any run that is not the default one)")
+    ap.add_argument("--runs-from", default=rq.S92_DIR_TMPL, metavar="TMPL",
+                    help="run-directory template to score, with {model} and {i} "
+                         f"(default: {rq.DEFAULT_RUNS_TMPL})")
+    ap.add_argument("--variant", default=rq.VARIANT,
+                    help=f"phase-state subdirectory (default: {rq.VARIANT})")
     ap.add_argument("--backends", nargs="+", default=list(rq.BACKENDS),
                     choices=list(rq.BACKENDS),
-                    help=f"backends of the {rq.ARM} arm (default: all)")
+                    help=f"backends of the {rq.LAYOUT} layout (default: all)")
     ap.add_argument("--runs", nargs="+", default=list(rq.RUNS), choices=rq.RUNS,
                     help="runs to score (default: run1 run2 run3)")
     args = ap.parse_args()
+
+    # Same rule as rq34.py: the default output belongs to the default run. This engine
+    # writes into the *same* directory rq34.py does, so an off-default sweep landing
+    # there would leave that arm's rq3/rq4 CSVs and its rq34_rq2 CSVs describing
+    # different runs -- a mismatch nothing downstream would notice.
+    rq.select_runs(args.runs_from, args.variant, args.variant)
+    deviations = []
+    if args.runs_from != rq.DEFAULT_RUNS_TMPL:
+        deviations.append(f"--runs-from {args.runs_from}")
+    if args.variant != rq.ARMS.get(rq.REPORTED_ARM, rq.ARMS[rq.DEFAULT_ARM])[0]:
+        deviations.append(f"--variant {args.variant}")
+    if set(args.backends) != set(rq.BACKENDS):
+        deviations.append(f"--backends {' '.join(args.backends)}")
+    if set(args.runs) != set(rq.RUNS):
+        deviations.append(f"--runs {' '.join(args.runs)}")
+    args.csv_root = rq.resolve_out(ap, args.csv_root, m.RQ34_REPORTS / DEFAULT_ARM,
+                                   deviations)
+    print(f"[rq34-rq2] runs-from = {rq.S92_DIR_TMPL}  (variant {rq.VARIANT})")
 
     rq.install_unpickler()
     variant_rows, linker_rows, variant_pp, linker_pp = build_rows(args.backends, args.runs)

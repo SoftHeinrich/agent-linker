@@ -13,22 +13,22 @@ composing model-doc -> code via the prebuilt ArCoTL bridge
 exactly the one slot its env names, so arms sit side by side and rq12.py can score
 whichever the roster lists.
 
-Defaults build the CANONICAL arm's body backend: s_linker92a on GPT-5.6-terra
-(``terra_s92a``), whose extracts come from ``build_alinker_extracts.py``. Every
-knob is env-overridable, so the SAME builder serves every other cell — the mirror
-backend, the no-knowledge sweep, and the retired s21 lineage:
+Defaults build the reported arm's body backend (GPT-5.6-terra), whose extracts come
+from ``build_alinker_extracts.py``; the arm itself is one knob (``$ALINKER_ARM``,
+default below). Every other knob is env-overridable too, so the SAME builder serves
+every other cell — the mirror backend, the no-knowledge sweep, and the retired s21
+lineage:
 
     # mirror backend (luna)
-    EXTRACTS_DIR=$PWD/results/s92a_extracts DUMP_BE_DIR=luna \
-      DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s92a DUMP_MANIFEST_TAG=s92a_luna \
+    DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
+      DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
       python3 mini-src/build_dump.py
 
     # a no-knowledge sweep: tags the manifest rows knowledge=noknow
-    EXTRACTS_DIR=<...noknow extracts> DUMP_CONFIG=terra_s92a_noknow \
-      DUMP_MANIFEST_TAG=s92a_noknow DUMP_KNOW=noknow python3 mini-src/build_dump.py
+    EXTRACTS_DIR=<...noknow extracts> DUMP_CONFIG=terra_s110_noknow \
+      DUMP_MANIFEST_TAG=s110_noknow DUMP_KNOW=noknow python3 mini-src/build_dump.py
 
-This is the version-controlled companion to sota/recovered-links/build_unified.py
-(that tree is not a git repo). The three writer helpers below (sha256/write_norm/
+This is the version-controlled companion to sota-links/build_unified.py. The three writer helpers below (sha256/write_norm/
 write_raw) are copied verbatim from build_unified.py so the dump is byte-identical;
 the manifest's P/R/F1 integrity figure comes from ``metrics.prf``, the tree's one
 F-measure. Gold and bridge are read from the already-built sota dump rather than
@@ -42,20 +42,26 @@ from pathlib import Path
 import metrics as m   # same directory: the tree's one P/R/F1 (see metrics.prf)
 
 _HERE = Path(__file__).resolve().parent              # .../evaluation/mini-src
-_ARDOCO_HOME = _HERE.parents[1]                       # .../ardoco-home
-ROOT = os.environ.get("SOTA_LINKS", str(_ARDOCO_HOME / "sota/recovered-links"))
-EXTRACTS = os.environ.get(
-    "EXTRACTS_DIR", str(_ARDOCO_HOME / "agent-linker/results/s92a_extracts"))
+_REPO = _HERE.parents[1]                              # .../alinker-replication-package
+# The reported arm; check.py reads this literal out of every generator and fails if any
+# two disagree, so an arm cannot be promoted by halves.
+DEFAULT_ARM = "s110"
+ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
+# Defaults are in-tree, so a bare run works; the env vars are for an out-of-tree dump or
+# extracts set. (Until 2026-09-02 they pointed at the pre-nesting sibling layout, i.e. at
+# nothing, and every bare run died on a missing gold CSV.)
+ROOT = os.environ.get("SOTA_LINKS", str(_REPO / "sota-links"))
+EXTRACTS = os.environ.get("EXTRACTS_DIR", str(_REPO / "results" / f"{ARM}_extracts"))
 
 PROJECTS = m.PROJECTS
 RUNS = ["run1", "run2", "run3"]
 # Which cell of the extracts tree to read, and what to call the slot it writes.
-# Defaults = the canonical arm's body backend (s_linker92a / GPT-5.6-terra); see the
-# module docstring for the mirror-backend and no-knowledge invocations.
+# Defaults = the reported arm's body backend (GPT-5.6-terra); see the module docstring
+# for the mirror-backend and no-knowledge invocations.
 BE_DIR = os.environ.get("DUMP_BE_DIR", "terra")          # <extracts>/<BE_DIR>/<run>/<proj>.json
 BE_TAG = os.environ.get("DUMP_BE_TAG", "gpt-5.6-terra")  # backend column in the manifest
-CONFIG = os.environ.get("DUMP_CONFIG", "terra_s92a")     # the sota config slot to write
-MANIFEST_TAG = os.environ.get("DUMP_MANIFEST_TAG", "s92a_terra")   # _manifest_<tag>.csv
+CONFIG = os.environ.get("DUMP_CONFIG", f"terra_{ARM}")   # the sota config slot to write
+MANIFEST_TAG = os.environ.get("DUMP_MANIFEST_TAG", f"{ARM}_terra")   # _manifest_<tag>.csv
 # Knowledge tier recorded in the manifest; set DUMP_KNOW=noknow for a no-knowledge sweep.
 KNOW = os.environ.get("DUMP_KNOW", "full")
 
@@ -147,7 +153,7 @@ def build_slot(md_gold, arcotl_bridge):
             md_man.append(dict(task="model-doc", system="aalinker", config=CONFIG,
                                backend=BE_TAG, knowledge=KNOW, run=run, project=proj,
                                n_links=n_md, P=f"{P:.4f}", R=f"{R:.4f}", F1=f"{F:.4f}",
-                               src=os.path.relpath(jpath, _ARDOCO_HOME), sha=sha256(jpath)))
+                               src=os.path.relpath(jpath, _REPO), sha=sha256(jpath)))
 
             # --- doc-code (composed: ours model-doc o ArCoTL model-code) ---
             bridge = arcotl_bridge[proj]

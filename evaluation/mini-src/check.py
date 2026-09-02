@@ -73,13 +73,14 @@ COMPUTE = {"sad-code": mini.compute_sad_code, "sad-sam": mini.compute_sad_sam}
 
 
 def check_arm_defaults():
-    """The three generators must agree on which arm is the incumbent.
+    """Every generator must agree on which arm is the incumbent.
 
-    rq12.py names the RQ12 CSVs from its DEFAULT_ARM, rq_tables.py reads those CSVs and
-    the RQ3/RQ4 dirs from its own, and csv_to_tex.py renders from the directory named by
-    a third. If they drift apart the pipeline does not fail -- it silently reshapes one
-    arm's numbers into another arm's tables. Promoting a winning arm means moving all
-    three, so this asserts it was not done by halves.
+    build_dump.py names the link-dump slot from its DEFAULT_ARM, rq12.py names the RQ12
+    CSVs from its, the three RQ3/RQ4 engines name their report directories from theirs,
+    rq_tables.py reads both sets from its own, and csv_to_tex.py renders from the
+    directory named by a seventh. If they drift apart the pipeline does not fail -- it
+    silently reshapes one arm's numbers into another arm's tables. Promoting a winning
+    arm means moving all seven, so this asserts it was not done by halves.
 
     Read out of the source text, not by importing: the arm names are all the same length
     ("s92a" -> "s110"), so an edit and a check inside the same second leave a stale .pyc
@@ -87,7 +88,8 @@ def check_arm_defaults():
     here = Path(__file__).resolve().parent
     pat = re.compile(r'^DEFAULT_ARM\s*=\s*["\'](?P<arm>[^"\']+)["\']', re.M)
     defaults = {}
-    for name in ("rq12.py", "rq_tables.py", "csv_to_tex.py"):
+    for name in ("build_dump.py", "rq12.py", "rq34.py", "rq34_rq2.py", "rq4_floor.py",
+                 "rq_tables.py", "csv_to_tex.py"):
         src = here / name
         if not src.is_file():
             print(f"SKIP  arm-default {name:14} (not found at {src})")
@@ -103,7 +105,7 @@ def check_arm_defaults():
         return 1
     if defaults:
         print(f"OK    arm-default   every generator reports arm "
-              f"{next(iter(defaults.values()))!r} ({len(defaults)}/3 found)")
+              f"{next(iter(defaults.values()))!r} ({len(defaults)}/7 found)")
     return 0
 
 

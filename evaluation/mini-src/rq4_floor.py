@@ -20,17 +20,21 @@ floor number asks about, and the sentence counts already live in
 `paper/table/gold_concentration.csv`. One source, cited from the caption, rather than a
 second that can drift from it.
 
-Output (`--csv-root`, default `reports_<arm>_floor/`):
+Output (`--csv-root`, default `reports/rq34/<arm>_floor/`):
 
     rq4_floor.csv   backend x run x arm x project, plus a `project=Average` row per
                     run and a `run=average` row per project -- counts, P, R, F1, F2.
 
-Both run families are named by template so a re-run only changes a knob:
+Both run families are named by template so a re-run only changes a knob -- `--head-runs`
+and `--arm-runs` on the command line, or:
 
     RQ4_FLOOR_HEAD_TMPL   default noevidence_e2e_{model}_r{i}_20260902
     RQ4_FLOOR_ARM_TMPL    default onecall_e2e_{model}_r{i}_20260902
     RQ4_FLOOR_HEAD_KEY    default s_linker110
     RQ4_FLOOR_ARM_KEY     default s_linker110_onecall
+
+Naming either one, or a subset of the backends, makes `--csv-root` required: the default
+output directory is what `rq_tables.py` publishes as the arm's floor.
 
 **The control is CROSS-SET by decision.** The head runs come from a different
 invocation than the arm's, which the branch normally forbids because absolute levels
@@ -38,7 +42,7 @@ drift: `s_linker110` on terra read macro F1 93.85 in one of the 2026-09-02 sets 
 92.90 in another. Roughly 1 F1 of that band sits on every delta this engine reports.
 The header of the emitted CSV says so; keep it there.
 
-    python3 mini-rq34/rq4_floor.py --backends terra luna
+    python3 mini-src/rq4_floor.py
 """
 from __future__ import annotations
 
@@ -49,10 +53,16 @@ import sys
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(_HERE.parent / "mini-src"))
+sys.path.insert(0, str(_HERE))
 import metrics as m  # noqa: E402  (shared core: benchmark layout, gold, F-measures)
 
-_ARDOCO_HOME = _HERE.parent.parent
+# The *reported arm*: it only names the output directory. Declared per module rather
+# than imported, matching rq12/rq_tables/csv_to_tex -- check.py reads the literal out of
+# each file's source text and fails if any two disagree.
+DEFAULT_ARM = "s110"
+
+
+_ARDOCO_HOME = _HERE.parents[1]                    # .../alinker-replication-package
 RESULTS = Path(os.environ.get(
     "ALINKER_RESULTS",
     _ARDOCO_HOME / "results" if (_ARDOCO_HOME / "results").is_dir()
@@ -63,7 +73,6 @@ ARM_TMPL = os.environ.get("RQ4_FLOOR_ARM_TMPL", "onecall_e2e_{model}_r{i}_202609
 HEAD_KEY = os.environ.get("RQ4_FLOOR_HEAD_KEY", "s_linker110")
 ARM_KEY = os.environ.get("RQ4_FLOOR_ARM_KEY", "s_linker110_onecall")
 
-ARMS = (("Full", HEAD_TMPL, HEAD_KEY), ("OneCall", ARM_TMPL, ARM_KEY))
 BACKENDS = ("terra", "luna")
 RUNS = (1, 2, 3)
 
@@ -113,17 +122,38 @@ def averaged(rows, over, keep):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--csv-root", type=Path, default=None,
-                    help="output dir (default reports_<arm>_floor/)")
+                    help=f"output dir (default reports/rq34/{DEFAULT_ARM}_floor/; "
+                         "required for any run that is not the default one)")
+    ap.add_argument("--head-runs", default=HEAD_TMPL, metavar="TMPL",
+                    help=f"control run template (default: {HEAD_TMPL})")
+    ap.add_argument("--arm-runs", default=ARM_TMPL, metavar="TMPL",
+                    help=f"floor run template (default: {ARM_TMPL})")
     ap.add_argument("--backends", nargs="+", default=list(BACKENDS),
                     choices=list(BACKENDS))
     args = ap.parse_args()
-    csv_root = args.csv_root or _HERE / "reports_s110_floor"
+
+    # The default output is for the default run, and only for it: `rq_tables.py` reads it
+    # as this arm's floor, and a `--backends terra` pass rewrites the whole file with that
+    # one backend rather than merging. The guard is inline rather than imported from
+    # rq34.py because this engine deliberately does not depend on the phase-state reader.
+    arms = (("Full", args.head_runs, HEAD_KEY), ("OneCall", args.arm_runs, ARM_KEY))
+    deviations = [f"--{n} {v}" for n, v, d in
+                  (("head-runs", args.head_runs, HEAD_TMPL),
+                   ("arm-runs", args.arm_runs, ARM_TMPL)) if v != d]
+    if set(args.backends) != set(BACKENDS):
+        deviations.append(f"--backends {' '.join(args.backends)}")
+    default_root = m.RQ34_REPORTS / f"{DEFAULT_ARM}_floor"
+    if args.csv_root is None and deviations:
+        ap.error("this run is not the default one (" + "; ".join(deviations) + "), so it "
+                 f"needs an explicit --csv-root: writing it to {default_root} would "
+                 "publish it as the arm's reported floor.")
+    csv_root = args.csv_root or default_root
 
     gold = {p: m.load_gs_sad_sam(p) for p in m.PROJECTS}
     rows, missing = [], []
 
     for backend in args.backends:
-        for arm, tmpl, key in ARMS:
+        for arm, tmpl, key in arms:
             per_run = []
             for i in RUNS:
                 run_dir = RESULTS / tmpl.format(model=backend, i=i)

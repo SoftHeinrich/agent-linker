@@ -14,7 +14,7 @@ from the oracle directly, so any arm with recorded ``run_ablation.py`` output ca
 ``mini-src/`` and ``rq12.py`` without touching either.
 
 Only ``final`` and ``meta`` are emitted.  The ``entity`` / ``coref`` / ``audit`` sections of the
-s21 extracts are the per-validator decisions ``mini-rq34`` needs for RQ3/RQ4; they are not
+s21 extracts are the per-validator decisions ``rq34.py`` needs for RQ3/RQ4; they are not
 recoverable from a link CSV, and RQ1/RQ2 never read them.
 
 Stdlib only.  No LLM calls.  Deterministic: re-running produces byte-identical output.

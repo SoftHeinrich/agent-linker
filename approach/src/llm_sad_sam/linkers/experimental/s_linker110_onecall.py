@@ -41,7 +41,7 @@ before the macro, and a macro loss is partly a length effect on the two long doc
 
 **What the phase log will and will not contain.** `knowledge` and `final` are written as
 the head writes them, so `score_runs.py` and the links CSVs work unchanged. There are no
-`linker_*` phases, so the RQ3/RQ4 engines (`mini-rq34`) cannot read this arm -- by
+`linker_*` phases, so the RQ3/RQ4 engines (`evaluation/mini-src/rq34.py`) cannot read it -- by
 construction, since it has no stages to attribute. Score it end to end.
 
 **Measurement owed:** level 4, paired with `s_linker110` in every invocation, three runs
