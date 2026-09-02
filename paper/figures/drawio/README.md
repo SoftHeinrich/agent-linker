@@ -16,7 +16,12 @@ Editable **draw.io / diagrams.net** sources for the paper's figures. Keep the
 
 | Source | Figure | Notes |
 |--------|--------|-------|
-| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → reference-form-specialised linkers → validation & consolidation), matching the canonical `s_linker21` design (a thin subclass of `s_linker20_union` that swaps only the validation-gate prompt; 2-pass alias-aware extraction **unioned** for recall; `p₁ ∧ p₂` conjunction at validation for precision). |
+| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → reference-form-specialised linkers → judging & consolidation), matching the reported `s_linker92a` arm — one knowledge table (alias table), **three** linkers (full-name and partial-name propose by scanning, coreference by an LLM resolution), and **three** single-pass judges. Redrawn 2026-09-01; the previous revision drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which the reported arm runs. |
+
+> **Re-export needed.** `../approach-overview.pdf` is still the old two-linker
+> render — this source has moved ahead of it. Regenerate with
+> `drawio -x -f pdf --crop -o ../approach-overview.pdf approach-overview.drawio`
+> (no draw.io CLI was available on the machine that made the edit).
 
 ## Editing
 

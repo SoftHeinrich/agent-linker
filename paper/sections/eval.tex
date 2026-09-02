@@ -20,7 +20,7 @@ ref=RQ\arabic*, series=researchQuestions] \item \label{rq:sota}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
 Existing approaches either match component names lexically~\cite{keim_trace_2021} or classify with a single \ac{LLM} call~\cite{fuchs_whos_2025}. 
-\approach first builds runtime knowledge about the architecture and then runs two focused linker modules with \evidenceBacked judges.
+\approach first builds runtime knowledge about the architecture and then runs three focused linker modules with \evidenceBacked judges.
 We want to know whether this extra structure helps in both link recovery tasks: doc-model, and its downstream task doc-code.
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
@@ -46,12 +46,12 @@ We measure how much each check helps by calculating the confusion matrix.
 % \emph{\textbf{Motivation:}}
 
 \begin{enumerate}[leftmargin=*, labelindent=0em, label=\textbf{RQ\arabic*}:, ref=RQ\arabic*, series=researchQuestions, resume]
-    \item \label{rq:ablation} \emph{What does each linker module of \approach{} contribute on its own?}
+    \item \label{rq:ablation} \emph{What does each module of \approach{} contribute on its own?}
 \end{enumerate}
 \emph{\textbf{Motivation:}}
-\approach{} is built from four modules: the knowledge module and the three linker modules \linkerB{}, \linkerD{}, and \linkerC{}.
-A module-level ablation shows what each module contributes.
-
+\approach{} splits the linking work by \emph{evidence form}---a whole name, one word of a name, or a referring expression---and gives each form the proposer that form admits and a judge of its own, over one shared knowledge module.
+Whether that decomposition pays is a different question from whether the judges pay (\ref{rq:validators}): a judge can only remove links, whereas the form decides which links exist to remove.
+A module-level ablation prices each form, and the knowledge they share, separately.
 
 \subsection{Experiment Design}
 \label{sec:exp-design}
@@ -152,6 +152,10 @@ This reports how many true positives each linker contributes that the others do 
 For the knowledge module we run a leave-one-out variant: we switch off the document-alias stage, re-run every linker on canonical component names only, and compare against the full workflow over the same three runs.
 This isolates how much of the gain comes from the shared knowledge rather than from the linkers themselves.
 \autoref{tab:rq4} reports the size-aware suite for the full workflow, for each linker on its own, and for the no-knowledge variant.
+
+Wherever a linker proposes by scanning, \ref{rq:validators} and \ref{rq:ablation} bound the same candidate set from opposite sides, which is why we report both.
+Switching a judge off accepts every pair its linker proposes, switching the linker off accepts none, and \approach{} sits where the judge cuts in between.
+The proposer therefore fixes the recall ceiling and the judge fixes where precision lands beneath it---two quantities that neither ablation gives on its own.
 
 
 %NOTE [dead block] (2026-08-31) this whole \subsection{Dataset} is SUPERSEDED and stays

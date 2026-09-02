@@ -81,14 +81,15 @@ so each link must be checked against its own evidence.
   \caption{Overview of \approach: a knowledge module feeds three linkers ordered
   by how much of a component's name the sentence gives, each checked by a judge,
   then merged.}
-  \Description{A workflow diagram with three stages. First, a knowledge module builds an alias table from the document and component set. Second, three linkers run in sequence: a full-name linker for sentences stating a name, a partial-name linker for sentences carrying one word of a name, and a coreference linker for sentences giving no name. Each linker sees only what the earlier ones left unlinked. Third, each linker output is filtered by a judge and the surviving links are merged into the final trace-link set.}
+  \Description{A workflow diagram with three stages. First, a knowledge module builds an alias table from the document and component set. Second, three linkers run in sequence: a full-name linker for sentences stating a name, a partial-name linker for sentences carrying one word of a name, and a coreference linker for sentences giving no name. The partial-name linker skips any sentence that already states a whole name. Third, each linker output is filtered by a judge and the surviving links are merged into the final trace-link set.}
   \label{fig:approach-overview}
 \end{figure*}
 
 \textbf{\approach in a nutshell.}
 \approach answers the three challenges in three steps (\autoref{fig:approach-overview}).
 It first builds a runtime \emph{knowledge module}, an alias table computed once from the components and the document.
-A sentence then gives a component's whole name, part of it, or only a reference to it, and \approach runs three linkers in that order: the \linkerB, the \linkerD, and the \linkerC, each enhanced by the knowledge and each seeing only what the earlier ones left unlinked.
+A sentence then gives a component's whole name, part of it, or only a reference to it, and \approach runs three linkers in that order: the \linkerB, the \linkerD, and the \linkerC, each reading the same alias table and each looking for the one evidence form it is built on.
+The three link sets are then merged by pair, so a sentence two linkers reach still yields one link.
 Each proposed link is checked by an \evidenceBacked judge, and the surviving links are merged into the output.
 By recovering the references other tools silently drop, \approach{} aims to leave no documented component abandoned---the abandonment that the doc-model \cmrname{} (\cmr) of \autoref{sec:metric} measures.
 % Because the knowledge is built once, \approach resolves each alias the same way for every sentence instead of re-deciding it on every call.
@@ -140,10 +141,10 @@ We write $s \models_{f} n$ when sentence $s$ \emph{writes} name $n$ at \emph{for
 \emph{Extent} says how much of the name must be present: the whole name, or \emph{any word} of it under an English inflectional ending.
 This relation reads only the model catalog and the alias table, together with one closed list of English suffixes; it contains no project vocabulary of any kind.
 
-\autoref{tab:forms} is why the linkers are ordered as they are.
+\autoref{tab:forms} is why each linker scans the form it does.
 Each row reports how many sentence--component pairs the form reaches across the five benchmark documents and how many of them are true links.
-Precision falls monotonically as the form loosens and reach rises, and \approach answers that with the judge behind it rather than with a further rule: the tightest forms feed a judge that approves by default, the loosest feeds a judge that is shown no target, and sentences no form reaches at all are left to a judge that rejects when uncertain.
-The two looser forms carry one shared restriction, that a surface owned by more than one component is evidence for neither.
+Precision falls as the form loosens and reach rises, and \approach answers that with the judge behind it rather than with a further rule: a whole name at \emph{any case} feeds a judge that approves by default, \emph{any word} feeds a judge that is shown no target, and sentences no form reaches at all are left to a judge that rejects when uncertain.
+The workflow scans those two forms and no others; its one ambiguity rule sits earlier, in the alias table, where a term two components both claim is taken to name neither and is dropped before any linker reads it.
 Nothing in the relation admits a link on its own---every form produces a \emph{candidate} for an \ac{LLM} judge.
 
 \begin{table}[t]
@@ -164,15 +165,19 @@ any word     & one word   & 281 & 161 & 0.57 \\
 \end{table}
 
 The forms are almost, but not quite, nested, and the exceptions are informative rather than incidental: compound splitting reaches \texttt{Image Provider} for a component named \texttt{ImageProvider}, which no case-folding rule reaches, and misses \texttt{redis pubsub} for one named \texttt{Redis PubSub}, which case folding does reach.
-Compound splitting is therefore a different normalization, not a looser one, and \approach takes the union of the forms a linker scans.
+Compound splitting is therefore a different normalization, not a looser one.
+\approach scans one form per linker and does not scan this one, so a component the document only ever writes split is out of \linkerB's reach and has to be recovered through the alias table.
 
 A sentence $s$ then writes a full name in $N(c)$, part of one, or none of one.
 These ask different questions---whether a sentence writes a name, whether it carries one word of a name written elsewhere, or whether it writes no name and must be resolved through the earlier sentence it refers back to---so they need different evidence and different judges.
-\approach therefore uses three linkers and tries them in that order (\linkerB, then \linkerD, then \linkerC), rather than the one large \ac{LLM} call that previous works used.
-Each linker runs once and sees only what the earlier ones left unlinked, so the strongest available name evidence decides a link and the weaker linkers are left the sentences it cannot reach.
-This is not only bookkeeping. Because a linker never re-proposes a pair the pipeline already holds, the later judges rule on the sentences still in question instead of on a majority of settled ones: over five runs on all five projects, withholding the settled pairs from the \linkerC{} judge removes $6.8$ false positives ($p=0.01$) at $+0.8$ true positives ($p=0.05$).
-The \linkerC retains the \emph{structural antecedent constraint}: a resolution is accepted only when the antecedent sentence itself writes a name in $N(c)$.
-That is the same relation at the same form the \linkerB admits on and the \linkerD defers on---one condition read by three stages, not three conditions.
+\approach therefore uses three linkers, one per form, rather than the one large \ac{LLM} call that previous works used.
+Each runs once over the whole document, and no linker is shown what the earlier ones produced: the only ordering the workflow enforces lives inside the relation, where \linkerD skips any sentence that states a whole name because that sentence is \linkerB's to judge---a property of the sentence, not of the link set.
+Separating the forms is what lets the judges differ, since a judge can be no stricter than the evidence its own linker reports.
+%DONE [order] (2026-09-01, code audit): the "sees only what the earlier ones left unlinked" design and
+%   its measured 6.8-FP claim describe machinery removed before this arm: s25 subtracted the settled
+%   pairs at every candidate boundary, s79 removed the subtraction, and in the reported arm
+%   `_run_linker` passes no link set at all -- duplicates are merged afterwards by `_union`. The
+%   structural antecedent constraint went the same way (s80); see sec:coref-linker.
 
 The third decision answers the reliability challenge: how to handle the non-determinism of the \ac{LLM}.
 An \ac{LLM} linker can return a wrong link that still reads as plausible, with nothing in the sentence to support it.
@@ -234,13 +239,12 @@ Return JSON:\\
 
 % Without the knowledge module, a named-mention linker would handle the all named mention forms from scratch.
 % The alias table removes this need: once it exists, every named form is just a sentence in $s$ that matches the exact name or one of the recorded aliases, so a single extraction step covers them all.
-\linkerB reads each sentence together with the alias table and asks the \ac{LLM} to mark the sentences that describe a component, 
-returning a candidate link $(s,c)$.
-Because the extractor is deliberately lenient, \approach then enforces the linker's own contract with the writing relation: a candidate is kept only when its sentence writes some name in $N(c)$ at \emph{any case}.
-The same relation also runs on its own, at the two forms an \ac{LLM} extractor is most likely to miss, so that the extractor is a proposer and not a single point of failure.
-Scanning at \emph{any spelling} recovers the orthographic variants of a name; scanning at \emph{as spelled} places a recall floor under the extractor.
-The floor is drawn at the tightest form for the reason \autoref{tab:forms} gives: a component named \texttt{Common} or \texttt{Client} matches ordinary English on every page, and capitalization is what separates the proper noun from the common one, so the same scan run case-insensitively would trade a precision of $0.96$ for one of $0.77$.
-Neither scan admits anything; both hand their pairs to the same judge as the extractor's own.
+\linkerB reaches the sentences that state a name of a component outright.
+It proposes the candidate $(s,c)$ whenever $s$ writes a name in $N(c)$ at \emph{any case}, so the proposer is a scan of the model catalog and the alias table and spends no \ac{LLM} call.
+An earlier design asked an \ac{LLM} to extract the named mentions and held its output to that same relation afterwards.
+Replaying the extractor's own recorded runs showed the proposer, not the judge behind it, to be where the headroom was: the scan reaches $7.8$ more gold pairs per run than the extractor ever emitted, and a mention the extractor never proposes is one no judge can recover.
+Substituting the scan raises macro F2 on both backends ($+2.0$, $p=0.10$; $+1.8$, $p=0.20$) at unchanged macro F1 ($+0.4$ and $-0.9$, neither significant), and retires one \ac{LLM} call per $50$ sentences---nine of them in a five-project run.
+Scanning at \emph{any case} rather than at \emph{as spelled} is the same trade one level down: \autoref{tab:forms} prices it at $26$ more true links against a precision of $0.77$ instead of $0.96$, and \approach buys the reach and leaves the precision to the judge, because a component named \texttt{Common} or \texttt{Client} needs the sentence read before the mention can be ruled on at all.
 Each candidate is tagged with the matched sentence and the reference form, forming the candidate's evidence bundle.
 %DONE 2026-08-10 (code audit): dropped "and a short reason" -- the bundle's extraction_rationale field is
 %   the same constant string for every candidate, so it carries no per-candidate information to report.
@@ -248,23 +252,15 @@ Candidates and their evidence bundles will be the input for the link judge.
 %DONE 2026-08-10 (pilot): an earlier revision sampled this prompt twice and unioned the two candidate
 %   sets. Five runs per side on all five projects: TP -1.2 (p=0.30), FP -1.2 (p=0.42) -- neutral, so
 %   \approach samples once and the paper no longer has to explain a self-consistency guard.
+%   (2026-09-01: moot -- the extraction prompt this note is about is gone; the proposer is a scan.)
 For example, in \autoref{fig:example} Sentence~11 names the \texttt{preferences} component, so \linkerB returns the candidate $(s_{11}, \texttt{preferences})$ with an evidence bundle recording the matched name ``preferences'' and the reference form as the reason.
 Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}.
-Although we prompt the \ac{LLM} to propose a link only when the topic is the matched component, the \ac{LLM} may not follow the rule or may be unable to understand architectural roles.
-If \linkerB also proposes the false link $(s_{7}, \texttt{preferences})$, it will be the judge's responsibility to reject it.
+The scan proposes $(s_{7}, \texttt{preferences})$ as well, because the sentence does write the name; deciding that the sentence is about \texttt{gui} and not about \texttt{preferences} is the judge's work, not the proposer's.
 
-\begin{promptL}{\linkerB: Named-Reference Extraction}{entity}\\
-{\scriptsize\ttfamily\raggedright
-Extract ALL references to components.\\
-COMPONENTS: \{comp\_names\}\\
-KNOWN ALIASES: \{aliases\}\\
-\{EXTRACTION\_RULE\}\\
-DOCUMENT: \{Sn: text\}\\
-Return JSON:\\
-~~\{"references": [\{sentence, component,\\
-~~~~matched\_text\}]\}
-}
-\end{promptL}
+%DONE [entity prompt] (2026-09-01, code audit): the {entity} "Named-Reference Extraction" prompt box
+%   was removed with the extractor it documented. In the reported arm the \linkerB proposer issues no
+%   prompt at all (`Extracted: N (scan, 0 calls)` in every recorded run log), so a prompt sketch here
+%   would document a call the workflow does not make.
 
 % -----------------------------------------------------------------
 % 2.5 LinkerD: one word of a name is weak evidence, so the judge
@@ -273,12 +269,12 @@ Return JSON:\\
 \subsection{\linkerD}\label{sec:partial-linker}
 
 \linkerD reaches the sentences that carry only one word of a component's name.
-It scans the same writing relation at its loosest form, \emph{any word}: it proposes a candidate $(s,c)$ when $s$ writes a name in $N(c)$ at that form and no other component of the model does.
+It scans the same writing relation at its loosest form, \emph{any word}: it proposes a candidate $(s,c)$ when $s$ writes a name in $N(c)$ at that form.
 It considers only sentences that write no whole name in $N(c)$, because those sentences already belong to \linkerB.
 For example, a document that names an \texttt{HTML5 Client} may later write only ``each client'': \linkerD proposes that link and records the matched word as its evidence.
-One word is weak evidence on its own, since an ordinary English word may carry no architectural reference at all, so \linkerD judges in two steps.
-It first asks, \emph{without showing the component}, whether the expression denotes a software participant or something merely associated with software; only the surviving expressions are then compared with the component, grounded in a sentence that states one of its names.
-Withholding the component in the first step is what makes the step informative: shown the target, the \ac{LLM} tends to confirm identity rather than test it.
+One word is weak evidence on its own, since an ordinary English word may carry no architectural reference at all, so \linkerD judges the expression before it links it.
+It asks, \emph{without showing the component}, whether the expression denotes a software participant or something merely associated with software.
+Withholding the component is what makes the step informative: shown the target, the \ac{LLM} tends to confirm identity rather than test it (\autoref{sec:validators}).
 
 \begin{promptL}{\linkerD: Denotation Without the Target}{denote}\\
 {\scriptsize\ttfamily\raggedright
@@ -307,12 +303,13 @@ For each sentence with a pronoun like 'it',  an \ac{LLM} step resolves the prono
 This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
 For illustration, suppose a later sentence reads ``It stores the user's settings,'' naming no component: \linkerC resolves ``It'' to an earlier sentence that named \texttt{preferences} and proposes the link to \texttt{preferences}, reporting that earlier sentence as its evidence.
 %NOTE: the simplified motivation figure has no pronoun case, so this one sentence is illustrative, not a benchmark quote -- swap in a real coreference example if one is available.
-%TODO [sec:coref-linker] two-step framing already present below (1) alias gate, (2) implicit
-%   judge). OPEN: (a) polish wording; (b) reconcile with the sec:validators reframe -- if the
-%   alias gate becomes "step 1 of the judge" (see sec:validators %TODO), present it there, not
-%   as a separate linker step. Pick ONE home for the gate.
-That check has two steps: 1) \approach keeps a resolution only when the earlier sentence actually contains the component's exact name or one of its discovered aliases.
-2) After the filter, candidates are then judged by the \corefValidator{}.
+%DONE [sec:coref-linker] (2026-09-01, code audit) the "pick ONE home for the alias gate" question is
+%   moot: the gate is not in either home any more. s80 removed it after measuring it at TP +/-0.0 and
+%   FP +/-0.0 on the pairs \linkerC alone contributes, and `_resolve_references` in the reported arm
+%   checks only that a resolution reports an antecedent and that both sentence numbers exist.
+\approach admits a resolution only when it reports an antecedent, and checks both sentence numbers it reports against the document, so a resolution citing a sentence the document does not have cannot become a candidate.
+It does not require the antecedent to name the component: demanding that costs and buys nothing on the pairs \linkerC alone contributes ($\mathrm{TP}$ $\pm 0.0$, $\mathrm{FP}$ $\pm 0.0$ replayed over the runs' own resolutions), so \approach states the requirement to the resolver and leaves the verdict to the judge.
+The surviving candidates go to the \corefValidator{}, which is shown the referring expression and the antecedent the resolver committed to.
 
 \begin{promptL}{\linkerC: Coreference Resolution}{coref}\\
 {\scriptsize\ttfamily\raggedright
@@ -356,38 +353,34 @@ Both halves of that claim are measured.
 Dropping the quote from those two prompts costs $35.2$ true positives ($p=0.01$), so the demand is not decoration; adding the mechanical check to them voids nothing at all ($0$ verdicts in $25$ project-runs), so the check would be.
 %DONE 2026-08-10 (code audit): "a hallucinated link is caught by a mismatch between bundle and sentence"
 %   held only for \linkerD, whose judge verifies claim-substring + anchor membership in code
-%   (_classify_denotations / _review_identity_batch). The \linkerB p1/p2 and \linkerC judges request a
-%   claim quote and discard it (_run_validation_pass reads only "approve"). Scope now stated explicitly.
+%   (_classify_denotations). The \linkerB and \linkerC judges request a claim quote and discard it
+%   (_run_validation_pass reads only "approve"). Scope now stated explicitly. Updated 2026-09-01: the
+%   p1/p2 split this note referred to is gone, and _review_identity_batch with it.
 
-Of the partial-name judge's two steps, only the first is load-bearing.
-The target-blind step is worth $12$ false positives.
-The grounded review that follows it, which shows the model the target together with the sentences naming it and asks whether the two denote the same participant, trades recall for precision at a bad rate: it rejects $8.0$ candidates per run of which $5.5$ are gold.
+The \partValidator{} rules in one target-blind step, worth $12$ false positives, and the measurement is why it stops there.
+An earlier design followed it with a grounded review that showed the model the target together with the sentences naming it and asked whether the two denote the same participant.
+That review trades recall for precision at a bad rate: it rejects $8.0$ candidates per run of which $5.5$ are gold.
 Dropping it leaves F1 unchanged ($+0.2$, $p=0.53$) and improves F2 by $1.3$ ($p=0.01$) over six paired runs, and it helps only one of the five documents, the one that proposes the most partial names, while costing recall on the one where partial names carry the most links.
 
-Second, the named-mention and coreference linkers pose different questions, so their judges do different work.
+Second, the three linkers pose different questions, so their judges do different work.
 A named mention has to clear two bars: the sentence must be \emph{relevant}, an architectural action that belongs to the component, and it must be \emph{unique}, pointing to that component rather than another or to a generic use of the word.
-A coreference link is simpler, because the alias lookup in \linkerC has already dropped every candidate whose earlier sentence does not name the component, so one question remains: whether the resolution fits the content of that earlier sentence.
+A coreference link asks one question instead, because the resolver has already committed to both halves of the claim---the referring expression and the sentence it read as the antecedent---leaving the judge only to rule on whether that commitment holds.
 Giving \linkerC{} a second pass as well confirms this rather than improving on it: it moves neither score ($\mathrm{TP}$ $-0.6$, $p=0.40$; $\mathrm{FP}$ $-0.8$, $p=0.17$).
 Resolution and judging read the same batch size, so the workflow states two batch sizes rather than three; giving resolution a smaller window of its own costs a quarter of the pipeline's calls and buys nothing ($\mathrm{F1}$ $-0.2$, $p=0.52$; $\mathrm{F2}$ $-0.0$, $p=0.91$ over six paired runs).
-The two bars for a named mention are asked in two separate calls, and that separation---rather than the number of calls---is what earns the precision.
-Asking both in one call costs $0.9$ macro F1 and $3.5$ false positives (both $p=0.01$ over six paired runs); asking that merged call twice and requiring it to agree with itself recovers about a third of the loss.
-The reason is visible in the verdicts: two prompts that pose different questions disagree on $2.7\%$ of candidates, of which four in five are false positives the conjunction removes, whereas two samples of one merged prompt disagree on only $0.6\%$ while rejecting exactly the same candidates unanimously.
-Independence between verdicts comes from asking a different question, not from sampling the same one again.
+\approach puts both bars for a named mention in one call, stated in the judge's rubric rather than in a focus line.
+An earlier design sent the prompt twice, once per bar, and approved only on agreement; replayed over its own recorded runs the two passes disagree on $4.0$ of roughly $196$ candidates per five-project run and neither direction of disagreement is stable, so the conjunction was buying noise at twice the calls.
 
-%TODO [sec:validators] (a) reframe the coref alias-gate (now sec:coref-linker "step 1") as
-%   STEP 1 of the implicit-reference judge, so the judge reads gate -> check (unifies with
-%   sec:coref-linker; mirrors the eval.tex "consolidate check / judge" note). (b) add a small
-%   prompt structure: a compact sketch of the judge prompt -- inputs (candidate link +
-%   evidence-bundle fields), the \linkerB p1 relevance and p2 uniqueness questions, and the
-%   \linkerC single question. Specs-only: describe what the sketch shows, do not draft final
-%   prompt text.
-%DONE (b) 2026-06-29: added \begin{promptL}{Evidence-Backed Judge}{judge} sketch + a one-line
-%   note that {FOCUS}/{VALIDATION_RULE} instantiate as p1 relevance, p2 uniqueness (\linkerB),
-%   and the \linkerC single coreference-fit pass. (a) alias-gate reframe still OPEN.
-%   Companion prompt sketches also added: {ambiguity}, {alias}, {entity}, {coref}.
-The \entValidator{} therefore runs two passes, a relevance pass $p_1$ and a uniqueness pass $p_2$, and accepts a candidate only when both hold ($p_1 \land p_2$), since a trace link needs both.
-The \corefValidator{} runs a single pass on its one remaining question, since the alias lookup has already done what a second pass would repeat.
-We call this design \emph{\evidenceBacked judging}: each judge rules on a candidate from the evidence bundle the linker reported, with the number of passes matched to how hard the decision is. We treat it as a method contribution.
+%DONE [sec:validators] (2026-09-01, code audit) both open items resolved against the reported arm.
+%   (a) the coref alias-gate has no home to pick: s80 removed it (see sec:coref-linker). (b) the
+%   p1/p2 two-pass \entValidator was retired before this arm -- `_validate_with_evidence` issues one
+%   `_run_validation_pass` per batch with an empty focus line, and the 1-pass call model reproduces the
+%   recorded per-project LLM call counts exactly on all five projects (9/31/10/19/6 for terra run 1),
+%   where a 2-pass model predicts 11/35/11/21/7. All three judges rule once.
+Every judge therefore rules once, and what separates them is the evidence each is handed and how hard its quote is checked.
+The \entValidator{} sees the matched span, the reference form and the sentences that name the component elsewhere, and weighs relevance and uniqueness together against them.
+The \partValidator{} is shown no target at all, so its quote is the whole of its evidence and is the one that is checked mechanically.
+The \corefValidator{} is shown the referring expression and the antecedent the resolver committed to, and rules on whether that commitment holds.
+We call this design \emph{\evidenceBacked judging}: each judge rules on a candidate from the evidence bundle its linker reported, and it is the bundle, not a second call, that makes the verdict checkable. We treat it as a method contribution.
 
 \begin{promptL}{Evidence-Backed Judge}{judge}\\
 {\scriptsize\ttfamily\raggedright
@@ -401,5 +394,5 @@ Return JSON:\\
 }
 \end{promptL}
 
-\noindent All judges share this prompt; \texttt{\{FOCUS\}} and \texttt{\{VALIDATION\_RULE\}} are instantiated three times: the \linkerB relevance pass $p_1$ and uniqueness pass $p_2$, and the \linkerC single coreference-fit pass.
+\noindent The \linkerB and \linkerC judges share this prompt: \texttt{\{VALIDATION\_RULE\}} carries either the named-mention rubric, which states the relevance and uniqueness bars together, or the coreference rubric, and \texttt{\{FOCUS\}} is empty for \linkerB. The \linkerD judge uses the target-blind prompt shown in \autoref{sec:partial-linker}.
 The checked links are then output as final recovered links.
