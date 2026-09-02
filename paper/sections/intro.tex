@@ -219,13 +219,13 @@
 % Para 1 -- big question + long-tailed hook; open at altitude, promise both strengths.
 Beyond code, software systems are described by architecture documentation and architecture models.
 Trace links tie these artifacts together, so a change in one can be followed into the others.
-They underpin impact analysis, change propagation, and compliance review, and without them architectural knowledge erodes as the system ages~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
+They support impact analysis, change propagation, and compliance review, and without them architectural knowledge erodes as the system ages~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
 Recovering these links automatically is a long-standing open problem.
 Recent \ac{LLM}-based approaches push recovery scores up to 84\% \fone. %, and the task looks solved. % use soften words?
 However, can practitioners rely on these links? %But does a high score mean the links a practitioner can rely on?
 On an established benchmark~\cite{fuchs_establishing_2023}, we found that trace link distribution is long tailed:
-the three largest components hold $69.3$--$99.3\%$ of the scored links.
-A tool can therefore top the benchmark yet never link a whole component that a fifth of the documentation describes, and the score fails to present this miss sufficiently. %never shows the miss.
+the three largest components hold $69.3$--$99.3\%$ of the trace links.
+A tool can therefore top the benchmark yet never link a whole component that the documentation describes, and the score fails to present this miss sufficiently. %never shows the miss.
 This paper answers the question with both an improved traceability link recovery method and a measure that exposes these misses.
 
 % Para 2 -- the gap: task in one clause, SWATTR+LiSSA then Artemis, one root cause + implication.
@@ -238,6 +238,12 @@ These approaches share one root cause: each link is decided in a single unchecke
 The decision cannot be trusted.
 % Overloaded everyday-word names slip in, references phrased in different ways are treated alike, and unsupported links go uncaught.
  Common word that happens to name a component gets linked, a plainly named mention and an indirect one are handled alike, and a link the evidence does not back is never caught.
+%TODO [para2 rewrite, 2026-09-02] your alinker-paper edit rewrote this sentence but stopped
+%  mid-clause, so the original is kept above rather than shipped broken. Your text was:
+%    "Common word that happens to name a component gets linked, a plainly named mention
+%     without any architectural XX."
+%  The kept version names all three failures (overloaded name / reference form / unsupported
+%  link), which is what Para 3's three modules answer -- finish the replacement or drop it.
 
 % Para 3 -- single bold thesis (decision altitude) + proposal + result, with hand-off to Para 4.
 \textbf{The recovery power lies in how each link is decided: rather than committing in one unchecked step, \approach makes a link earn its place: grounded in disambiguated knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
