@@ -1,0 +1,287 @@
+[
+  {
+    "phase": "s25_summary",
+    "ts": 1788345750.3782845,
+    "in": {
+      "components": 11,
+      "sentences": 43
+    },
+    "out": {
+      "workflow": [
+        {
+          "linker": "full_name",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 1,
+                "component": "Registry"
+              },
+              {
+                "sentence": 2,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 3,
+                "component": "Auth"
+              },
+              {
+                "sentence": 4,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 5,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 7,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 10,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 18,
+                "component": "Auth"
+              },
+              {
+                "sentence": 22,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 27,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 37,
+                "component": "Registry"
+              },
+              {
+                "sentence": 38,
+                "component": "Registry"
+              },
+              {
+                "sentence": 41,
+                "component": "Registry"
+              },
+              {
+                "sentence": 43,
+                "component": "Registry"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 25,
+                "component": "Persistence"
+              }
+            ]
+          }
+        },
+        {
+          "linker": "partial_name",
+          "feedback": {
+            "accepted": [],
+            "rejected": []
+          }
+        },
+        {
+          "linker": "coreference",
+          "feedback": {
+            "accepted": [
+              {
+                "sentence": 6,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 8,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 23,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 24,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 28,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 38,
+                "component": "Registry"
+              },
+              {
+                "sentence": 41,
+                "component": "Registry"
+              }
+            ],
+            "rejected": [
+              {
+                "sentence": 11,
+                "component": "WebUI"
+              },
+              {
+                "sentence": 19,
+                "component": "Auth"
+              },
+              {
+                "sentence": 20,
+                "component": "Auth"
+              },
+              {
+                "sentence": 25,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 26,
+                "component": "Persistence"
+              },
+              {
+                "sentence": 33,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 36,
+                "component": "Recommender"
+              },
+              {
+                "sentence": 39,
+                "component": "Registry"
+              },
+              {
+                "sentence": 40,
+                "component": "Registry"
+              },
+              {
+                "sentence": 43,
+                "component": "Registry"
+              }
+            ]
+          }
+        }
+      ],
+      "final": 19,
+      "elapsed_s": 23.2,
+      "llm_calls": 7,
+      "phase_metrics": {
+        "phase_25_full_name_judge": {
+          "calls": 1,
+          "elapsed_s": 4.353,
+          "tokens": 2437,
+          "errors": 0
+        },
+        "phase_25_coreference": {
+          "calls": 5,
+          "elapsed_s": 11.035,
+          "tokens": 7133,
+          "errors": 0
+        },
+        "phase_25_coreference_judge": {
+          "calls": 1,
+          "elapsed_s": 7.778,
+          "tokens": 2579,
+          "errors": 0
+        }
+      }
+    },
+    "links": [
+      {
+        "s": 1,
+        "c": "Registry",
+        "src": "full_name"
+      },
+      {
+        "s": 2,
+        "c": "WebUI",
+        "src": "full_name"
+      },
+      {
+        "s": 3,
+        "c": "Auth",
+        "src": "full_name"
+      },
+      {
+        "s": 4,
+        "c": "Recommender",
+        "src": "full_name"
+      },
+      {
+        "s": 5,
+        "c": "WebUI",
+        "src": "full_name"
+      },
+      {
+        "s": 7,
+        "c": "WebUI",
+        "src": "full_name"
+      },
+      {
+        "s": 10,
+        "c": "WebUI",
+        "src": "full_name"
+      },
+      {
+        "s": 18,
+        "c": "Auth",
+        "src": "full_name"
+      },
+      {
+        "s": 22,
+        "c": "Persistence",
+        "src": "full_name"
+      },
+      {
+        "s": 27,
+        "c": "Recommender",
+        "src": "full_name"
+      },
+      {
+        "s": 37,
+        "c": "Registry",
+        "src": "full_name"
+      },
+      {
+        "s": 38,
+        "c": "Registry",
+        "src": "full_name"
+      },
+      {
+        "s": 41,
+        "c": "Registry",
+        "src": "full_name"
+      },
+      {
+        "s": 43,
+        "c": "Registry",
+        "src": "full_name"
+      },
+      {
+        "s": 6,
+        "c": "WebUI",
+        "src": "coreference"
+      },
+      {
+        "s": 8,
+        "c": "WebUI",
+        "src": "coreference"
+      },
+      {
+        "s": 23,
+        "c": "Persistence",
+        "src": "coreference"
+      },
+      {
+        "s": 24,
+        "c": "Persistence",
+        "src": "coreference"
+      },
+      {
+        "s": 28,
+        "c": "Recommender",
+        "src": "coreference"
+      }
+    ]
+  }
+]

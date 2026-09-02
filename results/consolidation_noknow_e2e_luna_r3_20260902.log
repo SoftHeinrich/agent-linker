@@ -1,0 +1,326 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-luna)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker110_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_noknow ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 17 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S4 -> Facade
+    Coref reject: S8 -> Facade
+    Coref reject: S10 -> Facade
+    Coref reject: S21 -> Packaging
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_mediastore_20260902_130253.json
+  LLM call trace saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_mediastore_20260902_130253_calls.json (6 calls)
+
+Final: 19 links (15.4s, 6 LLM calls)
+  s_linker110_noknow: P=100.0% R=61.3% F1=76.0% F2=66.4% TP=19 FP=0 FN=12 (15s)
+    Sources: {'full_name': 17, 'coreference': 2}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_noknow ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 85 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref skip (no antecedent): S2 -> GAE Datastore
+    Coref reject: S3 -> Common
+    Coref reject: S4 -> UI
+    Coref reject: S6 -> UI
+    Coref reject: S7 -> UI
+    Coref reject: S8 -> Logic
+    Coref reject: S10 -> Test Driver
+    Coref reject: S25 -> UI
+    Coref reject: S28 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S81 -> UI
+    Coref reject: S82 -> Logic
+    Coref reject: S83 -> Logic
+    Coref reject: S84 -> Logic
+    Coref reject: S85 -> Logic
+    Coref reject: S85 -> UI
+    Coref reject: S86 -> Logic
+    Coref reject: S87 -> Logic
+    Coref reject: S88 -> Logic
+    Coref reject: S89 -> Logic
+    Coref reject: S90 -> Logic
+    Coref reject: S92 -> Logic
+    Coref reject: S94 -> Logic
+    Coref reject: S97 -> Logic
+    Coref reject: S101 -> Storage
+    Coref reject: S102 -> Logic
+    Coref reject: S103 -> Storage
+    Coref reject: S104 -> Storage
+    Coref reject: S105 -> Storage
+    Coref reject: S106 -> Logic
+    Coref reject: S107 -> Storage
+    Coref reject: S108 -> Storage
+    Coref reject: S109 -> Storage
+    Coref reject: S110 -> Storage
+    Coref reject: S121 -> Storage
+    Coref reject: S122 -> Storage
+    Coref reject: S123 -> Storage
+    Coref reject: S124 -> Storage
+    Coref reject: S126 -> Storage
+    Coref reject: S127 -> Storage
+    Coref reject: S130 -> Storage
+    Coref reject: S132 -> Storage
+    Coref reject: S133 -> Storage
+    Coref reject: S134 -> Storage
+    Coref reject: S135 -> Storage
+    Coref reject: S136 -> Storage
+    Coref reject: S137 -> Storage
+    Coref reject: S138 -> GAE Datastore
+    Coref reject: S139 -> Storage
+    Coref reject: S140 -> Storage
+    Coref reject: S161 -> Common
+    Coref reject: S163 -> Common
+    Coref reject: S164 -> Common
+    Coref reject: S165 -> Common
+    Coref reject: S166 -> Common
+    Coref reject: S167 -> Common
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_teammates_20260902_130450.json
+  LLM call trace saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_teammates_20260902_130450_calls.json (29 calls)
+
+Final: 77 links (117.7s, 29 LLM calls)
+  s_linker110_noknow: P=70.1% R=94.7% F1=80.6% F2=88.5% TP=54 FP=23 FN=3 (118s)
+    Sources: {'full_name': 56, 'partial_name': 10, 'coreference': 11}
+    FP by source: {'full_name': 7, 'coreference': 6, 'partial_name': 10}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_noknow ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 15 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S7 -> WebUI
+    Coref reject: S9 -> WebUI
+    Coref reject: S11 -> WebUI
+    Coref reject: S12 -> WebUI
+    Coref reject: S13 -> WebUI
+    Coref reject: S14 -> WebUI
+    Coref reject: S15 -> WebUI
+    Coref reject: S16 -> WebUI
+    Coref reject: S17 -> WebUI
+    Coref reject: S19 -> Auth
+    Coref reject: S20 -> Auth
+    Coref reject: S21 -> Auth
+    Coref reject: S31 -> Recommender
+    Coref reject: S32 -> Recommender
+    Coref reject: S33 -> Recommender
+    Coref reject: S34 -> Recommender
+    Coref reject: S34 -> Recommender
+    Coref reject: S35 -> Recommender
+    Coref reject: S36 -> Recommender
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S41 -> Registry
+    Coref reject: S43 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_teastore_20260902_130544.json
+  LLM call trace saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_teastore_20260902_130544_calls.json (8 calls)
+
+Final: 21 links (53.3s, 8 LLM calls)
+  s_linker110_noknow: P=100.0% R=77.8% F1=87.5% F2=81.4% TP=21 FP=0 FN=6 (53s)
+    Sources: {'full_name': 15, 'coreference': 6}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_noknow ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 35 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+    Partial-name scan refused 12 (word written only inside another component's name)
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S6 -> HTML5 Client
+    Coref reject: S8 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Client
+    Coref reject: S11 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Client
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S18 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S37 -> BBB web
+    Coref reject: S56 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S59 -> FSESL
+    Coref reject: S59 -> FSESL
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S73 -> FreeSWITCH
+    Coref reject: S78 -> HTML5 Client
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_bigbluebutton_20260902_130717.json
+  LLM call trace saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_bigbluebutton_20260902_130717_calls.json (16 calls)
+
+Final: 67 links (93.0s, 16 LLM calls)
+  s_linker110_noknow: P=89.6% R=96.8% F1=93.0% F2=95.2% TP=60 FP=7 FN=2 (93s)
+    Sources: {'full_name': 35, 'partial_name': 29, 'coreference': 3}
+    FP by source: {'partial_name': 6, 'full_name': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_noknow ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 20 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> model
+    Coref reject: S5 -> model
+    Coref reject: S5 -> model
+    Coref reject: S6 -> model
+    Coref reject: S6 -> gui
+    Coref reject: S7 -> preferences
+    Coref reject: S7 -> gui
+    Coref reject: S7 -> gui
+    Coref reject: S9 -> model
+    Coref reject: S9 -> logic
+    Coref reject: S9 -> model
+    Coref reject: S10 -> cli
+    Coref reject: S11 -> preferences
+    Coref reject: S12 -> gui
+    Coref reject: S13 -> model
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_jabref_20260902_130759.json
+  LLM call trace saved: ../results/consolidation_noknow_e2e_luna_r3_20260902/llm_logs/s_linker110_openai_jabref_20260902_130759_calls.json (4 calls)
+
+Final: 20 links (42.8s, 4 LLM calls)
+  s_linker110_noknow: P=90.0% R=100.0% F1=94.7% F2=97.8% TP=18 FP=2 FN=0 (43s)
+    Sources: {'full_name': 20}
+    FP by source: {'full_name': 2}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker110_noknow     
+-----------------+----------------------------
+mediastore       | F1 76.0% F2 66.4% FP   0
+teammates        | F1 80.6% F2 88.5% FP  23
+teastore         | F1 87.5% F2 81.4% FP   0
+bigbluebutton    | F1 93.0% F2 95.2% FP   7
+jabref           | F1 94.7% F2 97.8% FP   2
+-----------------+----------------------------
+Macro avg        | F1 86.4% F2 85.9% FP  32
+Pooled           | F1 86.2% F2 87.4% FP  32
+
+Results saved to ../results/consolidation_noknow_e2e_luna_r3_20260902/ablation_20260902_130759.json
