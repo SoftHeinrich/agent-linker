@@ -16,7 +16,15 @@ Editable **draw.io / diagrams.net** sources for the paper's figures. Keep the
 
 | Source | Figure | Notes |
 |--------|--------|-------|
-| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → reference-form-specialised linkers → judging & consolidation), matching the reported `s_linker92a` arm — one knowledge table (alias table), **three** linkers (full-name and partial-name propose by scanning, coreference by an LLM resolution), and **three** single-pass judges. Redrawn 2026-09-01; the previous revision drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which the reported arm runs. |
+| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → reference-form-specialised linkers → judging & consolidation), matching the reported `s_linker110` arm — one knowledge table (alias table), **three** linkers (full-name and partial-name propose by scanning, coreference by an LLM resolution), and **three** single-pass judges. Redrawn 2026-09-01; the previous revision drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which the reported arm runs. |
+
+> **Arm: `s_linker110`.** The figure was drawn against `s_linker92a`; s110 became the
+> reported arm on 2026-09-02 and is `s92a` plus two changes, neither of which is at the
+> granularity this overview draws: `s109` has the partial-name scan refuse a word written
+> only inside another component's whole name, and `s110` hands the coreference resolver a
+> per-case, code-computed shortlist of the components the sentences above it name. Three
+> linkers, three judges, one alias table — unchanged. Both are written up in
+> `../../sections/approach.tex` (§\ref{sec:partial-linker}, §\ref{sec:coref-linker}).
 
 > **Re-export needed.** `../approach-overview.pdf` is still the old two-linker
 > render — this source has moved ahead of it. Regenerate with

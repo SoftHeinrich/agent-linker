@@ -144,7 +144,8 @@ This relation reads only the model catalog and the alias table, together with on
 \autoref{tab:forms} is why each linker scans the form it does.
 Each row reports how many sentence--component pairs the form reaches across the five benchmark documents and how many of them are true links.
 Precision falls as the form loosens and reach rises, and \approach answers that with the judge behind it rather than with a further rule: a whole name at \emph{any case} feeds a judge that approves by default, \emph{any word} feeds a judge that is shown no target, and sentences no form reaches at all are left to a judge that rejects when uncertain.
-The workflow scans those two forms and no others; its one ambiguity rule sits earlier, in the alias table, where a term two components both claim is taken to name neither and is dropped before any linker reads it.
+The workflow scans those two forms and no others, and nothing in this deterministic layer admits a link---it can only end a case, which it does in two places.
+One is the alias table, where a term two components both claim is taken to name neither and is dropped before any linker reads it; the other is the \emph{any word} scan, which refuses a word the sentence writes only inside another component's whole name (\autoref{sec:partial-linker}).
 Nothing in the relation admits a link on its own---every form produces a \emph{candidate} for an \ac{LLM} judge.
 
 \begin{table}[t]
@@ -272,6 +273,17 @@ The scan proposes $(s_{7}, \texttt{preferences})$ as well, because the sentence 
 It scans the same writing relation at its loosest form, \emph{any word}: it proposes a candidate $(s,c)$ when $s$ writes a name in $N(c)$ at that form.
 It considers only sentences that write no whole name in $N(c)$, because those sentences already belong to \linkerB.
 For example, a document that names an \texttt{HTML5 Client} may later write only ``each client'': \linkerD proposes that link and records the matched word as its evidence.
+The scan makes one refusal of its own, on the ground the skip above already states: when every writing of the matched word falls inside a span where the sentence writes \emph{another} component's whole name, the sentence is naming that other component there, and the pair is that component's.
+A sentence reading ``events are published on the \texttt{Redis PubSub} channel'' therefore yields no candidate for \texttt{Redis DB}, the sibling component whose name shares the word \texttt{Redis}; a sentence that writes the word outside the longer name as well keeps its candidate, which is why ``each client connects to the \texttt{HTML5 Server}'' still reaches \texttt{HTML5 Client}.
+The refusal reads the model catalog and not the alias table, and the asymmetry is deliberate: a scan only ever proposes, so it may rest on a sampled \ac{LLM} output, whereas this predicate is the one thing in the layer that \emph{ends} a case and so may rest only on what is given.
+The judge behind the scan cannot be asked instead, because it is shown no component: it calls a real participant a participant and is right, with no way to know that the participant is a different one.
+Replayed pair by pair over twelve recorded runs, the refusal fires on exactly $12$ candidates in every run of both backends and removes $5.2$ false positives a run on GPT-5.6-terra and $10.8$ on GPT-5.6-luna, at no cost in true links.
+%DONE [nesting] (2026-09-02, arm rebase) the refusal arrives with s_linker109, which the reported
+%   s_linker110 subclasses; it is `_only_inside_another_name` filtering `_scan`. Numbers from
+%   pilot/test_s109_nesting.py (237 checks, 12 recorded runs, no LLM calls). The catalog-only
+%   restriction is load-bearing: the alias form of the same predicate costs 3 gold links in one
+%   recorded luna run. The Redis PubSub / Redis DB and HTML5 Server / HTML5 Client cases above
+%   were replayed against the predicate itself, not paraphrased from the docstring.
 One word is weak evidence on its own, since an ordinary English word may carry no architectural reference at all, so \linkerD judges the expression before it links it.
 It asks, \emph{without showing the component}, whether the expression denotes a software participant or something merely associated with software.
 Withholding the component is what makes the step informative: shown the target, the \ac{LLM} tends to confirm identity rather than test it (\autoref{sec:validators}).
@@ -303,12 +315,24 @@ For each sentence with a pronoun like 'it',  an \ac{LLM} step resolves the prono
 This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
 For illustration, suppose a later sentence reads ``It stores the user's settings,'' naming no component: \linkerC resolves ``It'' to an earlier sentence that named \texttt{preferences} and proposes the link to \texttt{preferences}, reporting that earlier sentence as its evidence.
 %NOTE: the simplified motivation figure has no pronoun case, so this one sentence is illustrative, not a benchmark quote -- swap in a real coreference example if one is available.
+The resolver is not left to find the antecedent in the catalog at large.
+Each case carries, computed in code from the same writing relation, the components the sentences above it actually name, each with the sentence that names it, nearest first; the model quotes the referring expression, says which of those entries it could point to, and then names the one it does, or none.
+The division is between what is a fact and what is a weighing: which components the earlier sentences name is settled exactly by the relation, and asking the model to re-derive it from the raw catalog is asking it to do lookup by attention, which it does by inventing---whereas which reading a referring expression carries in its sentence is in no table, so only the model can weigh it.
+The list is a shortlist in fact and not only in intent: over the resolver's own windows it names $1.8$ to $4.5$ of a catalog's $6$ to $14$ components per case, and a refer-back's antecedent sits a median of two sentences behind it.
+Handing it over costs no extra call and cuts spurious resolutions from $16.9$ to $12.3$ a project-run on GPT-5.6-terra and from $38.4$ to $23.1$ on GPT-5.6-luna, at a gold cost of $0.2$ and $0.5$.
+%DONE [shortlist] (2026-09-02, arm rebase) this IS s_linker110, the reported arm: `_prompt_coref` is
+%   the only method it overrides, and `_named_before` builds the list with `_states_a_name`, the same
+%   whole-name row of the relation sec:arch defines. Stage numbers: pilot/reading_pilots.py --arms
+%   control shortlist2, 3 samples x 5 projects per model. Shortlist size and the median-2 antecedent
+%   distance: pilot/test_s110_shortlist.py, 122 checks, no calls. E2E (three paired runs a model,
+%   pilot/run_consolidation_e2e.sh) is what results.tex reports; do not restate it here.
 %DONE [sec:coref-linker] (2026-09-01, code audit) the "pick ONE home for the alias gate" question is
 %   moot: the gate is not in either home any more. s80 removed it after measuring it at TP +/-0.0 and
 %   FP +/-0.0 on the pairs \linkerC alone contributes, and `_resolve_references` in the reported arm
 %   checks only that a resolution reports an antecedent and that both sentence numbers exist.
 \approach admits a resolution only when it reports an antecedent, and checks both sentence numbers it reports against the document, so a resolution citing a sentence the document does not have cannot become a candidate.
 It does not require the antecedent to name the component: demanding that costs and buys nothing on the pairs \linkerC alone contributes ($\mathrm{TP}$ $\pm 0.0$, $\mathrm{FP}$ $\pm 0.0$ replayed over the runs' own resolutions), so \approach states the requirement to the resolver and leaves the verdict to the judge.
+The shortlist is a prior and not a constraint for the same reason: the resolver may answer outside it, and what the code checks is the answer's sentence numbers, not its membership in the list.
 The surviving candidates go to the \corefValidator{}, which is shown the referring expression and the antecedent the resolver committed to.
 
 \begin{promptL}{\linkerC: Coreference Resolution}{coref}\\
@@ -316,13 +340,17 @@ The surviving candidates go to the \corefValidator{}, which is shown the referri
 Resolve refer-back references (pronoun or\\
 noun phrase) to components.\\
 COMPONENTS: \{comp\_names\}\\
-\{per case: CONTEXT lines + TARGET Sn (marked)\}\\
+SENTENCES: \{Sn: text\}\\
+\{per case: TARGET Sn + NAMED BEFORE THIS\\
+~~CASE: Name (Sm), ... nearest first\}\\
+Quote the referring expression, then the\\
+entries it could point to, then the one\\
+it does.\\
 \{COREF\_RULE\}\\
-\{ANTECEDENT\_RULE\}\\
 Return JSON:\\
 ~~\{"resolutions": [\{case, sent, ref,\\
-~~~~component, ant\_sent, ant\_text,\\
-~~~~via\_alias\}]\}
+~~~~candidates, component, ant\_sent,\\
+~~~~ant\_text\}]\}
 }
 \end{promptL}
 
