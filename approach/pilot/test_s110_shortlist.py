@@ -1,18 +1,32 @@
-"""`s_linker110`'s invariants: the shortlist is the name relation, and nothing else moved.
+"""`s_linker110`'s invariants: a standalone file, and the shortlist is the name relation.
 
-The variant hands the resolver a per-case list of the components the window actually
-names. Three things have to hold before the arm means anything:
+The variant is the reported arm and a **standalone** file -- the whole workflow inlined,
+no linker base class -- so the invariants come in two halves.
 
-  1  **the shortlist is the module's own relation, not a second one.** For every case of
+*That the inlining is faithful* (the half a subclass used to get for free):
+
+  1  **no linker base class, and the extraction surface is gone.** `SLinker110`'s MRO
+     is itself and `object`; `ENTITY_EXTRACTION_RULES`, `_prompt_extraction`,
+     `_run_extraction_pass` and `EXTRACTION_BATCH` appear nowhere in the code.
+  2  **every block that is not a marked delta is `s_linker92`'s, byte for byte**, and
+     every marked delta is its own source file's block -- checked by re-splitting the
+     files, so it tests the file rather than whatever produced it.
+  3  **the composed behaviour is the chain's.** Over all five projects, this file's
+     proposer agrees with `s_linker92a`'s, its partial-name scan with `s_linker109`'s,
+     and its evidence bundles with `s_linker92`'s, under an empty alias table and a
+     populated one.
+
+*That the arm is what it claims* (the original three, unchanged):
+
+  4  **the shortlist is the module's own relation, not a second one.** For every case of
      every project, `_named_before` returns exactly the components `_states_a_name`
-     finds in the rows strictly above the target, with the latest such row — checked
+     finds in the rows strictly above the target, with the latest such row -- checked
      against an independent recomputation, not against itself.
-  2  **the prompt is the head's plus the shortlist and nothing else.** The rule
-     constants are the head's objects, the case blocks differ from `s_linker92`'s only
-     by the added `NAMED BEFORE THIS CASE` line, and the reply schema keeps every field
-     the parser reads.
-  3  **nothing else is declared.** `_prompt_coref` and `_named_before` only; the loop,
-     the batch size, the `SENTENCES` table, every judge and the parser are inherited.
+  5  **the prompt is the head's plus the shortlist and nothing else.** The case blocks
+     differ from `s_linker92`'s only by the added `NAMED BEFORE THIS CASE` line, and the
+     reply schema keeps every field the parser reads.
+  6  **it is a shortlist in fact.** The per-project count of components listed a case,
+     against the catalog's size.
 
 No LLM calls.
 
@@ -20,24 +34,29 @@ No LLM calls.
 """
 from __future__ import annotations
 
+import ast
+import dataclasses
 import difflib
-import inspect
 import sys
+import textwrap
 from pathlib import Path
 
 sys.path.insert(0, "src")
 sys.path.insert(0, str(Path(__file__).parent))
 
-from design_audit import BENCH, PROJECTS                              # noqa: E402
-from llm_sad_sam.core.data_types_v2 import DocumentKnowledge          # noqa: E402
-from llm_sad_sam.core.document_loader_v2 import load_sentences        # noqa: E402
-from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository            # noqa: E402
-from llm_sad_sam.linkers.experimental import s_linker110 as VARIANT   # noqa: E402
-from llm_sad_sam.linkers.experimental import s_linker92 as HEAD       # noqa: E402
-from llm_sad_sam.linkers.experimental.s_linker109 import SLinker109   # noqa: E402
-from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110   # noqa: E402
-from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names  # noqa: E402
+from design_audit import BENCH, PROJECTS                                # noqa: E402
+from llm_sad_sam.core.data_types_v2 import DocumentKnowledge            # noqa: E402
+from llm_sad_sam.core.document_loader_v2 import load_sentences          # noqa: E402
+from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository              # noqa: E402
+from llm_sad_sam.linkers.experimental import s_linker110 as VARIANT     # noqa: E402
+from llm_sad_sam.linkers.experimental import s_linker92 as HEAD         # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker92 import SLinker92       # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker92a import SLinker92a     # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker109 import SLinker109     # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110     # noqa: E402
+from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names   # noqa: E402
 
+EXPERIMENTAL = Path("src/llm_sad_sam/linkers/experimental")
 CHECKS = []
 
 
@@ -54,112 +73,239 @@ class _NoCalls:
         return explode
 
 
-def build(cls):
+def build(cls, aliases=()):
     linker = cls.__new__(cls)
-    linker.doc_knowledge = DocumentKnowledge(aliases={})
+    linker.doc_knowledge = DocumentKnowledge(aliases=dict(aliases))
     linker.llm = _NoCalls()
     return linker
 
 
-def main():
-    arm, base = build(SLinker110), build(SLinker109)
+# ── the class-body splitter ──────────────────────────────────────────────────
+# `ast` line ranges, plus the comment/blank lines directly above each statement, so
+# a `#:` doc-comment or a `HEAD DELTA` banner travels with the block it introduces.
+# The blocks of one class body tile it exactly.
 
-    # ── 1. only the resolver prompt is declared ──────────────────────────────
-    declared = {n for n, v in vars(SLinker110).items()
-                if callable(v) or isinstance(v, (staticmethod, classmethod))}
-    check(declared <= {"__init__", "_named_before", "_prompt_coref"},
-          f"only the prompt builder is declared (found {sorted(declared)})")
-    check(SLinker110.__mro__[1] is SLinker109, "the base is s_linker109")
-    check(SLinker110.COREFERENCE_BATCH == HEAD.SLinker92.COREFERENCE_BATCH,
+def class_blocks(path, class_name):
+    lines = (EXPERIMENTAL / path).read_text().splitlines(keepends=True)
+    tree = ast.parse("".join(lines))
+    cls = next(n for n in ast.walk(tree)
+               if isinstance(n, ast.ClassDef) and n.name == class_name)
+    out, prev_end = {}, None
+    for stmt in cls.body:
+        first = min([stmt.lineno]
+                    + [d.lineno for d in getattr(stmt, "decorator_list", [])])
+        lo = first
+        if prev_end is not None:
+            while lo - 1 > prev_end and (not lines[lo - 2].strip()
+                                         or lines[lo - 2].lstrip().startswith("#")):
+                lo -= 1
+        if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            name = stmt.name
+        elif isinstance(stmt, ast.Assign):
+            name = ast.unparse(stmt.targets[0])
+        else:
+            name = "<docstring>"
+        out[name] = "".join(lines[lo - 1:stmt.end_lineno])
+        prev_end = stmt.end_lineno
+    return out
+
+
+def nomark(block):
+    """The block without the `HEAD DELTA` banner above it."""
+    return "".join(line for line in block.splitlines(keepends=True)
+                   if "HEAD DELTA" not in line).strip()
+
+
+def code_ast(block, rename=None):
+    """The block's AST with every docstring dropped -- code, not prose."""
+    source = textwrap.dedent(nomark(block))
+    if rename:
+        source = source.replace(*rename)
+    tree = ast.parse(source)
+    for node in ast.walk(tree):
+        body = getattr(node, "body", None)
+        if (isinstance(body, list) and body and isinstance(body[0], ast.Expr)
+                and isinstance(body[0].value, ast.Constant)
+                and isinstance(body[0].value.value, str)):
+            node.body = body[1:]
+    return ast.dump(tree)
+
+
+def structure():
+    """Groups 1 and 2 -- the file is s_linker92 plus three marked deltas."""
+    mine = class_blocks("s_linker110.py", "SLinker110")
+    head = class_blocks("s_linker92.py", "SLinker92")
+    a92 = class_blocks("s_linker92a.py", "SLinker92a")
+    n109 = class_blocks("s_linker109.py", "SLinker109")
+
+    check(SLinker110.__mro__ == (SLinker110, object),
+          f"no linker base class (mro={[c.__name__ for c in SLinker110.__mro__]})")
+    code = (EXPERIMENTAL / "s_linker110.py").read_text().split('"""')[2]
+    for token in ("ENTITY_EXTRACTION_RULES", "_prompt_extraction",
+                  "_run_extraction_pass", "EXTRACTION_BATCH",
+                  "SLinker92", "SLinker109"):
+        check(token not in code, f"{token} does not appear in the code")
+
+    #: What the promotion is allowed to have touched. Anything else must be the head's.
+    touched = {"<docstring>", "_VARIANT_NAME", "ASK_ATTEMPTS", "__init__",
+               "_run_full_name_linker", "SKIP_QUALIFIED", "_named_spans",
+               "_writes_name", "_extract_named_mentions", "_scan_all",
+               "_covering_names", "_only_inside_another_name", "_scan",
+               "_named_before", "_prompt_coref"}
+    check(set(head) - set(mine) == {"EXTRACTION_BATCH", "_prompt_extraction",
+                                   "_run_extraction_pass"},
+          f"exactly the extraction surface is gone ({sorted(set(head) - set(mine))})")
+    check(set(mine) - set(head) == {"SKIP_QUALIFIED", "_named_spans", "_writes_name",
+                                    "_scan_all", "_covering_names",
+                                    "_only_inside_another_name", "_named_before"},
+          f"exactly the deltas are added ({sorted(set(mine) - set(head))})")
+    for name in sorted(set(mine) & set(head) - touched):
+        check(mine[name] == head[name], f"{name} is s_linker92's block byte for byte")
+
+    for name in ("SKIP_QUALIFIED", "_named_spans", "_writes_name",
+                 "_extract_named_mentions"):
+        check(nomark(mine[name]) == nomark(a92[name]),
+              f"HEAD DELTA 1: {name} is s_linker92a's block")
+    for name in ("_covering_names", "_only_inside_another_name"):
+        check(nomark(mine[name]) == nomark(n109[name]),
+              f"HEAD DELTA 2: {name} is s_linker109's block")
+    # the head's generator, renamed, and s109's filter over it instead of over super()
+    check(code_ast(mine["_scan_all"], ("def _scan_all(", "def _scan("))
+          == code_ast(head["_scan"]),
+          "HEAD DELTA 2: _scan_all is the head's _scan, renamed (AST-equal)")
+    check(code_ast(mine["_scan"], ("self._scan_all(", "super()._scan("))
+          == code_ast(n109["_scan"]),
+          "HEAD DELTA 2: _scan is s_linker109's filter, base call redirected")
+
+    check(SLinker110.COREFERENCE_BATCH == SLinker92.COREFERENCE_BATCH,
           "the resolution batch size is the head's")
-    check(VARIANT.COREF_RULES is HEAD.COREF_RULES,
-          "COREF_RULES is the head's object, not a copy")
     for constant in {n for n, v in vars(VARIANT).items()
                      if n.isupper() and isinstance(v, str)}:
-        check(getattr(VARIANT, constant) is getattr(HEAD, constant, None),
-              f"{constant} is imported from the head, not redeclared")
-    for attribute in ("_validate_coref_links", "_resolve_references", "_window",
-                      "_iter_batches", "_states_a_name", "_scan"):
-        check(inspect.unwrap(getattr(SLinker110, attribute))
-              is inspect.unwrap(getattr(SLinker109, attribute)),
-              f"{attribute} is inherited from s_linker109")
+        check(getattr(VARIANT, constant) == getattr(HEAD, constant, None),
+              f"{constant} is byte-equal to the head's")
 
+
+def composed(project, sentences, components, sent_map, name_to_id, aliases, tag):
+    """Group 3 -- the composed behaviour is s92a's proposer and s109's scan."""
+    arm = build(SLinker110, aliases)
+    prop, nest, base = (build(SLinker92a, aliases), build(SLinker109, aliases),
+                        build(SLinker92, aliases))
+    label = f"{project}/{tag}"
+
+    got = arm._extract_named_mentions(sentences, components, name_to_id, sent_map)
+    want = prop._extract_named_mentions(sentences, components, name_to_id, sent_map)
+    check(got == want, f"{label}: the proposer is s_linker92a's ({len(want)} pairs)")
+
+    check(arm._scan(sentences, components) == nest._scan(sentences, components),
+          f"{label}: the partial-name scan is s_linker109's")
+    check(arm._scan_all(sentences, components) == base._scan(sentences, components),
+          f"{label}: _scan_all is the head's unfiltered generator")
+
+    fields = {k: dataclasses.astuple(v) for k, v in (
+        ((c.sentence_number, c.component_id), arm._build_evidence_bundle(c, sent_map))
+        for c in want.values())}
+    want_fields = {k: dataclasses.astuple(v) for k, v in (
+        ((c.sentence_number, c.component_id), base._build_evidence_bundle(c, sent_map))
+        for c in want.values())}
+    # `EvidenceBundle` is this file's own class, so the dataclasses are compared by
+    # field rather than by identity of their type.
+    check(fields == want_fields,
+          f"{label}: the evidence bundles are the head's ({len(fields)})")
+
+
+def shortlist_and_prompt(project, sentences, components, sent_map, comp_names):
+    """Groups 4 and 5 -- the shortlist is the name relation, the prompt is head+it."""
+    arm, base = build(SLinker110), build(SLinker92)
+
+    for _, batch in arm._iter_batches(sentences, arm.COREFERENCE_BATCH):
+        targets, window_ids = [], set()
+        for i, sentence in enumerate(batch, 1):
+            window = [w.number for w in arm._window(sentence.number, sentences)]
+            window_ids.update(window)
+            targets.append({"case": i, "target": sentence.number,
+                            "text": sentence.text, "context": window})
+        table = [{"sentence": n, "text": sent_map[n].text}
+                 for n in sorted(window_ids) if n in sent_map]
+
+        # ── 4. the shortlist is `_states_a_name` over the rows above ─────────
+        for target in targets:
+            got = dict(arm._named_before(comp_names, table, target["target"]))
+            want = {}
+            for row in table:
+                if row["sentence"] >= target["target"]:
+                    continue
+                for component in comp_names:
+                    if arm._states_a_name(row["text"], component):
+                        want[component] = max(want.get(component, 0), row["sentence"])
+            check(got == want,
+                  f"{project} S{target['target']}: shortlist == the name relation")
+            check(all(0 < n < target["target"] for n in got.values()),
+                  f"{project} S{target['target']}: every cited row is above the target")
+
+        # ── 5. the prompt is the head's plus the shortlist ───────────────────
+        mine = arm._prompt_coref(comp_names, table, targets)
+        theirs = base._prompt_coref(comp_names, table, targets)
+        diff = list(difflib.ndiff(theirs.splitlines(), mine.splitlines()))
+        added = [line[2:] for line in diff if line.startswith("+ ")]
+        removed = [line[2:] for line in diff if line.startswith("- ")]
+        # the reply schema line is replaced, because the template adds two fields
+        # to it; nothing else may go.
+        check(all('"resolutions"' in line for line in removed),
+              f"{project}: only the reply schema line is replaced ({removed[:1]})")
+        check(all(line.startswith("NAMED BEFORE THIS CASE:")
+                  or "NAMED BEFORE THIS CASE" in line
+                  or line.strip() == "" or "Quote the referring expression" in line
+                  or "already been checked" in line or "actually name" in line
+                  or "list could be what it points to" in line
+                  or '"reference"' in line or '"candidates"' in line
+                  for line in added),
+              f"{project}: every added line is the shortlist or its instruction")
+        for field in ('"resolutions"', '"sentence"', '"component"',
+                      '"antecedent_sentence"', '"antecedent_text"'):
+            check(field in mine, f"{project}: the reply schema keeps {field}")
+        check(HEAD.COREF_RULES in mine, f"{project}: COREF_RULES appears verbatim")
+
+
+def main():
+    structure()
+
+    first = True
     for name, (text, model, _) in PROJECTS.items():
         sentences = load_sentences(str(BENCH / text))
         components = parse_pcm_repository(str(BENCH / model))
         comp_names = get_comp_names(components)
         sent_map = {s.number: s for s in sentences}
+        name_to_id = {c.name: c.id for c in components}
 
-        # the resolver's own batching, so the cases are the ones it really builds
-        for _, batch in arm._iter_batches(sentences, arm.COREFERENCE_BATCH):
-            targets, window_ids = [], set()
-            for i, sentence in enumerate(batch, 1):
-                window = [w.number for w in arm._window(sentence.number, sentences)]
-                window_ids.update(window)
-                targets.append({"case": i, "target": sentence.number,
-                                "text": sentence.text, "context": window})
-            table = [{"sentence": n, "text": sent_map[n].text}
-                     for n in sorted(window_ids) if n in sent_map]
+        # a populated alias table drawn from the catalog itself, so the knowledge
+        # regime the scans read is exercised and stays deterministic
+        populated = {}
+        for component in components:
+            words = component.name.split()
+            if len(words) > 1:
+                populated.setdefault(words[-1].lower(), component.name)
+        for tag, aliases in (("noknow", {}), ("aliases", populated)):
+            composed(name, sentences, components, sent_map, name_to_id, aliases, tag)
 
-            # ── 2. the shortlist is `_states_a_name` over the rows above ─────
-            for target in targets:
-                got = dict(arm._named_before(comp_names, table, target["target"]))
-                want = {}
-                for row in table:
-                    if row["sentence"] >= target["target"]:
-                        continue
-                    for component in comp_names:
-                        if arm._states_a_name(row["text"], component):
-                            want[component] = max(want.get(component, 0),
-                                                  row["sentence"])
-                check(got == want,
-                      f"{name} S{target['target']}: shortlist == the name relation")
-                check(all(0 < n < target["target"] for n in got.values()),
-                      f"{name} S{target['target']}: every cited row is above the target")
+        if first:
+            # one project's full batching is the prompt contract; the rest repeat it
+            shortlist_and_prompt(name, sentences, components, sent_map, comp_names)
+            first = False
 
-            # ── 3. the prompt is the head's plus the shortlist ───────────────
-            mine = arm._prompt_coref(comp_names, table, targets)
-            theirs = base._prompt_coref(comp_names, table, targets)
-            added = [line[2:] for line in difflib.ndiff(
-                theirs.splitlines(), mine.splitlines()) if line.startswith("+ ")]
-            removed = [line[2:] for line in difflib.ndiff(
-                theirs.splitlines(), mine.splitlines()) if line.startswith("- ")]
-            # the reply schema line is replaced, because the template adds two fields
-            # to it; nothing else may go.
-            check(all('"resolutions"' in line for line in removed),
-                  f"{name}: only the reply schema line is replaced ({removed[:1]})")
-            check(all(line.startswith("NAMED BEFORE THIS CASE:")
-                      or "NAMED BEFORE THIS CASE" in line
-                      or line.strip() == "" or "Quote the referring expression" in line
-                      or "already been checked" in line or "actually name" in line
-                      or "list could be what it points to" in line
-                      or '"reference"' in line or '"candidates"' in line
-                      for line in added),
-                  f"{name}: every added line is the shortlist or its instruction")
-            for field in ('"resolutions"', '"sentence"', '"component"',
-                          '"antecedent_sentence"', '"antecedent_text"'):
-                check(field in mine, f"{name}: the reply schema keeps {field}")
-            check(HEAD.COREF_RULES in mine, f"{name}: COREF_RULES appears verbatim")
-        break        # one project's full batching is the contract; the rest repeat it
-
-    # every project's shortlist, over the windows the resolver really builds
-    for name, (text, model, _) in PROJECTS.items():
-        sentences = load_sentences(str(BENCH / text))
-        components = parse_pcm_repository(str(BENCH / model))
-        comp_names = get_comp_names(components)
-        sent_map = {s.number: s for s in sentences}
+        # ── 6. the shortlist is a shortlist, over the resolver's own windows ──
+        arm = build(SLinker110)
         listed, cases = 0, 0
         for _, batch in arm._iter_batches(sentences, arm.COREFERENCE_BATCH):
             window_ids = set()
             for sentence in batch:
-                window_ids.update(w.number for w in arm._window(sentence.number,
-                                                                sentences))
+                window_ids.update(w.number
+                                  for w in arm._window(sentence.number, sentences))
             table = [{"sentence": n, "text": sent_map[n].text}
                      for n in sorted(window_ids) if n in sent_map]
             for sentence in batch:
                 listed += len(arm._named_before(comp_names, table, sentence.number))
                 cases += 1
-        check(cases > 0 and listed >= 0, f"{name}: the shortlist is computable")
+        check(cases > 0, f"{name}: the shortlist is computable")
         print(f"  {name}: {listed / max(cases, 1):.1f} of {len(comp_names)} components "
               f"listed a case, over the resolver's own window")
 

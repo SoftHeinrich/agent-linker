@@ -222,8 +222,6 @@ CANONICAL_VARIANTS = [
     "s_linker109",  # the partial-name scan refuses a word another name covers
     "s_linker110",  # s109 + the resolver's antecedent shortlist, computed
     "s_linker110_noknow",  # RQ4 knowledge A/B for the reported arm: s110, alias table off
-    "s_linker110_noevidence",  # RQ4 evidence A/B for the reported arm: s110, computed context off
-    "s_linker110_nocoderef",  # RQ4 floor: resolver gets the whole document, nothing computed
     "s_linker110_onecall",  # RQ4 total floor (D3): one linking call, no scan, no judge
     "s_linker111",  # s110 + the lenient gate enumerates the surface's readings
     "s_linker112",  # s110 + the sortal gate quotes before it commits
@@ -2195,9 +2193,13 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker110",
         class_name="SLinker110",
         description=(
-            "S-Linker110 - s109 with the resolver's candidate antecedents enumerated "
-            "in code per case (NAMED BEFORE THIS CASE). s107's arm rebased off the "
-            "retired s101 onto the adopted head. Level 2 owed on luna."
+            "S-Linker110 - THE REPORTED ARM, and a STANDALONE file: the resolver's "
+            "candidate antecedents enumerated in code per case (NAMED BEFORE THIS "
+            "CASE), over the full-name scan and the nesting refusal, with the whole "
+            "workflow inlined and no linker base class. s107's arm rebased off the "
+            "retired s101 onto the adopted head. What s_linker92/92a/109 contribute "
+            "is marked HEAD DELTA 1-3 in the file; pilot/test_s110_shortlist.py "
+            "re-checks the inlining block by block against those three."
         ),
     ),
     "s_linker110_noknow": dict(
@@ -2218,47 +2220,6 @@ VARIANT_SPECS = {
         canonical=False,
         experimental=True,
         kwargs=dict(no_knowledge=True),
-    ),
-    "s_linker110_noevidence": dict(
-        aliases=("noevidence",),
-        module="llm_sad_sam.linkers.experimental.s_linker110_noevidence",
-        class_name="SLinker110NoEvidence",
-        description=(
-            "S-Linker110 NO-EVIDENCE - RQ4 evidence A/B for the arm the paper reports "
-            "(experimental=True, NOT canonical). s_linker110 with every code-computed "
-            "context withheld from the judges: the full-name Evidence block, the [prev] "
-            "prefix in every case, the partial-name step's +/-5 window (narrowed to the "
-            "candidate's own sentence), and the resolver's NAMED BEFORE THIS CASE "
-            "shortlist. The coreference SENTENCES window is KEPT -- without it a "
-            "refer-back is unresolvable in principle, so removing it would price the "
-            "task's impossibility rather than the shortlist's worth. Linkers, rubrics, "
-            "batch sizes and reply shapes are unchanged, so the candidate set entering "
-            "each judge is the head's and the parser is the head's. _VARIANT_NAME is its "
-            "own, so it pairs with s_linker110 in ONE invocation without clobbering its "
-            "phase states."
-        ),
-        canonical=False,
-        experimental=True,
-    ),
-    "s_linker110_nocoderef": dict(
-        aliases=("nocoderef",),
-        module="llm_sad_sam.linkers.experimental.s_linker110_nocoderef",
-        class_name="SLinker110NoCodeRef",
-        description=(
-            "S-Linker110 NO-CODE COREFERENCE - the floor arm for RQ4's coreference half "
-            "(experimental=True, NOT canonical). Extends s_linker110_noevidence: the "
-            "resolver is handed the WHOLE DOCUMENT and the component list and nothing "
-            "else -- no targets, no COREFERENCE_BATCH batching, no +/-5 window table, no "
-            "NAMED BEFORE THIS CASE shortlist. The reply schema, the parser, the post-hoc "
-            "validity checks and COREF_RULES are the head's, so the strict coreference "
-            "judge downstream sees the same fields. CONFOUND, stated: s_linker27 measured "
-            "a whole-document call and found accuracy tracks document length (jabref 13 "
-            "sentences 100.0, teammates 198 84.1), and batching is itself code-computed, "
-            "so a loss here is an UPPER BOUND on what the computed context is worth -- "
-            "read per-project before macro."
-        ),
-        canonical=False,
-        experimental=True,
     ),
     "s_linker110_onecall": dict(
         aliases=("onecall",),

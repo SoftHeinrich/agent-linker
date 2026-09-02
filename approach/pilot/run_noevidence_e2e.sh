@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# RETIRED 2026-09-02 -- KEPT AS PROVENANCE, NOT RUNNABLE.
+#
+# RQ4's floor is `s_linker110_onecall` alone. `s_linker110_noevidence` and
+# `s_linker110_nocoderef` were killed with it: both module files, both invariant tests
+# and both registrations are gone, so `--variants s_linker110_noevidence` below can no
+# longer resolve. Restore them from git history if the arm is ever wanted again.
+#
+# This file stays because its output directories are still read: the runs it produced,
+# `../results/noevidence_e2e_{terra,luna}_r{1,2,3}_20260902`, are where the RQ4 floor
+# table gets its `s_linker110` control from (`evaluation/mini-rq34/rq4_floor.py`,
+# RQ4_FLOOR_HEAD_TMPL). The header below is the record of how those runs were made --
+# the noevidence arm rode in the same invocations as the control, which is why the
+# directories carry its name.
+#
+# What follows describes the batch as it ran.
+#
 # RQ4's evidence A/B: the head against the head with no code-computed context.
 #
 # The paper's claim is that each judge rules on a case code assembled. This batch is
@@ -15,7 +31,7 @@
 # PHASE_CACHE_DIR this batch gives them -- the LANDMINE that applies to the `_noknow`
 # variants does not apply here.
 #
-# Invariants: pilot/test_s110_noevidence.py (21 checks, no calls) -- run it first.
+# Invariants: pilot/test_s110_noevidence.py (21 checks, no calls) -- deleted with the arm.
 # Scoring:    pilot/score_runs.py
 #
 #     pilot/run_noevidence_e2e.sh terra

@@ -55,16 +55,16 @@ import time
 
 from llm_sad_sam.core.data_types_v2 import DocumentKnowledge, SadSamLink
 from llm_sad_sam.core.document_loader_v2 import load_sentences
-from llm_sad_sam.linkers.experimental.s_linker92 import (
+from llm_sad_sam.linkers.experimental.s_linker110 import (
     LAYERED_COREF_RULES,
     LAYERED_ENTITY_RULES,
     QUALIFIED_CLAUSE,
     STRICTER_CLAUSE,
+    SLinker110,
     build_sent_map,
     get_comp_names,
     parse_snum,
 )
-from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository
 
 
@@ -80,8 +80,9 @@ class SLinker110OneCall(SLinker110):
     def _prompt_one_call(self, comp_names, aliases, sentences) -> str:
         """The head's rubrics, the document, the components, the aliases.
 
-        The four rubrics are rendered verbatim from `s_linker92` so the arm cannot
-        drift from the head's guidance. They are stated here as one standard because
+        The four rubrics are rendered verbatim from `s_linker110`, whose copies are
+        byte-identical to `s_linker92`'s, so the arm cannot drift from the head's
+        guidance. They are stated here as one standard because
         this arm has no stages to distribute them across.
         """
         document = [{"sentence": s.number, "text": s.text} for s in sentences]
@@ -115,7 +116,7 @@ Return JSON:
 JSON only:"""
 
     def link(self, text_path, model_path, **_kwargs):
-        """`s_linker92.link` with the three linkers replaced by one call.
+        """`s_linker110.link` with the three linkers replaced by one call.
 
         The knowledge stage, the phase log, the summary log and the `final` checkpoint
         are the head's, so the runner writes the same links CSV and `score_runs.py`

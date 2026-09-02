@@ -1086,6 +1086,24 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   catalog carries the sibling names -- at FP 13.3 -> 10.3 (terra) and **25.7 -> 8.7**
   (luna). On luna's teammates the arm moves both ways, inside a control that itself
   ranges 72.7-86.2 F1 across three runs. **`s_linker110` is the head.**
+- **`s_linker110.py` is a STANDALONE file** (2026-09-02). Being the reported arm,
+  it carries the whole workflow and no linker base class -- `s_linker92`'s pipeline
+  inlined, plus `s_linker92a`'s scan proposer, `s_linker109`'s nesting refusal and
+  its own resolver prompt, each marked `HEAD DELTA 1/2/3`. The branch policy is one
+  self-contained file per reported variant, because the paper's supplement is the
+  file (`.planning/research/ARCHITECTURE.md`). `s_linker92`, `s_linker92a` and
+  `s_linker109` are untouched and remain the arms this ledger records; `s_linker111`,
+  `s_linker112`, `s_linker114` and `s_linker110_onecall` still subclass `SLinker110`.
+  `pilot/test_s110_shortlist.py` (224 checks, no calls) re-checks the inlining block
+  by block against all three sources and the composed behaviour against them over
+  five projects, under an empty alias table and a populated one.
+- **RQ4's floor arm is `s_linker110_onecall`, alone.** `s_linker110_noevidence` and
+  `s_linker110_nocoderef` are killed -- modules, invariant tests and registrations
+  gone. Nothing in the paper read either; the RQ4 floor table reads only
+  `s_linker110` and `s_linker110_onecall` (`evaluation/mini-rq34/rq4_floor.py`). The
+  recorded `results/noevidence_e2e_*_20260902` runs stay, because that is where the
+  floor table's `s_linker110` control comes from, and `pilot/run_noevidence_e2e.sh`
+  stays with them as the provenance record, banner-marked RETIRED and not runnable.
 
 ### The uniform-schema round (s116–s119) — a reply schema carries the verdict's default
 
