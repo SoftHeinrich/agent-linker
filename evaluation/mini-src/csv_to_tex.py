@@ -47,6 +47,8 @@ def fmt(val, kind):
         return str(round(f)) if abs(f - round(f)) < 1e-9 else f"{f:.1f}"
     if kind == "f1":                      # one decimal, keep the leading zero (averaged counts)
         return f"{float(val):.1f}"
+    if kind == "signed":                  # one decimal WITH its sign (delta columns)
+        return f"{float(val):+.1f}"
     dp = 3 if kind == "f3" else 2
     s = f"{float(val):.{dp}f}"
     if s.startswith("0."):
@@ -330,6 +332,27 @@ SPECS = [
          {"field": "dc_worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
          {"field": "dc_harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
          {"field": "dc_harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
+     ]},
+
+    # ---- RQ4 floor: the workflow against one linking call (body backend) ----
+    {"csv": "rq4_floor.csv", "out": "rq4-floor.tex", "label": "tab:rq4-floor",
+     "colsep": "4pt", "fit": True, "tabularx": "\\columnwidth",
+     "colspec": "@{}l ZZ @{\\hskip 1em} ZZ @{\\hskip 1em} Z@{}",
+     "summary": {"field": "project", "value": "Average"}, "no_bold": True,
+     "caption": "RQ4: \\approach{} against one linking call on the GPT-5.6-terra backend, "
+                "mean of three runs. The floor receives the document, the component list and "
+                "the discovered alias table and returns the link set directly, carrying "
+                "\\approach{}'s rubrics verbatim -- what it removes is the arrangement, not "
+                "the guidance. Reported per project because the loss is not monotone in "
+                "document length (sentence counts in \\autoref{tab:gold_concentration}).",
+     "labels": [{"field": "project", "header": "Project"}],
+     "groups": [("\\approach{}", 2), ("one call", 2), ("", 1)],
+     "cols": [
+         {"field": "full_f1", "header": "\\fone", "kind": "f3"},
+         {"field": "full_f2", "header": "\\ftwo", "kind": "f3"},
+         {"field": "floor_f1", "header": "\\fone", "kind": "f3"},
+         {"field": "floor_f2", "header": "\\ftwo", "kind": "f3"},
+         {"field": "d_f1", "header": "$\\Delta$\\fone", "kind": "signed"},
      ]},
 
     # ---- RQ1+RQ2 big table: per project + per-system Average row, both backends ----

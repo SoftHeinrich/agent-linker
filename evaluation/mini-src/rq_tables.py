@@ -47,6 +47,7 @@ ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"   # matches rq12.py's output naming
 
 RQ34 = EVAL / "mini-rq34" / os.environ.get("RQ34_REPORTS", f"reports_{ARM}")
+RQ34_FLOOR = EVAL / "mini-rq34" / f"reports_{ARM}_floor"   # rq4_floor.py's output
 RQ34_NOKNOW = {                                     # backend -> no-knowledge rq34_rq2 report dir
     "terra": EVAL / "mini-rq34" / f"reports_{ARM}_noknow",
     "luna": EVAL / "mini-rq34" / f"reports_{ARM}_noknow_luna",
@@ -316,6 +317,29 @@ def build_rq4():
     write_csv("rq4.csv", fields, rows)
 
 
+def build_rq4_floor(backend, out):
+    """RQ4's floor for one backend: the workflow against one linking call, per project.
+
+    Per project and not only the average, because the whole point of the row order is
+    that the loss is NOT monotone in document length -- teastore (43 sentences) is the
+    worst project while teammates (198) is milder, which is what refuses the
+    document-length explanation. Sentence counts are in tab:gold_concentration; they
+    are deliberately not duplicated here.
+    """
+    floor = index(read_csv(RQ34_FLOOR / "rq4_floor.csv"), "backend", "run", "arm", "project")
+    rows = []
+    for project in PROJECTS + ["Average"]:
+        full = floor[(backend, "average", "Full", project)]
+        one = floor[(backend, "average", "OneCall", project)]
+        rows.append({
+            "project": project,
+            "full_f1": full["f1"], "full_f2": full["f2"],
+            "floor_f1": one["f1"], "floor_f2": one["f2"],
+            "d_f1": round((float(one["f1"]) - float(full["f1"])) * 100, 1),
+        })
+    write_csv(out, ["project", "full_f1", "full_f2", "floor_f1", "floor_f2", "d_f1"], rows)
+
+
 # --------------------------------------------------------------------------- #
 # RQ1+RQ2 big tables (whole suite, both backends): average + per-project
 # --------------------------------------------------------------------------- #
@@ -450,6 +474,7 @@ def main():
     big = index(read_csv(RQ12_BIGTABLE), "system", "run")
     build_rq1(big)
     build_rq2(big)
+    build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()
