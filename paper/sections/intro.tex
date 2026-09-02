@@ -152,13 +152,25 @@
 % PARA 4 -- Second contribution: the measure. Motivate from a TASK PROPERTY, not a competitor's gap.
 %   [NOT bold -- P1; M1 stakeholder; M3 own constructs. The failure/gap is EVIDENCE, NOT the reason.
 %    Ends on the KEY FINDING that our approach stands out under the suite.]
+%   [2026-09-02 DEDUP: S1/S2/S2b/S3's statement of the long-tailed property was a near-verbatim
+%    repeat of Para 1 S4/S5 (property + the 69.3--99.3% number + "the score hides it"). Para 1 now
+%    OWNS all three; prose Para 4 opens with a back-reference ("that long-tailed shape") and goes
+%    straight to S3's consequence + S4's metric. Do NOT re-state the property or the number here.]
 %   S1. MOTIVATION = intrinsic task property (NOT "tool X fails"): in this task, the links follow a
 %       long-tailed distribution across components -- a few large components hold most links, and a
 %       long tail of small ones hold only a few. This long-tailed shape is a property of the
 %       architecture, independent of any tool.
 %   S2. EVIDENCE of the property = the top-3 links data we have: on the benchmark the three largest
 %       components hold ~99% of the doc-code links. [data: table/gold_concentration; ref sec:motivation]
-%   S2b. (C2 inversion, MOVED here from old Para 2 -- now a PROOF POINT, not an unexplained aside) the same
+%   S2b. [DEAD 2026-09-02 -- DO NOT WRITE. Checked against table/rq1-results.csv and
+%    appendix/big-table-perrun.csv. (a) .849/.836 is the RETIRED Artemis GPT-5.4 single run
+%    (archive/float-restructure-260628/cross_system.tex:13); using it here breaks the arm rule at :62.
+%    (b) On GPT-5.6-terra the inversion is inside run noise: Artemis dc-dm = -0.25/+1.57/-0.29pp
+%    (mean +0.34, sd 1.06, positive in only 1 of 3 runs), and \approach is positive in 2 of 3
+%    (+0.38/-2.03/+0.27), so there is no prior-vs-ours asymmetry either. Only TransArc shows it
+%    cleanly (+0.36pp) because it is deterministic -- too small to carry the file-expansion
+%    mechanism. The long-tailed property is already evidenced by top3_pct in table/gold_concentration.]
+%   S2b-OLD. (C2 inversion, MOVED here from old Para 2 -- now a PROOF POINT, not an unexplained aside) the same
 %       file-expansion is why doc-code \fone (.849) sits ABOVE doc-model \fone (.836) for the prior
 %       pipeline: composing with sub-1.0 model-code scoring still rises because large components
 %       dominate the link count -- the inversion reinforces the long-tailed distribution, not against it.
@@ -229,18 +241,17 @@ On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-m
 On doc-code it reaches an \avgfone of $0.909$ ($+9.6$pp) and an \avgftwo of $0.912$ ($+6.8$pp). 
 % ; link-level \fone\ understates this gain, as the size-aware suite below shows.
 
-% Para 4 -- second contribution: the measure, motivated from the long-tailed task property; ends on the key finding.
-Our second contribution starts from a fact about the task itself: trace links are long tailed.
-A few large components hold most of the links, while a long tail of small components hold only a handful.
-On the benchmark, the three largest components hold $69.3$--$99.3\%$ of the doc-code links (\autoref{sec:motivation}).
-Standard link-level \fone\ rewards the large components, so the average hides the tail.
-We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare.
+% Para 4 -- second contribution: the measure. Para 1 OWNS the long-tailed fact and the 69.3--99.3% number;
+% this paragraph must NOT restate either -- it opens by cashing them in and moves to the metric.
+Our second contribution follows from that long-tailed shape.
+Because a few large components carry the score, link-level \fone\ answers the wrong question for an architect, who needs every documented component covered, not just the big ones.
+We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare: worst-component \fone\ and the harmonic mean of per-component \fone\ on doc-code, and the \cmrname\ (CMR) on doc-model (\autoref{sec:metric}).
 % These adapt established ideas (macro-averaging, worst-group reporting, and harmonic-mean aggregation) to the architecture, so the contribution is the adaptation, not new statistics.
 \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
 On doc-code \approach{} clears it: it leads \TransArc{} by $21.2$pp on the worst component and $22.3$pp on the harmonic per-component \fone, against $10.6$pp at the link level.
-On doc-model, \approach{} abandons one documented component and the same one in every run, where \Artemis{} abandons two per run and SWATTR abandons three on a single project.
+On doc-model, CMR tells the same story: \approach{} abandons one documented component and the same one in every run, where \Artemis{} abandons two per run and SWATTR abandons three on a single project.
 Exactly where link-level \fone{} is blind, \approach{} covers the components every prior tool drops.
 
 % Para 5 -- contributions (3 bullets) + roadmap.
