@@ -155,20 +155,34 @@ def build_rq2(big):
     and doc-code (file \\fone/\\ftwo + the doc-code size-aware metrics, each also as
     an \\ftwo), body backend."""
     rows = []
-    for label, key in (("approach", (BODY_SYSTEM, "average")),
-                       ("Artemis", (BASELINE_SYSTEM, BASELINE_RUN)),
-                       ("TransArC", ("TransArC", "single"))):
-        s = big[key]
-        rows.append({"system": label,
-                     "dm_link_f1": s["doc_to_model_link_f1"],
-                     "dm_link_f2": s["doc_to_model_link_f2"],
-                     "component_miss_rate": s["doc_to_model_component_miss_rate"],
-                     "dc_file_f1": s["doc_to_code_file_f1"],
-                     "dc_file_f2": s["doc_to_code_file_f2"],
-                     "worst_component_f1": s["doc_to_code_worst_component_f1"],
-                     "worst_component_f2": s["doc_to_code_worst_component_f2"],
-                     "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"],
-                     "harmonic_component_f2": s["doc_to_code_harmonic_component_f2"]})
+
+    def row(label, s, dm=True, dc=True):
+        """One display row. ``dm``/``dc`` blank the task the system does not do.
+
+        The ``TransArC`` entry of RQ12_BIGTABLE bundles two systems -- SWATTR supplies
+        its doc-model stage, TransArc proper the doc-code one -- so printing it whole
+        would credit TransArc with SWATTR's doc-model \fone/\ftwo and CMR. ``build_rq1``
+        splits it for exactly this reason; RQ2 splits it the same way, and results.tex
+        attributes the CMR to SWATTR in prose.
+        """
+        return {"system": label,
+                "dm_link_f1": s["doc_to_model_link_f1"] if dm else "",
+                "dm_link_f2": s["doc_to_model_link_f2"] if dm else "",
+                "component_miss_rate": s["doc_to_model_component_miss_rate"] if dm else "",
+                "dc_file_f1": s["doc_to_code_file_f1"] if dc else "",
+                "dc_file_f2": s["doc_to_code_file_f2"] if dc else "",
+                "worst_component_f1": s["doc_to_code_worst_component_f1"] if dc else "",
+                "worst_component_f2": s["doc_to_code_worst_component_f2"] if dc else "",
+                "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"] if dc else "",
+                "harmonic_component_f2": s["doc_to_code_harmonic_component_f2"] if dc else ""}
+
+    tx = big[("TransArC", "single")]
+    rows = [
+        row("approach", big[(BODY_SYSTEM, "average")]),
+        row("Artemis", big[(BASELINE_SYSTEM, BASELINE_RUN)]),
+        row("SWATTR", tx, dm=True, dc=False),       # TransArc's deterministic doc-model stage
+        row("TransArC", tx, dm=False, dc=True),     # TransArc proper = doc-code only
+    ]
     write_csv("rq2.csv",
               ["system", "dm_link_f1", "dm_link_f2", "component_miss_rate",
                "dc_file_f1", "dc_file_f2",

@@ -272,7 +272,9 @@ SPECS = [
          {"field": "worst_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
          {"field": "harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
          {"field": "harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
-     ]},
+     ],
+     "footnote": "$^{\\dagger}$SWATTR is the deterministic doc-model stage of \\TransArc{}; "
+                 "\\TransArc{} has no standalone doc-model output."},
 
     # ---- RQ3 body confusion matrix (mean of 3 runs) ----
     {"csv": "rq3.csv", "out": "rq3-confusion.tex", "label": "tab:rq3-confusion",
