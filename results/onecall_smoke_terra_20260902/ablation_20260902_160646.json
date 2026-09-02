@@ -1,0 +1,80 @@
+{
+  "mediastore": {
+    "s_linker110": {
+      "variant": "s_linker110",
+      "P": 0.9117647058823529,
+      "R": 1.0,
+      "F1": 0.9538461538461539,
+      "F2": 0.9810126582278481,
+      "tp": 31,
+      "fp": 3,
+      "fn": 0,
+      "n_links": 34,
+      "time": 18.042361736297607,
+      "sources": {
+        "full_name": 31,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        },
+        {
+          "sentence": 27,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The MediaAccess component encapsulates database access for meta-data of audio files."
+        },
+        {
+          "sentence": 29,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 9
+    },
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 1.0,
+      "R": 0.9354838709677419,
+      "F1": 0.9666666666666666,
+      "F2": 0.9477124183006536,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 29,
+      "time": 3.9133217334747314,
+      "sources": {
+        "one_call": 29
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 17,
+          "component": "TagWatermarking",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  }
+}

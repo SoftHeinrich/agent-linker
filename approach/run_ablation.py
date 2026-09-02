@@ -224,6 +224,7 @@ CANONICAL_VARIANTS = [
     "s_linker110_noknow",  # RQ4 knowledge A/B for the reported arm: s110, alias table off
     "s_linker110_noevidence",  # RQ4 evidence A/B for the reported arm: s110, computed context off
     "s_linker110_nocoderef",  # RQ4 floor: resolver gets the whole document, nothing computed
+    "s_linker110_onecall",  # RQ4 total floor (D3): one linking call, no scan, no judge
     "s_linker111",  # s110 + the lenient gate enumerates the surface's readings
     "s_linker112",  # s110 + the sortal gate quotes before it commits
     "s_linker113",  # s112 + the sortal gate enumerates the readings too
@@ -2255,6 +2256,27 @@ VARIANT_SPECS = {
             "sentences 100.0, teammates 198 84.1), and batching is itself code-computed, "
             "so a loss here is an UPPER BOUND on what the computed context is worth -- "
             "read per-project before macro."
+        ),
+        canonical=False,
+        experimental=True,
+    ),
+    "s_linker110_onecall": dict(
+        aliases=("onecall",),
+        module="llm_sad_sam.linkers.experimental.s_linker110_onecall",
+        class_name="SLinker110OneCall",
+        description=(
+            "S-Linker110 ONE CALL - RQ4's total floor, D3 (experimental=True, NOT "
+            "canonical). The document, the component list and the discovered alias table "
+            "go into ONE linking call and the reply is the final link set: no scan, no "
+            "window, no evidence bundle, no antecedent shortlist, no judge, no union. "
+            "The head's four rubrics are rendered verbatim so the arm removes the "
+            "arrangement and not the guidance. The knowledge stage is KEPT (it is RQ3's "
+            "ablation), so 'one call' means one LINKING call. NOT s_linker27, which "
+            "merged only the reading and kept every scan and judge. TWO stated confounds: "
+            "no quote is demanded (worth 35.2 TP on its own), and whole-document calls "
+            "carry s27's length effect (jabref 13 sentences vs teammates 198), so a loss "
+            "is an UPPER BOUND on what the workflow is worth. Has no linker_* phases, so "
+            "the mini-rq34 engines cannot read it; score end to end with score_runs.py."
         ),
         canonical=False,
         experimental=True,

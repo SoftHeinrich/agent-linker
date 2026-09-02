@@ -1,0 +1,196 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-luna)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker110_onecall
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_mediastore_20260902_161801.json
+  LLM call trace saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_mediastore_20260902_161801_calls.json (3 calls)
+
+Final: 29 links (7.8s, 3 LLM calls)
+  s_linker110_onecall: P=96.6% R=90.3% F1=93.3% F2=91.5% TP=28 FP=1 FN=3 (8s)
+    Sources: {'one_call': 29}
+    FP by source: {'one_call': 1}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+    Alias: E2E -> E2E
+    Alias: front-end -> UI
+    Alias: back end -> Logic
+    Alias: datastore -> GAE Datastore
+    Alias: GAE -> GAE Datastore
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_teammates_20260902_161815.json
+  LLM call trace saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_teammates_20260902_161815_calls.json (3 calls)
+
+Final: 91 links (14.7s, 3 LLM calls)
+  s_linker110_onecall: P=52.7% R=84.2% F1=64.9% F2=75.2% TP=48 FP=43 FN=9 (15s)
+    Sources: {'one_call': 91}
+    FP by source: {'one_call': 43}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: front-end -> WebUI
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: Image Provider -> ImageProvider
+    Alias: persistence provider -> Persistence
+    Alias: UI -> WebUI
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_teastore_20260902_161827.json
+  LLM call trace saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_teastore_20260902_161827_calls.json (3 calls)
+
+Final: 49 links (11.5s, 3 LLM calls)
+  s_linker110_onecall: P=55.1% R=100.0% F1=71.1% F2=86.0% TP=27 FP=22 FN=0 (12s)
+    Sources: {'one_call': 49}
+    FP by source: {'one_call': 22}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: conversion process -> Presentation Conversion
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: SFU -> WebRTC-SFU
+    Alias: HTML5 client -> HTML5 Client
+    Alias: HTML5 server -> HTML5 Server
+    Alias: Redis DB -> Redis DB
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton web application -> BBB web
+    Alias: media controller -> WebRTC-SFU
+    Alias: bbb-web -> BBB web
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: KMS -> kurento
+    Alias: Apps Akka -> Apps
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_bigbluebutton_20260902_161847.json
+  LLM call trace saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_bigbluebutton_20260902_161847_calls.json (3 calls)
+
+Final: 83 links (20.3s, 3 LLM calls)
+  s_linker110_onecall: P=57.8% R=77.4% F1=66.2% F2=72.5% TP=48 FP=35 FN=14 (20s)
+    Sources: {'one_call': 83}
+    FP by source: {'one_call': 35}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-luna)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_jabref_20260902_161854.json
+  LLM call trace saved: ../results/onecall_e2e_luna_r2_20260902/llm_logs/s_linker110_onecall_openai_jabref_20260902_161854_calls.json (2 calls)
+
+Final: 21 links (6.7s, 2 LLM calls)
+  s_linker110_onecall: P=85.7% R=100.0% F1=92.3% F2=96.8% TP=18 FP=3 FN=0 (7s)
+    Sources: {'one_call': 21}
+    FP by source: {'one_call': 3}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker110_onecall    
+-----------------+----------------------------
+mediastore       | F1 93.3% F2 91.5% FP   1
+teammates        | F1 64.9% F2 75.2% FP  43
+teastore         | F1 71.1% F2 86.0% FP  22
+bigbluebutton    | F1 66.2% F2 72.5% FP  35
+jabref           | F1 92.3% F2 96.8% FP   3
+-----------------+----------------------------
+Macro avg        | F1 77.6% F2 84.4% FP 104
+Pooled           | F1 72.2% F2 80.2% FP 104
+
+Results saved to ../results/onecall_e2e_luna_r2_20260902/ablation_20260902_161854.json

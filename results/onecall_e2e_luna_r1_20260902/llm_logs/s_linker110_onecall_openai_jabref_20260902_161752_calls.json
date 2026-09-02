@@ -1,0 +1,56 @@
+[
+  {
+    "phase": "phase_25_doc_extract",
+    "ts": 1788358666.239706,
+    "elapsed_s": 2.527,
+    "timeout": 300,
+    "max_retries": 3,
+    "prompt": "Find all alternative names used for these components in the document.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nFind surface forms the document uses to refer to a single named component (introduced short forms, alternate names, or words of multi-word names when they alone clearly mean the full name). Reject terms whose ordinary English use dominates.\n\nA fragment of a longer identifier is not an alias: if a term appears only as part of a compound or qualified name, do not include it.\n\nDOCUMENT:\nWe have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\nThere are additional utility packages for preferences and the cli.\nThe dependencies are only directed towards the center.\nWe have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\nThe model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\nThe logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\nOnly the gui knows the user and his preferences and can interact with him to help him solve tasks.\nFor each layer, we form packages according to their responsibility, i.e., vertical structuring.\nThe model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\nThe cli package bundles classes that are responsible for JabRef\u2019s command line interface.\nThe preferences represents all information customizable by a user for her personal needs.\nWe use an event bus to publish events from the model to the other layers.\nThis allows us to keep the architecture but still react upon changes within the core in the outer layers.\n\nReturn JSON:\n{\n  \"abbreviations\": [{\"term\": \"short_form\", \"component\": \"FullComponent\"}],\n  \"synonyms\":      [{\"term\": \"specific_alternative_name\", \"component\": \"FullComponent\"}]\n}\nJSON only:",
+    "response_text": "{\n  \"abbreviations\": [],\n  \"synonyms\": [\n    {\"term\": \"outer shell\", \"component\": \"gui\"},\n    {\"term\": \"intermediate layer\", \"component\": \"logic\"},\n    {\"term\": \"command line interface\", \"component\": \"cli\"}\n  ]\n}",
+    "success": true,
+    "error": null,
+    "latency_ms": 2526,
+    "model": "gpt-5.6-luna",
+    "token_usage": {
+      "prompt_tokens": 473,
+      "completion_tokens": 64,
+      "total_tokens": 537
+    }
+  },
+  {
+    "phase": "phase_25_doc_judge",
+    "ts": 1788358668.766518,
+    "elapsed_s": 1.159,
+    "timeout": 120,
+    "max_retries": 3,
+    "prompt": "JUDGE: Review these component name mappings for correctness.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nPROPOSED MAPPINGS:\n[{\"term\": \"outer shell\", \"component\": \"gui\"}, {\"term\": \"intermediate layer\", \"component\": \"logic\"}, {\"term\": \"command line interface\", \"component\": \"cli\"}]\n\nAn alias is valid when the document establishes an equivalence between a phrase and a single named component. It is invalid when the phrase is generic vocabulary or identifies anything other than that one component. When uncertain, prefer APPROVE.\n\nReturn JSON, echoing each approved mapping in full:\n{\"approved\": [{\"term\": \"term1\", \"component\": \"FullComponent\"}]}\nJSON only:",
+    "response_text": "{\"approved\":[{\"term\":\"command line interface\",\"component\":\"cli\"}]}",
+    "success": true,
+    "error": null,
+    "latency_ms": 1158,
+    "model": "gpt-5.6-luna",
+    "token_usage": {
+      "prompt_tokens": 192,
+      "completion_tokens": 18,
+      "total_tokens": 210
+    }
+  },
+  {
+    "phase": "phase_25_one_call",
+    "ts": 1788358669.9257016,
+    "elapsed_s": 2.716,
+    "timeout": 600,
+    "max_retries": 3,
+    "prompt": "Link sentences of an architecture document to the components of its architecture model.\n\nCOMPONENTS: gui, cli, logic, globals, model, preferences\n\nKNOWN ALIASES: command line interface=cli\n\nDOCUMENT\n[{\"sentence\": 1, \"text\": \"We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.\"}, {\"sentence\": 2, \"text\": \"There are additional utility packages for preferences and the cli.\"}, {\"sentence\": 3, \"text\": \"The dependencies are only directed towards the center.\"}, {\"sentence\": 4, \"text\": \"We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.\"}, {\"sentence\": 5, \"text\": \"The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.\"}, {\"sentence\": 6, \"text\": \"The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.\"}, {\"sentence\": 7, \"text\": \"Only the gui knows the user and his preferences and can interact with him to help him solve tasks.\"}, {\"sentence\": 8, \"text\": \"For each layer, we form packages according to their responsibility, i.e., vertical structuring.\"}, {\"sentence\": 9, \"text\": \"The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.\"}, {\"sentence\": 10, \"text\": \"The cli package bundles classes that are responsible for JabRef\\u2019s command line interface.\"}, {\"sentence\": 11, \"text\": \"The preferences represents all information customizable by a user for her personal needs.\"}, {\"sentence\": 12, \"text\": \"We use an event bus to publish events from the model to the other layers.\"}, {\"sentence\": 13, \"text\": \"This allows us to keep the architecture but still react upon changes within the core in the outer layers.\"}]\n\nReport every sentence that refers to a component, whether it writes the component's\nwhole name, only one word of that name, or refers back to it with a pronoun or a noun\nphrase. Judge each one against the standard below and report only the links that meet it.\n\nApprove the link by default: the component is named here and the document treats it as part of the system. A mention that says nothing further about the component still counts as a valid link. Reject only on a positive ground -- that the sentence asserts nothing of this component, because the name is doing some other job here, or because the sentence denies what it would otherwise say of it.\n\nAn expression that occurs only as part of a longer joined or dotted identifier is naming a piece of that identifier, not a participant in what the sentence describes.\n\nSome sentences use an ordinary English word that happens to coincide with a component's name. Approve only when the sentence uses that word as the name of the component; if it is used in its ordinary sense and the component is not what the sentence is talking about, reject. Capitalization is evidence for a name and its absence is evidence against, but neither settles it on its own.\n\nThese are coreference links: a pronoun or noun phrase in the sentence is claimed to refer back to the component, which is NOT named in the sentence itself. Approve only when the sentence contains a genuine referring expression that unambiguously points to THIS component and makes an architectural claim about it. Reject when there is no such referring expression or when the antecedent could equally be a different component. An expression denoting what a component acts on or produces refers to that thing and not to the component, however clearly the component is the one acting on it. When uncertain, reject.\n\nReturn JSON:\n{\"links\": [{\"sentence\": N_INTEGER, \"component\": \"Name\"}]}\n\nJSON only:",
+    "response_text": "{\"links\":[{\"sentence\":1,\"component\":\"model\"},{\"sentence\":1,\"component\":\"logic\"},{\"sentence\":1,\"component\":\"gui\"},{\"sentence\":2,\"component\":\"preferences\"},{\"sentence\":2,\"component\":\"cli\"},{\"sentence\":4,\"component\":\"logic\"},{\"sentence\":4,\"component\":\"model\"},{\"sentence\":4,\"component\":\"gui\"},{\"sentence\":5,\"component\":\"model\"},{\"sentence\":6,\"component\":\"logic\"},{\"sentence\":6,\"component\":\"model\"},{\"sentence\":6,\"component\":\"gui\"},{\"sentence\":7,\"component\":\"gui\"},{\"sentence\":7,\"component\":\"preferences\"},{\"sentence\":9,\"component\":\"model\"},{\"sentence\":9,\"component\":\"logic\"},{\"sentence\":10,\"component\":\"cli\"},{\"sentence\":11,\"component\":\"preferences\"},{\"sentence\":12,\"component\":\"model\"},{\"sentence\":13,\"component\":\"model\"}]}",
+    "success": true,
+    "error": null,
+    "latency_ms": 2715,
+    "model": "gpt-5.6-luna",
+    "token_usage": {
+      "prompt_tokens": 890,
+      "completion_tokens": 168,
+      "total_tokens": 1058
+    }
+  }
+]

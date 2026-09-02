@@ -1,0 +1,62 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore
+Variants: s_linker110_nocoderef
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_nocoderef ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker110NoCodeRef (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110NoEvidence (judges see the case, not the computed context)
+SLinker110NoCodeRef (resolver: whole document, no targets, no window)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+    Alias: AudioAccess -> MediaAccess
+    Alias: DataStorage -> FileStorage
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 31 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S21 -> Reencoding
+    Coref reject: S31 -> DB
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/nocoderef_smoke_terra_20260902/llm_logs/s_linker110_nocoderef_openai_mediastore_20260902_155828.json
+  LLM call trace saved: ../results/nocoderef_smoke_terra_20260902/llm_logs/s_linker110_nocoderef_openai_mediastore_20260902_155828_calls.json (6 calls)
+
+Final: 29 links (15.2s, 6 LLM calls)
+  s_linker110_nocoderef: P=100.0% R=93.5% F1=96.7% F2=94.8% TP=29 FP=0 FN=2 (15s)
+    Sources: {'full_name': 26, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |    s_linker110_nocoderef   
+-----------------+----------------------------
+mediastore       | F1 96.7% F2 94.8% FP   0
+-----------------+----------------------------
+Macro avg        | F1 96.7% F2 94.8% FP   0
+Pooled           | F1 96.7% F2 94.8% FP   0
+
+Results saved to ../results/nocoderef_smoke_terra_20260902/ablation_20260902_155828.json

@@ -1,0 +1,89 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore
+Variants: s_linker110, s_linker110_onecall
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: AudioAccess -> MediaAccess
+    Alias: DataStorage -> FileStorage
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 31 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref skip (no antecedent): S26 -> FileStorage
+    Coref reject: S3 -> Facade
+    Coref reject: S5 -> Facade
+    Coref reject: S8 -> Facade
+    Coref reject: S21 -> Reencoding
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_smoke_terra_20260902/llm_logs/s_linker110_openai_mediastore_20260902_160642.json
+  LLM call trace saved: ../results/onecall_smoke_terra_20260902/llm_logs/s_linker110_openai_mediastore_20260902_160642_calls.json (9 calls)
+
+Final: 34 links (18.0s, 9 LLM calls)
+  s_linker110: P=91.2% R=100.0% F1=95.4% F2=98.1% TP=31 FP=3 FN=0 (18s)
+    Sources: {'full_name': 31, 'coreference': 3}
+    FP by source: {'full_name': 3}
+
+  --- Variant: s_linker110_onecall ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker110OneCall (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: AudioAccess -> MediaAccess
+    Alias: DataStorage -> FileStorage
+    Alias: ReEncoder -> Reencoding
+    Alias: Database -> DB
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/onecall_smoke_terra_20260902/llm_logs/s_linker110_onecall_openai_mediastore_20260902_160646.json
+  LLM call trace saved: ../results/onecall_smoke_terra_20260902/llm_logs/s_linker110_onecall_openai_mediastore_20260902_160646_calls.json (3 calls)
+
+Final: 29 links (3.9s, 3 LLM calls)
+  s_linker110_onecall: P=100.0% R=93.5% F1=96.7% F2=94.8% TP=29 FP=0 FN=2 (4s)
+    Sources: {'one_call': 29}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker110         |     s_linker110_onecall    
+-----------------+-----------------------------+----------------------------
+mediastore       | F1 95.4% F2 98.1% FP   3 | F1 96.7% F2 94.8% FP   0
+-----------------+-----------------------------+----------------------------
+Macro avg        | F1 95.4% F2 98.1% FP   3 | F1 96.7% F2 94.8% FP   0
+Pooled           | F1 95.4% F2 98.1% FP   3 | F1 96.7% F2 94.8% FP   0
+
+Results saved to ../results/onecall_smoke_terra_20260902/ablation_20260902_160646.json

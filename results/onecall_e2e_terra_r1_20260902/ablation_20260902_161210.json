@@ -1,0 +1,509 @@
+{
+  "mediastore": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 1.0,
+      "R": 0.9354838709677419,
+      "F1": 0.9666666666666666,
+      "F2": 0.9477124183006536,
+      "tp": 29,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 29,
+      "time": 5.400146961212158,
+      "sources": {
+        "one_call": 29
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 28,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  },
+  "teammates": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 0.9215686274509803,
+      "R": 0.8245614035087719,
+      "F1": 0.8703703703703703,
+      "F2": 0.8422939068100358,
+      "tp": 47,
+      "fp": 4,
+      "fn": 10,
+      "n_links": 51,
+      "time": 6.183017015457153,
+      "sources": {
+        "one_call": 51
+      },
+      "fp_by_source": {
+        "one_call": 4
+      },
+      "fp_details": [
+        {
+          "sentence": 2,
+          "component": "GAE Datastore",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "TEAMMATES is a Web application that runs on Google App Engine (GAE)."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 127,
+          "component": "Common",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 78,
+          "component": "Logic",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 119,
+          "component": "Storage",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 120,
+          "component": "Storage",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  },
+  "teastore": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 0.5869565217391305,
+      "R": 1.0,
+      "F1": 0.7397260273972603,
+      "F2": 0.8766233766233766,
+      "tp": 27,
+      "fp": 19,
+      "fn": 0,
+      "n_links": 46,
+      "time": 5.806732416152954,
+      "sources": {
+        "one_call": 46
+      },
+      "fp_by_source": {
+        "one_call": 19
+      },
+      "fp_details": [
+        {
+          "sentence": 9,
+          "component": "WebUI",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The status view lists the instance count and hosts for all registered service instances."
+        },
+        {
+          "sentence": 13,
+          "component": "ImageProvider",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+        },
+        {
+          "sentence": 14,
+          "component": "ImageProvider",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The scaled image is stored for later use."
+        },
+        {
+          "sentence": 15,
+          "component": "ImageProvider",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name and size is found, the image will be loaded and delivered."
+        },
+        {
+          "sentence": 16,
+          "component": "ImageProvider",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+        },
+        {
+          "sentence": 17,
+          "component": "ImageProvider",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Before loading an image from the physical drive, a cache lookup will be performed and if the image is present, delivered"
+        },
+        {
+          "sentence": 19,
+          "component": "Auth",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Passwords are hashed using BCrypt."
+        },
+        {
+          "sentence": 20,
+          "component": "Auth",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+        },
+        {
+          "sentence": 21,
+          "component": "Auth",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When a SessionBlob is received, the cookie content is re-salted and checked against the hash to check for session tamper"
+        },
+        {
+          "sentence": 29,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Recommendations are generated based on the users current shopping cart, the user's previous orders and/or the item the u"
+        },
+        {
+          "sentence": 30,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The item rating of the users are based on their purchases."
+        },
+        {
+          "sentence": 31,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+        },
+        {
+          "sentence": 32,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        },
+        {
+          "sentence": 33,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "We implemented two versions of the algorithm."
+        },
+        {
+          "sentence": 34,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 35,
+          "component": "Recommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        },
+        {
+          "sentence": 39,
+          "component": "Registry",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+        },
+        {
+          "sentence": 40,
+          "component": "Registry",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called agai"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 3
+    }
+  },
+  "bigbluebutton": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 0.8627450980392157,
+      "R": 0.7096774193548387,
+      "F1": 0.7787610619469026,
+      "F2": 0.7357859531772575,
+      "tp": 44,
+      "fp": 7,
+      "fn": 18,
+      "n_links": 51,
+      "time": 8.182874917984009,
+      "sources": {
+        "one_call": 51
+      },
+      "fp_by_source": {
+        "one_call": 7
+      },
+      "fp_details": [
+        {
+          "sentence": 20,
+          "component": "HTML5 Client",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Client",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "As of 2.3-alpha-7, bbb-html5 uses 2 \"frontend\" and two \"backend\" processes (this value is configurable in bbb-html5-with"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 59,
+          "component": "FSESL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This allows others who are using voice conference systems other than FreeSWITCH to easily create their own integration."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 76,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  },
+  "jabref": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 10.784066915512085,
+      "sources": {
+        "one_call": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 3
+    }
+  }
+}
