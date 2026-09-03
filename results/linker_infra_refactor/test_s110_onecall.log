@@ -1,0 +1,45 @@
+$ ../.venv/bin/python pilot/test_s110_onecall.py
+
+the rules
+  ok    LAYERED_ENTITY_RULES rendered verbatim
+  ok    QUALIFIED_CLAUSE rendered verbatim
+  ok    STRICTER_CLAUSE rendered verbatim
+  ok    LAYERED_COREF_RULES rendered verbatim
+
+the inputs
+  ok    every one of the 40 sentences is present (missing: [])
+  ok    the component list is handed over
+  ok    the discovered alias table is handed over (knowledge is RQ3's ablation, not this one)
+  ok    the task names all three reference forms, so no form is silently out of scope
+
+nothing computed
+  ok    no 'Evidence: source='
+  ok    no '[prev:'
+  ok    no 'NAMED BEFORE THIS CASE'
+  ok    no 'SENTENCES (the document text'
+  ok    no '--- Case'
+  ok    no 'TARGET S'
+  ok    no 'CASES'
+  ok    no '"context"'
+  ok    no '"candidates"'
+  ok    no quote is demanded (a deliberate second removal, worth 35.2 TP on its own)
+
+the call, the checks, the output
+Loaded 3 components, 40 sentences
+
+[Knowledge] Document aliases
+
+[OneCall] whole document, no stages
+
+Final: 2 links (0.0s, 0 LLM calls)
+  ok    exactly one linking call (made 1)
+  ok    one phase tag: ['phase_25_one_call']
+  ok    only valid, deduplicated links survive ([(20, 'Storage'), (39, 'Logic')])
+  ok    links carry a source, so the CSV is well-formed
+  ok    knowledge and final checkpoints written (['final', 'knowledge'])
+  ok    no linker_* phases -- by construction, there are no stages to attribute
+  ok    declares only the prompt and the entry point: ['__init__', '_prompt_one_call', 'link']
+  ok    the base is s_linker110
+  ok    _VARIANT_NAME is its own, so it pairs with the head in one invocation
+
+27/27 checks passed

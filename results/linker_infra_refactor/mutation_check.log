@@ -1,0 +1,16 @@
+$ ../.venv/bin/python /tmp/.../mutants.py   (11 deliberate divergences in linker_infra.py)
+
+mutation                                     verdict   what the suite reported
+drop __getattr__ delegation                  CAUGHT    AttributeError: 'TracingLLMClient' object has no attribute 'describe_backend'
+keep a rejected payload across attempts      CAUGHT    106/107 checks
+stop raising on a failed response            CAUGHT    106/107 checks
+require_present loses priority over require  CAUGHT    105/107 checks
+linker_feedback reads only 'proposed'        CAUGHT    105/107 checks
+phase_metrics drops the rounding             CAUGHT    105/107 checks
+phase_metrics ignores a phaseless call       CAUGHT    KeyError: 'unknown'
+link_view keeps unmapped sentences           CAUGHT    KeyError: 99
+truncation mutates the trace in place        CAUGHT    106/107 checks
+checkpoint_dir drops the backend level       CAUGHT    105/107 checks
+the call trace filename loses its suffix     CAUGHT    KeyError: 'calls'
+
+11/11 mutants caught

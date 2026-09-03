@@ -59,6 +59,13 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   head is the highest-numbered one the compaction round confirms.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
+- `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
+  wrapper class, never a mixin**: `TracingLLMClient`, `ask_json` (the JSON call path),
+  the checkpoint/log/metrics writers, the batching and the log's views. Eleven blocks
+  that were byte-identical in 72 linker modules and that **no decision rule reads**.
+  A variant keeps each method under its own name with a one-line body, so a
+  self-contained file stays readable without an MRO. Do not put a prompt, a rule
+  constant or a scan in here — that is the variant's own file, by policy.
 - `pilot/` — every audit and arm cited below. Deterministic audits first
   (`rule_audit.py`, `bind_audit.py`, `partial_audit.py`, `stage_diff.py`,
   `composition_check.py`, `prompt_defensibility.py`, `lemma_swap_pilot.py`), then stage
@@ -1094,9 +1101,25 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   file (`.planning/research/ARCHITECTURE.md`). `s_linker92`, `s_linker92a` and
   `s_linker109` are untouched and remain the arms this ledger records; `s_linker111`,
   `s_linker112`, `s_linker114` and `s_linker110_onecall` still subclass `SLinker110`.
-  `pilot/test_s110_shortlist.py` (224 checks, no calls) re-checks the inlining block
+  `pilot/test_s110_shortlist.py` (235 checks, no calls) re-checks the inlining block
   by block against all three sources and the composed behaviour against them over
   five projects, under an empty alias table and a populated one.
+- **The policy is about the approach, not the plumbing** (2026-09-03). Eleven blocks
+  of `s_linker110.py` were byte-identical in **72 linker modules** and none is read by
+  a decision rule -- the tracing wrapper, the JSON call path (`_ask`), the checkpoint
+  and log writers, the per-phase metrics, the batching, the log's views. They are now
+  `linker_infra`, called from the methods that held them. **Functions, not a mixin**:
+  `SLinker110.__mro__` is still `(SLinker110, object)`, so the invariant and the
+  supplement claim both hold, and every prompt, rule constant, scan, judge and the
+  union rule stay in the file. `link()` is **byte-identical over all five projects**
+  against the pre-refactor file (`pilot/test_infra_refactor_e2e.py`, 51 checks; each
+  helper against `s_linker92`'s untouched block in `pilot/test_linker_infra.py`, 107
+  checks; 11/11 injected divergences caught). The eleven blocks leave
+  `test_s110_shortlist.py`'s byte comparison and gain a stronger check -- that each is
+  a delegation to its named helper, no longer than what it replaced -- so the suite
+  goes 224 -> 235, not 224 -> 213. Report:
+  `../results/linker_infra_refactor/README.md`. **No E2E owed; the head does not
+  move.**
 - **RQ4's floor arm is `s_linker110_onecall`, alone.** `s_linker110_noevidence` and
   `s_linker110_nocoderef` are killed -- modules, invariant tests, registrations and
   `pilot/run_noevidence_e2e.sh`, the batch runner, all gone. Nothing in the paper read

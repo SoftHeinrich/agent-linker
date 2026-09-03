@@ -146,12 +146,33 @@ def structure():
                   "SLinker92", "SLinker109"):
         check(token not in code, f"{token} does not appear in the code")
 
+    #: The infrastructure blocks, byte-identical in all 72 linkers of the branch, now
+    #: living in `linker_infra`. They are exempt from the byte comparison and get a
+    #: stronger check instead: the block that stayed here must be a delegation to the
+    #: named helper, and `pilot/test_linker_infra.py` proves each helper behaves as
+    #: `s_linker92`'s bytes did. No mixin: the MRO check above still has to hold.
+    delegated = {
+        "_ask": "ask_json", "_iter_batches": "iter_batches",
+        "_link_view": "link_view", "_decision_view": "decision_view",
+        "_linker_feedback": "linker_feedback", "_backend_tag": "backend_tag",
+        "_checkpoint_dir": "checkpoint_dir", "_save_phase": "save_phase_state",
+        "_log": "log_entry", "_save_log": "write_run_logs",
+        "_compute_phase_metrics": "phase_metrics",
+    }
+    for name, helper in sorted(delegated.items()):
+        calls = {n.func.id for n in ast.walk(ast.parse(textwrap.dedent(mine[name])))
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+        check(helper in calls,
+              f"{name} delegates to linker_infra.{helper} (calls={sorted(calls)})")
+        check(len(mine[name].splitlines()) <= len(head[name].splitlines()),
+              f"{name}'s delegation is no longer than the block it replaces")
+
     #: What the promotion is allowed to have touched. Anything else must be the head's.
     touched = {"<docstring>", "_VARIANT_NAME", "ASK_ATTEMPTS", "__init__",
                "_run_full_name_linker", "SKIP_QUALIFIED", "_named_spans",
                "_writes_name", "_extract_named_mentions", "_scan_all",
                "_covering_names", "_only_inside_another_name", "_scan",
-               "_named_before", "_prompt_coref"}
+               "_named_before", "_prompt_coref"} | set(delegated)
     check(set(head) - set(mine) == {"EXTRACTION_BATCH", "_prompt_extraction",
                                    "_run_extraction_pass"},
           f"exactly the extraction surface is gone ({sorted(set(head) - set(mine))})")
