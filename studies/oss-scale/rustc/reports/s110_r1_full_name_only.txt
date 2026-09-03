@@ -1,0 +1,37 @@
+strict     TP 198 FP 420 FN 195  P 0.320 R 0.504 F1 0.392
+recall link-only  34/220 = 0.155
+recall verbatim   164/173 = 0.948
+anchored P 198/262 = 0.756   (links on anchored sentences)
+unanchored predictions: 356 on 293 sentences (no gold; spot-check below)
+sentences linked: 483/1762; crates linked: 34
+
+per-crate (gold >= 5): crate TP FP FN
+  rustc_middle              33 113  36
+  rustc_span                 4   0  24
+  rustc_hir                 15  56  12
+  rustc_expand               9  19  15
+  rustc_parse               13  13   4
+  rustc_errors               5   1  12
+  rustc_ast                 14  40   3
+  rustc_resolve              8  22   9
+  rustc_codegen_ssa         14  25   2
+  rustc_metadata             9   0   7
+  rustc_driver              14   2   2
+  rustc_mir_transform        5   3   9
+  rustc_interface           13   3   1
+  rustc_type_ir              0   0  13
+  rustc_mir_dataflow         2   1   7
+  rustc_infer                0   0   8
+  rustc_ast_lowering         2   2   6
+  rustc_lexer                7   9   0
+  rustc_lint                 6   0   0
+  rustc_mir_build            5  16   0
+  rustc_data_structures      3   0   2
+  rustc_hir_analysis         3   0   2
+  most FP among crates with < 5 gold: rustc(74), rustc_borrowck(12), rustc_proc_macro(3), rustc_builtin_macros(3), rustc_monomorphize(2), rustc_codegen_llvm(1)
+
+FN sample (gold missed), 0:
+
+FP-on-anchored sample, 0:
+
+unanchored-prediction sample, 0:

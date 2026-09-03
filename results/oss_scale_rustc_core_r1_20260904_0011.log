@@ -1,0 +1,442 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: rustc_core
+Variants: s_linker110
+========================================================================================================================
+
+========================================================================================================================
+DATASET: rustc_core
+========================================================================================================================
+  Components: 79, Sentences: 1762
+  Gold links: 393, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110 ---
+SLinker85 (full-name -> partial-name -> coreference; fixed order)
+  Backend: openai (gpt-5.6-terra)
+SLinker110 (full-name proposer = scan, 0 calls)
+SLinker109 (partial-name scan refuses words covered by another name)
+SLinker110 (per-case antecedent shortlist computed deterministically)
+Loaded 79 components, 1762 sentences
+
+[Knowledge] Document aliases
+    Alias: built-in macros -> rustc_builtin_macros
+    Alias: HIR -> rustc_hir
+    Alias: LLVM backend -> rustc_codegen_llvm
+    Alias: parser -> rustc_parse
+    Alias: diagnostic infrastructure -> rustc_errors
+    Alias: codegen -> rustc_codegen_ssa
+    Alias: typing context -> rustc_middle
+    Alias: linting infrastructure -> rustc_lint
+    Alias: MIR -> rustc_middle
+    Alias: Rustc Driver -> rustc_driver
+    Alias: metadata system -> rustc_metadata
+    Alias: hir_typeck -> rustc_hir_typeck
+    Alias: tcx -> rustc_middle
+    Alias: built-in compiler lints -> rustc_lint
+    Alias: interface -> rustc_interface
+    Alias: MIR passes -> rustc_mir_transform
+    Alias: MIR builder -> rustc_mir_build
+    Alias: driver -> rustc_driver
+    Alias: AST lowering -> rustc_ast_lowering
+    Alias: proc macros -> rustc_proc_macro
+    Alias: monomorphization collector -> rustc_monomorphize
+    Alias: macro expansion -> rustc_expand
+    Alias: type collection -> rustc_hir_analysis
+    Alias: borrow checker -> rustc_borrowck
+    Alias: MIR optimizations -> rustc_mir_transform
+    Alias: dataflow framework -> rustc_mir_dataflow
+    Alias: rustc executable -> rustc
+    Alias: hir_analysis -> rustc_hir_analysis
+    Alias: resolver -> rustc_resolve
+    Alias: name resolution -> rustc_resolve
+    Alias: lexer -> rustc_lexer
+    Alias: THIR -> rustc_mir_build
+    Alias: AST -> rustc_ast
+    Alias: proc-macros -> rustc_proc_macro
+    Alias: Rust compiler -> rustc
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 677 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+    Partial-name scan refused 14236 (word written only inside another component's name)
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> rustc
+    Coref reject: S13 -> rustc_lexer
+    Coref reject: S14 -> rustc_lexer
+    Coref reject: S16 -> rustc_parse
+    Coref reject: S18 -> rustc_lexer
+    Coref reject: S19 -> rustc_lexer
+    Coref reject: S20 -> rustc_lexer
+    Coref reject: S21 -> rustc_lexer
+    Coref reject: S22 -> rustc_parse
+    Coref reject: S23 -> rustc_parse
+    Coref reject: S25 -> rustc_parse
+    Coref reject: S26 -> rustc_parse
+    Coref reject: S27 -> rustc_parse
+    Coref reject: S29 -> rustc_parse
+    Coref reject: S30 -> rustc_parse
+    Coref reject: S31 -> rustc_parse
+    Coref reject: S32 -> rustc_parse
+    Coref reject: S33 -> rustc_parse
+    Coref reject: S35 -> rustc_ast
+    Coref reject: S36 -> rustc_hir
+    Coref reject: S37 -> rustc_hir
+    Coref reject: S38 -> rustc_hir
+    Coref reject: S38 -> rustc_middle
+    Coref reject: S39 -> rustc_middle
+    Coref reject: S53 -> rustc
+    Coref reject: S54 -> rustc
+    Coref reject: S58 -> rustc
+    Coref reject: S60 -> rustc
+    Coref reject: S79 -> rustc_lexer
+    Coref reject: S81 -> rustc_ast
+    Coref reject: S82 -> rustc_ast
+    Coref reject: S83 -> rustc_hir
+    Coref reject: S84 -> rustc_hir
+    Coref reject: S85 -> rustc_hir
+    Coref reject: S86 -> rustc_mir_build
+    Coref reject: S87 -> rustc_mir_build
+    Coref reject: S88 -> rustc_mir_build
+    Coref reject: S89 -> rustc_middle
+    Coref reject: S91 -> rustc_middle
+    Coref reject: S92 -> rustc_middle
+    Coref reject: S93 -> rustc_middle
+    Coref reject: S94 -> rustc_middle
+    Coref reject: S109 -> rustc
+    Coref reject: S110 -> rustc
+    Coref reject: S114 -> rustc_hir
+    Coref reject: S116 -> rustc_borrowck
+    Coref reject: S116 -> rustc_borrowck
+    Coref reject: S116 -> rustc_codegen_ssa
+    Coref reject: S117 -> rustc_codegen_ssa
+    Coref reject: S118 -> rustc
+    Coref reject: S118 -> rustc
+    Coref reject: S118 -> rustc
+    Coref reject: S119 -> rustc_codegen_ssa
+    Coref reject: S119 -> rustc_codegen_ssa
+    Coref reject: S120 -> rustc_hir
+    Coref reject: S120 -> rustc_codegen_ssa
+    Coref reject: S123 -> rustc_middle
+    Coref reject: S124 -> rustc_middle
+    Coref reject: S125 -> rustc_middle
+    Coref reject: S125 -> rustc_middle
+    Coref reject: S125 -> rustc_middle
+    Coref reject: S126 -> rustc_middle
+    Coref reject: S127 -> rustc_middle
+    Coref reject: S127 -> rustc_middle
+    Coref reject: S130 -> rustc_middle
+    Coref reject: S131 -> rustc_middle
+    Coref reject: S132 -> rustc_middle
+    Coref reject: S134 -> rustc
+    Coref reject: S143 -> rustc
+    Coref reject: S147 -> rustc
+    Coref reject: S147 -> rustc
+    Coref reject: S152 -> rustc
+    Coref reject: S153 -> rustc
+    Coref reject: S153 -> rustc
+    Coref reject: S155 -> rustc
+    Coref reject: S159 -> rustc_driver
+    Coref reject: S161 -> rustc_driver
+    Coref reject: S166 -> rustc_middle
+    Coref reject: S169 -> rustc_llvm
+    Coref reject: S178 -> rustc_data_structures
+    Coref reject: S186 -> rustc_middle
+    Coref reject: S213 -> rustc
+    Coref reject: S213 -> rustc
+    Coref reject: S224 -> rustc_hir
+    Coref reject: S225 -> rustc_hir
+    Coref reject: S227 -> rustc_middle
+    Coref reject: S229 -> rustc_middle
+    Coref reject: S230 -> rustc_middle
+    Coref reject: S244 -> rustc_middle
+    Coref reject: S244 -> rustc_middle
+    Coref reject: S245 -> rustc_middle
+    Coref reject: S252 -> rustc_hir_analysis
+    Coref reject: S254 -> rustc_metadata
+    Coref reject: S258 -> rustc_metadata
+    Coref reject: S260 -> rustc_metadata
+    Coref reject: S264 -> rustc_middle
+    Coref reject: S264 -> rustc_middle
+    Coref reject: S270 -> rustc_middle
+    Coref reject: S283 -> rustc
+    Coref reject: S286 -> rustc
+    Coref reject: S302 -> rustc_middle
+    Coref reject: S303 -> rustc_middle
+    Coref reject: S304 -> rustc_middle
+    Coref reject: S305 -> rustc_middle
+    Coref reject: S311 -> rustc_middle
+    Coref reject: S314 -> rustc
+    Coref reject: S315 -> rustc
+    Coref reject: S316 -> rustc_middle
+    Coref reject: S317 -> rustc
+    Coref reject: S323 -> rustc_serialize
+    Coref reject: S324 -> rustc_serialize
+    Coref reject: S325 -> rustc_serialize
+    Coref reject: S326 -> rustc
+    Coref reject: S332 -> rustc_middle
+    Coref reject: S337 -> rustc_macros
+    Coref reject: S342 -> rustc_metadata
+    Coref reject: S343 -> rustc_middle
+    Coref reject: S344 -> rustc_middle
+    Coref reject: S346 -> rustc_middle
+    Coref reject: S347 -> rustc_metadata
+    Coref reject: S347 -> rustc_middle
+    Coref reject: S348 -> rustc_metadata
+    Coref reject: S357 -> rustc
+    Coref reject: S360 -> rustc_middle
+    Coref reject: S362 -> rustc
+    Coref reject: S367 -> rustc_data_structures
+    Coref reject: S368 -> rustc_data_structures
+    Coref reject: S369 -> rustc_data_structures
+    Coref reject: S403 -> rustc_ast
+    Coref reject: S405 -> rustc_parse
+    Coref reject: S406 -> rustc_parse
+    Coref reject: S407 -> rustc_parse
+    Coref reject: S409 -> rustc_parse
+    Coref reject: S411 -> rustc_parse
+    Coref reject: S416 -> rustc_lexer
+    Coref reject: S419 -> rustc_parse
+    Coref reject: S423 -> rustc_expand
+    Coref reject: S424 -> rustc_expand
+    Coref reject: S427 -> rustc_expand
+    Coref reject: S437 -> rustc
+    Coref reject: S453 -> rustc_ast
+    Coref reject: S465 -> rustc
+    Coref reject: S466 -> rustc
+    Coref reject: S471 -> rustc_ast
+    Coref reject: S472 -> rustc_ast
+    Coref reject: S474 -> rustc_span
+    Coref reject: S500 -> rustc_builtin_macros
+    Coref reject: S513 -> rustc_ast
+    Coref reject: S514 -> rustc_ast
+    Coref reject: S515 -> rustc_ast
+    Coref reject: S519 -> rustc_ast
+    Coref reject: S520 -> rustc_ast
+    Coref reject: S521 -> rustc_ast
+    Coref reject: S523 -> rustc_parse
+    Coref reject: S524 -> rustc_parse
+    Coref reject: S525 -> rustc_parse
+    Coref reject: S525 -> rustc_parse
+    Coref reject: S535 -> rustc_expand
+    Coref reject: S538 -> rustc_expand
+    Coref reject: S539 -> rustc_expand
+    Coref reject: S540 -> rustc_expand
+    Coref reject: S542 -> rustc_expand
+    Coref reject: S543 -> rustc_expand
+    Coref reject: S544 -> rustc_expand
+    Coref reject: S547 -> rustc_expand
+    Coref reject: S549 -> rustc_expand
+    Coref reject: S551 -> rustc_parse
+    Coref reject: S552 -> rustc_parse
+    Coref reject: S553 -> rustc_expand
+    Coref reject: S554 -> rustc_expand
+    Coref reject: S555 -> rustc_expand
+    Coref reject: S556 -> rustc_expand
+    Coref reject: S557 -> rustc_expand
+    Coref reject: S557 -> rustc_parse
+    Coref reject: S558 -> rustc_expand
+    Coref reject: S559 -> rustc_expand
+    Coref reject: S568 -> rustc_ast
+    Coref reject: S573 -> rustc_ast
+    Coref reject: S574 -> rustc_ast
+    Coref reject: S577 -> rustc_expand
+    Coref reject: S578 -> rustc_ast
+    Coref reject: S580 -> rustc_expand
+    Coref reject: S580 -> rustc_resolve
+    Coref reject: S581 -> rustc_resolve
+    Coref reject: S582 -> rustc_resolve
+    Coref reject: S583 -> rustc_resolve
+    Coref reject: S584 -> rustc_resolve
+    Coref reject: S585 -> rustc_resolve
+    Coref reject: S586 -> rustc_resolve
+    Coref reject: S590 -> rustc_resolve
+    Coref reject: S591 -> rustc_resolve
+    Coref reject: S592 -> rustc_resolve
+    Coref reject: S593 -> rustc_resolve
+    Coref reject: S594 -> rustc_resolve
+    Coref reject: S595 -> rustc_resolve
+    Coref reject: S596 -> rustc_resolve
+    Coref reject: S597 -> rustc_resolve
+    Coref reject: S598 -> rustc_resolve
+    Coref reject: S602 -> rustc_resolve
+    Coref reject: S613 -> rustc_expand
+    Coref reject: S618 -> rustc_resolve
+    Coref reject: S619 -> rustc_resolve
+    Coref reject: S627 -> rustc_resolve
+    Coref reject: S663 -> rustc_ast
+    Coref reject: S667 -> rustc_ast
+    Coref reject: S668 -> rustc_ast
+    Coref reject: S669 -> rustc_hir
+    Coref reject: S669 -> rustc_hir
+    Coref reject: S670 -> rustc_hir
+    Coref reject: S671 -> rustc_hir
+    Coref reject: S672 -> rustc_hir
+    Coref reject: S672 -> rustc_hir
+    Coref reject: S672 -> rustc_ast
+    Coref reject: S673 -> rustc_hir
+    Coref reject: S674 -> rustc_hir
+    Coref reject: S674 -> rustc
+    Coref reject: S674 -> rustc_hir
+    Coref reject: S675 -> rustc_ast
+    Coref reject: S675 -> rustc_hir
+    Coref reject: S676 -> rustc_hir
+    Coref reject: S679 -> rustc_hir
+    Coref reject: S679 -> rustc_hir
+    Coref reject: S679 -> rustc_hir
+    Coref reject: S680 -> rustc_hir
+    Coref reject: S686 -> rustc_hir
+    Coref reject: S687 -> rustc_hir
+    Coref reject: S690 -> rustc_hir
+    Coref reject: S691 -> rustc_hir
+    Coref reject: S692 -> rustc_hir
+    Coref reject: S693 -> rustc_hir
+    Coref reject: S694 -> rustc_hir
+    Coref reject: S695 -> rustc_hir
+    Coref reject: S696 -> rustc_hir
+    Coref reject: S697 -> rustc_hir
+    Coref reject: S698 -> rustc_hir
+    Coref reject: S699 -> rustc_hir
+    Coref reject: S699 -> rustc_hir
+    Coref reject: S700 -> rustc_hir
+    Coref reject: S703 -> rustc_middle
+    Coref reject: S704 -> rustc_middle
+    Coref reject: S708 -> rustc_hir
+    Coref reject: S713 -> rustc_ast_lowering
+    Coref reject: S718 -> rustc_ast_lowering
+    Coref reject: S718 -> rustc_ast_lowering
+    Coref reject: S720 -> rustc_ast_lowering
+    Coref reject: S721 -> rustc_passes
+    Coref reject: S722 -> rustc_hir
+    Coref reject: S723 -> rustc_hir
+    Coref reject: S724 -> rustc_ast_lowering
+    Coref reject: S726 -> rustc_hir
+    Coref reject: S727 -> rustc_ast_lowering
+    Coref reject: S728 -> rustc_ast
+    Coref reject: S729 -> rustc_hir
+    Coref reject: S730 -> rustc_ast
+    Coref reject: S731 -> rustc_ast
+    Coref reject: S733 -> rustc_ast
+    Coref reject: S734 -> rustc_ast
+    Coref reject: S737 -> rustc_middle
+    Coref reject: S738 -> rustc_hir
+    Coref reject: S739 -> rustc_hir
+    Coref reject: S739 -> rustc_mir_build
+    Coref reject: S740 -> rustc_middle
+    Coref reject: S749 -> rustc_mir_build
+    Coref reject: S756 -> rustc_middle
+    Coref reject: S758 -> rustc_middle
+    Coref reject: S760 -> rustc_middle
+    Coref reject: S792 -> rustc_middle
+    Coref reject: S830 -> rustc_mir_build
+    Coref reject: S831 -> rustc_mir_build
+    Coref reject: S833 -> rustc_mir_build
+    Coref reject: S876 -> rustc_middle
+    Coref reject: S879 -> rustc_mir_transform
+    Coref reject: S880 -> rustc_mir_transform
+    Coref reject: S908 -> rustc_driver
+    Coref reject: S1012 -> rustc
+    Coref reject: S1024 -> rustc_errors
+    Coref reject: S1025 -> rustc_errors
+    Coref reject: S1026 -> rustc_errors
+    Coref reject: S1028 -> rustc_errors
+    Coref reject: S1072 -> rustc_driver
+    Coref reject: S1091 -> rustc
+    Coref reject: S1105 -> rustc_lint
+    Coref reject: S1120 -> rustc_ast
+    Coref reject: S1121 -> rustc_ast
+    Coref reject: S1122 -> rustc
+    Coref reject: S1125 -> rustc_ast
+    Coref reject: S1126 -> rustc_errors
+    Coref reject: S1159 -> rustc_middle
+    Coref reject: S1165 -> rustc_hir
+    Coref reject: S1166 -> rustc_hir
+    Coref reject: S1169 -> rustc_hir
+    Coref reject: S1171 -> rustc_hir
+    Coref reject: S1174 -> rustc_hir
+    Coref reject: S1175 -> rustc_hir
+    Coref reject: S1176 -> rustc_hir
+    Coref reject: S1177 -> rustc_hir
+    Coref reject: S1178 -> rustc_hir
+    Coref reject: S1183 -> rustc_hir
+    Coref reject: S1188 -> rustc_hir
+    Coref reject: S1268 -> rustc_middle
+    Coref reject: S1269 -> rustc_middle
+    Coref reject: S1270 -> rustc_middle
+    Coref reject: S1349 -> rustc_middle
+    Coref reject: S1423 -> rustc_codegen_ssa
+    Coref reject: S1481 -> rustc_hir_typeck
+    Coref reject: S1481 -> rustc_hir_analysis
+    Coref reject: S1483 -> rustc_hir
+    Coref reject: S1483 -> rustc_middle
+    Coref reject: S1485 -> rustc_hir
+    Coref reject: S1486 -> rustc_hir
+    Coref reject: S1488 -> rustc_hir_typeck
+    Coref reject: S1543 -> rustc_borrowck
+    Coref reject: S1547 -> rustc_borrowck
+    Coref reject: S1549 -> rustc_middle
+    Coref reject: S1550 -> rustc_middle
+    Coref reject: S1551 -> rustc_middle
+    Coref reject: S1561 -> rustc_mir_transform
+    Coref reject: S1562 -> rustc_mir_transform
+    Coref reject: S1563 -> rustc_mir_transform
+    Coref reject: S1564 -> rustc_mir_transform
+    Coref reject: S1565 -> rustc_mir_transform
+    Coref reject: S1565 -> rustc_mir_transform
+    Coref reject: S1566 -> rustc_mir_transform
+    Coref reject: S1567 -> rustc_mir_transform
+    Coref reject: S1568 -> rustc_mir_transform
+    Coref reject: S1577 -> rustc_mir_transform
+    Coref reject: S1577 -> rustc_mir_transform
+    Coref reject: S1580 -> rustc_mir_transform
+    Coref reject: S1591 -> rustc_mir_transform
+    Coref reject: S1592 -> rustc_codegen_ssa
+    Coref reject: S1607 -> rustc_middle
+    Coref reject: S1629 -> rustc_monomorphize
+    Coref reject: S1630 -> rustc_monomorphize
+    Coref reject: S1631 -> rustc_monomorphize
+    Coref reject: S1632 -> rustc_monomorphize
+    Coref reject: S1633 -> rustc_monomorphize
+    Coref reject: S1634 -> rustc_codegen_ssa
+    Coref reject: S1638 -> rustc_codegen_ssa
+    Coref reject: S1639 -> rustc_monomorphize
+    Coref reject: S1645 -> rustc_codegen_ssa
+    Coref reject: S1652 -> rustc_codegen_ssa
+    Coref reject: S1657 -> rustc_interface
+    Coref reject: S1659 -> rustc
+    Coref reject: S1660 -> rustc
+    Coref reject: S1661 -> rustc_codegen_ssa
+    Coref reject: S1663 -> rustc
+    Coref reject: S1687 -> rustc_codegen_ssa
+    Coref reject: S1688 -> rustc_codegen_ssa
+    Coref reject: S1693 -> rustc
+    Coref reject: S1695 -> rustc
+    Coref reject: S1745 -> rustc_resolve
+    Coref reject: S1758 -> rustc
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: /mnt/hostshare/ardoco-home/alinker-replication-package/results/oss_scale_rustc_core_r1_20260904_0011/llm_logs/s_linker110_openai_sentences_20260904_003148.json
+  LLM call trace saved: /mnt/hostshare/ardoco-home/alinker-replication-package/results/oss_scale_rustc_core_r1_20260904_0011/llm_logs/s_linker110_openai_sentences_20260904_003148_calls.json (451 calls)
+
+Final: 3176 links (1191.4s, 451 LLM calls)
+  s_linker110: P=6.9% R=55.7% F1=12.3% F2=23.1% TP=219 FP=2957 FN=174 (1191s)
+    Sources: {'full_name': 618, 'partial_name': 2536, 'coreference': 22}
+    FP by source: {'full_name': 420, 'partial_name': 2516, 'coreference': 21}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker110        
+-----------------+----------------------------
+rustc_core       | F1 12.3% F2 23.1% FP 2957
+-----------------+----------------------------
+Macro avg        | F1 12.3% F2 23.1% FP 2957
+Pooled           | F1 12.3% F2 23.1% FP 2957
+
+Results saved to /mnt/hostshare/ardoco-home/alinker-replication-package/results/oss_scale_rustc_core_r1_20260904_0011/ablation_20260904_003148.json

@@ -1,0 +1,82 @@
+strict     TP 199 FP 441 FN 194  P 0.311 R 0.506 F1 0.385
+recall link-only  35/220 = 0.159
+recall verbatim   164/173 = 0.948
+anchored P 199/266 = 0.748   (links on anchored sentences)
+unanchored predictions: 374 on 311 sentences (no gold; spot-check below)
+sentences linked: 502/1762; crates linked: 34
+
+per-crate (gold >= 5): crate TP FP FN
+  rustc_middle              33 116  36
+  rustc_span                 4   0  24
+  rustc_hir                 15  56  12
+  rustc_expand               9  19  15
+  rustc_resolve              8  22   9
+  rustc_ast                 14  41   3
+  rustc_errors               5   1  12
+  rustc_parse               13  13   4
+  rustc_driver              14   4   2
+  rustc_codegen_ssa         14  25   2
+  rustc_metadata             9   0   7
+  rustc_interface           14   3   0
+  rustc_mir_transform        5   3   9
+  rustc_type_ir              0   0  13
+  rustc_mir_dataflow         2   1   7
+  rustc_infer                0   0   8
+  rustc_ast_lowering         2   3   6
+  rustc_lexer                7   9   0
+  rustc_lint                 6   1   0
+  rustc_hir_analysis         3   0   2
+  rustc_mir_build            5  16   0
+  rustc_data_structures      3   0   2
+  most FP among crates with < 5 gold: rustc(87), rustc_borrowck(12), rustc_proc_macro(3), rustc_builtin_macros(3), rustc_monomorphize(2), rustc_codegen_llvm(1)
+
+FN sample (gold missed), 15:
+  [371] rustc_data_structures (link) :: `WorkerLocal` is a special data structure implemented for parallel compilers.
+  [1250] rustc_type_ir (link) :: **Param** Represents a type parameter (e.g. the `T` in `Vec<T>`).
+  [290] rustc_middle (link) :: It also allows for easy comparison of types (more on types here) for equality: for each interned type `X`, we implemented `PartialEq` for X, so we can just comp
+  [504] rustc_span (link) :: Example 2: Note that these chains are not entirely determined by their last element, in other words `ExpnId` is not isomorphic to `SyntaxContext`.
+  [338] rustc_macros (link) :: `MetadataEncodable` generates implementations that only allow decoding by `rustc_metadata::rmeta::encoder::EncodeContext`.
+  [1126] rustc_errors (link) :: The JSON emitter defines its own `Diagnostic` struct (and sub-structs) for the JSON serialization.
+  [1015] rustc_span (link) :: `Span` is the primary data structure in `rustc` used to represent a location in the code being compiled.
+  [1030] rustc_errors (link) :: (Failing to either emit or cancel a `Diag` will result in an ICE.) See the docs for more info on what you can do.
+  [1507] rustc_mir_dataflow (link) :: `apply_call_return_effect` for the `success` edge of a `Call` terminator).
+  [714] rustc_middle (link) :: The entry point is `lower_to_hir`, which retrieves the post-expansion AST and resolver data from `TyCtxt` and builds the `hir::Crate` for the whole crate.
+  [484] rustc_span (link) :: The actual hierarchies are stored in `HygieneData`.
+  [321] rustc_codegen_ssa (link) :: `CrateInfo` is serialized to `JSON` when the `-Z no-link` flag is used, and deserialized from `JSON` when the `-Z link-only` flag is used.
+  [1081] rustc_lint_defs (link) :: You also declare the metadata of a particular lint via the `declare_lint!` macro.
+  [179] rustc_parse (link) :: After the `AST` is constructed and other early analysis is done, the compiler's query system gets set up.
+  [717] rustc_ast_lowering (link) :: Most of the lowering logic lives on `LoweringContext`.
+
+FP-on-anchored sample, 15:
+  [908] rustc (gold ['rustc_driver']) :: This builder accepts the same command-line args as rustc as well as an implementation of `Callbacks` and a couple of other optional options.
+  [11] rustc_driver (gold ['rustc_interface', 'rustc_interface']) :: This crate defines the compile configuration that is requested by the user and passes it to the rest of the compilation process as a `rustc_interface::Config`.
+  [1015] rustc (gold ['rustc_span']) :: `Span` is the primary data structure in `rustc` used to represent a location in the code being compiled.
+  [499] rustc_builtin_macros (gold ['rustc_span']) :: For built-in macros, we use the context: `SyntaxContext::empty().apply_mark(expn_id)`, and such macros are considered to be defined at the hierarchy root.
+  [828] rustc_hir (gold ['rustc_mir_transform']) :: The lowering of HIR to MIR occurs for the following (probably incomplete) list of items: Function and closure bodies Initializers of `static` and `const` items 
+  [878] rustc_middle (gold ['rustc_mir_transform']) :: A basic example of a MIR pass is `RemoveStorageMarkers`, which walks the MIR and removes all storage marks if they won't be emitted during codegen.
+  [179] rustc_ast (gold ['rustc_parse']) :: After the `AST` is constructed and other early analysis is done, the compiler's query system gets set up.
+  [594] rustc_expand (gold ['rustc_ast_lowering']) :: Macro expansion and name resolution communicate with each other via the `ResolverAstLoweringExt` trait.
+  [149] rustc (gold ['rustc_ast', 'rustc_borrowck', 'rustc_codegen_ssa', 'rustc_driver', 'rustc_hir', 'rustc_infer', 'rustc_lexer', 'rustc_middle', 'rustc_mir_build', 'rustc_mir_dataflow', 'rustc_mir_transform', 'rustc_parse', 'rustc_session', 'rustc_ast', 'rustc_borrowck', 'rustc_codegen_ssa', 'rustc_driver', 'rustc_hir', 'rustc_infer', 'rustc_lexer', 'rustc_middle', 'rustc_mir_build', 'rustc_mir_dataflow', 'rustc_mir_transform', 'rustc_parse', 'rustc_session']) :: Command line parsing Guide: The Rustc Driver and Interface Driver definition: `rustc_driver` Main entry point: `rustc_session::config::build_session_options` Le
+  [1644] rustc_middle (gold ['rustc_codegen_ssa', 'rustc_codegen_ssa']) :: The code is split into modules which handle particular MIR primitives: `rustc_codegen_ssa::mir::block` will deal with translating blocks and their terminators.
+  [398] rustc_lexer (gold ['rustc_ast', 'rustc_ast']) :: The AST is defined in `rustc_ast`, along with some definitions for tokens and token streams, data structures/traits for mutating ASTs, and shared definitions fo
+  [21] rustc_ast (gold ['rustc_parse']) :: The *parser* translates the token stream from the `lexer` into an Abstract Syntax Tree (AST).
+  [1744] rustc_resolve (gold ['rustc_metadata']) :: During name resolution, when an external crate is referenced (via an `extern crate` or path), the resolver uses the `CStore` which is responsible for finding th
+  [905] rustc_driver (gold ['rustc_interface', 'rustc_interface']) :: It acts as the glue for running the various phases of the compiler in the correct order, using the interface defined in the `rustc_interface` crate.
+  [714] rustc_ast (gold ['rustc_ast_lowering', 'rustc_middle']) :: The entry point is `lower_to_hir`, which retrieves the post-expansion AST and resolver data from `TyCtxt` and builds the `hir::Crate` for the whole crate.
+
+unanchored-prediction sample, 15:
+  [1158] rustc :: The `ty` module defines how the Rust compiler represents types internally.
+  [7] rustc :: The work that the compiler needs to perform is defined by command-line options.
+  [751] rustc_mir_build :: Dropping this arena will result in the THIR being destroyed, which is useful to keep peak memory in check.
+  [1640] rustc :: In this chapter, we will assume LLVM IR, since that's what rustc usually uses.
+  [465] rustc :: At a high level, hygiene within the Rust compiler is accomplished by keeping track of the context where a name is introduced and used.
+  [802] rustc_middle :: An evaluated constant (a "value") has already been computed; their representation differs between type system constants and MIR constants: MIR constants evaluat
+  [1757] rustc :: Cargo implements this technique by telling `rustc` to emit an `rmeta` file for each dependency as well as an `rlib`.
+  [32] rustc_ast :: Macro-expansion, `AST`-validation, name-resolution, and early linting also take place during the lexing and parsing stage.
+  [1089] rustc :: To support this, lint declarations can contain a feature gate like so: The use of the term `future-incompatible` within the compiler has a slightly broader mean
+  [490] rustc_ast :: For example: In this code, the AST nodes that are finally generated would have hierarchy `root -> id(foo) -> id(println)`.
+  [835] rustc_middle :: Functions that generate MIR tend to fall into one of two patterns.
+  [1013] rustc :: The _construction_ of the error is far away from where it is _emitted_, Invoking `rustc` with `-Z track-diagnostics` will print error creation locations alongsi
+  [1169] rustc_hir :: We know that that is the same type, i.e. the function takes an argument and returns an argument of the same type, but from the point of view of the HIR, there w
+  [542] rustc_parse :: The interface of the macro parser is as follows (this is slightly simplified): We use these items in macro parser: a `parser` variable is a reference to the sta
+  [720] rustc_hir :: This is why the `HirId` invariants below matter: `lower_node_id` maps AST `NodeId`s into the current owner, while `next_id` creates fresh HIR-only nodes introdu

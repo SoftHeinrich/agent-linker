@@ -1,0 +1,97 @@
+strict     TP 219 FP 2957 FN 174  P 0.069 R 0.557 F1 0.123
+recall link-only  55/220 = 0.250
+recall verbatim   164/173 = 0.948
+anchored P 219/775 = 0.283   (links on anchored sentences)
+unanchored predictions: 2401 on 777 sentences (no gold; spot-check below)
+sentences linked: 1031/1762; crates linked: 74
+
+per-crate (gold >= 5): crate TP FP FN
+  rustc_middle              33 117  36
+  rustc_span                 8   2  20
+  rustc_hir                 15  57  12
+  rustc_expand               9  21  15
+  rustc_errors               5  23  12
+  rustc_parse               13  22   4
+  rustc_resolve              8  23   9
+  rustc_ast                 14  42   3
+  rustc_driver              14   5   2
+  rustc_metadata            10   7   6
+  rustc_codegen_ssa         14  28   2
+  rustc_mir_transform        8  66   6
+  rustc_interface           14   5   0
+  rustc_type_ir              6 113   7
+  rustc_mir_dataflow         2  72   7
+  rustc_ast_lowering         4  48   4
+  rustc_infer                0   1   8
+  rustc_lexer                7  10   0
+  rustc_lint                 6  76   0
+  rustc_mir_build            5  86   0
+  rustc_data_structures      4  21   1
+  rustc_hir_analysis         3  81   2
+  most FP among crates with < 5 gold: rustc_type_ir_macros(207), rustc_query_impl(121), rustc_crate_store(116), rustc_index_macros(113), rustc_builtin_macros(111), rustc_macros(110), rustc_proc_macro(105), rustc(88)
+
+FN sample (gold missed), 20:
+  [402] rustc_ast (link) :: This renders `NodeId`s pretty much useless for incremental compilation, where you want as few things as possible to change.
+  [1489] rustc_hir_analysis (link) :: For more details, see the `collect` module. **TODO**: actually talk about type checking...
+  [290] rustc_middle (link) :: It also allows for easy comparison of types (more on types here) for equality: for each interned type `X`, we implemented `PartialEq` for X, so we can just comp
+  [522] rustc_expand (link) :: `BangProcMacro`/`TTMacroExpander`/`AttrProcMacro`/`MultiItemModifier` - `trait`s representing the expander function signatures.
+  [339] rustc_macros (link) :: `BlobDecodable` and `LazyDecodable` serve as the decoding counterparts to `MetadataEncodable`.
+  [1244] rustc_type_ir (link) :: **Slice** Corresponds to `T`.
+  [1127] rustc_errors (link) :: Don't confuse this with `errors::Diag`!
+  [1181] rustc_hir_analysis (link) :: The `hir_ty_lowering` module is where the code responsible for lowering a `rustc_hir::Ty` to a `ty::Ty` is located.
+  [1728] rustc_data_structures (link) :: The Strict Version Hash (SVH, also known as the "crate hash") is a 64-bit hash that is used to ensure that the correct crate dependencies are loaded.
+  [748] rustc_middle (link) :: For example, statements in the `stmts` array reference expressions by their index (represented as a `ExprId`) in the `exprs` array.
+  [488] rustc_span (link) :: The `ExpnData` struct itself contains a subset of properties from both macro definition and macro call available through global data.
+  [321] rustc_codegen_ssa (link) :: `CrateInfo` is serialized to `JSON` when the `-Z no-link` flag is used, and deserialized from `JSON` when the `-Z link-only` flag is used.
+  [1236] rustc_type_ir (link) :: There are many variants on the `TyKind` enum, which you can see by looking at its documentation.
+  [179] rustc_parse (link) :: After the `AST` is constructed and other early analysis is done, the compiler's query system gets set up.
+  [793] rustc_middle (link) :: Nobody ever references a basic block directly: instead, we pass around `BasicBlock` values, which are newtype'd indices into this vector. **Statements** are rep
+  [1030] rustc_errors (link) :: (Failing to either emit or cancel a `Diag` will result in an ICE.) See the docs for more info on what you can do.
+  [1577] rustc_mir_transform (link) :: The fastest and easiest way to do this is to add your optimization to one of the lists in the `run_optimization_passes()` function, and then start modifying the
+  [16] rustc_parse (link) :: The `Lexer` `struct` is used at this stage to perform a set of validations and turn strings into interned symbols (_interning_ is discussed later).
+  [1126] rustc_errors (link) :: The JSON emitter defines its own `Diagnostic` struct (and sub-structs) for the JSON serialization.
+  [551] rustc_expand (link) :: The full interface is defined here.
+
+FP-on-anchored sample, 20:
+  [403] rustc_expand (gold ['rustc_ast']) :: `NodeId`s are used in all the `rustc` bits that operate directly on the AST, like macro expansion and name resolution (more on these over the next couple chapte
+  [242] rustc_crate_store (gold ['rustc_codegen_ssa', 'rustc_driver']) :: But in some cases there are crates that provide queries for *both* local and external crates, in which case they define both a `provide` and a `provide_extern` 
+  [520] rustc_ast_ir (gold ['rustc_expand']) :: `SyntaxExtensionKind` - expander functions may have several different signatures (take one token stream, or two, or a piece of AST, etc).
+  [125] rustc_query_impl (gold ['rustc_middle']) :: The name is retained because that's what the name of the struct is in the source code.) All queries are defined as methods on the `TyCtxt` type, and the in-memo
+  [33] rustc_parse (gold ['rustc_errors', 'rustc_ast']) :: The `rustc_ast::ast`::{`Crate`, `Expr`, `Pat`, ...} `AST` nodes are returned from the parser while the standard `Diag` API is used for error handling.
+  [35] rustc_ast_passes (gold ['rustc_hir']) :: Next the `AST` is converted into High-Level Intermediate Representation (`HIR`), a more compiler-friendly representation of the `AST`.
+  [1746] rustc_crate_store (gold ['rustc_metadata']) :: To load each external crate, the `CStore` uses a `CrateLocator` to actually find the correct files for one specific crate.
+  [21] rustc_ast_lowering (gold ['rustc_parse']) :: The *parser* translates the token stream from the `lexer` into an Abstract Syntax Tree (AST).
+  [714] rustc_crate_store (gold ['rustc_ast_lowering', 'rustc_middle']) :: The entry point is `lower_to_hir`, which retrieves the post-expansion AST and resolver data from `TyCtxt` and builds the `hir::Crate` for the whole crate.
+  [400] rustc_ast_passes (gold ['rustc_ast']) :: A `NodeId` is an identifier number that uniquely identifies an AST node within a crate.
+  [878] rustc_mir_build (gold ['rustc_mir_transform']) :: A basic example of a MIR pass is `RemoveStorageMarkers`, which walks the MIR and removes all storage marks if they won't be emitted during codegen.
+  [35] rustc_hir_id (gold ['rustc_hir']) :: Next the `AST` is converted into High-Level Intermediate Representation (`HIR`), a more compiler-friendly representation of the `AST`.
+  [1643] rustc_mir_dataflow (gold ['rustc_codegen_ssa', 'rustc_codegen_ssa']) :: Eventually, this reaches `rustc_codegen_ssa::mir::codegen_mir`, which does the lowering from MIR to LLVM IR.
+  [401] rustc_ast_pretty (gold ['rustc_ast']) :: However, because they are absolute within a crate, adding or removing a single node in the AST causes all the subsequent `NodeId`s to change.
+  [913] rustc_passes (gold ['rustc_interface']) :: `run_compiler` creates a `Compiler` from the configuration and passes it to the `closure`.
+  [1448] rustc_next_trait_solver (gold ['rustc_trait_selection']) :: The trait solver can either return success, ambiguity or an error as a `CanonicalResponse`.
+  [403] rustc_resolve (gold ['rustc_ast']) :: `NodeId`s are used in all the `rustc` bits that operate directly on the AST, like macro expansion and name resolution (more on these over the next couple chapte
+  [627] rustc_errors (gold ['rustc_resolve', 'rustc_resolve']) :: Eagerly loading crates to include import suggestions that haven't yet been loaded is called _speculative crate loading_, because any errors it encounters should
+  [403] rustc_macros (gold ['rustc_ast']) :: `NodeId`s are used in all the `rustc` bits that operate directly on the AST, like macro expansion and name resolution (more on these over the next couple chapte
+  [401] rustc_ast_ir (gold ['rustc_ast']) :: However, because they are absolute within a crate, adding or removing a single node in the AST causes all the subsequent `NodeId`s to change.
+
+unanchored-prediction sample, 20:
+  [1234] rustc_ty_walk :: Whenever working with a `Ty` in the compiler, it is common to match on the kind of type: The `kind` field is of type `TyKind<'tcx>`, which is an enum defining a
+  [736] rustc_mir_build :: The THIR ("Typed High-Level Intermediate Representation"), previously called HAIR for "High-Level Abstract IR", is another IR used by rustc that is generated af
+  [51] rustc_codegen_llvm :: The `LLVM-IR` is passed to LLVM, which does a lot more optimizations on it, emitting machine code which is basically assembly code with additional low-level typ
+  [1107] rustc_lint_defs :: For example, This defines the `nonstandard_style` group which turns on the listed lints.
+  [1651] rustc_pattern_analysis :: An example of such an analysis pass would be figuring out which variables are SSA-like, so that we can translate them to SSA directly rather than relying on LLV
+  [296] rustc_type_ir :: With this schema, if we want to know if two types are the same, all we need to do is compare the pointers, which is efficient.
+  [513] rustc_proc_macro :: Above, we saw how the output of a macro is integrated into the AST for a crate, and we also saw how the hygiene data for a crate is generated.
+  [744] rustc_hir_analysis :: Besides making the types of all nodes available, the THIR also has additional desugaring compared to the HIR.
+  [361] rustc_hir_pretty :: Other parts, such as lexical parsing, HIR lowering, and macro expansion, are still executed in serial mode.
+  [871] rustc_ast_passes :: To produce the optimized MIR for a given def-id `D`, `optimized_mir(D)` goes through several suites of passes, each grouped by a query.
+  [1429] rustc_driver_impl :: That is, we do not have the full substitutions in terms of the type variables of the impl available to us, so we must run trait selection to figure everything o
+  [1123] rustc_trait_selection :: It looks like this: compile_fail,E0277\n// here we declare the Foo trait with a bar method\ntrait Foo {\n fn bar(&self);\n}\n\n// we now declare a function whic
+  [1463] rustc_trait_selection :: Overlapping is sometimes partially allowed: for marker traits under specialization It normally isn't.
+  [517] rustc_builtin_macros :: During the parsing phase, the normal Rust parser will set aside the contents of macros and their invocations.
+  [759] rustc_mir_dataflow :: If you'd like a very high-level introduction to MIR, as well as some of the compiler concepts that it relies on (such as control-flow graphs and desugaring), yo
+  [723] rustc_ast_lowering :: Lowering a `HirId` must be done in the scope of the *owning* item.
+  [1422] rustc_codegen_ssa :: At codegen time, we repeat the trait selection to choose a particular impl for each method call.
+  [1457] rustc_traits :: Overlap checks are performed for both inherent impls, and for trait impls.
+  [1068] rustc_lint_defs :: Those lints will be *buffered* where they are held until later phases of the compiler when the linting system is ready.
+  [87] rustc_hir_id :: It is like the `HIR` but it is fully typed and a bit more desugared (e.g. method calls and implicit dereferences are made fully explicit).

@@ -2715,6 +2715,19 @@ DATASETS = {
     },
 }
 
+# Extra datasets for out-of-benchmark cases (studies/oss-scale): a JSON file
+# mapping name -> {text, model, gold_sam[, transarc_sam]} with paths relative to
+# the JSON file.  Purely additive; the five benchmark entries above are untouched.
+_EXTRA = os.environ.get("ALINKER_EXTRA_DATASETS")
+if _EXTRA:
+    _extra_path = Path(_EXTRA).resolve()
+    with open(_extra_path) as _handle:
+        for _name, _spec in json.load(_handle).items():
+            DATASETS[_name] = {
+                key: _extra_path.parent / value for key, value in _spec.items()
+            }
+            DATASETS[_name].setdefault("transarc_sam", _extra_path.parent / "no-transarc.csv")
+
 
 def get_backend() -> LLMBackend:
     backend_name = os.environ.get("LLM_BACKEND", "openai").strip().lower()
