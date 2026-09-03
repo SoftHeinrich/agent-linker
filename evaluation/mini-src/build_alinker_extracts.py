@@ -17,7 +17,8 @@ Only ``final`` and ``meta`` are emitted.  The ``entity`` / ``coref`` / ``audit``
 s21 extracts are the per-validator decisions ``rq34.py`` needs for RQ3/RQ4; they are not
 recoverable from a link CSV, and RQ1/RQ2 never read them.
 
-Stdlib only.  No LLM calls.  Deterministic: re-running produces byte-identical output.
+Stdlib only.  No LLM calls.  Deterministic: re-running produces byte-identical output,
+from any working directory -- the recorded provenance path is normalized to the repo root.
 
     python3 mini-src/build_alinker_extracts.py --variant s_linker110 \
         --out ../results/s110_extracts \
@@ -56,6 +57,19 @@ def load_links(run_dir: Path, variant: str, project: str):
     return links, path
 
 
+def provenance(src: Path) -> str:
+    """`src` as a repo-root-relative path, so a cell's bytes do not encode the cwd.
+
+    The caller passes run directories relative to wherever it was invoked from, and this
+    string lands in the cell JSON that ``build_dump.py`` sha256s into its manifests. Left
+    verbatim, the same run set rebuilt from a different directory rewrites every cell and
+    every manifest sha without a single link changing -- so the repo-root form (what
+    HOWTO-REGENERATE-RQ.md's recipes type) is the one recorded, whatever the cwd. A run
+    set outside the repo keeps its `../` prefix; that is still cwd-independent.
+    """
+    return Path(os.path.relpath(src.resolve(), m.REPO)).as_posix()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--variant", required=True,
@@ -81,7 +95,7 @@ def main():
                     continue
                 links, src = loaded
                 cell = {
-                    "final": {"links": links, "provenance": {"source_csv": str(src)}},
+                    "final": {"links": links, "provenance": {"source_csv": provenance(src)}},
                     "meta": {"variant": args.variant, "backend_tag": model,
                              "project": project, "run": run,
                              "run_dir": run_dir.name, "n_links": len(links)},
