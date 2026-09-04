@@ -1,5 +1,15 @@
 \section{Background and Motivation}
 \label{sec:motivation}
+%SPEC [approach-pass, 2026-09-04] TWO EDITS OWED HERE.
+%SPEC 1. RESTORE the \caption. It is commented out entirely -- an artefact of
+%SPEC    the ICSE->FSE template switch, not a decision.
+%SPEC 2. The figure is FABRICATED in part and is attributed to a real public
+%SPEC    benchmark. benchmark/jabref/text_2021/jabref.txt has 13 real
+%SPEC    sentences; S6 ("...the UI renders the main application window.") and
+%SPEC    the pronoun reading of S7 are drawn, not quoted. Regenerate
+%SPEC    figures/jabref_trace_example.py with S1...S5 renumbered and declare
+%SPEC    in the caption that the example is adapted for space and information
+%SPEC    density.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/jabref_trace_example}
@@ -31,6 +41,15 @@ A trace link connects a documentation sentence to an architecture component (doc
 Sentence~11 describes the \texttt{preferences} component, which maps to the code package \texttt{org/jabref/preferences/}.
 Sentence~7 describes the \texttt{gui} component, but it also contains the word ``preferences.''
 That one sentence shows two problems that make automatic recovery hard.
+%SPEC CORRECTION, factual: "a reference uses no component name" is FALSE of
+%SPEC the real Sentence~7, which reads "Only the gui knows the user and his
+%SPEC preferences and can interact with him to help him solve tasks." It
+%SPEC states the name "gui" outright. The claim holds only for the drawn S7.
+%SPEC Either fix the sentence or make the adaptation explicit per the figure
+%SPEC note above. Related: every JabRef component is single-word (cli,
+%SPEC globals, gui, JabRef, logic, model, preferences) and the gold standard
+%SPEC has no link for S13, the only name-free sentence, so this example
+%SPEC cannot be extended to cover coreference honestly.
 A reference uses no component name, and a word matches the wrong component.
 The next two subsections develop these problems in detail.
 

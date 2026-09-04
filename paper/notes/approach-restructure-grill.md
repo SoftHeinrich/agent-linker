@@ -1,16 +1,23 @@
 # approach.tex restructure — grilling session state
 
-**Opened** 2026-09-03. **Status: frontier NOT empty — Q17–Q20 asked, unanswered.**
+**Opened** 2026-09-03. **Closed 2026-09-04. Status: frontier EMPTY — Q17–Q29 answered.**
 Written so this session can be resumed on another machine. Nothing here has been
 executed on `approach.tex` beyond steps 1–3 (see "Already executed").
 
+**The spec is not a file.** It lives inline in `paper/sections/approach.tex` as `%SPEC`
+annotations at the passage each one governs, plus a slim global header (N1-N11 and the
+execution order). `grep -n '^%SPEC' paper/sections/approach.tex` is the queue; delete each
+tag as you execute it. `motivation.tex` carries the two out-of-section `%SPEC` items.
+This file keeps only the interview record: what was asked, what was answered, and the
+facts the answers rest on.
+
 ## How to resume
 
-1. Read this file, then `paper/sections/approach.tex` lines 1–95 (the N1–N10 spec header).
-2. Re-invoke `/mattpocock-skills:grill-with-docs` (calls `grilling` + `domain-modeling`).
-3. Put Q17–Q20 below to the user as one round, in the skill's format
-   (`❓ **Qn** - **title**:` … `➡️ recommendation`). Do not act until the user
-   confirms shared understanding.
+The interview is over. Read the header of `paper/sections/approach.tex` for the global
+rules and the execution order, then work the `%SPEC` tags in file order. Re-open the grill
+only for the four questions deferred with the frozen table (Q23, Q25, Q26, Q29 — the
+`%SPEC` block at `\begin{table}` carries them), and only once the table's replacement is
+being designed.
 
 ## The task
 
@@ -103,48 +110,52 @@ fig:approach-overview
 | Q15 | Paired subsection titles | **(b)** — "Full-Name Links", "Partial-Name Links", "Coreference Links". Macros stay for in-prose mentions |
 | Q16 | Who states the root cause | **Combine the phenomenon paragraph with 6.1** |
 
-## Open frontier — ask these next
+## Round 2 decisions (Q17–Q22), settled 2026-09-04
 
-**Q17 — the chain, spelled out.** Three cuts of 6.1, all keeping the three axes
-(the project's own names / the form of the reference / the unreliability of an LLM answer):
-(a) five moves, four paragraphs + table — para 1 = phenomenon → root cause → insight →
-one sentence of design, then one paragraph per challenge closing on its decision;
-(b) four moves, root cause folded into the phenomenon;
-(c) three moves, three paragraphs, insight distributed, no sentence of its own.
-*Recommended: (a)* — only cut where the insight gets its own sentence, which is the
-section's claim to being more than a pipeline. Draft of para 1:
+| Q | Question | Answer |
+|---|---|---|
+| Q17 | The chain of 6.1 | **(a) five moves, four paragraphs + table** — para 1 = phenomenon → root cause → insight → one design sentence; then one paragraph per challenge closing on its decision. Draft of para 1 is in the spec |
+| Q18 | The three form names | **(a) full name / partial name / coreference** — matches all six macros, no renames. "Exact name" is rejected as false: the scan runs at `NameForm.ANY_CASE` |
+| Q19 | The strictness sentence | **Drop it.** User: *"strictness does not help understanding the core, drop"*. N4's second required sentence is retired |
+| Q20 | The `D/S/C/L` formalism | **(a) keep as settled in Q1** — the block stays at the top |
+| Q21 | What justifies one judge per linker, with strictness gone | **evidence + question**, both halves. Wording confirmed at Q28 |
+| Q22 | Does the notation get reused | **(a) light reuse** — `(s,c)` survives in the three linker subsections; `N(c)`, `\models_f`, fidelity and extent go |
 
-> Documentation explains a system rather than identifying its parts. A sentence can
-> name a component it is not about, and another can be about a component it never
-> names. Prior approaches decide each link in one step by matching names, with
-> nothing checking the result, so they invent links and miss links at once. But what
-> a sentence *gives* — a full name, one word of a name, or no name at all — is exactly
-> what evidence there is for a link, and a program can determine which of the three
-> it is. ArchLinker therefore pairs one linker with one judge per form.
+## Round 3 decisions (Q27–Q28), settled 2026-09-04
 
-**Q18 — the three form names.** (a) full name / partial name / coreference — matches
-all six existing macros, no renames; (b) full name / partial name / implicit reference
-— plainer, but renames `\linkerC`, `\corefValidator`, the figure box; (c) full name /
-partial name / no name — plainest, but "No-Name Links" reads as a mistake.
-*Recommended: (a).*
-**Standing term objection (fact, not preference): "exact name" would be false.** The
-full-name scan runs at `NameForm.ANY_CASE` and ignores capitalization by design, so
-"gui" matches `GUI`. "Full name" is equally plain, already the word in `\linkerB` and
-`\entValidator`, and true.
+| Q | Question | Answer |
+|---|---|---|
+| Q27 | The softened design law | 6.1 says *"Everything before a judge is scanning and pre-filtering: it generates candidates and never decides a link."* The two drops are named in the subsections that own them, not counted in 6.1. User: *"change the law to be soften and deterministically, say thats for scan / pre filter / candidate gen"* |
+| Q28 | The pairing sentence | *"Each form leaves the judge a different thing to read and a different question to answer, so each linker has its own judge."* |
 
-**Q19 — the strictness sentence.** N4 requires landing "a judge can be no stricter
-than the evidence its linker reports", but Q9 said keep strictness opaque.
-(a) keep the sentence, say nothing about how any judge's strictness is set;
-(b) drop it, justify pairing on evidence alone; (c) soften to "each judge can only
-ask what its evidence can answer".
-*Recommended: (c)* — same load, matches the code (the target-blind judge is not
-stricter, it is shown less), and does not invite "which judge is strictest".
+## Deferred with the frozen table — re-ask, do not guess
 
-**Q20 — does the task formalism survive the simplicity mandate.** Q1 settled it stays,
-but that predated Q13. With the relation gone, no symbol in the `D / S / C / L` block
-is used anywhere in the section. (a) keep as settled; (b) plain-English input/output
-sentence, drop the symbols; (c) drop the block, `sec:motivation` defines the task.
-*Recommended: (b).*
+User ruling 2026-09-04: **"we will replace the table, current fronzen it."** `tab:forms`
+is untouched in this pass, so Q3 (new columns) and Q11 (three rows) are **not** applied
+and these four stay open:
+
+- **Q23 / Q25 — what column 4 holds.** The user's reading is on record: *"its mainly the
+  structure of prompt, the evidence context structure, not concete test"* — the shape of
+  the evidence context each judge is handed, not the question and not the rubric.
+- **Q26 — Q14 vs the table.** Q14 says 6.1 never says what a particular judge sees, but
+  `tab:forms` sits in 6.1, so any per-judge column 4 breaks it. Unresolved; moot while
+  frozen.
+- **Q29 — the "different question" half of Q28's sentence** has no table support if
+  column 4 is context-only. Currently carried by the subsections.
+
+Facts gathered for that round, so it need not be re-derived — the three judge prompts as
+the code builds them:
+
+| judge | site | what the prompt contains |
+|---|---|---|
+| full-name | `_prompt_validation(strict=False)` `:607` | component list, source sentence, matched span, preceding sentence, ≤5 other sentences naming the component → quote the claim, then approve |
+| partial-name | `_classify_denotations` `:1276` | ±`CONTEXT_SENTENCES` window as a sentence table, the expression, **no component name anywhere** → does this expression denote a software participant or something merely associated? |
+| coreference | `_prompt_validation(strict=True)` `:607` | component list, the resolver's committed referring expression **and** antecedent sentence, the sentence plus its predecessor → quote the claim, state the strongest ground to reject, approve unless decisive |
+
+`_prompt_validation`'s own docstring (`:609`): *"The rubric is asymmetric by design: the
+full-name gate is lenient …, the coreference gate is strict."* That asymmetry is exactly
+what Q9 and Q19 keep out of the paper, so a fully faithful column 4 and those two answers
+cannot all three hold. That is the collision to settle when the table is replaced.
 
 ## Facts established (do not re-derive)
 
@@ -262,7 +273,7 @@ is clean for both files; only `paper/sections/approach.tex` is modified.
 - **N9** is superseded by Q4: all four prompt boxes commented out. Keep the one-clause
   prose description of each prompt's shape so a box can be restored without rewriting.
 
-## Execution queue, once Q17–Q20 land
+## Execution queue (SUPERSEDED by the %SPEC tags in approach.tex, kept for provenance)
 
 1. Rebuild 6.1 on the Q17 chain: phenomenon + root cause + insight + one design
    sentence, then three challenge→decision paragraphs, then the three-row table.

@@ -1,110 +1,107 @@
 \section{\approach}\label{sec:approach}
 % =====================================================================
-% REVISION SPEC -- RW-PASS, opened 2026-09-03. Supersedes the G1-G4 spec
-% round of 2026-06-28; that block and all 14 inline %DONE code-audit notes
-% are preserved verbatim in ../notes/approach-audit-trail.md.
-% ---------------------------------------------------------------------
-% WHY THIS PASS EXISTS. Between 2026-07-08 and 2026-09-02 this section grew
-% from 1514 prose words to 3602 and from 0 measured numbers to 48. Each
-% number was a real audit finding written in at the passage where it was
-% found; together they turned a design section into a lab notebook, and the
-% sentences lengthened to carry them (mean 23.7 -> 27.7 words, p90 37 -> 49).
-% This pass restores the June shape and keeps the September facts.
+% REVISION SPEC -- RW-PASS. Opened 2026-09-03, decisions closed 2026-09-04.
+% GLOBAL RULES ONLY. Everything that applies to one passage is annotated
+% inline at that passage, tagged %SPEC. Delete each tag as you execute it.
+%   interview record ....... ../notes/approach-restructure-grill.md
+%   prior spec rounds ...... ../notes/approach-audit-trail.md
+%   stripped measurements .. ../notes/approach-stripped-measurements.md
 % ---------------------------------------------------------------------
 % N1. STRUCTURE. Every design passage runs, in order:
 %       PHENOMENON -> CHALLENGE -> INSIGHT -> HOW THE INSIGHT GUIDES DESIGN.
-%     This is the template the June section used and the current one lost.
-%     Its exemplar is the old sec:model-understanding, in the audit trail:
-%     general case / the hard case shown on a real example / what \approach
-%     does / why that works. 3-5 sentences, one \emph{} coining, one concrete
-%     example, no numbers. A passage that opens on mechanism has skipped
-%     three moves. Each subsection repeats the shape at its own scale: the
-%     form it handles, what that form fails to settle, what can be settled
-%     exactly anyway, the proposer/judge pair that licenses.
-%     Do NOT re-evidence a phenomenon sec:motivation establishes; point and go.
-% N2. NO measured numbers and no p-values in this section. Justify every
-%     design choice conceptually. Stripped 2026-09-03; the 23 removed
-%     sentences are in ../notes/approach-stripped-measurements.md for
-%     results.tex to absorb.
-% N3. NO "---" in prose. Use a colon, a comma pair, parentheses, or a
-%     sentence split. Re-applied 2026-09-03. This has now regressed twice
-%     (cleaned 2026-06-21 and again 2026-06-27, back to 16 by 2026-09-02),
-%     so re-check it before every submission rather than trusting a [DONE].
-% N4. SPINE. Evidence: a link is kept only when the document gives words
-%     that support it and those words survive a check. Reference form is the
-%     spine's FIRST move, not a second idea. Two sentences the section must
-%     land: "the form of the reference is what evidence there is", and "a
-%     judge can be no stricter than the evidence its linker reports".
-%     One root cause, not three challenges (intro.tex locks this).
-% N5. TERM. "evidence-augmented", everywhere. Retires both "evidence-backed"
-%     and "context-augmented". \evidenceBacked in abbrev.tex changes once and
+%     3-5 sentences, one \emph{} coining, one concrete example, no numbers.
+%     A passage that opens on mechanism has skipped three moves. Each
+%     subsection repeats the shape at its own scale: the form it handles,
+%     what that form fails to settle, what can be settled exactly anyway,
+%     the linker/judge pair. Exemplar: the old sec:model-understanding, in
+%     the audit trail. Do NOT re-evidence a phenomenon sec:motivation
+%     establishes; point and go.
+% N2. NO measured numbers and no p-values in prose. Justify conceptually.
+%     One knowing exception: the frozen tab:forms (see its %SPEC).
+% N3. NO "---" in prose. Colon, comma pair, parentheses, or a sentence
+%     split. Has regressed twice; re-check before every submission.
+% N4. SPINE. ONE root cause -> three challenges -> three decisions. The
+%     derivation is licensed; it is not three separate problems. Reference
+%     form is the spine's FIRST move, not a second idea. The paragraph-by-
+%     paragraph spec lives inline at \subsection{Design}.
+% N5. TERM. "evidence-augmented", everywhere. Retires "evidence-backed" and
+%     "context-augmented". \evidenceBacked in abbrev.tex changes once and
 %     every call site follows; intro.tex has three live sites.
-% N6. Aliases are a supporting detail described in a few sentences, not a
-%     contribution. Do not argue the alias table against prior work here:
-%     the baseline also extracts aliases once per document from the whole
-%     text, grounded on the model catalog. What is ours is that the alias set
-%     is confirmed before use, that a contested term is discarded, and that a
-%     confirmed alias is scanned over every sentence rather than used only to
-%     match an already-extracted entity.
 % N7. No contribution claim in this section. Contributions are listed once,
 %     in intro.tex, and never recapped.
-% N8. VOICE. Match this section's own register, measured over its own prose:
-%     impersonal, mechanism as grammatical subject, one colon pivot per ~4
-%     sentences, contrastive X-not-Y pairs, inline \emph{} coinings, almost
-%     no "we". Target the June figures: mean ~24 words, p90 ~37. Do NOT
-%     import Wang's (i)/(ii)/(iii) enumeration, "thereby" closers, or 16-word
-%     mean: this section has never used any of them, and adding them is a
-%     voice change, not a polish.
-% N9. Prompt boxes and the cost paragraph stay commented out pending a
-%     decision. Keep a one-clause prose description of each prompt's shape so
-%     a box can be restored without rewriting.
+% N8. VOICE. Impersonal, mechanism as grammatical subject, one colon pivot
+%     per ~4 sentences, contrastive X-not-Y pairs, inline \emph{} coinings,
+%     almost no "we". Target mean ~24 words, p90 ~37. Do NOT import
+%     (i)/(ii)/(iii) enumeration or "thereby" closers: never used here.
 % N10. Length is not capped. It falls out of N1 and N2.
+% N11. DON'T (grill Q9 + Q19). Judge strictness is OPAQUE. No rubric, no
+%     "approves by default", no "rejects when uncertain", no lenient/strict
+%     contrast, no "how hard its quote is checked" -- nowhere, not in a
+%     caption. Rationale, from the user: strictness does not help the
+%     reader see the core idea.
 % ---------------------------------------------------------------------
-% RETIRED DESIGNS -- DO NOT REINTRODUCE. Each was measured and removed; the
-% evidence is in the audit trail and in approach/CLAUDE.md.
-%   - sequential linkers ("sees only what the earlier ones left unlinked").
-%     The reported arm passes no link set to any linker; duplicates merge
-%     afterwards by pair, earlier linkers winning ties.
-%   - the structural antecedent constraint / coreference alias gate.
-%   - the \ac{LLM} named-mention extractor and its {entity} prompt box. The
-%     full-name proposer is a code scan and issues no prompt at all.
-%   - the two-pass p1/p2 full-name judge. All three judges rule once.
-%   - the model-understanding module and its ambiguity map. One table only.
-%   - the alias scope grade ("global"/"local").
-%   - the grounded identity review after the target-blind denotation step.
-% LOAD-BEARING, DO NOT "SIMPLIFY":
-%   - the nesting refusal reads the model catalog and never the alias table.
-%     A scan only proposes, so it may rest on a sampled model output; this
-%     predicate ENDS a case, so it may rest only on what is given.
-%   - the mechanical quote check holds for the partial-name judge ONLY. The
-%     other two judges request a quote and discard it. Never write a sentence
-%     implying a fabricated quote cannot approve a link in general.
-%   - spelling variants are not produced by the knowledge module; they are
-%     recognized inside the full-name scan.
+% EXECUTION ORDER. Each step's detail is the %SPEC at its own site.
+%   1. rebuild 6.1 on the five-move chain, absorbing the lead phenomenon
+%      paragraph and the nutshell paragraph
+%   2. delete the writing relation and the nesting-of-forms paragraph
+%   3. delete the strictness sentence and every trace of N11
+%   4. flatten 6.2 + 6.2.1 into \subsection{Alias Discovery}
+%   5. retitle the three linker subsections; fold each judge into its own;
+%      delete \subsection{Evidence-Backed Judges}
+%   6. comment out all four promptL boxes
+%   7. apply the inline prose corrections
+%   8. rename evidence-backed / context-augmented -> evidence-augmented
+%      (abbrev.tex:28, here, intro.tex x3)
+%   9. figure: retitle the drawio Document Understanding box; strike
+%      "then merged" from caption and \Description
+%  10. out of section: motivation.tex's false S7 claim and the jabref
+%      example figure -- annotated in motivation.tex, not here
 % ---------------------------------------------------------------------
-% CARRIED FORWARD from the previous spec round:
-%   - position prior work by LINKING MECHANISM (lexical / string-similarity /
-%     neural-embedding), not by the generic glossary and IR citations.
-%     Overlaps rw.tex, which is currently commented out in its entirety, so
-%     decide there first. The five citations themselves were fact-checked
-%     2026-06-28 and all support their claims; see the audit trail.
+% MOVED INLINE, do not re-add to this header: the alias rule (N6, at Alias
+% Discovery), the prompt-box rule (N9, at each promptL), the frozen-table
+% rule (N12, at tab:forms), every load-bearing note and every retired
+% design -- each now sits at the site where it would be reintroduced.
 % =====================================================================
+%SPEC KEEP AS IS (Q20 + Q22). The D/S/C/L block stays: it is the section's
+%SPEC task statement. $(s,c)$ stays as the word for a candidate in the three
+%SPEC linker subsections -- three uses, one per linker, which is what makes the
+%SPEC block pay for itself. But $N(c)$, $A(c)$, $\mathrm{name}(c)$ and the
+%SPEC writing relation go from the PROSE entirely (Q13); they survive only
+%SPEC inside the frozen table. eval.tex:178 also reads D and C but is
+%SPEC commented out.
 We propose \approach, a training-free \ac{LLM} workflow that recovers trace links between an architecture document and an architectural model.
 Its input is a document $D$ with sentences $S = \{s_1, \ldots, s_n\}$ and a component set $C = \{c_1, \ldots, c_m\}$.
 Its output is a link set $L \subseteq S \times C$.
 Each link $(s_i, c_j) \in L$ asserts that sentence $s_i$ discusses the architectural responsibilities of component $c_j$.
 
+%SPEC ABSORB INTO 6.1 PARA 1, then delete from here (Q16). Para 1 runs five
+%SPEC moves: phenomenon -> root cause -> insight -> one sentence of design.
+%SPEC Approved draft, to be rewritten in this section's voice:
+%SPEC   "Documentation explains a system rather than identifying its parts. A
+%SPEC    sentence can name a component it is not about, and another can be
+%SPEC    about a component it never names. Prior approaches decide each link
+%SPEC    in one step by matching names, with nothing checking the result, so
+%SPEC    they invent links and miss links at once. But what a sentence gives
+%SPEC    (a full name, one word of a name, or no name at all) is exactly what
+%SPEC    evidence there is for a link, and a program can determine which of
+%SPEC    the three it is. \approach therefore pairs one linker with one judge
+%SPEC    per form."
+%SPEC N3 forbids the dash pair in the insight sentence. The root-cause
+%SPEC sentence must agree with the lock in intro.tex: each link is decided in
+%SPEC a single unchecked step, by matching surface names rather than weighing
+%SPEC the evidence the sentence gives. No "isolation", no "single call", no
+%SPEC "Artemis has no reusable knowledge" -- Artemis is a strong baseline.
 In \autoref{fig:example}, one sentence reads ``Only the gui knows the user and his preferences.''
 The sentence discusses the \texttt{gui} component, and it also contains \texttt{preferences}, the name of a component it does not discuss.
-Other sentences discuss a component without naming it at all, referring back to it with a pronoun or with a single word of its name.
-Documentation explains a system rather than identifying its parts, so linking each sentence to the components it names invents links and misses links at the same time.
+Other sentences discuss a component's architectural responsibilities without naming it, referring back to it with a pronoun or with a single word of its name.
+Documentation explains a system rather than identifying its parts, so matching each sentence to the components it names invents links and misses links at the same time.
 
+%TODO state the challenges here
 The names are still where the evidence is, and how much of a name a sentence gives is something a program can determine exactly.
-A sentence may state a component's name or an alias outright;
+A sentence may state a component's name or an alias of it;
 it may carry only one word of that name, with the name itself stated elsewhere;
 or it may name nothing and refer back to an earlier sentence.
-What the sentence gives fixes what evidence there is for a link, and how far that evidence can be trusted on its own.
-\approach therefore splits the linking work by that form: one linker per form proposes the sentences its form reaches, and one judge per form reads the sentence and decides, no stricter than its evidence allows.
+
 
 \begin{figure*}[t]
   \centering
@@ -116,86 +113,84 @@ What the sentence gives fixes what evidence there is for a link, and how far tha
   \label{fig:approach-overview}
 \end{figure*}
 
-\textbf{\approach in a nutshell.}
-\approach answers the three challenges in three steps (\autoref{fig:approach-overview}).
-It first builds a runtime \emph{knowledge module}, an alias table computed once from the components and the document.
-A sentence then gives a component's whole name, part of it, or only a reference to it, and \approach runs three linkers in that order: the \linkerB, the \linkerD, and the \linkerC, each reading the same alias table and each looking for the one evidence form it is built on.
-The three link sets are then merged by pair, so a sentence two linkers reach still yields one link.
-Each proposed link is checked by an \evidenceBacked judge, and the surviving links are merged into the output.
+%SPEC DELETE (Q2). This paragraph is absorbed into 6.1 para 1, which takes
+%SPEC over the reference to fig:approach-overview. The three-challenge ->
+%SPEC decision structure survives in 6.1; the duplication does not.
 
+
+% It first builds a runtime \emph{knowledge module}, an alias table computed once from the components and the document.
+% The three link sets are then merged by pair, so a sentence two linkers reach still yields one link.
+% Each proposed link is checked by an \evidenceBacked judge, and the surviving links are merged into the output.
+
+%SPEC 6.1 TARGET SHAPE (Q17a): four paragraphs, then the frozen table.
+%SPEC  para 1  phenomenon -> root cause -> insight -> one design sentence
+%SPEC          (absorbs the lead paragraph and the nutshell paragraph)
+%SPEC  para 2  challenge: the project's own names        -> decision 1
+%SPEC  para 3  challenge: the form of the reference      -> decision 2
+%SPEC  para 4  challenge: unreliability of an LLM answer -> decision 3
+%SPEC Form names are FULL NAME / PARTIAL NAME / COREFERENCE (Q18a): matches
+%SPEC all six macros, no renames. "Exact name" is FALSE and must never be
+%SPEC used -- the full-name scan runs at NameForm.ANY_CASE, so "gui" matches
+%SPEC GUI.
 \subsection{Design of \approach}\label{sec:arch}
+\textbf{\approach in a nutshell.}
+\approach answers the three challenges with three decisions (\autoref{fig:approach-overview}).
+To vocab, alias table reused in later linking. it scan XX and builds a alias table as a project knowledge.
+To deal with the various reference forms, its architecture consists three linking modules for each case. 
+To recover more links and reduce hallucinated links, each linking module is consisted of a proposer suggesting possible link candidates and collecting the evidence supporting that link.
 
 Three decisions fix the shape of the workflow.
-
-The first decision answers the project-knowledge challenge: the workflow gathers what it needs to know about a project once, up front, rather than leaving each linker to work it out on its own.
+The first decision answers the project-knowledge challenge: the workflow gathers what it needs to know about a project once, without each linker to work it out individually.
 The underlying difficulty is the vocabulary problem~\cite{furnas1987vocabulary}: one component can appear under many names, and some of those names are ordinary English, so plain lexical matching is unreliable.
 \approach builds this knowledge before linking, as a separate stage, in the spirit of glossary mining for requirements~\cite{arora2017automated,gemkow2018automatic} and software-side synonym networks~\cite{howard2013automatically,falleri2010automatic}.
-The knowledge module holds one table, the alias table. 
+The knowledge module holds an alias table, mapping each component to its aliases (its abbreviations and synonyms). 
 
+%SPEC PARA 3 starts here. It must land, in plain English and with no relation:
+%SPEC  - the split of the linking work by form;
+%SPEC  - the pairing sentence, confirmed verbatim (Q21/Q28): "Each form
+%SPEC    leaves the judge a different thing to read and a different question
+%SPEC    to answer, so each linker has its own judge.";
+%SPEC  - the SOFTENED design law (Q24/Q27), replacing "nothing in this
+%SPEC    deterministic layer admits a link ... in two places": "Everything
+%SPEC    before a judge is scanning and pre-filtering: it generates
+%SPEC    candidates and never decides a link." The two drops are NOT counted
+%SPEC    here; each is stated in the subsection that owns it.
+%SPEC  - each linker runs once over the whole document and is shown nothing
+%SPEC    the earlier ones produced.
+%SPEC RETIRED, do not reintroduce: sequential linkers ("sees only what the
+%SPEC earlier ones left unlinked"). The reported arm passes no link set to any
+%SPEC linker.
 The second decision answers the reference-form challenge: how to split the linking work.
-Let $N(c)$ be the \emph{names} of a component $c$: its model name $\mathrm{name}(c)$ and the project-specific aliases $A(c)$ that the knowledge module discovers (its abbreviations and synonyms).
+Instead of previous work's hand curated link rules, we devide the into 3 simple modules each simple task. 
+linker a, does xxx.
+b does xxx
+c does xxx.
+therefore, benefit
 
-A sentence may write a name in more ways than one, and \approach needs a single, stated
-notion of when it has.
-We write $s \models_{f} n$ when sentence $s$ \emph{writes} name $n$ at \emph{form} $f$, over two independent dimensions.
-\emph{Fidelity} says how exactly the characters must reproduce the name: \emph{as spelled} (character for character, at word boundaries), \emph{any case} (ignoring capitalization), or \emph{any spelling} (the name's word sequence, ignoring case, separators and compound joining, so that \texttt{Image Provider}, \texttt{image-provider} and \texttt{ImageProvider} are one form).
-\emph{Extent} says how much of the name must be present: the whole name, or \emph{any word} of it under an English inflectional ending.
-This relation reads only the model catalog and the alias table, together with one closed list of English suffixes; it contains no project vocabulary of any kind.
-
-\autoref{tab:forms} is why each linker scans the form it does.
-Each row reports how many sentence--component pairs the form reaches across the five benchmark documents and how many of them are true links.
-Precision falls as the form loosens and reach rises, and \approach answers that with the judge behind it rather than with a further rule: a whole name at \emph{any case} feeds a judge that approves by default, \emph{any word} feeds a judge that is shown no target, and sentences no form reaches at all are left to a judge that rejects when uncertain.
-The workflow scans those two forms and no others, and nothing in this deterministic layer admits a link: it can only end a case, which it does in two places.
-One is the alias table, where a term two components both claim is taken to name neither and is dropped before any linker reads it; the other is the \emph{any word} scan, which refuses a word the sentence writes only inside another component's whole name (\autoref{sec:partial-linker}).
-Nothing in the relation admits a link on its own: every form produces a \emph{candidate} for an \ac{LLM} judge.
-
-\begin{table}[t]
-\caption{Reach and precision of each form of the writing relation over the five benchmark documents. Looser forms reach more true links and a much larger share of spurious ones, so each linker pairs its form with a judge of matching strictness.}
-\label{tab:forms}
-\centering
-\small
-\begin{tabular}{llrrr}
-\toprule
-Fidelity & Extent & Pairs & True links & Precision \\
-\midrule
-as spelled   & whole name & 112 & 107 & 0.96 \\
-any case     & whole name & 172 & 133 & 0.77 \\
-any spelling & whole name & 176 & 137 & 0.78 \\
-any word     & one word   & 281 & 161 & 0.57 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The forms are almost, but not quite, nested, and the exceptions are informative rather than incidental: compound splitting reaches \texttt{Image Provider} for a component named \texttt{ImageProvider}, which no case-folding rule reaches, and misses \texttt{redis pubsub} for one named \texttt{Redis PubSub}, which case folding does reach.
-Compound splitting is therefore a different normalization, not a looser one.
-\approach scans one form per linker and does not scan this one, so a component the document only ever writes split is out of \linkerB's reach and has to be recovered through the alias table.
-
-A sentence $s$ then writes a full name in $N(c)$, part of one, or none of one.
-These ask different questions (whether a sentence writes a name, whether it carries one word of a name written elsewhere, or whether it writes no name and must be resolved through the earlier sentence it refers back to), so they need different evidence and different judges.
-\approach therefore uses three linkers, one per form, rather than the one large \ac{LLM} call that previous works used.
-Each runs once over the whole document, and no linker is shown what the earlier ones produced: the only ordering the workflow enforces lives inside the relation, where \linkerD skips any sentence that states a whole name because that sentence is \linkerB's to judge. That is a property of the sentence, not of the link set.
-Separating the forms is what lets the judges differ, since a judge can be no stricter than the evidence its own linker reports.
-
-The third decision answers the reliability challenge: how to handle the non-determinism of the \ac{LLM}.
-An \ac{LLM} linker can return a wrong link that still reads as plausible, with nothing in the sentence to support it.
-\approach therefore makes each linker report the text evidence it used in a structured \emph{evidence bundle} and 
+The third decision answers the reliability challenge: how to handle the hallucinates of the \ac{LLM}.
+A wrong link can be looked as plausible, with nothing in the sentence to support it.
+\approach therefore makes each proposer report the text evidence it used in a structured \emph{evidence bundle} and 
 has each judge check the candidate link against that. 
-Every judge must quote the sentence words it rules on before it rules, and where the sentence carries no name for the judge to fall back on, that quote is checked mechanically against the sentence (\autoref{sec:validators}).
+% Every judge must quote the sentence words it rules on before it rules (\autoref{sec:validators}).
 
+%SPEC FLATTEN (Q9): this subsection and its 6.2.1 become one
+%SPEC \subsection{Alias Discovery}. The drawio box retitles with it.
+%SPEC RETIRED, do not reintroduce here: the model-understanding module and its
+%SPEC ambiguity map (one table only); the alias scope grade ("global" /
+%SPEC "local"); ambiguous-name handling of any kind.
 \subsection{Project Knowledge Discovery}\label{sec:knowledge}
-Stage~1 is a \emph{document-understanding module} that analyzes the document against the component set to find the aliases the project has coined for its components.
+Stage~1 is a \emph{document-understanding module} that analyzes the document against the component set to find the aliases the project has coined.
 
-\approach leaves ordinary-English ambiguity to the judges, which see the sentence itself.
 
 \subsubsection{Alias Discovery}\label{sec:doc-understanding}
 An alias lets a linker match a document phrase to a component even when the phrase is not the component's exact name.
-\approach discovers these aliases from the document at runtime, and they come in two kinds.
-The first is an explicit renaming, where the document itself ties a short form to a name: an abbreviation in a parenthetical definition, or a synonym in a clear restatement.
-The second is a shorthand, one word of a multi-word name used on its own after the document has introduced the name.
-Shorthands are common, but many are also generic English whose meaning depends on the surrounding text, so this is the hard kind.
-An \ac{LLM} judge confirms each proposed mapping before it enters the alias table, rejecting a phrase that is generic vocabulary, names the whole system, names a different entity, or names a group of elements rather than one.
-Every confirmed alias is then a name of its component wherever it appears, on the same footing as the model name.
+\approach discovers these aliases from the document with the help of LLMs.
+An \ac{LLM} is prompted to XX
+Then an \ac{LLM} judge confirms each proposed mapping before it enters the alias table, rejecting hallucinated aliases.
+Every confirmed alias is then treated as a name of its component by later linkers.  
 
+
+%SPEC prompt's shape so it can be restored without rewriting.
 \begin{promptL}{Alias Extraction (Document Understanding)}{alias}\\
 {\scriptsize\ttfamily\raggedright
 Find alternative names used for the components.\\
@@ -207,61 +202,99 @@ Return JSON:\\
 }
 \end{promptL}
 
+%SPEC RETITLE to \subsection{Full-Name Links} (Q15b/Q18a); macros stay for
+%SPEC in-prose mentions. FOLD THIS LINKER'S JUDGE IN HERE (Q9b).
+%SPEC Facts the prose must respect:
+%SPEC   - the proposer is a code scan, case-insensitive, no LLM call;
+%SPEC   - the evidence bundle has five fields and ONLY THIS JUDGE ever sees
+%SPEC     one;
+%SPEC   - the reference-form field retains TWO labels, not the four described
+%SPEC     below (RETAINED_MENTION_TYPES = {VIA_ALIAS, CODE_TOKEN});
+%SPEC   - the other sentences naming the component are capped at five and are
+%SPEC     found by the catalog name only, aliases not used there;
+%SPEC   - this linker has NO refusal: its SKIP_QUALIFIED predicate is dead;
+%SPEC   - spelling variants are not produced by the knowledge module; they are
+%SPEC     recognized inside this scan.
+%SPEC RETIRED: the LLM named-mention extractor and its {entity} prompt box;
+%SPEC the two-pass p1/p2 judge -- all three link judges rule once.
 \subsection{\linkerB}\label{sec:entity-linker}
 
-\linkerB reaches the sentences that state a name of a component outright.
-It proposes the candidate $(s,c)$ whenever $s$ writes a name in $N(c)$ at \emph{any case}, so the proposer is a scan of the model catalog and the alias table and spends no \ac{LLM} call.
-Scanning at \emph{any case} rather than at \emph{as spelled} buys reach at the cost of precision, and \approach leaves that precision to the judge, because a component named \texttt{Common} or \texttt{Client} needs the sentence read before the mention can be ruled on at all.
-Each candidate is tagged with the matched sentence and the reference form, forming the candidate's evidence bundle.
+\linkerB is designed to catch direct mention of components.
+It proposes the candidate $(s,c)$ whenever the sentence $s$ writes the full name of a component. 
+so the proposer is a regex scan of the model names and the alias table and spends no \ac{LLM} call.
+%todo, define whats the reference form here 
+Each candidate is tagged with the matched sentence and how it is matched (exactly, by alias, mentioned in code path).
+Such matched information, combined with the surrounding sentences forming the candidate's evidence bundle.
 Candidates and their evidence bundles will be the input for the link judge.
-For example, in \autoref{fig:example} Sentence~11 names the \texttt{preferences} component, so \linkerB returns the candidate $(s_{11}, \texttt{preferences})$ with an evidence bundle recording the matched name ``preferences'' and the reference form as the reason.
-Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}.
-The scan proposes $(s_{7}, \texttt{preferences})$ as well, because the sentence does write the name; deciding that the sentence is about \texttt{gui} and not about \texttt{preferences} is the judge's work, not the proposer's.
+%TODO example: 
 
+% For example, in \autoref{fig:example} Sentence~11 names the \texttt{preferences} component, so \linkerB returns the candidate $(s_{11}, \texttt{preferences})$ with an evidence bundle recording the matched name ``preferences'' and the reference form as the reason.
+% Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}.
+% The scan proposes $(s_{7}, \texttt{preferences})$ as well, because the sentence does write the name; deciding that the sentence is about \texttt{gui} and not about \texttt{preferences} is the judge's work, not the proposer's.
+
+%SPEC RETITLE to \subsection{Partial-Name Links}. FOLD ITS JUDGE IN (Q9b).
+%SPEC THIS SUBSECTION OWNS DROP 2 of 2 (Q27), and the drop must stay
+%SPEC distinguishable from the skip or someone will "fix" the skip:
+%SPEC   DROP: a word the sentence writes only inside another component's whole
+%SPEC     name is not a candidate. This ENDS the case, so it reads the model
+%SPEC     catalog and never the alias table.
+%SPEC   SKIP: a sentence that already states a whole name is left to the
+%SPEC     full-name linker. This only ROUTES, so it may and does read the
+%SPEC     alias table.
+%SPEC Two different acts, two sentences. Neither predicate is a module: each
+%SPEC is about eight executable lines.
+%SPEC The judge: the component is deliberately withheld, and the judge is
+%SPEC asked what the expression itself denotes. Say that it is withheld and
+%SPEC why (shown the target, a model confirms identity rather than testing
+%SPEC it). Nothing about strictness (N11), and no mechanical quote check.
+%SPEC RETIRED: the grounded identity review after the target-blind step.
 \subsection{\linkerD}\label{sec:partial-linker}
 
-\linkerD reaches the sentences that carry only one word of a component's name.
-It scans the same writing relation at its loosest form, \emph{any word}: it proposes a candidate $(s,c)$ when $s$ writes a name in $N(c)$ at that form.
-It considers only sentences that write no whole name in $N(c)$, because those sentences already belong to \linkerB.
+\linkerD reaches the sentences that carry only part of a component's name.
 For example, a document that names an \texttt{HTML5 Client} may later write only ``each client'': \linkerD proposes that link and records the matched word as its evidence.
-The scan makes one refusal of its own, on the ground the skip above already states: when every writing of the matched word falls inside a span where the sentence writes \emph{another} component's whole name, the sentence is naming that other component there, and the pair is that component's.
-A sentence reading ``events are published on the \texttt{Redis PubSub} channel'' therefore yields no candidate for \texttt{Redis DB}, the sibling component whose name shares the word \texttt{Redis}; a sentence that writes the word outside the longer name as well keeps its candidate, which is why ``each client connects to the \texttt{HTML5 Server}'' still reaches \texttt{HTML5 Client}.
-The refusal reads the model catalog and not the alias table, and the asymmetry is deliberate: a scan only ever proposes, so it may rest on a sampled \ac{LLM} output, whereas this predicate is the one thing in the layer that \emph{ends} a case and so may rest only on what is given.
-The judge behind the scan cannot be asked instead, because it is shown no component: it calls a real participant a participant and is right, with no way to know that the participant is a different one.
-One word is weak evidence on its own, since an ordinary English word may carry no architectural reference at all, so \linkerD judges the expression before it links it.
-It asks, \emph{without showing the component}, whether the expression denotes a software participant or something merely associated with software.
-Withholding the component is what makes the step informative: shown the target, the \ac{LLM} tends to confirm identity rather than test it (\autoref{sec:validators}).
+The evidence bundle consists of the surrounding sentences and the matched word. 
+%TODO example evidence bundle 
+judged by if in the context, the candidate link really discuss the architectural responsibility of the target... 
 
-\begin{promptL}{\linkerD: Denotation Without the Target}{denote}\\
-{\scriptsize\ttfamily\raggedright
-Classify what each expression itself denotes\\
-in its local context: participant for a\\
-software participant, or associated for\\
-something merely associated with software.\\
-SENTENCES: \{Sn: text\}\\
-CASES: \{case, source, expression\}\\
-Claim must be an exact substring of the\\
-source sentence.\\
-Return JSON:\\
-~~\{"judgments": [\{case, denotation,\\
-~~~~claim\}]\}
-}
-\end{promptL}
 
+%SPEC N9 (Q4): COMMENT THIS BOX OUT, keep one clause of prose.
+% \begin{promptL}{\linkerD: Denotation Without the Target}{denote}\\
+% {\scriptsize\ttfamily\raggedright
+% Classify what each expression itself denotes\\
+% in its local context: participant for a\\
+% software participant, or associated for\\
+% something merely associated with software.\\
+% SENTENCES: \{Sn: text\}\\
+% CASES: \{case, source, expression\}\\
+% Claim must be an exact substring of the\\
+% source sentence.\\
+% Return JSON:\\
+% ~~\{"judgments": [\{case, denotation,\\
+% ~~~~claim\}]\}
+% }
+% \end{promptL}
+
+
+%SPEC RETITLE to \subsection{Coreference Links}. FOLD ITS JUDGE IN (Q9b).
+%SPEC CORRECTION, factual: the next sentence's "for each sentence with a
+%SPEC pronoun like 'it'" is FALSE. The resolver runs over EVERY sentence;
+%SPEC there is no pronoun filter.
+%SPEC The shortlist (the latest earlier sentence that names each component,
+%SPEC nearest first) supplies a fact to a prompt and ENDS NOTHING -- it is
+%SPEC neither a drop nor a skip. ~8 lines; not a module.
+%SPEC The judge is shown the sentence, its predecessor, and the referring
+%SPEC expression and antecedent the resolver committed to. 
 \subsection{\linkerC}\label{sec:coref-linker}
 
-\linkerC recovers the links in sentences that write no name at all, at any form of the relation.
+\linkerC recovers the links in sentences that write no explicit name, but referring to previous mentions.
 For each sentence with a pronoun like 'it',  an \ac{LLM} step resolves the pronoun to an earlier sentence and a candidate component as evidence.
-This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
-For illustration, suppose a later sentence reads ``It stores the user's settings,'' naming no component: \linkerC resolves ``It'' to an earlier sentence that named \texttt{preferences} and proposes the link to \texttt{preferences}, reporting that earlier sentence as its evidence.
-The resolver is not left to find the antecedent in the catalog at large.
-Each case carries, computed in code from the same writing relation, the components the sentences above it actually name, each with the sentence that names it, nearest first; the model quotes the referring expression, says which of those entries it could point to, and then names the one it does, or none.
-The division is between what is a fact and what is a weighing: which components the earlier sentences name is settled exactly by the relation, and asking the model to re-derive it from the raw catalog is asking it to do lookup by attention, which it does by inventing. Which reading a referring expression carries in its sentence is in no table, so only the model can weigh it.
-\approach admits a resolution only when it reports an antecedent, and checks both sentence numbers it reports against the document, so a resolution citing a sentence the document does not have cannot become a candidate.
-It does not require the antecedent to name the component, so \approach states the requirement to the resolver and leaves the verdict to the judge.
-The shortlist is a prior and not a constraint for the same reason: the resolver may answer outside it, and what the code checks is the answer's sentence numbers, not its membership in the list.
-The surviving candidates go to the \corefValidator{}, which is shown the referring expression and the antecedent the resolver committed to.
+% This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
+As an example, suppose a sentence reads ``It stores the user's settings,'' naming no component.
+\linkerC resolves ``It'' to an earlier sentence that named component \texttt{preferences} and proposes the link to \texttt{preferences}, reporting the earlier sentence as the antecedent.
+The antecedent 
+After that, link judge ...
 
+%SPEC N9 (Q4): COMMENT THIS BOX OUT, keep one clause of prose.
 \begin{promptL}{\linkerC: Coreference Resolution}{coref}\\
 {\scriptsize\ttfamily\raggedright
 Resolve refer-back references (pronoun or\\
@@ -280,6 +313,7 @@ Return JSON:\\
 ~~~~ant\_text\}]\}
 }
 \end{promptL}
+
 
 \subsection{Evidence-Backed Judges}\label{sec:validators}
 
@@ -308,6 +342,10 @@ The \partValidator{} is shown no target at all, so its quote is the whole of its
 The \corefValidator{} is shown the referring expression and the antecedent the resolver committed to, and rules on whether that commitment holds.
 We call this design \emph{\evidenceBacked judging}: each judge rules on a candidate from the evidence bundle its linker reported, and it is the bundle, not a second call, that makes the verdict checkable. We treat it as a method contribution.
 
+%SPEC N9 (Q4): COMMENT THIS BOX OUT, keep one clause of prose. The closing
+%SPEC paragraph that explains which judges share the prompt goes with the
+%SPEC subsection; the one fact worth keeping, if any, is that the two link
+%SPEC judges share a prompt -- and even that risks N11.
 \begin{promptL}{Evidence-Backed Judge}{judge}\\
 {\scriptsize\ttfamily\raggedright
 Validate components. \{FOCUS\}\\
