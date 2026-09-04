@@ -1,0 +1,53 @@
+$ continuity.py --gold gold_plus --links s_linker110_rustc_core_links.csv
+gold gold_plus: 1327 pairs on 1200 sentences
+
+stratum       pairs  prev has it  next has it   either  neither  prev unlabelled
+verbatim        147        0.395        0.483    0.612    0.388            0.293
+name-echo       504        0.490        0.565    0.714    0.286            0.252
+no-surface      676        0.731        0.655    0.868    0.132            0.141
+ALL            1327        0.602        0.602    0.781    0.219            0.200
+
+stretches of consecutive sentences on one component: 527 stretches covering 1327 pairs; mean length 2.52
+  length: 0:0  1:288  2:97  3:43  4:24  5:25  6:10  7:12   >=8: 28
+  stretches of length 1 (an isolated sentence): 288 (0.546 of stretches, 0.217 of pairs)
+
+chapter                             sents  pairs              top component  its share
+overview.md                           149    103               rustc_middle      0.175
+compiler-src.md                        62     30               rustc_middle      0.267
+query.md                               71     57               rustc_middle      0.386
+memory.md                              34     31               rustc_middle      0.742
+serialization.md                       38     34               rustc_middle      0.324
+parallel-rustc.md                      38     35      rustc_data_structures      0.257
+the-parser.md                          24     25                rustc_parse      0.400
+macro-expansion.md                    156    135               rustc_expand      0.600
+name-resolution.md                     67     48              rustc_resolve      0.979
+attributes.md                          28     11              rustc_feature      0.273
+hir.md                                 43     41                  rustc_hir      0.439
+hir/lowering.md                        25     26         rustc_ast_lowering      0.846
+thir.md                                19     12               rustc_middle      0.417
+mir/index.md                           73     65               rustc_middle      0.800
+mir/construction.md                    37     29            rustc_mir_build      0.931
+mir/passes.md                          39     37        rustc_mir_transform      0.730
+rustc-driver/intro.md                  14     13            rustc_interface      0.538
+diagnostics.md                        240    140                 rustc_lint      0.300
+ty.md                                 120     87               rustc_middle      0.471
+type-inference.md                      78     60                rustc_infer      0.867
+traits/resolution.md                   74     63      rustc_trait_selection      0.889
+solve/trait-solving.md                 20     15    rustc_next_trait_solver      0.533
+coherence.md                           29     29      rustc_trait_selection      0.897
+hir-typeck/summary.md                  11     10         rustc_hir_analysis      0.800
+mir/dataflow.md                        48     30         rustc_mir_dataflow      1.000
+borrow-check.md                        22     21             rustc_borrowck      0.952
+mir/optimizations.md                   41     18        rustc_mir_transform      1.000
+const-eval.md                          14     19           rustc_const_eval      0.474
+backend/monomorph.md                   24     16         rustc_monomorphize      0.938
+backend/lowering-mir.md                19     17          rustc_codegen_ssa      0.824
+backend/codegen.md                     31     19         rustc_codegen_llvm      0.421
+backend/libs-and-metadata.md           74     51             rustc_metadata      0.647
+
+mean share of a chapter's pairs held by its top component: 0.629
+
+chapter topic from the linker's own full-name links       1733 links  correct 0.166  found 0.216  no-name found 0.271
+  the same, unioned with the full-name links              2090 links  correct 0.211  found 0.332  no-name found 0.284
+the linker, all stages                                    3176 links  correct 0.143  found 0.342  no-name found 0.065
+ORACLE chapter topic (taken from the answer key)          1762 links  correct 0.437  found 0.580  no-name found 0.670

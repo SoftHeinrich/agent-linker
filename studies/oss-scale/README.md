@@ -563,3 +563,47 @@ SAD-SAM stage does not degrade at OSS scale, it collapses. Snake-case implementa
 (`rustc_mir_transform`) do not appear as noun phrases in prose, so name-similarity has nothing
 to match, while s110 — however weak in absolute terms (§9.1) — still reaches 0.973 of the
 verbatim stratum and 0.53 of the name-echo stratum on the same input.
+
+### 9.8 Is the no-name half actually continuous? (`semgold/continuity.py`)
+
+§9.5 assumes a sentence with no name in it continues the previous sentence's topic. Measured
+on the gold alone — no linker, no model:
+
+| stratum | pairs | previous sentence carries it | next does | either | neither |
+|---|---|---|---|---|---|
+| verbatim | 147 | 0.395 | 0.483 | 0.612 | 0.388 |
+| name-echo | 504 | 0.490 | 0.565 | 0.714 | 0.286 |
+| **no-surface** | **676** | **0.731** | 0.655 | **0.868** | 0.132 |
+
+The no-name sentences are the *most* continuous, and the ones that spell a name out are the
+least — naming a component is how the guide opens a topic, not how it continues one. But the
+document is not made of long blocks either: the 1,327 pairs fall into 527 stretches of
+consecutive sentences, mean length 2.5, and **288 of those stretches are a single sentence**
+(22% of all pairs). One in eight no-name pairs has neither neighbour on the same component.
+
+Chapters are concentrated but unevenly so — the top component holds 0.629 of a chapter's pairs
+on average, from 1.00 (`mir/dataflow.md`, `mir/optimizations.md`) and 0.98 (`name-resolution.md`)
+down to 0.30 (`diagnostics.md`) and 0.18 (`overview.md`).
+
+Which raises the uncomfortable baseline:
+
+| rule | links | correct | found | no-name found |
+|---|---|---|---|---|
+| chapter topic from the linker's own full-name links | 1,733 | 0.166 | 0.216 | 0.271 |
+| the same, unioned with the full-name links | 2,090 | 0.211 | 0.332 | 0.284 |
+| the linker, all stages | 3,176 | 0.143 | 0.342 | 0.065 |
+| **ORACLE chapter topic (from the answer key)** | 1,762 | **0.437** | **0.580** | **0.670** |
+
+Labelling every sentence of a chapter with that chapter's main component — one decision per
+chapter, 32 decisions for the whole book — is right 0.437 of the time and covers 0.580 of the
+gold, beating the pipeline on both. Even the automatic version, which reads the chapter topic
+off the linker's own links and uses no gold at all, beats it on the no-name stratum four times
+over at lower cost. The oracle gap (0.166 vs 0.437) says the leverage is in **identifying the
+chapter's topic**, not in judging sentences: 32 hard decisions instead of 1,762 easy-looking ones.
+
+Caveat on where the continuity number comes from: the annotators were shown ±2 sentences and
+told that a sentence continuing the previous topic counts, so some continuity is by
+construction. Two things argue it is real anyway — the component-first annotator, which never
+sees sentence order that way, agrees at κ 0.69, and the topic-propagation judge in §9.5 approves
+only about a fifth of the propagated proposals and is right on 46% of those. If the document
+were uniformly continuous, that judge would say yes to nearly everything.
