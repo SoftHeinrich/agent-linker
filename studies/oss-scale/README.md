@@ -429,7 +429,30 @@ at all** (514 pairs whose crate is never named in the chapter; 211 gold pairs in
 never named anywhere in the document, and only 33 of 79 crates are ever named). The stage
 produced 22 links and 7 true ones — 5.6% of even the narrow literal-antecedent ceiling.
 
-The cheap fix is not a better coref prompt, it is a wider antecedent: name echoes are already
+**Autopsy of the stage's own run** (`semgold/coref_autopsy.py`, reading the run's phase state):
+
+| | pairs | correct |
+|---|---|---|
+| resolver proposed | 377, on 362 of 1,762 sentences (20.5%) | 176 (0.467) |
+| judge approved | 47 | 22 (0.468) |
+| judge rejected | 330 | **154** (0.467) |
+
+Two separate failures. First, the stage never looks at four fifths of the document: a
+proposal needs a component some earlier sentence names, and it is run blind to what the
+other stages linked, so it cannot reuse them. Second — and worse — **its judge does not
+discriminate**: 46.7% of what it was handed was right, 46.8% of what it kept was right, and
+46.7% of what it threw away was right. It removed volume, not error, and 154 correct links
+went with it. Add to that: only 19% of the no-name gold sentences even open with a pronoun or
+demonstrative, so most of them are topic continuations rather than references, and a
+resolver asked for genuine coreference is right to stay silent about them.
+
+The judge in §9.5 is the same model on the same document; the difference is that it is shown
+the sentence that established the topic and asked an aboutness question rather than a
+reference question. It was handed a much dirtier pile (15.9% correct) and returned 46.3% —
+a 2.9x lift, keeping 58% of the correct proposals.
+
+The cheap fix is therefore not a better coref prompt, it is a wider antecedent plus a judge
+that has something to check against: name echoes are already
 what the linker's own stages fire on, and they raise the reachable share of the hard stratum
 from 0.11 to 0.48. A sticky-topic baseline (propagate every naming sentence forward K
 sentences, no LLM at all) is a useful yardstick — K=0: P 0.628 R 0.111; K=3: P 0.370 R 0.206;
