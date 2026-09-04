@@ -541,7 +541,8 @@ Wall clock 36 min: preprocessing 17:03, text extraction 14:15, recommendation 13
 connection 4:08. (The generated repository first had to gain a repository `id`; ArDoCo's PCM
 parser rejects the file without one. Fixed in `tools/make_dataset.py`.) ArDoCo re-splits the
 text with CoreNLP into 1,915 sentences, so its sentence ids were mapped back to dataset lines
-through the same splitter before scoring.
+through the same splitter before scoring (`semgold/from_ardoco.py --corenlp-json`, which
+reproduces the committed `reports/swattr_rustc_core_links.csv` exactly).
 
 | gold | links | TP | P | R |
 |---|---|---|---|---|
