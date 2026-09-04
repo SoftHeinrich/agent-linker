@@ -390,6 +390,11 @@ four characters. No word lists.
 | name-echo ("the borrow checker", "MIR", "name resolution") | 504 | 0.380 |
 | no-surface (only meaning connects them) | 676 | 0.509 |
 
+The rule was audited rather than assumed: the tokens that trigger an echo are `lint` (51
+pairs), `mir` (48), `trait` (33), `expand` (33), `hir` (29), `infer`, `query`, `borrowck`,
+`resolve` — domain words, not stopwords — and only 73 of the 504 echo pairs fire on a token
+that appears in more than 5% of sentences.
+
 | view | links | P | R | R verbatim | R name-echo | R no-surface |
 |---|---|---|---|---|---|---|
 | all stages | 3,176 | 0.143 | 0.342 | 0.973 | 0.530 | **0.065** |
@@ -520,3 +525,40 @@ The recipe holds on a C codebase and on design notes rather than a guide, and th
 the two audits is index size, not labelling — the same failure mode as the rustc partial-name
 stage. Residual misses in both are content-vs-placement disagreements, which is the known limit
 of any human source that records *where code lives* rather than *what prose is about*.
+
+### 9.7 The deterministic baseline: SWATTR on the same dataset (`rustc/reports/swattr_rustc_core.txt`)
+
+ArDoCo's own SAD-SAM stage (SWATTR) run through `ardoco-cli` on exactly this dataset —
+`sentences.txt` + the generated PCM repository, no API key, no LLM.
+
+```
+java -jar ardoco-cli-*-jar-with-dependencies.jar -t sad-sam -n rustc_core \
+  -d studies/oss-scale/rustc/data/core/sentences.txt \
+  -m studies/oss-scale/rustc/data/core/rustc_core.repository -o <out>
+```
+
+Wall clock 36 min: preprocessing 17:03, text extraction 14:15, recommendation 13 s,
+connection 4:08. (The generated repository first had to gain a repository `id`; ArDoCo's PCM
+parser rejects the file without one. Fixed in `tools/make_dataset.py`.) ArDoCo re-splits the
+text with CoreNLP into 1,915 sentences, so its sentence ids were mapped back to dataset lines
+through the same splitter before scoring.
+
+| gold | links | TP | P | R |
+|---|---|---|---|---|
+| gold_plus | 266 | 2 | 0.008 | 0.002 |
+| gold (strict) | 266 | 2 | 0.008 | 0.002 |
+| three-way | 266 | 2 | 0.008 | 0.002 |
+| anchor (the old syntactic gold) | 266 | 0 | 0.000 | 0.000 |
+
+**All 266 links point at one component — `rustc`, the umbrella entry.** Not a single link to
+any of the other 78 crates. The failure is not sentence selection: **198 of its 266 sentences
+(74%) are gold for some crate** — it picks documentation sentences that really are about the
+architecture and then attributes every one of them to the only component name that surfaces as
+an ordinary noun phrase. The two true positives are the two sentences the annotators did mark
+as being about `rustc` itself.
+
+This is the baseline number the study needed, and it is worth stating plainly: the deterministic
+SAD-SAM stage does not degrade at OSS scale, it collapses. Snake-case implementation names
+(`rustc_mir_transform`) do not appear as noun phrases in prose, so name-similarity has nothing
+to match, while s110 — however weak in absolute terms (§9.1) — still reaches 0.973 of the
+verbatim stratum and 0.53 of the name-echo stratum on the same input.
