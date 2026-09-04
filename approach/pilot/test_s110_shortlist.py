@@ -10,7 +10,9 @@ no linker base class -- so the invariants come in two halves.
      `_run_extraction_pass` and `EXTRACTION_BATCH` appear nowhere in the code.
   2  **every block that is not a marked delta is `s_linker92`'s, byte for byte**, and
      every marked delta is its own source file's block -- checked by re-splitting the
-     files, so it tests the file rather than whatever produced it.
+     files, so it tests the file rather than whatever produced it. One block is exempt:
+     `_classify_mention_typed`, whose two unreachable `MentionType` members are pruned
+     here, is checked by label equality over every (component, sentence) pair instead.
   3  **the composed behaviour is the chain's.** Over all five projects, this file's
      proposer agrees with `s_linker92a`'s, its partial-name scan with `s_linker109`'s,
      and its evidence bundles with `s_linker92`'s, under an empty alias table and a
@@ -168,7 +170,13 @@ def structure():
               f"{name}'s delegation is no longer than the block it replaces")
 
     #: What the promotion is allowed to have touched. Anything else must be the head's.
+    #: `_classify_mention_typed` is here for a pruning, not a delta: `MentionType` loses
+    #: `LOWERCASE_PROSE` (blanked by `RETAINED_MENTION_TYPES`, so it never reached a
+    #: prompt) and `INDIRECT` (unproducible once bundles cover only the full-name
+    #: proposer). Byte-equality is replaced by `composed`'s label check, which compares
+    #: what the prompt actually carries over every (component, sentence) pair.
     touched = {"<docstring>", "_VARIANT_NAME", "ASK_ATTEMPTS", "__init__",
+               "_classify_mention_typed",
                "_run_full_name_linker", "SKIP_QUALIFIED", "_named_spans",
                "_writes_name", "_extract_named_mentions", "_scan_all",
                "_covering_names", "_only_inside_another_name", "_scan",
@@ -232,6 +240,15 @@ def composed(project, sentences, components, sent_map, name_to_id, aliases, tag)
     # field rather than by identity of their type.
     check(fields == want_fields,
           f"{label}: the evidence bundles are the head's ({len(fields)})")
+
+    # The pruned classifier, checked where the byte comparison no longer runs: over
+    # every (component, sentence) pair, not only the pairs a candidate exists for.
+    labels = {(c.name, s.number): arm._retained_mention_label(c.name, s.text)
+              for c in components for s in sentences}
+    want_labels = {(c.name, s.number): base._retained_mention_label(c.name, s.text)
+                   for c in components for s in sentences}
+    check(labels == want_labels,
+          f"{label}: the retained mention label is the head's ({len(labels)} pairs)")
 
 
 def shortlist_and_prompt(project, sentences, components, sent_map, comp_names):

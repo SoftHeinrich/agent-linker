@@ -1101,7 +1101,7 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   file (`.planning/research/ARCHITECTURE.md`). `s_linker92`, `s_linker92a` and
   `s_linker109` are untouched and remain the arms this ledger records; `s_linker111`,
   `s_linker112`, `s_linker114` and `s_linker110_onecall` still subclass `SLinker110`.
-  `pilot/test_s110_shortlist.py` (235 checks, no calls) re-checks the inlining block
+  `pilot/test_s110_shortlist.py` (244 checks, no calls) re-checks the inlining block
   by block against all three sources and the composed behaviour against them over
   five projects, under an empty alias table and a populated one.
 - **The policy is about the approach, not the plumbing** (2026-09-03). Eleven blocks
@@ -1120,6 +1120,24 @@ invariants `pilot/test_s109_nesting.py` (129 checks).
   goes 224 -> 235, not 224 -> 213. Report:
   `../results/linker_infra_refactor/README.md`. **No E2E owed; the head does not
   move.**
+- **`MentionType` is pruned to three members in the head** (2026-09-04). `s_linker92`
+  declares five; two of them cannot reach a prompt from this file. `LOWERCASE_PROSE` is
+  blanked by `RETAINED_MENTION_TYPES` -- **216 of 1326 evidence lines** over the six
+  consolidation E2E runs are its cases and every one printed nothing -- and `INDIRECT`
+  cannot be produced at all, because `s_linker110` builds evidence bundles only for the
+  full-name proposer's candidates and that proposer emits a pair only when the
+  classifier's own predicate matched. Verified at level 1: **530 candidates over five
+  projects x three alias tables (empty, a recorded run's, one lowercase term per
+  component), 0 classified `None`**. The case `LOWERCASE_PROSE` named now returns
+  `PROPER_STANDALONE`, which no caller distinguishes from it, and the unreachable
+  fallback returns `None`, which `_retained_mention_label` already blanks. **No prompt
+  byte moves and no E2E is owed** -- `_retained_mention_label` agrees with
+  `s_linker92`'s over **every (component, sentence) pair** of all five projects under an
+  empty alias table and a populated one, which is the check that replaces byte-equality
+  for that one block in `test_s110_shortlist.py` (235 -> 244; the byte comparison still
+  runs on every other block). This is the **only** block of the file exempt from
+  "not a marked delta, therefore `s_linker92`'s bytes", and the exemption is named in
+  both the module docstring and the test's `touched` set.
 - **RQ4's floor arm is `s_linker110_onecall`, alone.** `s_linker110_noevidence` and
   `s_linker110_nocoderef` are killed -- modules, invariant tests, registrations and
   `pilot/run_noevidence_e2e.sh`, the batch runner, all gone. Nothing in the paper read
