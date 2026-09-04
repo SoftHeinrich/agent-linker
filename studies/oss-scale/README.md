@@ -368,3 +368,155 @@ is refuted semantically as well as syntactically: 184/2,536 correct, 107 more si
   paper needs); the crate grouping into ~12 maintainer-confirmed components (design 7),
   so the sibling confusions can be scored at both granularities; co-change is not a
   scalable source on rustc and should be tried on PostgreSQL/Linux instead.
+  *Partly closed on 2026-09-04*: §9.4 and §9.6 audit the recipe against two
+  developer-written assignments (Linux `MAINTAINERS`, PostgreSQL in-tree READMEs) instead
+  of paid annotators — 0.784 and 0.869 of sentences put the human owner in ABOUT, 20 of 22
+  documents vote for it.
+
+## 9. Where the recall goes: surface strata, coreference, and a human audit (2026-09-04)
+
+§8 split the gold into *explicit* (crate named verbatim) and *implicit*. That split was too
+coarse: it counts "the borrow checker" as implicit even though a matcher working on the
+component name alone can fire on it. `semgold/surface.py` re-splits by what surface of the
+name the sentence carries, using one generic morphological rule — a crate-id token (minus
+the vendor prefix every component shares) and a sentence token that agree on their first
+four characters. No word lists.
+
+### 9.1 Three strata, and where s110 lives (`reports/semgold_surface_strata.txt`)
+
+| stratum | gold_plus pairs | share |
+|---|---|---|
+| verbatim (`rustc_borrowck`) | 147 | 0.111 |
+| name-echo ("the borrow checker", "MIR", "name resolution") | 504 | 0.380 |
+| no-surface (only meaning connects them) | 676 | 0.509 |
+
+| view | links | P | R | R verbatim | R name-echo | R no-surface |
+|---|---|---|---|---|---|---|
+| all stages | 3,176 | 0.143 | 0.342 | 0.973 | 0.530 | **0.065** |
+| full_name | 618 | 0.426 | 0.198 | 0.973 | 0.167 | 0.053 |
+| partial_name | 2,536 | 0.073 | 0.139 | 0.000 | 0.363 | 0.001 |
+| coreference | 22 | 0.318 | 0.005 | 0.000 | 0.000 | 0.010 |
+
+Three things this changes:
+
+* The "full-name" stage is not a literal matcher — **392 of its 618 links (63%) are not a
+  verbatim occurrence** of the id. It is already doing name-word paraphrase, which is why it
+  reaches part of the echo stratum.
+* The partial-name stage, refuted three times on precision, is **the only stage covering the
+  name-echo stratum** (R 0.363 there against full-name's 0.167). Dropping it still wins on F1,
+  but the honest statement is that it buys echo recall at P 0.073, and nothing replaces it.
+* Half the gold has no name surface at all and the whole pipeline recovers 6.5% of it. That
+  is the tail, stated in one number.
+
+### 9.2 Coreference: the ceiling is the design, not the prompt (`semgold/coref_headroom.py`)
+
+s110's coreference stage resolves a referring expression to a component that an **earlier
+sentence names**; `_prompt_coref` is handed the "NAMED BEFORE THIS CASE" list, so no
+antecedent means no link. Against the semantic gold:
+
+| antecedent must be … | share of no-surface gold reachable, window 3 | anywhere earlier in chapter |
+|---|---|---|
+| a literal crate id | 0.109 | 0.451 |
+| any name echo | **0.479** | **0.846** |
+
+With literal antecedents, **60.5% of implicit gold has no preceding mention in the chapter
+at all** (514 pairs whose crate is never named in the chapter; 211 gold pairs involve crates
+never named anywhere in the document, and only 33 of 79 crates are ever named). The stage
+produced 22 links and 7 true ones — 5.6% of even the narrow literal-antecedent ceiling.
+
+The cheap fix is not a better coref prompt, it is a wider antecedent: name echoes are already
+what the linker's own stages fire on, and they raise the reachable share of the hard stratum
+from 0.11 to 0.48. A sticky-topic baseline (propagate every naming sentence forward K
+sentences, no LLM at all) is a useful yardstick — K=0: P 0.628 R 0.111; K=3: P 0.370 R 0.206;
+K=10: P 0.261 R 0.310; whole chapter: P 0.104 R 0.613. The pipeline's all-stages point
+(P 0.143, R 0.342) sits *below* the K=10 line.
+
+### 9.3 Developer-annotated links in the wild (`DATA-SOURCES.md`)
+
+Where do developers already record which component a piece of prose belongs to, as part of
+normal work? Four patterns generalise: an **ownership registry** (components with their code
+*and doc* paths), **per-directory metadata**, a **doc filed inside the unit it describes**, and
+**explicit citation directives**. The first three do not say what a sentence names, they say
+what a document belongs to — so they escape the anchor bias §8 measured. Measured, not quoted:
+
+| source | measured | what it gives |
+|---|---|---|
+| Linux `MAINTAINERS` | 3,395 subsystems, **1,715 with `Documentation/` paths**, 2,432 doc patterns, **607 docs owned by exactly one** | doc file → component + its code paths |
+| Chromium `DIR_METADATA` | ≥525 files (listing truncated) | directory → component, with `docs/*.md` in the same directories |
+| Mozilla `mots.yaml` | 163 modules, 149 with authored descriptions | component model with prose, for free |
+| `CODEOWNERS` (grafana) | 1,276 path rules, 51 teams | path → team, in any repo that keeps one |
+| rust `triagebot.toml` | 8 compiler autolabels, 52 path descriptions | label → crate, for this very system |
+| PostgreSQL `src/**/README` | 91 in-tree design documents | prose already filed under its module |
+| `.. kernel-doc::` / Sphinx `automodule` / Doxygen `@ingroup` | few hundred / thousands / uneven | explicit citations — votes, never gold |
+| Bugzilla / JIRA / `area/*` labels | 10^5 reports | text → component, but bug text |
+
+### 9.4 The audit: our recipe against Linux `MAINTAINERS` (`linux/`)
+
+12 documentation files that exactly one subsystem claims, 383 sentences, candidates by BM25
+over 3,282 subsystem profiles, the §8 ABOUT/REFERS prompt, one family (terra). The annotator
+is never shown the owner.
+
+* **owner among the ABOUT labels: 298/380 sentences = 0.784**; 0.879 of the sentences that got
+  any ABOUT; 0.93 ABOUT labels per sentence, so not a yes-to-everything labeller.
+* **10 of 12 documents** have the human owner as their most-voted subsystem.
+* Both misses are ownership-vs-content disagreements (`dlmfs.rst` is maintained by OCFS2 but is
+  about the DLM; `afbc.rst` is maintained by a DRM driver but describes a buffer format) — the
+  human source is *who maintains the file*, which is not exactly aboutness.
+
+This is the external check §8.4 was missing, on a system with no relation to rustc, against a
+mapping written by maintainers for their own use.
+
+It also produced the most actionable number of the round: BM25 finds the human owner in the
+top 12 of 3,282 for **0.346** of 5-sentence batches but **0.750** of whole documents. Same
+index, same components, only the query changes. Candidate retrieval belongs at document level;
+judging stays at sentence level.
+
+### 9.5 Coreference, fixed: topic propagation with a judge (`semgold/topic_probe.py`)
+
+§9.2 says the coreference stage's ceiling is its antecedent gate, not its prompt. This tests
+the replacement without touching the linker: take every link the full-name stage made, propose
+the same component for the next K sentences of the chapter, and put each proposal in front of
+one judging call ("is the target still making a claim about this component, given the sentence
+that established it?"). No new retrieval, no new knowledge — only a wider antecedent.
+
+Three runs of the judge (cache salts `""`, `r2`, `r3`), k=3, gold_plus:
+
+| view | links | TP | P | R | F1 |
+|---|---|---|---|---|---|
+| s110 coreference stage | 22 | 7 | 0.318 | 0.005 | 0.010 |
+| topic propagation, judged | 214 / 225 / 219 | 99 / 97 / 102 | 0.463 / 0.431 / 0.466 | 0.075 | 0.128 |
+| full-name stage alone | 618 | 263 | 0.426 | 0.198 | 0.270 |
+| **full-name + topic propagation** | **832 / 843 / 837** | **362 / 360 / 365** | **0.435** | **0.273** | **0.335** |
+| all s110 stages | 3,176 | 454 | 0.143 | 0.342 | 0.202 |
+| all s110 stages + topic propagation | 3,390 | 553 | 0.163 | 0.417 | 0.234 |
+
+* 14x the true links of the stage it replaces, at *higher* precision than the full-name stage
+  that seeded it (0.46 vs 0.43), and the three runs agree to +/-3 links and +/-3 true links --
+  well outside the +/-55-link coreference noise this project measured on the small benchmark.
+* +6.5 pp F1 on the precision-side arm (full-name only: 0.270 -> 0.335) for 107 calls.
+* k=5 proposes 1,568 instead of 1,066 and the judge approves 275: recall +0.007, precision
+  -0.04, F1 unchanged (0.335). k=3 is the knee.
+* All of it lands in the no-surface stratum, which is where §9.1 says the tail is.
+
+The verdict on coreference is therefore not "it does not work at scale" but **"the antecedent
+gate, not the resolver, is what fails"** -- and the gate is cheap to widen.
+
+### 9.6 Second audit, second pattern: PostgreSQL in-tree READMEs (`postgres/`)
+
+The Linux audit tests an *ownership registry*. PostgreSQL tests the other common in-the-wild
+pattern — a design document filed **inside** the directory it describes (42 such READMEs in C
+source directories). Components are the 141 source directories with at least two C files; same
+prompt, same scorer, 10 documents, 278 sentences.
+
+| | Linux `MAINTAINERS` | PostgreSQL READMEs |
+|---|---|---|
+| components in the index | 3,282 | 141 |
+| owner among ABOUT | 0.784 | **0.869** |
+| documents voting for the owner | 10/12 | **10/10** |
+| BM25 owner in top-12, per sentence batch | 0.346 | 0.831 |
+| BM25 owner in top-12, per document | 0.750 | 1.000 |
+
+The recipe holds on a C codebase and on design notes rather than a guide, and the gap between
+the two audits is index size, not labelling — the same failure mode as the rustc partial-name
+stage. Residual misses in both are content-vs-placement disagreements, which is the known limit
+of any human source that records *where code lives* rather than *what prose is about*.

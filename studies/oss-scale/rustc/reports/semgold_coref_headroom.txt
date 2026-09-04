@@ -1,0 +1,65 @@
+$ coref_headroom.py --gold gold_plus --links s_linker110_rustc_core_links.csv
+gold gold_plus: 1327 pairs, explicit 147, implicit 1180
+
+== implicit gold: sentences back to nearest preceding mention of the same crate (same chapter)
+  within  1 sentences:    52  ceiling recall on implicit 0.044  on all gold 0.150
+  within  2 sentences:    95  ceiling recall on implicit 0.081  on all gold 0.182
+  within  3 sentences:   126  ceiling recall on implicit 0.107  on all gold 0.206
+  within  5 sentences:   172  ceiling recall on implicit 0.146  on all gold 0.240
+  within 10 sentences:   264  ceiling recall on implicit 0.224  on all gold 0.310
+  within 20 sentences:   362  ceiling recall on implicit 0.307  on all gold 0.384
+  within 50 sentences:   436  ceiling recall on implicit 0.369  on all gold 0.439
+  anywhere earlier in chapter:   466  (0.395 of implicit)
+  NO preceding mention in chapter:   714  (0.605) -> unreachable by any antecedent-based coreference
+    of those: named only later in the chapter 200, never named in the chapter 514
+
+== surface of implicit gold sentences
+  opens with a pronoun/demonstrative: 226 (0.192)
+  of the 126 pairs reachable within 3 sentences, 27 open with one (0.214)
+
+== sticky-topic baseline: every sentence that names a crate propagates it forward K sentences
+     K   links     TP      P      R     F1
+     0     234    147  0.628  0.111  0.188
+     1     420    199  0.474  0.150  0.228
+     2     587    242  0.412  0.182  0.253
+     3     738    273  0.370  0.206  0.264
+     5    1007    319  0.317  0.240  0.273
+    10    1574    411  0.261  0.310  0.283
+  chapter    7800    813  0.104  0.613  0.178
+
+== linker coreference stage: 22 links, TP 7, P 0.318, R 0.005
+  of them on implicit gold pairs: 7
+  it takes 7 of the 126 pairs a 3-sentence-window antecedent resolver could take (0.056)
+
+$ coref_headroom.py --gold gold --links ...
+gold gold: 1236 pairs, explicit 126, implicit 1110
+
+== implicit gold: sentences back to nearest preceding mention of the same crate (same chapter)
+  within  1 sentences:    50  ceiling recall on implicit 0.045  on all gold 0.142
+  within  2 sentences:    91  ceiling recall on implicit 0.082  on all gold 0.176
+  within  3 sentences:   120  ceiling recall on implicit 0.108  on all gold 0.199
+  within  5 sentences:   163  ceiling recall on implicit 0.147  on all gold 0.234
+  within 10 sentences:   252  ceiling recall on implicit 0.227  on all gold 0.306
+  within 20 sentences:   347  ceiling recall on implicit 0.313  on all gold 0.383
+  within 50 sentences:   416  ceiling recall on implicit 0.375  on all gold 0.439
+  anywhere earlier in chapter:   445  (0.401 of implicit)
+  NO preceding mention in chapter:   665  (0.599) -> unreachable by any antecedent-based coreference
+    of those: named only later in the chapter 192, never named in the chapter 473
+
+== surface of implicit gold sentences
+  opens with a pronoun/demonstrative: 219 (0.197)
+  of the 120 pairs reachable within 3 sentences, 27 open with one (0.225)
+
+== sticky-topic baseline: every sentence that names a crate propagates it forward K sentences
+     K   links     TP      P      R     F1
+     0     234    126  0.538  0.102  0.171
+     1     420    176  0.419  0.142  0.213
+     2     587    217  0.370  0.176  0.238
+     3     738    246  0.333  0.199  0.249
+     5    1007    289  0.287  0.234  0.258
+    10    1574    378  0.240  0.306  0.269
+  chapter    7800    763  0.098  0.617  0.169
+
+== linker coreference stage: 22 links, TP 7, P 0.318, R 0.006
+  of them on implicit gold pairs: 7
+  it takes 7 of the 120 pairs a 3-sentence-window antecedent resolver could take (0.058)
