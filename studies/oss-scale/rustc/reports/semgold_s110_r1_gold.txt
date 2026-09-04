@@ -1,0 +1,111 @@
+gold tier gold: 1236 pairs on 1146 sentences; explicit 126 implicit 1110; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                           3176   424  0.134  0.343  0.192  0.139  0.976  0.271        171
+stage coreference                      22     7  0.318  0.006  0.011  0.318  0.000  0.006          0
+stage full_name                       618   237  0.383  0.192  0.256  0.456  0.976  0.103         64
+stage partial_name                   2536   180  0.071  0.146  0.095  0.072  0.000  0.162        107
+minus partial-name stage              640   244  0.381  0.197  0.260  0.450  0.976  0.109         64
+
+== 25 of 235 full_name links that no annotator labelled (hard FPs)
+[317] -> rustc :: rustc has to serialize and deserialize various data during compilation.
+       openai: about=[] refers=[] | This is a general statement about the compiler as a whole rather than a specific component
+       claude: about=['rustc_serialize'] refers=[] | general serialize/deserialize need during compilation, matches rustc_serialize's role
+[1013] -> rustc :: The _construction_ of the error is far away from where it is _emitted_, Invoking `rustc` with `-Z track-diagnostics` will print error creation locations alongsi
+       openai: about=['rustc_errors'] refers=[] | rustc_errors implements diagnostic construction, emission, and diagnostic-location trackin
+       claude: about=['rustc_errors'] refers=[] | track-diagnostics flag prints error creation site, part of error emission machinery
+[906] -> rustc_driver :: Where possible, using `rustc_driver` rather than `rustc_interface` is recommended.
+       openai: about=[] refers=['rustc_driver_impl', 'rustc_interface'] | This is a user-facing recommendation about choosing APIs rather than a description of eith
+       claude: about=['rustc_driver_impl', 'rustc_interface'] refers=[] | recommendation compares two crates' usage
+[142] -> rustc :: `rustc` itself is written in Rust.
+       openai: about=[] refers=[] | This is a system-wide fact about rustc rather than a responsibility of a particular crate.
+       claude: about=[] refers=[] | system-wide fact, not about any one component
+[623] -> rustc :: To give useful errors, rustc suggests importing paths into scope if they're not found.
+       openai: about=['rustc_resolve'] refers=[] | Name resolution constructs import suggestions when a path cannot be resolved.
+       claude: about=['rustc_resolve'] refers=[] | resolve emits import-suggestion diagnostics
+[1057] -> rustc_expand :: Example: `keyword_idents` checks for identifiers that will become Early lint pass: Works on AST nodes after macro expansion and name resolution, just before AST
+       openai: about=['rustc_lint'] refers=['rustc_ast', 'rustc_resolve', 'rustc_ast_lowering'] | The lint crate implements early lint passes, while the sentence situates them relative to 
+       claude: about=['rustc_lint'] refers=['rustc_ast_lowering'] | describes early lint pass in rustc_lint; AST lowering just named as later step
+[805] -> rustc_middle :: In general, a MIR constant value (`mir::ConstValue`) was computed by evaluating some constant the user wrote.
+       openai: about=['rustc_const_eval'] refers=['rustc_middle'] | Constant evaluation is implemented by rustc_const_eval, while rustc_middle defines the MIR
+       claude: about=['rustc_middle'] refers=[] | describes ConstValue's origin as computed const, defined in rustc_middle
+[1089] -> rustc :: To support this, lint declarations can contain a feature gate like so: The use of the term `future-incompatible` within the compiler has a slightly broader mean
+       openai: about=['rustc_lint_defs'] refers=[] | Lint declarations and their feature-gate metadata are defined by the lint-definition crate
+       claude: about=['rustc_lint_defs'] refers=['rustc_feature'] | lint decl feature gate syntax defined in rustc_lint_defs, references feature gate concept 
+[969] -> rustc :: When talking about the compiler, call it `the compiler`, not `Rust` or `rustc`.
+       openai: about=[] refers=[] | This is a terminology convention for the guide rather than a statement about compiler code
+       claude: about=[] refers=[] | naming convention guidance, not component behavior
+[71] -> rustc :: Limitations of other tools: `rustc` uses LLVM in its backend, and LLVM has some strengths we leverage and some aspects we need to work around.
+       openai: about=['rustc_codegen_llvm'] refers=[] | The LLVM codegen backend implements rustc's use of LLVM and accommodates its constraints.
+       claude: about=['rustc_codegen_llvm'] refers=[] | sentence about LLVM backend strengths/limits, backend crate ABOUT.
+[1059] -> rustc_hir :: Example: The `unused_parens` lint checks for parenthesized-expressions Late lint pass: Works on HIR nodes, towards the end of analysis (after borrow checking, e
+       openai: about=['rustc_lint'] refers=['rustc_middle'] | It describes late lint passes, while HIR nodes are data structures defined by rustc_middle
+       claude: about=['rustc_lint'] refers=[] | describes late lint pass working on HIR with full analysis
+[20] -> rustc_proc_macro :: The `lexer` preserves full fidelity information for both IDEs and procedural macros (sometimes referred to as "proc-macros").
+       openai: about=['rustc_lexer'] refers=[] | The low-level lexer retains original token text and related fidelity needed by tooling and
+       claude: about=['rustc_lexer'] refers=[] | full fidelity info preserved by rustc_lexer for IDEs/proc-macros
+[1625] -> rustc :: Monomorphization is the first step in the backend of the Rust compiler.
+       openai: about=['rustc_monomorphize'] refers=[] | This crate implements monomorphization as the backend's initial phase.
+       claude: about=['rustc_monomorphize'] refers=[] | sentence describes monomorphization phase, implemented by rustc_monomorphize
+[773] -> rustc_middle :: We can use `rustc filename.rs -Z mir-opt-level=0 --emit mir` to view unoptimized MIR.
+       openai: about=['rustc_driver_impl'] refers=[] | The compiler driver implements command-line options and MIR emission requested by this inv
+       claude: about=['rustc_driver_impl'] refers=[] | describes CLI flag usage to control MIR emission
+[361] -> rustc_hir :: Other parts, such as lexical parsing, HIR lowering, and macro expansion, are still executed in serial mode.
+       openai: about=['rustc_parse', 'rustc_ast_lowering', 'rustc_expand'] refers=[] | These crates implement lexical parsing, AST-to-HIR lowering, and macro expansion respectiv
+       claude: about=['rustc_parse', 'rustc_ast_lowering', 'rustc_expand'] refers=[] | names three still-serial compiler phases, each implemented by its own crate
+[907] -> rustc_driver :: The main entry point of `rustc_driver` is `rustc_driver::run_compiler`.
+       openai: about=['rustc_driver_impl'] refers=[] | run_compiler is the primary compiler-driving entry point implemented by the driver impleme
+       claude: about=['rustc_driver_impl'] refers=[] | entry point run_compiler lives in driver crate
+[313] -> rustc_hir :: The Rust compiler is a fairly large program containing lots of big data structures (e.g. the Abstract Syntax Tree (AST), High-Level Intermediate Representation 
+       openai: about=[] refers=[] | This is a general observation about memory use across the compiler rather than a specific 
+       claude: about=['rustc_middle'] refers=['rustc_ast', 'rustc_arena'] | arena-heavy AST/HIR/type system data structures defined in rustc_ast/rustc_middle, sentenc
+[223] -> rustc_codegen_ssa :: But computing the list of codegen-units would invoke some subquery that returns the list of all modules defined in the Rust source.
+       openai: about=['rustc_query_impl'] refers=['rustc_resolve'] | It describes a subquery dependency; module discovery is merely the information returned by
+       claude: about=['rustc_query_impl'] refers=[] | subquery listing modules is query-driven flow
+[1348] -> rustc_middle :: The NLL solver (actually, the MIR type-checker) does things slightly differently.
+       openai: about=['rustc_borrowck'] refers=[] | The NLL solver is implemented as part of MIR type checking and borrow checking.
+       claude: about=['rustc_borrowck'] refers=[] | NLL solver = MIR type-checker, part of borrowck crate
+[1658] -> rustc_codegen_ssa :: Code generation (or "codegen") is the part of the compiler that actually generates an executable binary.
+       openai: about=[] refers=[] | This is a general definition of code generation rather than a statement about a particular
+       claude: about=[] refers=[] | general def of codegen, no specific component
+[905] -> rustc_interface :: It acts as the glue for running the various phases of the compiler in the correct order, using the interface defined in the `rustc_interface` crate.
+       openai: about=['rustc_driver_impl'] refers=['rustc_interface'] | The driver implementation orchestrates compiler phases, while rustc_interface only supplie
+       claude: about=['rustc_driver_impl', 'rustc_interface'] refers=[] | driver orchestrates phases using interface crate's API
+[906] -> rustc_interface :: Where possible, using `rustc_driver` rather than `rustc_interface` is recommended.
+       openai: about=[] refers=['rustc_driver_impl', 'rustc_interface'] | This is a user-facing recommendation about choosing APIs rather than a description of eith
+       claude: about=['rustc_driver_impl', 'rustc_interface'] refers=[] | recommendation compares two crates' usage
+[1695] -> rustc :: This file format is specific to `rustc`, and may change over time.
+       openai: about=['rustc_codegen_ssa'] refers=[] | The rustc-specific rlib output format is maintained by the code generation and linking mac
+       claude: about=['rustc_metadata'] refers=[] | format specificity/versioning owned by metadata crate
+[675] -> rustc_ast :: Whereas in the AST the crate data structure basically just contains the root module, the HIR `Crate` structure contains a number of maps and other things that s
+       openai: about=['rustc_ast', 'rustc_hir'] refers=[] | It compares the structural organization of AST and HIR crate data.
+       claude: about=['rustc_hir'] refers=['rustc_ast', 'rustc_public'] | contrasts AST vs HIR Crate struct organization, about HIR's design
+[1093] -> rustc :: This is the meaning that rustc exclusively exposes to users as "future incompatible".
+       openai: about=['rustc_lint_defs'] refers=[] | Future-incompatible status is lint metadata defined by the lint definitions infrastructure
+       claude: about=[] refers=[] | general remark about how rustc categorizes lints for users, no specific component implemen
+
+== 25 of 809 implicit gold pairs the linker missed
+[442] rustc_expand :: This happens later, as we will see in the chapter: Name Resolution. _Eager expansion_ means we expand the arguments of a macro invocation before the macro invocation itse
+[577] rustc_resolve :: This is required to know what to even expand.
+[1454] rustc_trait_selection :: However, Coherence also results in an error if any other impls **could** exist, even if they are currently unknown.
+[444] rustc_expand :: As an example, consider the following: A lazy-expansion would expand `foo!` first.
+[1289] rustc_infer :: The main purpose of the inference context is to house a bunch of **inference variables** – these represent types or regions whose precise value is not yet known, but will
+[899] rustc_const_eval :: It wants to read the result produced by the `mir_const` query.
+[1678] rustc_codegen_ssa :: Multiple "modules" can be codegened at the same time to aid in multi-core utilization.
+[45] rustc_monomorphize :: To do this, we need to collect a list of what concrete types to generate code for.
+[1510] rustc_mir_dataflow :: The "before" effects are applied immediately before the unprefixed effect **regardless of the direction of the analysis**.
+[1740] rustc_symbol_mangling :: By default, all Rust symbols are mangled and incorporate the stable crate id.
+[261] rustc_query_impl :: The only exception is when a crate needs to provide special handling for external queries, in which case it would implement both local and external providers.
+[455] rustc_expand :: `Annotatable` - a piece of AST that can be an attribute target, almost the same thing as `AstFragment` except for types and patterns that can be produced by macros but ca
+[1710] rustc_metadata :: This file is created if the `--emit=metadata` CLI option is used.
+[1389] rustc_trait_selection :: To avoid ambiguity, we want to find exactly one candidate that is definitively applicable.
+[135] rustc_codegen_ssa :: Currently, there is only one part of rustc that is parallel by default: code generation.
+[731] rustc_resolve :: This has the advantage of creating a way to find the `DefId` of something via its `NodeId`.
+[1746] rustc_metadata :: To load each external crate, the `CStore` uses a `CrateLocator` to actually find the correct files for one specific crate.
+[104] rustc_middle :: The first big implementation choice is Rust's use of the _query_ system in its compiler.
+[644] rustc_feature :: They cannot be renamed.
+[1199] rustc_middle :: We always hide them within `Ty` and skip over it via `Deref` impls or methods.
+[1393] rustc_trait_selection :: If matching succeeds then we add it to a set of candidates.
+[1611] rustc_const_eval :: Statics are special; all other functions do not represent statics correctly and have thus assertions preventing their use on statics.
+[894] rustc_mir_transform :: With the stealing mechanism, the rectangle-shape queries must be performed before any stadium-shape queries, that have an equal or larger height in the dependency tree, e
+[1602] rustc_const_eval :: For a specific item (constant/static/array length) this happens after the MIR for the item is borrow-checked and optimized.
+[1758] rustc_metadata :: As early as it can, `rustc` will save the `rmeta` file to disk before it continues to the code generation phase.

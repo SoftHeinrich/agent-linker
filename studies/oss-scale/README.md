@@ -216,3 +216,155 @@ Next steps, in order:
    baseline BM25 on crate name + aliases.
 5. Second system for the drift story: Linux `Documentation/mm/` vs the 20 MEMORY
    MANAGEMENT entries, ~200 dangling paths as T-b gold (`candidates/linux.md`).
+
+## 8. Semantic gold: from anchors to a label model (2026-09-04)
+
+The §6 gold was rejected for the right reason: a hyperlink or a verbatim crate name is
+a *syntactic* event, it labels 19% of the sentences, and it is exactly the event the
+full-name stage detects, so scoring against it is circular for the explicit part and
+blind for the implicit part. The literature (`LITERATURE.md`, designs 1–3) says the
+same thing in older words: hyperlinks are distant supervision for *training*, never a
+test set (Mintz 2009; Rath ICSE'18: ~40% of true links carry no anchor; Bird FSE'09:
+anchored links are a biased sample). What replaces it is a **label model over semantic
+sources**, each of which may abstain, with the anchors demoted to one vote.
+
+### 8.1 Sources (`rustc/semgold/`, all reproducible from the cache)
+
+* **Component self-descriptions, project-authored.** Each crate's `//!` crate doc,
+  README, module-level `//!` docs, public module names, most-referenced public items and
+  source-file names (`profiles.py`): 41/79 crates carry a crate doc, 54 carry module
+  docs, 18 small utility crates are described only by their names, items and files.
+  This is what the *annotator* sees and the *linker* never sees (the linker gets the
+  flat id/name list; §1).
+* **Symbol grounding.** 14,591 public identifiers → defining crate(s) (`symbols.py`);
+  700 sentences name an identifier, 371 resolve to ≤3 crates. A deterministic code fact,
+  used as annotator evidence and as a vote ("`Diag` is defined in rustc_errors").
+* **Grounded LLM annotation, sentence view** (`annotate.py`). Two model families —
+  the linker's own (gpt-5.6-terra, flex, no reasoning) and another (Claude Sonnet via
+  the local CLI) — label every one of the 1,762 sentences, five at a time with ±2
+  sentences of context, the chapter, the resolved symbols, BM25-retrieved candidate
+  profiles (top-8 contains the anchor crate for 269/341 anchored sentences; with
+  symbols 308/341) and the full 79-name list. Labels per (sentence, crate): **ABOUT**
+  (maintainers of the crate would have to fix the sentence if the crate changed) or
+  **REFERS** (an item of the crate is named, the sentence is about something else).
+  Cost: 364 calls, 1.65M prompt tokens, ~10 min per terra run; ~35 min for the CLI run.
+  Three terra runs (fresh samples under a cache salt) give a per-pair consistency score.
+* **Grounded LLM annotation, crate view** (`annotate_crateview.py`). The opposite
+  direction, component first: given one crate's profile and one whole chapter, list the
+  sentences ABOUT it (299 (chapter, crate) prompts). Different failure mode, third vote.
+* **Co-change** (`cochange.py`): commits that edit a core chapter and 1–3 crates in the
+  rust monorepo. The guide's history is mirrored back to 2018 (1,144 commits touch the
+  32 chapters) but code co-changes exist only since the 2025 subtree merge: 15 focused
+  commits, 11 sentence-level pairs. Kept as an independent check, not as a source of
+  scale on this system.
+* **Anchors** (§6 gold, 393 pairs): now one vote.
+
+### 8.2 Label model and agreement (`label_model.py`, `out/label_model_report.json`)
+
+| tier | definition | pairs | sentences |
+|---|---|---|---|
+| gold | ABOUT by both families | 1,236 | 1,146 |
+| gold_plus | gold ∪ (ABOUT by one family ∧ symbol/anchor/co-change vote) | **1,327** | **1,200** (68% of the document), 55 crates |
+| silver | ABOUT by one family, unsupported | 681 | — |
+| refers | REFERS by either, not ABOUT | 427 | — |
+
+Agreement between the two families: Cohen's κ **0.76** on the full sentence × crate
+grid (139k cells), pair-level Jaccard 0.62, exact ABOUT-set agreement per sentence 0.68,
+"has any ABOUT" agreement 0.87. Terra's three runs reproduce 1,509 of its 2,022 union
+pairs in all three (75%); 1,214 of the 1,327 gold_plus pairs (91%) have full
+consistency. Both exceed Ahmed et al.'s MSR'25 suitability gate (model–model α > 0.5)
+and land between Ahmed's SE tasks and Alor et al.'s κ 0.94 on a hand-made doc→code set.
+
+Is the jury just re-detecting anchors? ABOUT rate by sentence surface (gold_plus):
+anchored 0.965, unanchored with a code span 0.665, unanchored plain prose 0.578. The
+plain-prose rate is the number the anchors could never give: more than half of the
+sentences that name nothing are still ABOUT a crate, and two families agree on which.
+
+Anchors re-judged semantically (`validate.py`): of the 312 item-link pairs (the
+"defining-crate code facts" §6 distrusted) the jury calls 218 gold, 35 gold_plus, 30
+REFERS, 29 nothing — so the item links were mostly right, and the 10% that are REFERS
+are exactly the `Span`/`Symbol`/`DefId` mentions. Of 11 co-change pairs, 6 are in
+gold_plus, 1 REFERS, 4 unlabelled.
+
+**Crate view as third vote** (`annotate_crateview.py`, terra, 299 prompts, 0.68M
+tokens): 1,671 pairs on 1,246 sentences; it recovers 78% of gold_plus at precision 0.62
+against gold_plus and 0.78 against "either family said ABOUT" (κ 0.69 vs gold_plus on
+the grid). 331 of its pairs have no sentence-view vote at all — the component-first
+reading finds sentences the sentence-first reading skipped, and those go to the human
+sheet, not into gold. **Three-way gold** (both families ∧ crate view): 980 pairs
+(`gold_semantic_3way.csv`).
+
+### 8.3 What the semantic gold says about s110 (`rescore.py`, same run as §6.1)
+
+| view | links | TP | P | R | F1 | P lenient¹ | R explicit² | R implicit² |
+|---|---|---|---|---|---|---|---|---|
+| all stages | 3,176 | 454 | 0.143 | 0.342 | 0.202 | 0.149 | 0.973 | 0.264 |
+| full-name stage | 618 | 263 | 0.426 | 0.198 | 0.270 | 0.506 | 0.973 | 0.102 |
+| partial-name stage | 2,536 | 184 | 0.073 | 0.139 | 0.095 | 0.073 | 0.000 | 0.156 |
+| minus partial-name | 640 | 270 | 0.422 | 0.203 | 0.275 | 0.498 | 0.973 | 0.108 |
+
+¹ REFERS pairs not counted as false positives. ² gold_plus split by whether the sentence
+contains the crate name verbatim: **147 explicit vs 1,180 implicit** pairs.
+
+Robustness to the choice of gold (full-name stage; `reports/semgold_s110_r1_*.txt`):
+
+| gold | pairs | P | R | F1 | R implicit |
+|---|---|---|---|---|---|
+| anchors (§6) | 393 | 0.320 | 0.504 | 0.392 | 0.156 (link-only) |
+| gold_plus (two families + votes) | 1,327 | 0.426 | 0.198 | 0.270 | 0.102 |
+| gold (both families) | 1,236 | 0.383 | 0.192 | 0.256 | 0.103 |
+| three-way (+ crate view) | 980 | 0.359 | 0.227 | 0.278 | 0.123 |
+| Claude family alone | 1,479 | 0.416 | 0.174 | 0.245 | 0.096 |
+
+Every semantic gold tells the same story; only the anchor gold told a different one.
+
+Three things change relative to §6.1. (i) The recall ceiling moves: the anchor gold
+made s110 look like a 0.50-recall linker; against what the document is actually about
+it is a 0.20-recall linker, because 89% of the gold is implicit and the full-name
+stage finds 10% of that. This is the paper's RQ2 claim ("the standard metric hides
+the tail") measured on 1,180 pairs instead of argued. (ii) Full-name precision drops
+from 0.75 (on anchored sentences) to 0.43: the 209 full-name links no annotator
+labelled are, on a 25-sample read, half the `rustc` entry absorbing "rustc" the system
+(the §7 rule is now a measured need) and half a verbatim word standing for a sibling
+("HIR" → rustc_hir when the sentence is about rustc_hir_typeck; "procedural macros" →
+rustc_proc_macro when the sentence is about the lexer). (iii) The partial-name stage
+is refuted semantically as well as syntactically: 184/2,536 correct, 107 more silver.
+
+### 8.4 Validation status and how this scales
+
+* **Human check.** `out/human_check_sheet.csv`: 255 pairs stratified by tier ×
+  evidence pattern (llm-only, anchor, symbol, multi-source; 40 bm25-top-1 negatives),
+  the no-source stratum over-sampled as design 1 demands. Verdict column is blank; this
+  is the sheet a human fills. Until a human fills it, a **declared stand-in** read all 255 pairs with the source
+  tree, symbol index and chapter open (a Claude-family agent in this session — same family
+  as one annotator, so it is a calibration check, not the paper's number;
+  `out/model_check_sheet.csv`, `reports/semgold_model_check_agreement.txt`):
+
+  | tier | n | judged ABOUT | ABOUT or REFERS |
+  |---|---|---|---|
+  | gold (both families) | 110 | 0.86 | 0.94 |
+  | gold_plus_only (one family + vote) | 35 | 0.60 | 0.94 |
+  | silver (one family, no vote) | 40 | 0.42 | 0.65 |
+  | refers | 30 | 0.13 (0.50 REFERS) | — |
+  | bm25-top-1 negatives | 40 | 0.03 | — |
+
+  The tiers are ordered as designed, the negatives are clean, and the symbol-vote
+  promotion is the weak rule (6/15 ABOUT): a symbol hit plus one family is not enough.
+  Consequence: **cite the strict `gold` tier (1,236 pairs) for precision claims and
+  `gold_plus` only for recall**; the gold-tier disagreements are almost all the
+  defining-crate vs implementing-crate boundary (SVH hashing attributed to
+  rustc_incremental, style guidelines naming an API), i.e. the REFERS line, not noise.
+* **Circularity.** The linker is terra; the gold requires the Claude family to agree,
+  the annotator sees crate self-descriptions and symbols the linker does not, and
+  `gold_semantic_a2only.csv` (Claude alone, 1,479 pairs) exists for a same-family-free
+  re-score. Rule "never hardcode benchmark words" is untouched: profiles are read from
+  the project tree at run time, and the annotator is dataset construction, not the linker.
+* **Scale.** Everything is linear in sentences: ~940 prompt tokens and ~1.7 s of wall
+  time per sentence per annotator run at 6 workers. The full guide (6,522 sentences) is
+  ~40 min per family; Linux `Documentation/mm` (2,541) or Firefox overview (1,029) need
+  only a profile extractor (MAINTAINERS + Kconfig help; mots.yaml descriptions) and a
+  symbol index (ctags). The runner hook, scorer and label model are system-agnostic.
+* **Still open.** Human verdicts on the 255 sheet (κ human–jury is the number the
+  paper needs); the crate grouping into ~12 maintainer-confirmed components (design 7),
+  so the sibling confusions can be scored at both granularities; co-change is not a
+  scalable source on rustc and should be tried on PostgreSQL/Linux instead.

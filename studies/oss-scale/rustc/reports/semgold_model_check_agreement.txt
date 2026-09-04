@@ -1,0 +1,17 @@
+tier             pattern         n   A   R   N  agree-with-tier
+gold             anchor         20  20   0   0  1.00
+gold             llm-only       60  48   5   7  0.80
+gold             multi-source   10   9   1   0  0.90
+gold             symbol         20  18   2   0  0.90
+gold_plus_only   anchor         15  10   5   0  0.67
+gold_plus_only   multi-source    5   5   0   0  1.00
+gold_plus_only   symbol         15   6   7   2  0.40
+none             bm25-top1      40   1   0  39  0.97
+refers           llm-only       15   4   8   3  0.53
+refers           symbol         15   0   7   8  0.47
+silver           llm-only       40  17   9  14  0.42
+per tier: {'gold': '95/110=0.86', 'gold_plus_only': '21/35=0.60', 'none': '39/40=0.97', 'refers': '15/30=0.50', 'silver': '17/40=0.42'}
+overall agreement with tier 187/255 = 0.73
+gold: judged A 0.86  A-or-R 0.94  (n=110)
+gold_plus_only: judged A 0.60  A-or-R 0.94  (n=35)
+silver: judged A 0.42  A-or-R 0.65  (n=40)

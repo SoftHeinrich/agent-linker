@@ -1,0 +1,111 @@
+gold tier gold_plus: 1327 pairs on 1200 sentences; explicit 147 implicit 1180; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                           3176   454  0.143  0.342  0.202  0.149  0.973  0.264        171
+stage coreference                      22     7  0.318  0.005  0.010  0.318  0.000  0.006          0
+stage full_name                       618   263  0.426  0.198  0.270  0.506  0.973  0.102         64
+stage partial_name                   2536   184  0.073  0.139  0.095  0.073  0.000  0.156        107
+minus partial-name stage              640   270  0.422  0.203  0.275  0.498  0.973  0.108         64
+
+== 25 of 209 full_name links that no annotator labelled (hard FPs)
+[403] -> rustc :: `NodeId`s are used in all the `rustc` bits that operate directly on the AST, like macro expansion and name resolution (more on these over the next couple chapte
+       openai: about=['rustc_expand', 'rustc_resolve'] refers=['rustc_ast'] | Macro expansion and name resolution use AST NodeIds, which are defined by rustc_ast.
+       claude: about=['rustc_ast'] refers=[] | NodeId belongs to AST, used across expansion/resolution crates but sentence about NodeId i
+[1178] -> rustc_hir :: After HIR is built, some basic type inference and type checking is done.
+       openai: about=['rustc_hir_typeck', 'rustc_infer'] refers=[] | HIR body type checking performs basic checking while using the inference engine.
+       claude: about=['rustc_hir_analysis', 'rustc_hir_typeck'] refers=[] | describes general type inference/checking phase after HIR, implemented by these crates
+[1072] -> rustc :: This is the mechanism used by Clippy, for example. *Tool* lints are lints with a path prefix like `clippy::` or `rustdoc::`. *Internal* lints are the `rustc::` 
+       openai: about=['rustc_lint'] refers=[] | Tool and internal lint classification and registration are part of the lint system.
+       claude: about=['rustc_lint', 'rustc_driver_impl'] refers=[] | tool/internal lints registered via rustc_lint; driver-registered lints tie to driver creat
+[147] -> rustc :: For example, it means that one of the major users of Rust is the Rust compiler, so we are constantly testing our own software ("eating our own dogfood").
+       openai: about=[] refers=[] | This describes Rust compiler development practice at the system level, not a particular co
+       claude: about=[] refers=[] | meta remark about testing own compiler, no specific component
+[726] -> rustc_hir :: A `NodeId` that will be placed into a HIR structure must be lowered, even if its `HirId` is unused.
+       openai: about=['rustc_ast_lowering'] refers=['rustc_ast', 'rustc_hir_id'] | This states an AST-to-HIR lowering invariant for IDs, while NodeId and HirId are defined e
+       claude: about=['rustc_ast_lowering'] refers=['rustc_ast', 'rustc_hir_id'] | rule about lowering process; NodeId/HirId only named, defined elsewhere
+[1219] -> rustc_middle :: Specifically, this is the case during HIR type checking or MIR borrow checking.
+       openai: about=['rustc_hir_typeck', 'rustc_borrowck'] refers=[] | HIR type checking and MIR borrow checking are the passes identified as operating with the 
+       claude: about=['rustc_hir_typeck', 'rustc_borrowck'] refers=[] | names HIR type checking and MIR borrow checking as the processes with inference context ac
+[904] -> rustc :: The `rustc_driver` is essentially `rustc`'s `main` function.
+       openai: about=['rustc_driver_impl'] refers=[] | The driver implementation crate provides rustc's effective main-function behavior.
+       claude: about=['rustc_driver_impl'] refers=[] | main fn defined and described in driver crate
+[1348] -> rustc_middle :: The NLL solver (actually, the MIR type-checker) does things slightly differently.
+       openai: about=['rustc_borrowck'] refers=[] | The NLL solver is implemented as part of MIR type checking and borrow checking.
+       claude: about=['rustc_borrowck'] refers=[] | NLL solver = MIR type-checker, part of borrowck crate
+[1164] -> rustc :: The HIR in rustc can be thought of as the high-level intermediate representation.
+       openai: about=['rustc_hir'] refers=[] | rustc_hir defines the compiler's HIR datatypes and representation.
+       claude: about=['rustc_hir'] refers=[] | describes HIR as high-level IR, HIR crate's own responsibility
+[74] -> rustc :: As with most compilers, `rustc` uses some intermediate representations (IRs) to facilitate computations.
+       openai: about=[] refers=[] | This is a general compiler-background statement rather than a specific component responsib
+       claude: about=['rustc_middle'] refers=[] | IRs (HIR/THIR/MIR) defined and used, rustc_middle owns IR defs.
+[1223] -> rustc_hir :: This is primarily a concern during HIR type checking and with all types from a `TyCtxt` query (for example from `tcx.type_of()`).
+       openai: about=['rustc_hir_typeck'] refers=['rustc_middle'] | The normalization concern is scoped to HIR type checking, while TyCtxt queries are only me
+       claude: about=['rustc_hir_typeck'] refers=['rustc_middle'] | describes when normalization concern applies during HIR typeck; TyCtxt just named as query
+[20] -> rustc_proc_macro :: The `lexer` preserves full fidelity information for both IDEs and procedural macros (sometimes referred to as "proc-macros").
+       openai: about=['rustc_lexer'] refers=[] | The low-level lexer retains original token text and related fidelity needed by tooling and
+       claude: about=['rustc_lexer'] refers=[] | full fidelity info preserved by rustc_lexer for IDEs/proc-macros
+[898] -> rustc_middle :: As an example, consider MIR const qualification.
+       openai: about=[] refers=['rustc_const_eval'] | This is only an introductory reference to the const-qualification process.
+       claude: about=['rustc_const_eval'] refers=[] | MIR const qualification is check_consts::qualifs in rustc_const_eval.
+[449] -> rustc_ast :: There are some additional helpers for building AST fragments in `rustc_expand::build`.
+       openai: about=['rustc_expand'] refers=[] | The rustc_expand::build module provides helpers for constructing AST fragments.
+       claude: about=['rustc_expand'] refers=[] | Names helper module rustc_expand::build for AST fragment building
+[1089] -> rustc :: To support this, lint declarations can contain a feature gate like so: The use of the term `future-incompatible` within the compiler has a slightly broader mean
+       openai: about=['rustc_lint_defs'] refers=[] | Lint declarations and their feature-gate metadata are defined by the lint-definition crate
+       claude: about=['rustc_lint_defs'] refers=['rustc_feature'] | lint decl feature gate syntax defined in rustc_lint_defs, references feature gate concept 
+[398] -> rustc_lexer :: The AST is defined in `rustc_ast`, along with some definitions for tokens and token streams, data structures/traits for mutating ASTs, and shared definitions fo
+       openai: about=['rustc_ast'] refers=[] | This sentence describes the contents and responsibilities of the rustc_ast crate.
+       claude: about=['rustc_ast'] refers=[] | sentence describes what rustc_ast crate contains, matching its own doc.
+[283] -> rustc :: Generally rustc tries to be pretty careful how it manages memory.
+       openai: about=[] refers=[] | This is a general statement about rustc as a whole rather than a specific component.
+       claude: about=[] refers=[] | general remark about rustc as whole system, no specific component
+[1578] -> rustc_middle :: Rerun `./x test --bless tests/mir-opt/<your-test>.rs` to regenerate the MIR dumps.
+       openai: about=[] refers=[] | This is a general test-command instruction for regenerating dump files.
+       claude: about=['rustc_mir_transform'] refers=[] | Rerunning mir-opt tests regenerates MIR dumps produced by mir_transform passes
+[1659] -> rustc :: Usually, rustc uses LLVM for code generation, but there is also support for Cranelift and GCC.
+       openai: about=['rustc_codegen_llvm', 'rustc_codegen_cranelift', 'rustc_codegen_gcc'] refers=[] | These crates implement rustc's LLVM, Cranelift, and GCC code-generation backend support.
+       claude: about=['rustc_codegen_llvm', 'rustc_codegen_cranelift', 'rustc_codegen_gcc'] refers=[] | names three backends rustc supports
+[1071] -> rustc_driver :: The following terms refer to the different classes of lints generally based on how they are registered. *Built-in* lints are defined inside the compiler source.
+       openai: about=['rustc_lint'] refers=[] | The lint crate implements the registration model and categories of registered lints.
+       claude: about=['rustc_lint'] refers=[] | describes lint registration classes, rustc_lint's registration mechanism
+[1079] -> rustc_ast :: The trait implementation allows you to check certain syntactic constructs as the linter walks the AST.
+       openai: about=['rustc_lint'] refers=[] | rustc_lint runs lint passes over syntax and lets them inspect AST constructs.
+       claude: about=['rustc_lint'] refers=[] | describes lint pass AST-walking behavior, rustc_lint's mechanism
+[1695] -> rustc :: This file format is specific to `rustc`, and may change over time.
+       openai: about=['rustc_codegen_ssa'] refers=[] | The rustc-specific rlib output format is maintained by the code generation and linking mac
+       claude: about=['rustc_metadata'] refers=[] | format specificity/versioning owned by metadata crate
+[756] -> rustc_hir :: It is constructed from HIR.
+       openai: about=['rustc_mir_build'] refers=['rustc_middle'] | rustc_mir_build constructs MIR, while rustc_middle defines the HIR and MIR representations
+       claude: about=['rustc_middle'] refers=[] | construction relation of MIR datatype, same crate defines it
+[1490] -> rustc_middle :: If you work on the MIR, you will frequently come across various flavors of dataflow analysis.
+       openai: about=['rustc_mir_dataflow'] refers=[] | The sentence introduces the dataflow analyses implemented using the MIR dataflow framework
+       claude: about=[] refers=[] | General remark about MIR work, no specific component.
+[161] -> rustc_driver :: The dependency order of these crates is complex, but roughly it is something like this: `rustc` (the binary) calls `rustc_driver::main`.
+       openai: about=['rustc'] refers=['rustc_driver_impl'] | This describes the rustc binary calling the driver's main entry point.
+       claude: about=['rustc', 'rustc_driver_impl'] refers=[] | rustc binary calls rustc_driver::main, describe both
+
+== 25 of 869 implicit gold pairs the linker missed
+[523] rustc_expand :: MBEs have their own parser distinct from the Rust parser.
+[1391] rustc_trait_selection :: The subroutines that decide whether a particular impl/where-clause/etc applies to a particular obligation are collectively referred to as the process of _matching_.
+[412] rustc_expand :: Expansion itself may require parsing the output of a macro, which may reveal more macros to be expanded, and so on.
+[1214] rustc_infer :: The simplest way to compare two types correctly requires an inference context (`infcx`).
+[837] rustc_mir_build :: It can then return a result as normal: But there are other functions that may generate new basic blocks as well.
+[1549] rustc_borrowck :: In the coming steps, we will modify this copy in place to modify the types and things to include references to the new regions that we are computing.
+[44] rustc_monomorphize :: Rust code is also _monomorphized_ during code generation, which means making copies of all the generic code with the type parameters replaced by concrete types.
+[1443] rustc_next_trait_solver :: The most important candidates are `Impl` candidates, i.e. trait implementations written by the user, and `ParamEnv` candidates, i.e. assumptions in our current environmen
+[1614] rustc_const_eval :: Constant evaluation returns an `EvalToValTreeResult` for type system constants or `EvalToConstValueResult` with either the error, or a representation of the evaluated con
+[248] rustc_middle :: It is exceedingly rare to need a `provide` function that doesn't just accept `query::Providers`.
+[425] rustc_expand :: Firstly, expansion happens at the crate level.
+[1592] rustc_mir_transform :: Some examples of passes are: `CleanupPostBorrowck`: Remove some of the info that is only needed for analyses, rather than codegen.
+[1323] rustc_infer :: Rather than use snapshots directly, it is often helpful to use the methods like `commit_if_ok` or `probe` that encapsulate higher-level patterns.
+[131] rustc_middle :: This is so important that we have a whole chapter on `ty::Ty`, but for now, we just want to mention that it exists and is the way `rustc` represents types!
+[669] rustc_ast_lowering :: It is a compiler-friendly representation of the abstract syntax tree (AST) that is generated after parsing, macro expansion, and name resolution (see Lowering for how the
+[1623] rustc_monomorphize :: For example, if I use a `Vec<u64>` and a `Vec<String>` in my code, then the generated binary will have two copies of the generated code for `Vec`: one for `Vec<u64>` and 
+[103] rustc_middle :: Many of the intermediate representations are interned.
+[1726] rustc_metadata :: This is optional, and only encoded if needed for code generation.
+[593] rustc_resolve :: In the first phase, which runs during `macro` expansion, we build a tree of modules and resolve imports.
+[1038] rustc_errors :: The message that accompanies them should be understandable in the following contexts: shown as an independent sub-diagnostic (this is the default output) shown as a label
+[1330] rustc_infer :: We then relate this new variable with the original bound: This will result in a region constraint (see below) of `'?b: 'a`.
+[1511] rustc_mir_dataflow :: In other words, a backward analysis will apply the "before" effect and then the "primary" effect when computing the transfer function for a basic block, just like a forwa
+[832] rustc_mir_build :: `(a, b): (i32, String)`) produces 3 bindings, one for the argument, and two for the bindings.
+[1506] rustc_mir_dataflow :: It's also possible to define an effect for particular outgoing edges of some terminators (e.g.
+[1635] rustc_monomorphize :: One is for "stable" i.e. non-generic code and the other is more volatile code i.e. monomorphized/specialized instances.

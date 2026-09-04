@@ -1,0 +1,178 @@
+{
+ "annotators": [
+  "claude_cli_sonnet",
+  "openai_gpt-5.6-terra"
+ ],
+ "sentences": 1762,
+ "about_pairs": {
+  "openai_gpt-5.6-terra": 1765,
+  "claude_cli_sonnet": 1479
+ },
+ "sentences_with_about": {
+  "openai_gpt-5.6-terra": 1439,
+  "claude_cli_sonnet": 1333,
+  "both": 1269,
+  "either": 1503
+ },
+ "refers_pairs": {
+  "openai_gpt-5.6-terra": 283,
+  "claude_cli_sonnet": 381
+ },
+ "pair_agreement": {
+  "jaccard_about": 0.6155378486055777,
+  "kappa_about_on_sentence_x_crate": 0.7592385359416017,
+  "sentence_exact_about_set_agreement": 0.6827468785471056,
+  "sentence_has_about_agreement": 0.8671963677639046
+ },
+ "tiers": {
+  "gold": 1236,
+  "gold_plus": 1327,
+  "silver": 681,
+  "refers": 427
+ },
+ "gold_plus_sentences": 1200,
+ "gold_plus_crates": 55,
+ "deterministic_support": {
+  "sym_pairs": 643,
+  "anchor_pairs": 393,
+  "cochange_pairs": 11,
+  "one_annotator_supported": 91
+ },
+ "top_gold_plus_crates": [
+  [
+   "rustc_middle",
+   202
+  ],
+  [
+   "rustc_trait_selection",
+   106
+  ],
+  [
+   "rustc_expand",
+   89
+  ],
+  [
+   "rustc_infer",
+   64
+  ],
+  [
+   "rustc_mir_transform",
+   59
+  ],
+  [
+   "rustc_resolve",
+   59
+  ],
+  [
+   "rustc_span",
+   53
+  ],
+  [
+   "rustc_metadata",
+   48
+  ],
+  [
+   "rustc_lint",
+   46
+  ],
+  [
+   "rustc_errors",
+   44
+  ],
+  [
+   "rustc_borrowck",
+   40
+  ],
+  [
+   "rustc_codegen_ssa",
+   37
+  ],
+  [
+   "rustc_mir_build",
+   36
+  ],
+  [
+   "rustc_mir_dataflow",
+   34
+  ],
+  [
+   "rustc_parse",
+   31
+  ],
+  [
+   "rustc_hir",
+   30
+  ],
+  [
+   "rustc_ast_lowering",
+   30
+  ],
+  [
+   "rustc_query_impl",
+   26
+  ],
+  [
+   "rustc_monomorphize",
+   23
+  ],
+  [
+   "rustc_ast",
+   19
+  ]
+ ],
+ "about_rate_by_surface": {
+  "anchored": {
+   "n": 341,
+   "openai_gpt-5.6-terra": 0.959,
+   "claude_cli_sonnet": 0.953,
+   "gold_plus": 0.965
+  },
+  "unanchored_with_code_span": {
+   "n": 576,
+   "openai_gpt-5.6-terra": 0.844,
+   "claude_cli_sonnet": 0.766,
+   "gold_plus": 0.665
+  },
+  "unanchored_plain_prose": {
+   "n": 845,
+   "openai_gpt-5.6-terra": 0.741,
+   "claude_cli_sonnet": 0.671,
+   "gold_plus": 0.578
+  }
+ },
+ "consistency_runs": 3,
+ "consistency_hist_over_a1_union": [
+  [
+   1.0,
+   1509
+  ],
+  [
+   0.33,
+   269
+  ],
+  [
+   0.67,
+   244
+  ]
+ ],
+ "gold_plus_pairs_with_full_consistency": 1214,
+ "robustness_gold_other_family": {
+  "claude_cli_sonnet": {
+   "pairs": 1479,
+   "sentences": 1333
+  }
+ },
+ "crate_view": {
+  "openai_gpt-5.6-terra": {
+   "pairs": 1671,
+   "sentences": 1246,
+   "overlap_gold_plus": 1034,
+   "gold_plus_recall": 0.779,
+   "precision_vs_gold_plus": 0.619,
+   "precision_vs_any_about": 0.78,
+   "new_pairs_no_sentence_view_vote": 331,
+   "kappa_vs_gold_plus_on_sentence_x_crate": 0.686,
+   "gold3_all_three_agree": 980
+  }
+ }
+}
