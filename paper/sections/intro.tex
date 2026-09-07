@@ -219,7 +219,7 @@
 % Para 1 -- big question + long-tailed hook; open at altitude, promise both strengths.
 Beyond code, software systems are described by architecture documentation and architecture models.
 Trace links tie these artifacts together, so a change in one can be followed into the others.
-They support impact analysis, change propagation, and compliance review, and without them architectural knowledge erodes as the system ages~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
+They underpin impact analysis, change propagation, and compliance review, and without them architectural knowledge erodes as the system ages~\cite{gotel1994analysis,clelandhuang2012handbook,maeder2015developers}.
 Recovering these links automatically is a long-standing open problem.
 Recent \ac{LLM}-based approaches push recovery scores up to 84\% \fone. %, and the task looks solved. % use soften words?
 However, can practitioners rely on these links? %But does a high score mean the links a practitioner can rely on?
@@ -235,7 +235,7 @@ The lexical line, such as SWATTR~\cite{keim_trace_2021}, scores each candidate l
 The \ac{LLM} line, such as LiSSA~\cite{fuchs_lissa_2025}, classifies each documentation-and-target pair with one \ac{LLM} call.
 The strongest approach, \Artemis, uses an \ac{LLM} to extract architecture entities with their aliases, then links them to the model by name and embedding similarity~\cite{fuchs_whos_2025}.
 These approaches share one root cause: each link is decided in a single unchecked step, by matching names rather than weighing the evidence the sentence gives.
-The decision cannot be trusted.
+The links cannot be trusted.
 % Overloaded everyday-word names slip in, references phrased in different ways are treated alike, and unsupported links go uncaught.
  Common word that happens to name a component gets linked, a plainly named mention and an indirect one are handled alike, and a link the evidence does not back is never caught.
 %TODO [para2 rewrite, 2026-09-02] your alinker-paper edit rewrote this sentence but stopped
@@ -246,7 +246,8 @@ The decision cannot be trusted.
 %  link), which is what Para 3's three modules answer -- finish the replacement or drop it.
 
 % Para 3 -- single bold thesis (decision altitude) + proposal + result, with hand-off to Para 4.
-\textbf{The recovery power lies in how each link is decided: rather than committing in one unchecked step, \approach makes a link earn its place: grounded in disambiguated knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
+%CHECK [merge 2026-09-07] hand-draft rewrite of the thesis sentence, taken verbatim.
+\textbf{Rather than working in one unchecked prompting, \approach makes a link earn its place: grounded in learned architectural documentation knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
 We present \approach, the first multi-stage \ac{LLM} workflow for doc-model trace-link recovery that carries an ambiguity-aware knowledge layer into the decision and checks every link with a context-augmented \ac{LLM}-as-a-judge.
 Four modules work together to make this decision: a knowledge module computed once, and three linkers, each paired with a judge.
 \linkerB targets sentences that state a component's whole name, \linkerD those that carry only one word of it, and \linkerC resolves an implicit reference against its antecedent.
@@ -259,14 +260,27 @@ On doc-code it reaches an \avgfone of $0.906$ ($+9.3$pp) and an \avgftwo of $0.9
 
 % Para 4 -- second contribution: the measure. Para 1 OWNS the long-tailed fact and the 69.3--99.3% number;
 % this paragraph must NOT restate either -- it opens by cashing them in and moves to the metric.
-Our second contribution follows from that long-tailed shape.
-Because a few large components carry the score, link-level \fone\ answers the wrong question for an architect, who needs every documented component covered, not just the big ones.
+%CHECK [merge 2026-09-07] the hand draft's restructuring of this paragraph, with the live
+%  tree's NUMBERS kept: the draft carried the pre-re-cut figures ($69$--$99\%$ rounded) and
+%  they were not imported. The draft also dropped the (\autoref{sec:metric}) pointer and the
+%  per-metric task split, both restored here.
+Our second contribution starts from a fact about the task itself: trace links are long tailed.
+A few large components hold most of the links, while a long tail of small components hold only a handful.
+On the benchmark, the three largest components hold $69.3$--$99.3\%$ of the doc-code links (\autoref{sec:motivation}).
+Standard link-level \fone\ rewards the large components, so the average hides the tail.
 We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare: worst-component \fone\ and the harmonic mean of per-component \fone\ on doc-code, and the \cmrname\ (CMR) on doc-model (\autoref{sec:metric}).
 % These adapt established ideas (macro-averaging, worst-group reporting, and harmonic-mean aggregation) to the architecture, so the contribution is the adaptation, not new statistics.
 \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
 On doc-code \approach{} clears it: it leads \TransArc{} by $29.1$pp on the worst component and $25.2$pp on the harmonic per-component \fone, against $10.4$pp at the link level.
+%CHECK [merge 2026-09-07] NUMBERS GUARDED. The hand draft carried the pre-re-cut figures
+%  throughout this paragraph and the contribution list (doc-model \avgfone $0.914$/$+10.4$pp,
+%  doc-code $+21.2$/$+22.3$pp, "abandons one documented component", and an \Artemis{}
+%  "released configuration" comparison at $4.6$/$10.4$/$16.9$pp). None were imported: the
+%  live figures come from the matched-backend re-cut (commit cdd6e744) and agree with
+%  results.tex:67. MANUAL CHECK: if the draft's numbers were the intended ones, this whole
+%  paragraph, the contribution list and results.tex must move together.
 On doc-model, CMR tells the same story: \approach{} abandons no documented component in any run, where \Artemis{} abandons two per run and SWATTR abandons three on a single project.
 Exactly where link-level \fone{} is blind, \approach{} covers the components every prior tool drops.
 

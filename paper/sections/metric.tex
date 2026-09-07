@@ -17,6 +17,8 @@ The directory expansion that expands one doc-code directory link to multiple doc
 Within each project the expanded links concentrate in a few components.
 \autoref{tab:gold_concentration} quantifies this with the Gini coefficient, which measures inequality in the per-component link counts ($0$ = uniform, $1$ = all links in one component).
 Gini ranges from $0.474$ on TeaStore to $0.591$ on JabRef.
+%TODO [gini-intuition] (from the 2026-09-07 hand draft) an intuitive explanation of the
+%  Gini, so the numbers are not dry. Still open.
 The median-to-maximum distribution also shows the concentration: 
 on Teammates the median component owns $861$ expanded links while the largest owns $3{,}622$; on JabRef the ratio is $768$ to $3{,}888$.
 %DRAFT [stats-do-work] (2026-09-07) Gini and the median-to-maximum ratio appear HERE AND
@@ -38,39 +40,27 @@ on Teammates the median component owns $861$ expanded links while the largest ow
 %  one is explicitly the GENERALIZATION ("motivation showed one project; here we show the
 %  shape holds on all five"). Add that clause or merge.
 Overall, the three largest components hold between $69.3\%$ (BBB) and $99.3\%$ (JabRef) of all expanded links.
-Link-level metrics therefore mainly reflect these few large components, hiding whether the system recovers the rest.
-This motivates us to define a suite that weights each component equally exposes what the link-level average buries.
+% This motivates us to define a suite that weights each component equally exposes what the link-level average buries.
 %FIX [grammar] (2026-09-07) the sentence above is ungrammatical -- "a suite that weights
 %  each component equally EXPOSES what ..." has two finite verbs and no conjunction.
-%DRAFT [benefit-i] (2026-09-07) replace it with the stakeholder benefit (Wang M1). This is
-%  the first of the three BENEFIT slots; it states the payoff as a PROMISE, before the
-%  definitions. Two sentences, both under 20 words:
-% An architect does not read the benchmark; they read the architecture, and a hole in it is visible whether or not it cost the score.
-% We therefore define a suite that weights each component equally and reports what the link-level average buries.
+Link-level metrics therefore mainly reflect these few large components, hiding whether the system recovers the rest.
+An architect does not read the benchmark. 
+They read the architecture, and a hole in it is relevant regardless the benchmark score.
+We therefore define a suite that weights each component equally and reports what the link-level average buries.
 \input{table/gold_concentration}
 
 \subsection{The Metric Suite}
 \label{sec:metric:suite}
 
-%DRAFT [desiderata] (2026-09-07) MISSING and worth ~4 lines: state what a metric for this
-%  task must do BEFORE defining anything. Without it the three definitions read as
-%  assertions; with it they read as answers. Standard move for a metric contribution
-%  (SECTION_PLAYBOOK 5.B item 1). Drop in as the opening of this subsection:
-% A metric for this task has to meet three requirements.
-% First, it must charge a system for every documented component, not for every link, because the two differ by two orders of magnitude on this benchmark.
-% Second, it must stay readable beside link-level $F_\beta$, so a reader can see what the standard metric hides rather than replacing it.
-% Third, it must need no annotation the benchmark does not already carry.
-%
-%FIX [caps] (2026-09-07) "we propose" starts the paragraph lowercase.
-%DRAFT [preview] (2026-09-07) the sentence below is a bare list: three names, one shared
-%  purpose clause, no per-metric purpose and no task split. Replace with the compressed
-%  (i)/(ii)/(iii) preview (Wang M5; SECTION_PLAYBOOK 5.C item 2), which also tells the
-%  reader up front WHICH TASK each metric serves -- currently they only learn that at the
-%  end of the subsection:
-% We propose three size-aware metrics, each answering one of these requirements on the task where it bites: (i) worst-component $F_\beta$ reports the doc-code component a system serves least; (ii) harmonic-mean $F_\beta$ reports how much of the doc-code tail it serves at all; and (iii) the \cmrname{} reports the documentation lost to components a system never reaches on doc-model.
-% Our suite keeps link-level $F_\beta$ as the reference metric, so every size-aware number is read beside the standard one rather than in place of it.
-we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, and the \cmrname{}, each exposing a component miss that a link-level average can hide.
-Our suite also keeps link-level $F_\beta$ as the reference metric. 
+Our metric suite for this task has three advantages.
+First, it weights a TLR system for every component. 
+Second, it must stay readable beside link-level $F_\beta$, so a reader can see what the standard metric hides rather than replacing it.
+Third, it needs no further annotation.
+We propose three size-aware metrics, each answering one of these requirements: 
+%TODO, replace word serve with xx
+(i) worst-component $F_\beta$ reports the component a system serves worst on doc-code task; % use a lower boundary
+(ii) harmonic-mean $F_\beta$ reports how much of the doc-code tail it serves overall;  % use term distribution
+and (iii) the \cmrname{} reports the component lost where a system never reaches on doc-model task.
 We define the family over the $F_\beta$ score,
 \begin{equation}
 F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
@@ -78,18 +68,11 @@ F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
 \end{equation}
 where $F_1$ ($\beta = 1$) weights precision and recall equally, and $F_2$ ($\beta = 2$) weights recall twice as heavily.
 Previous studies have suggested that both are essential in the trace-link recovery task.
-%TODO [fbeta-cite] (rewritten 2026-08-31) the sentence above appeals to the literature and
-%  cites nothing, which is the kind of claim a reviewer stops on. Two ways to close it, pick
-%  one: (a) cite a specific trace-recovery paper that reports both \fone\ and a
-%  recall-weighted measure, or (b) delete the sentence -- the paper does not need it, because
-%  eval.tex already argues the point from the task itself ("a spurious link is visible to the
-%  developer who reads it, while a link the system never proposes is not"), which is stronger
-%  than an uncited appeal. Fixed here regardless: a stray "/" was rendering as "task/".
+%TODO cite 
 
 \paragraph{Doc-code: worst-component and harmonic-mean \texorpdfstring{$F_\beta$}{F-beta}.}
-On the doc-code task, directory expansion maps each directory annotation into file-level links, creating the long-tailed distribution that lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
-Therefore, we propose finer-grained metric on component level.
-%FIX [article] (2026-09-07) "finer-grained metric" -> "a finer-grained metric".
+On the doc-code task, the long-tailed distribution of component-file links lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
+Therefore, we propose a finer-grained metric at the component level.
 %DRAFT [define-K] (2026-09-07) $\mathcal{K}$ is used in eq:worst, eq:harm AND eq:cmr and is
 %  never defined. The prose says "the gold components" once. It matters: tab:gold_concentration
 %  carries THREE component counts (MediaStore: Comp.\ $14$ vs $K$ $9$) and only the table
@@ -97,54 +80,31 @@ Therefore, we propose finer-grained metric on component level.
 %  formula finds an undefined universe. Verified against evaluation/mini-src/metrics.py:432-458
 %  -- the universe is the keys of gold_by_c, i.e. components with at least one gold link.
 %  Add after "component level.":
-% Let $\mathcal{K}$ be the components the gold standard reaches, that is, the components owning at least one gold link ($K$ in \autoref{tab:gold_concentration}).
-% A component the documentation never describes cannot be missed, so scoring it would reward silence; $\mathcal{K}$ is smaller than the model's component count for this reason.
+Let $\mathcal{K}$ be the whole component set ($K$ in \autoref{tab:gold_concentration}).
 Each component~$k$ owns a set of code files; 
 $F_\beta(k)$ denotes $F_\beta$ computed over only the links whose target belongs to~$k$.
-A file realizing two components contributes its links to both, so every gold link is scored under each component it reaches.
+% A file realizing two components contributes its links to both, so every gold link is scored under each component it reaches.
 The worst-component $F_\beta$ is the minimum over the gold components:
 \begin{equation}
 F_\beta^{\min} = \min_{k \in \mathcal{K}} F_\beta(k).
 \label{eq:worst}
 \end{equation}
 A single missed component drives it to zero, even when link-level $F_\beta$ stays high.
-%DRAFT [range-worst] (2026-09-07) MISSING: range + interpretation (SECTION_PLAYBOOK 5.B
-%  item 3). Every metric block needs it and only \cmr\ currently has one. One sentence:
-% Worst-component $F_\beta$ ranges in $[0,1]$ and is a floor, not an average: it reports the score of a system's weakest component and says nothing about how many components sit near it.
-%DRAFT [insight-worst] (2026-09-07) MISSING: the "this is because" mechanism sentence (Wang
-%  M8) -- why the standard metric STRUCTURALLY cannot see this, not merely that it does not.
-%  This is the INSIGHT slot for the metric. One sentence:
-% A missed component is invisible to link-level $F_\beta$ in proportion to how small it is, so the standard metric is quietest exactly where the architecture is thinnest; the minimum inverts that weighting and reads the component the average discounts most.
+Same as $F_\beta$, Worst-component $F_\beta$ ranges in $[0,1]$ and is a floor.
+It reports the score of a system's weakest component and says nothing about how many components sit near it.
+A missed component is invisible to link-level $F_\beta$ in proportion to how small it is, so the standard metric is quietest exactly where the component is smallest; 
+The minimum inverts that weighting.
 Because a single minimum can be noisy, we also report the harmonic mean of the per-component $F_\beta$:
-
 \begin{equation}
 F_\beta^{H} = \frac{|\mathcal{K}|}{\sum_{k \in \mathcal{K}} 1/F_\beta(k)}.
 \label{eq:harm}
 \end{equation}
+It is built on the insight that a low score should be expensive to average away.
 It down-weights every low-scoring component, not just the worst.
-%FIX [harm-zero] (2026-09-07) BLOCKING -- eq:harm as written is UNDEFINED when any
-%  $F_\beta(k)=0$, and that case fires: results.tex reports "at least one \Artemis{} run
-%  scores \fone\ $0$ on a gold component" on three of five projects, so \Artemis{}'s $.63$
-%  in tab:rq2 rests on a convention the paper never states. The implementation
-%  (evaluation/mini-src/metrics.py:454-456) returns $0$ whenever any component scores $0$.
-%  State it, either as a clause on eq:harm or as the sentence below:
-% We set $F_\beta^{H} = 0$ whenever any component scores $0$, so a system that abandons a component cannot recover the harmonic mean by scoring well everywhere else.
-%DRAFT [why-not-macro] (2026-09-07) MISSING: no defence of min + harmonic mean against the
-%  aggregator a reviewer will name first, the plain arithmetic macro-average. The preempt is
-%  already drafted in intro.tex Para 4 S5 and is COMMENTED OUT there; it belongs here, not in
-%  the intro. Two sentences:
-% We use the harmonic rather than the arithmetic mean because each component enters as its reciprocal: one component at $0.2$ pulls the mean further than four components at $0.9$ can restore it, whereas an arithmetic macro-average lets a wide tail hide behind a strong head.
-% Both aggregators adapt established ideas -- macro-averaging and worst-group reporting -- to the architecture; the contribution is the adaptation, not new statistics.
-%DRAFT [insight-harm] (2026-09-07) the INSIGHT slot for this metric (Wang M8), one sentence,
-%  if the why-not-macro block above is cut for space keep at least this:
-% The harmonic mean is built on the insight that a low score should be expensive to average away.
-%TODO [suite-close] (rewritten 2026-08-31) the original shorthand was "small sum + promotion
-%  sent"; read as: close this paragraph with (i) a one-line summary of what the two doc-code
-%  metrics jointly buy and (ii) a sentence promoting why they belong in the suite. NOTE this
-%  reading is an interpretation of the shorthand -- confirm before acting. If it is right,
-%  the content already exists in results.tex ("a missed small component costs almost nothing
-%  in a volume-weighted average, but a developer who reads the architecture still sees the
-%  hole") and would only need condensing to one sentence here.
+We set $F_\beta^{H} = 0$ whenever any component scores $0$, so a system that abandons a component cannot recover the harmonic mean by scoring well everywhere else.
+With harmonic mean, $F_\beta$ of one component at $0.2$ pulls the mean further than four components at $0.9$ can restore it.
+In arithmetic mean, macro-average lets a wide tail hide behind a strong head.
+
 %
 %DRAFT [suite-close] (2026-09-07) the reading in the TODO above is CONFIRMED -- (i) a joint
 %  summary and (ii) a promotion sentence. Three blocks below, in this order. They are the
@@ -175,33 +135,28 @@ It down-weights every low-scoring component, not just the worst.
 % Consider JabRef. \Artemis{} scores $0.916$ across its links and $0.53$ on \texttt{preferences}, a component carrying $0.44\%$ of them: link-level \fone{} moves by fractions of a point, worst-component \fone{} reports $0.53$.
 
 \paragraph{Doc-model: \cmrname.}
-Doc-model links are sentence-to-component links, which are with no directory expansion. 
-%FIX [grammar] (2026-09-07) "which are with no directory expansion" is ungrammatical. Replace:
-% Doc-model links run from a sentence to a component, with no directory expansion behind them.
-The per-component distribution is not long-tailed, so the worst-component and harmonic $F_\beta$ are redundant.
-%DRAFT [redundancy-evidence] (2026-09-07) this asserts redundancy with NO evidence in this
-%  section, and it is the kind of claim that invites the inverse question -- "then how do you
-%  know they are NOT redundant on doc-code?". intro.tex Para 4 S4 carries a Spearman
-%  $.87/.83$ for exactly this, but ONLY in a spec comment; I found no data file backing it.
-%  ACTION: locate or recompute the correlation, then state it here rather than in the intro:
-% On doc-model the two rank the systems as link-level $F_\beta$ does (Spearman $\rho = 0.87$ and $0.83$), so they add nothing the reference metric does not already say; on doc-code they do not, which is why the suite splits by task.
-%  If the number cannot be reproduced, fall back to the mechanism alone and DELETE the
-%  "redundant" word, which is a statistical claim:
-% Without expansion no component dominates the link count, so the worst-component and harmonic $F_\beta$ have no long tail to expose here.
+Doc-model links are sentence-to-component, with no folder directory expansion.
+This makes tail metrics have no long tail to expose.
 But a system can still miss a component entirely, leaving its documented sentences with no correct link.
 %DRAFT [define-cmr-symbols] (2026-09-07) eq:cmr uses $R_k$ and $\mathcal{S}_k$, NEITHER of
 %  which is defined anywhere in the paper. Both are inferable and neither is stated. Add
 %  before the equation:
-% Write $R_k$ for a system's recall on component~$k$ and $\mathcal{S}_k$ for the gold sentences assigned to it.
+Let $R_k$ for a system's recall on component~$k$ and $\mathcal{S}_k$ for the linked sentences.
 % A component is \emph{abandoned} when $R_k = 0$, that is, when the system recovers not one of its correct links.
 %FIX [redundant] (2026-09-07) "is a ... rate: it measures the share of" -- a rate IS a share.
 %  Cut to "is the share of gold sentence--component assignments belonging to such components:".
-The \cmrname{} (\cmr) is a sentence-weighted component-miss rate: it measures the share of gold sentence--component assignments belonging to such components:
+%CHECK [merge 2026-09-07] %FIX [redundant] applied. The draft's rival wording ("the share of
+%  documented sentences") and its eq:sfm union formula were REJECTED against
+%  evaluation/mini-src/metrics.py:517: "Do not union the sentence sets: shared sentences
+%  deliberately retain one unit for every documented component." eq:cmr stands.
+The \cmrname{} (\cmr) is the share of gold sentence--component assignments belonging to such components:
 \begin{equation}
 \cmr = \frac{\sum_{k:\,R_k=0} |\mathcal{S}_k|}{\sum_{k \in \mathcal{K}} |\mathcal{S}_k|} \in [0,1],
 \label{eq:cmr}
 \end{equation}
-Here, a sentence linked to two components contributes once for each gold assignment. \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
+A sentence linked to two components contributes once for each gold assignment.
+%CHECK [merge 2026-09-07] %FIX [punct] applied (comma -> full stop, "Here," folded in).
+\cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
 We report \cmr{} as a percentage throughout.
 %FIX [punct] (2026-09-07) eq:cmr ends in a comma and the next word is "Here" -- make it a
 %  full stop, or fold "Here, ..." into the sentence the comma promises.
