@@ -135,34 +135,22 @@ In arithmetic mean, macro-average lets a wide tail hide behind a strong head.
 % Consider JabRef. \Artemis{} scores $0.916$ across its links and $0.53$ on \texttt{preferences}, a component carrying $0.44\%$ of them: link-level \fone{} moves by fractions of a point, worst-component \fone{} reports $0.53$.
 
 \paragraph{Doc-model: \cmrname.}
-Doc-model links are sentence-to-component, with no folder directory expansion.
+Doc-model links are sentence-to-component pairs, with no folder directory expansion.
 This makes tail metrics have no long tail to expose.
 But a system can still miss a component entirely, leaving its documented sentences with no correct link.
-%DRAFT [define-cmr-symbols] (2026-09-07) eq:cmr uses $R_k$ and $\mathcal{S}_k$, NEITHER of
-%  which is defined anywhere in the paper. Both are inferable and neither is stated. Add
-%  before the equation:
 Let $R_k$ for a system's recall on component~$k$ and $\mathcal{S}_k$ for the linked sentences.
-% A component is \emph{abandoned} when $R_k = 0$, that is, when the system recovers not one of its correct links.
-%FIX [redundant] (2026-09-07) "is a ... rate: it measures the share of" -- a rate IS a share.
-%  Cut to "is the share of gold sentence--component assignments belonging to such components:".
-%CHECK [merge 2026-09-07] %FIX [redundant] applied. The draft's rival wording ("the share of
-%  documented sentences") and its eq:sfm union formula were REJECTED against
-%  evaluation/mini-src/metrics.py:517: "Do not union the sentence sets: shared sentences
-%  deliberately retain one unit for every documented component." eq:cmr stands.
-The \cmrname{} (\cmr) is the share of gold sentence--component assignments belonging to such components:
+A component is \emph{abandoned} when $R_k = 0$, that is, when the system recovers not one of its correct links.
+
+% frame from component view, num of component weighted by doc sentences 
+% The \cmrname{} (\cmr) is the share of gold sentence--component assignments belonging to such components:
+A component the system abandons still has documentation describing it, and \cmr\ is built on this idea: 
+it weights the miss by the sentences the reader loses.
 \begin{equation}
 \cmr = \frac{\sum_{k:\,R_k=0} |\mathcal{S}_k|}{\sum_{k \in \mathcal{K}} |\mathcal{S}_k|} \in [0,1],
 \label{eq:cmr}
 \end{equation}
-A sentence linked to two components contributes once for each gold assignment.
-%CHECK [merge 2026-09-07] %FIX [punct] applied (comma -> full stop, "Here," folded in).
 \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
-We report \cmr{} as a percentage throughout.
-%FIX [punct] (2026-09-07) eq:cmr ends in a comma and the next word is "Here" -- make it a
-%  full stop, or fold "Here, ..." into the sentence the comma promises.
-%DRAFT [insight-cmr] (2026-09-07) the INSIGHT slot for \cmr\ (Wang M8): say why weighting by
-%  SENTENCES rather than by links is the point, which is currently left implicit. One sentence:
-% A component the system abandons still has documentation describing it, and \cmr\ is built on that asymmetry: it weights the miss by the sentences the reader loses, not by the links the benchmark happens to contain.
+
 
 %DRAFT [replace-close] (2026-09-07) the three sentences below are a flat restatement of the
 %  preview sentence at the top of this subsection. Replace them with the NUTSHELL (block A of
