@@ -1,0 +1,252 @@
+[
+  {
+    "dataset": "mediastore",
+    "gold": 31,
+    "B": {
+      "coref_raw": 9,
+      "bypass_only": 4,
+      "bypass_validated": 2,
+      "bypass_validated_tp": 1,
+      "bypass_validated_fp": 1,
+      "verdict": "CAUTION"
+    },
+    "C": {
+      "killed_count": 0,
+      "verdict": "GO (nothing to absorb)"
+    },
+    "E": {
+      "n_coref": 9,
+      "agreement": 6,
+      "twopass_approves_extra": 1,
+      "twopass_rejects_extra": 2,
+      "single_pass_tp_fp": [
+        4,
+        1
+      ],
+      "twopass_tp_fp": [
+        4,
+        0
+      ],
+      "delta_tp_fp": [
+        0,
+        -1
+      ],
+      "verdict": "GO"
+    },
+    "F": {
+      "n_generic": 0,
+      "verdict": "GO (nothing went through generic-filter)"
+    }
+  },
+  {
+    "dataset": "teastore",
+    "gold": 27,
+    "B": {
+      "coref_raw": 10,
+      "bypass_only": 4,
+      "bypass_validated": 2,
+      "bypass_validated_tp": 1,
+      "bypass_validated_fp": 1,
+      "verdict": "CAUTION"
+    },
+    "C": {
+      "killed_count": 0,
+      "verdict": "GO (nothing to absorb)"
+    },
+    "E": {
+      "n_coref": 10,
+      "agreement": 9,
+      "twopass_approves_extra": 0,
+      "twopass_rejects_extra": 1,
+      "single_pass_tp_fp": [
+        6,
+        1
+      ],
+      "twopass_tp_fp": [
+        6,
+        0
+      ],
+      "delta_tp_fp": [
+        0,
+        -1
+      ],
+      "verdict": "GO"
+    },
+    "F": {
+      "n_generic": 0,
+      "verdict": "GO (nothing went through generic-filter)"
+    }
+  },
+  {
+    "dataset": "teammates",
+    "gold": 57,
+    "B": {
+      "coref_raw": 32,
+      "bypass_only": 19,
+      "bypass_validated": 4,
+      "bypass_validated_tp": 0,
+      "bypass_validated_fp": 4,
+      "verdict": "GO"
+    },
+    "C": {
+      "killed_count": 3,
+      "twopass_rejected": 2,
+      "twopass_approved": 1,
+      "details": [
+        {
+          "key": [
+            22,
+            "_3LCnIKESEeu-mYqkDskRow"
+          ],
+          "component": "Logic",
+          "matched_text": "logic",
+          "twopass_p1": true,
+          "twopass_p2": false,
+          "approved": false,
+          "phase_4b_reason": "Every occurrence of \"logic\" is only as a segment in dot-separated/package-style "
+        },
+        {
+          "key": [
+            130,
+            "_9JlCIKESEeu-mYqkDskRow"
+          ],
+          "component": "Storage",
+          "matched_text": "storage",
+          "twopass_p1": false,
+          "twopass_p2": false,
+          "approved": false,
+          "phase_4b_reason": "\"storage\" appears only within dot-separated package names like \"storage.api\" and"
+        },
+        {
+          "key": [
+            159,
+            "_zUmhEKESEeu-mYqkDskRow"
+          ],
+          "component": "Common",
+          "matched_text": "common.datatransfer",
+          "twopass_p1": true,
+          "twopass_p2": true,
+          "approved": true,
+          "phase_4b_reason": "\"common\" appears only in the dot-separated identifier \"common.datatransfer\" with"
+        }
+      ],
+      "verdict": "CAUTION"
+    },
+    "E": {
+      "n_coref": 32,
+      "agreement": 28,
+      "twopass_approves_extra": 1,
+      "twopass_rejects_extra": 3,
+      "single_pass_tp_fp": [
+        9,
+        7
+      ],
+      "twopass_tp_fp": [
+        10,
+        4
+      ],
+      "delta_tp_fp": [
+        1,
+        -3
+      ],
+      "verdict": "GO"
+    },
+    "F": {
+      "n_generic": 1,
+      "agreement": 1,
+      "twopass_approves_extra": 0,
+      "twopass_rejects_extra": 0,
+      "current_tp_fp": [
+        0,
+        0
+      ],
+      "twopass_only_tp_fp": [
+        0,
+        0
+      ],
+      "delta_tp_fp": [
+        0,
+        0
+      ],
+      "verdict": "GO"
+    }
+  },
+  {
+    "dataset": "bigbluebutton",
+    "gold": 62,
+    "B": {
+      "coref_raw": 18,
+      "bypass_only": 12,
+      "bypass_validated": 6,
+      "bypass_validated_tp": 6,
+      "bypass_validated_fp": 0,
+      "verdict": "NO-GO"
+    },
+    "C": {
+      "killed_count": 0,
+      "verdict": "GO (nothing to absorb)"
+    },
+    "E": {
+      "n_coref": 18,
+      "agreement": 17,
+      "twopass_approves_extra": 1,
+      "twopass_rejects_extra": 0,
+      "single_pass_tp_fp": [
+        11,
+        0
+      ],
+      "twopass_tp_fp": [
+        11,
+        1
+      ],
+      "delta_tp_fp": [
+        0,
+        1
+      ],
+      "verdict": "CAUTION"
+    },
+    "F": {
+      "n_generic": 0,
+      "verdict": "GO (nothing went through generic-filter)"
+    }
+  },
+  {
+    "dataset": "jabref",
+    "gold": 18,
+    "B": {
+      "coref_raw": 4,
+      "bypass_only": 0,
+      "bypass_validated": 0,
+      "bypass_validated_tp": 0,
+      "bypass_validated_fp": 0,
+      "verdict": "GO"
+    },
+    "C": {
+      "killed_count": 0,
+      "verdict": "GO (nothing to absorb)"
+    },
+    "E": {
+      "n_coref": 4,
+      "agreement": 4,
+      "twopass_approves_extra": 0,
+      "twopass_rejects_extra": 0,
+      "single_pass_tp_fp": [
+        3,
+        0
+      ],
+      "twopass_tp_fp": [
+        3,
+        0
+      ],
+      "delta_tp_fp": [
+        0,
+        0
+      ],
+      "verdict": "GO"
+    },
+    "F": {
+      "n_generic": 0,
+      "verdict": "GO (nothing went through generic-filter)"
+    }
+  }
+]

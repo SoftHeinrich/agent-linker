@@ -1,0 +1,66 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: jabref
+Variants: s_linker21
+========================================================================================================================
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: command line interface -> cli [local]
+  Model: 1 ambiguous of 6 components
+  Doc knowledge: 1 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=19 P2=19 ∪=19
+  Framing C: 19 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 19 / 19
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 20
+    Coref reject: S2 -> preferences
+    Coref reject: S2 -> cli
+    Coref reject: S4 -> logic
+    Coref reject: S4 -> model
+    Coref reject: S4 -> gui
+    Coref reject: S7 -> preferences
+  Coref validated: 14 / 20
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 19 (from 33 raw)
+  Phase log saved: results/v2.6.6_s21_sonnet/run1/llm_logs/s_linker21_claude_jabref_20260628_171155.json
+  LLM call trace saved: results/v2.6.6_s21_sonnet/run1/llm_logs/s_linker21_claude_jabref_20260628_171155_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 19 links (98.1s, 10 LLM calls)
+  s_linker21: P=94.7% R=100.0% F1=97.3% TP=18 FP=1 FN=0 (98s)
+    Sources: {'entity': 19}
+    FP by source: {'entity': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker21    
+-----------------+-------------------
+jabref           | F1 97.3% FP   1
+-----------------+-------------------
+Macro avg        | F1 97.3% FP   1
+
+Results saved to results/v2.6.6_s21_sonnet/run1/jabref/ablation_20260628_171155.json

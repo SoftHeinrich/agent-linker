@@ -1,0 +1,2081 @@
+{
+  "audit": {
+    "phase_metrics": {
+      "_total": {
+        "elapsed_s": 123.5,
+        "llm_calls": 12
+      },
+      "phase_1_doc_extract": {
+        "calls": 1,
+        "elapsed_s": 5.623,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_1_doc_judge": {
+        "calls": 1,
+        "elapsed_s": 9.084,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_1_model": {
+        "calls": 1,
+        "elapsed_s": 6.142,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_2_framing_c_pass1": {
+        "calls": 1,
+        "elapsed_s": 15.796,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_2_framing_c_pass2": {
+        "calls": 1,
+        "elapsed_s": 15.797,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_4_twopass_p1": {
+        "calls": 1,
+        "elapsed_s": 23.155,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_4_twopass_p2": {
+        "calls": 1,
+        "elapsed_s": 14.54,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_5_coref": {
+        "calls": 4,
+        "elapsed_s": 47.334,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_5_coref_validation": {
+        "calls": 1,
+        "elapsed_s": 7.973,
+        "errors": 0,
+        "tokens": 0
+      }
+    }
+  },
+  "coref": {
+    "decisions": [
+      {
+        "approved": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "path": "coref_rejected",
+        "s": 1
+      },
+      {
+        "approved": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "path": "coref_rejected",
+        "s": 3
+      },
+      {
+        "approved": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "path": "coref_rejected",
+        "s": 6
+      },
+      {
+        "approved": false,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "path": "coref_rejected",
+        "s": 7
+      },
+      {
+        "approved": false,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "path": "coref_rejected",
+        "s": 8
+      },
+      {
+        "approved": true,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "path": "coref_validated",
+        "s": 9
+      },
+      {
+        "approved": false,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "path": "coref_rejected",
+        "s": 13
+      },
+      {
+        "approved": false,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "path": "coref_rejected",
+        "s": 17
+      },
+      {
+        "approved": true,
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "path": "coref_validated",
+        "s": 21
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "path": "coref_validated",
+        "s": 24
+      },
+      {
+        "approved": true,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "path": "coref_validated",
+        "s": 28
+      },
+      {
+        "approved": false,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "path": "coref_rejected",
+        "s": 32
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "path": "coref_validated",
+        "s": 34
+      }
+    ],
+    "metadata": [
+      {
+        "antecedent_sentence": 1,
+        "antecedent_text": "namely the Facade component",
+        "antecedent_via_alias": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "reference": "the Facade component",
+        "s": 1
+      },
+      {
+        "antecedent_sentence": 1,
+        "antecedent_text": "namely the Facade component, which delivers websites to the users and provides session management",
+        "antecedent_via_alias": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "reference": "the Facade component",
+        "s": 3
+      },
+      {
+        "antecedent_sentence": 1,
+        "antecedent_text": "namely the Facade component, which delivers websites to the users and provides session management",
+        "antecedent_via_alias": false,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "reference": "the Facade component",
+        "s": 6
+      },
+      {
+        "antecedent_sentence": 7,
+        "antecedent_text": "called the MediaManagement component",
+        "antecedent_via_alias": false,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "reference": "the MediaManagement component",
+        "s": 7
+      },
+      {
+        "antecedent_sentence": 7,
+        "antecedent_text": "called the MediaManagement component",
+        "antecedent_via_alias": false,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "reference": "The MediaManagement component",
+        "s": 8
+      },
+      {
+        "antecedent_sentence": 8,
+        "antecedent_text": "The MediaManagement component coordinates the communication of other components",
+        "antecedent_via_alias": false,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "reference": "it",
+        "s": 9
+      },
+      {
+        "antecedent_sentence": 11,
+        "antecedent_text": "The UserManagement component answers the requests for registration and authentication.",
+        "antecedent_via_alias": false,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "reference": "the UserManagement component",
+        "s": 13
+      },
+      {
+        "antecedent_sentence": 16,
+        "antecedent_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+        "antecedent_via_alias": false,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "reference": "these audio files",
+        "s": 17
+      },
+      {
+        "antecedent_sentence": 20,
+        "antecedent_text": "The ReEncoder component converts the bit rates of audio files.",
+        "antecedent_via_alias": true,
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "reference": "This",
+        "s": 21
+      },
+      {
+        "antecedent_sentence": 23,
+        "antecedent_text": "The Database component represents an actual database (e.g., MySQL).",
+        "antecedent_via_alias": false,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "reference": "It",
+        "s": 24
+      },
+      {
+        "antecedent_sentence": 27,
+        "antecedent_text": "The MediaAccess component encapsulates database access for meta-data of audio files.",
+        "antecedent_via_alias": false,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "reference": "it",
+        "s": 28
+      },
+      {
+        "antecedent_sentence": 31,
+        "antecedent_text": "The Database component then executes the actual query for files.",
+        "antecedent_via_alias": false,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "reference": "the Database component",
+        "s": 32
+      },
+      {
+        "antecedent_sentence": 31,
+        "antecedent_text": "The Database component then executes the actual query for files.",
+        "antecedent_via_alias": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "reference": "the Database",
+        "s": 34
+      }
+    ],
+    "raw": [
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 1,
+        "source": "coreference"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 3,
+        "source": "coreference"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "coreference"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 7,
+        "source": "coreference"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 8,
+        "source": "coreference"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 9,
+        "source": "coreference"
+      },
+      {
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "confidence": 1.0,
+        "s": 13,
+        "source": "coreference"
+      },
+      {
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "confidence": 1.0,
+        "s": 17,
+        "source": "coreference"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "confidence": 1.0,
+        "s": 21,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 24,
+        "source": "coreference"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 28,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 32,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 34,
+        "source": "coreference"
+      }
+    ],
+    "validated": [
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 9,
+        "source": "coreference"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "confidence": 1.0,
+        "s": 21,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 24,
+        "source": "coreference"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 28,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 34,
+        "source": "coreference"
+      }
+    ]
+  },
+  "entity": {
+    "candidates": [
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 3,
+        "sentence_text": "To this end, the Facade component delivers the corresponding registration and log-in pages to users.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "In addition, users can browse, download, and upload audio files using the Facade component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 7,
+        "sentence_text": "Application business logic is provided by a central business logic component, called the MediaManagement component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 8,
+        "sentence_text": "The MediaManagement component coordinates the communication of other components.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "matched_text": "UserManagement component",
+        "mention_type": "indirect",
+        "s": 11,
+        "sentence_text": "The UserManagement component answers the requests for registration and authentication.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 12,
+        "sentence_text": "The UserDBAdapter component queries the database.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "matched_text": "UserManagement component",
+        "mention_type": "indirect",
+        "s": 13,
+        "sentence_text": "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "matched_text": "TagWatermarking component",
+        "mention_type": "indirect",
+        "s": 16,
+        "sentence_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 17,
+        "sentence_text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "matched_text": "TagWatermarking component",
+        "mention_type": "indirect",
+        "s": 17,
+        "sentence_text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "component_name": "Packaging",
+        "matched_text": "Packaging component",
+        "mention_type": "indirect",
+        "s": 19,
+        "sentence_text": "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "matched_text": "ReEncoder component",
+        "mention_type": "indirect",
+        "s": 20,
+        "sentence_text": "The ReEncoder component converts the bit rates of audio files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 23,
+        "sentence_text": "The Database component represents an actual database (e.g., MySQL).",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 25,
+        "sentence_text": "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 26,
+        "sentence_text": "When a user uploads an audio file, the MediaAccess component stores it at the predefined location.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 27,
+        "sentence_text": "The MediaAccess component encapsulates database access for meta-data of audio files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 29,
+        "sentence_text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 30,
+        "sentence_text": "The UserDBAdapter component creates a query based on the user's request.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 31,
+        "sentence_text": "The Database component then executes the actual query for files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 32,
+        "sentence_text": "All salted hashes of passwords are also stored in the Database component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 34,
+        "sentence_text": "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database",
+        "mention_type": "indirect",
+        "s": 34,
+        "sentence_text": "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.",
+        "source": "entity"
+      }
+    ],
+    "decisions": [
+      {
+        "approved": true,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 1,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 3,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 6,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 7,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 8,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 11,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 12,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 13,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 16,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 17,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 17,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 19,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 20,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 23,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 25,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 26,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 27,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 29,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 30,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 31,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 32,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 34,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 34,
+        "stage": "entity_twopass"
+      }
+    ],
+    "evidence_bundles": [
+      {
+        "anchor_sentences": [
+          "S3: To this end, the Facade component delivers the corresponding registration and log-in pages to users.",
+          "S6: In addition, users can browse, download, and upload audio files using the Facade component."
+        ],
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "Facade component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "",
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.",
+          "S6: In addition, users can browse, download, and upload audio files using the Facade component."
+        ],
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "Facade component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "To meet the user authentication requirement, registration and log-in have to be offered.",
+        "s": 3,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.",
+          "S3: To this end, the Facade component delivers the corresponding registration and log-in pages to users."
+        ],
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "Facade component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The main functionality, however, is provided by other components.",
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S8: The MediaManagement component coordinates the communication of other components.",
+          "S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+        ],
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaManagement component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "In addition, users can browse, download, and upload audio files using the Facade component.",
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S7: Application business logic is provided by a central business logic component, called the MediaManagement component.",
+          "S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+        ],
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaManagement component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "Application business logic is provided by a central business logic component, called the MediaManagement component.",
+        "s": 8,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S13: When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords."
+        ],
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "UserManagement component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "As described above, to communicate with the system, users' registration and authentication are needed.",
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S29: By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.",
+          "S30: The UserDBAdapter component creates a query based on the user's request."
+        ],
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "UserDBAdapter component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The UserManagement component answers the requests for registration and authentication.",
+        "s": 12,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S11: The UserManagement component answers the requests for registration and authentication."
+        ],
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "UserManagement component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The UserDBAdapter component queries the database.",
+        "s": 13,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S17: Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user."
+        ],
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "TagWatermarking component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "To this end, the requested files are first reencoded.",
+        "s": 16,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S7: Application business logic is provided by a central business logic component, called the MediaManagement component.",
+          "S8: The MediaManagement component coordinates the communication of other components."
+        ],
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaManagement component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S16: The re-encoded files are then digitally and individually watermarked by the TagWatermarking component."
+        ],
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "TagWatermarking component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "Packaging component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "Hence, each downloaded audio file is uniquely connected to a user ID can can be associated with the user if the audio file should ever appear in the public Internet.",
+        "s": 19,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "ReEncoder component",
+        "mention_type": "via known alias",
+        "preceding_text": "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.",
+        "s": 20,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "Database component",
+        "mention_type": "via known alias",
+        "preceding_text": "The persistence tier contains components that are concerned with the storage of audio files and their meta-data.",
+        "s": 23,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "Database component",
+        "mention_type": "via known alias",
+        "preceding_text": "It stores user information and meta-data of audio files such as the name and the genre.",
+        "s": 25,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S27: The MediaAccess component encapsulates database access for meta-data of audio files.",
+          "S34: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+        ],
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaAccess component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.",
+        "s": 26,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S26: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.",
+          "S34: When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database."
+        ],
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaAccess component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "When a user uploads an audio file, the MediaAccess component stores it at the predefined location.",
+        "s": 27,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S12: The UserDBAdapter component queries the database.",
+          "S30: The UserDBAdapter component creates a query based on the user's request."
+        ],
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "UserDBAdapter component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "Furthermore, it fetches a list of all available audio files.",
+        "s": 29,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S12: The UserDBAdapter component queries the database.",
+          "S29: By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data."
+        ],
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "UserDBAdapter component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.",
+        "s": 30,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "Database component",
+        "mention_type": "via known alias",
+        "preceding_text": "The UserDBAdapter component creates a query based on the user's request.",
+        "s": 31,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "Database component",
+        "mention_type": "via known alias",
+        "preceding_text": "The Database component then executes the actual query for files.",
+        "s": 32,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S26: When a user uploads an audio file, the MediaAccess component stores it at the predefined location.",
+          "S27: The MediaAccess component encapsulates database access for meta-data of audio files."
+        ],
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "MediaAccess component",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.",
+        "s": 34,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [],
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "Database",
+        "mention_type": "via known alias",
+        "preceding_text": "By contrast, all audio files are stored in a specific location (e.g., a dedicated file server or a local disk) to decouple the DataStorage from the database.",
+        "s": 34,
+        "source": "entity"
+      }
+    ],
+    "validated": [
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "One of the main components of Media Store is a server-side web front end, namely the Facade component, which delivers websites to the users and provides session management.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 3,
+        "sentence_text": "To this end, the Facade component delivers the corresponding registration and log-in pages to users.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "matched_text": "Facade component",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "In addition, users can browse, download, and upload audio files using the Facade component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 7,
+        "sentence_text": "Application business logic is provided by a central business logic component, called the MediaManagement component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 8,
+        "sentence_text": "The MediaManagement component coordinates the communication of other components.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "matched_text": "UserManagement component",
+        "mention_type": "indirect",
+        "s": 11,
+        "sentence_text": "The UserManagement component answers the requests for registration and authentication.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 12,
+        "sentence_text": "The UserDBAdapter component queries the database.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "matched_text": "UserManagement component",
+        "mention_type": "indirect",
+        "s": 13,
+        "sentence_text": "When a user logs into the system, Media Store does not store the password in plain text, but rather the UserManagement component implements further functions to hash and salt the passwords.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "matched_text": "TagWatermarking component",
+        "mention_type": "indirect",
+        "s": 16,
+        "sentence_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "matched_text": "MediaManagement component",
+        "mention_type": "indirect",
+        "s": 17,
+        "sentence_text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "matched_text": "TagWatermarking component",
+        "mention_type": "indirect",
+        "s": 17,
+        "sentence_text": "Afterward, the MediaManagement component forwards these audio files from the TagWatermarking component to the user.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "component_name": "Packaging",
+        "matched_text": "Packaging component",
+        "mention_type": "indirect",
+        "s": 19,
+        "sentence_text": "To allow users to download several files at a time, we provide the Packaging component, which archives multiple audio files into a single compressed file.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "matched_text": "ReEncoder component",
+        "mention_type": "indirect",
+        "s": 20,
+        "sentence_text": "The ReEncoder component converts the bit rates of audio files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 23,
+        "sentence_text": "The Database component represents an actual database (e.g., MySQL).",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 25,
+        "sentence_text": "After the user calls the page to list all available audio files, AudioAccess creates a query that is sent to the Database component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 26,
+        "sentence_text": "When a user uploads an audio file, the MediaAccess component stores it at the predefined location.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 27,
+        "sentence_text": "The MediaAccess component encapsulates database access for meta-data of audio files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 29,
+        "sentence_text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the user data.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "matched_text": "UserDBAdapter component",
+        "mention_type": "indirect",
+        "s": 30,
+        "sentence_text": "The UserDBAdapter component creates a query based on the user's request.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 31,
+        "sentence_text": "The Database component then executes the actual query for files.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database component",
+        "mention_type": "indirect",
+        "s": 32,
+        "sentence_text": "All salted hashes of passwords are also stored in the Database component.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "matched_text": "MediaAccess component",
+        "mention_type": "indirect",
+        "s": 34,
+        "sentence_text": "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "matched_text": "Database",
+        "mention_type": "indirect",
+        "s": 34,
+        "sentence_text": "When a user requests files to download, the MediaAccess component fetches the associated meta-data from the Database.",
+        "source": "entity"
+      }
+    ]
+  },
+  "final": {
+    "links": [
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 3,
+        "source": "entity"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "component_name": "Facade",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 8,
+        "source": "entity"
+      },
+      {
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "confidence": 1.0,
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "confidence": 1.0,
+        "s": 12,
+        "source": "entity"
+      },
+      {
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "component_name": "UserManagement",
+        "confidence": 1.0,
+        "s": 13,
+        "source": "entity"
+      },
+      {
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "confidence": 1.0,
+        "s": 16,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "component_name": "TagWatermarking",
+        "confidence": 1.0,
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "component_name": "Packaging",
+        "confidence": 1.0,
+        "s": 19,
+        "source": "entity"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "confidence": 1.0,
+        "s": 20,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 23,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 25,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 26,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 27,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "confidence": 1.0,
+        "s": 29,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "component_name": "UserDBAdapter",
+        "confidence": 1.0,
+        "s": 30,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 31,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 32,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 34,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 34,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaManagement",
+        "confidence": 1.0,
+        "s": 9,
+        "source": "coreference"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "component_name": "Reencoding",
+        "confidence": 1.0,
+        "s": 21,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "component_name": "DB",
+        "confidence": 1.0,
+        "s": 24,
+        "source": "coreference"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "component_name": "MediaAccess",
+        "confidence": 1.0,
+        "s": 28,
+        "source": "coreference"
+      }
+    ],
+    "provenance": [
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 1,
+          "antecedent_text": "namely the Facade component",
+          "antecedent_via_alias": false,
+          "reference": "the Facade component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 1,
+          "antecedent_text": "namely the Facade component, which delivers websites to the users and provides session management",
+          "antecedent_via_alias": false,
+          "reference": "the Facade component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 3,
+        "source": "entity"
+      },
+      {
+        "c": "_st2Y0HDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 1,
+          "antecedent_text": "namely the Facade component, which delivers websites to the users and provides session management",
+          "antecedent_via_alias": false,
+          "reference": "the Facade component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 7,
+          "antecedent_text": "called the MediaManagement component",
+          "antecedent_via_alias": false,
+          "reference": "the MediaManagement component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 7,
+          "antecedent_text": "called the MediaManagement component",
+          "antecedent_via_alias": false,
+          "reference": "The MediaManagement component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 8,
+        "source": "entity"
+      },
+      {
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 12,
+        "source": "entity"
+      },
+      {
+        "c": "_ahv3gL0YEeSAHuL4ItXOLQ",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 11,
+          "antecedent_text": "The UserManagement component answers the requests for registration and authentication.",
+          "antecedent_via_alias": false,
+          "reference": "the UserManagement component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 13,
+        "source": "entity"
+      },
+      {
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 16,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "c": "_h_QpkLhEEeSNPorBlo7x9g",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 16,
+          "antecedent_text": "The re-encoded files are then digitally and individually watermarked by the TagWatermarking component.",
+          "antecedent_via_alias": false,
+          "reference": "these audio files"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 17,
+        "source": "entity"
+      },
+      {
+        "c": "_B5geQHDsEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 19,
+        "source": "entity"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 20,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 23,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 25,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 26,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 27,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 29,
+        "source": "entity"
+      },
+      {
+        "c": "_tBjC0HDpEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 30,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 31,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": {
+          "approved": false,
+          "path": "coref_rejected"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 31,
+          "antecedent_text": "The Database component then executes the actual query for files.",
+          "antecedent_via_alias": false,
+          "reference": "the Database component"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 32,
+        "source": "entity"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 34,
+        "source": "entity"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 31,
+          "antecedent_text": "The Database component then executes the actual query for files.",
+          "antecedent_via_alias": true,
+          "reference": "the Database"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": true,
+        "s": 34,
+        "source": "entity"
+      },
+      {
+        "c": "_p_EeYHDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 8,
+          "antecedent_text": "The MediaManagement component coordinates the communication of other components",
+          "antecedent_via_alias": false,
+          "reference": "it"
+        },
+        "entity_decision": null,
+        "from_coref": true,
+        "s": 9,
+        "source": "coreference"
+      },
+      {
+        "c": "_o10-YHDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 20,
+          "antecedent_text": "The ReEncoder component converts the bit rates of audio files.",
+          "antecedent_via_alias": true,
+          "reference": "This"
+        },
+        "entity_decision": null,
+        "from_coref": true,
+        "s": 21,
+        "source": "coreference"
+      },
+      {
+        "c": "_5LN7MLg2EeSNPorBlo7x9g",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 23,
+          "antecedent_text": "The Database component represents an actual database (e.g., MySQL).",
+          "antecedent_via_alias": false,
+          "reference": "It"
+        },
+        "entity_decision": null,
+        "from_coref": true,
+        "s": 24,
+        "source": "coreference"
+      },
+      {
+        "c": "_9eK7YHDrEeSqnN80MQ2uGw",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 27,
+          "antecedent_text": "The MediaAccess component encapsulates database access for meta-data of audio files.",
+          "antecedent_via_alias": false,
+          "reference": "it"
+        },
+        "entity_decision": null,
+        "from_coref": true,
+        "s": 28,
+        "source": "coreference"
+      }
+    ]
+  },
+  "knowledge": {
+    "doc_knowledge": {
+      "aliases": [
+        {
+          "component": "DB",
+          "scope": "global",
+          "term": "Database"
+        },
+        {
+          "component": "DB",
+          "scope": "global",
+          "term": "Database component"
+        },
+        {
+          "component": "Reencoding",
+          "scope": "global",
+          "term": "ReEncoder"
+        }
+      ]
+    },
+    "model_knowledge": {
+      "ambiguous_names": [
+        "Cache",
+        "DB",
+        "FileStorage"
+      ]
+    }
+  },
+  "meta": {
+    "backend": "sonnet",
+    "backend_subdir": "claude",
+    "backend_tag": "claude",
+    "elapsed_s": {
+      "final": 123.5,
+      "layer1": 14.71,
+      "layer2": 15.8,
+      "layer3": 37.7,
+      "layer4": 55.31
+    },
+    "n_components": 14,
+    "n_sentences": 37,
+    "project": "mediastore",
+    "run": "run3",
+    "variant": "s_linker21"
+  }
+}

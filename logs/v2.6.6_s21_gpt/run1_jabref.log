@@ -1,0 +1,71 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: jabref
+Variants: s_linker21
+========================================================================================================================
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: outer shell -> gui [global]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [global]
+    Alias: core -> model [local]
+    Alias: center -> model [local]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=21 P2=21 ∪=21
+  Framing C: 21 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 18 / 21
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 8
+    Coref reject: S7 -> preferences
+    Coref reject: S9 -> model
+    Coref reject: S10 -> cli
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+    Coref reject: S13 -> model
+  Coref validated: 1 / 8
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 18 (from 19 raw)
+  Phase log saved: results/v2.6.6_s21_gpt/run1/llm_logs/s_linker21_openai_jabref_20260628_100758.json
+  LLM call trace saved: results/v2.6.6_s21_gpt/run1/llm_logs/s_linker21_openai_jabref_20260628_100758_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 18 links (23.4s, 10 LLM calls)
+  s_linker21: P=100.0% R=100.0% F1=100.0% TP=18 FP=0 FN=0 (23s)
+    Sources: {'entity': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker21    
+-----------------+-------------------
+jabref           | F1 100.0% FP   0
+-----------------+-------------------
+Macro avg        | F1 100.0% FP   0
+
+Results saved to results/v2.6.6_s21_gpt/run1/jabref/ablation_20260628_100758.json

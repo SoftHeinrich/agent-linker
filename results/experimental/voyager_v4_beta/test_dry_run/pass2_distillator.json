@@ -1,0 +1,37 @@
+{
+  "per_project": [
+    {
+      "iter": 2,
+      "patterns_proposed": [
+        {
+          "slot": "AMBIGUITY_RULES",
+          "rule_text": "Mock pattern (dry-run \u2014 no LLM call).",
+          "example_block": "TP: mock TP example.\nFP: mock FP example.",
+          "why_it_transfers": "dry-run placeholder",
+          "abstraction_check_cot": "dry-run: PASSES all styles (placeholder).",
+          "addresses_failure_modes": [
+            "FM-1"
+          ]
+        }
+      ],
+      "patterns_to_remove": [],
+      "dry_run": true
+    }
+  ],
+  "merged_proposals": [
+    {
+      "slot": "AMBIGUITY_RULES",
+      "rule_text": "Mock pattern (dry-run \u2014 no LLM call).",
+      "example_block": "TP: mock TP example.\nFP: mock FP example.",
+      "why_it_transfers": "dry-run placeholder",
+      "abstraction_check_cot": "dry-run: PASSES all styles (placeholder).",
+      "addresses_failure_modes": [
+        "FM-1"
+      ],
+      "_project": "mediastore"
+    }
+  ],
+  "per_project_removals": {
+    "mediastore": []
+  }
+}

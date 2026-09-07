@@ -1,0 +1,66 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: mediastore
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: AudioAccess -> MediaAccess [global]
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: re-encoded -> Reencoding [local]
+  Model: 4 ambiguous of 14 components
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=28 P2=27 ∪=28
+  Framing C: 28 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 27 / 28
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 14
+    Coref reject: S21 -> Reencoding
+    Coref reject: S33 -> DB
+  Coref validated: 12 / 14
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 30 (from 39 raw)
+  Phase log saved: results/v2.6.5_s20union_sonnet_nothink_20260627/run1/llm_logs/s_linker20_union_claude_mediastore_20260627_140722.json
+  LLM call trace saved: results/v2.6.5_s20union_sonnet_nothink_20260627/run1/llm_logs/s_linker20_union_claude_mediastore_20260627_140722_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 30 links (115.5s, 14 LLM calls)
+  s_linker20_union: P=100.0% R=96.8% F1=98.4% TP=30 FP=0 FN=1 (116s)
+    Sources: {'entity': 27, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 98.4% FP   0
+-----------------+-------------------
+Macro avg        | F1 98.4% FP   0
+
+Results saved to results/v2.6.5_s20union_sonnet_nothink_20260627/run1/mediastore/ablation_20260627_140722.json

@@ -1,0 +1,74 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: teammates
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: GAE -> GAE Datastore [global]
+  Model: 3 ambiguous of 8 components
+  Doc knowledge: 1 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=76 P2=66 ∪=76
+  Framing C: 76 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 55 / 76
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 52
+    Coref reject: S35 -> GAE Datastore
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S75 -> GAE Datastore
+    Coref reject: S79 -> Logic
+    Coref reject: S80 -> Logic
+    Coref reject: S124 -> Logic
+  Coref validated: 46 / 52
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 67 (from 101 raw)
+  Phase log saved: results/v2.6.5_s20union_sonnet_nothink_20260627/run1/llm_logs/s_linker20_union_claude_teammates_20260627_142700.json
+  LLM call trace saved: results/v2.6.5_s20union_sonnet_nothink_20260627/run1/llm_logs/s_linker20_union_claude_teammates_20260627_142700_calls.json (42 calls)
+  Checkpoint: final saved
+
+Final: 67 links (400.3s, 42 LLM calls)
+  s_linker20_union: P=76.1% R=89.5% F1=82.3% TP=51 FP=16 FN=6 (400s)
+    Sources: {'entity': 55, 'coreference': 12}
+    FP by source: {'entity': 8, 'coreference': 8}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+teammates        | F1 82.3% FP  16
+-----------------+-------------------
+Macro avg        | F1 82.3% FP  16
+
+Results saved to results/v2.6.5_s20union_sonnet_nothink_20260627/run1/teammates/ablation_20260627_142700.json

@@ -1,0 +1,25 @@
+{
+  "iter": 1,
+  "split": "test_dry_run",
+  "L_predictions_summary": {
+    "macro_F1": 0.5,
+    "delta_from_prior_iter": 0.5,
+    "per_dataset": {
+      "mediastore": 0.5
+    }
+  },
+  "failure_modes": [
+    {
+      "id": "FM-1",
+      "title": "Mock failure mode (dry-run)",
+      "affected_slot": "AMBIGUITY_RULES",
+      "symptom": "dry-run placeholder",
+      "apparent_cause": "no LLM calls in dry-run mode",
+      "suggested_direction": "N/A",
+      "evidence_count": 0,
+      "abstract_example_pair": "TP: N/A\nFP: N/A"
+    }
+  ],
+  "newly_introduced_errors": [],
+  "dry_run": true
+}

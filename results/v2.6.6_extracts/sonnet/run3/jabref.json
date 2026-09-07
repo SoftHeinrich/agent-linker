@@ -1,0 +1,1466 @@
+{
+  "audit": {
+    "phase_metrics": {
+      "_total": {
+        "elapsed_s": 309.7,
+        "llm_calls": 10
+      },
+      "phase_1_doc_extract": {
+        "calls": 1,
+        "elapsed_s": 58.236,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_1_doc_judge": {
+        "calls": 1,
+        "elapsed_s": 14.906,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_1_model": {
+        "calls": 1,
+        "elapsed_s": 4.307,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_2_framing_c_pass1": {
+        "calls": 1,
+        "elapsed_s": 9.622,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_2_framing_c_pass2": {
+        "calls": 1,
+        "elapsed_s": 8.547,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_4_twopass_p1": {
+        "calls": 1,
+        "elapsed_s": 57.583,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_4_twopass_p2": {
+        "calls": 1,
+        "elapsed_s": 32.629,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_5_coref": {
+        "calls": 2,
+        "elapsed_s": 124.096,
+        "errors": 0,
+        "tokens": 0
+      },
+      "phase_5_coref_validation": {
+        "calls": 1,
+        "elapsed_s": 12.611,
+        "errors": 0,
+        "tokens": 0
+      }
+    }
+  },
+  "coref": {
+    "decisions": [
+      {
+        "approved": true,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "path": "coref_validated",
+        "s": 6
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "path": "coref_validated",
+        "s": 12
+      }
+    ],
+    "metadata": [
+      {
+        "antecedent_sentence": 6,
+        "antecedent_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model",
+        "antecedent_via_alias": false,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "reference": "it",
+        "s": 6
+      },
+      {
+        "antecedent_sentence": 9,
+        "antecedent_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "antecedent_via_alias": false,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "reference": "the model",
+        "s": 12
+      }
+    ],
+    "raw": [
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "coreference"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 12,
+        "source": "coreference"
+      }
+    ],
+    "validated": [
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "coreference"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 12,
+        "source": "coreference"
+      }
+    ]
+  },
+  "entity": {
+    "candidates": [
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "the model in the center",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "the logic as an intermediate layer",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "the gui which is the outer shell",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "matched_text": "preferences",
+        "mention_type": "indirect",
+        "s": 2,
+        "sentence_text": "There are additional utility packages for preferences and the cli.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "matched_text": "the cli",
+        "mention_type": "indirect",
+        "s": 2,
+        "sentence_text": "There are additional utility packages for preferences and the cli.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "logic",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "model",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "gui",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "The model",
+        "mention_type": "indirect",
+        "s": 5,
+        "sentence_text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "The logic",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "manipulating the model",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "the gui",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "Only the gui",
+        "mention_type": "indirect",
+        "s": 7,
+        "sentence_text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "matched_text": "his preferences",
+        "mention_type": "indirect",
+        "s": 7,
+        "sentence_text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "The model",
+        "mention_type": "indirect",
+        "s": 9,
+        "sentence_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "the logic",
+        "mention_type": "indirect",
+        "s": 9,
+        "sentence_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "matched_text": "The cli package",
+        "mention_type": "indirect",
+        "s": 10,
+        "sentence_text": "The cli package bundles classes that are responsible for JabRef\u2019s command line interface.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "matched_text": "The preferences",
+        "mention_type": "indirect",
+        "s": 11,
+        "sentence_text": "The preferences represents all information customizable by a user for her personal needs.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "from the model",
+        "mention_type": "indirect",
+        "s": 12,
+        "sentence_text": "We use an event bus to publish events from the model to the other layers.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "outer layers",
+        "mention_type": "indirect",
+        "s": 13,
+        "sentence_text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers.",
+        "source": "entity"
+      }
+    ],
+    "decisions": [
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 1,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 1,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 1,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 2,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 2,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 4,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 4,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 4,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 5,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 6,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 6,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 6,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 7,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": false,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "p1": false,
+        "p2": false,
+        "path": "entity_twopass_reject",
+        "s": 7,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 9,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 9,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 10,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 11,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": true,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "p1": true,
+        "p2": true,
+        "path": "entity_twopass",
+        "s": 12,
+        "stage": "entity_twopass"
+      },
+      {
+        "approved": false,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "p1": false,
+        "p2": false,
+        "path": "entity_twopass_reject",
+        "s": 13,
+        "stage": "entity_twopass"
+      }
+    ],
+    "evidence_bundles": [
+      {
+        "anchor_sentences": [
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+          "S12: We use an event bus to publish events from the model to the other layers."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "the model in the center",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "",
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes."
+        ],
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "the logic as an intermediate layer",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "",
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        ],
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "the gui which is the outer shell",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "",
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks.",
+          "S11: The preferences represents all information customizable by a user for her personal needs."
+        ],
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "preferences",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S10: The cli package bundles classes that are responsible for JabRef\u2019s command line interface."
+        ],
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "the cli",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes."
+        ],
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "logic",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The dependencies are only directed towards the center.",
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+          "S12: We use an event bus to publish events from the model to the other layers."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "model",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The dependencies are only directed towards the center.",
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        ],
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "gui",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The dependencies are only directed towards the center.",
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+          "S12: We use an event bus to publish events from the model to the other layers."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "The model",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "s": 5,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes."
+        ],
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "The logic",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+          "S12: We use an event bus to publish events from the model to the other layers."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "manipulating the model",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        ],
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "the gui",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use."
+        ],
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "Only the gui",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S2: There are additional utility packages for preferences and the cli.",
+          "S11: The preferences represents all information customizable by a user for her personal needs."
+        ],
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "his preferences",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S12: We use an event bus to publish events from the model to the other layers."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "The model",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "For each layer, we form packages according to their responsibility, i.e., vertical structuring.",
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use."
+        ],
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "the logic",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "For each layer, we form packages according to their responsibility, i.e., vertical structuring.",
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S2: There are additional utility packages for preferences and the cli."
+        ],
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "The cli package",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "s": 10,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S2: There are additional utility packages for preferences and the cli.",
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        ],
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "The preferences",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The cli package bundles classes that are responsible for JabRef\u2019s command line interface.",
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S5: The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S9: The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes."
+        ],
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": true,
+        "matched_span": "from the model",
+        "mention_type": "proper case, standalone",
+        "preceding_text": "The preferences represents all information customizable by a user for her personal needs.",
+        "s": 12,
+        "source": "entity"
+      },
+      {
+        "anchor_sentences": [
+          "S1: We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+          "S4: We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+          "S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+          "S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        ],
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "extraction_rationale": "Framing C extraction",
+        "is_ambiguous": false,
+        "matched_span": "outer layers",
+        "mention_type": "indirect/unclear match",
+        "preceding_text": "We use an event bus to publish events from the model to the other layers.",
+        "s": 13,
+        "source": "entity"
+      }
+    ],
+    "validated": [
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "the model in the center",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "the logic as an intermediate layer",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "the gui which is the outer shell",
+        "mention_type": "indirect",
+        "s": 1,
+        "sentence_text": "We have been successfully transitioning from a spaghetti to a more structured architecture with the model in the center, and the logic as an intermediate layer towards the gui which is the outer shell.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "matched_text": "preferences",
+        "mention_type": "indirect",
+        "s": 2,
+        "sentence_text": "There are additional utility packages for preferences and the cli.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "matched_text": "the cli",
+        "mention_type": "indirect",
+        "s": 2,
+        "sentence_text": "There are additional utility packages for preferences and the cli.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "logic",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "model",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "gui",
+        "mention_type": "indirect",
+        "s": 4,
+        "sentence_text": "We have JUnit tests to detect violations of the most crucial dependencies (between logic, model, and gui), and the build will fail automatically in these cases.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "The model",
+        "mention_type": "indirect",
+        "s": 5,
+        "sentence_text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of logic attached.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "The logic",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "manipulating the model",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "the gui",
+        "mention_type": "indirect",
+        "s": 6,
+        "sentence_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "matched_text": "Only the gui",
+        "mention_type": "indirect",
+        "s": 7,
+        "sentence_text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "The model",
+        "mention_type": "indirect",
+        "s": 9,
+        "sentence_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "matched_text": "the logic",
+        "mention_type": "indirect",
+        "s": 9,
+        "sentence_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "matched_text": "The cli package",
+        "mention_type": "indirect",
+        "s": 10,
+        "sentence_text": "The cli package bundles classes that are responsible for JabRef\u2019s command line interface.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "matched_text": "The preferences",
+        "mention_type": "indirect",
+        "s": 11,
+        "sentence_text": "The preferences represents all information customizable by a user for her personal needs.",
+        "source": "entity"
+      },
+      {
+        "alias_used": null,
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "matched_text": "from the model",
+        "mention_type": "indirect",
+        "s": 12,
+        "sentence_text": "We use an event bus to publish events from the model to the other layers.",
+        "source": "entity"
+      }
+    ]
+  },
+  "final": {
+    "links": [
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "confidence": 1.0,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "confidence": 1.0,
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "confidence": 1.0,
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "confidence": 1.0,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 5,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "confidence": 1.0,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "component_name": "gui",
+        "confidence": 1.0,
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "component_name": "logic",
+        "confidence": 1.0,
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "component_name": "cli",
+        "confidence": 1.0,
+        "s": 10,
+        "source": "entity"
+      },
+      {
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "component_name": "preferences",
+        "confidence": 1.0,
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "component_name": "model",
+        "confidence": 1.0,
+        "s": 12,
+        "source": "entity"
+      }
+    ],
+    "provenance": [
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 1,
+        "source": "entity"
+      },
+      {
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 2,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 4,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 5,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 6,
+          "antecedent_text": "The logic is responsible for reading/writing/importing/exporting and manipulating the model",
+          "antecedent_via_alias": false,
+          "reference": "it"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": true,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 6,
+        "source": "entity"
+      },
+      {
+        "c": "_Coy0kEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 7,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "c": "_He3LoEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 9,
+        "source": "entity"
+      },
+      {
+        "c": "_EBiwMEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 10,
+        "source": "entity"
+      },
+      {
+        "c": "_NUdtEEl4Ee243f2e4VWs6w",
+        "coref_decision": null,
+        "coref_meta": null,
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": false,
+        "s": 11,
+        "source": "entity"
+      },
+      {
+        "c": "_MFIzMEl4Ee243f2e4VWs6w",
+        "coref_decision": {
+          "approved": true,
+          "path": "coref_validated"
+        },
+        "coref_meta": {
+          "antecedent_sentence": 9,
+          "antecedent_text": "The model should have no dependencies to other classes of JabRef and the logic should only depend on model classes.",
+          "antecedent_via_alias": false,
+          "reference": "the model"
+        },
+        "entity_decision": {
+          "approved": true,
+          "p1": true,
+          "p2": true,
+          "path": "entity_twopass",
+          "stage": "entity_twopass"
+        },
+        "from_coref": true,
+        "s": 12,
+        "source": "entity"
+      }
+    ]
+  },
+  "knowledge": {
+    "doc_knowledge": {
+      "aliases": [
+        {
+          "component": "cli",
+          "scope": "global",
+          "term": "command line interface"
+        },
+        {
+          "component": "gui",
+          "scope": "global",
+          "term": "outer shell"
+        }
+      ]
+    },
+    "model_knowledge": {
+      "ambiguous_names": [
+        "model"
+      ]
+    }
+  },
+  "meta": {
+    "backend": "sonnet",
+    "backend_subdir": "claude",
+    "backend_tag": "claude",
+    "elapsed_s": {
+      "final": 309.7,
+      "layer1": 73.14,
+      "layer2": 9.62,
+      "layer3": 90.21,
+      "layer4": 136.71
+    },
+    "n_components": 6,
+    "n_sentences": 13,
+    "project": "jabref",
+    "run": "run3",
+    "variant": "s_linker20_union"
+  }
+}
