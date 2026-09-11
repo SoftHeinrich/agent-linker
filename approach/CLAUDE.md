@@ -55,8 +55,11 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   fixed **name-evidence order** (full-name → partial-name → coreference), no controller.
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
-- `s_linker26.py` … `s_linker89.py` — the rounds below. All `experimental=True`; the
-  head is the highest-numbered one the compaction round confirms.
+- `s_linker26.py` … `s_linker120.py` — the rounds below. All `experimental=True`.
+  **THE HEAD IS `s_linker120` (the union arm) since 2026-09-11, and the paper reports
+  it**; it is a standalone file, like `s_linker110` before it. The ledger below is
+  chronological, so an earlier round's "X is the head" sentence is true of its own date
+  and superseded by the next round that moves it: s92a -> s109/s110 -> s120.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one

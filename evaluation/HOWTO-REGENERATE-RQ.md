@@ -5,10 +5,22 @@ paper's research questions, from the raw agent-linker run outputs to the scored
 CSVs and the `.tex` floats the paper reads. Everything here is **stdlib-only
 Python 3** — no `pip install`, no `requirements.txt`.
 
-The canonical arm is **`s_linker110`** (the scan, plus the sibling-name refusal
-and the resolver's antecedent shortlist) on two
-GPT-5.6 backends: **terra = paper body, luna = mirror**. Every engine below
-defaults to it. The retired arms (`s_linker21`, `s_linker20_union`) were dropped
+The canonical arm is **`s_linker120`** (the union arm: both name scans propose into
+one stream and one rule judges it, over `s_linker110`'s scan, sibling-name refusal and
+antecedent shortlist) on two GPT-5.6 backends: **terra = paper body, luna = mirror**.
+Every engine below defaults to it. Its E2E sweep is
+`results/union_e2e_{terra,luna}_r{1,2,3}_20260911`, which scored `s_linker110` in the
+SAME invocations; `s110`'s own suffixed CSVs and the in-set `s110ctl` slots are kept so
+the promotion stays reproducible.
+
+**Two per-arm SHAPES, not just per-arm paths.** `rq34.py`'s `PHASE_SETS` gives this arm
+**two** judges (`linker_name.pkl`, `linker_coreference.pkl`) where every earlier arm has
+three, so RQ3 has two rows; its `FORM_SETS` keeps RQ4 at **three** proposal forms by
+splitting the name phase on the stage label each link carries. An arm with no one-call
+floor sweep of its own -- `s120` has none, `s_linker120_onecall` was never built -- has
+no floor table at all: `rq4_floor.py` refuses, `rq_tables.py` drops the CSV,
+`csv_to_tex.py` skips the table and `sync_paper.py` deletes the previous arm's copy from
+the paper. The floor's control is the arm itself, so it cannot be borrowed. The retired arms (`s_linker21`, `s_linker20_union`) were dropped
 from the roster on 2026-08-26. Their link dumps are still in `sota-links/`, and
 `rq34.py` still scores them via `RQ34_ARM=s21`, but `rq12.py` no longer lists
 them and nothing regenerates a paper number from them.
@@ -31,12 +43,12 @@ export TRANSARC_RESULTS_DIR=$PWD/evaluation/mini-data
 
 | what | where |
 |---|---|
-| doc-model / doc-code link dumps | `sota-links/{model-doc/aalinker,doc-code/aalinker-composed}/{terra,luna}_s110/run{1,2,3}/` |
-| per-phase state (RQ3/RQ4) | `results/consolidation_e2e_{terra,luna}_r{1,2,3}_20260825/phase_states/s_linker110/` |
-| no-knowledge sweep | `results/consolidation_noknow_e2e_{terra,luna}_r{1,2,3}_20260902/` |
-| RQ4 floor sweep | `results/onecall_e2e_{terra,luna}_r{1,2,3}_20260902/` (control: `noevidence_e2e_…`) |
+| doc-model / doc-code link dumps | `sota-links/{model-doc/aalinker,doc-code/aalinker-composed}/{terra,luna}_s120/run{1,2,3}/` |
+| per-phase state (RQ3/RQ4) | `results/union_e2e_{terra,luna}_r{1,2,3}_20260911/phase_states/s_linker120/` |
+| no-knowledge sweep | `results/union_noknow_e2e_{terra,luna}_r{1,2,3}_20260911/` |
+| RQ4 floor sweep | none on this arm (s110's is `results/onecall_e2e_*_20260902/`) |
 | RQ1/RQ2 output | `evaluation/reports/RQ12_{BIGTABLE,PERPROJECT}.csv` |
-| RQ3/RQ4 output | `evaluation/reports/rq34/s110/` (+ `s110_floor`, `s110_noknow`, `s110_noknow_luna`) |
+| RQ3/RQ4 output | `evaluation/reports/rq34/s120/` (+ `s120_noknow`, `s120_noknow_luna`) |
 | paper tables | `evaluation/reports/tex_src/*.csv` → `evaluation/reports/tex/*.tex` |
 
 `rq34.py` and `rq4_floor.py` find the run root via `ALINKER_RESULTS` (auto-detected
@@ -51,16 +63,16 @@ fails if any two disagree.
 
 ```bash
 # (a) sota slots for this arm, if absent: run CSVs -> extracts -> dump
-python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker110 \
-    --out results/s110_extracts \
-    --model terra results/consolidation_e2e_terra_r{1,2,3}_20260825 \
-    --model luna  results/consolidation_e2e_luna_r{1,2,3}_20260825
-EXTRACTS_DIR=$PWD/results/s110_extracts SOTA_LINKS=$PWD/sota-links \
-  DUMP_CONFIG=terra_s110 DUMP_MANIFEST_TAG=s110_terra \
-  python3 evaluation/mini-src/build_dump.py                       # terra_s110
-EXTRACTS_DIR=$PWD/results/s110_extracts SOTA_LINKS=$PWD/sota-links DUMP_BE_DIR=luna \
-  DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
-  python3 evaluation/mini-src/build_dump.py                       # luna_s110
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker120 \
+    --out results/s120_extracts \
+    --model terra results/union_e2e_terra_r{1,2,3}_20260911 \
+    --model luna  results/union_e2e_luna_r{1,2,3}_20260911
+EXTRACTS_DIR=$PWD/results/s120_extracts SOTA_LINKS=$PWD/sota-links \
+  DUMP_CONFIG=terra_s120 DUMP_MANIFEST_TAG=s120_terra \
+  python3 evaluation/mini-src/build_dump.py                       # terra_s120
+EXTRACTS_DIR=$PWD/results/s120_extracts SOTA_LINKS=$PWD/sota-links DUMP_BE_DIR=luna \
+  DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s120 DUMP_MANIFEST_TAG=s120_luna \
+  python3 evaluation/mini-src/build_dump.py                       # luna_s120
 
 # (b) RQ1 + RQ2
 python3 evaluation/mini-src/rq12.py
@@ -71,8 +83,8 @@ python3 evaluation/mini-src/rq34_rq2.py
 
 # (d) the RQ4 "No knowledge" row (see §4)
 
-# (e) the RQ4 floor: the workflow against one linking call (see §5)
-python3 evaluation/mini-src/rq4_floor.py
+# (e) the RQ4 floor: NOT on this arm -- s_linker120_onecall was never built, so
+#     rq4_floor.py refuses and rq_tables.py drops the table (see §5)
 
 # (f) paper tables
 python3 evaluation/mini-src/rq_tables.py
@@ -93,17 +105,17 @@ asserts a bare run of all four reproduces the committed CSVs byte for byte.
 
 ## Quick reference — scoring a candidate arm against the incumbent
 
-The paper reports one arm (`s110`). Every generator resolves its inputs from
-`$ALINKER_ARM` (default `s110`), so a candidate is scored by setting one variable
+The paper reports one arm (`s120`). Every generator resolves its inputs from
+`$ALINKER_ARM` (default `s120`), so a candidate is scored by setting one variable
 instead of editing paths in seven files. The incumbent keeps the unsuffixed names;
 a candidate is written *beside* it, never over it:
 
-| | incumbent (`s110`) | candidate (e.g. `s120`) |
+| | incumbent (`s120`) | candidate (e.g. `s130`) |
 |---|---|---|
-| dump slots | `sota-links/**/{terra,luna}_s110` | `…/{terra,luna}_s120` |
-| RQ1/RQ2 CSVs | `reports/RQ12_BIGTABLE.csv` | `reports/RQ12_BIGTABLE_s120.csv` |
-| RQ3/RQ4 reports | `reports/rq34/s110` | `reports/rq34/s120` |
-| reshaped + rendered | `reports/tex_src`, `reports/tex` | `reports/tex_src_s120`, `reports/tex_s120` |
+| dump slots | `sota-links/**/{terra,luna}_s120` | `…/{terra,luna}_s130` |
+| RQ1/RQ2 CSVs | `reports/RQ12_BIGTABLE.csv` | `reports/RQ12_BIGTABLE_s130.csv` |
+| RQ3/RQ4 reports | `reports/rq34/s120` | `reports/rq34/s130` |
+| reshaped + rendered | `reports/tex_src`, `reports/tex` | `reports/tex_src_s130`, `reports/tex_s130` |
 
 A candidate also needs a row in `rq34.py`'s `ARMS` table (its phase-state variant and
 run sweep); without one the RQ3/RQ4 engines fall back to the default arm's runs.
@@ -112,43 +124,48 @@ Nothing is synced into the paper until the arm decision is made — `sync_paper.
 always reads the incumbent directories.
 
 ```bash
-# (1) extracts from the candidate's recorded E2E runs. s110's are the consolidation
-#     round's (they carry an in-set s_linker92a control -- see "the control" note below),
-#     so no LLM calls are needed. A round whose runs were never recorded is the one case
-#     that does cost calls; rq12.py --arm <arm> then stops with a "no dump slots" error
+# (1) extracts from the candidate's recorded E2E runs. s120's are the union round's
+#     (they carry an in-set s_linker110 control -- see "the control" note below), so no
+#     LLM calls are needed. A round whose runs were never recorded is the one case that
+#     does cost calls; rq12.py --arm <arm> then stops with a "no dump slots" error
 #     naming the four missing directories rather than scoring a partial set.
-python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker110 \
-    --out $PWD/results/s110_extracts \
-    --model terra results/consolidation_e2e_terra_r{1,2,3}_20260825 \
-    --model luna  results/consolidation_e2e_luna_r{1,2,3}_20260825
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker120 \
+    --out $PWD/results/s120_extracts \
+    --model terra results/union_e2e_terra_r{1,2,3}_20260911 \
+    --model luna  results/union_e2e_luna_r{1,2,3}_20260911
 
-# (1b) THE CONTROL. The consolidation runs scored s_linker92a in the SAME invocations,
-#      so build that as its own arm and compare against it. Comparing s110 against the
-#      paper's s92a instead is cross-set: the two differ by three days of API drift as
-#      well as by the arm, and on CMR that difference is larger than the arm's.
-python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker92a \
-    --out $PWD/results/s92actl_extracts \
-    --model terra results/consolidation_e2e_terra_r{1,2,3}_20260825 \
-    --model luna  results/consolidation_e2e_luna_r{1,2,3}_20260825
+# (1b) THE CONTROL. The union runs scored s_linker110 in the SAME invocations, so build
+#      that as its own arm and compare against it. Comparing s120 against the paper's
+#      previous s110 numbers instead is cross-set: the two would differ by weeks of API
+#      drift as well as by the arm, and on CMR that difference is larger than the arm's.
+python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker110 \
+    --out $PWD/results/s110ctl_extracts \
+    --model terra results/union_e2e_terra_r{1,2,3}_20260911 \
+    --model luna  results/union_e2e_luna_r{1,2,3}_20260911
 # build_dump.py defaults its roots in-tree, so only the cell knobs are needed. Name
 # both the config slot and the manifest tag, or the candidate overwrites the incumbent.
-EXTRACTS_DIR=$PWD/results/s110_extracts \
-  DUMP_CONFIG=terra_s110 DUMP_MANIFEST_TAG=s110_terra \
+EXTRACTS_DIR=$PWD/results/s110ctl_extracts \
+  DUMP_CONFIG=terra_s110ctl DUMP_MANIFEST_TAG=s110ctl_terra \
   python3 evaluation/mini-src/build_dump.py
-EXTRACTS_DIR=$PWD/results/s110_extracts DUMP_BE_DIR=luna \
-  DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
+EXTRACTS_DIR=$PWD/results/s110ctl_extracts DUMP_BE_DIR=luna \
+  DUMP_BE_TAG=gpt-5.6-luna DUMP_CONFIG=luna_s110ctl DUMP_MANIFEST_TAG=s110ctl_luna \
   python3 evaluation/mini-src/build_dump.py
 
 # (2) score both arms (no LLM calls)
 python3 evaluation/mini-src/rq12.py                      # incumbent, unsuffixed
-python3 evaluation/mini-src/rq12.py --arm s110           # candidate,  _s110
+python3 evaluation/mini-src/rq12.py --arm s110ctl        # the in-set control, _s110ctl
 
 # (3) the verdict: per-run deltas + sign agreement, not just the Average row
-python3 studies/compare_arms.py s110 --base s92actl \
-    --csv evaluation/reports/ARM_COMPARE_s110_vs_inset.csv   # the read to trust
-python3 studies/compare_arms.py s110 --base s92a \
-    --csv evaluation/reports/ARM_COMPARE_s110_vs_paper.csv   # vs the arm the paper ships
+python3 studies/compare_arms.py s120 --base s110ctl \
+    --csv evaluation/reports/ARM_COMPARE_s120_vs_inset.csv   # the read to trust
 ```
+
+That is the promotion that happened on 2026-09-11, and its verdict is the one the
+paper rests on: on terra every one of the six moving metrics reads BETTER with 3/3 sign
+agreement (doc-model \fone +2.25, \ftwo +1.96, doc-code \fone +2.21, \ftwo +1.12,
+worst-component +4.46, harmonic +2.77); on luna both doc-code metrics read BETTER and
+the rest are INSIDE NOISE with positive means. CMR is 0.0% for both arms on both
+backends, so the union changes precision and the tail, not coverage.
 
 `studies/compare_arms.py` lives outside the pipeline because it feeds no float. It
 exists because the Average row cannot settle this question: on this
@@ -168,8 +185,9 @@ place to read an architecture-traceability result, and that applies to picking a
 ### Promoting the winner
 
 If the candidate wins, promote it by moving the default rather than by renaming data —
-set `DEFAULT_ARM` in `mini-src/rq12.py`, `mini-src/rq_tables.py`, and
-`mini-src/csv_to_tex.py` (the three are asserted to agree by `check.py`), then re-run the
+set `DEFAULT_ARM` in all SEVEN modules that declare it -- `build_dump.py`, `rq12.py`,
+`rq34.py`, `rq34_rq2.py`, `rq4_floor.py`, `rq_tables.py`, `csv_to_tex.py` (they are
+asserted to agree by `check.py`, which is what stops a half-promotion), then re-run the
 full-rebuild quick reference above and `sync_paper.py`. The losing arm keeps its
 suffixed CSVs, so the comparison stays reproducible after the promotion.
 
@@ -198,7 +216,9 @@ agent-linker runs ──► link CSVs ──► extracts ──► sota-links du
 
 | Config slot | Backend | Arm | Built by |
 |-------------|---------|-----|----------|
-| `terra_s110`, `luna_s110` | GPT-5.6-terra / -luna | **`s_linker110` — canonical** | `build_dump.py` (all defaults) |
+| `terra_s120`, `luna_s120` | GPT-5.6-terra / -luna | **`s_linker120` — canonical** | `build_dump.py` (all defaults) |
+| `terra_s110`, `luna_s110` | GPT-5.6-terra / -luna | `s_linker110` — the arm s120 replaced, scored off its own consolidation runs | `build_dump.py` (env-overridden) |
+| `terra_s110ctl`, `luna_s110ctl` | GPT-5.6-terra / -luna | `s_linker110` scored **in-set**, off the union runs — the honest base for the s120 promotion | `build_dump.py` (env-overridden) |
 | `terra_s92a`, `luna_s92a` | GPT-5.6-terra / -luna | `s_linker92a` — the arm s110 replaced; kept because `../studies/compare_arms.py --base s92a` reads it | `build_dump.py` (env-overridden) |
 | `terra_s92actl`, `luna_s92actl` | GPT-5.6-terra / -luna | `s_linker92a` scored **in-set**, off the consolidation runs — the honest base for the promotion | `build_dump.py` (env-overridden) |
 | `gpt-5.4_s21`, `sonnet_s21` (+ `_noknow`) | gpt-5.4 / claude | `s_linker21` — retired | `build_dump.py` (env-overridden) |
@@ -223,11 +243,11 @@ so run order does not matter.
 #     The dump build below depends on the gold + bridge this produces, so run it first.
 python3 sota-links/build_unified.py
 
-# (b) the canonical s110 slots, from the extracts built in the quick reference.
+# (b) the canonical s120 slots, from the extracts built in the quick reference.
 #     terra is every default, so it needs no env at all; luna names its own cell.
 python3 evaluation/mini-src/build_dump.py
-EXTRACTS_DIR=$PWD/results/s110_extracts DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
-  DUMP_CONFIG=luna_s110 DUMP_MANIFEST_TAG=s110_luna \
+EXTRACTS_DIR=$PWD/results/s120_extracts DUMP_BE_DIR=luna DUMP_BE_TAG=gpt-5.6-luna \
+  DUMP_CONFIG=luna_s120 DUMP_MANIFEST_TAG=s120_luna \
   python3 evaluation/mini-src/build_dump.py
 ```
 
@@ -238,9 +258,10 @@ extracts tree to read), `DUMP_BE_TAG` (manifest backend column), `DUMP_CONFIG`
 extracts cell it was pointed at is empty.
 
 Each run prints a `model-doc F1 vs gold` integrity figure. At time of writing:
-terra_s110 **0.9385**, luna_s110 **0.8923** (15 cells each). The arm s110 replaced reads
-terra_s92a **0.9136**, luna_s92a **0.8793**; the ~2.5pp gap on terra is a useful tell
-that a slot was built from the wrong extracts.
+terra_s120 **0.9516**, luna_s120 **0.9003** (15 cells each). The arm s120 replaced reads
+terra_s110 **0.9385** off its own runs and terra_s110ctl **0.9291** in-set off the union
+runs, and the arm before that terra_s92a **0.9136**; the gaps are a useful tell that a
+slot was built from the wrong extracts.
 
 ---
 
@@ -311,19 +332,19 @@ input *and* the output together, which is the point of the `ARMS` table.
 
 ## 4. The RQ4 no-knowledge row
 
-Measured on this arm by `approach/pilot/run_consolidation_e2e_noknow.sh <terra|luna>`
-(variant `s_linker110_noknow`, three five-project runs per model, live calls), then
+Measured on this arm by `approach/pilot/run_union_e2e_noknow.sh <terra|luna>`
+(variant `s_linker120_noknow`, three five-project runs per model, live calls), then
 scored with the same two engines pointed at that sweep. Naming a non-default sweep (or
 a subset of the backends) makes `--csv-root` required, so this run cannot land on top of
 the arm's reported numbers:
 
 ```bash
-RUNS='consolidation_noknow_e2e_{model}_r{i}_20260902'
-python3 evaluation/mini-src/rq34.py     --runs-from "$RUNS" --ablation-key s_linker110_noknow \
-    --backends terra --csv-root evaluation/reports/rq34/s110_noknow
+RUNS='union_noknow_e2e_{model}_r{i}_20260911'
+python3 evaluation/mini-src/rq34.py     --runs-from "$RUNS" --ablation-key s_linker120_noknow \
+    --backends terra --csv-root evaluation/reports/rq34/s120_noknow
 python3 evaluation/mini-src/rq34_rq2.py --runs-from "$RUNS" \
-    --backends terra --csv-root evaluation/reports/rq34/s110_noknow
-# luna goes to reports/rq34/s110_noknow_luna (RQ34_NOKNOW in rq_tables.py)
+    --backends terra --csv-root evaluation/reports/rq34/s120_noknow
+# luna goes to reports/rq34/s120_noknow_luna (RQ34_NOKNOW in rq_tables.py)
 ```
 
 ---
