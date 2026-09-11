@@ -1,0 +1,180 @@
+====================================================================================================
+1. LINK-LEVEL TP / FP / FN  (SAD-SAM, 5 ArDoCo projects, majority-of-3 runs)
+====================================================================================================
+project         gold            ours TP/FP/FN      artemis TP/FP/FN       swattr TP/FP/FN
+mediastore        31         31/  3/  0         30/  5/  1         17/  1/ 14   
+teastore          27         26/  0/  1         26/ 20/  1         20/  0/  7   
+teammates         57         54/ 12/  3         39/  2/ 18         49/ 32/  8   
+bigbluebutton     62         57/  9/  5         44/ 12/ 18         44/  5/ 18   
+jabref            18         18/  0/  0         18/  5/  0         18/  2/  0   
+
+system       TP   FP   FN    micro-P micro-R micro-F1    macro-P macro-R macro-F1
+ours        186   24    9      0.886   0.954    0.919      0.919   0.966    0.941
+artemis     157   44   38      0.781   0.805    0.793      0.788   0.865    0.808
+swattr      148   40   47      0.787   0.759    0.773      0.869   0.772    0.799
+
+1b. run-to-run sensitivity (recall over 195 gold links)
+   ours     per-run TP [186, 186, 187]  spread  1 | majority 186 | union 190 | intersection 183 (spread 7)
+   artemis  per-run TP [152, 148, 161]  spread 13 | majority 157 | union 165 | intersection 139 (spread 26)
+   swattr   deterministic, TP 148
+
+====================================================================================================
+2. PAIRED GOLD-LINK PARTITION  (who recovers what; McNemar exact two-sided)
+====================================================================================================
+
+   ours vs SWATTR:  both=144  ours-only=42  swattr-only=4  neither=5   McNemar p=5.1e-09  (odds 42:4)
+     mediastore      both= 17  ours-only= 14  swattr-only=  0  neither=  0
+     teastore        both= 20  ours-only=  6  swattr-only=  0  neither=  1
+     teammates       both= 47  ours-only=  7  swattr-only=  2  neither=  1
+     bigbluebutton   both= 42  ours-only= 15  swattr-only=  2  neither=  3
+     jabref          both= 18  ours-only=  0  swattr-only=  0  neither=  0
+
+   ours vs ARTEMIS:  both=150  ours-only=36  artemis-only=7  neither=2   McNemar p=8.96e-06  (odds 36:7)
+     mediastore      both= 30  ours-only=  1  artemis-only=  0  neither=  0
+     teastore        both= 25  ours-only=  1  artemis-only=  1  neither=  0
+     teammates       both= 38  ours-only= 16  artemis-only=  1  neither=  2
+     bigbluebutton   both= 39  ours-only= 18  artemis-only=  5  neither=  0
+     jabref          both= 18  ours-only=  0  artemis-only=  0  neither=  0
+
+====================================================================================================
+3. RECALL BY REFERENCE FORM  (every gold link classified by how the sentence refers)
+====================================================================================================
+   F1 exact-name      = sentence writes the component name (verbatim after case/separator folding)
+   F2 partial-name    = sentence writes some but not all words of a multi-word name
+   F3 coreferent      = sentence writes no word of the name; the name occurs in the 3 preceding sentences
+   F4 renamed         = no word of the name in the sentence or its 3-sentence context (document uses another term)
+
+reference form        N                ours          artemis           swattr
+F1 exact-name       140      136 ( 97.1%)     127 ( 90.7%)     139 ( 99.3%)  
+F2 partial-name      29       25 ( 86.2%)      12 ( 41.4%)       7 ( 24.1%)  
+F3 coreferent        19       18 ( 94.7%)      12 ( 63.2%)       1 (  5.3%)  
+F4 renamed            7        7 (100.0%)       6 ( 85.7%)       1 ( 14.3%)  
+ALL                 195      186 ( 95.4%)     157 ( 80.5%)     148 ( 75.9%)  
+  tail (F2-F4)       55       50 ( 90.9%)      30 ( 54.5%)       9 ( 16.4%)  
+
+3b. where the recall gap comes from (gold links recovered, ours minus baseline)
+reference form        N   ours-SWATTR  ours-ArTEMiS
+F1 exact-name       140            -3            +9
+F2 partial-name      29           +18           +13
+F3 coreferent        19           +17            +6
+F4 renamed            7            +6            +1
+ALL                 195           +38           +29
+
+====================================================================================================
+4. OUR FALSE NEGATIVES  (gold links we miss, majority-of-3)
+====================================================================================================
+   teastore       s26   Persistence        F3 coreferent    artemis=Y swattr=n proposed-by=—
+        "As such, it also acts as a caching layer."
+   teammates      s7    Logic              F1 exact-name    artemis=n swattr=Y proposed-by=—
+        "In the UI Server the entry point for the application back end logic is designed as a REST-ful controller."
+   teammates      s8    Logic              F1 exact-name    artemis=n swattr=Y proposed-by=coreference
+        "The main logic of the application is in POJOs (Plain Old Java Objects)."
+   teammates      s168  Test Driver        F2 partial-name  artemis=Y swattr=n proposed-by=coreference
+        "This component automates the testing of TEAMMATES."
+   bigbluebutton  s19   HTML5 Server       F2 partial-name  artemis=Y swattr=n proposed-by=—
+        "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incoming messag"
+   bigbluebutton  s20   HTML5 Server       F2 partial-name  artemis=Y swattr=n proposed-by=—
+        "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodejs process "
+   bigbluebutton  s21   HTML5 Server       F2 partial-name  artemis=Y swattr=n proposed-by=—
+        "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value is configurable in bbb-html5-with-roles.con"
+   bigbluebutton  s26   Apps               F1 exact-name    artemis=Y swattr=Y proposed-by=full_name
+        "Frontends receive other DDP events including method calls to send events to akka-apps."
+   bigbluebutton  s78   BBB web            F1 exact-name    artemis=Y swattr=Y proposed-by=full_name
+        "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+
+   of these, swattr recovers 4: team/s7/Logic, team/s8/Logic, bigb/s26/Apps, bigb/s78/BBB web
+
+   of these, artemis recovers 7: teas/s26/Persistence, team/s168/Test Driver, bigb/s19/HTML5 Server, bigb/s20/HTML5 Server, bigb/s21/HTML5 Server, bigb/s26/Apps, bigb/s78/BBB web
+
+====================================================================================================
+5. FALSE-POSITIVE PROFILE  (what kind of error each system makes on the FP side)
+====================================================================================================
+   anchored      = the predicted component's name (or part) occurs in the sentence -> over-firing on a real mention
+   unanchored    = no word of the name in the sentence            -> invented or propagated from context
+   sibling-swap  = the sentence's own gold target was missed and shares a name word with the prediction
+   code-ident    = a name word occurs only inside a dotted/hyphenated identifier (logic.api, bbb-html5)
+   drift         = unanchored AND the same component was a TP within the 3 preceding sentences
+   lex-overfire  = code-ident OR the whole single-word name occurs only in lower case (ordinary-vocabulary use)
+
+system       FP   anchored  unanchored  sibling-swap  code-ident   drift   lex-overfire
+ours         24     17 ( 71%)       7 ( 29%)        2 (  8%)      7 ( 29%)   2 (  8%)        8 ( 33%)
+artemis      44     16 ( 36%)      28 ( 64%)        0 (  0%)      1 (  2%)  17 ( 39%)        2 (  5%)
+swattr       40     39 ( 98%)       1 (  2%)        0 (  0%)     27 ( 68%)   1 (  2%)       33 ( 82%)
+   (sibling-swap / code-ident / drift overlap; they are diagnostic markers, not a partition)
+
+   SWATTR code-identifier FPs (top 12):
+     teammates      s4    pred=Client         "The UI Browser seen by users consists of Web pages containing HTML, CS"
+     teammates      s22   pred=UI             "logic, ui.website, ui.controller represent an application of Model-Vie"
+     teammates      s23   pred=UI             "ui.website is not a real package."
+     teammates      s26   pred=UI             "ui.website is not a Java package."
+     teammates      s84   pred=Logic          "Package overview contains logic.api, logic.core."
+     teammates      s85   pred=Logic          "logic.api provides the API of the component to be accessed by the UI."
+     teammates      s86   pred=Logic          "logic.core contains the core logic of the system."
+     teammates      s125  pred=Storage        "Classes in the storage.entity package are not visible outside this com"
+     teammates      s127  pred=Common         "These datatransfer classes are in common.datatransfer package, to be e"
+     teammates      s130  pred=Storage        "Package overview contains storage.api, storage.entity, storage.search."
+     teammates      s131  pred=Storage        "storage.api provides the API of the component to be accessed by the lo"
+     teammates      s132  pred=Storage        "storage.entity contains classes that represent persistable entities."
+   ArTEMiS drift FPs (top 12):
+     mediastore     s21   pred=Reencoding               "This can result in reduction of file sizes."
+     teastore       s4    pred=WebUI                    "Data is retrieved from the PersistenceProvider and product recommendat"
+     teastore       s9    pred=WebUI                    "The status view lists the instance count and hosts for all registered "
+     teastore       s19   pred=Auth                     "Passwords are hashed using BCrypt."
+     teastore       s20   pred=Auth                     "To validate sessions, the SessionBlob is salted and hashed using SHA51"
+     teastore       s21   pred=Auth                     "When a SessionBlob is received, the cookie content is re-salted and ch"
+     teastore       s29   pred=Recommender              "Recommendations are generated based on the users current shopping cart"
+     teastore       s30   pred=Recommender              "The item rating of the users are based on their purchases."
+     teastore       s31   pred=Recommender              "If the current user is unknown (e.g., if the user is not logged in or "
+     teastore       s39   pred=Registry                 "Services are also required to send a heartbeat signal by re-registerin"
+     teastore       s40   pred=Registry                 "Services missing their heartbeat for more than 10 s are assumed to be "
+     bigbluebutton  s58   pred=FSESL                    "We have extracted out the component that integrates with FreeSWITCH in"
+   our sibling-swap FPs (all):
+     bigbluebutton  s20   pred=HTML5 Client             missed gold here = ['HTML5 Server']
+     bigbluebutton  s21   pred=HTML5 Client             missed gold here = ['HTML5 Server']
+
+====================================================================================================
+6. SILENT FAILURE  (a component or a multi-target sentence that gets nothing)
+====================================================================================================
+   ours       components with zero recovered links:  0/40  []
+   artemis    components with zero recovered links:  1/40  ['teammates:GAE Datastore']
+   swattr     components with zero recovered links:  2/40  ['mediastore:DB', 'mediastore:FileStorage']
+
+   sentence has                 ours            artemis             swattr
+   1 target           114/121 ( 94%)     103/121 ( 85%)      90/121 ( 74%)
+   2 targets           50/ 52 ( 96%)      34/ 52 ( 65%)      38/ 52 ( 73%)
+   >=3 targets         22/ 22 (100%)      20/ 22 ( 91%)      20/ 22 ( 91%)
+
+====================================================================================================
+7. WHERE OUR RECALL COMES FROM  (mechanism x reference form)
+====================================================================================================
+7a. which linker proposed the link we recovered (union of 3 terra runs)
+   reference form                   coreference     coreference+full_name                 full_name    full_name+partial_name              partial_name
+   F1 exact-name                              1                         2                       132                         1                         0
+   F2 partial-name                            1                         0                         6                         1                        17
+   F3 coreferent                             12                         0                         5                         0                         1
+   F4 renamed                                 1                         0                         5                         0                         1
+
+7b. ablation: recall by reference form when a design decision is removed
+   arm                         exact-name        partial-name          coreferent             renamed         ALL    FP
+   Full (s110)             136/140 ( 97%)       25/ 29 ( 86%)       18/ 19 ( 95%)        7/  7 (100%)    186/195    24
+   -knowledge              125/140 ( 89%)       21/ 29 ( 72%)       14/ 19 ( 74%)        2/  7 ( 29%)    162/195    17
+   -decomposition          135/140 ( 96%)        9/ 29 ( 31%)       13/ 19 ( 68%)        6/  7 ( 86%)    163/195    47
+   -evidence               135/140 ( 96%)       23/ 29 ( 79%)       17/ 19 ( 89%)        7/  7 (100%)    182/195    25
+
+====================================================================================================
+8. MIRROR BACKEND  (same pipeline, GPT-5.6-luna) -- is a residual FN structural?
+====================================================================================================
+   luna, recall by form    exact-name=140/140 (100%)  partial-name=24/29 (83%)  coreferent=19/19 (100%)  renamed=7/7 (100%)  | ALL=190/195  FP=60
+   of our 9 terra FNs, luna recovers 9: teas/s26/Persistence, team/s7/Logic, team/s8/Logic, team/s168/Test Driver, bigb/s19/HTML5 Server, bigb/s20/HTML5 Server, bigb/s21/HTML5 Server, bigb/s26/Apps, bigb/s78/BBB web
+   -> the residual FNs are an operating point (recall bought with FP 24 -> 60), not a blind spot.
+
+   per-run presence of each terra FN (terra r1r2r3 | luna r1r2r3):
+     teastore       s26   Persistence    F3 coreferent    terra=nnn luna=YnY
+     teammates      s7    Logic          F1 exact-name    terra=nnn luna=YYY
+     teammates      s8    Logic          F1 exact-name    terra=Ynn luna=YYY
+     teammates      s168  Test Driver    F2 partial-name  terra=nnY luna=YYY
+     bigbluebutton  s19   HTML5 Server   F2 partial-name  terra=nnn luna=YYY
+     bigbluebutton  s20   HTML5 Server   F2 partial-name  terra=nnn luna=YYY
+     bigbluebutton  s21   HTML5 Server   F2 partial-name  terra=nnn luna=YYY
+     bigbluebutton  s26   Apps           F1 exact-name    terra=nYn luna=YYY
+     bigbluebutton  s78   BBB web        F1 exact-name    terra=nYn luna=YYY
