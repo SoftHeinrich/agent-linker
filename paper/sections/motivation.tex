@@ -30,8 +30,9 @@ A trace link connects a documentation sentence to an architecture component (doc
 \autoref{fig:example} shows this setup on JabRef, a reference manager software.
 Sentence~11 describes the \texttt{preferences} component, which maps to the code package \texttt{org/jabref/preferences/}.
 Sentence~7 describes the \texttt{gui} component, but it also contains the word ``preferences.''
-That one sentence shows two problems that make automatic recovery hard.
+That one sentence already shows two problems that make automatic recovery hard.
 A reference uses no component name, and a word matches the wrong component.
+A third appears wherever a component's name has several words and a sentence states only one of them.
 The next two subsections develop these problems in detail.
 
 %SPEC [merged kp+jd] job: show that name matching structurally fails both ways on the same sentence (S7): missed true link from cross-sentence reference AND false positive from ambiguous word. One root cause, two faces.
@@ -41,6 +42,7 @@ Lexical similarity approaches catch a link only when the sentence contains the c
 Documentation does not always work that way.
 After a component is introduced, later sentences can refer to it by aliases and pronouns, not by its full name.
 This gap between how a document refers and how a name match works cuts both ways: it misses true links and it admits false ones.
+It takes three forms, which we take in turn: a reference that names nothing, a word that names the wrong component, and a name of which the sentence states only part.
 
 %TODO [scope of the miss] (rewritten 2026-08-31; the original note was garbled) The point
 %  it was making: \approach{} and \Artemis{} send the document as a whole, so an \ac{LLM}
@@ -49,13 +51,17 @@ This gap between how a document refers and how a name match works cuts both ways
 %  regime it holds in (a name match, and LiSSA's per-pair call), and must not be read as
 %  "the \ac{LLM} cannot see Sentence 6" -- that would contradict sec:approach, where
 %  \linkerC{} exists precisely because the context is available and still needs resolving.
-%  OPEN: if space allows, say in one clause that whole-document context does not by itself
-%  resolve the reference, which is the finding \linkerC{} and the \corefValidator{} rest on.
+%DONE [scope of the miss] (2026-09-11) the OPEN clause is written -- the sentence after "is
+%  missed" now says that whole-document context does not by itself resolve the reference, so
+%  the per-sentence framing above can no longer be read as "the \ac{LLM} cannot see S6". That
+%  is the finding \linkerC{} and the \corefValidator{} rest on, and it is also the answer to
+%  the reviewer question "why does \Artemis{}, which extracts aliases, not already solve this".
 \autoref{fig:example} shows the miss.
 Sentence~6 introduces the \texttt{gui} component under the alias ``the UI.''
 Sentence~7 then refers to it only through the pronoun ``it.''
 A name match on Sentence~7 finds no component name, because neither \texttt{gui} nor ``UI'' appears in it.
 The trace link to \texttt{gui} is missed.
+Passing the whole document instead of the sentence does not by itself close this gap: it makes the antecedent visible, but a reader must still decide which component ``it'' picks out, and be able to say which sentence licensed that choice.
 
 %SPEC [fp] role: the false-positive face, grounded in the same S7.
 The same sentence shows the false positive links.
@@ -65,8 +71,24 @@ But the sentence is actually about the \texttt{gui} component, not about \texttt
 % Nothing in the sentence supports that link.
 Without a check against the sentence's own evidence, the false link stands.
 
+%SPEC [pn] role: the third failure mode -- a partial name. Grounded on BigBlueButton, NOT on
+%  the JabRef thread, for a data reason: every JabRef component name is a single word
+%  (logic, gui, model, preferences, cli, globals), so the benchmark's JabRef project cannot
+%  instantiate a partial name at all. Provenance, all verified against the benchmark:
+%  BBB sentence 11 = "Each user's client is only aware of the their meeting's state, such the
+%  user's public and private chat messages sent and received." (text_2021/bigbluebutton.txt,
+%  one sentence per line, no blank lines before it). Its doc-model gold is
+%  _0e5u8FkHEeyewPSmlgszyA = "HTML5 Client" (goldstandard_sad_2021-sam_2021.csv), and the
+%  sibling _yGgUMFkHEeyewPSmlgszyA = "HTML5 Server" is gold for sentences 12 and 13 -- so the
+%  shared-word ambiguity is real in the gold, not constructed. This is the failure mode
+%  \linkerD{} and the \partValidator{} address, and the s110 sibling-name refusal exists for it.
+A third failure mode appears when a component's name has several words.
+BigBlueButton's \texttt{HTML5 Client} is documented in a sentence that states only ``client'': each user's client is aware only of its own meeting's state.
+A match on the whole name misses the sentence, and a match loose enough to accept the single word cannot separate \texttt{HTML5 Client} from its sibling \texttt{HTML5 Server}.
+The evidence for the link is one word, and that word is shared.
+
 %SPEC [capability-hint] role: light hint at what the task demands, no module names, no solution framing.
-A recovery method must therefore (i)~carry references across sentences and (ii)~check each proposed link against its sentence evidence.
+A recovery method must therefore (i)~carry references across sentences, (ii)~resolve a partial name against the components that share it, and (iii)~check each proposed link against its sentence evidence.
 
 %SPEC [ev] job: show why aggregate link-level scoring hides architecturally important misses; open with the task property (long-tailed distribution), not a paradox.
 \subsection{Architecture-Driven Evaluation}
@@ -146,12 +168,32 @@ On JabRef, \Artemis{} is weakest on exactly this component: it scores $0.53$ on 
 Its \fone\ on the three large components stays near $0.9$, so the link-level average barely registers the hole---\texttt{preferences} carries $0.44\%$ of the links.
 Across the benchmark this inverts the ranking: \Artemis{} leads \TransArc{} by $1.0$pp of link-level \fone\ while trailing it by $4.7$pp on the worst component and $4.1$pp on the harmonic mean.
 Link-level \fone{} therefore ranks the tool that covers less of the architecture above the one that covers more.
+Weighting recall twice as heavily does not rescue the aggregate: under \ftwo{} \Artemis{}'s link-level lead grows to $6.1$pp while it still trails on the harmonic per-component mean, so what the average hides is not an artifact of balancing precision against recall.
+%NOTE [beta] (2026-09-11) the \ftwo{} clause is deliberately scoped to the HARMONIC mean, and
+%  the \fone{} inversion sentence above it is deliberately scoped to \fone{}. The full picture
+%  from tab:rq2-results.csv (\Artemis{} vs \TransArc{}, pp):
+%      link      +1.0 (\fone)   +6.1 (\ftwo)
+%      worst     -4.7 (\fone)  +0.95 (\ftwo)   <-- SIGN FLIPS under \ftwo
+%      harmonic  -4.1 (\fone)   -0.9 (\ftwo)
+%  (worst \ftwo{} is +0.95pp, not +1.0pp: .5243 - .5148 = .0095. Quote it as 0.95 or as
+%  "under a point"; rounding it to 1.0 invites a reviewer to recompute and find 0.9.)
+%  So the worst-component half of the inversion is \fone-only: \Artemis{} .5243 vs \TransArc{}
+%  .5148 on worst \ftwo{}. Do NOT write "the inversion holds under both betas" -- it does not.
+%  What IS beta-robust is the SWING between the link level and the tail (5.1pp at beta=1,
+%  7.0pp at beta=2), which is the claim the sentence above makes. discussion.tex:22 already
+%  explains the mechanism: the backend re-run buys \Artemis{} recall and costs it precision,
+%  which is exactly why its \ftwo{} reads better than its \fone{} everywhere.
+%REBASED [ev-docmodel] (2026-09-11) this parked block was written against s92a and its
+%  \approach{} numbers were STALE: it said \approach{} abandons one component at macro \cmr{}
+%  $1.9\%$, but the reported s110 arm abandons NONE at $0.0\%$ (tab:rq2-results.csv, and
+%  intro.tex:44 + the RQ2 answer both now claim $0.0\%$). Numbers below re-read off the
+%  current table so the block is safe to revive; the baselines never moved in the arm swap.
 % %SPEC [ev-docmodel] role: separate the doc-model consequence; show the same silent-failure principle without conflating task granularity.
 % The same principle reappears on the doc-model task.
 % A system can score well on link-level \fone\ yet abandon a documented component's
 % sentences entirely.
 % We measure that abandonment directly with the \cmrname{} (\cmr) of \autoref{sec:metric:suite}.
-% On doc-model, \approach{} abandons one documented component across the five projects (macro \cmr{} $1.9\%$).
+% On doc-model, \approach{} abandons no documented component in any run (macro \cmr{} $0.0\%$).
 % \Artemis{} abandons two per run and SWATTR three (macro \cmr{} $3.3\%$ and $7.1\%$).
 % \Artemis{} abandons the \texttt{preferences} component on JabRef, the very component this section highlights.
 % SWATTR drops three MediaStore components.

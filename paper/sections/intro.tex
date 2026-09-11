@@ -271,8 +271,16 @@ Standard link-level \fone\ rewards the large components, so the average hides th
 We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare: worst-component \fone\ and the harmonic mean of per-component \fone\ on doc-code, and the \cmrname\ (CMR) on doc-model (\autoref{sec:metric}).
 % These adapt established ideas (macro-averaging, worst-group reporting, and harmonic-mean aggregation) to the architecture, so the contribution is the adaptation, not new statistics.
 \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
-The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
-The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
+The move to an \ac{LLM} bought links and lost architecture, and only the size-aware view records the trade: weighting recall twice as heavily widens its link-level lead to $6.1$pp of \ftwo{} and still leaves it behind on the harmonic per-component mean.
+%FIXED [overclaim-beta] (2026-09-11) the sentence above replaced "The move to an \ac{LLM} did
+%  not advance doc-code TLR; it regressed the tail the metric ignored." That was \fone-only and
+%  tab:rq2 now prints \ftwo{} beside it: under \ftwo{} \Artemis{} ADVANCES the link level by
+%  $6.1$pp and even the worst component by $0.95$pp (.5243 vs .5148), so "did not advance" and
+%  "regressed the tail" were both refutable from the paper's own table. What survives both
+%  betas is the swing from the link level to the tail (5.1pp at beta=1, 7.0pp at beta=2) and
+%  the harmonic-mean deficit (-4.1pp / -0.9pp), which is what the sentence now claims.
+%  motivation.tex carries the same fix and the full number grid; keep the two in step.
+The suite thus makes \TransArc{}, not \Artemis{}, the stronger prior on the tail, and that is the bar \approach{} must clear.
 On doc-code \approach{} clears it: it leads \TransArc{} by $29.1$pp on the worst component and $25.2$pp on the harmonic per-component \fone, against $10.4$pp at the link level.
 %CHECK [merge 2026-09-07] NUMBERS GUARDED. The hand draft carried the pre-re-cut figures
 %  throughout this paragraph and the contribution list (doc-model \avgfone $0.914$/$+10.4$pp,

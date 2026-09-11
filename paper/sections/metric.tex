@@ -1,11 +1,11 @@
-\section{Architecture-Driven Evaluation}
+\section{Measuring Coverage of the Architecture}
 \label{sec:metric}
-%FIX [heading-dup] (2026-09-07) this heading is character-identical to the
-%  \subsection{Architecture-Driven Evaluation} in motivation.tex. Two headings with the
-%  same words in one paper is a navigation bug. Rename ONE of them; the cheaper rename is
-%  here, because motivation.tex's subsection is the one that argues the need. Candidates:
-%    \section{Measuring Coverage of the Architecture}
-%    \section{A Size-Aware Metric Suite}
+%DONE [heading-dup] (2026-09-11) renamed from \section{Architecture-Driven Evaluation}, which
+%  was character-identical to the \subsection{} of the same name in motivation.tex. This side
+%  was the cheaper rename, as the note advised: motivation.tex's subsection is the one that
+%  argues the need, and \label{sec:metric} is unchanged so every \autoref{} still resolves.
+%  The alternative candidate, "A Size-Aware Metric Suite", was rejected because it collides
+%  with this section's own \subsection{The Metric Suite}.
 
 The trace link distribution is long-tailed, so link-level averaged metrics hide whether a system covers every documented component.
 This section quantifies that long tail across all five projects and builds a metric suite that exposes the components a system leaves untraced.
@@ -13,6 +13,7 @@ This section quantifies that long tail across all five projects and builds a met
 \subsection{Link Concentration in the Benchmark}
 \label{sec:metric:prestudy}
 
+\autoref{sec:motivation} showed the long tail on one project; here we show that the shape holds on all five, and is therefore a property of the task rather than of JabRef.
 The directory expansion that expands one doc-code directory link to multiple doc-code file links spans from $1.0\times$ on MediaStore to $217.6\times$ on JabRef.
 Within each project the expanded links concentrate in a few components.
 \autoref{tab:gold_concentration} quantifies this with the Gini coefficient, which measures inequality in the per-component link counts ($0$ = uniform, $1$ = all links in one component).
@@ -34,11 +35,11 @@ on Teammates the median component owns $861$ expanded links while the largest ow
 %      %  benchmark is close to the uniform distribution a link-level average assumes."
 %  (a) is the recommendation: this subsection already re-states motivation 2.3, and cutting
 %  is the cheaper way to stop the duplication.
-%NOTE [ownership] (2026-09-07) decide which section OWNS the long-tail evidence. Right now
-%  motivation 2.3 gives the JabRef instance (99.3\%, preferences 0.44\%, fig:motivation) and
-%  this subsection gives the benchmark-wide version. Keeping both is defensible only if this
-%  one is explicitly the GENERALIZATION ("motivation showed one project; here we show the
-%  shape holds on all five"). Add that clause or merge.
+%DONE [ownership] (2026-09-11) resolved the way the note prescribed, by adding the clause
+%  rather than merging: the subsection now OPENS by naming motivation 2.3 as the one-project
+%  instance and itself as the five-project generalization. So motivation 2.3 owns the JabRef
+%  instance (99.3\%, preferences 0.44\%, fig:motivation) and this subsection owns the
+%  benchmark-wide shape; the overlap is now a declared hand-off, not a repetition.
 Overall, the three largest components hold between $69.3\%$ (BBB) and $99.3\%$ (JabRef) of all expanded links.
 % This motivates us to define a suite that weights each component equally exposes what the link-level average buries.
 %FIX [grammar] (2026-09-07) the sentence above is ungrammatical -- "a suite that weights
@@ -131,7 +132,13 @@ In arithmetic mean, macro-average lets a wide tail hide behind a strong head.
 %      paper runs its motivation on JabRef \texttt{preferences}. Also answers Keim's carried-over
 %      reviewer comment in intro.tex ("Add examples ... to make it more tangible"). Numbers
 %      from motivation.tex (\Artemis{} $0.53$ on preferences; $0.44\%$ link share); the
-%      $0.916$ is the motivation.tex NOTE [arm] figure -- RE-CHECK before shipping:
+%      $0.916$ is the motivation.tex NOTE [arm] figure -- VERIFIED 2026-09-11 against
+%      appendix/big-table-perproject.csv, row "Artemis (GPT-5.6-terra),jabref":
+%      doc_to_code_file_f1 = 0.9158, and worst_component_f1 = 0.5333 is the preferences cell
+%      fig:motivation plots. Both are safe to ship as written.
+%      On JabRef the contrast also survives \ftwo{} (Artemis worst 0.6061 vs TransArc 0.9091),
+%      so this block needs no beta caveat; the BENCHMARK-WIDE worst \ftwo{} is the one that
+%      flips, and that is handled in motivation.tex NOTE [beta].
 % Consider JabRef. \Artemis{} scores $0.916$ across its links and $0.53$ on \texttt{preferences}, a component carrying $0.44\%$ of them: link-level \fone{} moves by fractions of a point, worst-component \fone{} reports $0.53$.
 
 \paragraph{Doc-model: \cmrname.}
