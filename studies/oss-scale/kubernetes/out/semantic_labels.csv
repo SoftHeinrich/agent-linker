@@ -1,0 +1,423 @@
+sentence,component,tier,terra,claude,compview,structural,consistency,verbatim,text
+5,kube-apiserver,gold,1,1,1,0,1.00,1,kube-apiserver The core component server that exposes the Kubernetes HTTP API.
+6,etcd,gold,1,1,1,0,1.00,1,etcd Consistent and highly-available key value store for all API server data.
+6,kube-apiserver,refers,0,0,0,0,0.00,0,etcd Consistent and highly-available key value store for all API server data.
+7,kube-scheduler,gold,1,1,1,0,1.00,1,"kube-scheduler Looks for Pods not yet bound to a node, and assigns each Pod to a suitable node."
+8,kube-controller-manager,gold,1,1,1,0,1.00,1,kube-controller-manager Runs controllers to implement Kubernetes API behavior.
+9,cloud-controller-manager,gold,1,1,1,0,1.00,1,cloud-controller-manager (optional) Integrates with underlying cloud provider(s).
+11,kubelet,gold,1,1,1,0,1.00,1,"kubelet Ensures that Pods are running, including their containers."
+12,kube-proxy,gold,1,1,1,0,1.00,1,kube-proxy (optional) Maintains network rules on nodes to implement Services.
+13,container-runtime,gold,1,1,1,0,1.00,1,Container runtime Software responsible for running containers.
+14,container-runtime,silver,0,1,0,0,0.00,1,Read Container Runtimes to learn more.
+18,dns,gold,1,1,1,0,1.00,1,DNS For cluster-wide DNS resolution.
+19,web-ui-dashboard,gold,1,1,1,0,1.00,1,Web UI (Dashboard) For cluster management via a web interface.
+20,container-resource-monitoring,gold,1,1,1,0,1.00,1,Container Resource Monitoring For collecting and storing container metrics.
+21,cluster-level-logging,gold,1,1,1,0,1.00,1,Cluster-level Logging For saving container logs to a central log store.
+33,kube-proxy,gold,1,1,1,0,1.00,1,"In the diagram, each node runs the kube-proxy component."
+34,kube-proxy,gold,1,1,1,0,1.00,0,You need a network proxy component on each node to ensure that the Service API and associated behaviors are available on your cluster network.
+35,kube-proxy,gold_plus_only,0,1,1,0,0.00,0,"However, some network plugins provide their own, third party implementation of proxying."
+36,kube-proxy,gold,1,1,1,0,1.00,1,"When you use that kind of network plugin, the node does not need to run kube-proxy."
+37,kube-controller-manager,silver,1,0,0,0,1.00,0,"The control plane's components make global decisions about the cluster (for example, scheduling), as well as detecting and responding to cluster events (for example, starting up a new pod when a Deployment's replicas field is unsatisfied)."
+37,kube-scheduler,silver,1,0,0,0,1.00,0,"The control plane's components make global decisions about the cluster (for example, scheduling), as well as detecting and responding to cluster events (for example, starting up a new pod when a Deployment's replicas field is unsatisfied)."
+41,kube-controller-manager,gold,1,1,1,1,1.00,0,There are many different types of controllers.
+42,kube-controller-manager,gold,1,1,1,1,1.00,0,Some examples of them are:
+43,kube-controller-manager,gold,1,1,1,1,1.00,0,Node controller: Responsible for noticing and responding when nodes go down.
+44,kube-controller-manager,gold,1,1,1,1,1.00,0,"Job controller: Watches for Job objects that represent one-off tasks, then creates Pods to run those tasks to completion."
+45,kube-controller-manager,gold,1,1,1,1,1.00,0,EndpointSlice controller: Populates EndpointSlice objects (to provide a link between Services and Pods).
+46,kube-controller-manager,gold,1,1,1,1,1.00,0,ServiceAccount controller: Create default ServiceAccounts for new namespaces.
+47,kube-controller-manager,gold,1,1,1,1,1.00,0,The above is not an exhaustive list.
+48,cloud-controller-manager,gold,1,1,1,1,1.00,1,The cloud-controller-manager only runs controllers that are specific to your cloud provider.
+49,cloud-controller-manager,gold,1,1,1,1,1.00,0,"If you are running Kubernetes on your own premises, or in a learning environment inside your own PC, the cluster does not have a cloud controller manager."
+50,cloud-controller-manager,gold,1,1,1,1,1.00,1,"As with the kube-controller-manager, the cloud-controller-manager combines several logically independent control loops into a single binary that you run as a single process."
+50,kube-controller-manager,refers,0,0,1,0,0.00,1,"As with the kube-controller-manager, the cloud-controller-manager combines several logically independent control loops into a single binary that you run as a single process."
+51,cloud-controller-manager,gold,1,1,1,1,1.00,0,You can scale horizontally (run more than one copy) to improve performance or to help tolerate failures.
+52,cloud-controller-manager,gold,1,1,1,1,1.00,0,The following controllers can have cloud provider dependencies:
+53,cloud-controller-manager,gold,1,1,1,1,1.00,0,Node controller: For checking the cloud provider to determine if a node has been deleted in the cloud after it stops responding
+54,cloud-controller-manager,gold,1,1,1,1,1.00,0,Route controller: For setting up routes in the underlying cloud infrastructure
+55,cloud-controller-manager,gold,1,1,1,1,1.00,0,"Service controller: For creating, updating and deleting cloud provider load balancers"
+56,container-runtime,silver,1,0,0,0,1.00,0,"Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+56,kube-proxy,silver,1,0,0,0,0.67,0,"Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+56,kubelet,silver,1,0,0,0,1.00,0,"Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+57,kube-proxy,gold,1,1,1,0,1.00,1,"If you use a network plugin that implements packet forwarding for Services by itself, and providing equivalent behavior to kube-proxy, then you do not need to run kube-proxy on the nodes in your cluster."
+61,dns,gold,1,1,1,1,1.00,1,"While the other addons are not strictly required, all Kubernetes clusters should have cluster DNS, as many examples rely on it."
+62,dns,gold,1,1,1,1,1.00,1,"Cluster DNS is a DNS server, in addition to the other DNS server(s) in your environment, which serves DNS records for Kubernetes services."
+63,dns,gold,1,1,1,1,1.00,1,Containers started by Kubernetes automatically include this DNS server in their DNS searches.
+64,web-ui-dashboard,gold,1,1,1,1,1.00,0,"Dashboard is a general purpose, web-based UI for Kubernetes clusters."
+65,web-ui-dashboard,gold,1,1,1,1,1.00,0,"It allows users to manage and troubleshoot applications running in the cluster, as well as the cluster itself."
+66,container-resource-monitoring,gold,1,1,1,1,1.00,1,"Container Resource Monitoring records generic time-series metrics about containers in a central database, and provides a UI for browsing that data."
+67,cluster-level-logging,gold,1,1,1,1,1.00,1,A cluster-level logging mechanism is responsible for saving container logs to a central log store with a search/browsing interface.
+74,kubelet,gold,1,1,1,0,1.00,1,"Static Pods Control plane components are deployed as static Pods, managed by the kubelet on specific nodes."
+84,kube-scheduler,gold,1,1,0,0,1.00,0,Custom schedulers can be deployed to work alongside the default Kubernetes scheduler or to replace it entirely.
+85,kube-apiserver,gold,1,1,1,0,1.00,0,API servers can be extended with CustomResourceDefinitions and API Aggregation.
+86,cloud-controller-manager,gold,1,1,1,0,1.00,1,Cloud providers can integrate deeply with Kubernetes using the cloud-controller-manager.
+91,kube-scheduler,gold,1,1,1,0,1.00,1,kube-scheduler which is the default scheduler for Kubernetes.
+92,etcd,refers,0,0,0,0,0.00,1,Etcd's official documentation.
+93,container-runtime,gold,1,1,0,0,0.67,1,Several container runtimes in Kubernetes.
+94,cloud-controller-manager,gold,1,1,0,0,1.00,1,Integrating with cloud providers using cloud-controller-manager.
+99,container-runtime,silver,0,1,0,0,0.33,1,"The components on a node include the kubelet, a container runtime, and the kube-proxy."
+99,kube-proxy,silver,0,1,0,0,0.33,1,"The components on a node include the kubelet, a container runtime, and the kube-proxy."
+99,kubelet,silver,0,1,0,0,0.33,1,"The components on a node include the kubelet, a container runtime, and the kube-proxy."
+100,kube-apiserver,refers,0,0,0,0,0.33,0,There are two main ways to have Nodes added to the API server:
+101,kubelet,gold,1,1,1,0,1.00,1,The kubelet on a node self-registers to the control plane
+103,kube-apiserver,silver,1,0,0,0,1.00,0,"After you create a Node object, or the kubelet on a node self-registers, the control plane checks whether the new Node object is valid."
+103,kubelet,refers,0,0,0,0,0.33,1,"After you create a Node object, or the kubelet on a node self-registers, the control plane checks whether the new Node object is valid."
+105,kube-apiserver,silver,1,0,0,0,0.67,0,Kubernetes creates a Node object internally (the representation).
+106,kube-apiserver,silver,1,0,0,0,1.00,0,Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node.
+106,kubelet,gold,1,1,0,0,1.00,1,Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node.
+107,kube-controller-manager,silver,1,0,0,0,0.67,0,"If the node is healthy (i.e. all necessary services are running), then it is eligible to run a Pod."
+107,kube-scheduler,silver,1,0,0,0,0.67,0,"If the node is healthy (i.e. all necessary services are running), then it is eligible to run a Pod."
+107,kubelet,silver,0,1,0,0,0.00,0,"If the node is healthy (i.e. all necessary services are running), then it is eligible to run a Pod."
+108,kube-controller-manager,silver,1,0,0,0,1.00,0,"Otherwise, that node is ignored for any cluster activity until it becomes healthy."
+108,kubelet,silver,0,1,0,0,0.00,0,"Otherwise, that node is ignored for any cluster activity until it becomes healthy."
+109,kube-controller-manager,silver,1,0,0,0,1.00,0,Kubernetes keeps the object for the invalid Node and continues checking to see whether it becomes healthy.
+109,kubelet,silver,0,1,0,0,0.00,0,Kubernetes keeps the object for the invalid Node and continues checking to see whether it becomes healthy.
+110,kube-controller-manager,silver,1,0,0,0,1.00,0,"You, or a controller, must explicitly delete the Node object to stop that health checking."
+110,kubelet,silver,0,1,0,0,0.00,0,"You, or a controller, must explicitly delete the Node object to stop that health checking."
+117,kube-apiserver,refers,0,0,0,0,0.33,0,"If the Node needs to be replaced or updated significantly, the existing Node object needs to be removed from API server first and re-added after the update."
+118,kube-apiserver,refers,0,0,0,0,0.33,0,"When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API server."
+118,kubelet,gold,1,1,1,0,1.00,1,"When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API server."
+119,kubelet,gold,1,1,1,0,0.67,0,"This is the preferred pattern, used by most distros."
+120,kubelet,gold,1,1,1,0,1.00,1,"For self-registration, the kubelet is started with the following options:"
+121,kube-apiserver,refers,0,0,0,0,0.33,0,--kubeconfig - Path to credentials to authenticate itself to the API server.
+121,kubelet,gold_plus_only,1,0,1,0,1.00,0,--kubeconfig - Path to credentials to authenticate itself to the API server.
+122,kubelet,gold_plus_only,1,0,1,0,1.00,0,--cloud-provider - How to talk to a cloud provider to read metadata about itself.
+123,kube-apiserver,refers,0,0,0,0,0.33,0,--register-node - Automatically register with the API server.
+123,kubelet,gold_plus_only,1,0,1,0,1.00,0,--register-node - Automatically register with the API server.
+124,kubelet,gold_plus_only,1,0,1,0,1.00,0,--register-with-taints - Register the node with the given list of taints (comma separated =:).
+125,kubelet,gold_plus_only,1,0,1,0,1.00,0,No-op if register-node is false.
+126,kubelet,gold,1,1,1,0,1.00,0,--node-ip - Optional comma-separated list of the IP addresses for the node.
+127,kubelet,gold,1,1,1,0,1.00,0,You can only specify a single address for each address family.
+128,kubelet,gold,1,1,1,0,1.00,1,"For example, in a single-stack IPv4 cluster, you set this value to be the IPv4 address that the kubelet should use for the node."
+129,kubelet,silver,0,1,0,0,0.00,0,See configure IPv4/IPv6 dual stack for details of running a dual-stack cluster.
+130,kubelet,gold,1,1,1,0,1.00,1,"If you don't provide this argument, the kubelet uses the node's default IPv4 address, if any; if the node has no IPv4 addresses then the kubelet uses the node's default IPv6 address."
+131,kube-apiserver,refers,0,0,0,0,0.00,0,--node-labels - Labels to add when registering the node in the cluster (see label restrictions enforced by the NodeRestriction admission plugin).
+131,kubelet,gold,1,1,1,0,1.00,0,--node-labels - Labels to add when registering the node in the cluster (see label restrictions enforced by the NodeRestriction admission plugin).
+132,kube-apiserver,refers,0,0,0,0,0.00,0,--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server.
+132,kubelet,gold,1,1,1,0,1.00,1,--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server.
+133,kube-apiserver,silver,1,0,0,0,1.00,0,"When the Node authorization mode and NodeRestriction admission plugin are enabled, kubelets are only authorized to create/modify their own Node resource."
+133,kubelet,gold_plus_only,0,1,1,0,0.33,1,"When the Node authorization mode and NodeRestriction admission plugin are enabled, kubelets are only authorized to create/modify their own Node resource."
+134,kube-apiserver,refers,0,0,0,0,0.00,0,"As mentioned in the Node name uniqueness section, when Node configuration needs to be updated, it is a good practice to re-register the node with the API server."
+134,kubelet,gold,1,1,1,0,0.67,0,"As mentioned in the Node name uniqueness section, when Node configuration needs to be updated, it is a good practice to re-register the node with the API server."
+135,kube-apiserver,refers,0,0,0,0,0.00,0,"For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the change will not take effect, as labels are only set (or modified) upon Node registration with the API server."
+135,kubelet,gold,1,1,1,0,1.00,1,"For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the change will not take effect, as labels are only set (or modified) upon Node registration with the API server."
+136,kubelet,gold,1,1,1,0,1.00,1,Pods already scheduled on the Node may misbehave or cause issues if the Node configuration will be changed on kubelet restart.
+137,kube-scheduler,gold,1,1,0,0,1.00,0,"For example, an already running Pod may be tainted against the new labels assigned to the Node, while other Pods, that are incompatible with that Pod will be scheduled based on this new label."
+137,kubelet,gold_plus_only,1,0,1,0,0.67,0,"For example, an already running Pod may be tainted against the new labels assigned to the Node, while other Pods, that are incompatible with that Pod will be scheduled based on this new label."
+138,kube-scheduler,gold,1,1,0,0,1.00,0,Node re-registration ensures all Pods will be drained and properly re-scheduled.
+138,kubelet,gold,1,1,1,0,1.00,0,Node re-registration ensures all Pods will be drained and properly re-scheduled.
+140,kubelet,gold,1,1,1,0,1.00,1,"When you want to create Node objects manually, set the kubelet flag --register-node=false."
+141,kubelet,refers,0,0,0,0,0.33,0,You can modify Node objects regardless of the setting of --register-node.
+145,kube-scheduler,silver,1,0,0,0,1.00,0,You can use labels on Nodes in conjunction with node selectors on Pods to control scheduling.
+146,kube-scheduler,silver,1,0,0,0,1.00,0,"For example, you can constrain a Pod to only be eligible to run on a subset of the available nodes."
+147,kube-scheduler,gold,1,1,1,0,1.00,0,Marking a node as unschedulable prevents the scheduler from placing new pods onto that Node but does not affect existing Pods on the Node.
+148,kube-scheduler,silver,0,1,0,0,0.33,0,This is useful as a preparatory step before a node reboot or other maintenance.
+149,kube-scheduler,silver,0,1,0,0,0.33,0,"To mark a Node unschedulable, run:"
+151,kube-controller-manager,silver,1,0,0,0,0.67,0,Pods that are part of a daemonset tolerate being run on an unschedulable Node.
+154,kubelet,silver,1,0,0,0,0.67,0,Capacity and Allocatable
+157,kubelet,silver,0,1,0,0,0.33,0,"Heartbeats, sent by Kubernetes nodes, help your cluster determine the availability of each node, and to take action when failures are detected."
+158,kubelet,silver,0,1,0,0,0.33,0,For nodes there are two forms of heartbeats:
+159,kubelet,silver,0,1,0,0,0.33,0,Updates to the .status of a Node.
+160,kubelet,silver,0,1,0,0,0.33,0,Lease objects within the kube-node-lease namespace.
+161,kubelet,silver,0,1,0,0,0.00,0,Each Node has an associated Lease object.
+162,kube-controller-manager,gold,1,1,1,0,1.00,0,The node controller is a Kubernetes control plane component that manages various aspects of nodes.
+163,kube-controller-manager,gold,1,1,1,0,1.00,0,The node controller has multiple roles in a node's life.
+164,kube-controller-manager,gold,1,1,1,0,1.00,0,The first is assigning a CIDR block to the node when it is registered (if CIDR assignment is turned on).
+165,kube-controller-manager,gold,1,1,1,0,1.00,0,The second is keeping the node controller's internal list of nodes up to date with the cloud provider's list of available machines.
+166,kube-controller-manager,gold,1,1,1,0,1.00,0,"When running in a cloud environment and whenever a node is unhealthy, the node controller asks the cloud provider if the VM for that node is still available."
+167,kube-controller-manager,gold,1,1,1,0,1.00,0,"If not, the node controller deletes the node from its list of nodes."
+168,kube-controller-manager,gold,1,1,1,0,1.00,0,The third is monitoring the nodes' health.
+169,kube-controller-manager,gold,1,1,1,0,1.00,0,The node controller is responsible for:
+170,kube-controller-manager,gold,1,1,1,0,1.00,0,"In the case that a node becomes unreachable, updating the Ready condition in the Node's .status field."
+171,kube-controller-manager,gold,1,1,1,0,1.00,0,In this case the node controller sets the Ready condition to Unknown.
+172,kube-controller-manager,gold,1,1,1,0,1.00,0,If a node remains unreachable: triggering API-initiated eviction for all of the Pods on the unreachable node.
+173,kube-controller-manager,gold,1,1,1,0,1.00,0,"By default, the node controller waits 5 minutes between marking the node as Unknown and submitting the first eviction request."
+174,kube-controller-manager,gold,1,1,1,0,1.00,0,"By default, the node controller checks the state of each node every 5 seconds."
+175,kube-controller-manager,gold,1,1,1,0,1.00,1,This period can be configured using the --node-monitor-period flag on the kube-controller-manager component.
+176,kube-controller-manager,gold,1,1,1,0,1.00,0,"In most cases, the node controller limits the eviction rate to --node-eviction-rate (default 0.1) per second, meaning it won't evict pods from more than 1 node per 10 seconds."
+177,kube-controller-manager,gold,1,1,1,0,1.00,0,The node eviction behavior changes when a node in a given availability zone becomes unhealthy.
+178,kube-controller-manager,gold,1,1,1,0,1.00,0,The node controller checks what percentage of nodes in the zone are unhealthy (the Ready condition is Unknown or False) at the same time:
+179,kube-controller-manager,gold,1,1,1,0,1.00,0,"If the fraction of unhealthy nodes is at least --unhealthy-zone-threshold (default 0.55), then the eviction rate is reduced."
+180,kube-controller-manager,gold,1,1,1,0,1.00,0,"If the cluster is small (i.e. has less than or equal to --large-cluster-size-threshold nodes - default 50), then evictions are stopped."
+181,kube-controller-manager,gold,1,1,1,0,1.00,0,"Otherwise, the eviction rate is reduced to --secondary-node-eviction-rate (default 0.01) per second."
+182,kube-controller-manager,gold,1,1,1,0,1.00,0,The reason these policies are implemented per availability zone is because one availability zone might become partitioned from the control plane while the others remain connected.
+183,kube-controller-manager,gold,1,1,1,0,1.00,0,"If your cluster does not span multiple cloud provider availability zones, then the eviction mechanism does not take per-zone unavailability into account."
+184,kube-controller-manager,vote_only,0,0,1,0,0.33,0,A key reason for spreading your nodes across availability zones is so that the workload can be shifted to healthy zones when one entire zone goes down.
+185,kube-controller-manager,gold,1,1,1,0,1.00,0,"Therefore, if all nodes in a zone are unhealthy, then the node controller evicts at the normal rate of --node-eviction-rate."
+186,kube-controller-manager,gold,1,1,1,0,1.00,0,The corner case is when all zones are completely unhealthy (none of the nodes in the cluster are healthy).
+187,kube-controller-manager,gold,1,1,1,0,1.00,0,"In such a case, the node controller assumes that there is some problem with connectivity between the control plane and the nodes, and doesn't perform any evictions."
+188,kube-controller-manager,gold,1,1,1,0,1.00,0,"(If there has been an outage and some nodes reappear, the node controller does evict pods from the remaining nodes that are unhealthy or unreachable)."
+189,kube-controller-manager,gold,1,1,1,0,1.00,0,"The node controller is also responsible for evicting pods running on nodes with NoExecute taints, unless those pods tolerate that taint."
+190,kube-controller-manager,gold,1,1,1,0,1.00,0,The node controller also adds taints corresponding to node problems like node unreachable or not ready.
+191,kube-controller-manager,gold_plus_only,1,0,1,0,0.67,0,This means that the scheduler won't place Pods onto unhealthy nodes.
+191,kube-scheduler,gold,1,1,1,0,1.00,0,This means that the scheduler won't place Pods onto unhealthy nodes.
+193,kubelet,gold,1,1,0,0,1.00,0,Nodes that self register report their capacity during registration.
+195,kube-scheduler,gold,1,1,1,0,1.00,0,The Kubernetes scheduler ensures that there are enough resources for all the Pods on a Node.
+196,kube-scheduler,gold,1,1,1,0,1.00,0,The scheduler checks that the sum of the requests of containers on the node is no greater than the node's capacity.
+197,container-runtime,refers,0,0,0,0,0.33,1,"That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the container runtime, and also excludes any processes running outside of the kubelet's control."
+197,kube-scheduler,gold,1,1,0,0,1.00,0,"That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the container runtime, and also excludes any processes running outside of the kubelet's control."
+197,kubelet,refers,0,0,1,0,0.33,1,"That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the container runtime, and also excludes any processes running outside of the kubelet's control."
+198,kubelet,silver,0,1,0,0,0.00,0,"If you want to explicitly reserve resources for non-Pod processes, see reserve resources for system daemons."
+199,kubelet,gold,1,1,1,0,1.00,1,"If you have enabled the TopologyManager feature gate, then the kubelet can use topology hints when making resource assignment decisions."
+200,kubelet,silver,0,1,0,0,0.00,0,See Control Topology Management Policies on a Node for more information.
+205,kubelet,silver,0,1,0,0,0.00,0,Graceful/non-graceful node shutdown.
+210,kube-apiserver,refers,0,0,0,0,0.00,0,This document catalogs the communication paths between the API server and the Kubernetes cluster.
+212,kube-apiserver,silver,0,1,0,0,0.33,0,"Kubernetes has a ""hub-and-spoke"" API pattern."
+213,kube-apiserver,gold,1,1,1,0,1.00,0,All API usage from nodes (or the pods they run) terminates at the API server.
+214,cloud-controller-manager,silver,1,0,0,0,1.00,0,None of the other control plane components are designed to expose remote services.
+214,etcd,silver,1,0,0,0,1.00,0,None of the other control plane components are designed to expose remote services.
+214,kube-apiserver,vote_only,0,0,1,0,0.00,0,None of the other control plane components are designed to expose remote services.
+214,kube-controller-manager,silver,1,0,0,0,1.00,0,None of the other control plane components are designed to expose remote services.
+214,kube-scheduler,silver,1,0,0,0,1.00,0,None of the other control plane components are designed to expose remote services.
+215,kube-apiserver,gold,1,1,1,0,1.00,0,The API server is configured to listen for remote connections on a secure HTTPS port (typically 443) with one or more forms of client authentication enabled.
+216,kube-apiserver,gold,1,1,1,0,1.00,0,"One or more forms of authorization should be enabled, especially if anonymous requests or service account tokens are allowed."
+217,kube-apiserver,refers,0,0,0,0,0.00,0,Nodes should be provisioned with the public root certificate for the cluster such that they can connect securely to the API server along with valid client credentials.
+217,kubelet,silver,0,1,0,0,0.00,0,Nodes should be provisioned with the public root certificate for the cluster such that they can connect securely to the API server along with valid client credentials.
+218,kubelet,gold,1,1,1,0,1.00,1,A good approach is that the client credentials provided to the kubelet are in the form of a client certificate.
+219,kubelet,silver,0,1,0,0,0.33,1,See kubelet TLS bootstrapping for automated provisioning of kubelet client certificates.
+220,kube-apiserver,silver,0,1,0,0,0.33,0,Pods that wish to connect to the API server can do so securely by leveraging a service account so that Kubernetes will automatically inject the public root certificate and a valid bearer token into the pod when it is instantiated.
+221,kube-apiserver,gold,1,1,0,0,1.00,0,The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy) to the HTTPS endpoint on the API server.
+221,kube-proxy,gold,1,1,1,0,1.00,1,The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy) to the HTTPS endpoint on the API server.
+222,kube-apiserver,gold,1,1,1,0,1.00,0,The control plane components also communicate with the API server over the secure port.
+223,kube-apiserver,vote_only,0,0,1,0,0.33,0,"As a result, the default operating mode for connections from the nodes and pod running on the nodes to the control plane is secured by default and can run over untrusted and/or public networks."
+224,kube-apiserver,gold,1,1,1,0,1.00,0,There are two primary communication paths from the control plane (the API server) to the nodes.
+225,kube-apiserver,gold,1,1,1,0,1.00,0,The first is from the API server to the kubelet process which runs on each node in the cluster.
+225,kubelet,gold,1,1,1,0,1.00,1,The first is from the API server to the kubelet process which runs on each node in the cluster.
+226,kube-apiserver,gold,1,1,1,0,1.00,0,"The second is from the API server to any node, pod, or service through the API server's _proxy_ functionality."
+227,kube-apiserver,gold,1,1,1,0,1.00,0,The connections from the API server to the kubelet are used for:
+227,kubelet,gold,1,1,1,0,1.00,1,The connections from the API server to the kubelet are used for:
+228,kube-apiserver,gold,1,1,1,0,1.00,0,Fetching logs for pods.
+228,kubelet,gold,1,1,1,0,1.00,0,Fetching logs for pods.
+229,kube-apiserver,gold,1,1,1,0,1.00,0,Attaching (usually through kubectl) to running pods.
+229,kubelet,gold,1,1,1,0,1.00,0,Attaching (usually through kubectl) to running pods.
+230,kube-apiserver,gold_plus_only,0,1,1,0,0.33,0,Providing the kubelet's port-forwarding functionality.
+230,kubelet,gold,1,1,1,0,1.00,1,Providing the kubelet's port-forwarding functionality.
+231,kube-apiserver,gold,1,1,1,0,1.00,0,These connections terminate at the kubelet's HTTPS endpoint.
+231,kubelet,gold,1,1,1,0,1.00,1,These connections terminate at the kubelet's HTTPS endpoint.
+232,kube-apiserver,gold,1,1,1,0,1.00,0,"By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-in-the-middle attacks and unsafe to run over untrusted and/or public networks."
+232,kubelet,silver,0,1,0,0,0.33,1,"By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-in-the-middle attacks and unsafe to run over untrusted and/or public networks."
+233,kube-apiserver,gold,1,1,1,0,1.00,0,"To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificate bundle to use to verify the kubelet's serving certificate."
+233,kubelet,silver,0,1,0,0,0.33,1,"To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificate bundle to use to verify the kubelet's serving certificate."
+234,kube-apiserver,gold,1,1,1,0,0.67,0,"If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an untrusted or public network."
+234,kubelet,gold,1,1,0,0,0.67,1,"If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an untrusted or public network."
+235,kubelet,gold,1,1,1,0,1.00,1,"Finally, Kubelet authentication and/or authorization should be enabled to secure the kubelet API."
+236,kube-apiserver,gold,1,1,1,0,1.00,0,"The connections from the API server to a node, pod, or service default to plain HTTP connections and are therefore neither authenticated nor encrypted."
+237,kube-apiserver,gold,1,1,1,0,1.00,0,"They can be run over a secure HTTPS connection by prefixing https: to the node, pod, or service name in the API URL, but they will not validate the certificate provided by the HTTPS endpoint nor provide client credentials."
+238,kube-apiserver,gold,1,1,1,0,1.00,0,"So while the connection will be encrypted, it will not provide any guarantees of integrity."
+239,kube-apiserver,gold,1,1,1,0,1.00,0,These connections are not currently safe to run over untrusted or public networks.
+241,kube-apiserver,gold,1,1,1,0,1.00,0,"In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server listening on port 22) and passes all traffic destined for a kubelet, node, pod, or service through the tunnel."
+241,kubelet,refers,0,0,0,0,0.00,1,"In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server listening on port 22) and passes all traffic destined for a kubelet, node, pod, or service through the tunnel."
+242,kube-apiserver,gold,1,1,1,0,1.00,0,This tunnel ensures that the traffic is not exposed outside of the network in which the nodes are running.
+243,kube-apiserver,silver,0,1,0,0,0.33,0,"SSH tunnels are currently deprecated, so you shouldn't opt to use them unless you know what you are doing."
+246,cloud-controller-manager,silver,0,1,0,0,0.00,0,The Konnectivity service consists of two parts: the Konnectivity server in the control plane network and the Konnectivity agents in the nodes network.
+265,kube-apiserver,refers,0,0,0,0,0.33,0,"The controller might carry the action out itself; more commonly, in Kubernetes, a controller will send messages to the API server that have useful side effects."
+267,kube-controller-manager,gold_plus_only,1,0,1,0,1.00,0,"Some built-in controllers, such as the namespace controller, act on objects that do not have a spec."
+269,kube-controller-manager,gold_plus_only,1,0,1,0,1.00,0,The job controller is an example of a Kubernetes built-in controller.
+270,kube-apiserver,silver,1,0,0,0,0.67,0,Built-in controllers manage state by interacting with the cluster API server.
+270,kube-controller-manager,gold,1,1,1,0,1.00,0,Built-in controllers manage state by interacting with the cluster API server.
+272,kubelet,gold,1,1,1,0,1.00,1,"(Once scheduled, Pod objects become part of the desired state for a kubelet)."
+273,kube-controller-manager,gold,1,1,1,0,1.00,0,"When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes are running the right number of Pods to get the work done."
+273,kubelet,gold,1,1,1,0,0.67,1,"When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes are running the right number of Pods to get the work done."
+274,kube-controller-manager,gold,1,1,1,0,1.00,0,The Job controller does not run any Pods or containers itself.
+275,kube-apiserver,refers,0,0,0,0,0.33,0,"Instead, the Job controller tells the API server to create or remove Pods."
+275,kube-controller-manager,gold,1,1,1,0,1.00,0,"Instead, the Job controller tells the API server to create or remove Pods."
+276,kube-scheduler,silver,1,0,0,0,1.00,0,"Other components in the control plane act on the new information (there are new Pods to schedule and run), and eventually the work is done."
+276,kubelet,silver,1,0,0,0,0.67,0,"Other components in the control plane act on the new information (there are new Pods to schedule and run), and eventually the work is done."
+277,kube-controller-manager,gold,1,1,0,0,0.67,0,"After you create a new Job, the desired state is for that Job to be completed."
+278,kube-controller-manager,gold,1,1,1,0,1.00,0,"The Job controller makes the current state for that Job be nearer to your desired state: creating Pods that do the work you wanted for that Job, so that the Job is closer to completion."
+279,kube-controller-manager,gold_plus_only,1,0,1,0,0.67,0,Controllers also update the objects that configure them.
+280,kube-controller-manager,gold,1,1,1,0,1.00,0,"For example: once the work is done for a Job, the Job controller updates that Job object to mark it Finished."
+281,kube-controller-manager,silver,0,1,0,0,0.00,0,(This is a bit like how some thermostats turn a light off to indicate that your room is now at the temperature you set).
+284,kube-apiserver,refers,0,0,0,0,0.00,0,"Controllers that interact with external state find their desired state from the API server, then communicate directly with an external system to bring the current state closer in line."
+286,kube-apiserver,refers,0,0,0,0,0.33,0,"The important point here is that the controller makes some changes to bring about your desired state, and then reports the current state back to your cluster's API server."
+296,kube-controller-manager,gold,1,1,1,0,1.00,0,"For example, a controller for Jobs tracks Job objects (to discover new work) and Pod objects (to run the Jobs, and then to see when the work is finished)."
+297,kube-controller-manager,gold,1,1,1,0,1.00,0,"In this case something else creates the Jobs, whereas the Job controller creates Pods."
+302,kube-controller-manager,vote_only,0,0,1,0,0.00,0,"For example, you can have Deployments and Jobs; these both create Pods."
+303,kube-controller-manager,gold,1,1,1,0,1.00,0,"The Job controller does not delete the Pods that your Deployment created, because there is information (labels) the controllers can use to tell those Pods apart."
+304,kube-controller-manager,gold,1,1,1,0,1.00,1,Kubernetes comes with a set of built-in controllers that run inside the kube-controller-manager.
+305,kube-controller-manager,gold,1,1,1,0,1.00,0,These built-in controllers provide important core behaviors.
+306,kube-controller-manager,gold,1,1,1,0,1.00,0,"The Deployment controller and Job controller are examples of controllers that come as part of Kubernetes itself (""built-in"" controllers)."
+307,kube-controller-manager,gold,1,1,1,0,0.67,0,"Kubernetes lets you run a resilient control plane, so that if any of the built-in controllers were to fail, another part of the control plane will take over the work."
+318,kube-apiserver,silver,1,0,0,0,1.00,0,Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server.
+318,kubelet,gold,1,1,1,0,1.00,1,Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server.
+319,kubelet,silver,1,0,0,0,1.00,0,"For every Node , there is a Lease object with a matching name in the kube-node-lease namespace."
+320,kubelet,gold,1,1,1,0,1.00,1,"Under the hood, every kubelet heartbeat is an update request to this Lease object, updating the spec.renewTime field for the Lease."
+321,kube-apiserver,silver,0,1,0,0,0.00,0,The Kubernetes control plane uses the time stamp of this field to determine the availability of this Node.
+324,kube-controller-manager,gold,1,1,1,0,1.00,1,"This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where only one instance of the component should be actively running while the other instances are on stand-by."
+324,kube-scheduler,gold,1,1,1,0,1.00,1,"This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where only one instance of the component should be actively running while the other instances are on stand-by."
+326,kube-controller-manager,gold,1,1,1,0,1.00,1,"When the ControllerManagerReleaseLeaderElectionLockOnExit feature gate is enabled, the kube-controller-manager actively releases its leader election lock during leader transitions, rather than waiting for the lock's TTL to expire."
+327,kube-controller-manager,gold,1,1,1,0,1.00,0,"This allows a new leader to be elected more quickly, reducing leader transition latency."
+328,kube-apiserver,gold,1,1,1,0,1.00,1,"Starting in Kubernetes v1.26, each kube-apiserver uses the Lease API to publish its identity to the rest of the system."
+329,kube-apiserver,gold,1,1,1,0,1.00,1,"While not particularly useful on its own, this provides a mechanism for clients to discover how many instances of kube-apiserver are operating the Kubernetes control plane."
+330,kube-apiserver,gold,1,1,1,0,1.00,1,Existence of kube-apiserver leases enables future capabilities that may require coordination between each kube-apiserver.
+331,kube-apiserver,gold_plus_only,0,1,1,0,0.00,1,You can inspect Leases owned by each kube-apiserver by checking for lease objects in the kube-system namespace with the name apiserver-.
+332,kube-apiserver,gold_plus_only,0,1,1,0,0.00,1,Alternatively you can use the label selector apiserver.kubernetes.io/identity=kube-apiserver:
+333,kube-apiserver,gold,1,1,1,0,1.00,0,The SHA256 hash used in the lease name is based on the OS hostname as seen by that API server.
+334,kube-apiserver,gold,1,1,1,0,1.00,1,Each kube-apiserver should be configured to use a hostname that is unique within the cluster.
+335,kube-apiserver,gold,1,1,1,0,1.00,1,"New instances of kube-apiserver that use the same hostname will take over existing Leases using a new holder identity, as opposed to instantiating new Lease objects."
+336,kube-apiserver,gold,1,1,1,0,1.00,1,You can check the hostname used by kube-apiserver by checking the value of the kubernetes.io/hostname label:
+337,kube-apiserver,gold,1,1,1,0,1.00,1,Expired leases from kube-apiservers that no longer exist are garbage collected by new kube-apiservers after 1 hour.
+338,kube-apiserver,gold,1,1,1,0,1.00,0,You can disable API server identity leases by disabling the APIServerIdentity feature gate.
+348,cloud-controller-manager,gold,1,1,1,0,1.00,1,The cloud-controller-manager is structured using a plugin mechanism that allows different cloud providers to integrate their platforms with Kubernetes.
+349,cloud-controller-manager,gold,1,1,1,0,1.00,0,"The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers in Pods)."
+350,cloud-controller-manager,gold,1,1,1,0,1.00,1,Each cloud-controller-manager implements multiple controllers in a single process.
+351,cloud-controller-manager,gold_plus_only,1,0,1,0,1.00,0,You can also run the cloud controller manager as a Kubernetes addon rather than as part of the control plane.
+352,cloud-controller-manager,gold,1,1,1,0,1.00,0,The controllers inside the cloud controller manager include:
+353,cloud-controller-manager,gold,1,1,1,0,1.00,0,The node controller is responsible for updating Node objects when new servers are created in your cloud infrastructure.
+354,cloud-controller-manager,gold,1,1,1,0,1.00,0,The node controller obtains information about the hosts running inside your tenancy with the cloud provider.
+355,cloud-controller-manager,gold,1,1,1,0,1.00,0,The node controller performs the following functions:
+356,cloud-controller-manager,gold,1,1,1,0,1.00,0,Update a Node object with the corresponding server's unique identifier obtained from the cloud provider API.
+357,cloud-controller-manager,gold,1,1,1,0,1.00,0,"Annotating and labelling the Node object with cloud-specific information, such as the region the node is deployed into and the resources (CPU, memory, etc) that it has available."
+358,cloud-controller-manager,gold,1,1,1,0,1.00,0,Obtain the node's hostname and network addresses.
+359,cloud-controller-manager,gold,1,1,1,0,1.00,0,Verifying the node's health.
+360,cloud-controller-manager,gold,1,1,1,0,1.00,0,"In case a node becomes unresponsive, this controller checks with your cloud provider's API to see if the server has been deactivated / deleted / terminated."
+361,cloud-controller-manager,gold,1,1,1,0,1.00,0,"If the node has been deleted from the cloud, the controller deletes the Node object from your Kubernetes cluster."
+362,cloud-controller-manager,gold,1,1,1,0,1.00,0,Some cloud provider implementations split this into a node controller and a separate node lifecycle controller.
+363,cloud-controller-manager,gold,1,1,1,0,1.00,0,The route controller is responsible for configuring routes in the cloud appropriately so that containers on different nodes in your Kubernetes cluster can communicate with each other.
+364,cloud-controller-manager,gold,1,1,1,0,1.00,0,"Depending on the cloud provider, the route controller might also allocate blocks of IP addresses for the Pod network."
+365,cloud-controller-manager,gold,1,1,1,0,1.00,0,"Services integrate with cloud infrastructure components such as managed load balancers, IP addresses, network packet filtering, and target health checking."
+366,cloud-controller-manager,gold,1,1,1,0,1.00,0,The service controller interacts with your cloud provider's APIs to set up load balancers and other infrastructure components when you declare a Service resource that requires them.
+367,cloud-controller-manager,gold,1,1,1,0,1.00,0,"This section breaks down the access that the cloud controller manager requires on various API objects, in order to perform its operations."
+368,cloud-controller-manager,gold,1,1,1,0,1.00,0,The Node controller only works with Node objects.
+369,cloud-controller-manager,gold,1,1,1,0,1.00,0,It requires full access to read and modify Node objects.
+370,cloud-controller-manager,gold,1,1,1,0,1.00,0,The route controller listens to Node object creation and configures routes appropriately.
+371,cloud-controller-manager,gold,1,1,1,0,1.00,0,It requires Get access to Node objects.
+372,cloud-controller-manager,gold,1,1,1,0,1.00,0,"The service controller watches for Service object create, update and delete events and then configures load balancers for those Services appropriately."
+373,cloud-controller-manager,gold,1,1,1,0,1.00,0,"To access Services, it requires list, and watch access."
+374,cloud-controller-manager,gold,1,1,1,0,1.00,0,"To update Services, it requires patch and update access to the status subresource."
+375,cloud-controller-manager,gold,1,1,1,0,1.00,0,"The implementation of the core of the cloud controller manager requires access to create Event objects, and to ensure secure operation, it requires access to create ServiceAccounts."
+376,cloud-controller-manager,gold,1,1,1,0,0.67,0,The RBAC ClusterRole for the cloud controller manager looks like:
+377,cloud-controller-manager,refers,0,0,0,0,0.00,0,Cloud Controller Manager Administration has instructions on running and managing the cloud controller manager.
+378,cloud-controller-manager,refers,0,0,0,0,0.00,0,"To upgrade a HA control plane to use the cloud controller manager, see Migrate Replicated Control Plane To Use Cloud Controller Manager."
+379,cloud-controller-manager,refers,0,0,0,0,0.00,0,"Want to know how to implement your own cloud controller manager, or extend an existing project?"
+380,cloud-controller-manager,gold,1,1,1,0,1.00,0,"The cloud controller manager uses Go interfaces, specifically, CloudProvider interface defined in cloud.go from kubernetes/cloud-provider to allow implementations from any cloud to be plugged in."
+381,cloud-controller-manager,gold,1,1,1,0,1.00,0,"The implementation of the shared controllers highlighted in this document (Node, Route, and Service), and some scaffolding along with the shared cloudprovider interface, is part of the Kubernetes core."
+382,cloud-controller-manager,gold,1,1,1,0,1.00,0,Implementations specific to cloud providers are outside the core of Kubernetes and implement the CloudProvider interface.
+383,cloud-controller-manager,refers,0,0,0,0,0.00,0,"For more information about developing plugins, see Developing Cloud Controller Manager."
+385,container-runtime,gold,1,1,1,0,1.00,1,The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods and containers which includes cpu/memory requests and limits for containerized workloads.
+385,kubelet,gold,1,1,1,0,1.00,1,The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods and containers which includes cpu/memory requests and limits for containerized workloads.
+396,kubelet,silver,0,1,0,0,0.33,0,"For example, the MemoryQoS feature improves memory QoS and relies on cgroup v2 primitives."
+402,container-runtime,gold,1,1,1,0,1.00,1,Container runtime supports cgroup v2.
+403,container-runtime,gold,1,1,1,0,1.00,0,containerd v1.4 and later
+404,container-runtime,gold,1,1,1,0,1.00,0,cri-o v1.20 and later
+405,container-runtime,gold,1,1,1,0,1.00,1,The kubelet and the container runtime are configured to use the systemd cgroup driver
+405,kubelet,gold,1,1,1,0,1.00,1,The kubelet and the container runtime are configured to use the systemd cgroup driver
+418,kubelet,gold,1,1,1,0,1.00,1,The kubelet automatically detects that the OS is running on cgroup v2 and performs accordingly with no additional configuration required.
+423,container-resource-monitoring,gold,1,1,0,0,0.67,0,"If you run cAdvisor as a stand-alone DaemonSet for monitoring pods and containers, update it to v0.43.0 or later."
+440,kubelet,gold,1,1,1,0,1.00,1,Kubelet will no longer start on a cgroup v1 node by default.
+441,kubelet,gold,1,1,1,0,1.00,1,To disable this setting a cluster admin should set failCgroupV1 to false in the kubelet configuration file.
+443,container-runtime,refers,0,0,0,0,0.00,1,Learn more about container runtime
+446,kube-controller-manager,silver,1,0,0,0,1.00,0,Objects without owner references
+447,kubelet,gold,1,1,0,0,1.00,0,Unused containers and container images
+448,kube-controller-manager,gold,1,1,0,0,1.00,0,Dynamically provisioned PersistentVolumes with a StorageClass reclaim policy of Delete
+449,kube-controller-manager,gold,1,1,0,0,1.00,0,Stale or expired CertificateSigningRequests (CSRs)
+450,cloud-controller-manager,gold,1,1,0,0,1.00,0,Nodes deleted in the following scenarios:
+450,kube-controller-manager,silver,0,1,0,0,0.33,0,Nodes deleted in the following scenarios:
+451,cloud-controller-manager,silver,0,1,0,0,0.00,0,On a cloud when the cluster uses a cloud controller manager
+452,cloud-controller-manager,refers,0,0,0,0,0.00,0,On-premises when the cluster uses an addon similar to a cloud controller manager
+453,kubelet,refers,0,0,0,0,0.00,0,Node Lease objects
+456,kube-controller-manager,silver,1,0,0,0,0.67,0,"Kubernetes uses owner references to give the control plane, and other API clients, the opportunity to clean up related resources before deleting an object."
+459,kube-controller-manager,silver,1,0,0,0,0.67,0,"For example, consider a Service that creates EndpointSlice objects."
+460,kube-controller-manager,silver,1,0,0,0,0.67,0,The Service uses *labels* to allow the control plane to determine which EndpointSlice objects are used for that Service.
+461,kube-controller-manager,silver,1,0,0,0,0.67,0,"In addition to the labels, each EndpointSlice that is managed on behalf of a Service has an owner reference."
+463,kube-controller-manager,silver,1,0,0,0,0.67,0,Cross-namespace owner references are disallowed by design.
+464,kube-controller-manager,silver,1,0,0,0,0.67,0,Namespaced dependents can specify cluster-scoped or namespaced owners.
+465,kube-controller-manager,silver,1,0,0,0,0.67,0,A namespaced owner must exist in the same namespace as the dependent.
+466,kube-controller-manager,silver,1,0,0,0,1.00,0,"If it does not, the owner reference is treated as absent, and the dependent is subject to deletion once all owners are verified absent."
+467,kube-controller-manager,silver,1,0,0,0,1.00,0,Cluster-scoped dependents can only specify cluster-scoped owners.
+468,kube-controller-manager,silver,1,0,0,0,1.00,0,"In v1.20+, if a cluster-scoped dependent specifies a namespaced kind as an owner, it is treated as having an unresolvable owner reference, and is not able to be garbage collected."
+469,kube-controller-manager,gold,1,1,0,0,1.00,0,"In v1.20+, if the garbage collector detects an invalid cross-namespace ownerReference, or a cluster-scoped dependent with an ownerReference referencing a namespaced kind, a warning Event with a reason of OwnerRefInvalidNamespace and an involvedObject of the invalid dependent is reported."
+471,kube-controller-manager,silver,1,0,0,0,1.00,0,"Kubernetes checks for and deletes objects that no longer have owner references, like the pods left behind when you delete a ReplicaSet."
+472,kube-controller-manager,silver,1,0,0,0,1.00,0,"When you delete an object, you can control whether Kubernetes deletes the object's dependents automatically, in a process called *cascading deletion*."
+473,kube-controller-manager,silver,1,0,0,0,1.00,0,"There are two types of cascading deletion, as follows:"
+474,kube-controller-manager,silver,1,0,0,0,1.00,0,Foreground cascading deletion
+475,kube-controller-manager,silver,1,0,0,0,1.00,0,Background cascading deletion
+476,kube-controller-manager,silver,1,0,0,0,1.00,0,You can also control how and when garbage collection deletes resources that have owner references using Kubernetes finalizers.
+477,kube-controller-manager,silver,1,0,0,0,1.00,0,"In foreground cascading deletion, the owner object you're deleting first enters a *deletion in progress* state."
+478,kube-controller-manager,silver,1,0,0,0,1.00,0,"In this state, the following happens to the owner object:"
+479,kube-apiserver,gold,1,1,1,0,1.00,0,The Kubernetes API server sets the object's metadata.deletionTimestamp field to the time the object was marked for deletion.
+480,kube-apiserver,gold,1,1,1,0,1.00,0,The Kubernetes API server also sets the metadata.finalizers field to foregroundDeletion.
+481,kube-apiserver,gold,1,1,1,0,0.67,0,The object remains visible through the Kubernetes API until the deletion process is complete.
+482,kube-controller-manager,gold,1,1,0,0,1.00,0,"After the owner object enters the *deletion in progress* state, the controller deletes dependents it knows about."
+483,kube-controller-manager,gold,1,1,0,0,1.00,0,"After deleting all the dependent objects it knows about, the controller deletes the owner object."
+484,kube-apiserver,gold,1,1,0,0,0.67,0,"At this point, the object is no longer visible in the Kubernetes API."
+484,kube-controller-manager,silver,1,0,0,0,0.67,0,"At this point, the object is no longer visible in the Kubernetes API."
+485,kube-controller-manager,gold,1,1,0,0,1.00,0,"During foreground cascading deletion, the only dependents that block owner deletion are those that have the ownerReference.blockOwnerDeletion=true field and are in the garbage collection controller cache."
+486,kube-controller-manager,gold,1,1,0,0,1.00,0,"The garbage collection controller cache may not contain objects whose resource type cannot be listed / watched successfully, or objects that are created concurrent with deletion of an owner object."
+488,kube-apiserver,gold,1,1,1,0,1.00,0,"In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collector controller (custom or default) cleans up the dependent objects in the background."
+488,kube-controller-manager,gold,1,1,0,0,1.00,0,"In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collector controller (custom or default) cleans up the dependent objects in the background."
+489,kube-apiserver,silver,1,0,0,0,0.67,0,"If a finalizer exists, it ensures that objects are not deleted until all necessary clean-up tasks are completed."
+490,kube-controller-manager,silver,1,0,0,0,0.67,0,"By default, Kubernetes uses background cascading deletion unless you manually use foreground deletion or choose to orphan the dependent objects."
+492,kube-controller-manager,silver,1,0,0,0,1.00,0,"When Kubernetes deletes an owner object, the dependents left behind are called *orphan* objects."
+493,kube-controller-manager,silver,1,0,0,0,1.00,0,"By default, Kubernetes deletes dependent objects."
+495,kubelet,gold,1,1,1,0,1.00,1,The kubelet performs garbage collection on unused images every five minutes and on unused containers every minute.
+496,kubelet,gold,1,1,1,0,1.00,1,"You should avoid using external garbage collection tools, as these can break the kubelet behavior and remove containers that should exist."
+497,kubelet,gold,1,1,1,0,1.00,1,"To configure options for unused container and image garbage collection, tune the kubelet using a configuration file and change the parameters related to garbage collection using the KubeletConfiguration resource type."
+498,kubelet,gold,1,1,1,0,1.00,1,"Kubernetes manages the lifecycle of all images through its *image manager*, which is part of the kubelet, with the cooperation of cadvisor."
+499,kubelet,gold,1,1,1,0,1.00,1,The kubelet considers the following disk usage limits when making garbage collection decisions:
+500,kubelet,gold,1,1,1,0,1.00,0,"Disk usage above the configured HighThresholdPercent value triggers garbage collection, which deletes images in order based on the last time they were used, starting with the oldest first."
+501,kubelet,gold,1,1,1,0,1.00,1,The kubelet deletes images until disk usage reaches the LowThresholdPercent value.
+502,kubelet,gold,1,1,1,0,1.00,0,"You can specify the maximum time a local image can be unused for, regardless of disk usage."
+503,kubelet,gold,1,1,1,0,1.00,1,This is a kubelet setting that you configure for each node.
+504,kubelet,gold,1,1,1,0,1.00,1,"To configure the setting, you need to set a value for the imageMaximumGCAge field in the kubelet configuration file."
+505,kubelet,gold,1,1,1,0,1.00,0,The value is specified as a Kubernetes duration.
+506,kubelet,silver,0,1,0,0,0.00,0,See duration in the glossary for more details.
+507,kubelet,gold,1,1,1,0,1.00,0,"For example, you can set the configuration field to 12h45m, which means 12 hours and 45 minutes."
+508,kubelet,gold,1,1,1,0,1.00,1,This feature does not track image usage across kubelet restarts.
+509,kubelet,gold,1,1,1,0,1.00,1,"If the kubelet is restarted, the tracked image age is reset, causing the kubelet to wait the full imageMaximumGCAge duration before qualifying images for garbage collection based on image age."
+510,kubelet,gold,1,1,1,0,1.00,1,"The kubelet garbage collects unused containers based on the following variables, which you can define:"
+511,kubelet,gold,1,1,1,0,1.00,1,MinAge: the minimum age at which the kubelet can garbage collect a container.
+512,kubelet,gold,1,1,1,0,1.00,0,Disable by setting to 0.
+513,kubelet,gold,1,1,1,0,1.00,0,MaxPerPodContainer: the maximum number of dead containers each Pod can have.
+514,kubelet,gold,1,1,1,0,1.00,0,Disable by setting to less than 0.
+515,kubelet,gold,1,1,1,0,1.00,0,MaxContainers: the maximum number of dead containers the cluster can have.
+516,kubelet,gold,1,1,1,0,1.00,0,Disable by setting to less than 0.
+517,kubelet,gold,1,1,1,0,1.00,1,"In addition to these variables, the kubelet garbage collects unidentified and deleted containers, typically starting with the oldest first."
+518,kubelet,gold,1,1,1,0,1.00,0,MaxPerPodContainer and MaxContainers may potentially conflict with each other in situations where retaining the maximum number of containers per Pod (MaxPerPodContainer) would go outside the allowable total of global dead containers (MaxContainers).
+519,kubelet,gold,1,1,1,0,1.00,1,"In this situation, the kubelet adjusts MaxPerPodContainer to address the conflict."
+520,kubelet,gold,1,1,1,0,1.00,0,A worst-case scenario would be to downgrade MaxPerPodContainer to 1 and evict the oldest containers.
+521,kubelet,gold,1,1,1,0,1.00,0,"Additionally, containers owned by pods that have been deleted are removed once they are older than MinAge."
+522,kubelet,gold,1,1,1,0,1.00,1,The kubelet only garbage collects the containers it manages.
+529,kube-controller-manager,silver,1,0,0,0,1.00,0,Learn about the TTL controller that cleans up finished Jobs.
+530,kube-apiserver,gold,1,1,1,0,1.00,0,Kubernetes 1.34 includes a beta feature that lets an API Server proxy resource requests to other _peer_ API servers.
+531,kube-apiserver,gold,1,1,1,0,1.00,0,It also lets clients get a holistic view of resources served across the entire cluster through discovery.
+532,kube-apiserver,gold,1,1,1,0,1.00,0,"This is useful when there are multiple API servers running different versions of Kubernetes in one cluster (for example, during a long-lived rollout to a new release of Kubernetes)."
+533,kube-apiserver,gold,1,1,1,0,1.00,0,"This enables cluster administrators to configure highly available clusters that can be upgraded more safely, by :"
+534,kube-apiserver,gold,1,1,1,0,1.00,0,ensuring that controllers relying on discovery to show a comprehensive list of resources for important tasks always get the complete view of all resources.
+535,kube-apiserver,gold,1,1,1,0,1.00,0,We call this complete cluster-wide discovery _Peer-aggregated discovery_.
+536,kube-apiserver,gold,1,1,1,0,1.00,1,directing resource requests (made during the upgrade) to the correct kube-apiserver.
+537,kube-apiserver,gold,1,1,1,0,1.00,0,This proxying prevents users from seeing unexpected 404 Not Found errors that stem from the upgrade process.
+538,kube-apiserver,gold,1,1,1,0,1.00,0,This mechanism is called the _Mixed Version Proxy_.
+539,kube-apiserver,gold,1,1,1,0,1.00,0,Ensure that UnknownVersionInteroperabilityProxy feature gate is enabled when you start the API Server:
+540,kube-apiserver,gold,1,1,1,0,1.00,1,The source kube-apiserver reuses the existing APIserver client authentication flags --proxy-client-cert-file and --proxy-client-key-file to present its identity that will be verified by its peer (the destination kube-apiserver).
+541,kube-apiserver,gold,1,1,1,0,1.00,0,The destination API server verifies that peer connection based on the configuration you specify using the --requestheader-client-ca-file command line argument.
+542,kube-apiserver,gold,1,1,1,0,1.00,0,"To authenticate the destination server's serving certs, you must configure a certificate authority bundle by specifying the --peer-ca-file command line argument to the source API server."
+543,kube-apiserver,gold,1,1,1,0,1.00,1,"To set the network location of a kube-apiserver that peers will use to proxy requests, use the --peer-advertise-ip and --peer-advertise-port command line arguments to kube-apiserver or specify these fields in the API server configuration file."
+544,kube-apiserver,gold,1,1,1,0,1.00,1,"If these flags are unspecified, peers will use the value from either --advertise-address or --bind-address command line argument to the kube-apiserver."
+545,kube-apiserver,gold,1,1,1,0,1.00,0,"If those too, are unset, the host's default interface is used."
+546,kube-apiserver,gold,1,1,1,0,1.00,0,"When you enable the feature, discovery requests are automatically enabled to serve a comprehensive discovery document (listing all resources served by any apiserver in the cluster) by default."
+547,kube-apiserver,gold,1,1,1,0,1.00,0,"If you would like to request a non peer-aggregated discovery document, you can indicate so by adding the following Accept header to the discovery request:"
+548,kube-apiserver,gold,1,1,1,0,1.00,0,Peer-aggregated discovery is only supported for Aggregated Discovery requests to the /apis endpoint and not for Unaggregated (Legacy) Discovery requests.
+549,kube-apiserver,gold,1,1,1,0,1.00,0,"When you enable mixed version proxying, the aggregation layer loads a special filter that does the following:"
+550,kube-apiserver,gold,1,1,1,0,1.00,0,When a resource request reaches an API server that cannot serve that API (either because it is at a version pre-dating the introduction of the API or the API is turned off on the API server) the API server attempts to send the request to a peer API server that can serve the requested API.
+551,kube-apiserver,gold,1,1,1,0,1.00,0,"It does so by identifying API groups / versions / resources that the local server doesn't recognise, and tries to proxy those requests to a peer API server that is capable of handling the request."
+552,kube-apiserver,gold,1,1,1,0,1.00,0,"If the peer API server fails to respond, the _source_ API server responds with 503 (""Service Unavailable"") error."
+553,kube-apiserver,gold,1,1,1,0,1.00,0,"When an API Server receives a resource request, it first checks which API servers can serve the requested resource."
+554,kube-apiserver,gold,1,1,1,0,1.00,0,This check happens using the non peer-aggregated discovery document.
+555,kube-apiserver,gold,1,1,1,0,1.00,0,"If the resource is listed in the non peer-aggregated discovery document retrieved from the API server that received the request(for example, GET /api/v1/pods/some-pod), the request is handled locally."
+556,kube-apiserver,gold,1,1,1,0,1.00,0,"If the resource in a request (for example, GET /apis/resource.k8s.io/v1beta1/resourceclaims) is not found in the non peer-aggregated discovery document retrieved from the API server trying to handle the request (the _handling API server_), likely because the resource.k8s.io/v1beta1 API was introduced in a newer Kubernetes version and the _handling API server_ is running an older version that does not support it, then the _handling API server_ fetches the peer API servers that do serve the relevant API group / version / resource (resource.k8s.io/v1beta1/resourceclaims in this case) by checking the non peer-aggregated discovery documents from all peer API servers."
+557,kube-apiserver,gold,1,1,1,0,1.00,1,The _handling API server_ then proxies the request to one of the matching peer kube-apiservers that are aware of the requested resource.
+558,kube-apiserver,gold,1,1,1,0,1.00,0,"If there is no peer known for that API group / version / resource, the handling API server passes the request to its own handler chain which should eventually return a 404 (""Not Found"") response."
+559,kube-apiserver,gold,1,1,1,0,1.00,0,"If the handling API server has identified and selected a peer API server, but that peer fails to respond (for reasons such as network connectivity issues, or a data race between the request being received and a controller registering the peer's info into the control plane), then the handling API server responds with a 503 (""Service Unavailable"") error."
+561,kube-controller-manager,silver,1,0,0,0,1.00,0,"It automatically replaces failed containers, reschedules workloads when nodes become unavailable, and ensures that the desired state of the system is maintained."
+561,kube-scheduler,silver,1,0,0,0,1.00,0,"It automatically replaces failed containers, reschedules workloads when nodes become unavailable, and ensures that the desired state of the system is maintained."
+561,kubelet,silver,1,0,0,0,1.00,0,"It automatically replaces failed containers, reschedules workloads when nodes become unavailable, and ensures that the desired state of the system is maintained."
+562,kubelet,gold,1,1,0,0,1.00,0,"Container-level restarts: If a container inside a Pod fails, Kubernetes restarts it based on the restartPolicy."
+563,kube-controller-manager,gold,1,1,0,0,1.00,0,"Replica replacement: If a Pod in a Deployment or StatefulSet fails, Kubernetes creates a replacement Pod to maintain the specified number of replicas."
+564,kube-controller-manager,gold,1,1,0,0,1.00,0,"If a Pod that is part of a DaemonSet fails, the control plane creates a replacement Pod to run on the same node."
+565,kube-controller-manager,gold,1,1,0,0,1.00,0,"Persistent storage recovery: If a node is running a Pod with a PersistentVolume (PV) attached, and the node fails, Kubernetes can reattach the volume to a new Pod on a different node."
+566,kube-controller-manager,silver,1,0,0,0,1.00,0,"Load balancing for Services: If a Pod behind a Service fails, Kubernetes automatically removes it from the Service's endpoints to route traffic only to healthy Pods."
+568,kubelet,gold,1,1,1,0,1.00,1,"kubelet: Ensures that containers are running, and restarts those that fail."
+569,kube-controller-manager,gold,1,1,1,0,1.00,0,"Deployment (via ReplicaSet), ReplicaSet, StatefulSet and DaemonSet controllers: Maintain the desired number of Pod replicas."
+570,kube-controller-manager,gold,1,1,1,0,1.00,0,PersistentVolume controller: Manages volume attachment and detachment for stateful workloads.
+571,kube-controller-manager,silver,0,1,0,0,0.00,0,"Storage Failures: If a persistent volume becomes unavailable, recovery steps may be required."
+572,kubelet,silver,0,1,0,0,0.33,0,"Application Errors: Kubernetes can restart containers, but underlying application issues must be addressed separately."

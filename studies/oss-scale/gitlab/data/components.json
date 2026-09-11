@@ -1,0 +1,261 @@
+[
+ {
+  "id": "alertmanager",
+  "name": "Alertmanager",
+  "description": "Deduplicates, groups, and routes alerts from Prometheus",
+  "layer": "Monitoring",
+  "process": "alertmanager"
+ },
+ {
+  "id": "ai-gateway",
+  "name": "AI Gateway",
+  "description": "GitLab AI-native features",
+  "layer": "",
+  "process": ""
+ },
+ {
+  "id": "gitlab-duo-workflow-service",
+  "name": "GitLab Duo Workflow Service",
+  "description": "GitLab AI-native features",
+  "layer": "",
+  "process": ""
+ },
+ {
+  "id": "certificate-management",
+  "name": "Certificate management",
+  "description": "TLS Settings, Let's Encrypt",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "consul",
+  "name": "Consul",
+  "description": "Database node discovery, failover",
+  "layer": "Core Service (Data)",
+  "process": ""
+ },
+ {
+  "id": "database-migrations",
+  "name": "Database migrations",
+  "description": "Database migrations",
+  "layer": "Core Service (Data)",
+  "process": ""
+ },
+ {
+  "id": "elasticsearch",
+  "name": "Elasticsearch",
+  "description": "Improved search within GitLab",
+  "layer": "Core Service (Data)",
+  "process": ""
+ },
+ {
+  "id": "gitaly",
+  "name": "Gitaly",
+  "description": "Git RPC service for handling all Git calls made by GitLab",
+  "layer": "Core Service (Data)",
+  "process": "gitaly"
+ },
+ {
+  "id": "praefect",
+  "name": "Praefect",
+  "description": "A transparent proxy between any Git client and Gitaly storage nodes.",
+  "layer": "Core Service (Data)",
+  "process": "praefect"
+ },
+ {
+  "id": "gitlab-geo",
+  "name": "GitLab Geo",
+  "description": "Geographically distributed GitLab site",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "gitlab-exporter",
+  "name": "GitLab Exporter",
+  "description": "Generates a variety of GitLab metrics",
+  "layer": "Monitoring",
+  "process": "gitlab-exporter"
+ },
+ {
+  "id": "gitlab-agent-for-kubernetes",
+  "name": "GitLab agent for Kubernetes",
+  "description": "Integrate Kubernetes clusters in a cloud-native way",
+  "layer": "",
+  "process": ""
+ },
+ {
+  "id": "gitlab-pages",
+  "name": "GitLab Pages",
+  "description": "Hosts static websites",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "gitlab-runner",
+  "name": "GitLab Runner",
+  "description": "Executes GitLab CI/CD jobs",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "gitlab-shell",
+  "name": "GitLab Shell",
+  "description": "Handles `git` over SSH sessions",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "gitlab-workhorse",
+  "name": "GitLab Workhorse",
+  "description": "Smart reverse proxy, handles large HTTP requests",
+  "layer": "Core Service (Processor)",
+  "process": "gitlab-workhorse"
+ },
+ {
+  "id": "grafana",
+  "name": "Grafana",
+  "description": "Metrics dashboard",
+  "layer": "Monitoring",
+  "process": ""
+ },
+ {
+  "id": "jaeger",
+  "name": "Jaeger",
+  "description": "Distributed tracing for deployed apps",
+  "layer": "Monitoring",
+  "process": ""
+ },
+ {
+  "id": "logrotate",
+  "name": "Logrotate",
+  "description": "",
+  "layer": "Core Service",
+  "process": "logrotate"
+ },
+ {
+  "id": "object-storage",
+  "name": "Object storage",
+  "description": "S3-compatible object storage service",
+  "layer": "Core Service (Data)",
+  "process": ""
+ },
+ {
+  "id": "nginx",
+  "name": "NGINX",
+  "description": "Routes requests to appropriate components, terminates SSL",
+  "layer": "Core Service (Processor)",
+  "process": "nginx"
+ },
+ {
+  "id": "node-exporter",
+  "name": "Node Exporter",
+  "description": "Prometheus endpoint with system metrics",
+  "layer": "Monitoring",
+  "process": "node-exporter"
+ },
+ {
+  "id": "patroni",
+  "name": "Patroni",
+  "description": "Manage PostgreSQL HA cluster leader selection and replication",
+  "layer": "Core Service (Data)",
+  "process": "patroni"
+ },
+ {
+  "id": "pgbouncer",
+  "name": "PgBouncer",
+  "description": "Database connection pooling, failover",
+  "layer": "Core Service (Data)",
+  "process": ""
+ },
+ {
+  "id": "pgbouncer-exporter",
+  "name": "PgBouncer Exporter",
+  "description": "Prometheus endpoint with PgBouncer metrics",
+  "layer": "Monitoring",
+  "process": ""
+ },
+ {
+  "id": "postgresql",
+  "name": "PostgreSQL",
+  "description": "Database",
+  "layer": "Core Service (Data)",
+  "process": "postgresql"
+ },
+ {
+  "id": "postgresql-exporter",
+  "name": "PostgreSQL Exporter",
+  "description": "Prometheus endpoint with PostgreSQL metrics",
+  "layer": "Monitoring",
+  "process": "postgres-exporter"
+ },
+ {
+  "id": "prometheus",
+  "name": "Prometheus",
+  "description": "Time-series database, metrics collection, and query service",
+  "layer": "Monitoring",
+  "process": "prometheus"
+ },
+ {
+  "id": "redis",
+  "name": "Redis",
+  "description": "Caching service",
+  "layer": "Core Service (Data)",
+  "process": "redis"
+ },
+ {
+  "id": "redis-exporter",
+  "name": "Redis Exporter",
+  "description": "Prometheus endpoint with Redis metrics",
+  "layer": "Monitoring",
+  "process": "redis-exporter"
+ },
+ {
+  "id": "registry",
+  "name": "Registry",
+  "description": "Container registry, allows pushing and pulling of images",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "sentry",
+  "name": "Sentry",
+  "description": "Error tracking for deployed apps",
+  "layer": "Monitoring",
+  "process": ""
+ },
+ {
+  "id": "sidekiq",
+  "name": "Sidekiq",
+  "description": "Background jobs processor",
+  "layer": "Core Service (Processor)",
+  "process": "sidekiq"
+ },
+ {
+  "id": "puma",
+  "name": "Puma",
+  "description": "Handles requests for the web interface and API",
+  "layer": "Core Service (Processor)",
+  "process": "puma"
+ },
+ {
+  "id": "ldap-authentication",
+  "name": "LDAP Authentication",
+  "description": "Authenticate users against centralized LDAP directory",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "outbound-email",
+  "name": "Outbound Email",
+  "description": "Send email messages to users",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ },
+ {
+  "id": "inbound-email",
+  "name": "Inbound Email",
+  "description": "Receive messages to update issues",
+  "layer": "Core Service (Processor)",
+  "process": ""
+ }
+]

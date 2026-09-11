@@ -1,0 +1,604 @@
+{
+  "gitlab_arch": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 0.45925925925925926,
+      "R": 0.8493150684931506,
+      "F1": 0.5961538461538461,
+      "F2": 0.7259953161592506,
+      "tp": 62,
+      "fp": 73,
+      "fn": 11,
+      "n_links": 135,
+      "time": 10.059590339660645,
+      "sources": {
+        "one_call": 135
+      },
+      "fp_by_source": {
+        "one_call": 73
+      },
+      "fp_details": [
+        {
+          "sentence": 15,
+          "component": "GitLab Workhorse",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma applicat"
+        },
+        {
+          "sentence": 15,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma applicat"
+        },
+        {
+          "sentence": 15,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma applicat"
+        },
+        {
+          "sentence": 16,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab serves web pages and the GitLab API using the Puma application server."
+        },
+        {
+          "sentence": 17,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It uses Sidekiq as a job queue which, in turn, uses Redis as a non-persistent database backend for job information, meta"
+        },
+        {
+          "sentence": 17,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It uses Sidekiq as a job queue which, in turn, uses Redis as a non-persistent database backend for job information, meta"
+        },
+        {
+          "sentence": 18,
+          "component": "GitLab Workhorse",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "By default, communication between Puma and Workhorse is via a Unix domain socket, but forwarding requests via TCP is als"
+        },
+        {
+          "sentence": 18,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "By default, communication between Puma and Workhorse is via a Unix domain socket, but forwarding requests via TCP is als"
+        },
+        {
+          "sentence": 19,
+          "component": "GitLab Workhorse",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Workhorse accesses the gitlab/public directory, bypassing the Puma application server to serve static pages, uploads (fo"
+        },
+        {
+          "sentence": 19,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Workhorse accesses the gitlab/public directory, bypassing the Puma application server to serve static pages, uploads (fo"
+        },
+        {
+          "sentence": 20,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The GitLab application uses PostgreSQL for persistent database information (for example, users, permissions, issues, or "
+        },
+        {
+          "sentence": 24,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The add-on component GitLab Shell serves repositories over SSH."
+        },
+        {
+          "sentence": 25,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It manages the SSH keys within the location defined in the configuration file, GitLab Shell section."
+        },
+        {
+          "sentence": 27,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit j"
+        },
+        {
+          "sentence": 27,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit j"
+        },
+        {
+          "sentence": 27,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit j"
+        },
+        {
+          "sentence": 27,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit j"
+        },
+        {
+          "sentence": 28,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell queries the GitLab API to determine authorization and access."
+        },
+        {
+          "sentence": 29,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Gitaly executes Git operations from GitLab Shell and the GitLab web app, and provides an API to the GitLab web app to ge"
+        },
+        {
+          "sentence": 75,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Praefect is a transparent proxy between each Git client and the Gitaly coordinating the replication of repository update"
+        },
+        {
+          "sentence": 78,
+          "component": "Prometheus",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Exporter is a process designed in house that allows us to export metrics about GitLab application internals to Pr"
+        },
+        {
+          "sentence": 93,
+          "component": "Elasticsearch",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Promet"
+        },
+        {
+          "sentence": 93,
+          "component": "Prometheus",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Promet"
+        },
+        {
+          "sentence": 111,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for us"
+        },
+        {
+          "sentence": 111,
+          "component": "Prometheus",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for us"
+        },
+        {
+          "sentence": 117,
+          "component": "Grafana",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these met"
+        },
+        {
+          "sentence": 117,
+          "component": "Prometheus",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these met"
+        },
+        {
+          "sentence": 117,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these met"
+        },
+        {
+          "sentence": 119,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The bundled registry uses NGINX as a load balancer and GitLab as an authentication manager."
+        },
+        {
+          "sentence": 127,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Sidekiq is a Ruby background job processor that pulls jobs from the Redis queue and processes them."
+        },
+        {
+          "sentence": 137,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "NGINX - Acts as our first line reverse proxy."
+        },
+        {
+          "sentence": 138,
+          "component": "GitLab Workhorse",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Workhorse - This determines if it needs to go to the Rails application or somewhere else to reduce load on Puma."
+        },
+        {
+          "sentence": 138,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Workhorse - This determines if it needs to go to the Rails application or somewhere else to reduce load on Puma."
+        },
+        {
+          "sentence": 139,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Puma - Since this is a web request, and it needs to access the application, it routes to Puma."
+        },
+        {
+          "sentence": 140,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+        },
+        {
+          "sentence": 140,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+        },
+        {
+          "sentence": 140,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+        },
+        {
+          "sentence": 145,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "All requests pass through NGINX and any other HTTP load balancers, but are not transformed in any way by them."
+        },
+        {
+          "sentence": 152,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "AuthorizedKeysCommand is an executable provided by GitLab Shell:"
+        },
+        {
+          "sentence": 159,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell also has a few operations that do not involve Gitaly, such as resetting two-factor authentication codes."
+        },
+        {
+          "sentence": 160,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "These are handled in the same way, except there is no round-trip into Gitaly - Rails performs the action as part of the "
+        },
+        {
+          "sentence": 160,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "These are handled in the same way, except there is no round-trip into Gitaly - Rails performs the action as part of the "
+        },
+        {
+          "sentence": 166,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To serve repositories over SSH there's an add-on application called GitLab Shell which is installed in /home/git/gitlab-"
+        },
+        {
+          "sentence": 169,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+        },
+        {
+          "sentence": 169,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+        },
+        {
+          "sentence": 169,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+        },
+        {
+          "sentence": 169,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+        },
+        {
+          "sentence": 170,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead"
+        },
+        {
+          "sentence": 170,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead"
+        },
+        {
+          "sentence": 170,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead"
+        },
+        {
+          "sentence": 171,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "As the git user it starts Sidekiq and Puma (a simple Ruby HTTP server running on port 8080 by default)."
+        },
+        {
+          "sentence": 171,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "As the git user it starts Sidekiq and Puma (a simple Ruby HTTP server running on port 8080 by default)."
+        },
+        {
+          "sentence": 172,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Under the GitLab user there are usually 4 processes: puma master (1 process), puma cluster worker (2 processes), sidekiq"
+        },
+        {
+          "sentence": 172,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Under the GitLab user there are usually 4 processes: puma master (1 process), puma cluster worker (2 processes), sidekiq"
+        },
+        {
+          "sentence": 174,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "HTTP cloning/push/pull uses the GitLab API and SSH cloning is handled by GitLab Shell (previously explained)."
+        },
+        {
+          "sentence": 176,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The GitLab init script starts and stops Puma and Sidekiq:"
+        },
+        {
+          "sentence": 176,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The GitLab init script starts and stops Puma and Sidekiq:"
+        },
+        {
+          "sentence": 177,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Redis (key-value store/non-persistent database):"
+        },
+        {
+          "sentence": 179,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab (includes Puma and Sidekiq logs):"
+        },
+        {
+          "sentence": 179,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab (includes Puma and Sidekiq logs):"
+        },
+        {
+          "sentence": 180,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "/home/git/gitlab/log/ usually contains application.log, production.log, sidekiq.log, puma.stdout.log, git_json.log, and "
+        },
+        {
+          "sentence": 180,
+          "component": "Sidekiq",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "/home/git/gitlab/log/ usually contains application.log, production.log, sidekiq.log, puma.stdout.log, git_json.log, and "
+        },
+        {
+          "sentence": 183,
+          "component": "NGINX",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "/var/log/nginx/ contains error and access logs."
+        },
+        {
+          "sentence": 187,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "/var/log/redis/redis.log there are also log-rotated logs there."
+        },
+        {
+          "sentence": 191,
+          "component": "Puma",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "puma.rb: Puma web server settings"
+        },
+        {
+          "sentence": 193,
+          "component": "GitLab Shell",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "GitLab Shell has a configuration file at /home/git/gitlab-shell/config.yml."
+        },
+        {
+          "sentence": 196,
+          "component": "Consul",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+        },
+        {
+          "sentence": 196,
+          "component": "Gitaly",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+        },
+        {
+          "sentence": 196,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+        },
+        {
+          "sentence": 196,
+          "component": "Redis",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+        },
+        {
+          "sentence": 197,
+          "component": "Jaeger",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Distributed Tracing configuration, and some observability configurations."
+        },
+        {
+          "sentence": 199,
+          "component": "PostgreSQL",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Anything that needs to be configured during Rails initialization, possibly before the Postgres connection has been estab"
+        },
+        {
+          "sentence": 213,
+          "component": "AI Gateway",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "A SaaS model gateway is available to enable AI-native features."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 63,
+          "component": "AI Gateway",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 64,
+          "component": "AI Gateway",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "AI Gateway",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 67,
+          "component": "GitLab Duo Workflow Service",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 68,
+          "component": "GitLab Duo Workflow Service",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 74,
+          "component": "Gitaly",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 79,
+          "component": "GitLab Exporter",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 86,
+          "component": "GitLab Runner",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 91,
+          "component": "GitLab Workhorse",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 96,
+          "component": "Logrotate",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "Registry",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  }
+}

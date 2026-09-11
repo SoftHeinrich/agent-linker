@@ -1,0 +1,86 @@
+[
+ {
+  "id": "kube-apiserver",
+  "name": "kube-apiserver",
+  "description": "The core component server that exposes the Kubernetes HTTP API.",
+  "layer": "control plane",
+  "process": ""
+ },
+ {
+  "id": "etcd",
+  "name": "etcd",
+  "description": "Consistent and highly-available key value store for all API server data.",
+  "layer": "control plane",
+  "process": ""
+ },
+ {
+  "id": "kube-scheduler",
+  "name": "kube-scheduler",
+  "description": "Looks for Pods not yet bound to a node, and assigns each Pod to a suitable node.",
+  "layer": "control plane",
+  "process": ""
+ },
+ {
+  "id": "kube-controller-manager",
+  "name": "kube-controller-manager",
+  "description": "Runs controllers to implement Kubernetes API behavior.",
+  "layer": "control plane",
+  "process": ""
+ },
+ {
+  "id": "cloud-controller-manager",
+  "name": "cloud-controller-manager",
+  "description": "Integrates with underlying cloud provider(s).",
+  "layer": "control plane",
+  "process": ""
+ },
+ {
+  "id": "kubelet",
+  "name": "kubelet",
+  "description": "Ensures that Pods are running, including their containers.",
+  "layer": "node",
+  "process": ""
+ },
+ {
+  "id": "kube-proxy",
+  "name": "kube-proxy",
+  "description": "Maintains network rules on nodes to implement Services.",
+  "layer": "node",
+  "process": ""
+ },
+ {
+  "id": "container-runtime",
+  "name": "Container runtime",
+  "description": "Software responsible for running containers. Read",
+  "layer": "node",
+  "process": ""
+ },
+ {
+  "id": "dns",
+  "name": "DNS",
+  "description": "For cluster-wide DNS resolution.",
+  "layer": "addon",
+  "process": ""
+ },
+ {
+  "id": "web-ui-dashboard",
+  "name": "Web UI (Dashboard)",
+  "description": "For cluster management via a web interface.",
+  "layer": "addon",
+  "process": ""
+ },
+ {
+  "id": "container-resource-monitoring",
+  "name": "Container Resource Monitoring",
+  "description": "For collecting and storing container metrics.",
+  "layer": "addon",
+  "process": ""
+ },
+ {
+  "id": "cluster-level-logging",
+  "name": "Cluster-level Logging",
+  "description": "For saving container logs to a central log store.",
+  "layer": "addon",
+  "process": ""
+ }
+]

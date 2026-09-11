@@ -1,0 +1,60 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: k8s_arch
+Variants: s_linker110_onecall
+========================================================================================================================
+
+========================================================================================================================
+DATASET: k8s_arch
+========================================================================================================================
+  Components: 12, Sentences: 576
+  Gold links: 22, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker110 (full-name scan -> partial-name scan -> coreference; fixed order, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 12 components, 576 sentences
+
+[Knowledge] Document aliases
+    Alias: API Server -> kube-apiserver
+    Alias: cloud controller manager -> cloud-controller-manager
+    Alias: web-based UI -> Web UI (Dashboard)
+    Alias: kube-apiservers -> kube-apiserver
+    Alias: API servers -> kube-apiserver
+    Alias: scheduler -> kube-scheduler
+    Alias: network proxy component -> kube-proxy
+    Alias: DNS server -> DNS
+    Alias: Dashboard -> Web UI (Dashboard)
+    Alias: cluster-level logging mechanism -> Cluster-level Logging
+    Alias: Cloud Controller Manager -> cloud-controller-manager
+    Alias: Kubernetes scheduler -> kube-scheduler
+    Alias: container runtimes -> Container runtime
+    Alias: API server -> kube-apiserver
+    Alias: API Servers -> kube-apiserver
+    Alias: cluster DNS -> DNS
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/oss_scale_k8s_onecall_terra_r3_20260904/llm_logs/s_linker110_onecall_openai_sentences_20260904_234133.json
+  LLM call trace saved: ../results/oss_scale_k8s_onecall_terra_r3_20260904/llm_logs/s_linker110_onecall_openai_sentences_20260904_234133_calls.json (3 calls)
+
+Final: 181 links (12.8s, 3 LLM calls)
+  s_linker110_onecall: P=5.0% R=40.9% F1=8.9% F2=16.7% TP=9 FP=172 FN=13 (13s)
+    Sources: {'one_call': 181}
+    FP by source: {'one_call': 172}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker110_onecall    
+-----------------+----------------------------
+k8s_arch         | F1 8.9% F2 16.7% FP 172
+-----------------+----------------------------
+Macro avg        | F1 8.9% F2 16.7% FP 172
+Pooled           | F1 8.9% F2 16.7% FP 172
+
+Results saved to ../results/oss_scale_k8s_onecall_terra_r3_20260904/ablation_20260904_234133.json

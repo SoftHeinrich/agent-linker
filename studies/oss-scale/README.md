@@ -630,3 +630,68 @@ construction. Two things argue it is real anyway — the component-first annotat
 sees sentence order that way, agrees at κ 0.69, and the topic-propagation judge in §9.5 approves
 only about a fifth of the propagated proposals and is right on 46% of those. If the document
 were uniformly continuous, that judge would say yes to nearly everything.
+
+## 10. Round 2: the same genre as the benchmark, from large systems (2026-09-04)
+
+§6–§9 scaled the size and lost the genre: a developer guide, a subsystem reference tree,
+in-tree design notes, snake_case implementation names. The five benchmark texts are
+project-authored **architecture-overview pages** with proper-noun component names. Round
+2 takes that genre from two large systems — details, gold reports and per-arm tables in
+`gitlab/README.md` and `kubernetes/README.md`; the style measurement is
+`tools/style_table.py`.
+
+| dataset | source | sents | comps | gold_plus | sent w/ gold | verbatim | caps | snake | κ families |
+|---|---|---|---|---|---|---|---|---|---|
+| benchmark (5 projects) | wiki / docs architecture pages | 13–198 | 6–14 | 18–62 | 0.23–0.77 | 0.55–1.00 | 0.92–1.00 (jabref 0) | 0.00–0.08 | (human) |
+| **gitlab** | `doc/development/architecture.md` @7eb01fc4 | 213 | **37** | 134 | 0.52 | 0.58 | 1.00 | 0.00 | 0.80 |
+| **kubernetes** | website `concepts/{overview/components,architecture/*}` @cf96ee6 | 576 | 12 | 297 | 0.49 | 0.32 | 0.42 | 0.50 | 0.83 |
+| rustc core (§6–§9) | rustc-dev-guide | 1,762 | 79 | 1,327 | 0.68 | 0.11 | 0.00 | 0.99 | 0.76 |
+
+GitLab sits inside the benchmark's range on every column and is 3–6× wider in components;
+Kubernetes has the benchmark's gold density but names its binaries descriptively ("the API
+server"), the BigBlueButton pattern pushed further. Gold is the §8 label model without the
+symbol index (terra ×3 majority ∧ Claude Sonnet; component-view and section-placement as
+votes), built by `gitlab/annotate.py` + `gitlab/label_model.py` for both.
+
+Three runs of every LLM arm on the paper backend, one SWATTR run, gold_plus F1
+(orderings identical under the strict, Claude-only and three-way golds):
+
+| arm | gitlab F1 (P / R) | kubernetes F1 (P / R) |
+|---|---|---|
+| s110 as shipped | 0.287 (0.18 / 0.69) | 0.508 (0.42 / 0.64) |
+| s110 minus partial-name stage | 0.706 (0.73 / 0.68) | 0.584 (0.79 / 0.47) |
+| `s_linker110_onecall` (RQ4 floor, 3 calls) | **0.763** (0.79 / 0.74) | **0.619** (0.80 / 0.51) |
+| SWATTR (ArDoCo SAD-SAM) | 0.502 (0.58 / 0.44) | 0.224 (0.43 / 0.15) |
+
+What round 2 settles:
+
+1. **The partial-name stage's failure is not a rustc artefact; it is the catalog's.** On
+   GitLab 360+ of its ~390 links a run are the `GitLab` prefix (8 of 37 names) fired on
+   sentences that say "GitLab" (89 of 213) — proper nouns, no domain vocabulary, and still
+   P 0.003. On Kubernetes it is `controller` (127 links, 38 TP) plus `cluster`/`manager`/
+   `container` (0 TP). The rule that predicts it needs no call: a name word carried by
+   ≥ 3 catalog names, or equal to the system's name, discriminates nothing. The benchmark
+   never poses the case (its system names prefix ≤ 1 component; TeaStore says "TeaStore" in
+   6 of 43 sentences).
+2. **Without that stage the workflow transfers**: F1 0.71 / 0.58, lenient P 0.94 / 0.94,
+   explicit recall ≥ 0.97 on both, the alias step resolving Kubernetes' descriptive names.
+   The residual false positives are REFERS pairs (the sentence names the component while
+   being about something else) by 26/34 and 26/37.
+3. **The one-call floor beats the workflow on both systems** (+5.7 pp and +3.5 pp over the
+   workflow's best view, +48 and +11 pp over s110 as shipped), where the benchmark had the
+   workflow +8.5 pp above it (`rq4-onecall-floor`). The floor has the widest run-to-run
+   spread of any arm (GitLab 0.745–0.796, Kubernetes 0.590–0.665), and its gain is in the
+   implicit stratum. This is the RQ4 result that does not survive the style-matched scale-up
+   and belongs in the paper's threats.
+4. **SWATTR does not collapse on proper-noun names** (GitLab F1 0.50, explicit recall 0.76)
+   — its rustc score (0.008) was the snake_case ids, not the scale. It finds no implicit
+   link on either system (R implicit 0.000 / 0.005), which is the whole LLM margin.
+5. **The tail is the same tail.** 40/56 (GitLab) and 101/201 (Kubernetes) implicit gold
+   pairs are linked by no run; none carries an alias; they are continuations inside a
+   component's own section or page. §9.5's topic propagation, not coreference, is the
+   mechanism — and the coreference stage fired 8.7 and 2.3 times a run, all correct.
+
+Open: a human pass over the two `out/semantic_labels.csv` files (the label model has the
+same declared stand-in status as §8.4); the partial-name gate as a code change in a
+variant (catalog-derived shared-word refusal) run N=3 on the benchmark and here; the
+one-call arm's variance at N ≥ 5 before the sign flip is quoted.

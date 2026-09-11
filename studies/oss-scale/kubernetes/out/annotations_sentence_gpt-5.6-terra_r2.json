@@ -1,0 +1,3630 @@
+{
+ "view": "sentence",
+ "model": "gpt-5.6-terra",
+ "backend": "openai",
+ "salt": "r2",
+ "unparsed": 0,
+ "usage": {
+  "prompt_tokens": 157616,
+  "completion_tokens": 39480
+ },
+ "labels": {
+  "0": {
+   "about": [],
+   "refers": [],
+   "why": "describes the page rather than a system component"
+  },
+  "1": {
+   "about": [],
+   "refers": [],
+   "why": "describes the cluster structure as a whole"
+  },
+  "2": {
+   "about": [],
+   "refers": [],
+   "why": "introduces the document overview rather than component behavior"
+  },
+  "3": {
+   "about": [],
+   "refers": [],
+   "why": "states a responsibility of the control plane as a whole"
+  },
+  "4": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "defines the API server's responsibility to expose the Kubernetes HTTP API"
+  },
+  "5": {
+   "about": [
+    "etcd"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "etcd stores all API server data."
+  },
+  "6": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "the scheduler assigns unbound Pods to suitable nodes."
+  },
+  "7": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the controller manager runs controllers implementing API behavior."
+  },
+  "8": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "the cloud controller manager integrates with cloud providers."
+  },
+  "10": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "states kubelet's responsibility to ensure Pods and containers run"
+  },
+  "11": {
+   "about": [
+    "kube-proxy"
+   ],
+   "refers": [],
+   "why": "states kube-proxy's responsibility for node network rules implementing Services"
+  },
+  "12": {
+   "about": [
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "states the container runtime's responsibility for running containers"
+  },
+  "13": {
+   "about": [],
+   "refers": [
+    "container-runtime"
+   ],
+   "why": "only directs readers to related documentation"
+  },
+  "14": {
+   "about": [],
+   "refers": [],
+   "why": "describes possible generic node software rather than a listed component"
+  },
+  "15": {
+   "about": [],
+   "refers": [],
+   "why": "states a generic property of addons as a category"
+  },
+  "16": {
+   "about": [],
+   "refers": [],
+   "why": "only introduces a list of examples"
+  },
+  "17": {
+   "about": [
+    "dns"
+   ],
+   "refers": [],
+   "why": "states DNS's cluster-wide resolution responsibility"
+  },
+  "18": {
+   "about": [
+    "web-ui-dashboard"
+   ],
+   "refers": [],
+   "why": "states the Dashboard's cluster-management purpose"
+  },
+  "19": {
+   "about": [
+    "container-resource-monitoring"
+   ],
+   "refers": [],
+   "why": "states the monitoring addon's metric collection and storage responsibility"
+  },
+  "20": {
+   "about": [
+    "cluster-level-logging"
+   ],
+   "refers": [],
+   "why": "It states the logging component's responsibility for centrally saving container logs."
+  },
+  "21": {
+   "about": [],
+   "refers": [],
+   "why": "It makes a generic statement about system architecture flexibility."
+  },
+  "22": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the architecture generally rather than a component's behavior."
+  },
+  "23": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document-navigation reference rather than a component description."
+  },
+  "24": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the cluster as a whole, not a listed component."
+  },
+  "25": {
+   "about": [],
+   "refers": [],
+   "why": "It states a cluster-wide requirement about worker nodes and Pods, not a listed component."
+  },
+  "26": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the general role of worker nodes in hosting application Pods."
+  },
+  "27": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the control plane as a whole rather than any specific control-plane component."
+  },
+  "28": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general production deployment property of clusters and control planes."
+  },
+  "29": {
+   "about": [],
+   "refers": [],
+   "why": "It is about the document's scope rather than component behavior."
+  },
+  "30": {
+   "about": [],
+   "refers": [],
+   "why": "it describes the document figure rather than a component"
+  },
+  "31": {
+   "about": [],
+   "refers": [],
+   "why": "it makes a generic statement about cluster setups"
+  },
+  "32": {
+   "about": [
+    "kube-proxy"
+   ],
+   "refers": [],
+   "why": "it states where kube-proxy runs"
+  },
+  "33": {
+   "about": [
+    "kube-proxy"
+   ],
+   "refers": [],
+   "why": "it describes the node-level proxy responsibility kube-proxy provides"
+  },
+  "34": {
+   "about": [],
+   "refers": [
+    "kube-proxy"
+   ],
+   "why": "it mentions third-party proxying as an alternative to the preceding proxy component"
+  },
+  "35": {
+   "about": [
+    "kube-proxy"
+   ],
+   "refers": [],
+   "why": "it states when kube-proxy is not required on a node"
+  },
+  "36": {
+   "about": [
+    "kube-scheduler",
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes scheduling and controller responses to cluster events"
+  },
+  "37": {
+   "about": [],
+   "refers": [],
+   "why": "it gives a generic deployment property of control plane components"
+  },
+  "38": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a typical setup-script installation arrangement"
+  },
+  "39": {
+   "about": [],
+   "refers": [],
+   "why": "it merely points to an example control plane setup"
+  },
+  "40": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the variety of controllers run by the controller manager."
+  },
+  "41": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It continues the controller-manager discussion by introducing its controller examples."
+  },
+  "42": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies behavior of a controller that the controller manager runs."
+  },
+  "43": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies behavior of a controller that the controller manager runs."
+  },
+  "44": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies behavior of a controller that the controller manager runs."
+  },
+  "45": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes a controller responsibility provided by the controller manager."
+  },
+  "46": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It continues the controller-manager controller list and states that its controller set has further entries."
+  },
+  "47": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states which controllers the cloud controller manager runs."
+  },
+  "48": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies environments in which the cloud controller manager is absent."
+  },
+  "49": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [
+    "kube-controller-manager"
+   ],
+   "why": "It describes the cloud controller manager's process structure while naming the controller manager only as a comparison."
+  },
+  "50": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the cloud controller manager's scaling behavior."
+  },
+  "51": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It introduces the cloud-provider-dependent controllers run by the cloud controller manager."
+  },
+  "52": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the cloud-specific node-controller responsibility."
+  },
+  "53": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the route controller's cloud-infrastructure responsibility."
+  },
+  "54": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the service controller's cloud load-balancer responsibility."
+  },
+  "55": {
+   "about": [
+    "kubelet",
+    "kube-proxy",
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "It describes the collective responsibilities of node components that run on every node."
+  },
+  "56": {
+   "about": [
+    "kube-proxy"
+   ],
+   "refers": [],
+   "why": "It specifies when kube-proxy does not need to run on cluster nodes."
+  },
+  "57": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about how addons implement cluster features."
+  },
+  "58": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general namespace convention for addons."
+  },
+  "59": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document-navigation statement about addon descriptions."
+  },
+  "60": {
+   "about": [
+    "dns"
+   ],
+   "refers": [],
+   "why": "states that cluster DNS is expected in Kubernetes clusters"
+  },
+  "61": {
+   "about": [
+    "dns"
+   ],
+   "refers": [],
+   "why": "describes cluster DNS serving records for Kubernetes Services"
+  },
+  "62": {
+   "about": [
+    "dns"
+   ],
+   "refers": [],
+   "why": "describes how cluster DNS is included in containers' DNS searches"
+  },
+  "63": {
+   "about": [
+    "web-ui-dashboard"
+   ],
+   "refers": [],
+   "why": "defines Dashboard as a web-based UI for clusters"
+  },
+  "64": {
+   "about": [
+    "web-ui-dashboard"
+   ],
+   "refers": [],
+   "why": "describes Dashboard's management and troubleshooting capabilities"
+  },
+  "65": {
+   "about": [
+    "container-resource-monitoring"
+   ],
+   "refers": [],
+   "why": "It defines the metrics collection, storage, and browsing responsibilities of Container Resource Monitoring."
+  },
+  "66": {
+   "about": [
+    "cluster-level-logging"
+   ],
+   "refers": [],
+   "why": "It defines the responsibility of cluster-level logging to save container logs centrally."
+  },
+  "67": {
+   "about": [],
+   "refers": [],
+   "why": "It describes network plugins, which are not among the listed components."
+  },
+  "68": {
+   "about": [],
+   "refers": [],
+   "why": "It continues describing network plugins, which are not among the listed components."
+  },
+  "69": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about Kubernetes deployment and management variations."
+  },
+  "70": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about cluster design."
+  },
+  "71": {
+   "about": [],
+   "refers": [],
+   "why": "It introduces deployment options for the control plane as a whole."
+  },
+  "72": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a generic control-plane deployment method."
+  },
+  "73": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It states that the kubelet manages static Pods on specific nodes."
+  },
+  "74": {
+   "about": [],
+   "refers": [],
+   "why": "It only notes that kubeadm commonly uses this approach."
+  },
+  "75": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a control-plane deployment model, not a specific component"
+  },
+  "76": {
+   "about": [],
+   "refers": [],
+   "why": "it describes managed Kubernetes services generically"
+  },
+  "77": {
+   "about": [],
+   "refers": [],
+   "why": "it discusses workload placement for the system as a whole"
+  },
+  "78": {
+   "about": [],
+   "refers": [],
+   "why": "it describes generic co-location of control-plane components and workloads"
+  },
+  "79": {
+   "about": [],
+   "refers": [],
+   "why": "it describes generic node separation for control-plane components"
+  },
+  "80": {
+   "about": [],
+   "refers": [],
+   "why": "It makes a generic placement statement about add-ons and monitoring tools, not a listed component."
+  },
+  "81": {
+   "about": [],
+   "refers": [],
+   "why": "It describes cluster deployment tools and management approaches rather than any component behavior."
+  },
+  "82": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about Kubernetes architecture as a whole."
+  },
+  "83": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "It describes how the default scheduler can be supplemented or replaced."
+  },
+  "84": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes extension mechanisms for API servers."
+  },
+  "85": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states that the cloud-controller-manager enables cloud-provider integration."
+  },
+  "86": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Kubernetes architecture flexibility as a whole."
+  },
+  "87": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document navigation prompt."
+  },
+  "88": {
+   "about": [],
+   "refers": [],
+   "why": "It names a general node-to-control-plane topic rather than a component responsibility."
+  },
+  "89": {
+   "about": [],
+   "refers": [],
+   "why": "It names generic cluster-object garbage collection without assigning it to a component."
+  },
+  "90": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "it identifies kube-scheduler as Kubernetes' default scheduler"
+  },
+  "91": {
+   "about": [],
+   "refers": [
+    "etcd"
+   ],
+   "why": "it only points to etcd's documentation"
+  },
+  "92": {
+   "about": [],
+   "refers": [
+    "container-runtime"
+   ],
+   "why": "it merely mentions the existence of multiple container runtimes"
+  },
+  "93": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes cloud-provider integration using the cloud controller manager"
+  },
+  "95": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Nodes generically rather than a listed component"
+  },
+  "96": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a Node and the control plane as general concepts"
+  },
+  "97": {
+   "about": [],
+   "refers": [],
+   "why": "it states generic cluster sizing information"
+  },
+  "98": {
+   "about": [],
+   "refers": [
+    "kubelet",
+    "container-runtime",
+    "kube-proxy"
+   ],
+   "why": "it lists node-resident components while describing the Node"
+  },
+  "99": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "it introduces Node-addition methods while only naming the API server as their destination"
+  },
+  "100": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "the kubelet self-registers with the control plane"
+  },
+  "101": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a human user's manual API action"
+  },
+  "102": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "the API server validates newly created or kubelet-registered Node objects"
+  },
+  "103": {
+   "about": [],
+   "refers": [],
+   "why": "it only introduces an example JSON manifest"
+  },
+  "104": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Kubernetes object representation generically"
+  },
+  "105": {
+   "about": [
+    "kubelet",
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the kubelet registers with the API server and the registration is checked"
+  },
+  "106": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "node health determines eligibility for Pod scheduling"
+  },
+  "107": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the node health controller ignores unhealthy nodes until recovery"
+  },
+  "108": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the node health controller retains and continues checking invalid Node objects"
+  },
+  "109": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "deleting the Node ends the controller's ongoing health checking"
+  },
+  "110": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server enforces validation rules for Node object names"
+  },
+  "111": {
+   "about": [],
+   "refers": [],
+   "why": "it states a generic Node identity property"
+  },
+  "112": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server maintains uniqueness of object names"
+  },
+  "113": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a general system assumption about resource identity"
+  },
+  "114": {
+   "about": [],
+   "refers": [],
+   "why": "it describes a general assumption about replacement Node instances"
+  },
+  "115": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a general consequence of reusing a Node name, not a listed component's behavior."
+  },
+  "116": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It gives a Node replacement procedure and only mentions the API server as the place from which the object is removed."
+  },
+  "117": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It specifies kubelet self-registration behavior and names the API server as its registration target."
+  },
+  "118": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It continues the self-registration topic and states that this kubelet registration pattern is preferred."
+  },
+  "119": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It introduces configuration options used to start the kubelet for self-registration."
+  },
+  "120": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "describes the kubelet credential option used to authenticate to the API server"
+  },
+  "121": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "describes how the kubelet reads metadata from a cloud provider"
+  },
+  "122": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "describes the kubelet option to register with the API server"
+  },
+  "123": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "describes the kubelet option for registering its node with taints"
+  },
+  "124": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "continues the kubelet registration-option behavior"
+  },
+  "125": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies the kubelet's node IP configuration option"
+  },
+  "126": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it continues the behavior and constraints of the kubelet node-IP option"
+  },
+  "127": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes which node address the kubelet should use"
+  },
+  "128": {
+   "about": [],
+   "refers": [],
+   "why": "it only links to documentation about dual-stack cluster configuration"
+  },
+  "129": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies how the kubelet selects a default node IP address"
+  },
+  "130": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It documents a kubelet registration flag while only parenthetically mentioning an API-server admission plugin."
+  },
+  "131": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It specifies the kubelet's node-status posting frequency to the API server."
+  },
+  "132": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [
+    "kubelet"
+   ],
+   "why": "Authorization and NodeRestriction enforcement are API-server behavior affecting kubelets."
+  },
+  "133": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "Continuing the self-registration topic, it prescribes re-registering through the API server after node configuration changes."
+  },
+  "134": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It explains how restarted kubelet label configuration takes effect during node registration."
+  },
+  "135": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes the consequences of changing Node configuration when the kubelet restarts"
+  },
+  "136": {
+   "about": [
+    "kubelet",
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "it continues the kubelet re-registration scenario and describes scheduling based on new Node labels"
+  },
+  "137": {
+   "about": [
+    "kubelet",
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "it states the effects of Node re-registration, including draining and rescheduling Pods"
+  },
+  "138": {
+   "about": [],
+   "refers": [],
+   "why": "it describes kubectl administration of generic Node objects, not a listed component"
+  },
+  "139": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies the kubelet registration flag required for manual Node creation"
+  },
+  "140": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies behavior relative to the kubelet's --register-node flag"
+  },
+  "141": {
+   "about": [],
+   "refers": [],
+   "why": "it gives generic examples of manual Node administration"
+  },
+  "142": {
+   "about": [],
+   "refers": [],
+   "why": "it describes generic Node label conventions"
+  },
+  "143": {
+   "about": [],
+   "refers": [],
+   "why": "it states a generic Kubernetes label-value convention"
+  },
+  "144": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "node selectors and labels control Pod scheduling behavior"
+  },
+  "145": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "Pod eligibility for nodes describes scheduling behavior."
+  },
+  "146": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "It specifies when the scheduler must not place new Pods."
+  },
+  "147": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "It continues the unschedulable-node scheduling behavior as a maintenance preparation."
+  },
+  "148": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "It continues the procedure for invoking unschedulable-node scheduling behavior."
+  },
+  "149": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to another document section."
+  },
+  "150": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "DaemonSet controller behavior allows its Pods on unschedulable Nodes."
+  },
+  "151": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "DaemonSets provide node-local services through controller-managed Pods."
+  },
+  "152": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "Node status is maintained and reported by the node's kubelet."
+  },
+  "153": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "Capacity and allocatable resources are reported in Node status by the kubelet."
+  },
+  "154": {
+   "about": [],
+   "refers": [],
+   "why": "This is an instruction for using kubectl, not a component behavior."
+  },
+  "155": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to another document section."
+  },
+  "156": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "Node heartbeats are maintained and sent by the kubelet to report node availability."
+  },
+  "157": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It continues describing the heartbeat behavior provided by the kubelet."
+  },
+  "158": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "Updating Node status is one of the kubelet's heartbeat mechanisms."
+  },
+  "159": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "Maintaining Lease objects for node heartbeats is kubelet behavior."
+  },
+  "160": {
+   "about": [],
+   "refers": [],
+   "why": "states a general Node-to-Lease relationship, not a listed component's behavior"
+  },
+  "161": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "describes the node controller, which is a controller run by the controller manager"
+  },
+  "162": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "continues describing the node controller's responsibilities"
+  },
+  "163": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "states a node controller responsibility during node registration"
+  },
+  "164": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "states the node controller's responsibility for reconciling node and cloud machine lists"
+  },
+  "165": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The node controller queries the cloud provider about unhealthy nodes."
+  },
+  "166": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The node controller removes unavailable nodes from its internal list."
+  },
+  "167": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It continues describing the node controller's responsibility to monitor node health."
+  },
+  "168": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It introduces responsibilities of the node controller."
+  },
+  "169": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The node controller updates a Node Ready condition when the node is unreachable."
+  },
+  "170": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The node controller behavior is implemented by kube-controller-manager."
+  },
+  "171": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Triggering evictions for unreachable nodes is node controller behavior."
+  },
+  "172": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The wait time before node-controller eviction requests is its behavior."
+  },
+  "173": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The node-state polling interval is node controller behavior."
+  },
+  "174": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies a kube-controller-manager flag that configures this controller behavior."
+  },
+  "175": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies the node controller's eviction-rate behavior."
+  },
+  "176": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes when the node controller's eviction behavior changes."
+  },
+  "177": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states that the node controller evaluates unhealthy-node percentages by zone."
+  },
+  "178": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It defines the node controller's threshold-based reduction of eviction rate."
+  },
+  "179": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It defines the node controller's behavior for small clusters under the unhealthy-zone condition."
+  },
+  "180": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies the node controller's eviction-rate behavior."
+  },
+  "181": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It explains why the node controller applies its eviction policies per availability zone."
+  },
+  "182": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes when the node controller's eviction mechanism considers per-zone unavailability."
+  },
+  "183": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It continues the availability-zone rationale for the node-controller eviction behavior."
+  },
+  "184": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states the node controller's normal eviction behavior when a zone is unhealthy."
+  },
+  "185": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It defines the failure condition governing the node controller's eviction behavior."
+  },
+  "186": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies the node controller's assumption and no-eviction behavior during total zone failure."
+  },
+  "187": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies when the node controller evicts Pods after nodes reappear."
+  },
+  "188": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states the node controller's responsibility for evicting Pods on NoExecute-tainted nodes."
+  },
+  "189": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states the node controller's behavior of adding taints for node problems."
+  },
+  "190": {
+   "about": [
+    "kube-scheduler",
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the scheduler's placement behavior is described as the consequence of node-controller tainting"
+  },
+  "191": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Node object data rather than a listed component's behavior"
+  },
+  "192": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "self-registering nodes report capacity through kubelet registration behavior"
+  },
+  "193": {
+   "about": [],
+   "refers": [],
+   "why": "it instructs a user about manually adding a Node"
+  },
+  "194": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "it states the scheduler's responsibility to ensure Pod resource availability"
+  },
+  "195": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "It specifies the scheduler's resource-request capacity check."
+  },
+  "196": {
+   "about": [
+    "kube-scheduler"
+   ],
+   "refers": [
+    "kubelet",
+    "container-runtime"
+   ],
+   "why": "It defines the scheduler's request-summing behavior while mentioning which containers the kubelet and runtime manage."
+  },
+  "197": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic pointer to resource-reservation guidance."
+  },
+  "198": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It states that the kubelet can use topology hints for resource assignment."
+  },
+  "199": {
+   "about": [],
+   "refers": [],
+   "why": "It is only a reference to further documentation."
+  },
+  "200": {
+   "about": [],
+   "refers": [],
+   "why": "document navigation text only"
+  },
+  "201": {
+   "about": [],
+   "refers": [],
+   "why": "generic node-components reference without a specific component"
+  },
+  "202": {
+   "about": [],
+   "refers": [],
+   "why": "API documentation reference, not a component behavior"
+  },
+  "203": {
+   "about": [],
+   "refers": [],
+   "why": "document reference only"
+  },
+  "204": {
+   "about": [],
+   "refers": [],
+   "why": "generic node-shutdown topic without naming a component"
+  },
+  "205": {
+   "about": [],
+   "refers": [],
+   "why": "It describes node autoscaling as a cluster-level concern."
+  },
+  "206": {
+   "about": [],
+   "refers": [],
+   "why": "It names a general Kubernetes scheduling and policy concept."
+  },
+  "207": {
+   "about": [],
+   "refers": [],
+   "why": "It names a generic node resource-management topic without assigning behavior to a listed component."
+  },
+  "208": {
+   "about": [],
+   "refers": [],
+   "why": "It names a Windows node resource-management topic rather than a listed component."
+  },
+  "209": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It describes the document's scope while mentioning the API server."
+  },
+  "210": {
+   "about": [],
+   "refers": [],
+   "why": "It states a cluster-wide installation and network-hardening goal."
+  },
+  "211": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a general Kubernetes API architecture pattern rather than a component."
+  },
+  "212": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies that node and Pod API traffic terminates at the API server."
+  },
+  "213": {
+   "about": [
+    "etcd",
+    "kube-scheduler",
+    "kube-controller-manager",
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies that the other control-plane components do not expose remote services."
+  },
+  "214": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies the API server's secure remote-listening and client-authentication behavior."
+  },
+  "215": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "Authorization is a security behavior that the API server must enforce."
+  },
+  "216": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It describes how nodes are provisioned to connect to the API server, not API server behavior."
+  },
+  "217": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies the form of client credentials provided to the kubelet."
+  },
+  "218": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "TLS bootstrapping concerns automated provisioning of kubelet client certificates."
+  },
+  "219": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It describes Pod service-account credential injection while naming the API server only as the connection target."
+  },
+  "220": {
+   "about": [
+    "kube-proxy",
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "kube-proxy redirects the service virtual IP to the API server HTTPS endpoint"
+  },
+  "221": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server communicates with control plane components over a secure port"
+  },
+  "222": {
+   "about": [],
+   "refers": [],
+   "why": "it describes the system-wide default security mode for node and pod connections"
+  },
+  "223": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it describes the API server's communication paths to nodes"
+  },
+  "224": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes a communication path between the API server and the kubelet"
+  },
+  "225": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it describes the API server's proxy communication functionality"
+  },
+  "226": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes the purpose of connections between the API server and kubelet"
+  },
+  "227": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes a capability provided through API-server-to-kubelet connections"
+  },
+  "228": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes attaching to Pods through API-server-to-kubelet connections"
+  },
+  "229": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "it describes the kubelet's port-forwarding functionality"
+  },
+  "230": {
+   "about": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes where API-server-to-kubelet connections terminate"
+  },
+  "231": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [
+    "kubelet"
+   ],
+   "why": "it specifies the API server's default certificate-verification behavior"
+  },
+  "232": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [
+    "kubelet"
+   ],
+   "why": "it configures the API server to verify the kubelet certificate"
+  },
+  "233": {
+   "about": [],
+   "refers": [
+    "kube-apiserver",
+    "kubelet"
+   ],
+   "why": "it recommends an external tunneling deployment method between them"
+  },
+  "234": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies security behavior for the kubelet API"
+  },
+  "235": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies the API server's default connection security behavior"
+  },
+  "236": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues describing how API-server connections can use HTTPS"
+  },
+  "237": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues stating the security properties of those API-server connections"
+  },
+  "238": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues defining when those API-server connections are unsafe"
+  },
+  "239": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic statement about Kubernetes control-plane-to-node communication"
+  },
+  "240": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [
+    "kubelet"
+   ],
+   "why": "the API server initiates and uses the SSH tunnels for its traffic"
+  },
+  "241": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues describing the security behavior of the API server's SSH tunnel configuration"
+  },
+  "242": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues the API server SSH-tunnel configuration and states its deprecation"
+  },
+  "243": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Konnectivity, which is not a listed component"
+  },
+  "244": {
+   "about": [],
+   "refers": [],
+   "why": "it describes the unlisted Konnectivity service's proxy behavior"
+  },
+  "245": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Konnectivity service parts, which are not listed components."
+  },
+  "246": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Konnectivity agent connection behavior, not a listed component."
+  },
+  "247": {
+   "about": [],
+   "refers": [],
+   "why": "It states a system-level traffic property for Konnectivity connections."
+  },
+  "248": {
+   "about": [],
+   "refers": [],
+   "why": "It is a setup instruction for the unlisted Konnectivity service."
+  },
+  "250": {
+   "about": [],
+   "refers": [],
+   "why": "Document link about a general network model."
+  },
+  "251": {
+   "about": [],
+   "refers": [],
+   "why": "Document link about cluster security generally."
+  },
+  "252": {
+   "about": [],
+   "refers": [],
+   "why": "Refers to the Kubernetes API as a concept, not a listed component."
+  },
+  "253": {
+   "about": [],
+   "refers": [],
+   "why": "Document link about the unlisted Konnectivity service."
+  },
+  "254": {
+   "about": [],
+   "refers": [],
+   "why": "Document link about a general cluster access feature."
+  },
+  "255": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic operational learning reference about Pods and kubectl."
+  },
+  "256": {
+   "about": [],
+   "refers": [],
+   "why": "It defines a control loop generically rather than describing a listed component."
+  },
+  "257": {
+   "about": [],
+   "refers": [],
+   "why": "It gives a thermostat analogy for a generic control loop."
+  },
+  "258": {
+   "about": [],
+   "refers": [],
+   "why": "It continues the thermostat analogy and describes no system component."
+  },
+  "259": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the current state in the thermostat analogy."
+  },
+  "260": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a thermostat analogy, not a listed system component."
+  },
+  "261": {
+   "about": [],
+   "refers": [],
+   "why": "It describes controllers generically rather than a specific listed component."
+  },
+  "262": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Kubernetes resource objects generically, not a component."
+  },
+  "263": {
+   "about": [],
+   "refers": [],
+   "why": "It states generic controller behavior without identifying a listed component."
+  },
+  "264": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes controllers interacting with the API server by sending it messages."
+  },
+  "265": {
+   "about": [],
+   "refers": [],
+   "why": "This is only a document-navigation statement."
+  },
+  "266": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes behavior of a built-in controller run by the controller manager."
+  },
+  "267": {
+   "about": [],
+   "refers": [],
+   "why": "This describes an omission from the page, not system behavior."
+  },
+  "268": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The Job controller is a controller managed by kube-controller-manager."
+  },
+  "269": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It describes built-in controllers interacting with the API server to manage state."
+  },
+  "270": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the generic semantics of a Job resource."
+  },
+  "271": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It states how Pod objects relate to the kubelet's desired state."
+  },
+  "272": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [
+    "kubelet"
+   ],
+   "why": "It describes the Job controller's responsibility to ensure Pods run via kubelets."
+  },
+  "273": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states a limitation of the Job controller's behavior."
+  },
+  "274": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It describes the Job controller acting through the API server to manage Pods."
+  },
+  "275": {
+   "about": [
+    "kube-scheduler",
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes scheduling Pods and ensuring they run"
+  },
+  "276": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it states the Job controller's reconciliation target for a Job"
+  },
+  "277": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes how the Job controller creates Pods to reconcile Job state"
+  },
+  "278": {
+   "about": [],
+   "refers": [],
+   "why": "it makes a generic statement about controllers rather than a listed component"
+  },
+  "279": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes the Job controller marking completed Jobs as Finished"
+  },
+  "280": {
+   "about": [],
+   "refers": [],
+   "why": "uses a thermostat analogy rather than describing a system component"
+  },
+  "281": {
+   "about": [],
+   "refers": [],
+   "why": "describes controllers in general, not a listed component"
+  },
+  "282": {
+   "about": [],
+   "refers": [],
+   "why": "describes a generic node-scaling control loop rather than a listed component"
+  },
+  "283": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "describes generic external-state controllers while only mentioning the API server as their source of desired state"
+  },
+  "284": {
+   "about": [],
+   "refers": [],
+   "why": "mentions an unspecified node-scaling controller that is not among the listed components"
+  },
+  "285": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "controllers report current state back through the API server"
+  },
+  "286": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "other control loops observe the state data reported through the API server"
+  },
+  "287": {
+   "about": [],
+   "refers": [],
+   "why": "it is a thermostat analogy about generic controllers"
+  },
+  "288": {
+   "about": [],
+   "refers": [],
+   "why": "it describes the control plane and Kubernetes extensions as a whole"
+  },
+  "289": {
+   "about": [],
+   "refers": [],
+   "why": "it makes a generic statement about Kubernetes systems"
+  },
+  "290": {
+   "about": [],
+   "refers": [],
+   "why": "It describes cluster-wide change and control loops generically."
+  },
+  "291": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general property of the cluster's overall state."
+  },
+  "292": {
+   "about": [],
+   "refers": [],
+   "why": "It discusses generic cluster controllers rather than kube-controller-manager."
+  },
+  "293": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Kubernetes' general controller-based design."
+  },
+  "294": {
+   "about": [],
+   "refers": [],
+   "why": "It explains the generic behavior of a control loop."
+  },
+  "295": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The Job controller tracks Jobs and Pods to run work to completion."
+  },
+  "296": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The Job controller is responsible for creating Pods for Jobs."
+  },
+  "297": {
+   "about": [],
+   "refers": [],
+   "why": "This describes a general controller design principle."
+  },
+  "298": {
+   "about": [],
+   "refers": [],
+   "why": "This states a system-wide resilience property for controllers in general."
+  },
+  "299": {
+   "about": [],
+   "refers": [],
+   "why": "This describes generic interactions among controllers."
+  },
+  "300": {
+   "about": [],
+   "refers": [],
+   "why": "it describes controllers in general, not a listed component"
+  },
+  "301": {
+   "about": [],
+   "refers": [],
+   "why": "it gives workload examples rather than describing a listed component"
+  },
+  "302": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it specifies behavior of the built-in Job controller run by the controller manager"
+  },
+  "303": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it states that built-in controllers run inside the kube-controller-manager"
+  },
+  "304": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it continues describing the core behaviors provided by its built-in controllers"
+  },
+  "305": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it identifies built-in controller types that the controller manager runs"
+  },
+  "306": {
+   "about": [],
+   "refers": [],
+   "why": "it describes control-plane resilience generally rather than a listed component"
+  },
+  "307": {
+   "about": [],
+   "refers": [],
+   "why": "it discusses external controllers generally"
+  },
+  "308": {
+   "about": [],
+   "refers": [],
+   "why": "it describes creating a controller in general"
+  },
+  "309": {
+   "about": [],
+   "refers": [],
+   "why": "it describes deployment options for a user-created controller"
+  },
+  "310": {
+   "about": [],
+   "refers": [],
+   "why": "It discusses controllers generically rather than a listed component."
+  },
+  "311": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document link about the control plane as a whole."
+  },
+  "312": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document link about Kubernetes objects."
+  },
+  "313": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document link about the Kubernetes API concept."
+  },
+  "314": {
+   "about": [],
+   "refers": [],
+   "why": "It gives guidance for writing a generic custom controller."
+  },
+  "315": {
+   "about": [],
+   "refers": [],
+   "why": "It describes leases as a generic distributed-systems concept."
+  },
+  "316": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the Kubernetes Lease API concept and its general uses, not a specific component."
+  },
+  "317": {
+   "about": [
+    "kubelet",
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It states that kubelet sends node heartbeats to the API server through the Lease API."
+  },
+  "318": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "In the node-heartbeat context, it specifies the Lease object maintained for each node."
+  },
+  "319": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies that a kubelet heartbeat updates the corresponding Lease renewal time."
+  },
+  "320": {
+   "about": [],
+   "refers": [],
+   "why": "it describes control-plane handling of Node availability generically"
+  },
+  "321": {
+   "about": [],
+   "refers": [],
+   "why": "it is a reference to further documentation"
+  },
+  "322": {
+   "about": [],
+   "refers": [],
+   "why": "it states a generic Kubernetes leader-election behavior without identifying a component"
+  },
+  "323": {
+   "about": [
+    "kube-controller-manager",
+    "kube-scheduler"
+   ],
+   "refers": [],
+   "why": "it specifies the HA active-versus-standby behavior of these components"
+  },
+  "324": {
+   "about": [],
+   "refers": [],
+   "why": "it is a reference to documentation about Lease-based leader selection"
+  },
+  "325": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies the controller manager's lock-release behavior during leader transitions."
+  },
+  "326": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It continues describing the effect of the controller manager's lock-release behavior."
+  },
+  "327": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It states that each API server publishes its identity using the Lease API."
+  },
+  "328": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes the API server identity mechanism enabling discovery of API server instances."
+  },
+  "329": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes capabilities enabled by the existence of API server leases."
+  },
+  "330": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It gives an inspection method for Lease objects rather than specifying API server behavior."
+  },
+  "331": {
+   "about": [],
+   "refers": [
+    "kube-apiserver"
+   ],
+   "why": "It provides a label selector for finding API server leases."
+  },
+  "332": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies how the API server derives the hash in its lease name."
+  },
+  "333": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies a required unique-hostname configuration for each API server."
+  },
+  "334": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes how new API server instances handle leases for an existing hostname."
+  },
+  "335": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes how the API server's hostname identity is identified."
+  },
+  "336": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies API server behavior for garbage-collecting expired identity leases."
+  },
+  "337": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes configuration that disables API server identity leases."
+  },
+  "338": {
+   "about": [],
+   "refers": [],
+   "why": "It describes custom workloads generically rather than a listed component."
+  },
+  "339": {
+   "about": [],
+   "refers": [],
+   "why": "It gives an example of a custom controller, not kube-controller-manager."
+  },
+  "340": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a custom controller workload and Lease usage, not a listed system component."
+  },
+  "341": {
+   "about": [],
+   "refers": [],
+   "why": "It gives generic naming guidance for Lease objects."
+  },
+  "342": {
+   "about": [],
+   "refers": [],
+   "why": "It provides an example Lease naming convention for an unspecified component."
+  },
+  "343": {
+   "about": [],
+   "refers": [],
+   "why": "It gives generic collision-avoidance guidance for Lease names."
+  },
+  "344": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general outcome for software products rather than a component behavior."
+  },
+  "345": {
+   "about": [],
+   "refers": [],
+   "why": "It describes cloud infrastructure generally, not a listed component."
+  },
+  "346": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general Kubernetes design principle rather than component behavior."
+  },
+  "347": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies the cloud-controller-manager's plugin-based integration behavior."
+  },
+  "348": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes how the cloud controller manager is deployed and runs in the control plane."
+  },
+  "349": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the cloud-controller-manager's responsibility for hosting multiple controllers in one process."
+  },
+  "350": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes where and how the cloud controller manager can run"
+  },
+  "351": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes the controllers that the cloud controller manager contains"
+  },
+  "352": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it states a cloud controller manager node-controller responsibility"
+  },
+  "353": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes cloud-provider information obtained by its node controller"
+  },
+  "354": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it introduces functions performed by the cloud controller manager's node controller"
+  },
+  "355": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its node controller updates Nodes using cloud-provider server identifiers."
+  },
+  "356": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its node controller annotates and labels Nodes with cloud-specific information."
+  },
+  "357": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its node controller obtains node hostnames and network addresses."
+  },
+  "358": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its node controller verifies node health."
+  },
+  "359": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its node controller checks the cloud provider when a node becomes unresponsive."
+  },
+  "360": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "the cloud node controller removes Node objects for deleted cloud nodes"
+  },
+  "361": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes how cloud-provider implementations organize the node-control functionality"
+  },
+  "362": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "the route controller configures cloud routes for cross-node container communication"
+  },
+  "363": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "the route controller may allocate Pod-network IP address blocks"
+  },
+  "364": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes the cloud infrastructure integration handled by the service controller"
+  },
+  "365": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its service controller configures cloud load balancers through provider APIs."
+  },
+  "366": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states the API access the cloud controller manager needs to operate."
+  },
+  "367": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the cloud controller manager's Node controller scope."
+  },
+  "368": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies permissions required by the Node controller."
+  },
+  "369": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the route controller reacting to Nodes and configuring routes."
+  },
+  "370": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies required Node-object permission for the cloud controller manager's route controller."
+  },
+  "371": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes the cloud controller manager's service controller behavior for Services and load balancers."
+  },
+  "372": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states permissions required by the cloud controller manager's service controller."
+  },
+  "373": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states status-update permissions required by the cloud controller manager's service controller."
+  },
+  "374": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies API access required by the core cloud controller manager implementation."
+  },
+  "375": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes the RBAC role required for the cloud controller manager"
+  },
+  "376": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it only points to administration instructions"
+  },
+  "377": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it only links to migration instructions"
+  },
+  "378": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it is a question directing readers to implementation guidance"
+  },
+  "379": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it states that the cloud controller manager uses the CloudProvider Go interface for pluggable implementations"
+  },
+  "380": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes where the cloud controller manager's shared controller implementation resides"
+  },
+  "381": {
+   "about": [
+    "cloud-controller-manager"
+   ],
+   "refers": [],
+   "why": "it states how cloud-provider-specific implementations integrate through its CloudProvider interface"
+  },
+  "382": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it only points readers to related development information"
+  },
+  "383": {
+   "about": [],
+   "refers": [],
+   "why": "it states a generic Linux cgroups property"
+  },
+  "384": {
+   "about": [
+    "kubelet",
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "it specifies that both components interface with cgroups to enforce workload resource management"
+  },
+  "385": {
+   "about": [],
+   "refers": [],
+   "why": "It describes Linux cgroup versions generally, not a system component."
+  },
+  "386": {
+   "about": [],
+   "refers": [],
+   "why": "It defines cgroup v2 as a Linux API feature."
+  },
+  "387": {
+   "about": [],
+   "refers": [],
+   "why": "It introduces general improvements of cgroup v2."
+  },
+  "388": {
+   "about": [],
+   "refers": [],
+   "why": "It states a general cgroup v2 API design property."
+  },
+  "389": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a general cgroup delegation capability for containers."
+  },
+  "390": {
+   "about": [],
+   "refers": [],
+   "why": "States a general cgroup v2 capability."
+  },
+  "391": {
+   "about": [],
+   "refers": [],
+   "why": "Describes generic cgroup v2 resource-management behavior."
+  },
+  "392": {
+   "about": [],
+   "refers": [],
+   "why": "Describes generic cgroup v2 memory accounting."
+  },
+  "393": {
+   "about": [],
+   "refers": [],
+   "why": "Describes generic cgroup v2 resource accounting."
+  },
+  "394": {
+   "about": [],
+   "refers": [],
+   "why": "Makes a system-wide statement about Kubernetes features without assigning behavior to a listed component."
+  },
+  "395": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a generic Kubernetes feature and cgroup primitives, not a listed component."
+  },
+  "396": {
+   "about": [],
+   "refers": [],
+   "why": "It gives a general operating-system recommendation for using cgroup v2."
+  },
+  "397": {
+   "about": [],
+   "refers": [],
+   "why": "It provides general guidance for checking the cgroup version on Linux nodes."
+  },
+  "398": {
+   "about": [],
+   "refers": [],
+   "why": "It introduces general cgroup v2 requirements rather than component behavior."
+  },
+  "399": {
+   "about": [],
+   "refers": [],
+   "why": "It states an operating-system distribution requirement, not a component responsibility."
+  },
+  "400": {
+   "about": [],
+   "refers": [],
+   "why": "States a Linux kernel requirement, not component behavior."
+  },
+  "401": {
+   "about": [
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "States that the container runtime must support cgroup v2."
+  },
+  "402": {
+   "about": [
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "Specifies the containerd version that provides required cgroup v2 support."
+  },
+  "403": {
+   "about": [
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "Specifies the CRI-O version that provides required cgroup v2 support."
+  },
+  "404": {
+   "about": [
+    "kubelet",
+    "container-runtime"
+   ],
+   "refers": [],
+   "why": "Requires both the kubelet and container runtime to use the systemd cgroup driver."
+  },
+  "405": {
+   "about": [],
+   "refers": [],
+   "why": "It refers readers to generic cgroup v2 documentation."
+  },
+  "406": {
+   "about": [],
+   "refers": [],
+   "why": "It lists a Linux distribution's cgroup v2 support."
+  },
+  "407": {
+   "about": [],
+   "refers": [],
+   "why": "It lists a Linux distribution's cgroup v2 support."
+  },
+  "408": {
+   "about": [],
+   "refers": [],
+   "why": "It lists a Linux distribution's cgroup v2 support."
+  },
+  "409": {
+   "about": [],
+   "refers": [],
+   "why": "It lists a Linux distribution's cgroup v2 support."
+  },
+  "410": {
+   "about": [],
+   "refers": [],
+   "why": "Lists Linux distribution support, not a system component behavior."
+  },
+  "411": {
+   "about": [],
+   "refers": [],
+   "why": "Lists Linux distribution support, not a system component behavior."
+  },
+  "412": {
+   "about": [],
+   "refers": [],
+   "why": "Provides generic host distribution guidance for checking cgroup version."
+  },
+  "413": {
+   "about": [],
+   "refers": [],
+   "why": "Describes generic operating-system configuration, not component responsibility."
+  },
+  "414": {
+   "about": [],
+   "refers": [],
+   "why": "Gives GRUB configuration instructions unrelated to a listed component's behavior."
+  },
+  "415": {
+   "about": [],
+   "refers": [],
+   "why": "it recommends an operating system distribution choice, not component behavior"
+  },
+  "416": {
+   "about": [],
+   "refers": [],
+   "why": "it gives generic migration and kernel upgrade guidance"
+  },
+  "417": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies kubelet detection and behavior for cgroup v2"
+  },
+  "418": {
+   "about": [],
+   "refers": [],
+   "why": "it describes general user experience and direct cgroup filesystem access"
+  },
+  "419": {
+   "about": [],
+   "refers": [],
+   "why": "it describes compatibility requirements for external applications"
+  },
+  "420": {
+   "about": [],
+   "refers": [],
+   "why": "It concerns unspecified third-party agents rather than a listed system component."
+  },
+  "421": {
+   "about": [],
+   "refers": [],
+   "why": "It gives an upgrade instruction for the unspecified agents from the preceding sentence."
+  },
+  "422": {
+   "about": [
+    "container-resource-monitoring"
+   ],
+   "refers": [],
+   "why": "It specifies cgroup v2 compatibility requirements for a cAdvisor monitoring deployment."
+  },
+  "423": {
+   "about": [],
+   "refers": [],
+   "why": "It concerns deployed Java applications, not a listed Kubernetes component."
+  },
+  "424": {
+   "about": [],
+   "refers": [],
+   "why": "It lists supported Java runtime versions rather than describing a system component."
+  },
+  "425": {
+   "about": [],
+   "refers": [],
+   "why": "Lists an IBM runtime version recommendation, not a system component behavior."
+  },
+  "426": {
+   "about": [],
+   "refers": [],
+   "why": "Lists an IBM Java version recommendation, not a system component behavior."
+  },
+  "427": {
+   "about": [],
+   "refers": [],
+   "why": "Recommends an application package version, not a listed component."
+  },
+  "428": {
+   "about": [],
+   "refers": [],
+   "why": "Recommends Node.js application versions, not a listed component."
+  },
+  "429": {
+   "about": [],
+   "refers": [],
+   "why": "Describes Node.js cgroup-limit detection behavior, not a listed component."
+  },
+  "430": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Node.js version behavior, not a listed system component"
+  },
+  "431": {
+   "about": [],
+   "refers": [],
+   "why": "it describes affected application versions reading pod memory limits"
+  },
+  "432": {
+   "about": [],
+   "refers": [],
+   "why": "it gives configuration advice for affected application versions"
+  },
+  "433": {
+   "about": [],
+   "refers": [],
+   "why": "it states an operating-system-level cgroup configuration fact"
+  },
+  "434": {
+   "about": [],
+   "refers": [],
+   "why": "it gives a command for checking cgroups on a node"
+  },
+  "435": {
+   "about": [],
+   "refers": [],
+   "why": "It states a generic cgroup filesystem output."
+  },
+  "436": {
+   "about": [],
+   "refers": [],
+   "why": "It states a generic cgroup filesystem output."
+  },
+  "437": {
+   "about": [],
+   "refers": [],
+   "why": "It describes a Kubernetes-wide deprecation, not a component."
+  },
+  "438": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the general Kubernetes deprecation policy."
+  },
+  "439": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies kubelet startup behavior on cgroup v1 nodes."
+  },
+  "440": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies a kubelet configuration setting that controls its cgroup-v1 startup behavior"
+  },
+  "441": {
+   "about": [],
+   "refers": [],
+   "why": "it is only a generic documentation link"
+  },
+  "442": {
+   "about": [],
+   "refers": [
+    "container-runtime"
+   ],
+   "why": "it is a documentation link that merely names the container runtime"
+  },
+  "443": {
+   "about": [],
+   "refers": [],
+   "why": "it is only a generic documentation link about cgroup drivers"
+  },
+  "444": {
+   "about": [],
+   "refers": [],
+   "why": "it describes garbage collection generically rather than a specific component's responsibility"
+  },
+  "445": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its garbage-collection controllers remove objects lacking owner references."
+  },
+  "446": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "The kubelet garbage-collects unused containers and images on nodes."
+  },
+  "447": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its persistent-volume control behavior handles deletion for dynamically provisioned volumes."
+  },
+  "448": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its certificate-signing request controllers clean up stale or expired CSRs."
+  },
+  "449": {
+   "about": [
+    "cloud-controller-manager",
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Node deletion is handled by node-control behavior, including cloud-specific control loops."
+  },
+  "450": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it only names use of the cloud controller manager as a node-deletion scenario"
+  },
+  "451": {
+   "about": [],
+   "refers": [
+    "cloud-controller-manager"
+   ],
+   "why": "it mentions an addon analogous to the cloud controller manager while describing a scenario"
+  },
+  "453": {
+   "about": [],
+   "refers": [],
+   "why": "it describes generic Kubernetes object relationships rather than a listed component"
+  },
+  "454": {
+   "about": [],
+   "refers": [],
+   "why": "it describes control-plane metadata semantics, not a specific component"
+  },
+  "455": {
+   "about": [],
+   "refers": [],
+   "why": "describes generic Kubernetes resource-deletion behavior, not a listed component"
+  },
+  "456": {
+   "about": [],
+   "refers": [],
+   "why": "states a system-wide API behavior without assigning it to a component"
+  },
+  "457": {
+   "about": [],
+   "refers": [],
+   "why": "compares generic Kubernetes resource mechanisms"
+  },
+  "458": {
+   "about": [],
+   "refers": [],
+   "why": "gives an example involving Kubernetes resources rather than a listed component"
+  },
+  "459": {
+   "about": [],
+   "refers": [],
+   "why": "describes generic control-plane selection behavior, and the control plane is not a component"
+  },
+  "460": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the EndpointSlice controller manages Service EndpointSlices and their owner references"
+  },
+  "461": {
+   "about": [],
+   "refers": [],
+   "why": "it states a general purpose of owner references across Kubernetes"
+  },
+  "462": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "garbage-collection controller behavior relies on the owner-reference scope restriction"
+  },
+  "463": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it defines owner-reference relationships interpreted by garbage collection"
+  },
+  "464": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it specifies the namespace constraint used for owner-reference handling"
+  },
+  "465": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes garbage-collector deletion behavior."
+  },
+  "466": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies owner-reference constraints used by garbage collection."
+  },
+  "467": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes how the garbage collector handles invalid owners."
+  },
+  "468": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies garbage-collector detection and warning-event behavior."
+  },
+  "469": {
+   "about": [],
+   "refers": [],
+   "why": "It only gives a user command for inspecting Events."
+  },
+  "470": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the garbage collector deletes orphaned objects"
+  },
+  "471": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the garbage collector implements cascading deletion behavior"
+  },
+  "472": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it introduces the garbage collector's cascading deletion modes"
+  },
+  "473": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it names a cascading deletion mode handled by the garbage collector"
+  },
+  "474": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it names a cascading deletion mode handled by the garbage collector"
+  },
+  "475": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "garbage collection behavior is implemented by a controller"
+  },
+  "476": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it describes the controller-managed foreground deletion lifecycle"
+  },
+  "477": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "it continues the foreground deletion behavior managed by garbage collection"
+  },
+  "478": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server sets the deletion timestamp"
+  },
+  "479": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server sets the foreground deletion finalizer"
+  },
+  "480": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The garbage collection deletion workflow keeps the object visible until completion."
+  },
+  "481": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its garbage collection controller deletes dependent objects during foreground deletion."
+  },
+  "482": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Its garbage collection controller deletes the owner after its dependents."
+  },
+  "483": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "This is the resulting state of the garbage collection controller's deletion workflow."
+  },
+  "484": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies which dependents in the garbage collection controller cache block deletion."
+  },
+  "485": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It specifies which objects the garbage collection controller cache can contain."
+  },
+  "486": {
+   "about": [],
+   "refers": [],
+   "why": "It is only a cross-reference to further documentation."
+  },
+  "487": {
+   "about": [
+    "kube-apiserver",
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes immediate owner deletion by the API server and dependent cleanup by the garbage collector."
+  },
+  "488": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It states the deletion behavior enforced when an object has a finalizer."
+  },
+  "489": {
+   "about": [],
+   "refers": [],
+   "why": "It states a generic Kubernetes default deletion policy rather than a specific component responsibility."
+  },
+  "490": {
+   "about": [],
+   "refers": [],
+   "why": "It only links to further documentation."
+  },
+  "491": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Garbage collection behavior for owner and dependent objects is implemented by a controller."
+  },
+  "492": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It states the default dependent-object deletion behavior managed by garbage collection."
+  },
+  "493": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to another document section."
+  },
+  "494": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies the kubelet's image and container garbage-collection schedule."
+  },
+  "495": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies a constraint needed to preserve kubelet container-management behavior"
+  },
+  "496": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes how kubelet garbage-collection behavior is configured"
+  },
+  "497": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it states that the kubelet includes the image manager responsible for image lifecycle"
+  },
+  "498": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it states which disk usage limits the kubelet uses for garbage-collection decisions"
+  },
+  "499": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it continues the kubelet image garbage-collection behavior by defining the high-threshold trigger"
+  },
+  "500": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies the kubelet's image garbage-collection stopping condition"
+  },
+  "501": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes the kubelet-controlled maximum unused-image age setting"
+  },
+  "502": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it states that the setting is configured per node for the kubelet"
+  },
+  "503": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies how to configure a kubelet setting"
+  },
+  "504": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it continues describing the format of the kubelet setting's value"
+  },
+  "505": {
+   "about": [],
+   "refers": [],
+   "why": "It is only a documentation cross-reference to the glossary."
+  },
+  "506": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It gives an example value for the kubelet image garbage-collection configuration."
+  },
+  "507": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies how kubelet image-usage tracking behaves across restarts."
+  },
+  "508": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It describes kubelet resetting tracked image age after a restart."
+  },
+  "509": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It states that kubelet garbage-collects unused containers using configurable variables."
+  },
+  "510": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies the kubelet's minimum-age rule for container garbage collection."
+  },
+  "511": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It continues the kubelet garbage-collection configuration by stating how to disable the preceding setting."
+  },
+  "512": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It defines a kubelet garbage-collection limit for dead containers per Pod."
+  },
+  "513": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It continues the kubelet garbage-collection configuration by stating how to disable the preceding limit."
+  },
+  "514": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It defines a kubelet garbage-collection limit for dead containers across the cluster."
+  },
+  "515": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it specifies how the kubelet's container-garbage-collection setting can be disabled"
+  },
+  "516": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes kubelet garbage-collection behavior for unidentified and deleted containers"
+  },
+  "517": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it describes conflicting kubelet container-retention configuration limits"
+  },
+  "518": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it states how the kubelet resolves the configuration conflict"
+  },
+  "519": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "it continues the kubelet's described conflict-resolution and eviction behavior"
+  },
+  "520": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It describes the kubelet's container garbage-collection behavior in the continuing section."
+  },
+  "521": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It specifies the scope of containers that the kubelet garbage collects."
+  },
+  "522": {
+   "about": [],
+   "refers": [],
+   "why": "It gives generic configuration guidance for resource-managing controllers rather than a specific component."
+  },
+  "523": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document-navigation statement about following pages."
+  },
+  "524": {
+   "about": [],
+   "refers": [],
+   "why": "It is a link title about configuring Kubernetes object deletion, not a listed component."
+  },
+  "525": {
+   "about": [],
+   "refers": [],
+   "why": "it only names a configuration topic for finished Jobs"
+  },
+  "526": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic reference to Kubernetes object ownership"
+  },
+  "527": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic reference to Kubernetes finalizers"
+  },
+  "528": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "the TTL controller is a controller-manager controller that cleans up finished Jobs"
+  },
+  "529": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it describes API server proxy behavior between peer API servers"
+  },
+  "530": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes the API server feature providing cluster-wide discovery to clients."
+  },
+  "531": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes the mixed-version API server scenario where the feature is useful."
+  },
+  "532": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It continues describing the API server feature's high-availability and upgrade benefits."
+  },
+  "533": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes the complete discovery view ensured by the API server feature."
+  },
+  "534": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It names the cluster-wide discovery behavior provided by peer API servers."
+  },
+  "535": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server proxy directs upgrade-time resource requests to the appropriate peer"
+  },
+  "536": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the API server proxying behavior avoids upgrade-related 404 responses"
+  },
+  "537": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it names the API server proxying mechanism described in the preceding sentences"
+  },
+  "538": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies a feature gate that must be enabled when starting the API server"
+  },
+  "539": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies how source and destination API servers authenticate proxy connections"
+  },
+  "540": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the destination API server verifies peer connections using its configured client CA"
+  },
+  "541": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the source API server uses the peer CA bundle to authenticate destination serving certificates"
+  },
+  "542": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies how kube-apiserver advertises its peer proxy network location"
+  },
+  "543": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it defines kube-apiserver fallback address settings for peer connectivity"
+  },
+  "544": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it continues the API server peer-address fallback behavior using the host default interface"
+  },
+  "545": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies the API server's default discovery-serving behavior"
+  },
+  "546": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it describes how the API server accepts a request for non-peer-aggregated discovery"
+  },
+  "547": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it defines which discovery requests the API server feature supports"
+  },
+  "548": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the aggregation layer filter is API server behavior for mixed-version proxying"
+  },
+  "549": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "it specifies how an API server forwards requests it cannot serve to peers"
+  },
+  "550": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes how an API server identifies unsupported resources and proxies requests to capable peers."
+  },
+  "551": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies the source API server's 503 response behavior when a peer fails."
+  },
+  "552": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It describes the API server's initial resource-serving check."
+  },
+  "553": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It continues describing how the API server performs that check using discovery."
+  },
+  "554": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "It specifies when the receiving API server handles a request locally."
+  },
+  "555": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "API servers discover peers that support an unavailable requested resource"
+  },
+  "556": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the handling API server proxies requests to a suitable peer API server"
+  },
+  "557": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the handling API server falls back to its handler chain and returns a not-found response"
+  },
+  "558": {
+   "about": [
+    "kube-apiserver"
+   ],
+   "refers": [],
+   "why": "the handling API server returns a service-unavailable error when its selected peer fails"
+  },
+  "560": {
+   "about": [
+    "kubelet",
+    "kube-scheduler",
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "It describes container restart, workload rescheduling, and desired-state reconciliation responsibilities."
+  },
+  "561": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "The kubelet restarts failed containers in Pods according to restartPolicy."
+  },
+  "562": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Deployment and StatefulSet controllers create replacement Pods to maintain replica counts."
+  },
+  "563": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The DaemonSet controller replaces failed Pods on their designated nodes."
+  },
+  "564": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "Volume attachment recovery is coordinated by control-plane controllers when a node fails."
+  },
+  "565": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The EndpointSlice controller removes failed Pods from Service endpoints."
+  },
+  "566": {
+   "about": [],
+   "refers": [],
+   "why": "This is an introductory statement about the following list."
+  },
+  "567": {
+   "about": [
+    "kubelet"
+   ],
+   "refers": [],
+   "why": "It states the kubelet's responsibility to keep containers running and restart failures."
+  },
+  "568": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "These workload controllers run under the controller manager and maintain replica counts."
+  },
+  "569": {
+   "about": [
+    "kube-controller-manager"
+   ],
+   "refers": [],
+   "why": "The PersistentVolume controller is a controller-manager controller responsible for volume attachment behavior."
+  },
+  "570": {
+   "about": [],
+   "refers": [],
+   "why": "it states a general storage-failure consideration, not a listed component's behavior"
+  },
+  "571": {
+   "about": [],
+   "refers": [],
+   "why": "it describes Kubernetes self-healing generally without assigning behavior to a specific listed component"
+  },
+  "572": {
+   "about": [],
+   "refers": [],
+   "why": "it is a document link about Pods, which are not a listed component"
+  },
+  "573": {
+   "about": [],
+   "refers": [],
+   "why": "it is a document link about controllers in general, not a specific component"
+  },
+  "574": {
+   "about": [],
+   "refers": [],
+   "why": "it is a document link about node autoscaling, not a listed component"
+  },
+  "575": {
+   "about": [],
+   "refers": [],
+   "why": "It describes node autoscaling behavior, not a listed component."
+  }
+ }
+}

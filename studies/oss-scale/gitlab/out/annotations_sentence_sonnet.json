@@ -1,0 +1,1363 @@
+{
+ "view": "sentence",
+ "model": "sonnet",
+ "backend": "claude_cli",
+ "salt": "",
+ "unparsed": 0,
+ "usage": {
+  "prompt_tokens": 2272603,
+  "completion_tokens": 25065
+ },
+ "labels": {
+  "0": {
+   "about": [],
+   "refers": [],
+   "why": "intro line, no component named"
+  },
+  "1": {
+   "about": [],
+   "refers": [],
+   "why": "names software edition, not a component"
+  },
+  "2": {
+   "about": [],
+   "refers": [],
+   "why": "names software edition, not a component"
+  },
+  "3": {
+   "about": [],
+   "refers": [],
+   "why": "repo status, generic system fact"
+  },
+  "4": {
+   "about": [],
+   "refers": [],
+   "why": "codebase structure, generic system fact"
+  },
+  "5": {
+   "about": [],
+   "refers": [],
+   "why": "subscription note, no component"
+  },
+  "6": {
+   "about": [],
+   "refers": [],
+   "why": "release process, whole system"
+  },
+  "7": {
+   "about": [],
+   "refers": [],
+   "why": "pointer to doc, not component"
+  },
+  "8": {
+   "about": [],
+   "refers": [],
+   "why": "generic distro note, no named component"
+  },
+  "9": {
+   "about": [],
+   "refers": [],
+   "why": "meta-reference to doc section itself"
+  },
+  "10": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about dependent-component versioning process, not about one component"
+  },
+  "11": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about release timing across dependent components"
+  },
+  "12": {
+   "about": [],
+   "refers": [],
+   "why": "generic install-method statement (GNU/Linux vs Kubernetes), not about a component"
+  },
+  "13": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about GitLab.com's install method (Helm chart/Linux package)"
+  },
+  "14": {
+   "about": [
+    "nginx",
+    "gitlab-workhorse",
+    "puma"
+   ],
+   "refers": [],
+   "why": "describes request-flow responsibility of each: NGINX proxies through Workhorse into Puma"
+  },
+  "15": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "puma serves web+API"
+  },
+  "16": {
+   "about": [
+    "sidekiq",
+    "redis"
+   ],
+   "refers": [],
+   "why": "sidekiq job queue behavior, redis backend role described"
+  },
+  "17": {
+   "about": [
+    "puma",
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "comms mechanism between both"
+  },
+  "18": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "workhorse serving static, puma just named as bypassed"
+  },
+  "19": {
+   "about": [
+    "postgresql"
+   ],
+   "refers": [],
+   "why": "postgres stores persistent data"
+  },
+  "20": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "bare repo storage is gitaly's job"
+  },
+  "21": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "continues repo storage topic"
+  },
+  "22": {
+   "about": [
+    "puma",
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "API auth resolve = puma, serving git objects = gitaly"
+  },
+  "23": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "names component serving SSH repos"
+  },
+  "24": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "SSH key mgmt is gitlab-shell's job"
+  },
+  "25": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "continues topic: file gitlab-shell manages"
+  },
+  "26": {
+   "about": [
+    "gitlab-shell",
+    "gitaly",
+    "sidekiq"
+   ],
+   "refers": [
+    "redis"
+   ],
+   "why": "gitlab-shell's own access/job-submit behavior; gitaly serves objects, sidekiq receives jobs; redis just conduit"
+  },
+  "27": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "gitlab-shell's own auth-check behavior"
+  },
+  "28": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [
+    "gitlab-shell",
+    "puma"
+   ],
+   "why": "gitaly's own exec/API behavior; shell and web app only named as callers"
+  },
+  "29": {
+   "about": [],
+   "refers": [],
+   "why": "pointer to other doc, no component behavior"
+  },
+  "30": {
+   "about": [],
+   "refers": [],
+   "why": "generic install-method comparison, no component"
+  },
+  "31": {
+   "about": [],
+   "refers": [],
+   "why": "generic install-method comparison, no component"
+  },
+  "32": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about installation methods"
+  },
+  "33": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about installation methods"
+  },
+  "34": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about installation methods"
+  },
+  "35": {
+   "about": [],
+   "refers": [],
+   "why": "generic Kubernetes architecture note, no component named"
+  },
+  "36": {
+   "about": [],
+   "refers": [],
+   "why": "generic guidance on shared state, no component"
+  },
+  "37": {
+   "about": [],
+   "refers": [],
+   "why": "generic API design rule, no component"
+  },
+  "38": {
+   "about": [],
+   "refers": [],
+   "why": "generic file-sharing avoidance rule, no component"
+  },
+  "39": {
+   "about": [],
+   "refers": [],
+   "why": "generic API-first/Kubernetes compat rule, no component"
+  },
+  "40": {
+   "about": [],
+   "refers": [],
+   "why": "generic guidance on adding components, not about any one component"
+  },
+  "41": {
+   "about": [],
+   "refers": [],
+   "why": "refers to a process doc, not a component"
+  },
+  "42": {
+   "about": [],
+   "refers": [],
+   "why": "about the diagram/document itself"
+  },
+  "43": {
+   "about": [],
+   "refers": [],
+   "why": "about the diagram/document itself"
+  },
+  "44": {
+   "about": [],
+   "refers": [],
+   "why": "generic system-wide statement about connections"
+  },
+  "45": {
+   "about": [],
+   "refers": [],
+   "why": "placeholder text, no component"
+  },
+  "46": {
+   "about": [],
+   "refers": [],
+   "why": "generic legend statement about all components' status docs"
+  },
+  "47": {
+   "about": [],
+   "refers": [],
+   "why": "about document's intended audience, not a component"
+  },
+  "48": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about GitLab as whole, not one component"
+  },
+  "49": {
+   "about": [],
+   "refers": [],
+   "why": "generic troubleshooting advice, names no component"
+  },
+  "50": {
+   "about": [],
+   "refers": [],
+   "why": "generic doc statement, no component"
+  },
+  "51": {
+   "about": [],
+   "refers": [],
+   "why": "generic system-layer statement"
+  },
+  "52": {
+   "about": [],
+   "refers": [],
+   "why": "describes Monitoring layer generically, no specific component"
+  },
+  "53": {
+   "about": [],
+   "refers": [],
+   "why": "describes Core layer generically, no specific component"
+  },
+  "54": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about core processes as whole"
+  },
+  "55": {
+   "about": [],
+   "refers": [],
+   "why": "meta-structure statement about doc layout, not a component"
+  },
+  "56": {
+   "about": [],
+   "refers": [],
+   "why": "generic definition of Processor category, no specific component"
+  },
+  "57": {
+   "about": [],
+   "refers": [],
+   "why": "generic definition of Data category, no specific component"
+  },
+  "58": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [],
+   "why": "describes what Alertmanager does"
+  },
+  "59": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [],
+   "why": "continues describing Alertmanager's dedup/routing behavior"
+  },
+  "60": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [],
+   "why": "continues Alertmanager section, describes its silencing/inhibition behavior"
+  },
+  "61": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "describes what AI Gateway is and does"
+  },
+  "62": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "continues AI Gateway section lead-in to further reading"
+  },
+  "63": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "points to AI Gateway's own README, continuing topic"
+  },
+  "64": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "points to AI Gateway's own install docs, continuing topic"
+  },
+  "65": {
+   "about": [
+    "gitlab-duo-workflow-service"
+   ],
+   "refers": [],
+   "why": "describes what the service is and its deployment"
+  },
+  "66": {
+   "about": [],
+   "refers": [],
+   "why": "doc self-reference, points to further reading"
+  },
+  "67": {
+   "about": [],
+   "refers": [],
+   "why": "doc self-reference, points to design doc"
+  },
+  "68": {
+   "about": [
+    "consul"
+   ],
+   "refers": [],
+   "why": "defines what consul is"
+  },
+  "69": {
+   "about": [
+    "consul"
+   ],
+   "refers": [],
+   "why": "describes consul's properties"
+  },
+  "70": {
+   "about": [
+    "elasticsearch"
+   ],
+   "refers": [],
+   "why": "describes what Elasticsearch is"
+  },
+  "71": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "describes Gitaly's purpose, removing NFS need"
+  },
+  "72": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "describes Gitaly's git-access responsibility"
+  },
+  "73": {
+   "about": [],
+   "refers": [],
+   "why": "pointer to README, about the doc not the component"
+  },
+  "74": {
+   "about": [
+    "praefect"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "describes Praefect's proxy role; Gitaly only named as target"
+  },
+  "75": {
+   "about": [
+    "gitlab-geo"
+   ],
+   "refers": [],
+   "why": "describes Geo's purpose, own section"
+  },
+  "76": {
+   "about": [
+    "gitlab-geo"
+   ],
+   "refers": [],
+   "why": "continues Geo topic, describes its effect"
+  },
+  "77": {
+   "about": [
+    "gitlab-exporter"
+   ],
+   "refers": [
+    "prometheus"
+   ],
+   "why": "exporter's job; Prometheus just named as metrics target"
+  },
+  "78": {
+   "about": [
+    "gitlab-exporter"
+   ],
+   "refers": [],
+   "why": "continues exporter topic, pointer to its README"
+  },
+  "79": {
+   "about": [
+    "gitlab-agent-for-kubernetes"
+   ],
+   "refers": [],
+   "why": "describes agent's role, own section"
+  },
+  "80": {
+   "about": [
+    "gitlab-agent-for-kubernetes"
+   ],
+   "refers": [],
+   "why": "continues describing agent's use"
+  },
+  "81": {
+   "about": [
+    "gitlab-pages"
+   ],
+   "refers": [],
+   "why": "own section defines Pages"
+  },
+  "82": {
+   "about": [
+    "gitlab-pages"
+   ],
+   "refers": [],
+   "why": "use cases of Pages"
+  },
+  "83": {
+   "about": [],
+   "refers": [],
+   "why": "license note, not about component behavior"
+  },
+  "84": {
+   "about": [
+    "gitlab-runner"
+   ],
+   "refers": [],
+   "why": "own section defines Runner"
+  },
+  "85": {
+   "about": [
+    "gitlab-runner"
+   ],
+   "refers": [],
+   "why": "describes what GitLab CI/CD does, part of Runner's own behavior"
+  },
+  "86": {
+   "about": [
+    "gitlab-runner"
+   ],
+   "refers": [],
+   "why": "naming history/guidance for Runner component"
+  },
+  "87": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "describes Shell's core function"
+  },
+  "88": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "clarifies what Shell is not, still about it"
+  },
+  "89": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "Workhorse's purpose stated, Puma only named"
+  },
+  "90": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "continues Workhorse topic per rule 2"
+  },
+  "91": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "describes Workhorse's proxy role"
+  },
+  "92": {
+   "about": [
+    "grafana"
+   ],
+   "refers": [],
+   "why": "describes what Grafana is"
+  },
+  "93": {
+   "about": [
+    "jaeger"
+   ],
+   "refers": [],
+   "why": "describes what Jaeger is"
+  },
+  "94": {
+   "about": [
+    "jaeger"
+   ],
+   "refers": [],
+   "why": "continues Jaeger topic, describes its use"
+  },
+  "95": {
+   "about": [],
+   "refers": [],
+   "why": "generic system-wide statement, no component"
+  },
+  "96": {
+   "about": [
+    "logrotate"
+   ],
+   "refers": [],
+   "why": "describes what logrotate does"
+  },
+  "97": {
+   "about": [
+    "logrotate"
+   ],
+   "refers": [],
+   "why": "continues logrotate topic"
+  },
+  "98": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "describes object storage's role/data"
+  },
+  "99": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "describes object storage compatibility requirement"
+  },
+  "100": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "continues object-storage topic, providers responsibility"
+  },
+  "101": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "lists example object-storage providers, same topic"
+  },
+  "102": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "describes NGINX ingress routing behavior"
+  },
+  "103": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "continues NGINX topic, packaging detail"
+  },
+  "104": {
+   "about": [
+    "node-exporter"
+   ],
+   "refers": [],
+   "why": "describes Node Exporter's metric function"
+  },
+  "105": {
+   "about": [
+    "node-exporter"
+   ],
+   "refers": [],
+   "why": "continues Node Exporter section describing itself"
+  },
+  "106": {
+   "about": [
+    "pgbouncer"
+   ],
+   "refers": [],
+   "why": "own-section desc of PgBouncer"
+  },
+  "107": {
+   "about": [
+    "pgbouncer-exporter"
+   ],
+   "refers": [],
+   "why": "own-section desc of PgBouncer Exporter"
+  },
+  "108": {
+   "about": [
+    "pgbouncer-exporter"
+   ],
+   "refers": [],
+   "why": "continues PgBouncer Exporter topic, metrics port"
+  },
+  "109": {
+   "about": [
+    "postgresql"
+   ],
+   "refers": [],
+   "why": "own-section desc of PostgreSQL"
+  },
+  "110": {
+   "about": [
+    "postgresql-exporter"
+   ],
+   "refers": [],
+   "why": "describes postgres_exporter itself"
+  },
+  "111": {
+   "about": [
+    "prometheus"
+   ],
+   "refers": [],
+   "why": "describes prometheus itself"
+  },
+  "112": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "intro line of redis's own storage list"
+  },
+  "113": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "continues redis storage list, cache info"
+  },
+  "114": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "continues redis storage list, job queues"
+  },
+  "115": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "continues Redis topic, guidelines link"
+  },
+  "116": {
+   "about": [
+    "redis-exporter"
+   ],
+   "refers": [
+    "redis"
+   ],
+   "why": "own-section desc of exporter, mentions redis process"
+  },
+  "117": {
+   "about": [
+    "registry"
+   ],
+   "refers": [],
+   "why": "own-section desc of registry"
+  },
+  "118": {
+   "about": [
+    "registry"
+   ],
+   "refers": [
+    "nginx"
+   ],
+   "why": "registry's use of nginx/gitlab, about registry"
+  },
+  "119": {
+   "about": [
+    "registry"
+   ],
+   "refers": [],
+   "why": "describes registry auth flow"
+  },
+  "120": {
+   "about": [
+    "registry"
+   ],
+   "refers": [],
+   "why": "describes registry's auth token flow, continuing topic"
+  },
+  "121": {
+   "about": [],
+   "refers": [],
+   "why": "doc pointer, not about component behavior"
+  },
+  "122": {
+   "about": [
+    "registry"
+   ],
+   "refers": [],
+   "why": "describes external registry config using GitLab auth"
+  },
+  "123": {
+   "about": [
+    "sentry"
+   ],
+   "refers": [],
+   "why": "states what sentry does"
+  },
+  "124": {
+   "about": [
+    "sentry"
+   ],
+   "refers": [],
+   "why": "describes sentry server implementation/API"
+  },
+  "125": {
+   "about": [],
+   "refers": [
+    "sentry"
+   ],
+   "why": "points to sentry's own docs, not describing behavior"
+  },
+  "126": {
+   "about": [
+    "sidekiq"
+   ],
+   "refers": [
+    "redis"
+   ],
+   "why": "describes sidekiq pulling jobs from redis queue"
+  },
+  "127": {
+   "about": [
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "continues sidekiq background-job topic"
+  },
+  "128": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "states puma is default web server"
+  },
+  "129": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "describes puma running core Rails app"
+  },
+  "130": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "still describing Puma process display"
+  },
+  "131": {
+   "about": [],
+   "refers": [],
+   "why": "generic system statement, no component"
+  },
+  "132": {
+   "about": [],
+   "refers": [],
+   "why": "generic category label, no component named"
+  },
+  "133": {
+   "about": [],
+   "refers": [],
+   "why": "generic category label, no component named"
+  },
+  "134": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about request types"
+  },
+  "135": {
+   "about": [],
+   "refers": [],
+   "why": "generic intro to request path, no component itself"
+  },
+  "136": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "describes nginx's own reverse-proxy role"
+  },
+  "137": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "workhorse's routing decision described; puma only named as load target"
+  },
+  "138": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "web request routes to puma, app access via puma"
+  },
+  "139": {
+   "about": [
+    "postgresql",
+    "gitaly",
+    "redis"
+   ],
+   "refers": [],
+   "why": "these services store/retrieve data for request"
+  },
+  "140": {
+   "about": [],
+   "refers": [],
+   "why": "framing sentence, no component"
+  },
+  "141": {
+   "about": [],
+   "refers": [],
+   "why": "general comparison, no component"
+  },
+  "142": {
+   "about": [],
+   "refers": [],
+   "why": "generic split-across-components statement, none named"
+  },
+  "143": {
+   "about": [],
+   "refers": [],
+   "why": "refers to diagram, no component"
+  },
+  "144": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "describes nginx's routing behavior for all requests"
+  },
+  "145": {
+   "about": [],
+   "refers": [],
+   "why": "generic note on diagram URL path format, no component named"
+  },
+  "146": {
+   "about": [],
+   "refers": [],
+   "why": "generic sequence-diagram continuation (push vs fetch), no specific component"
+  },
+  "147": {
+   "about": [],
+   "refers": [],
+   "why": "generic overview stmt, handling split 'across several components' not attributed to one"
+  },
+  "148": {
+   "about": [],
+   "refers": [],
+   "why": "generic stmt SSH server (not a GitLab component) terminates connection"
+  },
+  "149": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "SSH key based user auth is gitlab-shell's job (ties to AuthorizedKeysCommand, S151)"
+  },
+  "150": {
+   "about": [],
+   "refers": [],
+   "why": "generic diagram intro, no component behavior stated"
+  },
+  "151": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "AuthorizedKeysCommand is executable GitLab Shell provides"
+  },
+  "152": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "continues git push/fetch mechanism owned by GitLab Shell"
+  },
+  "153": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "fallback authorized_keys file mechanism is GitLab Shell's SSH auth setup"
+  },
+  "154": {
+   "about": [
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "AuthorizedKeysWorker is Rails background job run by Sidekiq"
+  },
+  "155": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "continues SSH auth topic, cert-based alt to keys"
+  },
+  "156": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "AuthorizedPrincipalsCommand swap is shell SSH mechanism"
+  },
+  "157": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "shell extracts username; /api/internal/allowed just named as target"
+  },
+  "158": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "shell ops not involving Gitaly; Gitaly only named in exclusion"
+  },
+  "159": {
+   "about": [
+    "gitlab-shell",
+    "puma"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "Rails(puma) does action, shell streams reply; no Gitaly round-trip named"
+  },
+  "160": {
+   "about": [],
+   "refers": [],
+   "why": "generic doc note on ~git meaning"
+  },
+  "161": {
+   "about": [],
+   "refers": [],
+   "why": "generic install location statement"
+  },
+  "162": {
+   "about": [],
+   "refers": [],
+   "why": "generic home dir layout description"
+  },
+  "163": {
+   "about": [],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "names repo storage path, not gitaly behavior"
+  },
+  "164": {
+   "about": [],
+   "refers": [],
+   "why": "generic system-wide Rails statement"
+  },
+  "165": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "describes gitlab-shell add-on for SSH, install path"
+  },
+  "166": {
+   "about": [],
+   "refers": [],
+   "why": "about document's own summary section"
+  },
+  "167": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about system as whole"
+  },
+  "168": {
+   "about": [
+    "postgresql",
+    "redis",
+    "nginx",
+    "puma"
+   ],
+   "refers": [],
+   "why": "states each component's role: db, cache/queue, proxy, app server"
+  },
+  "169": {
+   "about": [],
+   "refers": [
+    "postgresql",
+    "redis"
+   ],
+   "why": "names postgres/redis only as example system-user names, not their behavior"
+  },
+  "170": {
+   "about": [
+    "sidekiq",
+    "puma"
+   ],
+   "refers": [],
+   "why": "git user starts these two processes"
+  },
+  "171": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "process counts for puma master/worker and sidekiq"
+  },
+  "172": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement, no component named"
+  },
+  "173": {
+   "about": [
+    "puma",
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "HTTP cloning via GitLab API (puma) and SSH cloning via GitLab Shell"
+  },
+  "174": {
+   "about": [],
+   "refers": [],
+   "why": "pointer to README, about document itself"
+  },
+  "175": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "init script starts/stops these two services"
+  },
+  "176": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "heading naming Redis service for init script"
+  },
+  "177": {
+   "about": [],
+   "refers": [],
+   "why": "heading names no specific component, just 'one of following'"
+  },
+  "178": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "heading: GitLab log location includes Puma and Sidekiq logs"
+  },
+  "179": {
+   "about": [],
+   "refers": [
+    "puma",
+    "sidekiq"
+   ],
+   "why": "log file path listing, mentions sidekiq.log/puma logs but not about their behavior"
+  },
+  "180": {
+   "about": [],
+   "refers": [],
+   "why": "OS auth log, no component"
+  },
+  "181": {
+   "about": [],
+   "refers": [],
+   "why": "OS auth log, no component"
+  },
+  "182": {
+   "about": [],
+   "refers": [
+    "nginx"
+   ],
+   "why": "just log path for nginx, not nginx behavior"
+  },
+  "183": {
+   "about": [],
+   "refers": [],
+   "why": "Apache not a listed component"
+  },
+  "184": {
+   "about": [],
+   "refers": [],
+   "why": "Apache log path, Apache not listed"
+  },
+  "185": {
+   "about": [],
+   "refers": [],
+   "why": "log path list, generic troubleshooting"
+  },
+  "186": {
+   "about": [],
+   "refers": [
+    "redis"
+   ],
+   "why": "just log path, not redis behavior"
+  },
+  "187": {
+   "about": [],
+   "refers": [],
+   "why": "config file location, about doc itself"
+  },
+  "188": {
+   "about": [],
+   "refers": [],
+   "why": "intro line, no component"
+  },
+  "189": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "gitlab.yml configs Rails app, ABOUT both per note"
+  },
+  "190": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "puma.rb governs Puma web server settings"
+  },
+  "191": {
+   "about": [
+    "postgresql"
+   ],
+   "refers": [],
+   "why": "database.yml sets DB connection settings"
+  },
+  "192": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "states GitLab Shell's own config file path"
+  },
+  "193": {
+   "about": [],
+   "refers": [],
+   "why": "generic intro to gitlab.yml settings categories, no component"
+  },
+  "194": {
+   "about": [],
+   "refers": [],
+   "why": "generic wiring-across-services statement, no component"
+  },
+  "195": {
+   "about": [],
+   "refers": [
+    "gitaly",
+    "redis",
+    "postgresql",
+    "consul"
+   ],
+   "why": "list example of address settings, not about those components' behavior"
+  },
+  "196": {
+   "about": [],
+   "refers": [],
+   "why": "generic observability config category, no component named"
+  },
+  "197": {
+   "about": [],
+   "refers": [],
+   "why": "example continuing observability config, no component named"
+  },
+  "198": {
+   "about": [],
+   "refers": [
+    "postgresql"
+   ],
+   "why": "postgres named only as timing marker for Rails init, sentence about Rails setting"
+  },
+  "199": {
+   "about": [],
+   "refers": [],
+   "why": "about app's ApplicationSetting, no component"
+  },
+  "200": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about config UX vs files, not component-specific"
+  },
+  "201": {
+   "about": [],
+   "refers": [],
+   "why": "generic dev-cost/deployment-method tradeoff, no component named"
+  },
+  "202": {
+   "about": [],
+   "refers": [],
+   "why": "lead-in sentence to a list, no component"
+  },
+  "203": {
+   "about": [],
+   "refers": [],
+   "why": "installation-method instruction, not component behavior"
+  },
+  "204": {
+   "about": [],
+   "refers": [],
+   "why": "installation-method instruction, not component behavior"
+  },
+  "205": {
+   "about": [],
+   "refers": [],
+   "why": "GDK setting addition, generic app config not tied to a component"
+  },
+  "206": {
+   "about": [],
+   "refers": [],
+   "why": "generic Rake maintenance tasks for whole app"
+  },
+  "207": {
+   "about": [],
+   "refers": [],
+   "why": "doc pointer, not about a component"
+  },
+  "208": {
+   "about": [],
+   "refers": [],
+   "why": "intro fragment, no content"
+  },
+  "209": {
+   "about": [],
+   "refers": [],
+   "why": "generic git-user login instruction, no component"
+  },
+  "210": {
+   "about": [],
+   "refers": [],
+   "why": "generic sudo/OS troubleshooting, no component"
+  },
+  "211": {
+   "about": [],
+   "refers": [],
+   "why": "generic statement about GitLab.com architecture as whole"
+  },
+  "212": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "SaaS model gateway enabling AI-native features is the AI Gateway itself"
+  }
+ }
+}

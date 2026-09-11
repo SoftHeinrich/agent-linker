@@ -1,0 +1,52 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: gitlab_arch
+Variants: s_linker110_onecall
+========================================================================================================================
+
+========================================================================================================================
+DATASET: gitlab_arch
+========================================================================================================================
+  Components: 37, Sentences: 213
+  Gold links: 73, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110_onecall ---
+SLinker110 (full-name scan -> partial-name scan -> coreference; fixed order, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+SLinker110OneCall (one linking call; no scan, no judge, no union)
+Loaded 37 components, 213 sentences
+
+[Knowledge] Document aliases
+    Alias: postgres_exporter -> PostgreSQL Exporter
+    Alias: registry -> Registry
+    Alias: Postgres -> PostgreSQL
+    Alias: GitLab AI Gateway -> AI Gateway
+    Alias: Alert manager -> Alertmanager
+    Alias: Geo -> GitLab Geo
+    Alias: Workhorse -> GitLab Workhorse
+    Alias: GitLab CI Multi Runner -> GitLab Runner
+  Checkpoint: knowledge saved
+
+[OneCall] whole document, no stages
+  Checkpoint: final saved
+  Phase log saved: ../results/oss_scale_gitlab_onecall_terra_r3_20260904/llm_logs/s_linker110_onecall_openai_sentences_20260904_233848.json
+  LLM call trace saved: ../results/oss_scale_gitlab_onecall_terra_r3_20260904/llm_logs/s_linker110_onecall_openai_sentences_20260904_233848_calls.json (3 calls)
+
+Final: 135 links (10.1s, 3 LLM calls)
+  s_linker110_onecall: P=45.9% R=84.9% F1=59.6% F2=72.6% TP=62 FP=73 FN=11 (10s)
+    Sources: {'one_call': 135}
+    FP by source: {'one_call': 73}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker110_onecall    
+-----------------+----------------------------
+gitlab_arch      | F1 59.6% F2 72.6% FP  73
+-----------------+----------------------------
+Macro avg        | F1 59.6% F2 72.6% FP  73
+Pooled           | F1 59.6% F2 72.6% FP  73
+
+Results saved to ../results/oss_scale_gitlab_onecall_terra_r3_20260904/ablation_20260904_233848.json

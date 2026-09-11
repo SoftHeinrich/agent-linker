@@ -1,0 +1,1430 @@
+{
+ "view": "sentence",
+ "model": "gpt-5.6-terra",
+ "backend": "openai",
+ "salt": "",
+ "unparsed": 0,
+ "usage": {
+  "prompt_tokens": 127661,
+  "completion_tokens": 18605
+ },
+ "labels": {
+  "0": {
+   "about": [],
+   "refers": [],
+   "why": "describes system-wide software distributions"
+  },
+  "1": {
+   "about": [],
+   "refers": [],
+   "why": "describes a GitLab distribution"
+  },
+  "2": {
+   "about": [],
+   "refers": [],
+   "why": "describes a GitLab distribution"
+  },
+  "3": {
+   "about": [],
+   "refers": [],
+   "why": "describes repository status"
+  },
+  "4": {
+   "about": [],
+   "refers": [],
+   "why": "describes the system-wide codebase"
+  },
+  "5": {
+   "about": [],
+   "refers": [],
+   "why": "subscription availability is a system-wide distribution concern"
+  },
+  "6": {
+   "about": [],
+   "refers": [],
+   "why": "branching and release practices concern the codebase as a whole"
+  },
+  "7": {
+   "about": [],
+   "refers": [],
+   "why": "it only points to release-process documentation"
+  },
+  "8": {
+   "about": [],
+   "refers": [],
+   "why": "it generically describes distributions rather than a specific component"
+  },
+  "9": {
+   "about": [],
+   "refers": [],
+   "why": "it describes document organization and repositories in general"
+  },
+  "10": {
+   "about": [],
+   "refers": [],
+   "why": "It describes versioning policy for dependent components generically."
+  },
+  "11": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the general release cadence rather than a component's behavior."
+  },
+  "12": {
+   "about": [],
+   "refers": [],
+   "why": "It describes supported installation platforms for GitLab as a whole."
+  },
+  "13": {
+   "about": [],
+   "refers": [],
+   "why": "It describes deployment methods for a GitLab installation as a whole."
+  },
+  "14": {
+   "about": [
+    "nginx",
+    "gitlab-workhorse",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It specifies the web-request proxy path through NGINX, Workhorse, and Puma."
+  },
+  "15": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "Puma serves the GitLab web pages and API."
+  },
+  "16": {
+   "about": [
+    "sidekiq",
+    "redis"
+   ],
+   "refers": [],
+   "why": "Sidekiq processes the job queue using Redis for job data."
+  },
+  "17": {
+   "about": [
+    "puma",
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "Puma and Workhorse communicate through a socket or TCP."
+  },
+  "18": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "Workhorse serves static content directly instead of routing it through Puma."
+  },
+  "19": {
+   "about": [
+    "puma",
+    "sidekiq",
+    "postgresql"
+   ],
+   "refers": [],
+   "why": "The GitLab Rails application uses PostgreSQL for persistent data."
+  },
+  "20": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "Gitaly owns Git repository storage."
+  },
+  "21": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "It continues describing metadata kept with Git repositories."
+  },
+  "22": {
+   "about": [
+    "puma",
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "The Rails API authorizes HTTP Git access while Gitaly serves Git objects."
+  },
+  "23": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell serves repositories over SSH."
+  },
+  "24": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It continues describing GitLab Shell's SSH-key management."
+  },
+  "25": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It constrains manual editing of the SSH-key file managed by GitLab Shell."
+  },
+  "26": {
+   "about": [
+    "gitlab-shell",
+    "gitaly",
+    "redis",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It specifies GitLab Shell's Git and job-submission integrations with these services."
+  },
+  "27": {
+   "about": [
+    "gitlab-shell",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It specifies that GitLab Shell uses the GitLab API for authorization decisions."
+  },
+  "28": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [
+    "gitlab-shell",
+    "puma"
+   ],
+   "why": "It describes Gitaly's Git-operation and Git-metadata API responsibilities."
+  },
+  "29": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to separate GitLab.com architecture documentation."
+  },
+  "30": {
+   "about": [],
+   "refers": [],
+   "why": "describes system-wide installation-environment differences"
+  },
+  "31": {
+   "about": [],
+   "refers": [],
+   "why": "introduces a generic comparison of installation methods"
+  },
+  "32": {
+   "about": [],
+   "refers": [],
+   "why": "states a generic property of Linux package service deployment"
+  },
+  "33": {
+   "about": [],
+   "refers": [],
+   "why": "states a generic Kubernetes platform constraint"
+  },
+  "34": {
+   "about": [],
+   "refers": [],
+   "why": "describes generic shared configuration and network access in Linux packages"
+  },
+  "35": {
+   "about": [],
+   "refers": [],
+   "why": "generic Kubernetes deployment constraint"
+  },
+  "36": {
+   "about": [],
+   "refers": [],
+   "why": "generic guidance on service shared state"
+  },
+  "37": {
+   "about": [],
+   "refers": [],
+   "why": "generic API communication requirement"
+  },
+  "38": {
+   "about": [],
+   "refers": [],
+   "why": "continues generic guidance on avoiding files"
+  },
+  "39": {
+   "about": [],
+   "refers": [],
+   "why": "generic requirement for new Kubernetes-compatible services"
+  },
+  "40": {
+   "about": [],
+   "refers": [],
+   "why": "describes a generic installation approach"
+  },
+  "41": {
+   "about": [],
+   "refers": [],
+   "why": "refers to documentation process"
+  },
+  "42": {
+   "about": [],
+   "refers": [],
+   "why": "describes the architecture diagram"
+  },
+  "43": {
+   "about": [],
+   "refers": [],
+   "why": "points to another diagram"
+  },
+  "44": {
+   "about": [],
+   "refers": [],
+   "why": "states a system-wide connection convention"
+  },
+  "45": {
+   "about": [],
+   "refers": [],
+   "why": "states a legend entry without describing any component"
+  },
+  "46": {
+   "about": [],
+   "refers": [],
+   "why": "describes documentation links rather than component behavior"
+  },
+  "47": {
+   "about": [],
+   "refers": [],
+   "why": "describes the document's intended audience"
+  },
+  "48": {
+   "about": [],
+   "refers": [],
+   "why": "makes a generic statement about GitLab deployment as a whole"
+  },
+  "49": {
+   "about": [],
+   "refers": [],
+   "why": "gives troubleshooting guidance rather than component responsibilities"
+  },
+  "50": {
+   "about": [],
+   "refers": [],
+   "why": "It continues a documentation-guidance statement without describing a component."
+  },
+  "51": {
+   "about": [],
+   "refers": [],
+   "why": "It describes the system-wide process-layer classification."
+  },
+  "52": {
+   "about": [],
+   "refers": [],
+   "why": "It defines the Monitoring layer generically rather than any specific component."
+  },
+  "53": {
+   "about": [],
+   "refers": [],
+   "why": "It defines the Core layer generically rather than any specific component."
+  },
+  "54": {
+   "about": [],
+   "refers": [],
+   "why": "It states a generic consequence for Core processes without identifying a component."
+  },
+  "55": {
+   "about": [],
+   "refers": [],
+   "why": "It only introduces a generic layer classification."
+  },
+  "56": {
+   "about": [],
+   "refers": [],
+   "why": "It defines the generic Processor category rather than a listed component."
+  },
+  "57": {
+   "about": [],
+   "refers": [],
+   "why": "It defines the generic Data category rather than a listed component."
+  },
+  "58": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [
+    "prometheus"
+   ],
+   "why": "It describes Alertmanager's alert-handling responsibility while only mentioning Prometheus as provider and example client."
+  },
+  "59": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [],
+   "why": "It continues describing Alertmanager's deduplication, grouping, and routing behavior."
+  },
+  "60": {
+   "about": [
+    "alertmanager"
+   ],
+   "refers": [],
+   "why": "It specifies Alertmanager's alert silencing and inhibition behavior."
+  },
+  "61": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "It states that AI Gateway provides AI features to GitLab users."
+  },
+  "62": {
+   "about": [],
+   "refers": [],
+   "why": "It is a document-navigation statement rather than component behavior."
+  },
+  "63": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to project documentation."
+  },
+  "64": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to installation documentation."
+  },
+  "65": {
+   "about": [
+    "gitlab-duo-workflow-service"
+   ],
+   "refers": [],
+   "why": "it defines the service as providing agentic AI features and states its deployment"
+  },
+  "66": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic pointer to further documentation"
+  },
+  "67": {
+   "about": [],
+   "refers": [],
+   "why": "it only identifies a design document"
+  },
+  "68": {
+   "about": [
+    "consul"
+   ],
+   "refers": [],
+   "why": "it states Consul's service-discovery and configuration role"
+  },
+  "69": {
+   "about": [
+    "consul"
+   ],
+   "refers": [],
+   "why": "it states Consul's availability and scalability characteristics"
+  },
+  "70": {
+   "about": [
+    "elasticsearch"
+   ],
+   "refers": [],
+   "why": "states Elasticsearch's role and architecture"
+  },
+  "71": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "states Gitaly's responsibility for Git storage access"
+  },
+  "72": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "continues describing Gitaly's Git-level access behavior"
+  },
+  "73": {
+   "about": [],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "only points readers to documentation about the project"
+  },
+  "74": {
+   "about": [
+    "praefect"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "describes Praefect's proxy and replication-coordination role"
+  },
+  "75": {
+   "about": [
+    "gitlab-geo"
+   ],
+   "refers": [],
+   "why": "It states Geo's read-only mirror responsibility."
+  },
+  "76": {
+   "about": [
+    "gitlab-geo"
+   ],
+   "refers": [],
+   "why": "It continues describing the Geo secondary site's benefits."
+  },
+  "77": {
+   "about": [
+    "gitlab-exporter"
+   ],
+   "refers": [
+    "prometheus"
+   ],
+   "why": "It defines GitLab Exporter's metric-export behavior toward Prometheus."
+  },
+  "78": {
+   "about": [],
+   "refers": [
+    "gitlab-exporter"
+   ],
+   "why": "It only directs readers to the exporter's project README."
+  },
+  "79": {
+   "about": [
+    "gitlab-agent-for-kubernetes"
+   ],
+   "refers": [],
+   "why": "It states the agent's in-cluster integration responsibility."
+  },
+  "80": {
+   "about": [
+    "gitlab-agent-for-kubernetes"
+   ],
+   "refers": [],
+   "why": "It describes the agent's deployment-sync capability."
+  },
+  "81": {
+   "about": [
+    "gitlab-pages"
+   ],
+   "refers": [],
+   "why": "It states that GitLab Pages publishes static websites from repositories."
+  },
+  "82": {
+   "about": [
+    "gitlab-pages"
+   ],
+   "refers": [],
+   "why": "It continues describing the supported uses of GitLab Pages websites."
+  },
+  "83": {
+   "about": [
+    "gitlab-pages"
+   ],
+   "refers": [],
+   "why": "It continues describing GitLab Pages content capabilities."
+  },
+  "84": {
+   "about": [
+    "gitlab-runner"
+   ],
+   "refers": [],
+   "why": "It states that Runner executes jobs and returns their results."
+  },
+  "85": {
+   "about": [],
+   "refers": [],
+   "why": "it describes GitLab CI/CD generally rather than a listed component"
+  },
+  "86": {
+   "about": [],
+   "refers": [
+    "gitlab-runner"
+   ],
+   "why": "it only states the component's former project name"
+  },
+  "87": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "it defines GitLab Shell's SSH Git-session and key-management responsibilities"
+  },
+  "88": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "it specifies what GitLab Shell is not intended to be"
+  },
+  "89": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "it states Workhorse's responsibility while only mentioning Puma as the relieved component"
+  },
+  "90": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "It continues the GitLab Workhorse description by pointing to its development rationale."
+  },
+  "91": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [],
+   "why": "It states GitLab Workhorse's smart reverse-proxy responsibility."
+  },
+  "92": {
+   "about": [
+    "grafana"
+   ],
+   "refers": [
+    "elasticsearch",
+    "prometheus"
+   ],
+   "why": "It describes Grafana's dashboard and graph-editor role while naming supported data sources."
+  },
+  "93": {
+   "about": [
+    "jaeger"
+   ],
+   "refers": [],
+   "why": "It defines Jaeger's distributed-tracing function."
+  },
+  "94": {
+   "about": [
+    "jaeger"
+   ],
+   "refers": [],
+   "why": "It continues describing Jaeger's monitoring use."
+  },
+  "95": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about GitLab services as a whole."
+  },
+  "96": {
+   "about": [
+    "logrotate"
+   ],
+   "refers": [],
+   "why": "It states why the bundled Logrotate component is provided."
+  },
+  "97": {
+   "about": [
+    "logrotate"
+   ],
+   "refers": [],
+   "why": "It describes the nature of the Logrotate component as a packaged upstream offering."
+  },
+  "98": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "It states the object storage requirement and the data it stores."
+  },
+  "99": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "It specifies the S3 API compatibility required of object storage providers."
+  },
+  "100": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "the object-storage provider choice is an operator responsibility"
+  },
+  "101": {
+   "about": [
+    "object-storage"
+   ],
+   "refers": [],
+   "why": "it describes the supported types of object-storage providers"
+  },
+  "102": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "it states NGINX ingress and request-routing behavior"
+  },
+  "103": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "it describes the bundled NGINX distribution"
+  },
+  "104": {
+   "about": [
+    "node-exporter"
+   ],
+   "refers": [],
+   "why": "it states that Node Exporter exposes underlying-machine metrics"
+  },
+  "105": {
+   "about": [
+    "node-exporter"
+   ],
+   "refers": [],
+   "why": "It continues describing the Node Exporter package."
+  },
+  "106": {
+   "about": [
+    "pgbouncer"
+   ],
+   "refers": [
+    "postgresql"
+   ],
+   "why": "It states PgBouncer's connection-pooling responsibility for PostgreSQL."
+  },
+  "107": {
+   "about": [
+    "pgbouncer-exporter"
+   ],
+   "refers": [
+    "pgbouncer"
+   ],
+   "why": "It defines the exporter as providing metrics for PgBouncer."
+  },
+  "108": {
+   "about": [
+    "pgbouncer-exporter"
+   ],
+   "refers": [],
+   "why": "It continues describing the exporter's metrics endpoint."
+  },
+  "109": {
+   "about": [
+    "postgresql"
+   ],
+   "refers": [],
+   "why": "It states PostgreSQL's responsibility for storing application metadata and user information."
+  },
+  "110": {
+   "about": [
+    "postgresql-exporter"
+   ],
+   "refers": [
+    "postgresql",
+    "prometheus",
+    "grafana"
+   ],
+   "why": "It defines the PostgreSQL Exporter's metric-delivery role."
+  },
+  "111": {
+   "about": [
+    "prometheus"
+   ],
+   "refers": [],
+   "why": "It describes Prometheus as a time-series tool for exposing process metrics."
+  },
+  "112": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "It introduces Redis's responsibility to provide storage."
+  },
+  "113": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "It continues the Redis storage responsibilities with cached information."
+  },
+  "114": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "It continues the Redis storage responsibilities with background-job queues."
+  },
+  "115": {
+   "about": [],
+   "refers": [
+    "redis"
+   ],
+   "why": "It only points readers to documentation about Redis usage."
+  },
+  "116": {
+   "about": [
+    "redis-exporter",
+    "prometheus",
+    "grafana"
+   ],
+   "refers": [
+    "redis"
+   ],
+   "why": "The exporter sends Redis metrics to Prometheus for visualization in Grafana."
+  },
+  "117": {
+   "about": [
+    "registry"
+   ],
+   "refers": [],
+   "why": "It states the Registry's purpose of storing users' Docker images."
+  },
+  "118": {
+   "about": [
+    "registry",
+    "nginx",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It describes the Registry's load-balancing and authentication integrations."
+  },
+  "119": {
+   "about": [
+    "registry",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It specifies the Registry's authentication challenge response and GitLab token endpoint integration."
+  },
+  "120": {
+   "about": [
+    "registry",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It describes the registry authentication flow and the Rails token request."
+  },
+  "121": {
+   "about": [],
+   "refers": [],
+   "why": "It only points readers to documentation."
+  },
+  "122": {
+   "about": [
+    "registry",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It describes configuring registry authentication through a GitLab endpoint."
+  },
+  "123": {
+   "about": [
+    "sentry"
+   ],
+   "refers": [],
+   "why": "It states Sentry's responsibility for monitoring and fixing crashes."
+  },
+  "124": {
+   "about": [
+    "sentry"
+   ],
+   "refers": [],
+   "why": "It describes Sentry's server implementation and event API behavior."
+  },
+  "125": {
+   "about": [],
+   "refers": [
+    "sentry"
+   ],
+   "why": "It directs readers to documentation rather than describing Sentry behavior."
+  },
+  "126": {
+   "about": [
+    "sidekiq",
+    "redis"
+   ],
+   "refers": [],
+   "why": "It describes Sidekiq processing jobs from Redis queues."
+  },
+  "127": {
+   "about": [
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It explains the purpose and behavior of background-job processing."
+  },
+  "128": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "It states Puma's role as the default web server."
+  },
+  "129": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "It describes Puma running the core Rails application for user-facing features."
+  },
+  "130": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "It describes how Puma commonly appears in process output."
+  },
+  "131": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about GitLab's user interfaces."
+  },
+  "132": {
+   "about": [],
+   "refers": [],
+   "why": "It merely names a system-level request interface."
+  },
+  "133": {
+   "about": [],
+   "refers": [],
+   "why": "It merely names a system-level request interface."
+  },
+  "134": {
+   "about": [],
+   "refers": [],
+   "why": "It makes a generic statement about request types and processes."
+  },
+  "135": {
+   "about": [
+    "nginx",
+    "gitlab-workhorse",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It introduces the HTTP request path handled by these request-processing components."
+  },
+  "136": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "It states NGINX's reverse-proxy role."
+  },
+  "137": {
+   "about": [
+    "gitlab-workhorse"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "It describes Workhorse deciding request routing to reduce Puma load."
+  },
+  "138": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "It states that web application requests are routed to Puma."
+  },
+  "139": {
+   "about": [
+    "puma",
+    "postgresql",
+    "gitaly",
+    "redis"
+   ],
+   "refers": [],
+   "why": "It describes web requests using these services to store or retrieve data."
+  },
+  "140": {
+   "about": [],
+   "refers": [],
+   "why": "introduces the request-path discussion without stating component behaviour"
+  },
+  "141": {
+   "about": [],
+   "refers": [],
+   "why": "compares request cycles generically without identifying a component"
+  },
+  "142": {
+   "about": [],
+   "refers": [],
+   "why": "describes Git HTTP handling generically without assigning behaviour to a listed component"
+  },
+  "143": {
+   "about": [],
+   "refers": [],
+   "why": "only introduces a sequence diagram"
+  },
+  "144": {
+   "about": [
+    "nginx"
+   ],
+   "refers": [],
+   "why": "states that NGINX passes HTTP requests through without transforming them"
+  },
+  "145": {
+   "about": [],
+   "refers": [],
+   "why": "It is a documentation convention for expressing paths."
+  },
+  "146": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "Gitaly handles the Git upload-pack and receive-pack operations."
+  },
+  "147": {
+   "about": [
+    "gitlab-shell",
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "SSH Git-operation handling is divided between the SSH-session and Git-RPC components."
+  },
+  "148": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell handles SSH-based Git sessions without itself terminating SSH."
+  },
+  "149": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell distinguishes GitLab users through their presented SSH keys."
+  },
+  "150": {
+   "about": [],
+   "refers": [],
+   "why": "It only introduces a diagram in the document."
+  },
+  "151": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell provides the AuthorizedKeysCommand executable."
+  },
+  "152": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It describes the SSH Git operation handled in the GitLab Shell request flow."
+  },
+  "153": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It describes the authorized-keys fallback mechanism for SSH Git sessions."
+  },
+  "154": {
+   "about": [
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It describes a Rails background worker scheduled to maintain authorized keys."
+  },
+  "155": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell's SSH authentication flow supports certificates as an alternative to keys."
+  },
+  "156": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell's certificate authentication path uses AuthorizedPrincipalsCommand."
+  },
+  "157": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [
+    "puma"
+   ],
+   "why": "GitLab Shell extracts the certificate username locally rather than through the Rails API."
+  },
+  "158": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "GitLab Shell owns SSH operations that can run without Gitaly."
+  },
+  "159": {
+   "about": [
+    "gitlab-shell",
+    "puma"
+   ],
+   "refers": [
+    "gitaly"
+   ],
+   "why": "GitLab Shell streams the result while Rails handles the internal API action without Gitaly."
+  },
+  "160": {
+   "about": [],
+   "refers": [],
+   "why": "it only defines a filesystem shorthand used in diagrams"
+  },
+  "161": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic statement about the installation location"
+  },
+  "162": {
+   "about": [],
+   "refers": [],
+   "why": "it generally describes the installation directory layout"
+  },
+  "163": {
+   "about": [
+    "gitaly"
+   ],
+   "refers": [],
+   "why": "it states the location of the Git repositories managed by Gitaly"
+  },
+  "164": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it describes the Rails application that runs in both request and job-processing processes"
+  },
+  "165": {
+   "about": [
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "GitLab Shell serves repositories over SSH."
+  },
+  "166": {
+   "about": [],
+   "refers": [],
+   "why": "It only introduces a directory summary."
+  },
+  "167": {
+   "about": [],
+   "refers": [],
+   "why": "It makes a generic statement about the system."
+  },
+  "168": {
+   "about": [
+    "postgresql",
+    "redis",
+    "nginx",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It states the application's database and proxy dependencies."
+  },
+  "169": {
+   "about": [
+    "postgresql",
+    "redis",
+    "nginx",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It requires the previously listed components to run under separate users."
+  },
+  "170": {
+   "about": [
+    "sidekiq",
+    "puma"
+   ],
+   "refers": [],
+   "why": "It specifies the user context and default HTTP port for the Sidekiq and Puma processes."
+  },
+  "171": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It specifies the normal Puma and Sidekiq process layout under the GitLab user."
+  },
+  "172": {
+   "about": [
+    "puma",
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It describes the HTTP and SSH mechanisms through which repositories are accessed."
+  },
+  "173": {
+   "about": [
+    "puma",
+    "gitlab-shell"
+   ],
+   "refers": [],
+   "why": "It assigns HTTP repository operations to the GitLab API and SSH operations to GitLab Shell."
+  },
+  "174": {
+   "about": [],
+   "refers": [],
+   "why": "It is a documentation pointer without component behavior."
+  },
+  "175": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It states that these processes are started and stopped by the GitLab init script."
+  },
+  "176": {
+   "about": [
+    "redis"
+   ],
+   "refers": [],
+   "why": "It identifies Redis by its key-value-store behavior."
+  },
+  "177": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic web-server category without identifying a listed component."
+  },
+  "178": {
+   "about": [],
+   "refers": [
+    "puma",
+    "sidekiq"
+   ],
+   "why": "It lists their logs while discussing log locations."
+  },
+  "179": {
+   "about": [],
+   "refers": [
+    "puma",
+    "sidekiq"
+   ],
+   "why": "It names their log files as examples of files in an application log directory."
+  },
+  "180": {
+   "about": [],
+   "refers": [],
+   "why": "states a system authentication log location, not a listed component behavior"
+  },
+  "181": {
+   "about": [],
+   "refers": [],
+   "why": "states a system authentication log location, not a listed component behavior"
+  },
+  "182": {
+   "about": [],
+   "refers": [
+    "nginx"
+   ],
+   "why": "names NGINX only to identify its log directory"
+  },
+  "183": {
+   "about": [],
+   "refers": [],
+   "why": "concerns Apache logs, which is not a listed component"
+  },
+  "184": {
+   "about": [],
+   "refers": [],
+   "why": "states an Apache log location, and Apache is not a listed component"
+  },
+  "185": {
+   "about": [],
+   "refers": [],
+   "why": "it only describes an Apache log location, not a listed component"
+  },
+  "186": {
+   "about": [],
+   "refers": [
+    "redis"
+   ],
+   "why": "it lists Redis's log path rather than describing Redis behavior"
+  },
+  "187": {
+   "about": [],
+   "refers": [],
+   "why": "it is a generic statement about GitLab configuration-file locations"
+  },
+  "188": {
+   "about": [],
+   "refers": [],
+   "why": "it introduces a generic list of configuration files"
+  },
+  "189": {
+   "about": [],
+   "refers": [
+    "puma",
+    "sidekiq"
+   ],
+   "why": "it names a Rails configuration file without describing request or job behavior"
+  },
+  "190": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "it identifies Puma web-server settings"
+  },
+  "191": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [
+    "postgresql"
+   ],
+   "why": "it describes Rails database-connection configuration"
+  },
+  "192": {
+   "about": [],
+   "refers": [
+    "gitlab-shell"
+   ],
+   "why": "it only gives GitLab Shell's configuration-file path"
+  },
+  "193": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it continues describing GitLab Rails configuration settings"
+  },
+  "194": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it describes how the Rails application is wired to services"
+  },
+  "195": {
+   "about": [
+    "gitaly",
+    "redis",
+    "postgresql",
+    "consul"
+   ],
+   "refers": [],
+   "why": "it identifies the service endpoints that Rails must be configured to use"
+  },
+  "196": {
+   "about": [],
+   "refers": [],
+   "why": "it only categorizes generic tracing and observability settings"
+  },
+  "197": {
+   "about": [],
+   "refers": [],
+   "why": "it gives a generic configuration example"
+  },
+  "198": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [
+    "postgresql"
+   ],
+   "why": "it describes Rails initialization requirements before a database connection"
+  },
+  "199": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it describes where general Rails application settings belong"
+  },
+  "200": {
+   "about": [
+    "puma"
+   ],
+   "refers": [],
+   "why": "It concerns managing application settings through the web UI."
+  },
+  "201": {
+   "about": [],
+   "refers": [],
+   "why": "It discusses a general deployment and development tradeoff."
+  },
+  "202": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "It introduces configuration of a GitLab Rails application setting."
+  },
+  "203": {
+   "about": [],
+   "refers": [],
+   "why": "It is an instruction about Omnibus packaging configuration."
+  },
+  "204": {
+   "about": [],
+   "refers": [],
+   "why": "It is an instruction about Helm Charts configuration."
+  },
+  "205": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "a GitLab Rails setting must also be represented in GDK"
+  },
+  "206": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "the GitLab Rails application provides Rake tasks for version and configuration checks"
+  },
+  "207": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it continues the GitLab Rails maintenance-task topic"
+  },
+  "208": {
+   "about": [
+    "puma",
+    "sidekiq"
+   ],
+   "refers": [],
+   "why": "it continues the GitLab Rails maintenance procedure"
+  },
+  "209": {
+   "about": [],
+   "refers": [],
+   "why": "it gives a generic operating-system user command"
+  },
+  "210": {
+   "about": [],
+   "refers": [],
+   "why": "It concerns operating-system compatibility of maintenance commands, not a component."
+  },
+  "211": {
+   "about": [],
+   "refers": [],
+   "why": "It is a generic statement about the GitLab.com architecture and its audience."
+  },
+  "212": {
+   "about": [
+    "ai-gateway"
+   ],
+   "refers": [],
+   "why": "It states that the AI Gateway provides a SaaS model gateway for AI-native features."
+  }
+ }
+}

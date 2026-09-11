@@ -1,0 +1,216 @@
+sentence,component,tier,terra,claude,compview,structural,consistency,verbatim,text
+15,gitlab-workhorse,gold,1,1,0,0,1.00,1,A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma application server.
+15,nginx,gold,1,1,0,0,1.00,1,A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma application server.
+15,puma,gold,1,1,1,0,1.00,1,A typical installation uses NGINX or Apache as a web server to proxy through GitLab Workhorse and into the Puma application server.
+16,puma,gold,1,1,1,0,1.00,1,GitLab serves web pages and the GitLab API using the Puma application server.
+17,redis,gold,1,1,1,0,1.00,1,"It uses Sidekiq as a job queue which, in turn, uses Redis as a non-persistent database backend for job information, metadata, and incoming jobs."
+17,sidekiq,gold,1,1,1,0,1.00,1,"It uses Sidekiq as a job queue which, in turn, uses Redis as a non-persistent database backend for job information, metadata, and incoming jobs."
+18,gitlab-workhorse,gold,1,1,1,0,1.00,0,"By default, communication between Puma and Workhorse is via a Unix domain socket, but forwarding requests via TCP is also supported."
+18,puma,gold,1,1,1,0,1.00,1,"By default, communication between Puma and Workhorse is via a Unix domain socket, but forwarding requests via TCP is also supported."
+19,gitlab-workhorse,gold,1,1,1,0,1.00,0,"Workhorse accesses the gitlab/public directory, bypassing the Puma application server to serve static pages, uploads (for example, avatar images or attachments), and pre-compiled assets."
+19,puma,refers,0,0,0,0,0.00,1,"Workhorse accesses the gitlab/public directory, bypassing the Puma application server to serve static pages, uploads (for example, avatar images or attachments), and pre-compiled assets."
+20,postgresql,gold,1,1,1,0,1.00,1,"The GitLab application uses PostgreSQL for persistent database information (for example, users, permissions, issues, or other metadata)."
+20,puma,gold_plus_only,1,0,1,0,1.00,0,"The GitLab application uses PostgreSQL for persistent database information (for example, users, permissions, issues, or other metadata)."
+20,sidekiq,silver,1,0,0,0,1.00,0,"The GitLab application uses PostgreSQL for persistent database information (for example, users, permissions, issues, or other metadata)."
+21,gitaly,gold,1,1,0,0,1.00,0,"GitLab stores the bare Git repositories in the location defined in the configuration file, repositories: section."
+22,gitaly,gold,1,1,0,0,1.00,0,It also keeps default branch and hook information with the bare repository.
+23,gitaly,gold,1,1,0,0,1.00,0,When serving repositories over HTTP/HTTPS GitLab uses the GitLab API to resolve authorization and access and to serve Git objects.
+23,puma,gold,1,1,1,0,1.00,0,When serving repositories over HTTP/HTTPS GitLab uses the GitLab API to resolve authorization and access and to serve Git objects.
+24,gitlab-shell,gold,1,1,1,0,1.00,1,The add-on component GitLab Shell serves repositories over SSH.
+25,gitlab-shell,gold,1,1,1,0,1.00,1,"It manages the SSH keys within the location defined in the configuration file, GitLab Shell section."
+26,gitlab-shell,gold,1,1,1,0,1.00,0,The file in that location should never be manually edited.
+27,gitaly,gold,1,1,1,0,1.00,1,"GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit jobs to Sidekiq for GitLab to process."
+27,gitlab-shell,gold,1,1,1,0,1.00,1,"GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit jobs to Sidekiq for GitLab to process."
+27,redis,gold_plus_only,1,0,1,0,1.00,1,"GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit jobs to Sidekiq for GitLab to process."
+27,sidekiq,gold,1,1,1,0,1.00,1,"GitLab Shell accesses the bare repositories through Gitaly to serve Git objects, and communicates with Redis to submit jobs to Sidekiq for GitLab to process."
+28,gitlab-shell,gold,1,1,1,0,1.00,1,GitLab Shell queries the GitLab API to determine authorization and access.
+28,puma,silver,1,0,0,0,1.00,0,GitLab Shell queries the GitLab API to determine authorization and access.
+29,gitaly,gold,1,1,1,0,1.00,1,"Gitaly executes Git operations from GitLab Shell and the GitLab web app, and provides an API to the GitLab web app to get attributes from Git (for example, title, branches, tags, or other metadata), and to get blobs (for example, diffs, commits, or files)."
+29,gitlab-shell,silver,1,0,0,0,0.67,1,"Gitaly executes Git operations from GitLab Shell and the GitLab web app, and provides an API to the GitLab web app to get attributes from Git (for example, title, branches, tags, or other metadata), and to get blobs (for example, diffs, commits, or files)."
+29,puma,gold_plus_only,1,0,1,0,0.67,0,"Gitaly executes Git operations from GitLab Shell and the GitLab web app, and provides an API to the GitLab web app to get attributes from Git (for example, title, branches, tags, or other metadata), and to get blobs (for example, diffs, commits, or files)."
+59,alertmanager,gold,1,1,1,1,1.00,0,"Alert manager is a tool provided by Prometheus that _""handles alerts sent by client applications such as the Prometheus server."
+59,prometheus,refers,0,0,1,0,0.00,1,"Alert manager is a tool provided by Prometheus that _""handles alerts sent by client applications such as the Prometheus server."
+60,alertmanager,gold,1,1,1,1,1.00,0,"It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as email, PagerDuty, or Opsgenie."
+61,alertmanager,gold,1,1,1,1,1.00,0,"It also takes care of silencing and inhibition of alerts.""_ You can read more in issue #45740 about what we alert on."
+62,ai-gateway,gold,1,1,1,1,1.00,1,"GitLab AI Gateway is a standalone-service that will give access to AI features to all users of GitLab, no matter which instance they are using: self-managed, dedicated, or GitLab.com."
+63,ai-gateway,gold_plus_only,0,1,0,1,0.00,0,You can read more:
+64,ai-gateway,gold_plus_only,0,1,0,1,0.00,0,In the project's README.
+65,ai-gateway,gold_plus_only,0,1,0,1,0.00,0,In the installation instructions.
+66,gitlab-duo-workflow-service,gold,1,1,1,1,1.00,1,GitLab Duo Workflow Service is our agentic AI Features that is deployed via our Runway service in the
+67,gitlab-duo-workflow-service,refers,0,0,0,1,0.00,0,You can read more about:
+68,gitlab-duo-workflow-service,refers,0,0,0,1,0.00,0,In the design document.
+69,consul,gold,1,1,1,1,1.00,1,Consul is a tool for service discovery and configuration.
+70,consul,gold,1,1,1,1,1.00,1,"Consul is distributed, highly available, and extremely scalable."
+71,elasticsearch,gold,1,1,1,1,1.00,1,Elasticsearch is a distributed RESTful search engine built for the cloud.
+72,gitaly,gold,1,1,1,1,1.00,1,Gitaly is a service designed by GitLab to remove our need for NFS for Git storage in distributed deployments of GitLab (think GitLab.com or High Availability Deployments).
+73,gitaly,gold,1,1,1,1,1.00,0,"As of 11.3.0, this service handles all Git level access in GitLab."
+74,gitaly,refers,0,0,0,1,0.00,0,You can read more about the project in the project's README.
+75,gitaly,refers,0,0,1,0,0.00,1,Praefect is a transparent proxy between each Git client and the Gitaly coordinating the replication of repository updates to secondary nodes.
+75,praefect,gold,1,1,1,1,1.00,1,Praefect is a transparent proxy between each Git client and the Gitaly coordinating the replication of repository updates to secondary nodes.
+76,gitlab-geo,gold,1,1,1,1,1.00,0,Geo is a premium feature built to help speed up the development of distributed teams by providing one or more read-only mirrors of a primary GitLab instance.
+77,gitlab-geo,gold,1,1,1,1,1.00,0,"This mirror (a Geo secondary site) reduces the time to clone or fetch large repositories and projects, or can be part of a Disaster Recovery solution."
+78,gitlab-exporter,gold,1,1,1,1,1.00,1,GitLab Exporter is a process designed in house that allows us to export metrics about GitLab application internals to Prometheus.
+78,prometheus,gold_plus_only,1,0,1,0,0.67,1,GitLab Exporter is a process designed in house that allows us to export metrics about GitLab application internals to Prometheus.
+79,gitlab-exporter,gold_plus_only,0,1,0,1,0.00,0,You can read more in the project's README.
+80,gitlab-agent-for-kubernetes,gold,1,1,1,1,1.00,1,The GitLab agent for Kubernetes is an active in-cluster component for solving GitLab and Kubernetes integration tasks in a secure and cloud-native way.
+81,gitlab-agent-for-kubernetes,gold,1,1,1,1,1.00,0,You can use it to sync deployments onto your Kubernetes cluster.
+82,gitlab-pages,gold,1,1,1,1,1.00,1,GitLab Pages is a feature that allows you to publish static websites directly from a repository in GitLab.
+83,gitlab-pages,gold,1,1,1,1,1.00,0,"You can use it either for personal or business websites, such as portfolios, documentation, manifestos, and business presentations."
+84,gitlab-pages,gold_plus_only,1,0,1,1,1.00,0,You can also attribute any license to your content.
+85,gitlab-runner,gold,1,1,1,1,1.00,1,GitLab Runner runs jobs and sends the results to GitLab.
+86,gitlab-runner,gold,1,1,1,1,0.67,0,GitLab CI/CD is the open-source continuous integration service included with GitLab that coordinates the testing.
+87,gitlab-runner,gold_plus_only,0,1,0,1,0.00,1,"The old name of this project was GitLab CI Multi Runner, but you should use GitLab Runner (without CI) from now on."
+88,gitlab-shell,gold,1,1,1,1,1.00,1,"GitLab Shell is a program designed at GitLab to handle SSH-based git sessions, and modifies the list of authorized keys."
+89,gitlab-shell,gold,1,1,1,1,1.00,1,GitLab Shell is not a Unix shell nor a replacement for Bash or Zsh.
+90,gitlab-workhorse,gold,1,1,1,1,1.00,1,GitLab Workhorse is a program designed at GitLab to help alleviate pressure from Puma.
+90,puma,refers,0,0,0,0,0.00,1,GitLab Workhorse is a program designed at GitLab to help alleviate pressure from Puma.
+91,gitlab-workhorse,gold,1,1,0,1,0.67,0,You can read more about the historical reasons for developing.
+92,gitlab-workhorse,gold,1,1,1,1,1.00,0,It's designed to act as a smart reverse proxy to help speed up GitLab as a whole.
+93,elasticsearch,refers,0,0,0,0,0.00,1,"Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus, and InfluxDB."
+93,grafana,gold,1,1,1,1,1.00,1,"Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus, and InfluxDB."
+93,prometheus,refers,0,0,0,0,0.00,1,"Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus, and InfluxDB."
+94,jaeger,gold,1,1,1,1,1.00,1,"Jaeger, inspired by Dapper and OpenZipkin, is a distributed tracing system."
+95,jaeger,gold,1,1,1,1,1.00,0,It can be used for monitoring microservices-based distributed systems.
+96,logrotate,vote_only,0,0,0,1,0.00,0,GitLab is comprised of a large number of services that all log.
+97,logrotate,gold,1,1,1,1,1.00,1,We bundle our own Logrotate to make sure we were logging responsibly.
+98,logrotate,gold,1,1,1,1,1.00,0,This is just a packaged version of the common open source offering.
+99,object-storage,gold,1,1,1,1,1.00,1,"GitLab requires an S3-compatible object storage for storing data such as CI artifacts, LFS objects, uploads, and container registry images."
+99,registry,refers,0,0,0,0,0.00,1,"GitLab requires an S3-compatible object storage for storing data such as CI artifacts, LFS objects, uploads, and container registry images."
+100,object-storage,gold,1,1,1,1,1.00,1,GitLab is compatible with any object storage provider that offers full S3 API compatibility.
+101,object-storage,gold,1,1,1,1,1.00,0,The choice of provider is your responsibility.
+102,object-storage,gold,1,1,1,1,1.00,0,"Cloud-managed services such as Amazon S3, Google Cloud Storage, and Azure Blob Storage are commonly used, as is any self-hosted S3-compatible solution."
+103,nginx,gold,1,1,1,1,1.00,1,NGINX has an Ingress port for all HTTP requests and routes them to the appropriate sub-systems within GitLab.
+104,nginx,gold,1,1,1,1,1.00,0,We are bundling an unmodified version of the popular open source webserver.
+105,node-exporter,gold,1,1,1,1,1.00,1,Node Exporter is a Prometheus tool that gives us metrics on the underlying machine (think CPU/Disk/Load).
+106,node-exporter,gold,1,1,1,1,1.00,0,It's just a packaged version of the common open source offering from the Prometheus project.
+106,prometheus,refers,0,0,0,0,0.00,1,It's just a packaged version of the common open source offering from the Prometheus project.
+107,pgbouncer,gold,1,1,1,1,1.00,0,Lightweight connection pooler for PostgreSQL.
+107,postgresql,refers,0,0,0,0,0.00,1,Lightweight connection pooler for PostgreSQL.
+108,pgbouncer,refers,0,0,0,0,0.00,1,Prometheus exporter for PgBouncer.
+108,pgbouncer-exporter,gold,1,1,1,1,1.00,0,Prometheus exporter for PgBouncer.
+109,pgbouncer-exporter,gold,1,1,1,1,1.00,0,Exports metrics at 9127/metrics.
+110,postgresql,gold,1,1,1,1,1.00,0,GitLab packages the popular Database to provide storage for Application meta data and user information.
+111,grafana,refers,0,0,0,0,0.00,1,postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for use in Grafana Dashboards.
+111,postgresql,refers,0,0,0,0,0.00,1,postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for use in Grafana Dashboards.
+111,postgresql-exporter,gold,1,1,1,1,1.00,0,postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for use in Grafana Dashboards.
+111,prometheus,refers,0,0,1,0,0.00,1,postgres_exporter is the community provided Prometheus exporter that delivers data about PostgreSQL to Prometheus for use in Grafana Dashboards.
+112,prometheus,gold,1,1,1,1,1.00,1,Prometheus is a time-series tool that helps GitLab administrators expose metrics about the individual processes used to provide GitLab the service.
+113,redis,gold,1,1,1,1,1.00,1,Redis is packaged to provide a place to store:
+114,redis,gold,1,1,1,1,1.00,0,temporary cache information
+115,redis,gold,1,1,1,1,1.00,0,background job queues
+116,redis,gold_plus_only,0,1,0,1,0.00,1,See our Redis guidelines for more information about how GitLab uses Redis.
+117,grafana,refers,0,0,0,0,0.33,1,Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these metrics in Grafana.
+117,prometheus,refers,0,0,1,0,0.33,1,Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these metrics in Grafana.
+117,redis,refers,0,0,0,0,0.00,1,Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these metrics in Grafana.
+117,redis-exporter,gold,1,1,1,1,1.00,1,Redis Exporter is designed to give specific metrics about the Redis process to Prometheus so that we can graph these metrics in Grafana.
+118,registry,gold,1,1,1,1,1.00,1,The registry is what users use to store their own Docker images.
+119,nginx,gold_plus_only,1,0,1,0,1.00,1,The bundled registry uses NGINX as a load balancer and GitLab as an authentication manager.
+119,puma,silver,1,0,0,0,1.00,0,The bundled registry uses NGINX as a load balancer and GitLab as an authentication manager.
+119,registry,gold,1,1,1,1,1.00,1,The bundled registry uses NGINX as a load balancer and GitLab as an authentication manager.
+120,puma,refers,0,0,0,0,0.33,0,"Whenever a client requests to pull or push an image from the registry, it returns a 401 response along with a header detailing where to get an authentication token, in this case the GitLab instance."
+120,registry,gold,1,1,1,1,1.00,1,"Whenever a client requests to pull or push an image from the registry, it returns a 401 response along with a header detailing where to get an authentication token, in this case the GitLab instance."
+121,puma,silver,1,0,0,0,0.67,0,The client then requests a pull or push auth token from GitLab and retries the original request to the registry.
+121,registry,gold,1,1,1,1,1.00,1,The client then requests a pull or push auth token from GitLab and retries the original request to the registry.
+122,registry,vote_only,0,0,0,1,0.33,0,"For more information, see token authentication."
+123,puma,silver,1,0,0,0,0.67,0,An external registry can also be configured to use GitLab as an auth endpoint.
+123,registry,gold,1,1,1,1,1.00,1,An external registry can also be configured to use GitLab as an auth endpoint.
+124,sentry,gold,1,1,1,1,1.00,1,Sentry fundamentally is a service that helps you monitor and fix crashes in real time.
+125,sentry,gold,1,1,1,1,1.00,0,"The server is in Python, but it contains a full API for sending events from any language, in any application."
+126,sentry,refers,0,0,0,1,0.00,1,"For monitoring deployed apps, see the Sentry integration docs"
+127,redis,gold_plus_only,1,0,1,0,0.67,1,Sidekiq is a Ruby background job processor that pulls jobs from the Redis queue and processes them.
+127,sidekiq,gold,1,1,1,1,1.00,1,Sidekiq is a Ruby background job processor that pulls jobs from the Redis queue and processes them.
+128,puma,vote_only,0,0,1,0,0.00,0,Background jobs allow GitLab to provide a faster request/response cycle by moving work into the background.
+128,sidekiq,gold,1,1,1,1,1.00,0,Background jobs allow GitLab to provide a faster request/response cycle by moving work into the background.
+129,puma,gold,1,1,1,1,1.00,1,Puma is the default web server.
+130,puma,gold,1,1,1,1,1.00,1,Puma is a Ruby application server that is used to run the core Rails Application that provides the user facing features in GitLab.
+131,puma,gold,1,1,1,1,1.00,0,Often this displays in process output as bundle or config.ru depending on the GitLab version.
+133,puma,vote_only,0,0,1,0,0.33,0,Web HTTP Requests (Viewing the UI/API)
+136,gitlab-workhorse,silver,1,0,0,0,0.67,0,When making a request to an HTTP Endpoint (think /users/sign_in) the request takes the following path through the GitLab Service:
+136,nginx,silver,1,0,0,0,0.67,0,When making a request to an HTTP Endpoint (think /users/sign_in) the request takes the following path through the GitLab Service:
+136,puma,gold_plus_only,1,0,1,0,0.67,0,When making a request to an HTTP Endpoint (think /users/sign_in) the request takes the following path through the GitLab Service:
+137,nginx,gold,1,1,1,0,1.00,1,NGINX - Acts as our first line reverse proxy.
+138,gitlab-workhorse,gold,1,1,1,0,1.00,1,GitLab Workhorse - This determines if it needs to go to the Rails application or somewhere else to reduce load on Puma.
+138,puma,refers,0,0,0,0,0.00,1,GitLab Workhorse - This determines if it needs to go to the Rails application or somewhere else to reduce load on Puma.
+139,puma,gold,1,1,1,0,1.00,1,"Puma - Since this is a web request, and it needs to access the application, it routes to Puma."
+140,gitaly,gold,1,1,1,0,1.00,1,"PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+140,postgresql,gold,1,1,1,0,1.00,1,"PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+140,puma,vote_only,0,0,1,0,0.33,0,"PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+140,redis,gold,1,1,1,0,1.00,1,"PostgreSQL/Gitaly/Redis - Depending on the type of request, it may hit these services to store or retrieve data."
+145,nginx,gold,1,1,1,0,1.00,1,"All requests pass through NGINX and any other HTTP load balancers, but are not transformed in any way by them."
+147,gitaly,silver,1,0,0,0,1.00,0,"The sequence is similar for git push, except git-receive-pack is used instead of git-upload-pack."
+148,gitaly,silver,1,0,0,0,0.67,0,"Git operations over SSH can use the stateful protocol described in the Git documentation, but responsibility for handling them is split across several GitLab components."
+148,gitlab-shell,silver,1,0,0,0,0.67,0,"Git operations over SSH can use the stateful protocol described in the Git documentation, but responsibility for handling them is split across several GitLab components."
+149,gitlab-shell,gold_plus_only,1,0,1,0,0.67,0,"No GitLab components speak SSH directly - all SSH connections are made between Git on the client machine and the SSH server, which terminates the connection."
+150,gitlab-shell,gold,1,1,0,0,1.00,0,"To the SSH server, all connections are authenticated as the git user; GitLab users are differentiated by the SSH key presented by the client."
+152,gitlab-shell,gold,1,1,1,0,1.00,1,AuthorizedKeysCommand is an executable provided by GitLab Shell:
+153,gitlab-shell,gold,1,1,0,0,0.67,0,"The git push operation is very similar, except git receive-pack is used instead of git upload-pack."
+154,gitlab-shell,gold,1,1,1,0,1.00,0,"If fast SSH key lookups are not enabled, the SSH server reads from the ~git/.ssh/authorized_keys file to determine what command to run for a given SSH session."
+155,sidekiq,gold,1,1,0,0,1.00,0,"This is kept up to date by an AuthorizedKeysWorker in Rails, scheduled to run whenever an SSH key is modified by a user."
+156,gitlab-shell,gold,1,1,1,0,1.00,0,SSH certificates may be used instead of keys.
+157,gitlab-shell,gold,1,1,1,0,1.00,0,"In this case, AuthorizedKeysCommand is replaced with an AuthorizedPrincipalsCommand."
+158,gitlab-shell,gold,1,1,1,0,1.00,0,"This extracts a username from the certificate without using the Rails internal API, which is used instead of key_id in the /api/internal/allowed call later."
+158,puma,refers,0,0,0,0,0.33,0,"This extracts a username from the certificate without using the Rails internal API, which is used instead of key_id in the /api/internal/allowed call later."
+159,gitaly,refers,0,0,0,0,0.00,1,"GitLab Shell also has a few operations that do not involve Gitaly, such as resetting two-factor authentication codes."
+159,gitlab-shell,gold,1,1,1,0,1.00,1,"GitLab Shell also has a few operations that do not involve Gitaly, such as resetting two-factor authentication codes."
+160,gitaly,refers,0,0,0,0,0.00,1,"These are handled in the same way, except there is no round-trip into Gitaly - Rails performs the action as part of the internal API call, and GitLab Shell streams the response back to the user directly."
+160,gitlab-shell,gold,1,1,1,0,1.00,1,"These are handled in the same way, except there is no round-trip into Gitaly - Rails performs the action as part of the internal API call, and GitLab Shell streams the response back to the user directly."
+160,puma,gold,1,1,1,0,1.00,0,"These are handled in the same way, except there is no round-trip into Gitaly - Rails performs the action as part of the internal API call, and GitLab Shell streams the response back to the user directly."
+164,gitaly,silver,1,0,0,0,0.67,0,The bare repositories are located in /home/git/repositories.
+165,puma,gold_plus_only,1,0,1,0,1.00,0,GitLab is a Ruby on rails application so the particulars of the inner workings can be learned by studying how a Ruby on rails application works.
+165,sidekiq,silver,1,0,0,0,1.00,0,GitLab is a Ruby on rails application so the particulars of the inner workings can be learned by studying how a Ruby on rails application works.
+166,gitlab-shell,gold,1,1,0,0,1.00,1,To serve repositories over SSH there's an add-on application called GitLab Shell which is installed in /home/git/gitlab-shell.
+169,nginx,gold,1,1,0,0,1.00,1,"It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+169,postgresql,gold,1,1,1,0,1.00,1,"It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+169,puma,gold,1,1,1,0,1.00,1,"It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+169,redis,gold,1,1,0,0,1.00,1,"It requires a persistent database (PostgreSQL) and Redis database, and uses Apache httpd or NGINX to proxypass Puma."
+170,nginx,silver,1,0,0,0,0.67,0,"All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead of git)."
+170,postgresql,silver,1,0,0,0,0.67,0,"All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead of git)."
+170,puma,silver,1,0,0,0,0.67,0,"All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead of git)."
+170,redis,silver,1,0,0,0,0.67,1,"All these components should run as different system users to GitLab (for example, postgres, redis, and www-data, instead of git)."
+171,puma,gold,1,1,1,0,1.00,1,As the git user it starts Sidekiq and Puma (a simple Ruby HTTP server running on port 8080 by default).
+171,sidekiq,gold,1,1,1,0,1.00,1,As the git user it starts Sidekiq and Puma (a simple Ruby HTTP server running on port 8080 by default).
+172,puma,gold,1,1,1,0,1.00,1,"Under the GitLab user there are usually 4 processes: puma master (1 process), puma cluster worker (2 processes), sidekiq (1 process)."
+172,sidekiq,gold,1,1,1,0,1.00,1,"Under the GitLab user there are usually 4 processes: puma master (1 process), puma cluster worker (2 processes), sidekiq (1 process)."
+173,gitlab-shell,silver,1,0,0,0,1.00,0,Repositories get accessed via HTTP or SSH.
+173,puma,silver,1,0,0,0,1.00,0,Repositories get accessed via HTTP or SSH.
+174,gitlab-shell,gold,1,1,1,0,1.00,1,HTTP cloning/push/pull uses the GitLab API and SSH cloning is handled by GitLab Shell (previously explained).
+174,puma,gold,1,1,1,0,1.00,0,HTTP cloning/push/pull uses the GitLab API and SSH cloning is handled by GitLab Shell (previously explained).
+176,puma,gold,1,1,0,0,1.00,1,The GitLab init script starts and stops Puma and Sidekiq:
+176,sidekiq,gold,1,1,1,0,1.00,1,The GitLab init script starts and stops Puma and Sidekiq:
+177,redis,gold,1,1,1,0,1.00,1,Redis (key-value store/non-persistent database):
+179,puma,silver,0,1,0,0,0.00,1,GitLab (includes Puma and Sidekiq logs):
+179,sidekiq,silver,0,1,0,0,0.00,1,GitLab (includes Puma and Sidekiq logs):
+180,puma,refers,0,0,0,0,0.00,1,"/home/git/gitlab/log/ usually contains application.log, production.log, sidekiq.log, puma.stdout.log, git_json.log, and puma.stderr.log."
+180,sidekiq,refers,0,0,0,0,0.00,1,"/home/git/gitlab/log/ usually contains application.log, production.log, sidekiq.log, puma.stdout.log, git_json.log, and puma.stderr.log."
+183,nginx,refers,0,0,0,0,0.00,1,/var/log/nginx/ contains error and access logs.
+187,redis,refers,0,0,0,0,0.00,1,/var/log/redis/redis.log there are also log-rotated logs there.
+190,puma,gold,1,1,0,0,0.67,0,gitlab.yml: GitLab Rails configuration
+190,sidekiq,gold,1,1,0,0,0.67,0,gitlab.yml: GitLab Rails configuration
+191,puma,gold,1,1,0,0,1.00,1,puma.rb: Puma web server settings
+192,postgresql,silver,0,1,0,0,0.33,0,database.yml: Database connection settings
+192,puma,silver,1,0,0,0,0.67,0,database.yml: Database connection settings
+192,sidekiq,silver,1,0,0,0,0.67,0,database.yml: Database connection settings
+193,gitlab-shell,silver,0,1,0,0,0.00,1,GitLab Shell has a configuration file at /home/git/gitlab-shell/config.yml.
+194,puma,silver,1,0,0,0,1.00,0,Settings which belong in gitlab.yml include those related to:
+194,sidekiq,silver,1,0,0,0,1.00,0,Settings which belong in gitlab.yml include those related to:
+195,puma,silver,1,0,0,0,1.00,0,How the application is wired together across multiple services.
+195,sidekiq,silver,1,0,0,0,1.00,0,How the application is wired together across multiple services.
+196,consul,refers,0,0,0,0,0.33,1,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+196,gitaly,refers,0,0,0,0,0.33,1,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+196,postgresql,refers,0,0,0,0,0.33,0,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+196,puma,silver,1,0,0,0,0.67,0,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+196,redis,refers,0,0,0,0,0.33,1,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+196,sidekiq,silver,1,0,0,0,0.67,0,"For example, Gitaly addresses, Redis addresses, Postgres addresses, and Consul addresses."
+197,puma,silver,1,0,0,0,0.67,0,"Distributed Tracing configuration, and some observability configurations."
+197,sidekiq,silver,1,0,0,0,0.67,0,"Distributed Tracing configuration, and some observability configurations."
+198,puma,silver,1,0,0,0,0.67,0,"For example, histogram bucket boundaries."
+198,sidekiq,silver,1,0,0,0,0.67,0,"For example, histogram bucket boundaries."
+199,postgresql,refers,0,0,0,0,0.00,0,"Anything that needs to be configured during Rails initialization, possibly before the Postgres connection has been established."
+199,puma,silver,1,0,0,0,1.00,0,"Anything that needs to be configured during Rails initialization, possibly before the Postgres connection has been established."
+199,sidekiq,silver,1,0,0,0,1.00,0,"Anything that needs to be configured during Rails initialization, possibly before the Postgres connection has been established."
+200,puma,silver,1,0,0,0,1.00,0,"Many other settings are better placed in the app itself, in ApplicationSetting."
+200,sidekiq,silver,1,0,0,0,1.00,0,"Many other settings are better placed in the app itself, in ApplicationSetting."
+201,puma,silver,1,0,0,0,0.67,0,Managing settings in UI is usually a better user experience compared to managing configuration files.
+207,puma,silver,1,0,0,0,1.00,0,GitLab provides Rake tasks with which you see version information and run a quick check on your configuration to ensure it is configured properly within the application.
+207,sidekiq,silver,1,0,0,0,1.00,0,GitLab provides Rake tasks with which you see version information and run a quick check on your configuration to ensure it is configured properly within the application.
+213,ai-gateway,gold,1,1,1,0,1.00,0,A SaaS model gateway is available to enable AI-native features.

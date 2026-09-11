@@ -1,0 +1,3251 @@
+{
+  "k8s_arch": {
+    "s_linker110": {
+      "variant": "s_linker110",
+      "P": 0.031982942430703626,
+      "R": 0.6818181818181818,
+      "F1": 0.06109979633401222,
+      "F2": 0.13464991023339318,
+      "tp": 15,
+      "fp": 454,
+      "fn": 7,
+      "n_links": 469,
+      "time": 205.21416568756104,
+      "sources": {
+        "full_name": 176,
+        "partial_name": 290,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "partial_name": 285,
+        "full_name": 167,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 1,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This page provides a high-level overview of the essential components that make up a Kubernetes cluster."
+        },
+        {
+          "sentence": 2,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A Kubernetes cluster consists of a control plane and one or more worker nodes."
+        },
+        {
+          "sentence": 4,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Manage the overall state of the cluster:"
+        },
+        {
+          "sentence": 5,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kube-apiserver The core component server that exposes the Kubernetes HTTP API."
+        },
+        {
+          "sentence": 6,
+          "component": "etcd",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "etcd Consistent and highly-available key value store for all API server data."
+        },
+        {
+          "sentence": 6,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "etcd Consistent and highly-available key value store for all API server data."
+        },
+        {
+          "sentence": 7,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kube-scheduler Looks for Pods not yet bound to a node, and assigns each Pod to a suitable node."
+        },
+        {
+          "sentence": 8,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "kube-controller-manager Runs controllers to implement Kubernetes API behavior."
+        },
+        {
+          "sentence": 8,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kube-controller-manager Runs controllers to implement Kubernetes API behavior."
+        },
+        {
+          "sentence": 9,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "cloud-controller-manager (optional) Integrates with underlying cloud provider(s)."
+        },
+        {
+          "sentence": 11,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "kubelet Ensures that Pods are running, including their containers."
+        },
+        {
+          "sentence": 11,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "kubelet Ensures that Pods are running, including their containers."
+        },
+        {
+          "sentence": 11,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kubelet Ensures that Pods are running, including their containers."
+        },
+        {
+          "sentence": 12,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kube-proxy (optional) Maintains network rules on nodes to implement Services."
+        },
+        {
+          "sentence": 13,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container runtime Software responsible for running containers."
+        },
+        {
+          "sentence": 13,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Container runtime Software responsible for running containers."
+        },
+        {
+          "sentence": 15,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Your cluster may require additional software on each node; for example, you might also run systemd on a Linux node to su"
+        },
+        {
+          "sentence": 18,
+          "component": "DNS",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "DNS For cluster-wide DNS resolution."
+        },
+        {
+          "sentence": 19,
+          "component": "Web UI (Dashboard)",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Web UI (Dashboard) For cluster management via a web interface."
+        },
+        {
+          "sentence": 20,
+          "component": "Container Resource Monitoring",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Container Resource Monitoring For collecting and storing container metrics."
+        },
+        {
+          "sentence": 20,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container Resource Monitoring For collecting and storing container metrics."
+        },
+        {
+          "sentence": 21,
+          "component": "Cluster-level Logging",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Cluster-level Logging For saving container logs to a central log store."
+        },
+        {
+          "sentence": 21,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Cluster-level Logging For saving container logs to a central log store."
+        },
+        {
+          "sentence": 21,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Cluster-level Logging For saving container logs to a central log store."
+        },
+        {
+          "sentence": 25,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A Kubernetes cluster consists of a control plane plus a set of worker machines, called nodes, that run containerized app"
+        },
+        {
+          "sentence": 26,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Every cluster needs at least one worker node in order to run Pods."
+        },
+        {
+          "sentence": 28,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The control plane manages the worker nodes and the Pods in the cluster."
+        },
+        {
+          "sentence": 29,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In production environments, the control plane usually runs across multiple computers and a cluster usually runs multiple"
+        },
+        {
+          "sentence": 30,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This document outlines the various components you need to have for a complete and working Kubernetes cluster."
+        },
+        {
+          "sentence": 31,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The diagram in Figure 1 presents an example reference architecture for a Kubernetes cluster."
+        },
+        {
+          "sentence": 32,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The actual distribution of components can vary based on specific cluster setups and requirements."
+        },
+        {
+          "sentence": 33,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In the diagram, each node runs the kube-proxy component."
+        },
+        {
+          "sentence": 34,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You need a network proxy component on each node to ensure that the Service API and associated behaviors are available on"
+        },
+        {
+          "sentence": 34,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You need a network proxy component on each node to ensure that the Service API and associated behaviors are available on"
+        },
+        {
+          "sentence": 36,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When you use that kind of network plugin, the node does not need to run kube-proxy."
+        },
+        {
+          "sentence": 39,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "However, for simplicity, setup scripts typically start all control plane components on the same machine, and do not run "
+        },
+        {
+          "sentence": 39,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "However, for simplicity, setup scripts typically start all control plane components on the same machine, and do not run "
+        },
+        {
+          "sentence": 41,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "There are many different types of controllers."
+        },
+        {
+          "sentence": 43,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Node controller: Responsible for noticing and responding when nodes go down."
+        },
+        {
+          "sentence": 44,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Job controller: Watches for Job objects that represent one-off tasks, then creates Pods to run those tasks to completion"
+        },
+        {
+          "sentence": 45,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "EndpointSlice controller: Populates EndpointSlice objects (to provide a link between Services and Pods)."
+        },
+        {
+          "sentence": 46,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "ServiceAccount controller: Create default ServiceAccounts for new namespaces."
+        },
+        {
+          "sentence": 48,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The cloud-controller-manager only runs controllers that are specific to your cloud provider."
+        },
+        {
+          "sentence": 50,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "As with the kube-controller-manager, the cloud-controller-manager combines several logically independent control loops i"
+        },
+        {
+          "sentence": 52,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The following controllers can have cloud provider dependencies:"
+        },
+        {
+          "sentence": 53,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Node controller: For checking the cloud provider to determine if a node has been deleted in the cloud after it stops res"
+        },
+        {
+          "sentence": 54,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Route controller: For setting up routes in the underlying cloud infrastructure"
+        },
+        {
+          "sentence": 55,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Service controller: For creating, updating and deleting cloud provider load balancers"
+        },
+        {
+          "sentence": 57,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If you use a network plugin that implements packet forwarding for Services by itself, and providing equivalent behavior "
+        },
+        {
+          "sentence": 58,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Addons use Kubernetes resources (daemonset, deployment, etc) to implement cluster features."
+        },
+        {
+          "sentence": 59,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Because these are providing cluster-level features, namespaced resources for addons belong within the kube-system namesp"
+        },
+        {
+          "sentence": 62,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Cluster DNS is a DNS server, in addition to the other DNS server(s) in your environment, which serves DNS records for Ku"
+        },
+        {
+          "sentence": 63,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Containers started by Kubernetes automatically include this DNS server in their DNS searches."
+        },
+        {
+          "sentence": 63,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Containers started by Kubernetes automatically include this DNS server in their DNS searches."
+        },
+        {
+          "sentence": 66,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container Resource Monitoring records generic time-series metrics about containers in a central database, and provides a"
+        },
+        {
+          "sentence": 66,
+          "component": "Web UI (Dashboard)",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container Resource Monitoring records generic time-series metrics about containers in a central database, and provides a"
+        },
+        {
+          "sentence": 67,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A cluster-level logging mechanism is responsible for saving container logs to a central log store with a search/browsing"
+        },
+        {
+          "sentence": 67,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A cluster-level logging mechanism is responsible for saving container logs to a central log store with a search/browsing"
+        },
+        {
+          "sentence": 74,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Static Pods Control plane components are deployed as static Pods, managed by the kubelet on specific nodes."
+        },
+        {
+          "sentence": 84,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Custom schedulers can be deployed to work alongside the default Kubernetes scheduler or to replace it entirely."
+        },
+        {
+          "sentence": 85,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "API servers can be extended with CustomResourceDefinitions and API Aggregation."
+        },
+        {
+          "sentence": 86,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Cloud providers can integrate deeply with Kubernetes using the cloud-controller-manager."
+        },
+        {
+          "sentence": 91,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kube-scheduler which is the default scheduler for Kubernetes."
+        },
+        {
+          "sentence": 93,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Several container runtimes in Kubernetes."
+        },
+        {
+          "sentence": 93,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Several container runtimes in Kubernetes."
+        },
+        {
+          "sentence": 94,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Integrating with cloud providers using cloud-controller-manager."
+        },
+        {
+          "sentence": 95,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes runs your workload by placing containers into Pods to run on _Nodes_."
+        },
+        {
+          "sentence": 95,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes runs your workload by placing containers into Pods to run on _Nodes_."
+        },
+        {
+          "sentence": 99,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 99,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 99,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 100,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "There are two main ways to have Nodes added to the API server:"
+        },
+        {
+          "sentence": 101,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet on a node self-registers to the control plane"
+        },
+        {
+          "sentence": 103,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "After you create a Node object, or the kubelet on a node self-registers, the control plane checks whether the new Node o"
+        },
+        {
+          "sentence": 106,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node."
+        },
+        {
+          "sentence": 106,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node."
+        },
+        {
+          "sentence": 110,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You, or a controller, must explicitly delete the Node object to stop that health checking."
+        },
+        {
+          "sentence": 110,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You, or a controller, must explicitly delete the Node object to stop that health checking."
+        },
+        {
+          "sentence": 114,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes also assumes that a resource with the same name is the same object."
+        },
+        {
+          "sentence": 117,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the Node needs to be replaced or updated significantly, the existing Node object needs to be removed from API server "
+        },
+        {
+          "sentence": 118,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API se"
+        },
+        {
+          "sentence": 118,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API se"
+        },
+        {
+          "sentence": 120,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "For self-registration, the kubelet is started with the following options:"
+        },
+        {
+          "sentence": 121,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "--kubeconfig - Path to credentials to authenticate itself to the API server."
+        },
+        {
+          "sentence": 123,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "--register-node - Automatically register with the API server."
+        },
+        {
+          "sentence": 128,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "For example, in a single-stack IPv4 cluster, you set this value to be the IPv4 address that the kubelet should use for t"
+        },
+        {
+          "sentence": 130,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If you don't provide this argument, the kubelet uses the node's default IPv4 address, if any; if the node has no IPv4 ad"
+        },
+        {
+          "sentence": 132,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server."
+        },
+        {
+          "sentence": 132,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server."
+        },
+        {
+          "sentence": 133,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When the Node authorization mode and NodeRestriction admission plugin are enabled, kubelets are only authorized to creat"
+        },
+        {
+          "sentence": 134,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "As mentioned in the Node name uniqueness section, when Node configuration needs to be updated, it is a good practice to "
+        },
+        {
+          "sentence": 135,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the chan"
+        },
+        {
+          "sentence": 135,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the chan"
+        },
+        {
+          "sentence": 136,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Pods already scheduled on the Node may misbehave or cause issues if the Node configuration will be changed on kubelet re"
+        },
+        {
+          "sentence": 140,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When you want to create Node objects manually, set the kubelet flag --register-node=false."
+        },
+        {
+          "sentence": 147,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Marking a node as unschedulable prevents the scheduler from placing new pods onto that Node but does not affect existing"
+        },
+        {
+          "sentence": 157,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Heartbeats, sent by Kubernetes nodes, help your cluster determine the availability of each node, and to take action when"
+        },
+        {
+          "sentence": 162,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is a Kubernetes control plane component that manages various aspects of nodes."
+        },
+        {
+          "sentence": 162,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is a Kubernetes control plane component that manages various aspects of nodes."
+        },
+        {
+          "sentence": 163,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller has multiple roles in a node's life."
+        },
+        {
+          "sentence": 163,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller has multiple roles in a node's life."
+        },
+        {
+          "sentence": 165,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The second is keeping the node controller's internal list of nodes up to date with the cloud provider's list of availabl"
+        },
+        {
+          "sentence": 165,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The second is keeping the node controller's internal list of nodes up to date with the cloud provider's list of availabl"
+        },
+        {
+          "sentence": 166,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When running in a cloud environment and whenever a node is unhealthy, the node controller asks the cloud provider if the"
+        },
+        {
+          "sentence": 166,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When running in a cloud environment and whenever a node is unhealthy, the node controller asks the cloud provider if the"
+        },
+        {
+          "sentence": 167,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If not, the node controller deletes the node from its list of nodes."
+        },
+        {
+          "sentence": 167,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If not, the node controller deletes the node from its list of nodes."
+        },
+        {
+          "sentence": 169,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is responsible for:"
+        },
+        {
+          "sentence": 169,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is responsible for:"
+        },
+        {
+          "sentence": 171,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In this case the node controller sets the Ready condition to Unknown."
+        },
+        {
+          "sentence": 171,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In this case the node controller sets the Ready condition to Unknown."
+        },
+        {
+          "sentence": 173,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "By default, the node controller waits 5 minutes between marking the node as Unknown and submitting the first eviction re"
+        },
+        {
+          "sentence": 173,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "By default, the node controller waits 5 minutes between marking the node as Unknown and submitting the first eviction re"
+        },
+        {
+          "sentence": 174,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "By default, the node controller checks the state of each node every 5 seconds."
+        },
+        {
+          "sentence": 174,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "By default, the node controller checks the state of each node every 5 seconds."
+        },
+        {
+          "sentence": 175,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This period can be configured using the --node-monitor-period flag on the kube-controller-manager component."
+        },
+        {
+          "sentence": 176,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In most cases, the node controller limits the eviction rate to --node-eviction-rate (default 0.1) per second, meaning it"
+        },
+        {
+          "sentence": 176,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In most cases, the node controller limits the eviction rate to --node-eviction-rate (default 0.1) per second, meaning it"
+        },
+        {
+          "sentence": 178,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller checks what percentage of nodes in the zone are unhealthy (the Ready condition is Unknown or False) "
+        },
+        {
+          "sentence": 178,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller checks what percentage of nodes in the zone are unhealthy (the Ready condition is Unknown or False) "
+        },
+        {
+          "sentence": 180,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the cluster is small (i.e. has less than or equal to --large-cluster-size-threshold nodes - default 50), then evictio"
+        },
+        {
+          "sentence": 183,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If your cluster does not span multiple cloud provider availability zones, then the eviction mechanism does not take per-"
+        },
+        {
+          "sentence": 185,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Therefore, if all nodes in a zone are unhealthy, then the node controller evicts at the normal rate of --node-eviction-r"
+        },
+        {
+          "sentence": 185,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Therefore, if all nodes in a zone are unhealthy, then the node controller evicts at the normal rate of --node-eviction-r"
+        },
+        {
+          "sentence": 186,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The corner case is when all zones are completely unhealthy (none of the nodes in the cluster are healthy)."
+        },
+        {
+          "sentence": 187,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In such a case, the node controller assumes that there is some problem with connectivity between the control plane and t"
+        },
+        {
+          "sentence": 187,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In such a case, the node controller assumes that there is some problem with connectivity between the control plane and t"
+        },
+        {
+          "sentence": 188,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "(If there has been an outage and some nodes reappear, the node controller does evict pods from the remaining nodes that "
+        },
+        {
+          "sentence": 188,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "(If there has been an outage and some nodes reappear, the node controller does evict pods from the remaining nodes that "
+        },
+        {
+          "sentence": 189,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is also responsible for evicting pods running on nodes with NoExecute taints, unless those pods tole"
+        },
+        {
+          "sentence": 189,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is also responsible for evicting pods running on nodes with NoExecute taints, unless those pods tole"
+        },
+        {
+          "sentence": 190,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller also adds taints corresponding to node problems like node unreachable or not ready."
+        },
+        {
+          "sentence": 190,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller also adds taints corresponding to node problems like node unreachable or not ready."
+        },
+        {
+          "sentence": 191,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This means that the scheduler won't place Pods onto unhealthy nodes."
+        },
+        {
+          "sentence": 195,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Kubernetes scheduler ensures that there are enough resources for all the Pods on a Node."
+        },
+        {
+          "sentence": 196,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The scheduler checks that the sum of the requests of containers on the node is no greater than the node's capacity."
+        },
+        {
+          "sentence": 196,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The scheduler checks that the sum of the requests of containers on the node is no greater than the node's capacity."
+        },
+        {
+          "sentence": 196,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The scheduler checks that the sum of the requests of containers on the node is no greater than the node's capacity."
+        },
+        {
+          "sentence": 197,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the"
+        },
+        {
+          "sentence": 197,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the"
+        },
+        {
+          "sentence": 197,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the"
+        },
+        {
+          "sentence": 199,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If you have enabled the TopologyManager feature gate, then the kubelet can use topology hints when making resource assig"
+        },
+        {
+          "sentence": 210,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This document catalogs the communication paths between the API server and the Kubernetes cluster."
+        },
+        {
+          "sentence": 210,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This document catalogs the communication paths between the API server and the Kubernetes cluster."
+        },
+        {
+          "sentence": 211,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The intent is to allow users to customize their installation to harden the network configuration such that the cluster c"
+        },
+        {
+          "sentence": 213,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "All API usage from nodes (or the pods they run) terminates at the API server."
+        },
+        {
+          "sentence": 215,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The API server is configured to listen for remote connections on a secure HTTPS port (typically 443) with one or more fo"
+        },
+        {
+          "sentence": 217,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Nodes should be provisioned with the public root certificate for the cluster such that they can connect securely to the "
+        },
+        {
+          "sentence": 217,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Nodes should be provisioned with the public root certificate for the cluster such that they can connect securely to the "
+        },
+        {
+          "sentence": 218,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "A good approach is that the client credentials provided to the kubelet are in the form of a client certificate."
+        },
+        {
+          "sentence": 219,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "See kubelet TLS bootstrapping for automated provisioning of kubelet client certificates."
+        },
+        {
+          "sentence": 220,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Pods that wish to connect to the API server can do so securely by leveraging a service account so that Kubernetes will a"
+        },
+        {
+          "sentence": 221,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy"
+        },
+        {
+          "sentence": 221,
+          "component": "kube-proxy",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy"
+        },
+        {
+          "sentence": 222,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The control plane components also communicate with the API server over the secure port."
+        },
+        {
+          "sentence": 224,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "There are two primary communication paths from the control plane (the API server) to the nodes."
+        },
+        {
+          "sentence": 225,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The first is from the API server to the kubelet process which runs on each node in the cluster."
+        },
+        {
+          "sentence": 225,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The first is from the API server to the kubelet process which runs on each node in the cluster."
+        },
+        {
+          "sentence": 225,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The first is from the API server to the kubelet process which runs on each node in the cluster."
+        },
+        {
+          "sentence": 226,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The second is from the API server to any node, pod, or service through the API server's _proxy_ functionality."
+        },
+        {
+          "sentence": 227,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The connections from the API server to the kubelet are used for:"
+        },
+        {
+          "sentence": 227,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The connections from the API server to the kubelet are used for:"
+        },
+        {
+          "sentence": 230,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Providing the kubelet's port-forwarding functionality."
+        },
+        {
+          "sentence": 231,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "These connections terminate at the kubelet's HTTPS endpoint."
+        },
+        {
+          "sentence": 232,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-"
+        },
+        {
+          "sentence": 232,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-"
+        },
+        {
+          "sentence": 233,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificat"
+        },
+        {
+          "sentence": 233,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificat"
+        },
+        {
+          "sentence": 234,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an un"
+        },
+        {
+          "sentence": 234,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an un"
+        },
+        {
+          "sentence": 235,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Finally, Kubelet authentication and/or authorization should be enabled to secure the kubelet API."
+        },
+        {
+          "sentence": 236,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The connections from the API server to a node, pod, or service default to plain HTTP connections and are therefore neith"
+        },
+        {
+          "sentence": 241,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server "
+        },
+        {
+          "sentence": 241,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server "
+        },
+        {
+          "sentence": 241,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server "
+        },
+        {
+          "sentence": 249,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Follow the Konnectivity service task to set up the Konnectivity service in your cluster."
+        },
+        {
+          "sentence": 262,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A controller tracks at least one Kubernetes resource type."
+        },
+        {
+          "sentence": 262,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A controller tracks at least one Kubernetes resource type."
+        },
+        {
+          "sentence": 262,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A controller tracks at least one Kubernetes resource type."
+        },
+        {
+          "sentence": 264,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controller(s) for that resource are responsible for making the current state come closer to that desired state."
+        },
+        {
+          "sentence": 264,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controller(s) for that resource are responsible for making the current state come closer to that desired state."
+        },
+        {
+          "sentence": 264,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controller(s) for that resource are responsible for making the current state come closer to that desired state."
+        },
+        {
+          "sentence": 265,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controller might carry the action out itself; more commonly, in Kubernetes, a controller will send messages to the A"
+        },
+        {
+          "sentence": 265,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The controller might carry the action out itself; more commonly, in Kubernetes, a controller will send messages to the A"
+        },
+        {
+          "sentence": 265,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controller might carry the action out itself; more commonly, in Kubernetes, a controller will send messages to the A"
+        },
+        {
+          "sentence": 267,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some built-in controllers, such as the namespace controller, act on objects that do not have a spec."
+        },
+        {
+          "sentence": 267,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some built-in controllers, such as the namespace controller, act on objects that do not have a spec."
+        },
+        {
+          "sentence": 269,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The job controller is an example of a Kubernetes built-in controller."
+        },
+        {
+          "sentence": 269,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The job controller is an example of a Kubernetes built-in controller."
+        },
+        {
+          "sentence": 270,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Built-in controllers manage state by interacting with the cluster API server."
+        },
+        {
+          "sentence": 270,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Built-in controllers manage state by interacting with the cluster API server."
+        },
+        {
+          "sentence": 270,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Built-in controllers manage state by interacting with the cluster API server."
+        },
+        {
+          "sentence": 272,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "(Once scheduled, Pod objects become part of the desired state for a kubelet)."
+        },
+        {
+          "sentence": 273,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes ar"
+        },
+        {
+          "sentence": 273,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes ar"
+        },
+        {
+          "sentence": 273,
+          "component": "kubelet",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes ar"
+        },
+        {
+          "sentence": 274,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not run any Pods or containers itself."
+        },
+        {
+          "sentence": 274,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not run any Pods or containers itself."
+        },
+        {
+          "sentence": 274,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not run any Pods or containers itself."
+        },
+        {
+          "sentence": 274,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not run any Pods or containers itself."
+        },
+        {
+          "sentence": 275,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Instead, the Job controller tells the API server to create or remove Pods."
+        },
+        {
+          "sentence": 275,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Instead, the Job controller tells the API server to create or remove Pods."
+        },
+        {
+          "sentence": 275,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Instead, the Job controller tells the API server to create or remove Pods."
+        },
+        {
+          "sentence": 278,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller makes the current state for that Job be nearer to your desired state: creating Pods that do the work "
+        },
+        {
+          "sentence": 278,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller makes the current state for that Job be nearer to your desired state: creating Pods that do the work "
+        },
+        {
+          "sentence": 279,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers also update the objects that configure them."
+        },
+        {
+          "sentence": 279,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers also update the objects that configure them."
+        },
+        {
+          "sentence": 280,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example: once the work is done for a Job, the Job controller updates that Job object to mark it Finished."
+        },
+        {
+          "sentence": 280,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example: once the work is done for a Job, the Job controller updates that Job object to mark it Finished."
+        },
+        {
+          "sentence": 282,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In contrast with Job, some controllers need to make changes to things outside of your cluster."
+        },
+        {
+          "sentence": 282,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In contrast with Job, some controllers need to make changes to things outside of your cluster."
+        },
+        {
+          "sentence": 283,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, if you use a control loop to make sure there are enough Nodes in your cluster, then that controller needs s"
+        },
+        {
+          "sentence": 283,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, if you use a control loop to make sure there are enough Nodes in your cluster, then that controller needs s"
+        },
+        {
+          "sentence": 284,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers that interact with external state find their desired state from the API server, then communicate directly wi"
+        },
+        {
+          "sentence": 284,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Controllers that interact with external state find their desired state from the API server, then communicate directly wi"
+        },
+        {
+          "sentence": 284,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers that interact with external state find their desired state from the API server, then communicate directly wi"
+        },
+        {
+          "sentence": 285,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "(There actually is a controller that horizontally scales the nodes in your cluster.)"
+        },
+        {
+          "sentence": 285,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "(There actually is a controller that horizontally scales the nodes in your cluster.)"
+        },
+        {
+          "sentence": 286,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The important point here is that the controller makes some changes to bring about your desired state, and then reports t"
+        },
+        {
+          "sentence": 286,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The important point here is that the controller makes some changes to bring about your desired state, and then reports t"
+        },
+        {
+          "sentence": 286,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The important point here is that the controller makes some changes to bring about your desired state, and then reports t"
+        },
+        {
+          "sentence": 288,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In the thermostat example, if the room is very cold then a different controller might also turn on a frost protection he"
+        },
+        {
+          "sentence": 288,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In the thermostat example, if the room is very cold then a different controller might also turn on a frost protection he"
+        },
+        {
+          "sentence": 293,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "As long as the controllers for your cluster are running and able to make useful changes, it doesn't matter if the overal"
+        },
+        {
+          "sentence": 293,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "As long as the controllers for your cluster are running and able to make useful changes, it doesn't matter if the overal"
+        },
+        {
+          "sentence": 294,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "As a tenet of its design, Kubernetes uses lots of controllers that each manage a particular aspect of cluster state."
+        },
+        {
+          "sentence": 294,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "As a tenet of its design, Kubernetes uses lots of controllers that each manage a particular aspect of cluster state."
+        },
+        {
+          "sentence": 295,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Most commonly, a particular control loop (controller) uses one kind of resource as its desired state, and has a differen"
+        },
+        {
+          "sentence": 295,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Most commonly, a particular control loop (controller) uses one kind of resource as its desired state, and has a differen"
+        },
+        {
+          "sentence": 295,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Most commonly, a particular control loop (controller) uses one kind of resource as its desired state, and has a differen"
+        },
+        {
+          "sentence": 296,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, a controller for Jobs tracks Job objects (to discover new work) and Pod objects (to run the Jobs, and then "
+        },
+        {
+          "sentence": 296,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, a controller for Jobs tracks Job objects (to discover new work) and Pod objects (to run the Jobs, and then "
+        },
+        {
+          "sentence": 297,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In this case something else creates the Jobs, whereas the Job controller creates Pods."
+        },
+        {
+          "sentence": 297,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In this case something else creates the Jobs, whereas the Job controller creates Pods."
+        },
+        {
+          "sentence": 298,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It's useful to have simple controllers rather than one, monolithic set of control loops that are interlinked."
+        },
+        {
+          "sentence": 298,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It's useful to have simple controllers rather than one, monolithic set of control loops that are interlinked."
+        },
+        {
+          "sentence": 299,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers can fail, so Kubernetes is designed to allow for that."
+        },
+        {
+          "sentence": 299,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Controllers can fail, so Kubernetes is designed to allow for that."
+        },
+        {
+          "sentence": 300,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "There can be several controllers that create or update the same kind of object."
+        },
+        {
+          "sentence": 300,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "There can be several controllers that create or update the same kind of object."
+        },
+        {
+          "sentence": 301,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Behind the scenes, Kubernetes controllers make sure that they only pay attention to the resources linked to their contro"
+        },
+        {
+          "sentence": 301,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Behind the scenes, Kubernetes controllers make sure that they only pay attention to the resources linked to their contro"
+        },
+        {
+          "sentence": 303,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not delete the Pods that your Deployment created, because there is information (labels) the cont"
+        },
+        {
+          "sentence": 303,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Job controller does not delete the Pods that your Deployment created, because there is information (labels) the cont"
+        },
+        {
+          "sentence": 304,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes comes with a set of built-in controllers that run inside the kube-controller-manager."
+        },
+        {
+          "sentence": 305,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "These built-in controllers provide important core behaviors."
+        },
+        {
+          "sentence": 305,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "These built-in controllers provide important core behaviors."
+        },
+        {
+          "sentence": 306,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Deployment controller and Job controller are examples of controllers that come as part of Kubernetes itself (\"built-"
+        },
+        {
+          "sentence": 306,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Deployment controller and Job controller are examples of controllers that come as part of Kubernetes itself (\"built-"
+        },
+        {
+          "sentence": 307,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes lets you run a resilient control plane, so that if any of the built-in controllers were to fail, another part"
+        },
+        {
+          "sentence": 307,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes lets you run a resilient control plane, so that if any of the built-in controllers were to fail, another part"
+        },
+        {
+          "sentence": 308,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can find controllers that run outside the control plane, to extend Kubernetes."
+        },
+        {
+          "sentence": 308,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can find controllers that run outside the control plane, to extend Kubernetes."
+        },
+        {
+          "sentence": 309,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Or, if you want, you can write a new controller yourself."
+        },
+        {
+          "sentence": 309,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Or, if you want, you can write a new controller yourself."
+        },
+        {
+          "sentence": 310,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can run your own controller as a set of Pods, or externally to Kubernetes."
+        },
+        {
+          "sentence": 310,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can run your own controller as a set of Pods, or externally to Kubernetes."
+        },
+        {
+          "sentence": 311,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "What fits best will depend on what that particular controller does."
+        },
+        {
+          "sentence": 311,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "What fits best will depend on what that particular controller does."
+        },
+        {
+          "sentence": 318,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server."
+        },
+        {
+          "sentence": 318,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server."
+        },
+        {
+          "sentence": 320,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Under the hood, every kubelet heartbeat is an update request to this Lease object, updating the spec.renewTime field for"
+        },
+        {
+          "sentence": 324,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where onl"
+        },
+        {
+          "sentence": 324,
+          "component": "kube-scheduler",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where onl"
+        },
+        {
+          "sentence": 326,
+          "component": "kube-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the ControllerManagerReleaseLeaderElectionLockOnExit feature gate is enabled, the kube-controller-manager actively "
+        },
+        {
+          "sentence": 328,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Starting in Kubernetes v1.26, each kube-apiserver uses the Lease API to publish its identity to the rest of the system."
+        },
+        {
+          "sentence": 329,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "While not particularly useful on its own, this provides a mechanism for clients to discover how many instances of kube-a"
+        },
+        {
+          "sentence": 330,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Existence of kube-apiserver leases enables future capabilities that may require coordination between each kube-apiserver"
+        },
+        {
+          "sentence": 331,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You can inspect Leases owned by each kube-apiserver by checking for lease objects in the kube-system namespace with the "
+        },
+        {
+          "sentence": 333,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The SHA256 hash used in the lease name is based on the OS hostname as seen by that API server."
+        },
+        {
+          "sentence": 334,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Each kube-apiserver should be configured to use a hostname that is unique within the cluster."
+        },
+        {
+          "sentence": 335,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "New instances of kube-apiserver that use the same hostname will take over existing Leases using a new holder identity, a"
+        },
+        {
+          "sentence": 336,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You can check the hostname used by kube-apiserver by checking the value of the kubernetes.io/hostname label:"
+        },
+        {
+          "sentence": 337,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Expired leases from kube-apiservers that no longer exist are garbage collected by new kube-apiservers after 1 hour."
+        },
+        {
+          "sentence": 338,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You can disable API server identity leases by disabling the APIServerIdentity feature gate."
+        },
+        {
+          "sentence": 340,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, you might run a custom controller where a primary or leader member performs operations that its peers do no"
+        },
+        {
+          "sentence": 340,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For example, you might run a custom controller where a primary or leader member performs operations that its peers do no"
+        },
+        {
+          "sentence": 341,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You define a Lease so that the controller replicas can select or elect a leader, using the Kubernetes API for coordinati"
+        },
+        {
+          "sentence": 341,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You define a Lease so that the controller replicas can select or elect a leader, using the Kubernetes API for coordinati"
+        },
+        {
+          "sentence": 348,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The cloud-controller-manager is structured using a plugin mechanism that allows different cloud providers to integrate t"
+        },
+        {
+          "sentence": 349,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers i"
+        },
+        {
+          "sentence": 349,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers i"
+        },
+        {
+          "sentence": 349,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers i"
+        },
+        {
+          "sentence": 349,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers i"
+        },
+        {
+          "sentence": 350,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Each cloud-controller-manager implements multiple controllers in a single process."
+        },
+        {
+          "sentence": 350,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Each cloud-controller-manager implements multiple controllers in a single process."
+        },
+        {
+          "sentence": 351,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You can also run the cloud controller manager as a Kubernetes addon rather than as part of the control plane."
+        },
+        {
+          "sentence": 351,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can also run the cloud controller manager as a Kubernetes addon rather than as part of the control plane."
+        },
+        {
+          "sentence": 352,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The controllers inside the cloud controller manager include:"
+        },
+        {
+          "sentence": 352,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The controllers inside the cloud controller manager include:"
+        },
+        {
+          "sentence": 353,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller is responsible for updating Node objects when new servers are created in your cloud infrastructure."
+        },
+        {
+          "sentence": 354,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller obtains information about the hosts running inside your tenancy with the cloud provider."
+        },
+        {
+          "sentence": 355,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller performs the following functions:"
+        },
+        {
+          "sentence": 355,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The node controller performs the following functions:"
+        },
+        {
+          "sentence": 360,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In case a node becomes unresponsive, this controller checks with your cloud provider's API to see if the server has been"
+        },
+        {
+          "sentence": 361,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the node has been deleted from the cloud, the controller deletes the Node object from your Kubernetes cluster."
+        },
+        {
+          "sentence": 361,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the node has been deleted from the cloud, the controller deletes the Node object from your Kubernetes cluster."
+        },
+        {
+          "sentence": 361,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the node has been deleted from the cloud, the controller deletes the Node object from your Kubernetes cluster."
+        },
+        {
+          "sentence": 362,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some cloud provider implementations split this into a node controller and a separate node lifecycle controller."
+        },
+        {
+          "sentence": 362,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some cloud provider implementations split this into a node controller and a separate node lifecycle controller."
+        },
+        {
+          "sentence": 363,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller is responsible for configuring routes in the cloud appropriately so that containers on different no"
+        },
+        {
+          "sentence": 363,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller is responsible for configuring routes in the cloud appropriately so that containers on different no"
+        },
+        {
+          "sentence": 363,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller is responsible for configuring routes in the cloud appropriately so that containers on different no"
+        },
+        {
+          "sentence": 363,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller is responsible for configuring routes in the cloud appropriately so that containers on different no"
+        },
+        {
+          "sentence": 364,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Depending on the cloud provider, the route controller might also allocate blocks of IP addresses for the Pod network."
+        },
+        {
+          "sentence": 364,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Depending on the cloud provider, the route controller might also allocate blocks of IP addresses for the Pod network."
+        },
+        {
+          "sentence": 366,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The service controller interacts with your cloud provider's APIs to set up load balancers and other infrastructure compo"
+        },
+        {
+          "sentence": 366,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The service controller interacts with your cloud provider's APIs to set up load balancers and other infrastructure compo"
+        },
+        {
+          "sentence": 367,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This section breaks down the access that the cloud controller manager requires on various API objects, in order to perfo"
+        },
+        {
+          "sentence": 367,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This section breaks down the access that the cloud controller manager requires on various API objects, in order to perfo"
+        },
+        {
+          "sentence": 368,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Node controller only works with Node objects."
+        },
+        {
+          "sentence": 368,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The Node controller only works with Node objects."
+        },
+        {
+          "sentence": 370,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller listens to Node object creation and configures routes appropriately."
+        },
+        {
+          "sentence": 370,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The route controller listens to Node object creation and configures routes appropriately."
+        },
+        {
+          "sentence": 372,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The service controller watches for Service object create, update and delete events and then configures load balancers fo"
+        },
+        {
+          "sentence": 372,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The service controller watches for Service object create, update and delete events and then configures load balancers fo"
+        },
+        {
+          "sentence": 375,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The implementation of the core of the cloud controller manager requires access to create Event objects, and to ensure se"
+        },
+        {
+          "sentence": 375,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The implementation of the core of the cloud controller manager requires access to create Event objects, and to ensure se"
+        },
+        {
+          "sentence": 376,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The RBAC ClusterRole for the cloud controller manager looks like:"
+        },
+        {
+          "sentence": 376,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The RBAC ClusterRole for the cloud controller manager looks like:"
+        },
+        {
+          "sentence": 377,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Cloud Controller Manager Administration has instructions on running and managing the cloud controller manager."
+        },
+        {
+          "sentence": 377,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Cloud Controller Manager Administration has instructions on running and managing the cloud controller manager."
+        },
+        {
+          "sentence": 378,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To upgrade a HA control plane to use the cloud controller manager, see Migrate Replicated Control Plane To Use Cloud Con"
+        },
+        {
+          "sentence": 378,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "To upgrade a HA control plane to use the cloud controller manager, see Migrate Replicated Control Plane To Use Cloud Con"
+        },
+        {
+          "sentence": 379,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Want to know how to implement your own cloud controller manager, or extend an existing project?"
+        },
+        {
+          "sentence": 379,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Want to know how to implement your own cloud controller manager, or extend an existing project?"
+        },
+        {
+          "sentence": 380,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager uses Go interfaces, specifically, CloudProvider interface defined in cloud.go from kubernet"
+        },
+        {
+          "sentence": 380,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The cloud controller manager uses Go interfaces, specifically, CloudProvider interface defined in cloud.go from kubernet"
+        },
+        {
+          "sentence": 381,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The implementation of the shared controllers highlighted in this document (Node, Route, and Service), and some scaffoldi"
+        },
+        {
+          "sentence": 381,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The implementation of the shared controllers highlighted in this document (Node, Route, and Service), and some scaffoldi"
+        },
+        {
+          "sentence": 383,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "For more information about developing plugins, see Developing Cloud Controller Manager."
+        },
+        {
+          "sentence": 383,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "For more information about developing plugins, see Developing Cloud Controller Manager."
+        },
+        {
+          "sentence": 385,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods "
+        },
+        {
+          "sentence": 385,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods "
+        },
+        {
+          "sentence": 385,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods "
+        },
+        {
+          "sentence": 390,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Safer sub-tree delegation to containers"
+        },
+        {
+          "sentence": 390,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Safer sub-tree delegation to containers"
+        },
+        {
+          "sentence": 402,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Container runtime supports cgroup v2."
+        },
+        {
+          "sentence": 405,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet and the container runtime are configured to use the systemd cgroup driver"
+        },
+        {
+          "sentence": 405,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet and the container runtime are configured to use the systemd cgroup driver"
+        },
+        {
+          "sentence": 407,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container Optimized OS (since M97)"
+        },
+        {
+          "sentence": 407,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container Optimized OS (since M97)"
+        },
+        {
+          "sentence": 418,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet automatically detects that the OS is running on cgroup v2 and performs accordingly with no additional config"
+        },
+        {
+          "sentence": 419,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "There should not be any noticeable difference in the user experience when switching to cgroup v2, unless users are acces"
+        },
+        {
+          "sentence": 419,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "There should not be any noticeable difference in the user experience when switching to cgroup v2, unless users are acces"
+        },
+        {
+          "sentence": 423,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If you run cAdvisor as a stand-alone DaemonSet for monitoring pods and containers, update it to v0.43.0 or later."
+        },
+        {
+          "sentence": 423,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If you run cAdvisor as a stand-alone DaemonSet for monitoring pods and containers, update it to v0.43.0 or later."
+        },
+        {
+          "sentence": 440,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubelet will no longer start on a cgroup v1 node by default."
+        },
+        {
+          "sentence": 441,
+          "component": "Cluster-level Logging",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "To disable this setting a cluster admin should set failCgroupV1 to false in the kubelet configuration file."
+        },
+        {
+          "sentence": 441,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To disable this setting a cluster admin should set failCgroupV1 to false in the kubelet configuration file."
+        },
+        {
+          "sentence": 443,
+          "component": "Container runtime",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Learn more about container runtime"
+        },
+        {
+          "sentence": 447,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Unused containers and container images"
+        },
+        {
+          "sentence": 447,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Unused containers and container images"
+        },
+        {
+          "sentence": 451,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "On a cloud when the cluster uses a cloud controller manager"
+        },
+        {
+          "sentence": 452,
+          "component": "cloud-controller-manager",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "On-premises when the cluster uses an addon similar to a cloud controller manager"
+        },
+        {
+          "sentence": 456,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes uses owner references to give the control plane, and other API clients, the opportunity to clean up related r"
+        },
+        {
+          "sentence": 458,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Ownership is different from the labels and selectors mechanism that some resources also use."
+        },
+        {
+          "sentence": 476,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can also control how and when garbage collection deletes resources that have owner references using Kubernetes final"
+        },
+        {
+          "sentence": 479,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Kubernetes API server sets the object's metadata.deletionTimestamp field to the time the object was marked for delet"
+        },
+        {
+          "sentence": 480,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Kubernetes API server also sets the metadata.finalizers field to foregroundDeletion."
+        },
+        {
+          "sentence": 482,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "After the owner object enters the *deletion in progress* state, the controller deletes dependents it knows about."
+        },
+        {
+          "sentence": 482,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "After the owner object enters the *deletion in progress* state, the controller deletes dependents it knows about."
+        },
+        {
+          "sentence": 483,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "After deleting all the dependent objects it knows about, the controller deletes the owner object."
+        },
+        {
+          "sentence": 483,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "After deleting all the dependent objects it knows about, the controller deletes the owner object."
+        },
+        {
+          "sentence": 488,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collect"
+        },
+        {
+          "sentence": 488,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collect"
+        },
+        {
+          "sentence": 488,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collect"
+        },
+        {
+          "sentence": 495,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet performs garbage collection on unused images every five minutes and on unused containers every minute."
+        },
+        {
+          "sentence": 495,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet performs garbage collection on unused images every five minutes and on unused containers every minute."
+        },
+        {
+          "sentence": 495,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet performs garbage collection on unused images every five minutes and on unused containers every minute."
+        },
+        {
+          "sentence": 496,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You should avoid using external garbage collection tools, as these can break the kubelet behavior and remove containers "
+        },
+        {
+          "sentence": 496,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You should avoid using external garbage collection tools, as these can break the kubelet behavior and remove containers "
+        },
+        {
+          "sentence": 496,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "You should avoid using external garbage collection tools, as these can break the kubelet behavior and remove containers "
+        },
+        {
+          "sentence": 497,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "To configure options for unused container and image garbage collection, tune the kubelet using a configuration file and "
+        },
+        {
+          "sentence": 497,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To configure options for unused container and image garbage collection, tune the kubelet using a configuration file and "
+        },
+        {
+          "sentence": 498,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes manages the lifecycle of all images through its *image manager*, which is part of the kubelet, with the coope"
+        },
+        {
+          "sentence": 499,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet considers the following disk usage limits when making garbage collection decisions:"
+        },
+        {
+          "sentence": 501,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet deletes images until disk usage reaches the LowThresholdPercent value."
+        },
+        {
+          "sentence": 503,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is a kubelet setting that you configure for each node."
+        },
+        {
+          "sentence": 504,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To configure the setting, you need to set a value for the imageMaximumGCAge field in the kubelet configuration file."
+        },
+        {
+          "sentence": 508,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This feature does not track image usage across kubelet restarts."
+        },
+        {
+          "sentence": 509,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the kubelet is restarted, the tracked image age is reset, causing the kubelet to wait the full imageMaximumGCAge dura"
+        },
+        {
+          "sentence": 510,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet garbage collects unused containers based on the following variables, which you can define:"
+        },
+        {
+          "sentence": 510,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet garbage collects unused containers based on the following variables, which you can define:"
+        },
+        {
+          "sentence": 510,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet garbage collects unused containers based on the following variables, which you can define:"
+        },
+        {
+          "sentence": 511,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MinAge: the minimum age at which the kubelet can garbage collect a container."
+        },
+        {
+          "sentence": 511,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MinAge: the minimum age at which the kubelet can garbage collect a container."
+        },
+        {
+          "sentence": 511,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "MinAge: the minimum age at which the kubelet can garbage collect a container."
+        },
+        {
+          "sentence": 513,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxPerPodContainer: the maximum number of dead containers each Pod can have."
+        },
+        {
+          "sentence": 513,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxPerPodContainer: the maximum number of dead containers each Pod can have."
+        },
+        {
+          "sentence": 515,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxContainers: the maximum number of dead containers the cluster can have."
+        },
+        {
+          "sentence": 515,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxContainers: the maximum number of dead containers the cluster can have."
+        },
+        {
+          "sentence": 517,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In addition to these variables, the kubelet garbage collects unidentified and deleted containers, typically starting wit"
+        },
+        {
+          "sentence": 517,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "In addition to these variables, the kubelet garbage collects unidentified and deleted containers, typically starting wit"
+        },
+        {
+          "sentence": 517,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In addition to these variables, the kubelet garbage collects unidentified and deleted containers, typically starting wit"
+        },
+        {
+          "sentence": 518,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxPerPodContainer and MaxContainers may potentially conflict with each other in situations where retaining the maximum "
+        },
+        {
+          "sentence": 518,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "MaxPerPodContainer and MaxContainers may potentially conflict with each other in situations where retaining the maximum "
+        },
+        {
+          "sentence": 519,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "In this situation, the kubelet adjusts MaxPerPodContainer to address the conflict."
+        },
+        {
+          "sentence": 520,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A worst-case scenario would be to downgrade MaxPerPodContainer to 1 and evict the oldest containers."
+        },
+        {
+          "sentence": 520,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "A worst-case scenario would be to downgrade MaxPerPodContainer to 1 and evict the oldest containers."
+        },
+        {
+          "sentence": 521,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Additionally, containers owned by pods that have been deleted are removed once they are older than MinAge."
+        },
+        {
+          "sentence": 521,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Additionally, containers owned by pods that have been deleted are removed once they are older than MinAge."
+        },
+        {
+          "sentence": 522,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet only garbage collects the containers it manages."
+        },
+        {
+          "sentence": 522,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The kubelet only garbage collects the containers it manages."
+        },
+        {
+          "sentence": 522,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The kubelet only garbage collects the containers it manages."
+        },
+        {
+          "sentence": 523,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can tune garbage collection of resources by configuring options specific to the controllers managing those resources"
+        },
+        {
+          "sentence": 523,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "You can tune garbage collection of resources by configuring options specific to the controllers managing those resources"
+        },
+        {
+          "sentence": 529,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Learn about the TTL controller that cleans up finished Jobs."
+        },
+        {
+          "sentence": 529,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Learn about the TTL controller that cleans up finished Jobs."
+        },
+        {
+          "sentence": 530,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kubernetes 1.34 includes a beta feature that lets an API Server proxy resource requests to other _peer_ API servers."
+        },
+        {
+          "sentence": 530,
+          "component": "kube-proxy",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kubernetes 1.34 includes a beta feature that lets an API Server proxy resource requests to other _peer_ API servers."
+        },
+        {
+          "sentence": 531,
+          "component": "kube-apiserver",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "It also lets clients get a holistic view of resources served across the entire cluster through discovery."
+        },
+        {
+          "sentence": 532,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is useful when there are multiple API servers running different versions of Kubernetes in one cluster (for example,"
+        },
+        {
+          "sentence": 534,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "ensuring that controllers relying on discovery to show a comprehensive list of resources for important tasks always get "
+        },
+        {
+          "sentence": 534,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "ensuring that controllers relying on discovery to show a comprehensive list of resources for important tasks always get "
+        },
+        {
+          "sentence": 536,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "directing resource requests (made during the upgrade) to the correct kube-apiserver."
+        },
+        {
+          "sentence": 538,
+          "component": "kube-proxy",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This mechanism is called the _Mixed Version Proxy_."
+        },
+        {
+          "sentence": 539,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Ensure that UnknownVersionInteroperabilityProxy feature gate is enabled when you start the API Server:"
+        },
+        {
+          "sentence": 540,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The source kube-apiserver reuses the existing APIserver client authentication flags --proxy-client-cert-file and --proxy"
+        },
+        {
+          "sentence": 541,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The destination API server verifies that peer connection based on the configuration you specify using the --requestheade"
+        },
+        {
+          "sentence": 542,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To authenticate the destination server's serving certs, you must configure a certificate authority bundle by specifying "
+        },
+        {
+          "sentence": 543,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "To set the network location of a kube-apiserver that peers will use to proxy requests, use the --peer-advertise-ip and -"
+        },
+        {
+          "sentence": 544,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If these flags are unspecified, peers will use the value from either --advertise-address or --bind-address command line "
+        },
+        {
+          "sentence": 546,
+          "component": "kube-apiserver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When you enable the feature, discovery requests are automatically enabled to serve a comprehensive discovery document (l"
+        },
+        {
+          "sentence": 550,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When a resource request reaches an API server that cannot serve that API (either because it is at a version pre-dating t"
+        },
+        {
+          "sentence": 551,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It does so by identifying API groups / versions / resources that the local server doesn't recognise, and tries to proxy "
+        },
+        {
+          "sentence": 551,
+          "component": "kube-proxy",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It does so by identifying API groups / versions / resources that the local server doesn't recognise, and tries to proxy "
+        },
+        {
+          "sentence": 552,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the peer API server fails to respond, the _source_ API server responds with 503 (\"Service Unavailable\") error."
+        },
+        {
+          "sentence": 553,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When an API Server receives a resource request, it first checks which API servers can serve the requested resource."
+        },
+        {
+          "sentence": 555,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the resource is listed in the non peer-aggregated discovery document retrieved from the API server that received the "
+        },
+        {
+          "sentence": 555,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the resource is listed in the non peer-aggregated discovery document retrieved from the API server that received the "
+        },
+        {
+          "sentence": 556,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the resource in a request (for example, GET /apis/resource.k8s.io/v1beta1/resourceclaims) is not found in the non pee"
+        },
+        {
+          "sentence": 556,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the resource in a request (for example, GET /apis/resource.k8s.io/v1beta1/resourceclaims) is not found in the non pee"
+        },
+        {
+          "sentence": 557,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The _handling API server_ then proxies the request to one of the matching peer kube-apiservers that are aware of the req"
+        },
+        {
+          "sentence": 557,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The _handling API server_ then proxies the request to one of the matching peer kube-apiservers that are aware of the req"
+        },
+        {
+          "sentence": 558,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If there is no peer known for that API group / version / resource, the handling API server passes the request to its own"
+        },
+        {
+          "sentence": 559,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the handling API server has identified and selected a peer API server, but that peer fails to respond (for reasons su"
+        },
+        {
+          "sentence": 559,
+          "component": "kube-apiserver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the handling API server has identified and selected a peer API server, but that peer fails to respond (for reasons su"
+        },
+        {
+          "sentence": 559,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "If the handling API server has identified and selected a peer API server, but that peer fails to respond (for reasons su"
+        },
+        {
+          "sentence": 561,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It automatically replaces failed containers, reschedules workloads when nodes become unavailable, and ensures that the d"
+        },
+        {
+          "sentence": 561,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It automatically replaces failed containers, reschedules workloads when nodes become unavailable, and ensures that the d"
+        },
+        {
+          "sentence": 562,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container-level restarts: If a container inside a Pod fails, Kubernetes restarts it based on the restartPolicy."
+        },
+        {
+          "sentence": 562,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Container-level restarts: If a container inside a Pod fails, Kubernetes restarts it based on the restartPolicy."
+        },
+        {
+          "sentence": 568,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "kubelet: Ensures that containers are running, and restarts those that fail."
+        },
+        {
+          "sentence": 568,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "kubelet: Ensures that containers are running, and restarts those that fail."
+        },
+        {
+          "sentence": 568,
+          "component": "kubelet",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "kubelet: Ensures that containers are running, and restarts those that fail."
+        },
+        {
+          "sentence": 569,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Deployment (via ReplicaSet), ReplicaSet, StatefulSet and DaemonSet controllers: Maintain the desired number of Pod repli"
+        },
+        {
+          "sentence": 569,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Deployment (via ReplicaSet), ReplicaSet, StatefulSet and DaemonSet controllers: Maintain the desired number of Pod repli"
+        },
+        {
+          "sentence": 570,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "PersistentVolume controller: Manages volume attachment and detachment for stateful workloads."
+        },
+        {
+          "sentence": 570,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "PersistentVolume controller: Manages volume attachment and detachment for stateful workloads."
+        },
+        {
+          "sentence": 572,
+          "component": "Container Resource Monitoring",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Application Errors: Kubernetes can restart containers, but underlying application issues must be addressed separately."
+        },
+        {
+          "sentence": 572,
+          "component": "Container runtime",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Application Errors: Kubernetes can restart containers, but underlying application issues must be addressed separately."
+        },
+        {
+          "sentence": 574,
+          "component": "cloud-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Learn about Kubernetes Controllers"
+        },
+        {
+          "sentence": 574,
+          "component": "kube-controller-manager",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Learn about Kubernetes Controllers"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 42,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 51,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 52,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 53,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 54,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 55,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 92
+    }
+  }
+}

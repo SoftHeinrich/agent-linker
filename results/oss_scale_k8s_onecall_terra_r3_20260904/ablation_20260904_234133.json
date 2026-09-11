@@ -1,0 +1,1309 @@
+{
+  "k8s_arch": {
+    "s_linker110_onecall": {
+      "variant": "s_linker110_onecall",
+      "P": 0.049723756906077346,
+      "R": 0.4090909090909091,
+      "F1": 0.08866995073891626,
+      "F2": 0.16728624535315986,
+      "tp": 9,
+      "fp": 172,
+      "fn": 13,
+      "n_links": 181,
+      "time": 12.825183868408203,
+      "sources": {
+        "one_call": 181
+      },
+      "fp_by_source": {
+        "one_call": 172
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kube-apiserver The core component server that exposes the Kubernetes HTTP API."
+        },
+        {
+          "sentence": 6,
+          "component": "etcd",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "etcd Consistent and highly-available key value store for all API server data."
+        },
+        {
+          "sentence": 7,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kube-scheduler Looks for Pods not yet bound to a node, and assigns each Pod to a suitable node."
+        },
+        {
+          "sentence": 8,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kube-controller-manager Runs controllers to implement Kubernetes API behavior."
+        },
+        {
+          "sentence": 9,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "cloud-controller-manager (optional) Integrates with underlying cloud provider(s)."
+        },
+        {
+          "sentence": 11,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kubelet Ensures that Pods are running, including their containers."
+        },
+        {
+          "sentence": 12,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kube-proxy (optional) Maintains network rules on nodes to implement Services."
+        },
+        {
+          "sentence": 13,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Container runtime Software responsible for running containers."
+        },
+        {
+          "sentence": 14,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Read Container Runtimes to learn more."
+        },
+        {
+          "sentence": 18,
+          "component": "DNS",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "DNS For cluster-wide DNS resolution."
+        },
+        {
+          "sentence": 19,
+          "component": "Web UI (Dashboard)",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Web UI (Dashboard) For cluster management via a web interface."
+        },
+        {
+          "sentence": 20,
+          "component": "Container Resource Monitoring",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Container Resource Monitoring For collecting and storing container metrics."
+        },
+        {
+          "sentence": 21,
+          "component": "Cluster-level Logging",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Cluster-level Logging For saving container logs to a central log store."
+        },
+        {
+          "sentence": 33,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "In the diagram, each node runs the kube-proxy component."
+        },
+        {
+          "sentence": 34,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You need a network proxy component on each node to ensure that the Service API and associated behaviors are available on"
+        },
+        {
+          "sentence": 36,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When you use that kind of network plugin, the node does not need to run kube-proxy."
+        },
+        {
+          "sentence": 50,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "As with the kube-controller-manager, the cloud-controller-manager combines several logically independent control loops i"
+        },
+        {
+          "sentence": 56,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+        },
+        {
+          "sentence": 56,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+        },
+        {
+          "sentence": 56,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment."
+        },
+        {
+          "sentence": 57,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If you use a network plugin that implements packet forwarding for Services by itself, and providing equivalent behavior "
+        },
+        {
+          "sentence": 74,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Static Pods Control plane components are deployed as static Pods, managed by the kubelet on specific nodes."
+        },
+        {
+          "sentence": 84,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Custom schedulers can be deployed to work alongside the default Kubernetes scheduler or to replace it entirely."
+        },
+        {
+          "sentence": 85,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "API servers can be extended with CustomResourceDefinitions and API Aggregation."
+        },
+        {
+          "sentence": 86,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Cloud providers can integrate deeply with Kubernetes using the cloud-controller-manager."
+        },
+        {
+          "sentence": 91,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kube-scheduler which is the default scheduler for Kubernetes."
+        },
+        {
+          "sentence": 92,
+          "component": "etcd",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Etcd's official documentation."
+        },
+        {
+          "sentence": 93,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Several container runtimes in Kubernetes."
+        },
+        {
+          "sentence": 94,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Integrating with cloud providers using cloud-controller-manager."
+        },
+        {
+          "sentence": 99,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 99,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 99,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The components on a node include the kubelet, a container runtime, and the kube-proxy."
+        },
+        {
+          "sentence": 100,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "There are two main ways to have Nodes added to the API server:"
+        },
+        {
+          "sentence": 101,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet on a node self-registers to the control plane"
+        },
+        {
+          "sentence": 103,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "After you create a Node object, or the kubelet on a node self-registers, the control plane checks whether the new Node o"
+        },
+        {
+          "sentence": 106,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node."
+        },
+        {
+          "sentence": 106,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes checks that a kubelet has registered to the API server that matches the metadata.name field of the Node."
+        },
+        {
+          "sentence": 117,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the Node needs to be replaced or updated significantly, the existing Node object needs to be removed from API server "
+        },
+        {
+          "sentence": 118,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API se"
+        },
+        {
+          "sentence": 118,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the kubelet flag --register-node is true (the default), the kubelet will attempt to register itself with the API se"
+        },
+        {
+          "sentence": 120,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For self-registration, the kubelet is started with the following options:"
+        },
+        {
+          "sentence": 121,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "--kubeconfig - Path to credentials to authenticate itself to the API server."
+        },
+        {
+          "sentence": 123,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "--register-node - Automatically register with the API server."
+        },
+        {
+          "sentence": 128,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, in a single-stack IPv4 cluster, you set this value to be the IPv4 address that the kubelet should use for t"
+        },
+        {
+          "sentence": 130,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If you don't provide this argument, the kubelet uses the node's default IPv4 address, if any; if the node has no IPv4 ad"
+        },
+        {
+          "sentence": 132,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server."
+        },
+        {
+          "sentence": 132,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "--node-status-update-frequency - Specifies how often kubelet posts its node status to the API server."
+        },
+        {
+          "sentence": 133,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the Node authorization mode and NodeRestriction admission plugin are enabled, kubelets are only authorized to creat"
+        },
+        {
+          "sentence": 134,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "As mentioned in the Node name uniqueness section, when Node configuration needs to be updated, it is a good practice to "
+        },
+        {
+          "sentence": 135,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the chan"
+        },
+        {
+          "sentence": 135,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "For example, if the kubelet is being restarted with a new set of --node-labels, but the same Node name is used, the chan"
+        },
+        {
+          "sentence": 136,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Pods already scheduled on the Node may misbehave or cause issues if the Node configuration will be changed on kubelet re"
+        },
+        {
+          "sentence": 140,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When you want to create Node objects manually, set the kubelet flag --register-node=false."
+        },
+        {
+          "sentence": 147,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Marking a node as unschedulable prevents the scheduler from placing new pods onto that Node but does not affect existing"
+        },
+        {
+          "sentence": 162,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The node controller is a Kubernetes control plane component that manages various aspects of nodes."
+        },
+        {
+          "sentence": 175,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This period can be configured using the --node-monitor-period flag on the kube-controller-manager component."
+        },
+        {
+          "sentence": 195,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The Kubernetes scheduler ensures that there are enough resources for all the Pods on a Node."
+        },
+        {
+          "sentence": 196,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The scheduler checks that the sum of the requests of containers on the node is no greater than the node's capacity."
+        },
+        {
+          "sentence": 197,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the"
+        },
+        {
+          "sentence": 197,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "That sum of requests includes all containers managed by the kubelet, but excludes any containers started directly by the"
+        },
+        {
+          "sentence": 199,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If you have enabled the TopologyManager feature gate, then the kubelet can use topology hints when making resource assig"
+        },
+        {
+          "sentence": 210,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This document catalogs the communication paths between the API server and the Kubernetes cluster."
+        },
+        {
+          "sentence": 213,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "All API usage from nodes (or the pods they run) terminates at the API server."
+        },
+        {
+          "sentence": 215,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The API server is configured to listen for remote connections on a secure HTTPS port (typically 443) with one or more fo"
+        },
+        {
+          "sentence": 217,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Nodes should be provisioned with the public root certificate for the cluster such that they can connect securely to the "
+        },
+        {
+          "sentence": 218,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "A good approach is that the client credentials provided to the kubelet are in the form of a client certificate."
+        },
+        {
+          "sentence": 220,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Pods that wish to connect to the API server can do so securely by leveraging a service account so that Kubernetes will a"
+        },
+        {
+          "sentence": 221,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy"
+        },
+        {
+          "sentence": 221,
+          "component": "kube-proxy",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy"
+        },
+        {
+          "sentence": 222,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The control plane components also communicate with the API server over the secure port."
+        },
+        {
+          "sentence": 224,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "There are two primary communication paths from the control plane (the API server) to the nodes."
+        },
+        {
+          "sentence": 225,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The first is from the API server to the kubelet process which runs on each node in the cluster."
+        },
+        {
+          "sentence": 225,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The first is from the API server to the kubelet process which runs on each node in the cluster."
+        },
+        {
+          "sentence": 226,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The second is from the API server to any node, pod, or service through the API server's _proxy_ functionality."
+        },
+        {
+          "sentence": 227,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The connections from the API server to the kubelet are used for:"
+        },
+        {
+          "sentence": 227,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The connections from the API server to the kubelet are used for:"
+        },
+        {
+          "sentence": 230,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Providing the kubelet's port-forwarding functionality."
+        },
+        {
+          "sentence": 231,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "These connections terminate at the kubelet's HTTPS endpoint."
+        },
+        {
+          "sentence": 232,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-"
+        },
+        {
+          "sentence": 232,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "By default, the API server does not verify the kubelet's serving certificate, which makes the connection subject to man-"
+        },
+        {
+          "sentence": 233,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificat"
+        },
+        {
+          "sentence": 233,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To verify this connection, use the --kubelet-certificate-authority flag to provide the API server with a root certificat"
+        },
+        {
+          "sentence": 234,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an un"
+        },
+        {
+          "sentence": 234,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If that is not possible, use SSH tunneling between the API server and kubelet if required to avoid connecting over an un"
+        },
+        {
+          "sentence": 235,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Finally, Kubelet authentication and/or authorization should be enabled to secure the kubelet API."
+        },
+        {
+          "sentence": 241,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "In this configuration, the API server initiates an SSH tunnel to each node in the cluster (connecting to the SSH server "
+        },
+        {
+          "sentence": 265,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The controller might carry the action out itself; more commonly, in Kubernetes, a controller will send messages to the A"
+        },
+        {
+          "sentence": 270,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Built-in controllers manage state by interacting with the cluster API server."
+        },
+        {
+          "sentence": 272,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "(Once scheduled, Pod objects become part of the desired state for a kubelet)."
+        },
+        {
+          "sentence": 273,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the Job controller sees a new task it makes sure that, somewhere in your cluster, the kubelets on a set of Nodes ar"
+        },
+        {
+          "sentence": 275,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Instead, the Job controller tells the API server to create or remove Pods."
+        },
+        {
+          "sentence": 284,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Controllers that interact with external state find their desired state from the API server, then communicate directly wi"
+        },
+        {
+          "sentence": 286,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The important point here is that the controller makes some changes to bring about your desired state, and then reports t"
+        },
+        {
+          "sentence": 304,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes comes with a set of built-in controllers that run inside the kube-controller-manager."
+        },
+        {
+          "sentence": 318,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server."
+        },
+        {
+          "sentence": 318,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes uses the Lease API to communicate kubelet node heartbeats to the Kubernetes API server."
+        },
+        {
+          "sentence": 320,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Under the hood, every kubelet heartbeat is an update request to this Lease object, updating the spec.renewTime field for"
+        },
+        {
+          "sentence": 324,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where onl"
+        },
+        {
+          "sentence": 324,
+          "component": "kube-scheduler",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This is used by control plane components like kube-controller-manager and kube-scheduler in HA configurations, where onl"
+        },
+        {
+          "sentence": 326,
+          "component": "kube-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When the ControllerManagerReleaseLeaderElectionLockOnExit feature gate is enabled, the kube-controller-manager actively "
+        },
+        {
+          "sentence": 328,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Starting in Kubernetes v1.26, each kube-apiserver uses the Lease API to publish its identity to the rest of the system."
+        },
+        {
+          "sentence": 329,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "While not particularly useful on its own, this provides a mechanism for clients to discover how many instances of kube-a"
+        },
+        {
+          "sentence": 330,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Existence of kube-apiserver leases enables future capabilities that may require coordination between each kube-apiserver"
+        },
+        {
+          "sentence": 331,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You can inspect Leases owned by each kube-apiserver by checking for lease objects in the kube-system namespace with the "
+        },
+        {
+          "sentence": 332,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Alternatively you can use the label selector apiserver.kubernetes.io/identity=kube-apiserver:"
+        },
+        {
+          "sentence": 334,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Each kube-apiserver should be configured to use a hostname that is unique within the cluster."
+        },
+        {
+          "sentence": 335,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "New instances of kube-apiserver that use the same hostname will take over existing Leases using a new holder identity, a"
+        },
+        {
+          "sentence": 336,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You can check the hostname used by kube-apiserver by checking the value of the kubernetes.io/hostname label:"
+        },
+        {
+          "sentence": 337,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Expired leases from kube-apiservers that no longer exist are garbage collected by new kube-apiservers after 1 hour."
+        },
+        {
+          "sentence": 338,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You can disable API server identity leases by disabling the APIServerIdentity feature gate."
+        },
+        {
+          "sentence": 348,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The cloud-controller-manager is structured using a plugin mechanism that allows different cloud providers to integrate t"
+        },
+        {
+          "sentence": 349,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The cloud controller manager runs in the control plane as a replicated set of processes (usually, these are containers i"
+        },
+        {
+          "sentence": 350,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Each cloud-controller-manager implements multiple controllers in a single process."
+        },
+        {
+          "sentence": 351,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You can also run the cloud controller manager as a Kubernetes addon rather than as part of the control plane."
+        },
+        {
+          "sentence": 352,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The controllers inside the cloud controller manager include:"
+        },
+        {
+          "sentence": 367,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This section breaks down the access that the cloud controller manager requires on various API objects, in order to perfo"
+        },
+        {
+          "sentence": 375,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The implementation of the core of the cloud controller manager requires access to create Event objects, and to ensure se"
+        },
+        {
+          "sentence": 376,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The RBAC ClusterRole for the cloud controller manager looks like:"
+        },
+        {
+          "sentence": 377,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Cloud Controller Manager Administration has instructions on running and managing the cloud controller manager."
+        },
+        {
+          "sentence": 378,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To upgrade a HA control plane to use the cloud controller manager, see Migrate Replicated Control Plane To Use Cloud Con"
+        },
+        {
+          "sentence": 379,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Want to know how to implement your own cloud controller manager, or extend an existing project?"
+        },
+        {
+          "sentence": 380,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The cloud controller manager uses Go interfaces, specifically, CloudProvider interface defined in cloud.go from kubernet"
+        },
+        {
+          "sentence": 381,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The implementation of the shared controllers highlighted in this document (Node, Route, and Service), and some scaffoldi"
+        },
+        {
+          "sentence": 385,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods "
+        },
+        {
+          "sentence": 385,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet and the underlying container runtime need to interface with cgroups to enforce resource management for pods "
+        },
+        {
+          "sentence": 402,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Container runtime supports cgroup v2."
+        },
+        {
+          "sentence": 405,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet and the container runtime are configured to use the systemd cgroup driver"
+        },
+        {
+          "sentence": 405,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet and the container runtime are configured to use the systemd cgroup driver"
+        },
+        {
+          "sentence": 418,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet automatically detects that the OS is running on cgroup v2 and performs accordingly with no additional config"
+        },
+        {
+          "sentence": 440,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubelet will no longer start on a cgroup v1 node by default."
+        },
+        {
+          "sentence": 441,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To disable this setting a cluster admin should set failCgroupV1 to false in the kubelet configuration file."
+        },
+        {
+          "sentence": 443,
+          "component": "Container runtime",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Learn more about container runtime"
+        },
+        {
+          "sentence": 451,
+          "component": "cloud-controller-manager",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "On a cloud when the cluster uses a cloud controller manager"
+        },
+        {
+          "sentence": 479,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The Kubernetes API server sets the object's metadata.deletionTimestamp field to the time the object was marked for delet"
+        },
+        {
+          "sentence": 480,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The Kubernetes API server also sets the metadata.finalizers field to foregroundDeletion."
+        },
+        {
+          "sentence": 481,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The object remains visible through the Kubernetes API until the deletion process is complete."
+        },
+        {
+          "sentence": 488,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "In background cascading deletion, the Kubernetes API server deletes the owner object immediately and the garbage collect"
+        },
+        {
+          "sentence": 495,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet performs garbage collection on unused images every five minutes and on unused containers every minute."
+        },
+        {
+          "sentence": 496,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "You should avoid using external garbage collection tools, as these can break the kubelet behavior and remove containers "
+        },
+        {
+          "sentence": 497,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To configure options for unused container and image garbage collection, tune the kubelet using a configuration file and "
+        },
+        {
+          "sentence": 498,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes manages the lifecycle of all images through its *image manager*, which is part of the kubelet, with the coope"
+        },
+        {
+          "sentence": 499,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet considers the following disk usage limits when making garbage collection decisions:"
+        },
+        {
+          "sentence": 500,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Disk usage above the configured HighThresholdPercent value triggers garbage collection, which deletes images in order ba"
+        },
+        {
+          "sentence": 501,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet deletes images until disk usage reaches the LowThresholdPercent value."
+        },
+        {
+          "sentence": 503,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This is a kubelet setting that you configure for each node."
+        },
+        {
+          "sentence": 504,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To configure the setting, you need to set a value for the imageMaximumGCAge field in the kubelet configuration file."
+        },
+        {
+          "sentence": 508,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This feature does not track image usage across kubelet restarts."
+        },
+        {
+          "sentence": 509,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the kubelet is restarted, the tracked image age is reset, causing the kubelet to wait the full imageMaximumGCAge dura"
+        },
+        {
+          "sentence": 510,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet garbage collects unused containers based on the following variables, which you can define:"
+        },
+        {
+          "sentence": 511,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "MinAge: the minimum age at which the kubelet can garbage collect a container."
+        },
+        {
+          "sentence": 517,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "In addition to these variables, the kubelet garbage collects unidentified and deleted containers, typically starting wit"
+        },
+        {
+          "sentence": 519,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "In this situation, the kubelet adjusts MaxPerPodContainer to address the conflict."
+        },
+        {
+          "sentence": 522,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The kubelet only garbage collects the containers it manages."
+        },
+        {
+          "sentence": 530,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Kubernetes 1.34 includes a beta feature that lets an API Server proxy resource requests to other _peer_ API servers."
+        },
+        {
+          "sentence": 532,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "This is useful when there are multiple API servers running different versions of Kubernetes in one cluster (for example,"
+        },
+        {
+          "sentence": 536,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "directing resource requests (made during the upgrade) to the correct kube-apiserver."
+        },
+        {
+          "sentence": 539,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "Ensure that UnknownVersionInteroperabilityProxy feature gate is enabled when you start the API Server:"
+        },
+        {
+          "sentence": 540,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The source kube-apiserver reuses the existing APIserver client authentication flags --proxy-client-cert-file and --proxy"
+        },
+        {
+          "sentence": 541,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The destination API server verifies that peer connection based on the configuration you specify using the --requestheade"
+        },
+        {
+          "sentence": 542,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To authenticate the destination server's serving certs, you must configure a certificate authority bundle by specifying "
+        },
+        {
+          "sentence": 543,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "To set the network location of a kube-apiserver that peers will use to proxy requests, use the --peer-advertise-ip and -"
+        },
+        {
+          "sentence": 544,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If these flags are unspecified, peers will use the value from either --advertise-address or --bind-address command line "
+        },
+        {
+          "sentence": 550,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When a resource request reaches an API server that cannot serve that API (either because it is at a version pre-dating t"
+        },
+        {
+          "sentence": 551,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "It does so by identifying API groups / versions / resources that the local server doesn't recognise, and tries to proxy "
+        },
+        {
+          "sentence": 552,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the peer API server fails to respond, the _source_ API server responds with 503 (\"Service Unavailable\") error."
+        },
+        {
+          "sentence": 553,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "When an API Server receives a resource request, it first checks which API servers can serve the requested resource."
+        },
+        {
+          "sentence": 555,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the resource is listed in the non peer-aggregated discovery document retrieved from the API server that received the "
+        },
+        {
+          "sentence": 556,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the resource in a request (for example, GET /apis/resource.k8s.io/v1beta1/resourceclaims) is not found in the non pee"
+        },
+        {
+          "sentence": 557,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "The _handling API server_ then proxies the request to one of the matching peer kube-apiservers that are aware of the req"
+        },
+        {
+          "sentence": 558,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If there is no peer known for that API group / version / resource, the handling API server passes the request to its own"
+        },
+        {
+          "sentence": 559,
+          "component": "kube-apiserver",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "If the handling API server has identified and selected a peer API server, but that peer fails to respond (for reasons su"
+        },
+        {
+          "sentence": 568,
+          "component": "kubelet",
+          "source": "one_call",
+          "confidence": 1.0,
+          "text": "kubelet: Ensures that containers are running, and restarts those that fail."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 41,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 42,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 43,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 44,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 45,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 46,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "kube-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 51,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 52,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 53,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 54,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 55,
+          "component": "cloud-controller-manager",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "Web UI (Dashboard)",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 3
+    }
+  }
+}

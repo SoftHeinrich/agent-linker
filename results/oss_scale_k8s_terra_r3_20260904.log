@@ -1,0 +1,190 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: k8s_arch
+Variants: s_linker110
+========================================================================================================================
+
+========================================================================================================================
+DATASET: k8s_arch
+========================================================================================================================
+  Components: 12, Sentences: 576
+  Gold links: 22, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110 ---
+SLinker110 (full-name scan -> partial-name scan -> coreference; fixed order, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+Loaded 12 components, 576 sentences
+
+[Knowledge] Document aliases
+    Alias: scheduler -> kube-scheduler
+    Alias: API servers -> kube-apiserver
+    Alias: cluster DNS -> DNS
+    Alias: network proxy component -> kube-proxy
+    Alias: kube-apiservers -> kube-apiserver
+    Alias: cloud controller manager -> cloud-controller-manager
+    Alias: API server -> kube-apiserver
+    Alias: API Server -> kube-apiserver
+    Alias: Dashboard -> Web UI (Dashboard)
+    Alias: Kubelet -> kubelet
+    Alias: API Servers -> kube-apiserver
+    Alias: cluster-level logging mechanism -> Cluster-level Logging
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 179 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+    Partial-name scan refused 85 (word written only inside another component's name)
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref skip (no antecedent): S100 -> kube-apiserver
+    Coref reject: S14 -> Container runtime
+    Coref reject: S22 -> Cluster-level Logging
+    Coref reject: S35 -> kube-proxy
+    Coref reject: S36 -> kube-proxy
+    Coref reject: S49 -> cloud-controller-manager
+    Coref reject: S50 -> kube-controller-manager
+    Coref reject: S50 -> cloud-controller-manager
+    Coref reject: S51 -> cloud-controller-manager
+    Coref reject: S94 -> cloud-controller-manager
+    Coref reject: S101 -> kube-apiserver
+    Coref reject: S103 -> kube-apiserver
+    Coref reject: S106 -> kube-apiserver
+    Coref reject: S118 -> kubelet
+    Coref reject: S119 -> kubelet
+    Coref reject: S120 -> kubelet
+    Coref reject: S121 -> kubelet
+    Coref reject: S122 -> kubelet
+    Coref reject: S132 -> kubelet
+    Coref reject: S133 -> kubelet
+    Coref reject: S135 -> kubelet
+    Coref reject: S136 -> kubelet
+    Coref reject: S140 -> kubelet
+    Coref reject: S141 -> kubelet
+    Coref reject: S197 -> kubelet
+    Coref reject: S197 -> Container runtime
+    Coref reject: S199 -> kubelet
+    Coref reject: S214 -> kube-apiserver
+    Coref reject: S215 -> kube-apiserver
+    Coref reject: S217 -> kube-apiserver
+    Coref reject: S218 -> kubelet
+    Coref reject: S219 -> kubelet
+    Coref reject: S220 -> kube-apiserver
+    Coref reject: S222 -> kube-apiserver
+    Coref reject: S223 -> kube-apiserver
+    Coref reject: S224 -> kube-apiserver
+    Coref reject: S225 -> kube-apiserver
+    Coref reject: S225 -> kube-apiserver
+    Coref reject: S225 -> kubelet
+    Coref reject: S226 -> kube-apiserver
+    Coref reject: S226 -> kube-apiserver
+    Coref reject: S227 -> kube-apiserver
+    Coref reject: S227 -> kube-apiserver
+    Coref reject: S227 -> kubelet
+    Coref reject: S230 -> kubelet
+    Coref reject: S231 -> kubelet
+    Coref reject: S232 -> kubelet
+    Coref reject: S233 -> kubelet
+    Coref reject: S234 -> kubelet
+    Coref reject: S237 -> kube-apiserver
+    Coref reject: S238 -> kube-apiserver
+    Coref reject: S239 -> kube-apiserver
+    Coref reject: S276 -> kube-apiserver
+    Coref reject: S285 -> kube-controller-manager
+    Coref reject: S325 -> kube-scheduler
+    Coref reject: S325 -> kube-controller-manager
+    Coref reject: S327 -> kube-controller-manager
+    Coref reject: S329 -> kube-apiserver
+    Coref reject: S329 -> kube-apiserver
+    Coref reject: S332 -> kube-apiserver
+    Coref reject: S335 -> kube-apiserver
+    Coref reject: S336 -> kube-apiserver
+    Coref reject: S337 -> kube-apiserver
+    Coref reject: S338 -> kube-apiserver
+    Coref reject: S349 -> cloud-controller-manager
+    Coref reject: S351 -> cloud-controller-manager
+    Coref reject: S352 -> cloud-controller-manager
+    Coref reject: S367 -> cloud-controller-manager
+    Coref reject: S368 -> cloud-controller-manager
+    Coref reject: S369 -> cloud-controller-manager
+    Coref reject: S370 -> cloud-controller-manager
+    Coref reject: S371 -> cloud-controller-manager
+    Coref reject: S373 -> cloud-controller-manager
+    Coref reject: S374 -> cloud-controller-manager
+    Coref reject: S375 -> cloud-controller-manager
+    Coref reject: S375 -> cloud-controller-manager
+    Coref reject: S376 -> cloud-controller-manager
+    Coref reject: S377 -> cloud-controller-manager
+    Coref reject: S377 -> cloud-controller-manager
+    Coref reject: S378 -> cloud-controller-manager
+    Coref reject: S378 -> cloud-controller-manager
+    Coref reject: S379 -> cloud-controller-manager
+    Coref reject: S380 -> cloud-controller-manager
+    Coref reject: S405 -> Container runtime
+    Coref reject: S480 -> kube-apiserver
+    Coref reject: S488 -> kube-apiserver
+    Coref reject: S495 -> kubelet
+    Coref reject: S496 -> kubelet
+    Coref reject: S497 -> kubelet
+    Coref reject: S498 -> kubelet
+    Coref reject: S499 -> kubelet
+    Coref reject: S500 -> kubelet
+    Coref reject: S503 -> kubelet
+    Coref reject: S504 -> kubelet
+    Coref reject: S508 -> kubelet
+    Coref reject: S511 -> kubelet
+    Coref reject: S517 -> kubelet
+    Coref reject: S519 -> kubelet
+    Coref reject: S522 -> kubelet
+    Coref reject: S532 -> kube-apiserver
+    Coref reject: S536 -> kube-apiserver
+    Coref reject: S540 -> kube-apiserver
+    Coref reject: S540 -> kube-apiserver
+    Coref reject: S541 -> kube-apiserver
+    Coref reject: S542 -> kube-apiserver
+    Coref reject: S543 -> kube-apiserver
+    Coref reject: S544 -> kube-apiserver
+    Coref reject: S551 -> kube-apiserver
+    Coref reject: S551 -> kube-apiserver
+    Coref reject: S551 -> kube-apiserver
+    Coref reject: S553 -> kube-apiserver
+    Coref reject: S553 -> kube-apiserver
+    Coref reject: S553 -> kube-apiserver
+    Coref reject: S554 -> kube-apiserver
+    Coref reject: S555 -> kube-apiserver
+    Coref reject: S556 -> kube-apiserver
+    Coref reject: S556 -> kube-apiserver
+    Coref reject: S556 -> kube-apiserver
+    Coref reject: S556 -> kube-apiserver
+    Coref reject: S557 -> kube-apiserver
+    Coref reject: S557 -> kube-apiserver
+    Coref reject: S558 -> kube-apiserver
+    Coref reject: S558 -> kube-apiserver
+    Coref reject: S559 -> kube-apiserver
+    Coref reject: S559 -> kube-apiserver
+    Coref reject: S559 -> kube-apiserver
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/oss_scale_k8s_terra_r3_20260904/llm_logs/s_linker110_openai_sentences_20260904_234048.json
+  LLM call trace saved: ../results/oss_scale_k8s_terra_r3_20260904/llm_logs/s_linker110_openai_sentences_20260904_234048_calls.json (92 calls)
+
+Final: 469 links (205.2s, 92 LLM calls)
+  s_linker110: P=3.2% R=68.2% F1=6.1% F2=13.5% TP=15 FP=454 FN=7 (205s)
+    Sources: {'full_name': 176, 'partial_name': 290, 'coreference': 3}
+    FP by source: {'partial_name': 285, 'full_name': 167, 'coreference': 2}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker110        
+-----------------+----------------------------
+k8s_arch         | F1 6.1% F2 13.5% FP 454
+-----------------+----------------------------
+Macro avg        | F1 6.1% F2 13.5% FP 454
+Pooled           | F1 6.1% F2 13.5% FP 454
+
+Results saved to ../results/oss_scale_k8s_terra_r3_20260904/ablation_20260904_234048.json

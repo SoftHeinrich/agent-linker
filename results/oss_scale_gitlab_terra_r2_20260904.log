@@ -1,0 +1,113 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: gitlab_arch
+Variants: s_linker110
+========================================================================================================================
+
+========================================================================================================================
+DATASET: gitlab_arch
+========================================================================================================================
+  Components: 37, Sentences: 213
+  Gold links: 73, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker110 ---
+SLinker110 (full-name scan -> partial-name scan -> coreference; fixed order, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+Loaded 37 components, 213 sentences
+
+[Knowledge] Document aliases
+    Alias: Alert manager -> Alertmanager
+    Alias: GitLab AI Gateway -> AI Gateway
+    Alias: Geo -> GitLab Geo
+    Alias: registry -> Registry
+    Alias: GitLab CI Multi Runner -> GitLab Runner
+    Alias: postgres_exporter -> PostgreSQL Exporter
+    Alias: Postgres -> PostgreSQL
+    Alias: Workhorse -> GitLab Workhorse
+  Checkpoint: knowledge saved
+
+[Linker] full_name
+    Extracted: 121 (scan, 0 calls)
+  Checkpoint: linker_full_name saved
+
+[Linker] partial_name
+    Partial-name scan refused 89 (word written only inside another component's name)
+  Checkpoint: linker_partial_name saved
+
+[Linker] coreference
+    Coref reject: S16 -> Puma
+    Coref reject: S17 -> Puma
+    Coref reject: S19 -> GitLab Workhorse
+    Coref reject: S22 -> Puma
+    Coref reject: S60 -> Alertmanager
+    Coref reject: S60 -> Alertmanager
+    Coref reject: S64 -> AI Gateway
+    Coref reject: S66 -> GitLab Duo Workflow Service
+    Coref reject: S68 -> GitLab Duo Workflow Service
+    Coref reject: S74 -> Gitaly
+    Coref reject: S77 -> GitLab Geo
+    Coref reject: S79 -> GitLab Exporter
+    Coref reject: S87 -> GitLab Runner
+    Coref reject: S101 -> Object storage
+    Coref reject: S102 -> Object storage
+    Coref reject: S102 -> Object storage
+    Coref reject: S107 -> PostgreSQL
+    Coref reject: S108 -> Prometheus
+    Coref reject: S108 -> PgBouncer
+    Coref reject: S109 -> PgBouncer Exporter
+    Coref reject: S110 -> PostgreSQL
+    Coref reject: S121 -> Registry
+    Coref reject: S123 -> Registry
+    Coref reject: S126 -> Sentry
+    Coref reject: S131 -> Puma
+    Coref reject: S139 -> Puma
+    Coref reject: S145 -> NGINX
+    Coref reject: S155 -> GitLab Shell
+    Coref reject: S157 -> GitLab Shell
+    Coref reject: S158 -> GitLab Shell
+    Coref reject: S160 -> GitLab Shell
+    Coref reject: S166 -> GitLab Shell
+    Coref reject: S169 -> GitLab Shell
+    Coref reject: S171 -> Puma
+    Coref reject: S172 -> Puma
+    Coref reject: S172 -> Puma
+    Coref reject: S174 -> GitLab Shell
+    Coref reject: S176 -> Puma
+    Coref reject: S176 -> Sidekiq
+    Coref reject: S177 -> Redis
+    Coref reject: S179 -> Puma
+    Coref reject: S179 -> Sidekiq
+    Coref reject: S180 -> Sidekiq
+    Coref reject: S180 -> Puma
+    Coref reject: S180 -> Puma
+    Coref reject: S187 -> Redis
+    Coref reject: S191 -> Puma
+    Coref reject: S193 -> GitLab Shell
+    Coref reject: S196 -> Gitaly
+    Coref reject: S196 -> Redis
+    Coref reject: S196 -> PostgreSQL
+    Coref reject: S196 -> Consul
+    Coref reject: S199 -> PostgreSQL
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/oss_scale_gitlab_terra_r2_20260904/llm_logs/s_linker110_openai_sentences_20260904_233542.json
+  LLM call trace saved: ../results/oss_scale_gitlab_terra_r2_20260904/llm_logs/s_linker110_openai_sentences_20260904_233542_calls.json (60 calls)
+
+Final: 516 links (164.1s, 60 LLM calls)
+  s_linker110: P=9.9% R=69.9% F1=17.3% F2=31.6% TP=51 FP=465 FN=22 (164s)
+    Sources: {'full_name': 117, 'partial_name': 389, 'coreference': 10}
+    FP by source: {'partial_name': 388, 'full_name': 77}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker110        
+-----------------+----------------------------
+gitlab_arch      | F1 17.3% F2 31.6% FP 465
+-----------------+----------------------------
+Macro avg        | F1 17.3% F2 31.6% FP 465
+Pooled           | F1 17.3% F2 31.6% FP 465
+
+Results saved to ../results/oss_scale_gitlab_terra_r2_20260904/ablation_20260904_233542.json
