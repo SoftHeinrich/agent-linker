@@ -400,9 +400,12 @@ def write_out02_concentration():
         # 10 column pairs buys back ~20pt -- more than the new column costs, so
         # the float stays at least as narrow as the last overfull-free build.
         "\\begin{table}[t]", "\\centering\\footnotesize\\setlength{\\tabcolsep}{2pt}",
+        # "to one of the $K$ components" is load-bearing, not padding: on Teammates
+        # 92 sentences carry a gold link but 91 reach a scored component, so the
+        # looser wording would misreport that row.
         "\\caption{The ardoco-benchmark statistics. \\emph{Sent.} counts the sentences of "
         "the architecture documentation and \\emph{Sent.$_g$} those carrying at least one "
-        "gold doc-code link; $K$ is the number of components the size-aware suite scores.}",
+        "gold doc-code link to one of the $K$ components the size-aware suite scores.}",
         "\\label{tab:gold_concentration}",
         "\\begin{tabular}{lrrrrrrrrr}", "\\toprule",
         "\\textbf{Project} & \\textbf{Sent.} & \\textbf{Sent.$_g$} & "
