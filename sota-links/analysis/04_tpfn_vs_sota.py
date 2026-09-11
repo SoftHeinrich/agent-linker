@@ -446,3 +446,169 @@ with open(args.out + "_goldlinks.csv", "w", newline="") as fh:
         w.writerow([r["proj"], r["sid"], r["tid"], r["name"], r["form"], r["ev"],
                     int(r["ours"]), int(r["artemis"]), int(r["swattr"]), srcof(r), r["sent"]])
 print(f"\n[written] {args.out}.txt   {args.out}_goldlinks.csv")
+
+# ── 9. unified failure-mode taxonomy: every error, FN side and FP side ───────
+# One rule set, applied to all systems and to our own ablation arms. Modes are
+# assigned in the listed priority order, so each error lands in exactly one.
+MODES = ["M1 sibling confusion", "M2 code identifier", "M3 ordinary vocabulary",
+         "M4 topic drift", "M5 wrong antecedent", "M6 unanchored invention",
+         "M7 non-architectural mention", "M8 partial-name reach",
+         "M9 coreference reach", "M10 renaming reach", "M11 plain name miss"]
+MODE_DOC = {
+    "M1 sibling confusion":       "two components share a name word; the system took the other one (always an FN and an FP together)",
+    "M2 code identifier":         "the name occurs only inside a dotted/hyphenated identifier (logic.api, bbb-html5, akka-apps)",
+    "M3 ordinary vocabulary":     "a one-word name used in lower case as ordinary English ('the core logic of the system')",
+    "M4 topic drift":             "FP: no name word, but the component was a TP within the 3 preceding sentences -> topic assumed to continue",
+    "M5 wrong antecedent":        "FP: no name word; the name is in the 3-sentence context, so a reference was resolved to the wrong component",
+    "M6 unanchored invention":    "FP: no name word in the sentence or its context and no recent TP",
+    "M7 non-architectural mention": "FP: the name really is written here, but the gold does not count this mention as a link",
+    "M8 partial-name reach":      "FN: the sentence writes part of a multi-word name and the system never reached it",
+    "M9 coreference reach":       "FN: the sentence writes no name word; the name is in the 3-sentence context",
+    "M10 renaming reach":         "FN: no name word in the sentence or its context (the document uses its own term)",
+    "M11 plain name miss":        "FN: the sentence writes the name in full and the system still did not link it",
+}
+
+
+def _idspans(st):
+    return [(m.start(), m.end()) for m in re.finditer(r"\b[a-zA-Z][\w]*(?:[.\-][\w]+)+\b", st)]
+
+
+def only_in_identifier(name, st):
+    spans, low, hit = _idspans(st), st.lower(), False
+    for t in C.camel_tokens(name):
+        occ = [m.start() for m in re.finditer(r"\b" + re.escape(t), low)]
+        if not occ:
+            continue
+        hit = True
+        for pos in occ:
+            if not any(a <= pos < b for a, b in spans):
+                return False
+    return hit
+
+
+def lowercase_only(name, st):
+    tk = C.camel_tokens(name)
+    if len(tk) != 1:
+        return False
+    occ = re.findall(r"\b" + re.escape(tk[0]) + r"\w*\b", st, re.I)
+    return bool(occ) and all(o[0].islower() for o in occ)
+
+
+def classify_errors(predby):
+    """predby: project -> link set. Returns (fn_by_mode, fp_by_mode) of example lists."""
+    fn, fp = defaultdict(list), defaultdict(list)
+    for proj in P:
+        g, n2, sents = GOLD[proj], C.id_to_name(proj), C.sentences(proj)
+        pred = predby[proj]
+        gbys, pbys = defaultdict(set), defaultdict(set)
+        for s, t in g:
+            gbys[s].add(t)
+        for s, t in pred:
+            pbys[s].add(t)
+        recent = defaultdict(list)
+        for s, t in pred & g:
+            recent[t].append(s)
+        tks = lambda t: set(C.camel_tokens(n2.get(t, t)))
+        for (sid, tid) in sorted(g - pred):                       # ---- misses
+            nm, st = n2.get(tid, tid), sents.get(sid, "")
+            surf = C.lexical_class(nm, st)[0]
+            if [x for x in pbys[sid] if x not in gbys[sid] and tks(x) & tks(tid)]:
+                m = "M1 sibling confusion"
+            elif only_in_identifier(nm, st):
+                m = "M2 code identifier"
+            elif lowercase_only(nm, st):
+                m = "M3 ordinary vocabulary"
+            elif surf == "LEXICAL-partial":
+                m = "M8 partial-name reach"
+            elif surf == "SEMANTIC-none":
+                m = ("M9 coreference reach"
+                     if C.lexical_class(nm, _ctx(sents, sid))[0] != "SEMANTIC-none"
+                     else "M10 renaming reach")
+            else:
+                m = "M11 plain name miss"
+            fn[m].append((proj, sid, nm, st[:88]))
+        for (sid, tid) in sorted(pred - g):                       # ---- spurious
+            nm, st = n2.get(tid, tid), sents.get(sid, "")
+            surf = C.lexical_class(nm, st)[0]
+            if [x for x in gbys[sid] if x not in pbys[sid] and tks(x) & tks(tid)]:
+                m = "M1 sibling confusion"
+            elif only_in_identifier(nm, st):
+                m = "M2 code identifier"
+            elif lowercase_only(nm, st):
+                m = "M3 ordinary vocabulary"
+            elif surf != "SEMANTIC-none":
+                m = "M7 non-architectural mention"
+            elif any(0 < sid - ps <= 3 for ps in recent.get(tid, [])):
+                m = "M4 topic drift"
+            elif C.lexical_class(nm, _ctx(sents, sid))[0] != "SEMANTIC-none":
+                m = "M5 wrong antecedent"
+            else:
+                m = "M6 unanchored invention"
+            fp[m].append((proj, sid, nm, st[:88]))
+    return fn, fp
+
+
+out()
+out("=" * 100)
+out("9. UNIFIED FAILURE-MODE TAXONOMY  (every FN and every FP, one rule set, one mode each)")
+out("=" * 100)
+for m in MODES:
+    out(f"   {m:30} {MODE_DOC[m]}")
+out()
+ERR = {s: classify_errors(SYS[s]) for s in SYSTEMS}
+out(f"   {'failure mode':30}" + "".join(f"{s + ' FN/FP (sum)':>24}" for s in SYSTEMS))
+for m in MODES:
+    line = f"   {m:30}"
+    for s in SYSTEMS:
+        fn, fp = ERR[s]
+        line += f"{len(fn[m]):11d} /{len(fp[m]):<4d}({len(fn[m]) + len(fp[m]):3d}) "
+    out(line)
+line = f"   {'TOTAL ERRORS':30}"
+for s in SYSTEMS:
+    fn, fp = ERR[s]
+    a, b = sum(map(len, fn.values())), sum(map(len, fp.values()))
+    line += f"{a:11d} /{b:<4d}({a + b:3d}) "
+out(line)
+out("   NOTE M1 is reach-conditional: a system can only confuse two siblings on a sentence where it")
+out("        proposed one of them. A system that reaches neither scores 0 on M1 and pays under M2/M8.")
+
+out()
+out("9b. the same taxonomy on our own ablation arms -- which design decision suppresses which mode")
+arms_cached = {nm: mk() for nm, mk in ARMS.items()}
+usable = {nm: a for nm, a in arms_cached.items() if any(a[p_] for p_ in P)}
+out(f"   {'failure mode':30}" + "".join(f"{nm + ' FN/FP':>22}" for nm in usable))
+AERR = {nm: classify_errors(a) for nm, a in usable.items()}
+for m in MODES:
+    line = f"   {m:30}"
+    for nm in usable:
+        fn, fp = AERR[nm]
+        line += f"{len(fn[m]):13d} /{len(fp[m]):<7d}"
+    out(line)
+line = f"   {'TOTAL ERRORS':30}"
+for nm in usable:
+    fn, fp = AERR[nm]
+    line += f"{sum(map(len, fn.values())):13d} /{sum(map(len, fp.values())):<7d}"
+out(line)
+
+out()
+out("9c. examples per mode and system (up to 4 each)")
+for m in MODES:
+    out(f"\n   -- {m}")
+    for s in SYSTEMS:
+        fn, fp = ERR[s]
+        for side, lst in (("FN", fn[m]), ("FP", fp[m])):
+            for (proj, sid, nm, st) in lst[:4]:
+                out(f"      {s:8} {side} {proj:14} s{sid:<4} {nm:<22} \"{st}\"")
+
+with open(args.out + ".txt", "w") as fh:
+    fh.write("\n".join(O) + "\n")
+with open(args.out + "_errors.csv", "w", newline="") as fh:
+    w = csv.writer(fh)
+    w.writerow(["system", "side", "failure_mode", "project", "sentence_id", "component", "sentence"])
+    for s in SYSTEMS:
+        fn, fp = ERR[s]
+        for side, d in (("FN", fn), ("FP", fp)):
+            for m in MODES:
+                for (proj, sid, nm, st) in d[m]:
+                    w.writerow([s, side, m, proj, sid, nm, st])
+print(f"[written] {args.out}_errors.csv")

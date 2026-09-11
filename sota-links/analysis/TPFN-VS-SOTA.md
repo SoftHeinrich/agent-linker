@@ -140,6 +140,96 @@ two components is two independent cases.
 
 ---
 
+## 3b. One taxonomy over both sides: every FP and every FN, one mode each
+
+§2 read the FN side by reference form and §3 read the FP side by error signature.
+They are the same phenomena seen from two directions, so the script also assigns
+**every** error — miss and over-fire alike — to exactly one of eleven modes under
+one priority-ordered rule set, applied identically to all three systems
+(`tpfn_vs_sota_errors.csv` holds all 202 errors).
+
+| failure mode | what it is | ours FN/FP | ArTEMiS FN/FP | SWATTR FN/FP |
+|---|---|---|---|---|
+| **M1 sibling confusion** | two components share a name word; the system took the other one — always a miss *and* an over-fire on the same sentence | **2/2 (4)** | 0/0 (0) | 0/0 (0) |
+| **M2 code identifier** | the name occurs only inside a dotted/hyphenated identifier (`logic.api`, `bbb-html5`, `akka-apps`) | 3/3 (6) | **1/0 (1)** | 3/23 (**26**) |
+| **M3 ordinary vocabulary** | a one-word name used in lower case as ordinary English ("the core logic of the system") | **2/2 (4)** | 5/1 (6) | 0/8 (8) |
+| **M4 topic drift** | no name word, but the component was a TP ≤3 sentences earlier → topic assumed to continue | 0/2 (2) | 0/17 (**17**) | 0/1 (1) |
+| **M5 wrong antecedent** | a reference was resolved, to the wrong component | 0/1 (1) | 0/1 (1) | 0/0 (0) |
+| **M6 unanchored invention** | no name word in the sentence or its context, and no recent TP | 0/4 (4) | 0/10 (10) | 0/0 (0) |
+| **M7 non-architectural mention** | the name really is written here; the gold does not count this mention | 0/10 (10) | 0/15 (15) | 0/8 (8) |
+| **M8 partial-name reach** | part of a multi-word name is written; never reached | 1/0 (1) | 17/0 (17) | 19/0 (**19**) |
+| **M9 coreference reach** | no name word; the name is in the 3-sentence context | 1/0 (1) | 7/0 (7) | 18/0 (**18**) |
+| **M10 renaming reach** | no name word in the sentence or its context | 0/0 (0) | 1/0 (1) | 6/0 (6) |
+| **M11 plain name miss** | the name is written in full and still not linked | 0/0 (0) | 7/0 (7) | 1/0 (1) |
+| **TOTAL** | | **9/24 = 33** | 38/44 = **82** | 47/40 = **87** |
+
+*M1 is reach-conditional: you can only confuse two siblings on a sentence where you
+proposed one of them. A system that reaches neither scores 0 on M1 and pays under
+M2/M8 instead — which is exactly what SWATTR does on the same three sentences.*
+
+Read across the rows, the three systems are three different machines:
+
+- **SWATTR's budget is 45/87 in two modes** — M2 (26) and M8+M9+M10 (43). It fires
+  iff the string is present, so it over-fires on identifiers and package inventories
+  and cannot reach anything that is not a literal name. It has **zero** M4/M6: a
+  matcher cannot drift and cannot invent.
+- **ArTEMiS's budget is 44/82 in the generative modes** — M4 drift (17), M6
+  invention (10), M7 (15) — plus 25 reach failures it should not have (M8 17, M11 7:
+  a sampled recogniser silently drops names that are written in full).
+- **Ours is 33 total, and no single mode exceeds 10.** The largest is M7, the bucket
+  where the document really does name the component and the gold declines to count
+  the mention; that is a disagreement with the gold's linking definition rather than
+  a mechanism failure.
+
+Two modes are worth reading as *policy dials* rather than defects, because they have
+an FN face and an FP face that trade directly against each other:
+
+| | no filter | calibrated | over-strict |
+|---|---|---|---|
+| **M3 ordinary vocabulary** | SWATTR 0 FN / 8 FP | **ours 2 FN / 2 FP** | ArTEMiS 5 FN / 1 FP |
+| **M2 code identifier** | SWATTR 3 FN / 23 FP | ours 3 FN / 3 FP | **ArTEMiS 1 FN / 0 FP** |
+
+On M3 we sit on the efficient point of that dial; on M2 we do not — ArTEMiS carries
+one error to our six. M2 is where our remaining headroom is, and §5 shows why: the
+same joined-identifier rule that turns SWATTR's 23 FPs into 3 also costs us the
+`akka-apps` and `bbb-web` links, and the `bbb-html5` alias mis-assignment adds M1's
+four errors on top.
+
+### The same taxonomy on our own ablations
+
+| failure mode | Full | − knowledge | − decomposition | − evidence |
+|---|---|---|---|---|
+| M1 sibling confusion | 2/2 | **0/0** | 2/2 | 2/2 |
+| M2 code identifier | 3/3 | 6/2 | 2/5 | 4/5 |
+| M3 ordinary vocabulary | 2/2 | 4/1 | 2/0 | 0/1 |
+| M4 topic drift | 0/2 | 0/1 | 0/**12** | 0/1 |
+| M5 wrong antecedent | 0/1 | 0/0 | 0/2 | 0/1 |
+| M6 unanchored invention | 0/4 | 0/0 | 0/7 | 0/3 |
+| M7 non-architectural mention | 0/10 | 0/13 | 0/**19** | 0/12 |
+| M8 partial-name reach | 1/0 | 5/0 | **17**/0 | 3/0 |
+| M9 coreference reach | 1/0 | 5/0 | 6/0 | 2/0 |
+| M10 renaming reach | 0/0 | **5**/0 | 1/0 | 0/0 |
+| M11 plain name miss | 0/0 | **8**/0 | 2/0 | 2/0 |
+| **TOTAL** | **9/24 = 33** | 33/17 = 50 | 32/47 = **79** | 13/25 = 38 |
+
+Each decision suppresses a different mode, and removing it reproduces a *baseline's*
+signature rather than degrading uniformly:
+
+- **− knowledge → SWATTR's reach profile.** M10 0→5 and M11 0→8: without the alias
+  table a document-coined name is unreachable, and a name is only "written in full"
+  if the PCM spells it that way. Note M1 falls to 0/0 — the alias table is what
+  creates the sibling-confusion risk it also pays for, so its 4 errors are the price
+  of the 5 renaming/plain-name errors it removes.
+- **− decomposition → ArTEMiS's generative profile.** M8 1→17 and M4 0→12: one
+  monolithic call cannot hold a separate standard of proof for partial names, and
+  without per-linker evidence it starts carrying a topic across sentences. Total
+  errors 33 → 79.
+- **− evidence → a milder version of the same.** M7 10→12, M8 1→3, M2 6→9: the
+  judge without a bundle rules on the link rather than on what the linker can show.
+
+
+---
+
 ## 4. Where our recall actually comes from — mechanism × reference form
 
 The `source` column of every recovered link names the linker that proposed it.
@@ -224,22 +314,34 @@ other (§4).
 
 **Which failure modes did we address?**
 
-| failure mode | who suffers it | evidence | our answer |
-|---|---|---|---|
-| Cannot reach a partial mention ("each client") | SWATTR 7/29, ArTEMiS 12/29 | §2 | partial-name linker + target-blind denotation judge (17/25 of ours) |
-| Cannot reach a coreferent mention ("It contains minimal logic …") | SWATTR **1/19** | §2 | coreference linker with a committed antecedent (12/18 of ours) |
-| Vocabulary problem — the document renames the component | SWATTR 1/7 | §2; − knowledge arm 7→2 | confirmed alias table, scanned over every sentence |
-| Over-firing on code identifiers (`logic.api`, `storage.entity`) | SWATTR 27/40 FPs | §3 | joined/dotted-identifier rule in the judge (costs us 1 TP) |
-| Over-firing on ordinary English words that happen to be names | SWATTR 33/40 FPs are lexical over-firing vs our 8/24 | §3 | capitalisation-aware generic-word rule (costs us 2 TP) |
-| Topic drift — an entity propagated over a run of sentences | ArTEMiS 17/44 FPs | §3 | every candidate carries evidence matched **in its own sentence**; ours 2/24 |
-| One entity per mention region | ArTEMiS 65 % on 2-target sentences | §3 | three linkers propose independently, merge by pair |
-| Whole components silently unlinked | SWATTR 2/40, ArTEMiS 1/40 | §3 | 0/40 |
-| Run-to-run instability | ArTEMiS spread 13 TP per run, 26 union−∩ | §1 | spread 1 per run, 7 union−∩ |
+Counted as total errors (FN + FP), on both sides at once:
+
+| failure mode | ours | ArTEMiS | SWATTR | our answer | what it costs us |
+|---|---|---|---|---|---|
+| M8 partial-name reach | **1** | 17 | 19 | partial-name linker + target-blind denotation judge | — |
+| M9 coreference reach | **1** | 7 | 18 | coreference linker with a committed antecedent | — |
+| M10 renaming reach | **0** | 1 | 6 | confirmed alias table, scanned over every sentence | enables M1 (4) |
+| M11 plain name miss | **0** | 7 | 1 | a deterministic scan proposes exact names; no sampled recogniser | — |
+| M4 topic drift | **2** | 17 | 1 | evidence matched **in the candidate's own sentence**, not carried | — |
+| M6 unanchored invention | 4 | 10 | **0** | evidence-backed judge must be handed a bundle | — |
+| M2 code identifier | 6 | **1** | 26 | joined/dotted-identifier rule in the judge | 3 FN (`akka-apps`, `bbb-web`, `bbb-html5`) |
+| M3 ordinary vocabulary | **4** | 6 | 8 | capitalisation-aware generic-word rule | 2 FN (`Logic` ×2) |
+| M7 non-architectural mention | 10 | 15 | **8** | (gold-definition disagreement, not a mechanism) | — |
+| M1 sibling confusion | 4 | **0** | **0** | nesting refusal guards *within* a sentence, not the alias table | 2 FN + 2 FP (`bbb-html5`) |
+| M5 wrong antecedent | 1 | 1 | **0** | resolver must report and commit to an antecedent sentence | — |
+| **total** | **33** | 82 | 87 | | |
+
+Two non-error axes behave the same way: ArTEMiS recovers 65 % of links on
+two-target sentences against our 96 % (one entity per mention region vs. three
+linkers proposing independently), and its per-run TP spread is 13 (union − ∩ = 26)
+against our 1 (7). SWATTR leaves 2/40 components and ArTEMiS 1/40 entirely
+unlinked; we leave 0/40.
 
 ---
 
 ### Files
 
 - `04_tpfn_vs_sota.py` — regenerates everything above
-- `tpfn_vs_sota.txt` — full printed report (sections 1–8)
+- `tpfn_vs_sota.txt` — full printed report (sections 1–9)
+- `tpfn_vs_sota_errors.csv` — all 202 errors (FN and FP, all three systems) with their failure mode
 - `tpfn_vs_sota_goldlinks.csv` — all 195 gold links with reference form, per-system hit/miss, and the linker that proposed ours

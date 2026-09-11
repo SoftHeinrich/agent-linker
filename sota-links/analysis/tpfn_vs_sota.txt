@@ -178,3 +178,161 @@ swattr       40     39 ( 98%)       1 (  2%)        0 (  0%)     27 ( 68%)   1 (
      bigbluebutton  s21   HTML5 Server   F2 partial-name  terra=nnn luna=YYY
      bigbluebutton  s26   Apps           F1 exact-name    terra=nYn luna=YYY
      bigbluebutton  s78   BBB web        F1 exact-name    terra=nYn luna=YYY
+
+====================================================================================================
+9. UNIFIED FAILURE-MODE TAXONOMY  (every FN and every FP, one rule set, one mode each)
+====================================================================================================
+   M1 sibling confusion           two components share a name word; the system took the other one (always an FN and an FP together)
+   M2 code identifier             the name occurs only inside a dotted/hyphenated identifier (logic.api, bbb-html5, akka-apps)
+   M3 ordinary vocabulary         a one-word name used in lower case as ordinary English ('the core logic of the system')
+   M4 topic drift                 FP: no name word, but the component was a TP within the 3 preceding sentences -> topic assumed to continue
+   M5 wrong antecedent            FP: no name word; the name is in the 3-sentence context, so a reference was resolved to the wrong component
+   M6 unanchored invention        FP: no name word in the sentence or its context and no recent TP
+   M7 non-architectural mention   FP: the name really is written here, but the gold does not count this mention as a link
+   M8 partial-name reach          FN: the sentence writes part of a multi-word name and the system never reached it
+   M9 coreference reach           FN: the sentence writes no name word; the name is in the 3-sentence context
+   M10 renaming reach             FN: no name word in the sentence or its context (the document uses its own term)
+   M11 plain name miss            FN: the sentence writes the name in full and the system still did not link it
+
+   failure mode                          ours FN/FP (sum)     artemis FN/FP (sum)      swattr FN/FP (sum)
+   M1 sibling confusion                    2 /2   (  4)           0 /0   (  0)           0 /0   (  0) 
+   M2 code identifier                      3 /3   (  6)           1 /0   (  1)           3 /23  ( 26) 
+   M3 ordinary vocabulary                  2 /2   (  4)           5 /1   (  6)           0 /8   (  8) 
+   M4 topic drift                          0 /2   (  2)           0 /17  ( 17)           0 /1   (  1) 
+   M5 wrong antecedent                     0 /1   (  1)           0 /1   (  1)           0 /0   (  0) 
+   M6 unanchored invention                 0 /4   (  4)           0 /10  ( 10)           0 /0   (  0) 
+   M7 non-architectural mention            0 /10  ( 10)           0 /15  ( 15)           0 /8   (  8) 
+   M8 partial-name reach                   1 /0   (  1)          17 /0   ( 17)          19 /0   ( 19) 
+   M9 coreference reach                    1 /0   (  1)           7 /0   (  7)          18 /0   ( 18) 
+   M10 renaming reach                      0 /0   (  0)           1 /0   (  1)           6 /0   (  6) 
+   M11 plain name miss                     0 /0   (  0)           7 /0   (  7)           1 /0   (  1) 
+   TOTAL ERRORS                            9 /24  ( 33)          38 /44  ( 82)          47 /40  ( 87) 
+   NOTE M1 is reach-conditional: a system can only confuse two siblings on a sentence where it
+        proposed one of them. A system that reaches neither scores 0 on M1 and pays under M2/M8.
+
+9b. the same taxonomy on our own ablation arms -- which design decision suppresses which mode
+   failure mode                       Full (s110) FN/FP      -knowledge FN/FP  -decomposition FN/FP       -evidence FN/FP
+   M1 sibling confusion                      2 /2                  0 /0                  2 /2                  2 /2      
+   M2 code identifier                        3 /3                  6 /2                  2 /5                  4 /5      
+   M3 ordinary vocabulary                    2 /2                  4 /1                  2 /0                  0 /1      
+   M4 topic drift                            0 /2                  0 /1                  0 /12                 0 /1      
+   M5 wrong antecedent                       0 /1                  0 /0                  0 /2                  0 /1      
+   M6 unanchored invention                   0 /4                  0 /0                  0 /7                  0 /3      
+   M7 non-architectural mention              0 /10                 0 /13                 0 /19                 0 /12     
+   M8 partial-name reach                     1 /0                  5 /0                 17 /0                  3 /0      
+   M9 coreference reach                      1 /0                  5 /0                  6 /0                  2 /0      
+   M10 renaming reach                        0 /0                  5 /0                  1 /0                  0 /0      
+   M11 plain name miss                       0 /0                  8 /0                  2 /0                  2 /0      
+   TOTAL ERRORS                              9 /24                33 /17                32 /47                13 /25     
+
+9c. examples per mode and system (up to 4 each)
+
+   -- M1 sibling confusion
+      ours     FN bigbluebutton  s20   HTML5 Server           "This means that bbb-html5 could use multiple CPU cores for processing messages and handl"
+      ours     FN bigbluebutton  s21   HTML5 Server           "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value i"
+      ours     FP bigbluebutton  s20   HTML5 Client           "This means that bbb-html5 could use multiple CPU cores for processing messages and handl"
+      ours     FP bigbluebutton  s21   HTML5 Client           "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value i"
+
+   -- M2 code identifier
+      ours     FN bigbluebutton  s19   HTML5 Server           "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple"
+      ours     FN bigbluebutton  s26   Apps                   "Frontends receive other DDP events including method calls to send events to akka-apps."
+      ours     FN bigbluebutton  s78   BBB web                "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+      ours     FP teammates      s125  Storage                "Classes in the storage.entity package are not visible outside this component to hide inf"
+      ours     FP teammates      s131  Storage                "storage.api provides the API of the component to be accessed by the logic component."
+      ours     FP teammates      s169  Test Driver            "Package overview contains test.driver, test.cases and subpackages."
+      artemis  FN bigbluebutton  s70   WebRTC-SFU             "The WebRTC-SFU acts as the media controller handling negotiations and to manage the medi"
+      swattr   FN bigbluebutton  s19   HTML5 Server           "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple"
+      swattr   FN bigbluebutton  s20   HTML5 Server           "This means that bbb-html5 could use multiple CPU cores for processing messages and handl"
+      swattr   FN bigbluebutton  s21   HTML5 Server           "As of 2.3-alpha-7, bbb-html5 uses 2 "frontend" and two "backend" processes (this value i"
+      swattr   FP teammates      s4    Client                 "The UI Browser seen by users consists of Web pages containing HTML, CSS for styling and "
+      swattr   FP teammates      s22   UI                     "logic, ui.website, ui.controller represent an application of Model-View-Controller patte"
+      swattr   FP teammates      s23   UI                     "ui.website is not a real package."
+      swattr   FP teammates      s26   UI                     "ui.website is not a Java package."
+
+   -- M3 ordinary vocabulary
+      ours     FN teammates      s7    Logic                  "In the UI Server the entry point for the application back end logic is designed as a RES"
+      ours     FN teammates      s8    Logic                  "The main logic of the application is in POJOs (Plain Old Java Objects)."
+      ours     FP teammates      s22   Logic                  "logic, ui.website, ui.controller represent an application of Model-View-Controller patte"
+      ours     FP teammates      s196  Client                 "client.util contains helpers needed for client scripts."
+      artemis  FN teammates      s7    Logic                  "In the UI Server the entry point for the application back end logic is designed as a RES"
+      artemis  FN teammates      s8    Logic                  "The main logic of the application is in POJOs (Plain Old Java Objects)."
+      artemis  FN teammates      s9    Storage                "The storage layer of the application uses the persistence framework provided by GAE Data"
+      artemis  FN teammates      s131  Logic                  "storage.api provides the API of the component to be accessed by the logic component."
+      artemis  FP jabref         s7    preferences            "Only the gui knows the user and his preferences and can interact with him to help him so"
+      swattr   FP teammates      s22   Logic                  "logic, ui.website, ui.controller represent an application of Model-View-Controller patte"
+      swattr   FP teammates      s79   Logic                  "Managing relationships between entities, e.g. cascade logic for create/update/delete."
+      swattr   FP teammates      s86   Logic                  "logic.core contains the core logic of the system."
+      swattr   FP teammates      s117  Logic                  "Refer to the API for the cascade logic."
+
+   -- M4 topic drift
+      ours     FP mediastore     s27   DB                     "The MediaAccess component encapsulates database access for meta-data of audio files."
+      ours     FP bigbluebutton  s74   WebRTC-SFU             "WebRTC provides the user with high-quality audio with lower delay."
+      artemis  FP mediastore     s21   Reencoding             "This can result in reduction of file sizes."
+      artemis  FP teastore       s4    WebUI                  "Data is retrieved from the PersistenceProvider and product recommendations from the Reco"
+      artemis  FP teastore       s9    WebUI                  "The status view lists the instance count and hosts for all registered service instances."
+      artemis  FP teastore       s19   Auth                   "Passwords are hashed using BCrypt."
+      swattr   FP bigbluebutton  s74   WebRTC-SFU             "WebRTC provides the user with high-quality audio with lower delay."
+
+   -- M5 wrong antecedent
+      ours     FP teammates      s24   UI                     "It is a conceptual package representing the front-end of the application."
+      artemis  FP bigbluebutton  s78   Presentation Conversion "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+
+   -- M6 unanchored invention
+      ours     FP teammates      s50   UI                     "Sixth, WebApiServlet sends the result back to the browser which will then process it on "
+      ours     FP teammates      s182  UI                     "Front-end files (particularly TypeScript) are tested separately with Jest."
+      ours     FP teammates      s197  Logic                  "client.remoteapi classes needed to connect to the back end directly."
+      ours     FP teammates      s198  Logic                  "client.scripts scripts that deal with the back end data for administrative purposes."
+      artemis  FP mediastore     s16   AudioWatermarking      "The re-encoded files are then digitally and individually watermarked by the TagWatermark"
+      artemis  FP mediastore     s16   ParallelWatermarking   "The re-encoded files are then digitally and individually watermarked by the TagWatermark"
+      artemis  FP mediastore     s17   ParallelWatermarking   "Afterward, the MediaManagement component forwards these audio files from the TagWatermar"
+      artemis  FP teastore       s32   Recommender            "If the user is known, Slope One as item-based collaborative filtering is applied to calc"
+
+   -- M7 non-architectural mention
+      ours     FP mediastore     s12   DB                     "The UserDBAdapter component queries the database."
+      ours     FP mediastore     s29   DB                     "By contrast, the UserDBAdapter component provides all functions required in order to enc"
+      ours     FP teammates      s144  GAE Datastore          "Implementation of Transaction Control has been minimized due to limitations of GAE envir"
+      ours     FP teammates      s173  Test Driver            "x.testdriver contains component test cases for testing the test driver infrastructure an"
+      artemis  FP mediastore     s17   AudioWatermarking      "Afterward, the MediaManagement component forwards these audio files from the TagWatermar"
+      artemis  FP teastore       s13   ImageProvider          "If the product ID or UI name is found but not in the requested size, the largest image w"
+      artemis  FP teastore       s14   ImageProvider          "The scaled image is stored for later use."
+      artemis  FP teastore       s15   ImageProvider          "If the product ID or UI name and size is found, the image will be loaded and delivered."
+      swattr   FP mediastore     s37   Reencoding             "However, a download can cause re-encoding of the audio file."
+      swattr   FP teammates      s17   E2E                    "Selenium Java is used to automate E2E testing with actual Web browsers."
+      swattr   FP teammates      s173  Test Driver            "x.testdriver contains component test cases for testing the test driver infrastructure an"
+      swattr   FP teammates      s188  E2E                    "e2e.util contains helpers needed for running E2E tests."
+
+   -- M8 partial-name reach
+      ours     FN teammates      s168  Test Driver            "This component automates the testing of TEAMMATES."
+      artemis  FN teammates      s122  GAE Datastore          "Hiding the complexities of datastore from the Logic component."
+      artemis  FN teammates      s138  GAE Datastore          "Add and Delete operations try to wait until data is persisted in the datastore before re"
+      artemis  FN teammates      s141  GAE Datastore          "Eventual consistency here means it takes some time for a database operation to propagate"
+      artemis  FN bigbluebutton  s6    HTML5 Server           "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), fr"
+      swattr   FN mediastore     s33   FileStorage            "By contrast, all audio files are stored in a specific location (e.g., a dedicated file s"
+      swattr   FN mediastore     s35   FileStorage            "Afterwards, based on the user request and the corresponding meta-data, the file will be "
+      swattr   FN mediastore     s36   FileStorage            "When a user uploads a file, it will be stored in the DataStorage without any change."
+      swattr   FN teastore       s8    WebUI                  "The UI provides a status page at link indicating the current state of the TeaStore."
+
+   -- M9 coreference reach
+      ours     FN teastore       s26   Persistence            "As such, it also acts as a caching layer."
+      artemis  FN mediastore     s33   DB                     "By contrast, all audio files are stored in a specific location (e.g., a dedicated file s"
+      artemis  FN teammates      s19   Client                 "It is used for administrative purposes, e.g. migrating data to a new schema."
+      artemis  FN teammates      s78   Logic                  "In particular, it is responsible for the following."
+      artemis  FN teammates      s119  Storage                "It contains minimal logic beyond what is directly relevant to CRUD operations."
+      swattr   FN mediastore     s9    MediaManagement        "Furthermore, it fetches audio files from a specific location (e.g., a dedicated file ser"
+      swattr   FN mediastore     s28   MediaAccess            "Furthermore, it fetches a list of all available audio files."
+      swattr   FN mediastore     s31   DB                     "The Database component then executes the actual query for files."
+      swattr   FN mediastore     s32   DB                     "All salted hashes of passwords are also stored in the Database component."
+
+   -- M10 renaming reach
+      artemis  FN bigbluebutton  s65   WebRTC-SFU             "Users joining through Google Chrome or Mozilla Firefox are able to take advantage of hig"
+      swattr   FN mediastore     s20   Reencoding             "The ReEncoder component converts the bit rates of audio files."
+      swattr   FN mediastore     s23   DB                     "The Database component represents an actual database (e.g., MySQL)."
+      swattr   FN mediastore     s24   DB                     "It stores user information and meta-data of audio files such as the name and the genre."
+      swattr   FN mediastore     s25   DB                     "After the user calls the page to list all available audio files, AudioAccess creates a q"
+
+   -- M11 plain name miss
+      artemis  FN teastore       s10   WebUI                  "The Image Provider delivers images to the WebUI as base64 encoded strings to embed them "
+      artemis  FN teammates      s9    GAE Datastore          "The storage layer of the application uses the persistence framework provided by GAE Data"
+      artemis  FN teammates      s20   Common                 "The Common component contains utility code (data transfer objects, helper classes, etc.)"
+      artemis  FN teammates      s85   UI                     "logic.api provides the API of the component to be accessed by the UI."
+      swattr   FN bigbluebutton  s72   HTML5 Client           "A user can join the voice conference (running in FreeSWITCH) from the BigBlueButton HTML"
