@@ -11,22 +11,30 @@
 \newcommand{\TransArc}{TransArc\xspace}
 \newcommand{\approach}{ArchLinker\xspace}
 \newcommand{\linkerA}{seedlinker\xspace}
-% Linker labels derive from the name-evidence axis: a sentence gives a
-% component's whole name, part of it, or only a reference to it.
-% Execution order is \linkerB -> \linkerD -> \linkerC. The letters are stable
-% identifiers, not the order: \linkerB/\linkerC predate \linkerD, so keeping
-% their meaning leaves every existing call site correct.
-\newcommand{\linkerB}{full-name linker\xspace}
+% Labels derive from the name-evidence axis: a sentence gives a component's whole
+% name, part of it, or only a reference to it. The reported arm has TWO linkers --
+% the \linkerN, which reaches the two written forms, and the \linkerC -- so
+% \linkerB and \linkerD name the two PROPOSERS inside the first, not two linkers.
+% The letters are stable identifiers, not the order: \linkerB/\linkerC predate
+% \linkerD, so keeping their meaning leaves every existing call site correct.
+\newcommand{\linkerN}{name linker\xspace}
+\newcommand{\linkerB}{full-name proposer\xspace}
 \newcommand{\linkerC}{coreference linker\xspace}
-\newcommand{\linkerD}{partial-name linker\xspace}
+\newcommand{\linkerD}{partial-name proposer\xspace}
 \newcommand{\ardoco}{ArDoCo\xspace}
 
-% --- Phase 43 / D-10: RQ3 validator + variant macros (REQ-V263-05) ---
+% --- RQ3 judge + variant macros ---
+% One judge per linker: the \nameValidator reads both written forms under one rule,
+% the \corefValidator reads the resolver's commitments. \entValidator and
+% \partValidator named the two name judges the reported arm merged; they are kept
+% defined so a passage quoting the earlier design still compiles.
+\newcommand{\nameValidator}{name judge\xspace}
 \newcommand{\entValidator}{full-name judge\xspace}
 \newcommand{\partValidator}{partial-name judge\xspace}
 \newcommand{\corefValidator}{coreference judge\xspace}
 \newcommand{\evidenceBacked}{evidence-backed\xspace}  % adjective; compose: "\evidenceBacked judge(s)/judging" (titles stay literal "Evidence-Backed")
 \newcommand{\fullVariant}{Full\xspace}
+\newcommand{\noNameValid}{NoName\xspace}
 \newcommand{\noEntityValid}{NoEntity\xspace}
 \newcommand{\noPartialValid}{NoPartialName\xspace}
 \newcommand{\noCitation}{NoCitation\xspace}

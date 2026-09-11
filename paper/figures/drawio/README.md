@@ -16,18 +16,21 @@ Editable **draw.io / diagrams.net** sources for the paper's figures. Keep the
 
 | Source | Figure | Notes |
 |--------|--------|-------|
-| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → reference-form-specialised linkers → judging & consolidation), matching the reported `s_linker110` arm — one knowledge table (alias table), **three** linkers (full-name and partial-name propose by scanning, coreference by an LLM resolution), and **three** single-pass judges. Redrawn 2026-09-01; the previous revision drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which the reported arm runs. |
+| `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → proposal by reference form → judging & consolidation), matching the reported `s_linker120` arm — one knowledge table (alias table), **three proposers** (whole name and one word by scanning, coreference by an LLM resolution) and **two** single-pass judges, because the two written forms are judged together under one rule. Redrawn 2026-09-01 for `s_linker110`, rewired 2026-09-11 for the union arm; the revision before that drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which any reported arm runs. |
 
-> **Arm: `s_linker110`.** The figure was drawn against `s_linker92a`; s110 became the
-> reported arm on 2026-09-02 and is `s92a` plus two changes, neither of which is at the
-> granularity this overview draws: `s109` has the partial-name scan refuse a word written
-> only inside another component's whole name, and `s110` hands the coreference resolver a
-> per-case, code-computed shortlist of the components the sentences above it name. Three
-> linkers, three judges, one alias table — unchanged. Both are written up in
-> `../../sections/approach.tex` (§\ref{sec:partial-linker}, §\ref{sec:coref-linker}).
+> **Arm: `s_linker120`.** The figure was drawn against `s_linker92a` and re-labelled for
+> `s_linker110`, whose two changes (the sibling-name refusal in the word scan, the
+> resolver's code-computed antecedent shortlist) sit below the granularity this overview
+> draws. `s_linker120`, the reported arm since 2026-09-11, is the first change that does
+> not: it merges the full-name and partial-name **judges** into one, so the third column
+> has two boxes rather than three while the second still has three. What did NOT change:
+> the alias table, the three reference forms, and the one-pass character of every judge.
+> Written up in `../../sections/approach.tex` (§\ref{sec:name-linker},
+> §\ref{sec:coref-linker}).
 
-> **Re-export needed.** `../approach-overview.pdf` is still the old two-linker
-> render — this source has moved ahead of it. Regenerate with
+> **Re-export needed (still).** `../approach-overview.pdf` predates BOTH redraws: it is
+> the retired `s_linker21` render, and the paper has been shipping it. This source has
+> moved ahead of it twice. Regenerate with
 > `drawio -x -f pdf --crop -o ../approach-overview.pdf approach-overview.drawio`
 > (no draw.io CLI was available on the machine that made the edit).
 

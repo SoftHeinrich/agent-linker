@@ -42,7 +42,13 @@
 % N4. SPINE. Evidence: a link is kept only when the document gives words that
 %     support it and those words survive a check. Reference form is the
 %     spine's FIRST move, not a second idea. The sentence the section must
-%     land: "a judge can be no stricter than the evidence its linker reports".
+%     land, REWRITTEN 2026-09-11 with the arm swap to s_linker120: reference
+%     form decides what a case CONTAINS, not which standard is applied to it.
+%     The old spine ("a judge can be no stricter than the evidence its linker
+%     reports, so one linker per form buys one standard of proof per form") is
+%     what the union arm measured and beat -- one rule over both written forms
+%     is better on both models -- so it must not come back anywhere in the
+%     paper. Splitting is a claim about PROPOSING; judging is one question.
 % N5. TERM. \evidenceBacked is the adjective, everywhere. Retiring it in
 %     favour of "evidence-augmented" is execution item 8 and is NOT done: it
 %     is one line in abbrev.tex plus three live sites in intro.tex, and it
@@ -62,9 +68,12 @@
 %     used them, and adding them is a voice change, not a polish.
 % N9. The four prompt boxes are LIVE and their rule slots are filled from the
 %     reported arm (approach/src/llm_sad_sam/linkers/experimental/
-%     s_linker110.py). Supersedes the 2026-09-03 "keep them commented out"
-%     note and grill Q4. If a box is ever re-cut for space, keep the
-%     one-clause prose description of its shape so it can be restored.
+%     s_linker120.py, standalone; s_linker110 until 2026-09-11). Supersedes the
+%     2026-09-03 "keep them commented out" note and grill Q4. If a box is ever
+%     re-cut for space, keep the one-clause prose description of its shape so
+%     it can be restored. prompt:judge is now the ONE name rule; prompt:denote
+%     is the same rule's reply contract for a call whose cases carry no
+%     component, not a second rubric -- do not describe it as one.
 % N11. %CHECK markers flag the 2026-09-07 slot fills: every place where an xx or
 %     a %TODO in the hand draft was filled from s_linker110.py rather than by the
 %     author. Each says what the slot used to read and what still needs a human
@@ -82,7 +91,13 @@
 %     REPORT an antecedent, and both sentence numbers are checked.
 %   - the \ac{LLM} named-mention extractor and its {entity} prompt box. The
 %     full-name proposer is a code scan and issues no prompt at all.
-%   - the two-pass p1/p2 full-name judge. All three judges rule once.
+%   - the two-pass p1/p2 full-name judge. Every judge rules once.
+%   - TWO NAME JUDGES WITH OPPOSITE DEFAULTS (retired 2026-09-11). The arm
+%     through s_linker110 judged the two written forms with two prompts, one
+%     approving by default and one target-blind. s_linker120 replaces both with
+%     one rule and is better on both models at the same call count (terra
+%     quality-changing on all four statistics, luna neutral-and-favourable),
+%     so "one standard of proof per form" is a retired design, not a feature.
 %   - the model-understanding module and its ambiguity map. One table only.
 %   - the alias scope grade ("global"/"local").
 %   - the grounded identity review after the target-blind denotation step.
@@ -99,6 +114,11 @@
 %     verification. (This corrected a false claim carried since 2026-06.)
 %   - spelling variants are not produced by the alias step; they are
 %     recognized inside the full-name scan.
+%   - the target is still withheld where the match computed no component. In
+%     s_linker120 that is a property of the CASE (a sentence writing one word of
+%     a name reaches no component, so the case names none and its call answers
+%     what the expression denotes), not of a separate prompt. Writing the
+%     component into those cases costs gold on the second model.
 % ---------------------------------------------------------------------
 % CARRIED FORWARD: position prior work by LINKING MECHANISM (lexical /
 % string-similarity / neural-embedding), not by the generic glossary and IR
@@ -142,25 +162,24 @@ The workflow must build this knowledge before it links, rather than leave each c
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/approach-overview.pdf}
-  \caption{Overview of \approach: a knowledge module feeds three linkers ordered
-  by how much of a component's name the sentence gives, each checked by a judge,
-  then merged.}
-  \Description{A workflow diagram with three stages. First, a knowledge module builds an alias table from the document and component set. Second, three linkers run in sequence: a full-name linker for sentences stating a name, a partial-name linker for sentences carrying one word of a name, and a coreference linker for sentences giving no name. The partial-name linker skips any sentence that already states a whole name. Third, each linker output is filtered by a judge and the surviving links are merged into the final trace-link set.}
+  \caption{Overview of \approach: a knowledge module feeds two linkers, the first
+  proposing by how much of a component's name the sentence writes and the second by
+  resolving a reference, each checked by its judge, then merged.}
+  \Description{A workflow diagram with three stages. First, a knowledge module builds an alias table from the document and component set. Second, two linkers run in sequence: a name linker, whose two scans mark the sentences that write a whole name of a component and those that write only one word of one, and a coreference linker for sentences that write no name at all. The word scan skips any sentence that already writes a whole name. Third, each linker's candidates are filtered by its judge -- one rule for both name forms, a stricter one for resolved references -- and the surviving links are merged into the final trace-link set.}
   \label{fig:approach-overview}
 \end{figure*}
 
 \textbf{\approach in a nutshell.}
 \approach answers the three challenges by three design decisions.
-Targeting the challenge of various reference forms, \approach has an architecture of three linker modules: the \linkerB, the \linkerD, and the \linkerC.
-%CHECK [xx: benefit 1/3] (filled 2026-09-07) Was: 'They XXX, benefit.'
-%  Filled with the N4 spine sentence. MANUAL CHECK: this is the section's load-bearing
-%  claim; it should not also be asserted in intro.tex in the same words.
-Splitting by form is what lets the checks differ: a judge can be no stricter than the evidence its own linker reports, so one linker per form buys one standard of proof per form.
+Targeting the challenge of various reference forms, \approach reaches them with two linker modules: the \linkerN and the \linkerC.
+The \linkerN proposes by two lexical scans, the \linkerB for a sentence that writes a whole name of a component and the \linkerD for one that writes a single word of one; the \linkerC proposes by resolving a referring expression against the sentences around it.
+Splitting the \emph{proposal} by form is what makes the forms reachable at all: a scan tight enough to be trusted on an exact name sees nothing in a sentence that writes no name, and a step loose enough to resolve a pronoun proposes far too much to be trusted on one.
 %%%%%%%%%% C - Hallucination
-To reduce hallucinated trace links, each proposed link is checked by an \ac{LLM} based judge.
-Instead of merely guessing on the proposed link, we guide the judge with augmented context to reason about the architectural responsibility of the link: every linker reports the text it actually matched, as a structured \emph{evidence bundle}, and the judge is handed that bundle alongside the candidate, which is what makes each judge \evidenceBacked.
-%CHECK [xx: benefit 2/3] (filled 2026-09-07) Was: 'Therefore, the judge xxx benefit.'
-The judge therefore rules on what the linker can show rather than on the link alone, which makes the verdict traceable to text in the document instead of to a second opinion.
+To reduce hallucinated trace links, every proposed link is checked by an \ac{LLM} based judge.
+Instead of merely guessing on the proposed link, we guide the judge with augmented context to reason about the architectural responsibility of the link: each proposer reports the text it actually matched and what the code can say about that match, as a structured \emph{evidence bundle}, and the judge is handed that bundle alongside the candidate, which is what makes each judge \evidenceBacked.
+The judge therefore rules on what the proposer can show rather than on the link alone, which makes the verdict traceable to text in the document instead of to a second opinion.
+Splitting the \emph{judging} does not follow from splitting the proposal, and \approach does not split it: both written forms are read by one \nameValidator under one rule, which states what a trace link is and how to read each field of the bundle.
+What separates a sentence that writes a name from one that writes a single word of it is then a \emph{fact in the case} rather than a second standard applied to it, which is the division of labour \approach keeps throughout: the deterministic layer states facts about a case, and the \ac{LLM} weighs them.
 %%%%%%%%%% C- Vocab
 To address the vocabulary mismatch problem, \approach builds a reusable alias table.
 Before linking, \approach scans the components and the document to build that table.
@@ -170,9 +189,9 @@ This is motivated by previous works on glossary mining for requirements~\cite{ar
 %  by the partial-name whole-name exclusion (_states_a_name), by the mention-type
 %  classifier, and by the coreference shortlist (_named_before). The ONE exception is the
 %  nesting refusal, which reads the model catalog only -- see LOAD-BEARING above.
-All three linkers read that one table, so a name the project coined once is recognized wherever it is used and no linker has to rediscover it mid-run.
+Every scan and every judge reads that one table, so a name the project coined once is recognized wherever it is used and no linker has to rediscover it mid-run.
 
-Together these decisions give the workflow of \approach in \autoref{fig:approach-overview}: the alias discovery module, the architecture of three reference-form linkers, and \evidenceBacked judges.
+Together these decisions give the workflow of \approach in \autoref{fig:approach-overview}: the alias discovery module, two linkers reaching three reference forms, and \evidenceBacked judges.
 
 % -----------------------------------------------------------------
 % 2.3 Knowledge discovery. The module addresses the
@@ -217,93 +236,111 @@ Return JSON:\\
 \end{promptL}
 
 % -----------------------------------------------------------------
-% 2.4 LinkerB: the named forms collapse into one scan once the
-% knowledge layer is available.
+% 2.4 LinkerN: two scans reach the two written forms; ONE rule reads
+% both, and what differs between their cases is the evidence the
+% match computed. (Rewritten 2026-09-11 with the arm swap to
+% s_linker120; the two separate name-linker subsections it replaces
+% are in ../notes/approach-audit-trail.md.)
 % -----------------------------------------------------------------
-\subsection{\linkerB}\label{sec:entity-linker}
+\subsection{\linkerN}\label{sec:name-linker}
 
-\linkerB consists of a lexical link proposer and an \ac{LLM} based judge.
-The proposer scans the document $S$ together with the alias table to mark the sentences that describe a component, returning a set of candidate links, $(s,c)$ pairs.
-Because this linker targets the simplest reference form, the exact mention, a substring scan is enough and the proposer spends no \ac{LLM} call.
-Each candidate is tagged with the matched sentence and the source (exact or by alias), forming the candidate's evidence bundle.
-Candidates and their evidence bundles are the input for the link judge.
-For example, in \autoref{fig:example} Sentence~11 names the \texttt{preferences} component, so \linkerB returns the candidate $(s_{11}, \texttt{preferences})$ with an evidence bundle recording the matched name ``preferences'' and the source ``exact name'' as the reason.
-Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}.
-When the scanner proposes the false link $(s_{7}, \texttt{preferences})$, it is the judge's responsibility to reject it.
-The judge rules once on the candidate and its bundle, weighing together whether the sentence makes an architectural claim about the component and whether the name identifies that component rather than serving as ordinary vocabulary (\autoref{prompt:judge}).
+\linkerN consists of two lexical link proposers and one \ac{LLM} based judge.
+Both proposers scan the document $S$ together with the alias table, spend no \ac{LLM} call, and return candidate links, $(s,c)$ pairs.
+The \linkerB marks a sentence that writes a whole name of a component, under any capitalization and under any short form the alias table confirmed.
+The \linkerD reaches a sentence that writes only part of one: it matches a sentence word against the words of a component's name under English inflection, so a document that names an \texttt{HTML5 Client} and later writes only ``each client'' is reached where the \linkerB sees nothing.
+For example, in \autoref{fig:example} Sentence~11 writes the name of the \texttt{preferences} component, so the \linkerB proposes $(s_{11}, \texttt{preferences})$; Sentence~7 uses the same word as ordinary English while its topic is \texttt{gui}, and the proposer cannot tell the two apart, because what it knows is only that the characters are there.
 
-\begin{promptL}{\evidenceBacked Judge}{judge}\\
+The looser scan makes one refusal of its own.
+When every writing of the matched word falls inside a span where the sentence writes another component's whole name, the sentence is naming that other component there, and the pair is that component's.
+A sentence reading ``events are published on the \texttt{Redis PubSub} channel'' therefore yields no candidate for \texttt{Redis DB}, the sibling component whose name shares the word \texttt{Redis}.
+The refusal reads the model catalog and not the alias table, and the asymmetry is deliberate: a scan only ever proposes, so it may rest on a sampled \ac{LLM} output, whereas this predicate is the one thing in the layer that \emph{ends} a case and so may rest only on what is given.
+
+Both proposers feed one stream, and one judge reads it under one rule (\autoref{prompt:judge}).
+The rule states what a trace link is and how to read each field of the evidence bundle, and it states no default and no per-form standard: whether the sentence wrote a whole name, a confirmed short form or a single word is a \emph{field of the case}, not a different question asked of it.
+What the field changes is what the judge is weighing rather than how strictly it weighs: a shorter surface leaves more readings of the expression open, and the bundle names the other components the same word could reach, so the judge can see what this expression might be doing instead of naming this component.
+The alternative set is the clearest instance of that division, because it is a fact no judge can be asked to recompute: which components the sentence's words could reach is settled by the catalog, while which reading the sentence actually has is settled only by reading it.
+
+A case carries a component only where the match computed one.
+The \linkerD reaches a sentence through a single word, and one word of a name identifies nothing, so such a case names the expression and not the component, and its call is asked what the expression denotes: a participant in the system, or something merely associated with software (\autoref{prompt:denote}).
+This is the same rule with the reply contract its own evidence licenses, not a second rubric: shown a component to confirm, the \ac{LLM} tends to confirm identity rather than test it, so the case that has no identity to offer must not be given one.
+Every verdict rests on a quote the judge commits to first, and a verdict carrying no quote does not count, since a judge that must point at text cannot approve on an impression.
+
+\begin{promptL}{\evidenceBacked Judge: one rule for both written forms}{judge}\\
 {\scriptsize\ttfamily\raggedright
 Validate components in a document.\\
 COMPONENTS: \{comp\_names\}\\
-Approve the link by default: the component is\\
-named here and the document treats it as part\\
-of the system. A mention that says nothing\\
-further about it still counts. Reject only on\\
-a positive ground: the sentence asserts\\
-nothing of this component, the name is doing\\
-some other job here, or the sentence denies\\
-what it would otherwise say of it.\\
+A trace link holds between a sentence and a\\
+component when the sentence makes an\\
+architectural claim about that component: when\\
+it says something about that component as a\\
+participant in the system this document\\
+describes. A mention that says nothing further\\
+about the component still counts as a valid\\
+link.\\
+Every case gives you the expression, the\\
+sentence, the evidence, and, where the sentence\\
+writes a name of it, the component that name\\
+reaches. A case whose sentence writes no name\\
+of any component carries no component: decide\\
+what the expression denotes there, and nothing\\
+about identity. The evidence says what the\\
+expression is doing here; none of it is a\\
+verdict.\\
+~~writes: what this sentence writes of the\\
+~~name: the whole name, a short form the\\
+~~document established, or one word of it. A\\
+~~shorter surface leaves more readings open; it\\
+~~does not make the reading in front of you\\
+~~wrong.\\
+~~alternatives: other components whose names\\
+~~carry the same word. They are what the\\
+~~expression could be reaching instead.\\
+~~mention: what the code can tell about the\\
+~~expression's place in the sentence.\\
+~~anchors: other sentences that name this\\
+~~component. They fix what the name means in\\
+~~the document; they do not decide this one.\\
+Reject only on a positive ground: the sentence\\
+asserts nothing of this component, the name is\\
+doing some other job here, or the sentence\\
+denies what it would otherwise say of it.\\
+Where the case gives you a component: some\\
+sentences use an ordinary English word that\\
+coincides with a component's name. Approve only\\
+when the sentence uses that word as the name of\\
+the component. Capitalization is evidence for a\\
+name and its absence evidence against; neither\\
+settles it alone.\\
 An expression occurring only inside a longer\\
 joined or dotted identifier names a piece of\\
-that identifier, not a participant.\\
-Some sentences use an ordinary English word\\
-that coincides with a component's name.\\
-Approve only when the sentence uses that word\\
-as the name of the component. Capitalization\\
-is evidence for a name and its absence\\
-evidence against; neither settles it alone.\\
-For each case, first quote the EXACT words\\
-that state the architectural claim (or\\
-"none"), then decide approve true/false.\\
+that identifier, not a participant. An\\
+expression denoting what a component acts on or\\
+produces refers to that thing and not to the\\
+component.\\
+For each case, first quote the EXACT words the\\
+verdict rests on, then decide approve\\
+true/false.\\
 CASES: \{cases\}\\
 Return JSON:\\
 ~~\{"validations": [\{case, claim, approve\}]\}
 }
 \end{promptL}
 
-\noindent The \linkerC judge shares this prompt under a stricter rubric, which demands a genuine referring expression and an architectural claim rather than approving by default; the \linkerD judge uses the target-blind prompt of \autoref{prompt:denote}.
+\noindent The \linkerC judge does not share this rule: its cases carry no match at all, so it is given the stricter rubric of \autoref{sec:coref-linker}, which demands a genuine referring expression and an architectural claim rather than reading an evidence bundle.
 
-\noindent The \linkerC judge shares this prompt under a stricter rubric, which demands a genuine referring expression and an architectural claim rather than approving by default; the \linkerD judge uses the target-blind prompt of \autoref{prompt:denote}.
-
-% -----------------------------------------------------------------
-% 2.5 LinkerD: one word of a name is weak evidence, so the judge is
-% shown the expression and never the target.
-% -----------------------------------------------------------------
-\subsection{\linkerD}\label{sec:partial-linker}
-
-\linkerD reaches the sentences that carry only part of a component's name.
-It can be seen as a fuzzy matching between the document and the components: the proposer matches a sentence word against the words of a component's name under English inflection.
-For example, a document that names an \texttt{HTML5 Client} may later write only ``each client'', missed by \linkerB.
-\linkerD's proposer matches that link and records the matched word as its evidence.
-The scan makes one refusal of its own: when every writing of the matched word falls inside a span where the sentence writes another component's whole name, the sentence is naming that other component there, and the pair is that component's.
-A sentence reading ``events are published on the \texttt{Redis PubSub} channel'' therefore yields no candidate for \texttt{Redis DB}, the sibling component whose name shares the word \texttt{Redis}.
-The refusal reads the model catalog and not the alias table, and the asymmetry is deliberate: a scan only ever proposes, so it may rest on a sampled \ac{LLM} output, whereas this predicate is the one thing in the layer that \emph{ends} a case and so may rest only on what is given.
-After that, a judge decides whether the matched term denotes a software component or something merely mentioned.
-The judge is shown the expression and its context but never the component, so it rules on what the expression denotes rather than on whether a proposed identity holds: shown the target, the \ac{LLM} tends to confirm identity rather than test it.
-%CHECK [xx: partial judge duty] (filled 2026-09-07) Was: '%TODO remaining duty of
-%  partial-judge'. Filled to say the quote is DEMANDED, not verified -- s110 validates
-%  `denotation in {...} and bool(claim)`. MANUAL CHECK: the old 'checked mechanically /
-%  a fabricated quote cannot approve a link' claim was FALSE and is now deleted; make
-%  sure it has not survived into results.tex or discussion.tex.
-The judge must quote the sentence words it ruled on, and a verdict carrying no quote does not count, since a judge that must point at text cannot approve on an impression.
-
-\begin{promptL}{\linkerD: Denotation Without the Target}{denote}\\
+\begin{promptL}{The reply a case with no component is asked for}{denote}\\
 {\scriptsize\ttfamily\raggedright
-Classify what each expression itself denotes\\
-in its local context: participant for a\\
-software participant, or associated for\\
-something merely associated with software.\\
-An expression occurring only inside a longer\\
-joined or dotted identifier names a piece of\\
-that identifier, not a participant.\\
+(same rule and same cases as \autoref{prompt:judge};\\
+the COMPONENTS list is withheld when no case\\
+in the call carries a component)\\
 SENTENCES: \{Sn: text\}\\
-CASES: \{case, source, expression\}\\
-Claim must be a contiguous exact substring\\
-of the source sentence.\\
+For each case, quote as the claim a contiguous\\
+exact substring of the source sentence, then\\
+answer denotation with participant or\\
+associated.\\
 Return JSON:\\
-~~\{"judgments": [\{case, denotation,\\
-~~~~claim\}]\}
+~~\{"validations": [\{case, claim,\\
+~~~~denotation\}]\}
 }
 \end{promptL}
 
@@ -318,13 +355,12 @@ Return JSON:\\
 %  a pronoun like it'. s110's _resolve_references: 'Every sentence goes to the LLM in
 %  context; no pronoun regex.' MANUAL CHECK: this contradicts any earlier text describing
 %  a pronoun-triggered coreference stage.
-Which sentences those are is not decided in advance: an \ac{LLM} step reads every sentence in its context and reports the referring expression it finds, a pronoun or a noun phrase pointing back, with the earlier sentence and the component it resolves to.
-A sentence carrying no such expression yields no resolution, so no rule has to guess in advance where one is.
-This resolution is the one judgment only an \ac{LLM} can make, and it is where \linkerC does its real work.
+Such links are component mentioned in S XXX sentence (antecedent sentence). 
+A later sentence describe the component again refering by pronouns like "it / that". 
+In such case, antecedent sentences are is not decided in advance.
+Since this step requires semantic reasoning, we use an \ac{LLM} step to propose link candidate. 
+It reads each sentence and its surrounding sentences, and  reports which pronoun pointing back, to which earlier sentence.
 For illustration, suppose a later sentence reads ``It stores the user's settings,'' naming no component: \linkerC resolves ``It'' to an earlier sentence that named \texttt{preferences} and proposes the link to \texttt{preferences}, reporting that earlier sentence as its evidence.
-The resolver is not left to find the antecedent in the catalog at large: each case carries, computed in code, the components the sentences above it actually name, each with the sentence that names it, nearest first.
-The division is between what is a fact and what is a weighing: which components the earlier sentences name is settled exactly, while which reading a referring expression carries in its sentence is in no table.
-That list is a prior and not a constraint: the resolver may answer outside it, and what the code checks is the answer's sentence numbers, not its membership in the list.
 The candidates are then judged by the \corefValidator{}, which is shown the referring expression and the antecedent the resolver committed to, and rules on whether that commitment holds.
 
 \begin{promptL}{\linkerC: Coreference Resolution}{coref}\\

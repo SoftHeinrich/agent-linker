@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ArchLinker — the coreference linker on the JabRef motivating example</title>
+<style>
+  :root{
+    --kit-green:#009682; --kit-blue:#4664aa; --kit-red:#a22223;
+    --kit-orange:#df9b1b; --kit-purple:#a3107c; --kit-cyan:#23a1e0;
+    --ink:#1a1a1a; --mut:#6b6b6b; --rule:#d7d7d7; --wash:#f7f8f9;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  body{
+    margin:0; padding:28px 24px 48px; background:#fff; color:var(--ink);
+    font-family:"Linux Libertine O","Libertine",Georgia,"Times New Roman",serif;
+    font-size:14px; line-height:1.5;
+  }
+  .sheet{max-width:1180px; margin:0 auto}
+  code,kbd,pre,.mono{font-family:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace}
+
+  /* ---- header ---- */
+  header{border-bottom:2.5px solid var(--ink); padding-bottom:10px; margin-bottom:6px}
+  h1{font-size:23px; margin:0 0 3px; letter-spacing:-.2px}
+  h1 em{font-style:italic; color:var(--kit-green)}
+  .sub{color:var(--mut); font-size:13px; margin:0}
+  .provenance{
+    margin-top:10px; font-size:11.5px; color:var(--mut);
+    font-family:"IBM Plex Mono",Menlo,Consolas,monospace; line-height:1.7;
+  }
+  .provenance b{color:var(--ink); font-weight:600}
+
+  /* ---- stage scaffolding ---- */
+  .stage{margin:26px 0 0; border-top:1px solid var(--rule); padding-top:14px}
+  .stage > h2{
+    font-size:15px; margin:0 0 2px; display:flex; align-items:baseline; gap:9px;
+  }
+  .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:21px; height:21px; border-radius:50%; background:var(--ink); color:#fff;
+    font-size:12px; font-weight:700; font-family:"IBM Plex Mono",monospace; flex:none;
+  }
+  .stage > .lede{margin:2px 0 13px 30px; color:var(--mut); font-size:13px; max-width:96ch}
+  .cols{display:grid; gap:14px; margin-left:30px}
+  .c2{grid-template-columns:1fr 1fr}
+  .c23{grid-template-columns:1.15fr 1fr}
+  .c32{grid-template-columns:1.6fr 1fr}
+
+  /* ---- boxes ---- */
+  .box{border:1px solid var(--rule); border-radius:5px; overflow:hidden; background:#fff}
+  .box > .cap{
+    font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; font-weight:700;
+    padding:5px 10px; background:var(--wash); border-bottom:1px solid var(--rule);
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+  }
+  .box > .cap .tag{font-weight:600; letter-spacing:.02em; text-transform:none; font-size:10.5px}
+  .box .body{padding:9px 11px}
+  .box.code .body{
+    font-family:"IBM Plex Mono",Menlo,Consolas,monospace; font-size:11px; line-height:1.55;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .box.llm > .cap{background:#e8f5f2; border-bottom-color:#a8d8d0; color:#03574c}
+  .box.llm{border-color:#a8d8d0}
+  .box.codeside > .cap{background:#eaeef6; border-bottom-color:#b3c1de; color:#2b3d6b}
+  .box.codeside{border-color:#b3c1de}
+  .box.judge > .cap{background:#fbf1de; border-bottom-color:#e8cf9c; color:#7a5407}
+  .box.judge{border-color:#e8cf9c}
+
+  /* ---- provenance chips ---- */
+  .chip{
+    display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    font-weight:600; letter-spacing:.05em; padding:1px 6px; border-radius:3px;
+    vertical-align:2px; white-space:nowrap;
+  }
+  .chip.code{background:#e4eaf5; color:var(--kit-blue); border:1px solid #b3c1de}
+  .chip.llm{background:#dff0ed; color:#03574c; border:1px solid #a8d8d0}
+  .chip.fix{background:#efefef; color:#555; border:1px solid #cfcfcf}
+
+  /* ---- document excerpt ---- */
+  .doc .s{display:flex; gap:8px; padding:1.5px 0; align-items:baseline}
+  .doc .n{
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--mut);
+    min-width:26px; text-align:right; flex:none; padding-top:1px;
+  }
+  .doc .t{font-size:12.5px; line-height:1.45}
+  .doc .s.target{background:#fff6e2; margin:3px -6px; padding:5px 6px; border-radius:4px;
+                 box-shadow:inset 3px 0 0 var(--kit-orange)}
+  .doc .s.target .t{font-weight:600}
+  .doc .s.ant{background:#eef4fb; margin:2px -6px; padding:3px 6px; border-radius:4px;
+              box-shadow:inset 3px 0 0 var(--kit-blue)}
+  .nm{background:#e4eaf5; border-radius:2px; padding:0 2px; font-weight:600; color:#243d72}
+  .ref{background:#ffe0a8; border-radius:2px; padding:0 3px; font-weight:700; color:#7a4b02}
+  .note{font-size:11.5px; color:var(--mut); margin:7px 0 0; font-style:italic}
+
+  /* ---- catalog / alias ---- */
+  .pill{
+    display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    border:1px solid var(--rule); border-radius:3px; padding:1px 5px; margin:0 3px 4px 0;
+    background:#fafafa;
+  }
+  .pill.seen{background:#e4eaf5; border-color:#b3c1de; color:#243d72}
+  .alias{font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.8}
+  .alias .arr{color:var(--kit-green); font-weight:700; padding:0 4px}
+
+  /* ---- prompt rendering ---- */
+  pre.prompt{margin:0; white-space:pre-wrap; word-break:break-word;
+             font-family:"IBM Plex Mono",Menlo,Consolas,monospace; font-size:10.5px; line-height:1.6}
+  .slot{background:#e4eaf5; border-radius:2px; padding:0 2px; color:#243d72}
+  .instr{color:#03574c}
+  .rule-txt{background:#dff0ed; border-radius:2px; padding:0 2px}
+  .schema{color:var(--mut)}
+  .marker{
+    display:block; margin:9px 0 3px; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; font-weight:700; color:var(--mut);
+    border-top:1px dashed var(--rule); padding-top:6px;
+  }
+  .marker:first-child{border-top:0; margin-top:0; padding-top:0}
+
+  /* ---- evidence bundle ---- */
+  .ev{display:grid; grid-template-columns:auto 1fr; gap:5px 10px; align-items:baseline}
+  .ev dt{font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
+         color:var(--mut); white-space:nowrap}
+  .ev dd{margin:0; font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.5}
+  .ev .src{font-family:inherit}
+
+  /* ---- tables ---- */
+  table{border-collapse:collapse; width:100%; font-size:11.5px}
+  th,td{text-align:left; padding:4.5px 7px; border-bottom:1px solid #ececec; vertical-align:top}
+  thead th{
+    font-size:9.8px; letter-spacing:.07em; text-transform:uppercase; color:var(--mut);
+    border-bottom:1.5px solid var(--ink); font-weight:700; white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:1.5px solid var(--ink)}
+  td.m,th.m{font-family:"IBM Plex Mono",monospace; font-size:10.5px}
+  td.r,th.r{text-align:right}
+  .ok{color:#03574c; font-weight:700}
+  .no{color:var(--kit-red); font-weight:700}
+  .dim{color:var(--mut)}
+  tr.kept{background:#f2faf8}
+  tr.lost{background:#fdf3f3}
+
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-left:30px; margin-bottom:14px}
+  .kpi{border:1px solid var(--rule); border-radius:5px; padding:9px 11px; background:var(--wash)}
+  .kpi .v{font-size:21px; font-weight:700; letter-spacing:-.5px; line-height:1.15}
+  .kpi .v small{font-size:12px; font-weight:600; color:var(--mut)}
+  .kpi .k{font-size:10.5px; color:var(--mut); margin-top:2px; line-height:1.35}
+  .kpi.g .v{color:var(--kit-green)} .kpi.b .v{color:var(--kit-blue)}
+  .kpi.o .v{color:#b87d10} .kpi.r .v{color:var(--kit-red)}
+
+  .takeaway{
+    margin:14px 0 0 30px; border-left:3px solid var(--kit-green); background:#f2faf8;
+    padding:9px 13px; font-size:12.5px; border-radius:0 4px 4px 0;
+  }
+  .takeaway b{color:#03574c}
+  footer{margin-top:32px; border-top:1px solid var(--rule); padding-top:10px;
+         font-size:11px; color:var(--mut); line-height:1.7}
+  footer code{font-size:10.5px}
+
+  @media print{
+    body{padding:0; font-size:12px}
+    .stage{break-inside:avoid}
+    .box{break-inside:avoid}
+  }
+</style>
+<style>
+  .xref{
+    margin-top:11px; display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline;
+    font-size:11.5px; color:var(--mut); border-left:3px solid var(--kit-purple);
+    padding:6px 0 6px 10px; background:#faf7fc;
+  }
+  .xref b{color:#6A4C93; font-weight:700}
+  .okw{color:#03574c; font-weight:700}
+  .now{color:#a22223; font-weight:700}
+</style>
+
+</head>
+<body>
+<div class="sheet">
+
+<header>
+  <h1>The <em>coreference linker</em>, end to end &mdash; on the motivating example</h1>
+  <p class="sub">JabRef, the paper&rsquo;s running example: the same three sentences S6&nbsp;/&nbsp;S7&nbsp;/&nbsp;S11, followed through the stage that reads references across sentences, and then the same stage measured over the whole benchmark.</p>
+  <div class="provenance">
+    <b>arm</b> s_linker110 &nbsp;·&nbsp; <b>model</b> GPT-5.6-terra &nbsp;·&nbsp; <b>run</b> consolidation_e2e_terra_r3_20260825 &nbsp;·&nbsp; <b>project</b> jabref (13 sentences, 6 components)<br>
+    <b>trace</b> phase_states/s_linker110/openai/jabref/linker_coreference.pkl &nbsp;·&nbsp; <b>gold</b> goldstandard_sad_2021-sam_2021.csv (18 links)
+  </div>
+  <div class="xref">
+    <b>Cross-reference to the motivating example (&sect;2.1).</b>
+    <span><span class="mono">S6</span> introduces the component a later sentence refers back to</span>
+    <span><span class="mono">S7</span> the one sentence that carries <em>both</em> failures: a reference and a wrong-component word</span>
+    <span><span class="mono">S11</span> the tail component <span class="mono">preferences</span>, named outright</span>
+  </div>
+</header>
+
+<!-- ═════════════ 1. INPUT ═════════════ -->
+<section class="stage">
+  <h2><span class="num">1</span> Input &mdash; the whole document, and the two sentences the stage must read</h2>
+  <p class="lede">JabRef&rsquo;s architecture documentation is 13 sentences over 6 components, so the figure can show all of it. Two sentences carry a referring expression that a name match cannot follow. <b>S6</b> says <span class="mono">&ldquo;&hellip;and <span class="ref">it</span> is structured often as an API the gui can call and use&rdquo;</span> &mdash; a claim made about a component through a pronoun. <b>S7</b> is the sentence the motivating example is built on: it contains the word <span class="mono">preferences</span>, which matches a component name but denotes the user&rsquo;s settings.</p>
+
+  <div class="cols c23">
+    <div class="box doc">
+      <div class="cap"><span>JabRef architecture documentation &mdash; all 13 sentences</span><span class="tag chip fix">given</span></div>
+      <div class="body doc">
+        <div class="s ant"><span class="n">S1</span><span class="t">We have been successfully transitioning from a spaghetti to a more structured architecture with the <span class="nm">model</span> in the center, and the <span class="nm">logic</span> as an intermediate layer towards the <span class="nm">gui</span> which is the outer shell.</span></div>
+        <div class="s ant"><span class="n">S2</span><span class="t">There are additional utility packages for <span class="nm">preferences</span> and the <span class="nm">cli</span>. <span class="dim">&nbsp;&larr; antecedent quoted for S7</span></span></div>
+        <div class="s"><span class="n">S3</span><span class="t">The dependencies are only directed towards <span class="ref">the center</span>.</span></div>
+        <div class="s"><span class="n">S4</span><span class="t">We have JUnit tests to detect violations of the most crucial dependencies (between <span class="nm">logic</span>, <span class="nm">model</span>, and <span class="nm">gui</span>), and the build will fail automatically in <span class="ref">these cases</span>.</span></div>
+        <div class="s"><span class="n">S5</span><span class="t">The <span class="nm">model</span> represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has only a little bit of <span class="nm">logic</span> attached.</span></div>
+        <div class="s target"><span class="n">S6</span><span class="t">The <span class="nm">logic</span> is responsible for reading/writing/importing/exporting and manipulating the <span class="nm">model</span>, and <span class="ref">it</span> is structured often as an API the <span class="nm">gui</span> can call and use. <span class="dim">&nbsp;&larr; case A</span></span></div>
+        <div class="s target"><span class="n">S7</span><span class="t">Only the <span class="nm">gui</span> knows the user and <span class="ref">his preferences</span> and can interact with him to help him solve tasks. <span class="dim">&nbsp;&larr; case B &mdash; the motivating example&rsquo;s sentence</span></span></div>
+        <div class="s"><span class="n">S8</span><span class="t">For each layer, we form packages according to <span class="ref">their responsibility</span>, i.e., vertical structuring.</span></div>
+        <div class="s"><span class="n">S9</span><span class="t">The <span class="nm">model</span> should have no dependencies to other classes of JabRef and the <span class="nm">logic</span> should only depend on <span class="nm">model</span> classes.</span></div>
+        <div class="s"><span class="n">S10</span><span class="t">The <span class="nm">cli</span> package bundles classes that are responsible for JabRef&rsquo;s command line interface.</span></div>
+        <div class="s"><span class="n">S11</span><span class="t">The <span class="nm">preferences</span> represents all information customizable by a user for her personal needs.</span></div>
+        <div class="s"><span class="n">S12</span><span class="t">We use an event bus to publish events from the <span class="nm">model</span> to <span class="ref">the other layers</span>.</span></div>
+        <div class="s"><span class="n">S13</span><span class="t">This allows us to keep the architecture but still react upon changes within the core in the outer layers.</span></div>
+        <p class="note">Shaded words are writings of a component name the code can match. Orange words are the six expressions the resolver reported in this run &mdash; note that <span class="mono">&ldquo;his preferences&rdquo;</span> in S7 looks like both at once, which is exactly the motivating example&rsquo;s point.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="box codeside">
+        <div class="cap"><span>Component catalogue</span><span class="tag chip code">code</span></div>
+        <div class="body">
+          <span class="pill seen">gui</span><span class="pill seen">cli</span><span class="pill seen">logic</span><span class="pill">globals</span><span class="pill seen">model</span><span class="pill seen">preferences</span>
+          <p class="note">Shaded = the document writes this name somewhere. All 6 go into the prompt, in this order.</p>
+        </div>
+      </div>
+
+      <div class="box llm" style="margin-top:14px">
+        <div class="cap"><span>Alias table (knowledge module)</span><span class="tag chip llm">LLM, judged</span></div>
+        <div class="body alias">
+          command line interface <span class="arr">&rarr;</span> cli
+          <p class="note">The extraction step also proposed <span class="mono">outer shell&nbsp;&rarr;&nbsp;gui</span>, <span class="mono">center&nbsp;&rarr;&nbsp;model</span> and <span class="mono">core&nbsp;&rarr;&nbsp;model</span> in this run; the knowledge judge approved only <span class="mono">cli</span>. That refusal is felt two panels later: with no <span class="mono">center&nbsp;&rarr;&nbsp;model</span> alias, S3&rsquo;s <span class="mono">&ldquo;the center&rdquo;</span> is left to the coreference stage &mdash; where the judge rejects it.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 2. PROMPT ═════════════ -->
+<section class="stage">
+  <h2><span class="num">2</span> How we prompt &mdash; the facts are computed, the reading is asked</h2>
+  <p class="lede">No rule decides in advance which sentences carry a reference: every sentence goes to the model as a case, in batches of ten, with a &plusmn;5-sentence window of the document around it &mdash; for a 13-sentence document, the whole text. What the prompt does <em>not</em> leave open is the antecedent search space. For each case the code computes <span class="mono">NAMED&nbsp;BEFORE&nbsp;THIS&nbsp;CASE</span> &mdash; the components the sentences above it actually name, each with the sentence that names it, nearest first &mdash; using the same exact name relation the rest of the workflow reads names with. That list is a prior, not a constraint: the model may answer outside it, and the code checks the sentence numbers it reports, not its membership.</p>
+
+  <div class="cols c32">
+    <div class="box code">
+      <div class="cap"><span>Resolver prompt &mdash; batch 1 (S1&ndash;S10), cases 6 and 7 shown in full</span><span class="tag">1 call / 10 sentences · 5.4 kB</span></div>
+      <div class="body">
+<pre class="prompt"><span class="marker">task</span><span class="instr">Resolve references (pronouns and noun phrases that refer back) to components.</span>
+
+<span class="marker">catalogue &amp; window — computed</span>COMPONENTS: <span class="slot">gui, cli, logic, globals, model, preferences</span>
+
+SENTENCES (the document text the cases are drawn from)
+<span class="slot">[{"sentence": 1, "text": "We have been successfully transitioning from a spaghetti…"},
+ … 13 rows, S1–S13: the union of the batch's ±5 windows is the whole document …
+ {"sentence": 13, "text": "This allows us to keep the architecture but still react…"}]</span>
+
+<span class="marker">contract — what a case is, and that a case may yield nothing</span><span class="instr">For each TARGET sentence below, identify any pronoun or noun phrase in THAT
+sentence that refers back to a component listed above. Read the TARGET's
+context in SENTENCES. If a target sentence has no such reference to a listed
+component, return no resolution for it. Be conservative — only include
+resolutions you are CERTAIN about.</span>
+
+<span class="marker">the shortlist, and what it is for</span><span class="instr">Each case lists NAMED BEFORE THIS CASE: the components the sentences above it
+actually name, with the sentence that names each, nearest first. That list has
+already been checked against the document, so it is where the antecedent will
+be if there is one. Quote the referring expression first, then say which
+entries of that list could be what it points to, then name the one it does
+point to.</span>
+
+<span class="marker">the ten cases — one per sentence of the batch</span><span class="schema">--- Case 1 (S1) --- … --- Case 5 (S5) --- …</span>
+--- Case 6 ---
+TARGET S6: The logic is responsible for reading/writing/importing/exporting and manipulating the model, and it is structured often as an API the gui can call and use.
+NAMED BEFORE THIS CASE: <span class="slot">logic (S5), model (S5), gui (S4), cli (S2), preferences (S2)</span>
+--- Case 7 ---
+TARGET S7: Only the gui knows the user and his preferences and can interact with him to help him solve tasks.
+NAMED BEFORE THIS CASE: <span class="slot">gui (S6), logic (S6), model (S6), cli (S2), preferences (S2)</span>
+<span class="schema">--- Case 8 (S8) --- … --- Case 10 (S10) --- …</span>
+
+<span class="marker">the standard — and only the standard</span><span class="rule-txt">Resolve when the surrounding sentences make one component the clear antecedent,
+under any form the document uses for it. Avoid resolving when two or more
+equally plausible antecedents exist.</span>
+
+<span class="marker">reply contract</span><span class="schema">Return JSON:
+{"resolutions": [{"case": 1, "sentence": N_INTEGER, "reference": "the server",
+  "candidates": ["Name", "OtherName"], "component": "Name",
+  "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}]}
+JSON only:</span></pre>
+      </div>
+    </div>
+
+    <div>
+      <div class="box codeside">
+        <div class="cap"><span>The division of labour</span><span class="tag">per case</span></div>
+        <div class="body" style="font-size:12.5px">
+          <p style="margin:0 0 8px"><span class="chip code">code</span> &nbsp;<b>Which components the earlier sentences name.</b> A fact, settled exactly by the name relation plus the alias table &mdash; no model is asked for it, and no model can get it wrong. For case&nbsp;7 the code is right: <span class="mono">preferences</span> really <em>is</em> named, in S2.</p>
+          <p style="margin:0 0 8px"><span class="chip llm">LLM</span> &nbsp;<b>Which reading a referring expression carries in its sentence.</b> This is in no table. It is the one judgement only the model can make &mdash; and case&nbsp;7 is where it goes wrong, exactly as the motivating example predicts.</p>
+          <p style="margin:0" class="note">The shortlist is a prior, not a filter. The code validates the two sentence numbers the reply reports against the document &mdash; an invented sentence cannot name a real one &mdash; and does <em>not</em> require the answer to be a member of the list.</p>
+        </div>
+      </div>
+
+      <div class="box llm" style="margin-top:14px">
+        <div class="cap"><span>Model reply &mdash; cases 6 and 7</span><span class="tag chip llm">LLM</span></div>
+        <div class="body code" style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.55;white-space:pre-wrap">{ "case": 6, "sentence": 6,
+  "reference": <span class="okw">"it"</span>,
+  "candidates": ["logic"],
+  "component": "logic",
+  "antecedent_sentence": 6,
+  "antecedent_text": "The logic is responsible" }
+
+{ "case": 7, "sentence": 7,
+  "reference": <span class="now">"his preferences"</span>,
+  "candidates": ["preferences"],
+  "component": "preferences",
+  "antecedent_sentence": 2,
+  "antecedent_text": "preferences" }</div>
+      </div>
+
+      <div class="box" style="margin-top:14px">
+        <div class="cap"><span>Yield of this document</span><span class="tag">2 batches</span></div>
+        <div class="body" style="font-size:12.5px">
+          13 sentences in, <b>6 resolutions</b> out (S3, S4, S6, S7, S8, S12). The other 7 carry no referring expression to a listed component and the model returns nothing for them &mdash; no rule had to guess in advance which 7 those were.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 3. EVIDENCE BUNDLE ═════════════ -->
+<section class="stage">
+  <h2><span class="num">3</span> The evidence bundle &mdash; what the coreference judge is shown</h2>
+  <p class="lede">The judge does not re-do the resolution; it rules on the commitment the resolver already made. So the bundle is not the computed mention bundle the two name judges receive &mdash; a coreference case has no name surface to anchor. It is the resolver&rsquo;s own two commitments, carried forward verbatim, plus the sentence in its immediate context. Withholding them is expensive: an earlier arm that handed the judge only a sentence and a component name made it guess which expression was claimed to refer and to what, and it rejected about half the gold resolutions put to it (49.8&thinsp;% kept).</p>
+
+  <div class="cols c2" style="margin-bottom:14px">
+    <div class="box judge">
+      <div class="cap"><span>Bundle &mdash; case A: S6 &rarr; <span class="mono">logic</span></span><span class="tag">4 items</span></div>
+      <div class="body">
+        <dl class="ev">
+          <dt>Catalogue</dt><dd><span class="src">all 6 component names</span> <span class="chip code">code</span></dd>
+          <dt>Claimed<br>reference</dt><dd>&ldquo;<b>it</b>&rdquo; <span class="chip llm">from the resolver</span></dd>
+          <dt>Claimed<br>antecedent</dt><dd>(S6) &ldquo;The logic is responsible&rdquo; <span class="chip llm">from the resolver</span></dd>
+          <dt>Sentence<br>in context</dt><dd>[prev: The model represents the most important data structures&hellip;]<br>&ldquo;The logic is responsible for &hellip; and it is structured often as an API the gui can call and use.&rdquo; <span class="chip code">code</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="box judge">
+      <div class="cap"><span>Bundle &mdash; case B: S7 &rarr; <span class="mono">preferences</span> <span style="font-weight:400">(motivating example)</span></span><span class="tag">4 items</span></div>
+      <div class="body">
+        <dl class="ev">
+          <dt>Catalogue</dt><dd><span class="src">all 6 component names</span> <span class="chip code">code</span></dd>
+          <dt>Claimed<br>reference</dt><dd>&ldquo;<b>his preferences</b>&rdquo; <span class="chip llm">from the resolver</span></dd>
+          <dt>Claimed<br>antecedent</dt><dd>(S2) &ldquo;preferences&rdquo; <span class="chip llm">from the resolver</span><br><span class="src note" style="margin-top:3px;display:block">A real sentence and a real writing of the name &mdash; the code check passes. Only the <em>reading</em> is wrong.</span></dd>
+          <dt>Sentence<br>in context</dt><dd>[prev: The logic is responsible for &hellip; the gui can call and use.]<br>&ldquo;Only the gui knows the user and his preferences and can interact with him to help him solve tasks.&rdquo; <span class="chip code">code</span></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols c32">
+    <div class="box code judge">
+      <div class="cap"><span>Judge prompt (strict rubric) and replies</span><span class="tag">1 call / 6 cases · 4.0 kB</span></div>
+      <div class="body">
+<pre class="prompt"><span class="marker">question</span><span class="instr">Validate components in a document. Check coref resolution: does the
+referring expression in this sentence actually refer to the named
+component as an architectural participant?</span>
+
+<span class="marker">rubric — strict, because the name is absent</span><span class="rule-txt">These are coreference links: a pronoun or noun phrase in the sentence is
+claimed to refer back to the component, which is NOT named in the sentence
+itself. Approve only when the sentence contains a genuine referring
+expression that unambiguously points to THIS component and makes an
+architectural claim about it. Reject when there is no such referring
+expression or when the antecedent could equally be a different component.
+<b>An expression denoting what a component acts on or produces refers to that
+thing and not to the component, however clearly the component is the one
+acting on it.</b> When uncertain, reject.</span>
+
+<span class="marker">reply contract — quote, then object, then decide</span><span class="instr">first quote the EXACT words from the sentence that state the architectural
+claim …, then state the strongest ground there is for rejecting this case
+under the rules above (or "none"), then decide: approve unless that ground
+is one the rules above make decisive. An objection you could raise against
+most sentences is not a ground for rejecting this one.</span>
+
+<span class="marker">cases 3 and 4 of 6</span>Case 3: pronoun/role-ref -&gt; logic
+  Claimed reference: "it"
+  Claimed antecedent (S6): "The logic is responsible"
+  [prev: The model represents the most important data structures …]
+  "The logic is responsible for reading/writing/importing/exporting and
+   manipulating the model, and it is structured often as an API the gui
+   can call and use."
+
+Case 4: pronoun/role-ref -&gt; preferences
+  Claimed reference: "his preferences"
+  Claimed antecedent (S2): "preferences"
+  [prev: The logic is responsible for … the gui can call and use.]
+  "Only the gui knows the user and his preferences and can interact with
+   him to help him solve tasks."
+
+<span class="marker">replies</span>{"case": 3,
+ "claim": "it is structured often as an API the gui can call and use.",
+ "objection": "none",
+ "approve": <span class="ok">true</span>}
+
+{"case": 4,
+ "claim": "none",
+ "objection": "\"his preferences\" refers to the user's preferences,
+               not to the preferences component.",
+ "approve": <span class="no">false</span>}</pre>
+      </div>
+    </div>
+
+    <div>
+      <div class="box">
+        <div class="cap"><span>The motivating example&rsquo;s false positive, in the system&rsquo;s own words</span><span class="tag">case B</span></div>
+        <div class="body" style="font-size:12.5px">
+          <p style="margin:0 0 8px">The motivation states the failure as <em>a word matches the wrong component</em>. The judge rejects it with the same distinction, unprompted by any list of words: the bolded clause of the rubric is a general rule about denotation, not a stop-list, and nothing in the module names <span class="mono">preferences</span> or any other project term.</p>
+          <p style="margin:0" class="note">The same false link is proposed twice on this document, by two independent routes, and refused twice: the full-name linker proposes S7&nbsp;&rarr;&nbsp;<span class="mono">preferences</span> because the word matches, and its judge returns <span class="mono">claim: none</span>; the coreference resolver proposes it as a refer-back, and its judge returns the objection above.</p>
+        </div>
+      </div>
+
+      <div class="takeaway" style="margin-left:0; margin-top:14px">
+        <b>Why the objection field.</b> The strict rubric asks for the strongest ground <em>against</em> the link before the verdict, then discounts objections that would fire on most sentences. On this document that field is the whole of the stage&rsquo;s contribution: it writes down, case by case, why five of six proposed resolutions do not hold.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 4. RESULTS ═════════════ -->
+<section class="stage">
+  <h2><span class="num">4</span> Results</h2>
+  <p class="lede">All six resolutions this document produced, with the judge&rsquo;s verdict and the gold verdict beside it.</p>
+
+  <div class="cols" style="grid-template-columns:1fr; margin-bottom:16px">
+    <div class="box">
+      <div class="cap"><span>JabRef &mdash; every coreference candidate, run 3</span><span class="tag">6 proposed &rarr; 1 kept</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr>
+            <th class="m">Sent.</th><th>Referring expr.</th><th class="m">&rarr; Comp.</th><th class="m">Ant.</th>
+            <th>Judge</th><th>Objection recorded</th><th>Gold</th><th>Net effect on the workflow</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="m">S3</td><td>&ldquo;the center&rdquo;</td><td class="m">model</td><td class="m">S1</td>
+              <td class="no">reject</td><td>&ldquo;the center&rdquo; denotes the architectural center/model, but the sentence makes a dependency-direction claim about dependencies, not an architectural claim about the model as a participant</td>
+              <td class="no">false</td><td>false positive removed</td>
+            </tr>
+            <tr>
+              <td class="m">S4</td><td>&ldquo;these cases&rdquo;</td><td class="m">logic</td><td class="m">S4</td>
+              <td class="no">reject</td><td>&ldquo;these cases&rdquo; refers to dependency violations, not to the logic component</td>
+              <td class="ok">true</td><td class="dim">no loss &mdash; S4 names <span class="mono">logic</span> outright, the full-name linker holds it</td>
+            </tr>
+            <tr class="kept">
+              <td class="m">S6</td><td>&ldquo;it&rdquo;</td><td class="m">logic</td><td class="m">S6</td>
+              <td class="ok">approve</td><td class="dim">none</td><td class="ok">true</td><td>kept, and true &mdash; the only resolution stable across all three runs</td>
+            </tr>
+            <tr class="lost">
+              <td class="m">S7</td><td>&ldquo;his preferences&rdquo;</td><td class="m">preferences</td><td class="m">S2</td>
+              <td class="no">reject</td><td>&ldquo;his preferences&rdquo; refers to the user&rsquo;s preferences, not to the preferences component</td>
+              <td class="no">false</td><td><b>the motivating example&rsquo;s false positive, removed</b></td>
+            </tr>
+            <tr>
+              <td class="m">S8</td><td>&ldquo;their responsibility&rdquo;</td><td class="m">model</td><td class="m">S1</td>
+              <td class="no">reject</td><td>&ldquo;their responsibility&rdquo; refers to the layers, not specifically to the model; the model is not named or unambiguously referred to in the sentence</td>
+              <td class="no">false</td><td>false positive removed</td>
+            </tr>
+            <tr>
+              <td class="m">S12</td><td>&ldquo;the other layers&rdquo;</td><td class="m">gui</td><td class="m">S7</td>
+              <td class="no">reject</td><td>&ldquo;the other layers&rdquo; excludes the gui and does not unambiguously identify it as a participant</td>
+              <td class="no">false</td><td>false positive removed</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">Run-to-run: the resolver proposes 3, 3 and 6 candidates in runs 1&ndash;3; <b>S6&nbsp;&rarr;&nbsp;<span class="mono">logic</span> is approved in every run</b> and is the only approval in every run. S3&nbsp;&rarr;&nbsp;<span class="mono">model</span> and S12&nbsp;&rarr;&nbsp;<span class="mono">gui</span> recur in all three and are rejected in all three.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols c2" style="margin-bottom:16px">
+    <div class="box">
+      <div class="cap"><span>The motivating example, resolved &mdash; what the workflow finally returns</span><span class="tag">doc&ndash;model</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr><th class="m">Sent.</th><th class="m">Link</th><th>Proposed by</th><th>Verdict</th><th>Gold</th></tr></thead>
+          <tbody>
+            <tr><td class="m">S6</td><td class="m">&rarr; logic</td><td>full-name <em>and</em> coreference</td><td class="ok">kept</td><td class="ok">true</td></tr>
+            <tr><td class="m">S7</td><td class="m">&rarr; gui</td><td>full-name</td><td class="ok">kept</td><td class="ok">true</td></tr>
+            <tr class="lost"><td class="m">S7</td><td class="m">&rarr; preferences</td><td>full-name <em>and</em> coreference</td><td class="no">rejected twice</td><td class="no">false</td></tr>
+            <tr><td class="m">S11</td><td class="m">&rarr; preferences</td><td>full-name</td><td class="ok">kept</td><td class="ok">true</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">On JabRef the workflow returns <b>18 links, 18 true, 0 false</b> &mdash; precision, recall and F<sub>1</sub> all <b>1.000</b>, in each of the three GPT-5.6-terra runs. The tail component <span class="mono">preferences</span> that the motivation&rsquo;s tail analysis shows a baseline abandoning is kept, and the coincidental word that would attach it to S7 is refused.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="cap"><span>The other face &mdash; where the link really is hidden</span><span class="tag">MediaStore, run 1</span></div>
+      <div class="body" style="font-size:12.5px">
+        <p style="margin:0 0 8px">JabRef writes every one of its component names in the sentence that links to it, so there is no hidden link left for this stage to <em>find</em> &mdash; its whole contribution there is refusal. MediaStore shows the recall face of the same machinery, with the same prompt and the same judge:</p>
+        <table style="margin-bottom:6px">
+          <thead><tr><th class="m">Sent.</th><th>Referring expr.</th><th class="m">&rarr; Comp.</th><th>Verdict</th><th>Gold</th></tr></thead>
+          <tbody>
+            <tr class="kept"><td class="m">S9</td><td>&ldquo;it&rdquo;</td><td class="m">MediaManagement</td><td class="ok">keep</td><td class="ok">true</td></tr>
+            <tr class="kept"><td class="m">S24</td><td>&ldquo;It&rdquo;</td><td class="m">DB</td><td class="ok">keep</td><td class="ok">true</td></tr>
+            <tr class="kept"><td class="m">S28</td><td>&ldquo;it&rdquo;</td><td class="m">MediaAccess</td><td class="ok">keep</td><td class="ok">true</td></tr>
+          </tbody>
+        </table>
+        <p style="margin:0" class="note">7 proposed, 3 kept, all three true and <b>all three links no other linker in the workflow produces</b> &mdash; e.g. S24 <span class="mono">&ldquo;It stores user information and meta-data of audio files&hellip;&rdquo;</span>, whose antecedent S23 names the component only under the document alias <span class="mono">Database</span>. The four rejections cost nothing: two are false, and two are true links the full-name linker already holds.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="lede" style="margin-bottom:10px">Over the benchmark the two faces appear together. Averages per run, five projects, three runs, GPT-5.6-terra.</p>
+
+  <div class="kpis">
+    <div class="kpi b"><div class="v">127.0</div><div class="k">coreference candidates proposed per run</div></div>
+    <div class="kpi g"><div class="v">40.7 <small>kept</small></div><div class="k">39.0 true, 1.7 false &mdash; the judge&rsquo;s output is 95.9&thinsp;% precise</div></div>
+    <div class="kpi o"><div class="v">52.7 <small>FP killed</small></div><div class="k">false candidates the judge rejects, the largest of the three judges</div></div>
+    <div class="kpi r"><div class="v">4.7 <small>TP lost</small></div><div class="k">of 33.7 true candidates rejected, only 4.7 are held by no other linker</div></div>
+  </div>
+
+  <div class="cols c2">
+    <div class="box">
+      <div class="cap"><span>What the coreference judge is worth</span><span class="tag">RQ3</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr><th>Judge switched off</th><th class="r">&Delta; macro F<sub>1</sub></th><th class="r">&Delta; macro F<sub>2</sub></th><th class="r">FP rej.</th><th class="r">TP cost</th></tr></thead>
+          <tbody>
+            <tr><td>full-name judge</td><td class="r m">&minus;6.3 pp</td><td class="r m">&minus;2.4 pp</td><td class="r m">48.0</td><td class="r m">3.3</td></tr>
+            <tr><td>partial-name judge</td><td class="r m">&minus;4.9 pp</td><td class="r m">&minus;1.6 pp</td><td class="r m">48.0</td><td class="r m">4.3</td></tr>
+            <tr style="background:#fbf7ee"><td><b>coreference judge</b></td><td class="r m"><b>&minus;7.4 pp</b></td><td class="r m"><b>&minus;2.3 pp</b></td><td class="r m"><b>52.7</b></td><td class="r m"><b>4.7</b></td></tr>
+            <tr><td class="dim">all three</td><td class="r m dim">&minus;15.3 pp</td><td class="r m dim">&minus;6.2 pp</td><td class="r m dim">143.7</td><td class="r m dim">8.7</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">The coreference judge carries the most weight of the three, because it judges the least precise input: 54.3 of the 127.0 candidates it sees are false &mdash; five of six on JabRef. A judge can only remove links, so under F<sub>2</sub>, which weights recall four times as heavily, the same contribution reads about a third as large.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="cap"><span>What the coreference linker is worth</span><span class="tag">RQ4</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr><th>Variant</th><th class="r">avg&nbsp;F<sub>1</sub></th><th class="r">avg&nbsp;F<sub>2</sub></th><th class="r">unique TPs</th></tr></thead>
+          <tbody>
+            <tr><td>full approach</td><td class="r m">0.939</td><td class="r m">0.955</td><td class="r m dim">&mdash;</td></tr>
+            <tr><td>full-name linker alone</td><td class="r m">0.861</td><td class="r m">0.832</td><td class="r m">131</td></tr>
+            <tr><td>partial-name linker alone</td><td class="r m">0.095</td><td class="r m">0.074</td><td class="r m">16</td></tr>
+            <tr style="background:#f2faf8"><td><b>coreference linker alone</b></td><td class="r m"><b>0.293</b></td><td class="r m"><b>0.214</b></td><td class="r m"><b>17</b></td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">Read as a whole system the row is low &mdash; but that is scope, not quality: the stage fires only on sentences carrying a referring expression, so scoring it against the entire gold standard charges it for every sentence it was never meant to see. Removing it costs 4.6&thinsp;pp of link-level F<sub>1</sub>, yet it is what reaches components a document never names twice: dropping both small linkers takes worst-component F<sub>1</sub> from 0.81 to 0.70 and harmonic per-component F<sub>1</sub> from 0.93 to 0.86.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <b>The stage in one line.</b> Exactly one question is put to the model &mdash; what does this expression refer to &mdash; on a shortlist the code has already settled; the judge then rules on the resolver&rsquo;s own quoted commitment rather than re-reading the sentence. On JabRef that machinery spends itself refusing, including on the very false positive the motivating example is built from; on documents whose components are not named twice it is the only route to the link.
+  </div>
+</section>
+
+<footer>
+  All prompt text, shortlists, model replies, judge objections and verdicts are reproduced verbatim from the recorded run; the <span class="mono">NAMED BEFORE THIS CASE</span> lines were recomputed with the arm&rsquo;s own <code>_named_before</code> against this document and alias table. Ellipses mark elided prompt bulk only. Aggregate figures: <code>evaluation/reports/rq34/s110/rq3_validators.csv</code>, <code>rq4_variants.csv</code>, <code>rq4_linkers.csv</code>, <code>rq34_rq2_linkers.csv</code> (terra averages over three five-project runs). The MediaStore panel is <code>consolidation_e2e_terra_r1_20260825</code>; the full worked version of it is <code>coref-linker-illustration.html</code>.
+</footer>
+
+</div>
+
+</body>
+</html>

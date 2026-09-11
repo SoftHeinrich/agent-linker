@@ -14,14 +14,15 @@
 %  eq:worst states it -- per component, over the LINKS whose target file belongs to it --
 %  instead of over a (sentence, component) projection. Every tail number in RQ2 and RQ4
 %  moved; the rankings and the argument did not.
-%DONE (2026-08-26, rebased 2026-09-02): every RQ number in this section is the reported arm on
-%  the GPT-5.6-terra backend (mean of 3 runs) -- s\_linker92a when this note was written,
-%  s\_linker110 since the arm swap. Sources: evaluation/reports/tex_src/rq{1,2,3,4}.csv <-
-%  rq12.py (RQ1/RQ2) + evaluation/reports/rq34/s110 (RQ3/RQ4). Both engines are independent and agree
-%  on the arm's macro \fone\ (0.9385).
-%  TRAP: 0.9385 is ALSO what s92a scored, so this line reads unchanged across the swap and is no
-%  evidence the section was rebased. Check a number the arms disagree on -- rq3.csv's 143.67
-%  (s92a: 164.33) is the cheapest one.
+%DONE (2026-08-26, rebased 2026-09-02, rebased again 2026-09-11): every RQ number in this
+%  section is the reported arm on the GPT-5.6-terra backend (mean of 3 runs) -- s\_linker92a
+%  when this note was written, s\_linker110 after, s\_linker120 (the union arm) since.
+%  Sources: evaluation/reports/tex_src/rq{1,2,3,4}.csv <- rq12.py (RQ1/RQ2) +
+%  evaluation/reports/rq34/s120 (RQ3/RQ4). Both engines are independent and agree on the
+%  arm's macro \fone\ (0.9516).
+%  TRAP: the two earlier arms both scored 0.9385, so a section rebased by halves reads
+%  plausible. Check a number the arms disagree on -- rq3.csv has TWO judge rows here and
+%  three before, which is the cheapest tell.
 
 
 %==================== SPEC (section-wide) ====================
@@ -35,7 +36,8 @@
 %SPEC: do not refer appendix, the submitted version will be trimed.
 %============================================================
  
-For space, this section reports the GPT-5.6-terra backend and the five-project average; per-project and per-run breakdowns are in appendix.
+For space, this section reports the GPT-5.6-terra backend and the five-project average; 
+per-project and per-run breakdowns are in appendix.
 Every \approach{} number is the mean of three runs.
 
 \subsection{Answer to RQ1}
@@ -51,47 +53,40 @@ Every \approach{} number is the mean of three runs.
 %  the one this arm is designed for (a link never proposed cannot be repaired downstream).
 
 \autoref{tab:rq1} reports macro precision, recall, \fone, and \ftwo\ for every system on both tasks, doc-model and doc-code.
-Both \ac{LLM} systems run on the same backend and are reported as the mean of three runs, so the comparison isolates the workflow from the model.
-On doc-model, \approach{} lifts the \avgfone\ from \Artemis{}'s $0.809$ to $0.939$, a gain of $+12.9$pp; the lexical SWATTR pipeline reaches $0.799$.
-The recall-weighted \avgftwo\ moves by the same margin: $0.828 \rightarrow 0.955$ ($+12.7$pp).
+% Both \ac{LLM} systems run on the same backend and are reported as the mean of three runs, so the comparison isolates the workflow from the model.
+On doc-model, \approach{} lifts the \avgfone\ from \Artemis{}'s $0.809$ to $0.952$, a gain of $+14.2$pp; the lexical SWATTR pipeline reaches $0.799$.
+The recall-weighted \avgftwo\ moves by the same margin: $0.828 \rightarrow 0.965$ ($+13.7$pp).
+
+%TODO, This reason is too coarse, use the minimal suitable one. 
 This is because \approach{} builds the alias table once and reuses it across every sentence, then filters each link through the judge stack, so it proposes a link wherever a name or a reference occurs instead of only where a single extraction pass fires.
 \Artemis{} extracts entities with no reusable architecture knowledge and no judging, so it neither reaches the alias-heavy mentions nor removes the plausible-but-wrong links an \ac{LLM} produces.
 
 The gain is not a precision-for-recall trade.
-On doc-model \approach{} leads on both components of the score, precision $0.91$ against $0.81$ ($+10.9$pp) and recall $0.97$ against $0.85$ ($+11.7$pp); on doc-code it leads by $+10.9$pp precision and $+3.8$pp recall.
-The scan-plus-judge split is what makes both possible at once: the entity pass over-proposes by design, scanning each sentence for every candidate name rather than extracting one mention, and the judges remove what it over-proposes before the link set is emitted.
+On doc-model \approach{} leads on both components of the score, precision $0.93$ against $0.81$ ($+12.6$pp) and recall $0.98$ against $0.85$ ($+12.6$pp); on doc-code it leads by $+13.5$pp precision and $+3.9$pp recall.
+The scan-plus-judge split is what makes both possible at once: the scans over-propose by design, marking every sentence that writes a name or a word of one rather than extracting one mention, and the judges remove what they over-propose before the link set is emitted.
 A single extraction pass has to make that trade in one decision and cannot recover a mention it did not emit.
 
-Beyond the link-level average, \autoref{tab:rq2} reports the \cmrname{} (\cmr), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of gold sentence--component assignments whose component a system abandons.
-\approach{} reaches a macro \cmr{} of $0.0\%$, against $3.3\%$ for \Artemis{} and $7.1\%$ for the lexical SWATTR pipeline.
-It abandons no documented component at all: every project reaches a \cmr{} of $0.0\%$, in each of the three runs.
-\Artemis{} abandons two components per run on average, and only one of them consistently: Teammates' \texttt{GAE Datastore} in every run, plus Teammates' \texttt{Common}, BigBlueButton's \texttt{Presentation Conversion}, or JabRef's \texttt{preferences} depending on the run.
-Which components a single \Artemis{} run drops is therefore not stable, which is itself the finding---a re-run repairs one hole and opens another.
-SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage}, and \texttt{Reencoding}---that together carry $35.5\%$ of MediaStore's documented sentence--component assignments.
-
-\paragraph{Smallest-gain case: MediaStore.}
+\paragraph{Weakest case: Teammates.}
 %SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
-%  datum, name the cause, close on the aggregate. The datum moved from Teammates
-%  (component \fone) to MediaStore.
-%DONE (2026-08-29) against the matched-backend baseline MediaStore is no longer only a
-%  doc-model \fone\ regression -- it loses on doc-model \fone, doc-model \ftwo\ and
-%  doc-code \fone\ alike, so the paragraph states all three instead of leaning on \ftwo.
-MediaStore is the one project where \approach{} does not beat \Artemis{}, and it loses on every view of the score: doc-model \fone\ $0.903$ against $0.933$ ($-3.0$pp), doc-model \ftwo\ $0.903$ against $0.954$ ($-5.0$pp), and doc-code \fone\ $0.867$ against $0.927$ ($-6.1$pp).
-It is also the project carrying the arm's only missed component, and the two facts share one cause.
-All three of \texttt{FileStorage}'s documented sentences call the component ``the DataStorage'', a name the architecture model does not use, so neither name pass matches it and the alias table never learns the pair.
-\linkerC{} does propose all three links, and the \corefValidator{} rejects all three on the grounds that an explicitly named mention is not a coreference---correct by its own rule, and wrong for this component.
-On MediaStore the judges therefore reject $8$ true links and $0$ false ones, the mirror image of their aggregate behaviour.
-MediaStore is also the smallest and least enrolled project in the benchmark, so a handful of links moves its score further than anywhere else; the other four projects gain between $+6.5$pp (Teammates) and $+27.9$pp (TeaStore) of doc-model \fone.
-The fix is an alias source that covers names the model does not contain, which the current knowledge module derives only from model element names.
+%  datum, name the cause, close on the aggregate. The datum moved to Teammates when the
+%  reported arm became the union one: MediaStore, the previous datum, is now 1.000 on
+%  doc-model, because the three FileStorage sentences that call the component "the
+%  DataStorage" are name cases under one rule and were coreference cases under two.
+\approach{} beats \Artemis{} on all five projects at both grains, so the honest datum is no longer a loss but a floor: Teammates is the weakest project at doc-model \fone\ $0.869$, against \Artemis{}'s $0.755$.
+It is weak on one side only, precision $0.813$ against recall $0.936$, and the cause is the same mechanism that earns the recall.
+Teammates is the project whose sentences most often refer to a component by a phrase the document coins rather than by its catalog name, so the alias table is what reaches them: it binds ``front-end'' to \texttt{UI} and ``back end'' to \texttt{Logic}.
+Those two terms then carry most of the residual false links, because a coined short form can be broader than the component it names---``Front-end files are tested separately with Jest'' is about the front end and not about the \texttt{UI} component.
+Of roughly twelve false links a run on this project, all but one come from the whole-name scan, and they concentrate on the components whose names are ordinary English (\texttt{UI}, \texttt{Logic}, \texttt{Storage}, \texttt{Client}).
+This is the one call the rule leaves to judgement rather than deciding in code, and a catalog of generic names is where it is hardest.
 
 The same picture holds on the downstream doc-code task, where \approach{} reaches code files transitively.
-\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.813$ to $0.906$ ($+9.3$pp) and the \avgftwo\ from $0.844$ to $0.909$ ($+6.6$pp); the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
+\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.813$ to $0.918$ ($+10.6$pp) and the \avgftwo\ from $0.844$ to $0.914$ ($+7.1$pp); the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
 This is because the composition step inherits the doc-model gain at every sentence, so the advantage \approach{} earns over \Artemis{} upstream carries through to the task developers care about.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ1.}
-Against \Artemis{} on the same backend, \approach{} gains $+12.9$pp \avgfone\ and $+12.7$pp \avgftwo\ on doc-model, and $+9.3$pp \avgfone\ and $+6.6$pp \avgftwo\ on doc-code.
-It leads on precision and recall at both grains, and abandons no component at all, to \Artemis{}'s two and SWATTR's three.
+Against \Artemis{} on the same backend, \approach{} gains $+14.2$pp \avgfone\ and $+13.7$pp \avgftwo\ on doc-model, and $+10.6$pp \avgfone\ and $+7.1$pp \avgftwo\ on doc-code.
+It leads on precision and recall at both grains and on every project, and abandons no component at all, to \Artemis{}'s two and SWATTR's three.
 \end{rqanswer}
 
 \subsection{Answer to RQ2}
@@ -106,17 +101,24 @@ It leads on precision and recall at both grains, and abandons no component at al
 %  \fone/\ftwo), GPT-5.6-terra backend; the per-(system,project) cells live in the appendix big table
 %  tab:detailed-perproject (both backends).
 %DONE [scope] suite covers both tasks (doc-model + doc-code).
+% Beyond the link-level average, \autoref{tab:rq2} reports the \cmrname{} (\cmr), the doc-model size-aware metric of \autoref{sec:metric:suite}: the share of gold sentence--component assignments whose component a system abandons.
+% \approach{} reaches a macro \cmr{} of $0.0\%$, against $3.3\%$ for \Artemis{} and $7.1\%$ for the lexical SWATTR pipeline.
+% It abandons no documented component at all: every project reaches a \cmr{} of $0.0\%$, in each of the three runs.
+% \Artemis{} abandons two components per run on average, and only one of them consistently: Teammates' \texttt{GAE Datastore} in every run, plus Teammates' \texttt{Common}, BigBlueButton's \texttt{Presentation Conversion}, or JabRef's \texttt{preferences} depending on the run.
+% Which components a single \Artemis{} run drops is therefore not stable, which is itself the finding---a re-run repairs one hole and opens another.
+% SWATTR abandons three MediaStore components---\texttt{DB}, \texttt{FileStorage}, and \texttt{Reencoding}---that together carry $35.5\%$ of MediaStore's documented sentence--component assignments.
+
 \autoref{tab:rq2} reports the size-aware suite for \approach{}, \TransArc{}, and \Artemis{} on both tasks, on the GPT-5.6-terra backend.
 On doc-model, the \cmrname{} reported above already separates the systems: $0.0\%$ for \approach{} against $3.3\%$ and $7.1\%$.
 
-On doc-code, the standard link-level \fone\ shows the \emph{smaller} gap: \approach{} separates from \Artemis{} by $+9.3$pp, because it is driven by the few large components every system recovers.
+On doc-code, the standard link-level \fone\ shows the \emph{smaller} gap: \approach{} separates from \Artemis{} by $+10.6$pp, because it is driven by the few large components every system recovers.
 The size-aware metrics open it.
-\approach{} reaches a worst-component \fone\ of $0.81$ against \Artemis{}'s $0.47$ ($+33.8$pp, roughly $3.6$ times the link-level \fone\ gap), and a harmonic per-component \fone\ of $0.93$ against $0.63$ ($+29.3$pp).
-Against the deterministic \TransArc{} pipeline the same pattern holds with a smaller spread: $+10.4$pp link-level, $+29.1$pp worst-component, $+25.2$pp harmonic.
+\approach{} reaches a worst-component \fone\ of $0.82$ against \Artemis{}'s $0.47$ ($+35.3$pp, roughly $3.3$ times the link-level \fone\ gap), and a harmonic per-component \fone\ of $0.94$ against $0.63$ ($+30.6$pp).
+Against the deterministic \TransArc{} pipeline the same pattern holds with a smaller spread: $+11.6$pp link-level, $+30.6$pp worst-component, $+26.5$pp harmonic.
 
 Averaging over runs understates how far \Artemis{} drops.
 On three of five projects---Teammates, BigBlueButton, and JabRef---at least one \Artemis{} run scores \fone\ $0$ on a gold component, missing it entirely; a different project each run, which is why no single project's mean falls to zero.
-\approach{} never drops a doc-code component to zero on any project in any run; its lowest per-component \fone\ is $0.40$, on Teammates.
+\approach{} never drops a doc-code component to zero on any project in any run; its lowest per-component \fone\ is $0.61$, on BigBlueButton.
 This is the failure mode link-level \fone\ cannot show: a missed small component costs almost nothing in a volume-weighted average, but a developer who reads the architecture still sees the hole.
 The gap is largest against the \ac{LLM} baseline \Artemis{}, whose per-pass extraction drops whole components and drops different ones on re-run; it narrows against \TransArc{}, which is more stable on the tail but trails on the link level.
 Against either baseline the size-aware metrics, not the standard metric, show where the systems differ.
@@ -124,7 +126,7 @@ Against either baseline the size-aware metrics, not the standard metric, show wh
 \begin{rqanswer}
 \paragraph{Answer to RQ2.}
 On doc-model, \approach{} reaches a $0.0\%$ \cmrname{}, below both baselines'.
-On doc-code the standard \fone\ gap is $+9.3$pp; the size-aware suite opens it to $+33.8$pp worst-component and $+29.3$pp harmonic-mean \fone, exposing the tail the baselines drop.
+On doc-code the standard \fone\ gap is $+10.6$pp; the size-aware suite opens it to $+35.3$pp worst-component and $+30.6$pp harmonic-mean \fone, exposing the tail the baselines drop.
 \end{rqanswer}
 
 \subsection{Answer to RQ3}
@@ -133,29 +135,30 @@ On doc-code the standard \fone\ gap is $+9.3$pp; the size-aware suite opens it t
 \input{table/rq3-confusion}
 %SPEC [rq3] tab:rq3-confusion = one row per judge: the links it rejects and keeps, plus the
 %  \fone/\ftwo the pipeline loses with that judge switched off. Terminology = TP/FP throughout.
-%DONE [3-judge] this arm judges three linkers, not two: the named-mention stage is split into
-%  a full-name and a partial-name pass, each with its own judge. Mean of 3 runs
-%  (evaluation/reports/rq34/s110/rq3_validators.csv + rq3_variants.csv).
+%DONE [2-judge] (2026-09-11, arm swap to s_linker120) this arm judges TWO linkers: both
+%  written name forms are proposed by two scans and judged once, under one rule. The
+%  earlier arm's three-judge row set is retired with it. Mean of 3 runs
+%  (evaluation/reports/rq34/s120/rq3_validators.csv + rq3_variants.csv).
 %DONE [f2] the table now carries the counterfactual in BOTH \fone and \ftwo, which is what
 %  separates the judges' precision effect from their net effect (see the second paragraph).
 \autoref{tab:rq3-confusion} reports, for each judge, the links it rejects and keeps and what the pipeline loses when it is switched off, averaged over the three runs.
-The \entValidator{} rejects $48.0$ false positives while outright costing $3.3$ true ones; the \partValidator{} rejects $48.0$ against $4.3$; the \corefValidator{} rejects $52.7$ against $4.7$.
-The REJ-TP column counts only the true links no other linker recovers, so it is the recall each judge costs the pipeline outright.
-Together the three judges reject $143.7$ distinct false positives and lose $8.7$ true links; the per-judge counts overlap, so they do not sum to these totals.
-This is because each judge targets a different failure mode: a full name that matches no model element, a partial name that denotes something else, and an implicit reference whose antecedent the linker could not quote.
+The \nameValidator{} rejects $95.0$ false positives while outright costing $5.0$ true ones; the \corefValidator{} rejects $57.3$ against $2.7$.
+The REJ-TP column counts only the true links no other linker recovers, so it is the recall each judge costs the pipeline outright, and the two numbers behind it are far apart: the \corefValidator{} rejects $49.0$ true links a run and only $2.7$ of them are lost, because \linkerN{} has already proposed the rest.
+Together the two judges reject $146.0$ distinct false positives and lose $6.0$ true links; the per-judge counts overlap, so they do not sum to these totals.
+This is because each judge reads a different kind of case: the \nameValidator{} reads a match the code computed, with the evidence that match carries, and the \corefValidator{} reads a resolution the model committed to, with the antecedent it quoted.
 
 The judges are what makes the scan usable, and \ftwo\ prices how much of that is precision.
-Switching all three off drops macro \fone\ from $0.939$ to $0.785$, a loss of $15.3$pp, but macro \ftwo\ only from $0.955$ to $0.893$, a loss of $6.2$pp.
-Removing them one at a time costs $6.3$, $4.9$, and $7.4$pp of \fone\ (\entValidator{}, \partValidator{}, \corefValidator{}) against $2.4$, $1.6$, and $2.3$pp of \ftwo.
+Switching both off drops macro \fone\ from $0.952$ to $0.802$, a loss of $14.9$pp, but macro \ftwo\ only from $0.965$ to $0.900$, a loss of $6.5$pp.
+Removing them one at a time costs $9.9$ and $7.8$pp of \fone\ (\nameValidator{}, \corefValidator{}) against $4.2$ and $2.8$pp of \ftwo.
 This is because a judge almost only removes links: it buys precision and can never add recall, so a metric that weights recall four times as heavily as precision sees a third of the effect.
-The \corefValidator{} carries the most weight either way, because it judges the least precise input: only $40.7$ of the $127.0$ candidates it sees survive, and $54.3$ of them are false.
-The price is judging volume: the stack rules on $427.3$ candidates per run to emit $212.3$ links, roughly two decisions per link kept.
+The \corefValidator{} carries the most weight per case, because it judges the least precise input: of the $144.0$ candidates it sees only $37.7$ survive, against $194.7$ of $295.0$ at the \nameValidator{}.
+The price is judging volume: the stack rules on $439.0$ candidates per run to emit $211.3$ links, roughly two decisions per link kept.
 Therefore the judge stack, not the linker, is what turns a high-recall scan into a precise result---and a reader who cares mostly about recall should read its contribution as the smaller \ftwo\ figure.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ3.}
-The three judges together reject $143.7$ distinct false positives while outright costing $8.7$ true links; removing all three costs $15.3$pp macro \fone\ but only $6.2$pp macro \ftwo.
-They target separate failure modes---an unmatched full name, a misdenoting partial name, an unquotable implicit reference---and buy precision, never recall.
+The two judges together reject $146.0$ distinct false positives while outright costing $6.0$ true links; removing both costs $14.9$pp macro \fone\ but only $6.5$pp macro \ftwo.
+They read different kinds of case---a match the code computed, a resolution the model committed to---and buy precision, never recall.
 \end{rqanswer}
 
 \subsection{Answer to RQ4}
@@ -165,50 +168,52 @@ They target separate failure modes---an unmatched full name, a misdenoting parti
 %  each linker alone. Numbers: evaluation/reports/rq34/s110/rq4_variants.csv (doc-model macro \fone)
 %  + rq34_rq2_linkers.csv (doc-code suite) + rq4_linkers.csv (unique TPs).
 %DONE [noknow] (rebased 2026-09-02) the knowledge ablation is measured ON THIS ARM:
-%  s_linker110_noknow, three five-project runs, GPT-5.6-terra
-%  (results/consolidation_noknow_e2e_terra_r{1,2,3}_20260902, scored into
-%  evaluation/reports/rq34/s110_noknow). Launcher: approach/pilot/run_consolidation_e2e_noknow.sh.
-%  The control is IN-SET: results/consolidation_e2e_terra_r{1,2,3}_20260825, same variant and
-%  model with the alias table on. This arm reads 7.6pp \fone / 11.9pp \ftwo (the s21 lineage's
-%  5.8pp and s92a's 6.2pp / 9.6pp are both retired).
-%  LANDMINE (from the launcher): s_linker110_noknow's _VARIANT_NAME is "s_linker110", so its
-%  phase states nest under <run>/phase_states/s_linker110/ -- PHASE_CACHE_DIR must stay per-run
+%  s_linker120_noknow, three five-project runs, GPT-5.6-terra
+%  (results/union_noknow_e2e_terra_r{1,2,3}_20260911, scored into
+%  evaluation/reports/rq34/s120_noknow). Launcher: approach/pilot/run_union_e2e_noknow.sh.
+%  The control is IN-SET: results/union_e2e_terra_r{1,2,3}_20260911, same variant and model
+%  with the alias table on. This arm reads 6.1pp \fone / 10.6pp \ftwo (s110's 7.6/11.9, the
+%  s21 lineage's 5.8 and s92a's 6.2/9.6 are all retired). The row CANNOT be borrowed from
+%  another arm: `writes=alias` is one of the three values of this arm's evidence, so the
+%  table's absence changes what the rule reads, not only what the scans match.
+%  LANDMINE (from the launcher): s_linker120_noknow's _VARIANT_NAME is "s_linker120", so its
+%  phase states nest under <run>/phase_states/s_linker120/ -- PHASE_CACHE_DIR must stay per-run
 %  or it overwrites the Full arm's states that RQ3/RQ4 read.
 \input{table/rq4-results}
-\approach{} has four modules: the knowledge module and the three linker modules \linkerB{}, \linkerD{}, and \linkerC{}.
-We ablate each one and score the result with the size-aware suite.
+\approach{} reaches three reference forms through two linkers over one knowledge module, so it is ablated by form: the \linkerB{} and the \linkerD{} inside \linkerN{}, the \linkerC{}, and the alias table all three read.
+Every link records the proposer that reached it, so the two forms \linkerN{} judges together can still be separated after the fact.
 \autoref{tab:rq4} reports the five variants on doc-code, with the metrics ordered from the standard link-level \fone\ to the tail.
 
-\linkerB{} alone reaches an \avgfone\ of $0.861$, already above SWATTR's $0.799$: an \ac{LLM} base beats the lexical pipeline on its own.
-Adding \linkerD{} and \linkerC{} raises \avgfone\ to $0.939$, because they reach the mentions \linkerB{} cannot quote in full.
-The two smaller linkers are worth half again as much under \ftwo\ as under \fone: \avgftwo\ rises from $0.832$ to $0.955$ ($+12.3$pp) where \avgfone\ rises $7.7$pp, because what they add is recall.
-The three linkers catch different slices of gold links---\linkerB{} contributes $131$ unique true positives, \linkerD{} another $16$, and \linkerC{} another $17$---so the decomposition is not redundant.
+The \linkerB{} alone reaches an \avgfone\ of $0.881$, already above SWATTR's $0.799$: an \ac{LLM} base beats the lexical pipeline on its own.
+Adding the \linkerD{} and the \linkerC{} raises \avgfone\ to $0.952$, because they reach the mentions the \linkerB{} cannot quote in full.
+The two smaller forms are worth half again as much under \ftwo\ as under \fone: \avgftwo\ rises from $0.850$ to $0.965$ ($+11.6$pp) where \avgfone\ rises $7.1$pp, because what they add is recall.
+The three forms catch different slices of gold links---the \linkerB{} contributes $137$ unique true positives, the \linkerD{} another $16$, and the \linkerC{} another $15$---so the decomposition is not redundant, and it survives the two written forms being judged by one rule.
 
 The table tells the RQ2 story from inside the approach.
-Removing \linkerD{} or \linkerC{} barely moves the standard link-level \fone---$-2.2$pp and $-4.6$pp---but each one lowers the tail: with \linkerB{} alone, worst-component \fone\ falls from $0.81$ to $0.70$ and the harmonic per-component \fone\ from $0.93$ to $0.86$.
-Removing \linkerB{} is different---it collapses every metric, link-level \fone\ included, by $58.9$pp, because \linkerB{} recovers most of the direct links.
-Read as whole systems the two smaller linkers score far lower---\linkerD{} $0.095$ \avgfone\ and \linkerC{} $0.293$---but that is their scope, not their quality: each fires only on the sentences its evidence form applies to (\linkerD{} skips any sentence that states a whole name, \linkerC{} only sentences carrying a referring expression), so a row scored against the whole gold standard charges it for every sentence it was never meant to see.
+Removing the \linkerD{} or the \linkerC{} barely moves the standard link-level \fone---$-2.0$pp and $-4.5$pp---but each one lowers the tail: with the \linkerB{} alone, worst-component \fone\ falls from $0.82$ to $0.73$ and the harmonic per-component \fone\ from $0.94$ to $0.87$.
+Removing the \linkerB{} is different---it collapses every metric, link-level \fone\ included, by $58.9$pp, because it recovers most of the direct links.
+Read as whole systems the two smaller forms score far lower---the \linkerD{} $0.085$ \avgfone\ and the \linkerC{} $0.311$---but that is their scope, not their quality: each fires only on the sentences its evidence form applies to (the \linkerD{} skips any sentence that writes a whole name, the \linkerC{} only sentences carrying a referring expression), so a row scored against the whole gold standard charges it for every sentence it was never meant to see.
 
-The knowledge module is ablated as the no-knowledge variant of \ref{rq:ablation}: the document-alias stage is switched off and every linker sees canonical component names only.
-Removing the alias table costs $7.6$pp \avgfone\ ($0.939 \rightarrow 0.863$) and $11.9$pp \avgftwo\ ($0.955 \rightarrow 0.836$) on doc-model, a contribution no linker recovers on its own.
-Its real weight is on the tail, exactly where \autoref{tab:rq2} says the standard metric is blind: worst-component \fone\ falls from $0.81$ to $0.43$ ($-37.8$pp) and the harmonic per-component \fone\ from $0.93$ to $0.52$ ($-40.3$pp), against $-11.5$pp of doc-code file \fone.
+The knowledge module is ablated as the no-knowledge variant of \ref{rq:ablation}: the document-alias stage is switched off and every scan sees canonical component names only.
+Removing the alias table costs $6.1$pp \avgfone\ ($0.952 \rightarrow 0.890$) and $10.6$pp \avgftwo\ ($0.965 \rightarrow 0.860$) on doc-model, a contribution no linker recovers on its own.
+Its real weight is on the tail, exactly where \autoref{tab:rq2} says the standard metric is blind: worst-component \fone\ falls from $0.82$ to $0.47$ ($-34.8$pp) and the harmonic per-component \fone\ from $0.94$ to $0.55$ ($-39.1$pp), against $-11.4$pp of doc-code file \fone.
 This is because an alias is the only route to a component the document never names canonically, and those components are small: losing them costs little link volume and a whole architectural unit.
-Therefore the modules are complementary rather than interchangeable, and the knowledge module and the two cheap linkers all buy tail accuracy that the standard metric does not price.
+Therefore the modules are complementary rather than interchangeable, and the knowledge module and the two cheap forms all buy tail accuracy that the standard metric does not price.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ4.}
-\linkerB{} alone beats SWATTR; \linkerD{} and \linkerC{} lift \avgfone\ from $0.861$ to $0.939$ and \avgftwo\ from $0.832$ to $0.955$; the knowledge module is worth $7.6$pp \avgfone\ and $11.9$pp \avgftwo.
-Removing a small linker or the knowledge module barely moves link-level \fone\ but lowers the tail---the alias table alone is worth $37.8$pp of worst-component \fone---while removing \linkerB{} collapses every metric.
+The \linkerB{} alone beats SWATTR; the \linkerD{} and the \linkerC{} lift \avgfone\ from $0.881$ to $0.952$ and \avgftwo\ from $0.850$ to $0.965$; the knowledge module is worth $6.1$pp \avgfone\ and $10.6$pp \avgftwo.
+Removing a small form or the knowledge module barely moves link-level \fone\ but lowers the tail---the alias table alone is worth $34.8$pp of worst-component \fone---while removing the \linkerB{} collapses every metric.
 \end{rqanswer}
 
 \subsection{Summary}
 \label{sec:results:summary}
 
 \approach{} improves over the strongest baseline, \Artemis{}, run on the same backend, at every granularity we measure.
-Doc-model \avgfone\ rises from $0.809$ to $0.939$ ($+12.9$pp) and \avgftwo\ from $0.828$ to $0.955$ ($+12.7$pp), with all five projects gaining on both.
-The doc-code composition inherits the gain: $+9.3$pp \avgfone\ and $+6.6$pp \avgftwo.
+Doc-model \avgfone\ rises from $0.809$ to $0.952$ ($+14.2$pp) and \avgftwo\ from $0.828$ to $0.965$ ($+13.7$pp), with all five projects gaining on both.
+The doc-code composition inherits the gain: $+10.6$pp \avgfone\ and $+7.1$pp \avgftwo.
 The \cmrname{} is $0.0\%$, against $3.3\%$ for \Artemis{} and $7.1\%$ for SWATTR.
-The doc-code size-aware metrics show a much larger advantage on the tail that the standard metric hides: worst-component \fone\ $+33.8$pp and harmonic-mean per-component \fone\ $+29.3$pp over \Artemis{}, against $+9.3$pp at the link level.
-The three judges remove $143.7$ distinct false positives at a cost of $8.7$ true links---worth $15.3$pp of \fone\ but only $6.2$pp of \ftwo, since a judge buys precision and never recall---and each of the three linkers catches a non-overlapping slice of true positives.
-The knowledge module is worth $7.6$pp \avgfone, and $37.8$pp of worst-component \fone: like the size-aware suite itself, its value is concentrated in the tail.
+The doc-code size-aware metrics show a much larger advantage on the tail that the standard metric hides: worst-component \fone\ $+35.3$pp and harmonic-mean per-component \fone\ $+30.6$pp over \Artemis{}, against $+10.6$pp at the link level.
+The two judges remove $146.0$ distinct false positives at a cost of $6.0$ true links---worth $14.9$pp of \fone\ but only $6.5$pp of \ftwo, since a judge buys precision and never recall---and each of the three reference forms catches a non-overlapping slice of true positives.
+The knowledge module is worth $6.1$pp \avgfone, and $34.8$pp of worst-component \fone: like the size-aware suite itself, its value is concentrated in the tail.
 We discuss the threats to validity in~\autoref{sec:threats}.

@@ -58,19 +58,25 @@
 %    which scored s92a in the SAME invocations -- that in-set control, not the paper's
 %    old s92a, is what s110 was judged against. Regenerate, never hand-edit:
 %    evaluation/mini-src/rq12.py -> rq_tables.py -> csv_to_tex.py -> sync_paper.py.]
-%   doc-model avgF1: Artemis .809, SWATTR .799, \approach .939 (+12.9pp);
-%     avgF2: Artemis .828, SWATTR .778, \approach .955 (+12.7pp).
-%   doc-code  avgF1: TransArc .803, Artemis .813, \approach .906 (+9.3pp link-level);
-%     avgF2: TransArc .782, Artemis .844, \approach .909 (+6.6pp).
-%   doc-code size-aware (tab:rq2, \approach vs Artemis): worst-comp F1 .81 vs .47
-%     (+33.8pp), harmonic per-comp F1 .93 vs .63 (+29.3pp).
+%   [2026-09-11 REBASE TO s_linker120, the union arm: the two name judges become ONE
+%    rule over one merged candidate stream. Its E2E is results/union_e2e_{terra,luna}_
+%    r{1,2,3}_20260911, which scored s110 in the SAME invocations (terra quality-changing
+%    on all four statistics, luna neutral-and-favourable). Every \approach number below
+%    moved again; the BASELINES did not. The paper also loses a judge row: RQ3 has two.]
+%   doc-model avgF1: Artemis .809, SWATTR .799, \approach .952 (+14.2pp);
+%     avgF2: Artemis .828, SWATTR .778, \approach .965 (+13.7pp).
+%   doc-code  avgF1: TransArc .803, Artemis .813, \approach .918 (+10.6pp link-level);
+%     avgF2: TransArc .782, Artemis .844, \approach .914 (+7.1pp).
+%   doc-code size-aware (tab:rq2, \approach vs Artemis): worst-comp F1 .82 vs .47
+%     (+35.3pp), harmonic per-comp F1 .94 vs .63 (+30.6pp).
 %     [2026-08-27: tail metrics re-cut at the link grain of eq:worst.]
-%   per-project: all 5 projects gain on BOTH doc-model F1 and F2 (was 4/5 on s92a).
+%   per-project: all 5 projects gain on BOTH doc-model F1 and F2, and on doc-code F1 too
+%     (was 4/5 on s92a; on s110 MediaStore still lost to Artemis, and on s120 it is 1.000).
 %   Artemis-vs-TransArc para (2026-08-28: NOW THE RE-RUN ARM, not gpt-5.4, so the intro,
 %     the motivation and sec:results all mean one system): Artemis-5.6 dc F1 .8127 vs
 %     TransArc .8026 (+1.0pp), worst-comp .4684 vs .5149 (-4.7pp), harmonic .6347 vs
 %     .6756 (-4.1pp). The released gpt-5.4 arm was +4.6/-10.4/-16.9 -- do not mix them.
-%   \approach vs TransArc on doc-code: +10.4pp link, +29.1pp worst, +25.2pp harmonic.
+%   \approach vs TransArc on doc-code: +11.6pp link, +30.6pp worst, +26.5pp harmonic.
 %   doc-model CMR: \approach 0.0%, Artemis 3.3%, SWATTR 7.1%.
 %   abandoned components: \approach 0 (none, on every project, in all 3 runs),
 %     Artemis-5.6 2/run (only 1 consistently), SWATTR 3 (all MediaStore).
@@ -249,13 +255,14 @@ The links cannot be trusted.
 %CHECK [merge 2026-09-07] hand-draft rewrite of the thesis sentence, taken verbatim.
 \textbf{Rather than working in one unchecked prompting, \approach makes a link earn its place: grounded in learned architectural documentation knowledge, reached by a linker matched to how the reference is phrased, and confirmed by a judge that can reject it.}
 We present \approach, the first multi-stage \ac{LLM} workflow for doc-model trace-link recovery that carries an ambiguity-aware knowledge layer into the decision and checks every link with a context-augmented \ac{LLM}-as-a-judge.
-Four modules work together to make this decision: a knowledge module computed once, and three linkers, each paired with a judge.
-\linkerB targets sentences that state a component's whole name, \linkerD those that carry only one word of it, and \linkerC resolves an implicit reference against its antecedent.
-Each judge is a context-augmented \ac{LLM}-as-a-judge: a plain judge scores an output alone, but ours receives the evidence the link rests on, such as the matched span, the form of the reference, and, for an implicit reference, the antecedent sentence.
+Three modules work together to make this decision: a knowledge module computed once, and two linkers, each paired with a judge.
+\linkerN reaches the sentences that write a name, by two scans: the \linkerB for a whole name of a component and the \linkerD for a single word of one; \linkerC resolves an implicit reference against its antecedent.
+Each judge is a context-augmented \ac{LLM}-as-a-judge: a plain judge scores an output alone, but ours receives the evidence the link rests on, such as the matched span, what the sentence writes of the name, the other components that surface could reach, and, for an implicit reference, the antecedent sentence.
 So, it can reject trace links the evidence does not support.
+Splitting the reference forms buys the proposals, not the standards: both written forms are judged under \emph{one} rule, and what separates them is a field of the evidence rather than a second rubric.
 % Running \approach takes one invocation over the documentation and model, with no labeled links and no per-project tuning.
-On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.939$, $12.9$ percentage points above the strongest baseline \Artemis{} re-run on the same backend, and $0.955$ \avgftwo, $12.7$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
-On doc-code it reaches an \avgfone of $0.906$ ($+9.3$pp) and an \avgftwo of $0.909$ ($+6.6$pp). 
+On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.952$, $14.2$ percentage points above the strongest baseline \Artemis{} re-run on the same backend, and $0.965$ \avgftwo, $13.7$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+On doc-code it reaches an \avgfone of $0.918$ ($+10.6$pp) and an \avgftwo of $0.914$ ($+7.1$pp). 
 % ; link-level \fone\ understates this gain, as the size-aware suite below shows.
 
 % Para 4 -- second contribution: the measure. Para 1 OWNS the long-tailed fact and the 69.3--99.3% number;
@@ -273,7 +280,7 @@ We therefore add an architecture-driven evaluation suite of three size-aware met
 \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too---by $1.0$pp of link-level \fone---yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
 The move to an \ac{LLM} did not advance doc-code TLR; it regressed the tail the metric ignored.
 The suite thus makes \TransArc{}, not \Artemis{}, the strongest prior on the tail, and that is the bar \approach{} must clear.
-On doc-code \approach{} clears it: it leads \TransArc{} by $29.1$pp on the worst component and $25.2$pp on the harmonic per-component \fone, against $10.4$pp at the link level.
+On doc-code \approach{} clears it: it leads \TransArc{} by $30.6$pp on the worst component and $26.5$pp on the harmonic per-component \fone, against $11.6$pp at the link level.
 %CHECK [merge 2026-09-07] NUMBERS GUARDED. The hand draft carried the pre-re-cut figures
 %  throughout this paragraph and the contribution list (doc-model \avgfone $0.914$/$+10.4$pp,
 %  doc-code $+21.2$/$+22.3$pp, "abandons one documented component", and an \Artemis{}
@@ -289,7 +296,7 @@ This work makes three contributions:
 \begin{itemize}[leftmargin=*]
     \item \textbf{\approach}, a training-free, multi-stage \ac{LLM} workflow for doc-model trace-link recovery (\autoref{sec:approach}).
     \item an \textbf{architecture-driven evaluation suite} of three size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
-    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $12.9$pp \fone\ ($12.7$pp \ftwo) on doc-model and $9.3$pp \fone\ ($6.6$pp \ftwo) on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
+    \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $14.2$pp \fone\ ($13.7$pp \ftwo) on doc-model and $10.6$pp \fone\ ($7.1$pp \ftwo) on doc-code, with far larger gains on the long tail (\autoref{sec:exp-design}, \autoref{sec:results}).
 \end{itemize}
 
 \autoref{sec:motivation} motivates the task and its long-tailed distribution.
