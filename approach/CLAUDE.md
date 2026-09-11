@@ -1228,3 +1228,49 @@ Report: `../results/simmerge_audit/README.md`; audit `pilot/simmerge_audit.py` (
   **−9.0 / −16.0**. The registered arm is therefore *one scan emitting a `form` field
   that selects the rubric inside the call*, which is the design law applied to the rubric
   rather than to the candidate. Unbuilt.
+
+### The union-judge round (s120) — one rule, one reply, evidence graded by the match
+
+Can the two name judges be one, with the difference carried by an evidence line computed
+from the match instead of by two rubrics with opposite defaults? Level 1 only, no LLM
+calls. Report: `../results/unijudge_audit/README.md`; audit `pilot/unijudge_audit.py`
+(U1–U5); arm `s_linker120` (`unijudge`), pinned by `pilot/test_s120_union.py`
+(**1700 checks**, five projects, no calls). **Never run.**
+
+- **The census says five of twelve axes are facts of the match.** The rubric's premise
+  (`named here` / `NOT named`), the target shown, the catalog shown, the evidence bundle
+  and the context window are all computed by code the module already runs; four axes are
+  weighings and three are the reply contract (s118, s119). **Both rubrics are already
+  conditioned on `_states_a_name`** — the union moves an existing conditioning variable
+  from prose into a field, it does not invent one.
+- **The routing by stream is coarser than the facts already in hand.** Split by
+  `naming × capitalization` over six recorded runs: whole-name/capitalized **101 cases at
+  base 0.980, 1.7 FP a run**; whole-name/lowercase **71 at 0.479, 13.8 FP — the largest
+  single bucket in the pipeline**, under "approve by default"; word-only/lowercase 72 at
+  0.306, **1.8 FP**, under the strictest treatment the workflow has. Leniency is being
+  spent by stream, and the streams are not the populations.
+- **A third of the merged stream is a row the judge only confirms.** Against each row's
+  own default: whole-name/capitalized earns **+0.0 gold, +0.3 FP killed**;
+  whole-name/lowercase **+23.2 FP killed for −3.3 gold**; alias/capitalized **+14.5 FP
+  killed at no gold**; word-only/lowercase **+48.2 FP killed for −11.0 gold**. The two
+  rows the call is worth most on sit on opposite sides of today's routing, so no prompt
+  sees both. (Not a licence to admit a row in code — that invariant stands.)
+- **Blindness is not buying what it was designed to buy.** Word-only cases split by the
+  code-enumerable alternative set: *ambiguous* (a rival component shares the matched
+  word) **17 cases, base 0.765, 0.7 FP a run**; *unique* **64 cases, base 0.203, 4.5 FP**.
+  Sibling confusion is the clean bucket. The errors are ordinary English words coinciding
+  with one component's name — the failure mode `STRICTER_CLAUSE` is written for, and that
+  clause is withheld from this stream because a blind case has no target for it to speak
+  about.
+- **The arm keeps two defaults and one schema.** `s_linker120` states the default per
+  `naming` row of one rule (`whole name`/`alias` approve-by-default, `word only`
+  approve-only-when), so the polarity is keyed to a code fact rather than to a reply
+  shape — the exact substitution `s_linker119` got wrong at net −9.0 / −16.0. Cost:
+  **the same 14 judging calls**, one prompt instead of two, **148.2 kB against 167.2 kB**
+  sent today, and no case shown less than its current stage shows it (word-only cases are
+  shown more: the target, its anchors, its alternatives).
+- **Owed before it is bought:** a stage pilot on fixed candidates, three samples a side,
+  both models, **read per row, not in the total** — a union that trades the 0.980 row
+  against the 0.306 row reads neutral in a sum and is not neutral. Two rungs registered:
+  split the reply key for the word-only row (if the lenient default leaks), and withhold
+  the catalog line while keeping the target (if s25's confirmation effect reappears).

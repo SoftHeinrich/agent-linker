@@ -231,6 +231,7 @@ CANONICAL_VARIANTS = [
     "s_linker117",  # s114 + the lenient gate writes the verdict before the quote
     "s_linker118",  # s114 + the sortal gate's reply carries a ground too
     "s_linker119",  # s114 + one reply schema at all three judges
+    "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2305,6 +2306,20 @@ VARIANT_SPECS = {
         class_name="SLinker119",
         description=(
             "S-Linker119 - s114 with all three judges replying in ONE structure: the sortal gate adopts the other two's reply key, field order and boolean verdict. Composed with s116 at the lenient gate this is the whole uniform design; the polarity, the withheld target and the withheld catalog do not move."
+        ),
+    ),
+    "s_linker120": dict(
+        aliases=("unijudge",),
+        module="llm_sad_sam.linkers.experimental.s_linker120",
+        class_name="SLinker120",
+        description=(
+            "S-Linker120 - s110 with the full-name and partial-name judges unioned: "
+            "one rule, one reply, and an evidence line computed from the match "
+            "(naming=whole name|alias|word only, the competing components, the "
+            "recency of the last naming). The defaults stay two, stated per row of "
+            "the rule rather than per stream, so s119's polarity refusal is not "
+            "repeated. Level 1 only: priced by pilot/unijudge_audit.py, pinned by "
+            "pilot/test_s120_union.py (1700 checks), never run."
         ),
     ),
     "s_linker114": dict(

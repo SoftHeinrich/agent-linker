@@ -1,0 +1,13 @@
+axis,kind,source_probe,what_differs
+rubric constant,WEIGHING,ok,lenient LAYERED_ENTITY_RULES / strict LAYERED_COREF_RULES / the denotation line
+premise of the rubric,FACT,ok,'the component is named here' vs 'is NOT named in the sentence itself' — `_states_a_name` computes exactly this
+target shown,FACT,ok,full-name and coref cases print `-> ComponentName`; denotation cases print the expression only
+catalog shown,FACT,ok,`COMPONENTS: ...` heads the validation prompt; the denotation prompt has no catalog
+evidence bundle,FACT,ok,source / span / mention label / preceding sentence / anchor sentences — validation only
+context window,FACT,ok,denotation prints a SENTENCES table over ±CONTEXT_SENTENCES; validation prints the previous sentence and the anchors
+qualified clause,WEIGHING,ok,"QUALIFIED_CLAUSE joins the lenient rubric and the denotation prompt, never the strict one"
+stricter clause,WEIGHING,ok,STRICTER_CLAUSE joins the lenient rubric only
+objection field,CONTRACT,ok,asked of the strict gate only; s118 priced adding it elsewhere at ±0.0 net
+verdict vocabulary,CONTRACT,ok,`approve` boolean against `denotation` enum — s119 measured the swap at net −9.0 / −16.0
+claim quote,WEIGHING,ok,demanded before the verdict in all three; worth 35.2 TP on its own
+batch bound,CONTRACT,ok,JUDGE_BATCH = 25 for all three judging passes
