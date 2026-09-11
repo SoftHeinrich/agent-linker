@@ -4,9 +4,14 @@
 already share a builder (`_prompt_validation`, with `strict=` picking the rubric); the
 third, the partial-name denotation judge, is a different question asked of a
 **target-blind** case. Can they be *one static link rule*, with the difference between
-streams carried by an **evidence bundle computed from the match** — the design law
-("facts in code, weighings in the prompt") applied to what the judge is *shown* rather
-than to what it is *told*?
+streams carried by an **evidence bundle computed from the match**?
+
+**Where this sits against the design law.** The law is *facts stay in code, weighings go
+in the prompt*, and its table records four refusals on the fact side — one of them
+showing the denotation judge its target (`s_linker25`, **−5.5 gold**). A union of the two
+name judges necessarily shows the target to the word-only stream, so **the arm starts on
+the refused side of the standing law**; what follows is the case for measuring it anyway,
+not a claim that the law does not apply.
 
 **Answer.** Yes, and the audit says it is worth measuring for a reason the union was not
 proposed for: **the routing the two rubrics implement is coarser than the facts the code

@@ -1229,48 +1229,50 @@ Report: `../results/simmerge_audit/README.md`; audit `pilot/simmerge_audit.py` (
   that selects the rubric inside the call*, which is the design law applied to the rubric
   rather than to the candidate. Unbuilt.
 
-### The union-judge round (s120) — one rule, one reply, evidence graded by the match
+### The union round (s120) — one judge, one rule, evidence computed from the match
 
-Can the two name judges be one, with the difference carried by an evidence line computed
-from the match instead of by two rubrics with opposite defaults? Level 1 only, no LLM
-calls. Report: `../results/unijudge_audit/README.md`; audit `pilot/unijudge_audit.py`
-(U1–U5); arm `s_linker120` (`unijudge`), pinned by `pilot/test_s120_union.py`
-(**1700 checks**, five projects, no calls). **Never run.**
+Can the head's two name judges be one? Not two rubrics addressed by a code fact, but
+**one rule stating what a trace link is and how to read each piece of evidence**, with
+every candidate in one case format. Level 1 `pilot/unijudge_audit.py`; level 2
+`pilot/union_pilots.py` (both arms in one invocation, fixed candidates, alias table
+pinned), statistics `pilot/union_stats.py`, error analysis `pilot/union_diff.py`, level 3
+`pilot/union_composition.py`; arm `s_linker120` (`unijudge`), its thirteen iterations as
+data in `union_iterations.py`, invariants `pilot/test_s120_union.py` (2593 checks),
+defensibility `pilot/union_defensibility.py` (25 checks). Report:
+`../results/union_round/README.md`.
 
-- **The census says five of twelve axes are facts of the match.** The rubric's premise
-  (`named here` / `NOT named`), the target shown, the catalog shown, the evidence bundle
-  and the context window are all computed by code the module already runs; four axes are
-  weighings and three are the reply contract (s118, s119). **Both rubrics are already
-  conditioned on `_states_a_name`** — the union moves an existing conditioning variable
-  from prose into a field, it does not invent one.
-- **The routing by stream is coarser than the facts already in hand.** Split by
-  `naming × capitalization` over six recorded runs: whole-name/capitalized **101 cases at
-  base 0.980, 1.7 FP a run**; whole-name/lowercase **71 at 0.479, 13.8 FP — the largest
-  single bucket in the pipeline**, under "approve by default"; word-only/lowercase 72 at
-  0.306, **1.8 FP**, under the strictest treatment the workflow has. Leniency is being
-  spent by stream, and the streams are not the populations.
-- **A third of the merged stream is a row the judge only confirms.** Against each row's
-  own default: whole-name/capitalized earns **+0.0 gold, +0.3 FP killed**;
-  whole-name/lowercase **+23.2 FP killed for −3.3 gold**; alias/capitalized **+14.5 FP
-  killed at no gold**; word-only/lowercase **+48.2 FP killed for −11.0 gold**. The two
-  rows the call is worth most on sit on opposite sides of today's routing, so no prompt
-  sees both. (Not a licence to admit a row in code — that invariant stands.)
-- **Blindness is not buying what it was designed to buy.** Word-only cases split by the
-  code-enumerable alternative set: *ambiguous* (a rival component shares the matched
-  word) **17 cases, base 0.765, 0.7 FP a run**; *unique* **64 cases, base 0.203, 4.5 FP**.
-  Sibling confusion is the clean bucket. The errors are ordinary English words coinciding
-  with one component's name — the failure mode `STRICTER_CLAUSE` is written for, and that
-  clause is withheld from this stream because a blind case has no target for it to speak
-  about.
-- **The arm keeps two defaults and one schema.** `s_linker120` states the default per
-  `naming` row of one rule (`whole name`/`alias` approve-by-default, `word only`
-  approve-only-when), so the polarity is keyed to a code fact rather than to a reply
-  shape — the exact substitution `s_linker119` got wrong at net −9.0 / −16.0. Cost:
-  **the same 14 judging calls**, one prompt instead of two, **148.2 kB against 167.2 kB**
-  sent today, and no case shown less than its current stage shows it (word-only cases are
-  shown more: the target, its anchors, its alternatives).
-- **Owed before it is bought:** a stage pilot on fixed candidates, three samples a side,
-  both models, **read per row, not in the total** — a union that trades the 0.980 row
-  against the 0.306 row reads neutral in a sum and is not neutral. Two rungs registered:
-  split the reply key for the word-only row (if the lenient default leaks), and withhold
-  the catalog line while keeping the target (if s25's confirmation effect reappears).
+- **Adopted at the stage, on both models.** terra (n=5, 25 paired units): gold **+0.2
+  (p = 1.00)**, spurious **−12.6 (p = 0.000)**, net **+13.2 (p = 0.025)**, precision
+  0.878 → 0.939. luna (n=3): gold **+0.3 (p = 1.00)**, spurious **−17.7 (p = 0.008)**,
+  net **+18.7 (p = 0.011)**, precision 0.789 → 0.859. **Same 14 judging calls, one
+  prompt instead of two.** Composition is clean on terra (0 gold pairs removed that
+  nothing re-proposes) and 2 distinct pairs on luna, below the TP floor of 4.8.
+- **The level-1 finding that motivated it held up.** Routing by stream is coarser than
+  the facts in code: whole-name/capitalized is 101 cases at base 0.980, whole-name/
+  lowercase 71 at 0.479 carrying **13.8 FP a run** under "approve by default", and
+  word-only/lowercase 72 at 0.306 carrying 1.8 under the strictest gate. The union's
+  whole-name row is where its win comes from on both models (terra gold +0.36/unit at
+  p = 0.007 with spurious −0.60 at p = 0.002; luna −1.3 gold at **−21.0 spurious**).
+- **An evidence field restrains when it is stated and misleads when it is weighted.**
+  Iteration 1 stated the alternative set as a ground for rejecting: **−7.6 gold** on a
+  bucket that is 0.765 gold. Iteration 6 deleted the same field from the case:
+  **+26.4 spurious** at +0.7 gold. Same fact, opposite errors, a number on each side of
+  the design law.
+- **The company a case keeps is part of its evidence.** Three rewrites of the rule left
+  luna's word-only row at 9.7–12.3 gold against a control's ~21. Grouping those cases by
+  what the match computed moved it to 15.3 with no prompt change; letting the call carry
+  only what its batch has (no catalog, the head's denotation contract) finished it at
+  22.0. **No sentence of any rule moved that row as far as the batch boundary did.**
+- **`s_linker25`'s refusal is about the question, not the target.** Blinding the
+  word-only case recovered 1.4 of 6.4 gold on terra and nothing on luna; what that stream
+  loses to is being asked an identity question in any of the ways a merged prompt can ask
+  one. And **a row-free prompt cannot carry a per-row reply contract**: iteration 10 asked
+  those cases for `denotation`, luna kept answering `approve`, and the row kept 1.0 of 81.
+- **Defensible by construction, checked mechanically.** Every clause of the rule that
+  states a criterion is a verbatim slice of a head constant, verified against the constant
+  it came from; `LAYERED_ENTITY_RULES`' "Approve the link by default" is deliberately not
+  carried and its absence is asserted. 0 of 63 catalog words, 0 dotted identifiers, 0
+  document-shape words, 0 corpus-grounded sentences. The judge punches on two things: the
+  architectural claim, and what an expression denotes where no name is written.
+- **The head does not move on this evidence alone** — one stage is measured, and adoption
+  into the pipeline is an E2E decision for a whole variant.

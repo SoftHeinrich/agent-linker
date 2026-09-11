@@ -58,18 +58,36 @@ def _variant(data):
 
 
 def _prompts_and_cases(linker, data, answer):
-    """Run the union judging pass with `_ask` stubbed. Returns prompts and results."""
+    """Run the union judging pass with `_ask` stubbed. Returns prompts and results.
+
+    The stub answers **in each row's own field** — the boolean for a naming row, the
+    enum for a word-only one — which is what the variant's parser reads. A stub that
+    answered one field for both would have exercised half the parse path and passed.
+    """
     prompts = []
 
     def fake_ask(prompt, **_kwargs):
         prompts.append(prompt)
         count = prompt.count("\nCase ") + prompt.startswith("Case ")
-        # The batch's case numbers, read back off the prompt the variant built.
+        lines = prompt.splitlines()
         numbers = [int(line.split()[1].rstrip(":"))
-                   for line in prompt.splitlines() if line.startswith("Case ")]
-        return {"validations": [{"case": n, "claim": "quoted words",
-                                 "approve": answer(n)} for n in numbers]} if count \
-            else {"validations": []}
+                   for line in lines if line.startswith("Case ")]
+        blind = set()
+        current = None
+        for line in lines:
+            if line.startswith("Case "):
+                current = int(line.split()[1].rstrip(":"))
+            elif current and "naming=word only" in line:
+                blind.add(current)
+        replies = []
+        for n in numbers:
+            reply = {"case": n, "claim": "quoted words"}
+            if n in blind:
+                reply["denotation"] = "participant" if answer(n) else "associated"
+            else:
+                reply["approve"] = answer(n)
+            replies.append(reply)
+        return {"validations": replies} if count else {"validations": []}
 
     linker._ask = fake_ask
     sent_map = {s.number: s for s in data["sentences"]}
@@ -112,12 +130,36 @@ def main():
 
         # T2/T3 — the cases and the evidence
         by_id = {c.id: c for c in data["components"]}
+        names = {component.name for component in data["components"]}
         for candidate in candidates:
             evidence = linker._union_evidence(
                 candidate, data["components"], sent_map)
             case = linker._format_union_case(1, candidate, evidence, sent_map)
             check(candidate.sentence_text in case, f"{project}: case shows its sentence")
-            check(candidate.component_name in case, f"{project}: case shows its target")
+            # One format for every candidate: the same header, the same evidence
+            # line, the same field vocabulary. What differs between cases is the
+            # VALUE of a field, never whether the case is a different kind of case.
+            if evidence["naming"] == "word only":
+                # The slot the match could not fill stays empty: no component name
+                # may appear outside the sentence the case quotes.
+                printed = "\n".join(line for line in case.splitlines()
+                                     if not line.strip().startswith('"')
+                                     and "[prev:" not in line)
+                check(not any(name in printed for name in names),
+                      f"{project}: a case with no computed component names none")
+            else:
+                check(candidate.component_name in case,
+                      f"{project}: every case with a computed component shows it")
+            check("Evidence: writes=" in case,
+                  f"{project}: every case carries the writes field")
+            check(linker.WRITES[evidence["naming"]] in case,
+                  f"{project}: the writes field says what the sentence writes")
+            fields = {part.split("=")[0].strip() for line in case.splitlines()
+                      if line.strip().startswith("Evidence:")
+                      for part in line.split("Evidence:")[1].split(", ")
+                      if "=" in part}
+            check(fields <= {"writes", "alternatives", "mention"},
+                  f"{project}: no case invents an evidence field ({fields})")
             check(evidence["span"] and evidence["span"] in case,
                   f"{project}: case shows its span")
             whole = bool(linker._writes_name(candidate.sentence_text,
@@ -177,6 +219,33 @@ def main():
         check({(link.sentence_number, link.component_id) for link in links}
               <= head_full | head_partial,
               f"{project}: no link outside the scans")
+
+        # the verdict contract follows the case: an iteration that answers `per_row`
+        # decides a case carrying no component by the denotation enum, and a boolean
+        # cannot approve one. An iteration that answers `boolean` decides every case
+        # by the boolean. Either way the contract is a property of the iteration,
+        # not of a rubric the prompt switches between.
+        contract = _variant(data)
+        contract._ask = lambda prompt, **_k: {"validations": [
+            {"case": int(line.split()[1].rstrip(":")), "claim": "quoted words",
+             "approve": True}
+            for line in prompt.splitlines() if line.startswith("Case ")]}
+        kept_contract, _decisions = contract._judge_union(
+            candidates, data["components"], data["sentences"], sent_map)
+        blind_pairs = {(c.sentence_number, c.component_id) for c in candidates
+                       if (linker.iteration.blind_word_only
+                           or linker.iteration.contract_follows_batch)
+                       and linker._union_evidence(c, data["components"],
+                                                  sent_map)["naming"] == "word only"}
+        decided_by_boolean = {(c.sentence_number, c.component_id)
+                              for c in kept_contract}
+        if (linker.iteration.verdict == "per_row"
+                or linker.iteration.contract_follows_batch):
+            check(not (decided_by_boolean & blind_pairs),
+                  f"{project}: a boolean cannot approve a case with no component")
+        else:
+            check(len(kept_contract) == len(candidates),
+                  f"{project}: one verdict field decides every case")
 
         # a reply the model never sent must not keep anything
         silent = _variant(data)

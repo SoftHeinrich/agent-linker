@@ -1,75 +1,69 @@
-"""S-Linker120 — one judge for both name streams; the rule is static, the evidence is not.
+"""S-Linker120 — one judge, one rule: what a trace link is and how to read the evidence.
 
 The head judges the two name streams with two prompts whose rubrics state opposite
-defaults, and it routes a case to one or the other by which scan proposed it. This
-variant asks the same question of both with **one rule**, and lets the difference be
-carried by an **evidence line computed from the match**: `naming=whole name | alias |
-word only`, the competing components the match could equally point to, and how long ago
-the document last named this one. Nothing in the rule is new — every clause is one of
-the head's own, re-scoped to speak about the evidence line instead of about the stream.
+defaults, and routes a case to one or the other by which scan proposed it. This variant
+asks **one question of every candidate**: a trace link holds when the sentence makes an
+architectural claim about the component. There is no lenient row and no strict row. What
+differs between candidates is the **evidence computed from the match** — what the
+sentence writes of the name, which components the same word could reach, what the code
+can tell about the expression's place in the sentence, and which other sentences name
+the component — and the rule says how to read each of those, not which rubric to apply.
 
-**Why this is the shape the branch's own results point at.** `pilot/gate_inventory.py`
-states the fold law: *a gate folds into a judge's prompt exactly when that judge is
-shown the information the gate reads.* Run forwards, the law says what a union needs —
-not a better rubric but a bigger evidence line, because what a judge may be told
-decides what its rule can say. `pilot/unijudge_audit.py` runs the census: of the twelve
-axes on which the three judging calls differ, **five are facts of the match** (the
-rubric's premise, the target, the catalog, the evidence bundle, the context window),
-four are weighings, and three are the reply contract. This variant moves exactly the
-five, keeps the four in one paragraph, and leaves the three alone.
+**Measured, and adopted on that basis.** Stage pilot on fixed recorded candidates, both
+arms in the same invocation, five projects, the alias table pinned
+(`pilot/union_pilots.py`, `../results/union_round/`):
 
-**What the audit found the routing is actually doing** (six recorded head runs, five
-projects, `../results/unijudge_audit/`):
+    model  samples  gold      p        spurious   p        net      p       precision
+    terra  5        +0.2      1.000    -12.6      0.000    +13.2    0.025   0.878 -> 0.939
+    luna   3        +0.3      1.000    -17.7      0.008    +18.7    0.011   0.789 -> 0.859
 
-    naming      case         gate          cases  base   kept/run  TP/run  FP/run
-    whole name  capitalized  lenient         101  0.980     100.7    99.0     1.7
-    whole name  lowercase    lenient          71  0.479      44.5    30.7    13.8
-    alias       capitalized  lenient          39  0.487      24.5    19.0     5.5
-    word only   lowercase    target-blind     72  0.306      12.8    11.0     1.8
+**Gold-neutral on both models, spurious down on both, at the same 14 judging calls and
+one prompt instead of two.** Composition is level-3 clean on terra (0 gold pairs the
+union removes that nothing downstream re-proposes) and carries 2 distinct pairs on luna,
+below the recorded TP floor of 4.8 (`pilot/union_composition.py`).
 
-The lenient gate's stream is **not one population**: two rows of it sit at base rate
-0.98 and 0.48, and the low row carries **13.8 false positives a run, the largest single
-bucket in the pipeline**, under a rubric that says "approve by default". The strictest
-treatment in the workflow is spent on the row that costs 1.8. Routing by *stream* is a
-coarser instrument than routing by *evidence*, and the evidence is a code fact either
-way.
+**Thirteen iterations, each one change, each measured against the control beside it.**
+They live in `union_iterations.py` as data — rule text, case format, verdict contract and
+numbers — so the trail can be read and re-run (`pilot/union_pilots.py --arms control v3
+v13` puts two of them in one invocation). Three results from it are worth more than the
+arm:
 
-**The two results this variant must not walk into, and how it avoids each.**
+  * **An evidence field restrains when it is stated and misleads when it is weighted.**
+    Iteration 1 stated the alternative set as a ground for rejecting and lost 7.6 gold on
+    a bucket that is 0.765 gold; iteration 6 removed the same field and gained **26.4
+    spurious**. Between those two numbers is the whole design law, measured twice in
+    opposite directions.
+  * **The company a case keeps is part of its evidence.** Three successive rewrites of
+    the rule left luna's word-only row at ~10 gold against a control's ~21. Grouping
+    those cases by what the match computed — one code fact, no prompt change — recovered
+    the row, and letting the call carry what its batch's evidence has (no catalog, the
+    head's denotation contract) finished it.
+  * **`s_linker25`'s refusal is about the arrangement, not the target.** Showing the
+    component to a case whose sentence writes only one word of a name cost gold on luna
+    (-9.4) and nothing much on terra; blinding it recovered 1.4 of 6.4 on terra and
+    nothing on luna. What that stream actually loses to is being asked an identity
+    question, in any of the several ways a merged prompt can ask one.
 
-*`s25`, −5.5 gold*: showing the denotation judge its target made the model confirm
-identity instead of testing it. That was measured as a **second, rejecting pass** behind
-the blind one — a target-shown reviewer that could only subtract. Here there is no
-second pass: the target is shown once, in the only call the case gets, and the case
-carries the competing components with it, which is `s_linker107`'s result (the
-alternative set is a fact when the case contains it; enumerating it in code moved
-spurious −10.0 where asking the model to enumerate moved it +6.6).
+**Defensibility is enforced, not asserted.** `pilot/union_defensibility.py` (25 checks)
+holds the rule to GATE-06/GATE-07: every clause that states a criterion is a **verbatim
+slice of one of the head's own constants** — checked against the constant it came from,
+not retyped — and the residue is the definition of a trace link plus one line per
+evidence field, each with a declared ground. Zero benchmark words of 63 catalog names,
+zero dotted identifiers, zero document-shape enumerations, zero corpus-grounded
+sentences. What the judge punches on is exactly two things: whether the sentence makes
+an architectural claim about the component, and what the expression denotes where no
+name is written.
 
-*`s119`, net −9.0 / −16.0*: making the sortal gate reply in the lenient gate's boolean
-imported the lenient default onto a stream whose base rate is a third of it. Here the
-defaults are **not** unified: the rule states one default per `naming` row, and the row
-is selected by a fact the code computes, not by the schema. One reply shape, two
-defaults, stated once.
+**Invariants.** `pilot/test_s120_union.py` (2593 checks, five projects, no calls): the
+merged stream is exactly `full ∪ partial` at the head's own bytes, every candidate keeps
+the stage label its links and phase log are read by, every case carries its sentence and
+span, a case whose match computed no component names none, no case invents an evidence
+field, the verdict contract follows the batch, and an empty reply keeps nothing.
 
-**Level 1 only. This variant has never been run.** It exists so the arm is a file before
-a pilot buys it, as the branch's policy requires; `pilot/test_s120_union.py` pins what
-is structurally unchanged (both scans, the decision records, the link sources, the parse
-path) and `pilot/unijudge_audit.py` prices what changes. What it does not answer —
-whether one prompt asking the rule of both rows keeps what two prompts keep — is a stage
-pilot on fixed recorded candidates, three samples a side, both models, **read per row
-and not only in the total**: a union that trades the rows against each other reads
-neutral in a sum and is not neutral.
-
-**Cost, measured off the recorded runs.** The same 14 judging calls a five-project run
-(296 cases in one stream fill the batches two streams of 215 and 81 fill), and 148.2 kB
-of prompt against the 167.2 kB the two stages send today — the denotation window and the
-duplicated anchors collapse into one table. No case is shown less than its current stage
-shows it; word-only cases are shown *more* (the target, its anchors, the alternatives),
-which is the whole point of the arm.
-
-**Lineage.** `s_linker110`, unchanged except at the judging of the two name streams.
-The coreference linker is untouched and deliberately outside this union: its cases are
-not matches — there is no span the code computed — so "evidence computed from the match"
-has nothing to say about them. Folding the strict gate in is the next rung, not this one.
+**Lineage.** `s_linker110`, unchanged except at the judging of the two name streams. The
+coreference linker is untouched and outside this union: its cases are not matches — there
+is no span the code computed — so evidence computed from the match has nothing to say
+about them. Folding the strict gate in is the next rung, not this one.
 """
 from __future__ import annotations
 
@@ -79,24 +73,45 @@ from llm_sad_sam.core.data_types_v2 import SadSamLink
 from llm_sad_sam.linkers.experimental.s_linker110 import (
     SLinker110, NameForm, QUALIFIED_CLAUSE, STRICTER_CLAUSE,
 )
+from llm_sad_sam.linkers.experimental.union_iterations import (
+    ACTIVE, ITERATIONS, active,
+)
 
-#: The one rule. Four clauses, each the head's own, plus one sentence per `naming` row
-#: stating that row's default. `LAYERED_ENTITY_RULES` supplies the whole-name row
-#: verbatim in substance ("approve by default ... reject only on a positive ground");
-#: the word-only row states the standard the denotation judge applies today, now
-#: sayable because the case carries the target and its alternatives.
-UNION_LINK_RULES = """A link says the sentence makes an architectural claim about the component named in the case. Each case carries an evidence line stating how the sentence reaches that component; the row you are given decides how far to extend the case before asking it for more.
-
-naming=whole name — the component's name is written here and the document treats it as part of the system. Approve by default: a mention that says nothing further about the component still counts as a valid link. Reject only on a positive ground -- that the sentence asserts nothing of this component, because the name is doing some other job here, or because the sentence denies what it would otherwise say of it.
-
-naming=alias — as above, reached through a short form the document itself established for that component. The same default holds, and the ground for rejecting is the same one.
-
-naming=word only — the sentence writes one word of the name and never the whole name. Approve only when that word is being used to name this component here; if it is used in its ordinary sense, or if a component listed under alternatives is the one the sentence means, reject."""
-
-#: The two reject-grounds the lenient gate carries today, unchanged. They speak about a
-#: surface in the sentence, which every case of this stream has, so both rows can read
-#: them; the coreference gate still cannot, and still does not get them.
-UNION_CLAUSES = f"{QUALIFIED_CLAUSE}\n{STRICTER_CLAUSE}"
+#: **Iteration 7 — one rule, no rows.** Iterations 1-6 kept two standards inside one
+#: prompt, selected by the `naming` row: the head's two defaults, addressed by a code
+#: fact instead of by a stream. That is a union of the *prompts* and not of the
+#: *question*, and it leaves the judge holding two definitions of a link. This rule
+#: holds one: **what a trace link is, and how to read each piece of evidence.** Every
+#: candidate is then one case in one format, and what differs between candidates is the
+#: value of the evidence fields, not the standard applied to them.
+#:
+#: The measured trail that got here, all on gpt-5.6-terra, three samples, both arms in
+#: one invocation, each iteration read against the control that ran beside it
+#: (`../results/union_round/`):
+#:
+#:     iteration                                    gold      spurious   3*gold-sp
+#:     1  paraphrased rows, alternatives reject    -11.3        -0.7       -33.2
+#:     2  rows quoted verbatim, alternatives inert  -4.0       -12.7        +0.7
+#:     3  + the word-only case blinded              -4.0       -13.4        +1.4
+#:     4  + the quote demand made row-aware         -0.7        +3.3        -5.4
+#:     5  + each row answering its own field        -3.0        +3.7       -12.7
+#:     6  - alternatives and recency from the case  +0.7       +26.4       -24.3
+#:
+#: Two of those are facts this rule is built on rather than opinions about it.
+#: **Iteration 6 is the sharpest**: dropping `alternatives` and the recency line from
+#: the case cost **+26.4 spurious at +0.7 gold** -- an evidence field that names what a
+#: case could reach *instead* is what restrains the judge, so evidence is worth stating
+#: even when no clause tells the judge to weigh it. **Iteration 1 is its mirror**: the
+#: same field, stated as a ground for rejecting, cost 7.6 gold on a bucket that is 0.765
+#: gold. Evidence belongs in the case; how to read it belongs in the rule; a verdict
+#: keyed to it belongs in neither.
+#: The rule the variant runs, and every version of it that was measured, live in
+#: `union_iterations.py` — one file to read the trail off. Override per process with
+#: `UNION_ITERATION=v3`, which is how `pilot/union_pilots.py --iteration` runs an
+#: older version as its own arm.
+TRACE_LINK_RULE = ITERATIONS[ACTIVE].rule
+UNION_LINK_RULES = TRACE_LINK_RULE
+UNION_CLAUSES = ITERATIONS[ACTIVE].clauses
 
 
 class SLinker120(SLinker110):
@@ -111,6 +126,35 @@ class SLinker120(SLinker110):
 
     #: Full name and partial name are proposed by two scans and judged by one call.
     LINKERS = ("name", "coreference")
+
+    #: The iteration this instance runs. Set on the instance so one process can hold
+    #: two arms (`pilot/union_pilots.py` builds `control`, `union` and any named
+    #: iteration in the same invocation).
+    iteration_name: str | None = None
+
+    @property
+    def iteration(self):
+        return active(self.iteration_name)
+
+    #: The contract a call whose cases carry no component answers in. Both lines are
+    #: the head's own denotation prompt: there is nothing to approve against, so the
+    #: call classifies, and `s_linker119` measured what happens when that stream is
+    #: made to answer the other contract instead (net -9.0 terra / -16.0 luna).
+    DENOTATION_DEMAND = (
+        "For each case, quote as the claim a contiguous exact substring of the source "
+        "sentence, then answer denotation with participant or associated."
+    )
+    DENOTATION_REPLY = ('{"validations": [{"case": 1, "claim": "exact source quote", '
+                        '"denotation": "participant"}]}')
+
+    #: How the evidence line says what the sentence writes of the name. These are the
+    #: three values of one code fact (`_states_a_name` decomposed), phrased as the
+    #: evidence they are rather than as the name of a rule to apply.
+    WRITES = {
+        "whole name": "the whole name",
+        "alias": "a short form the document established for it",
+        "word only": "one word of the name",
+    }
 
     def _run_linker(self, linker, sentences, components, name_to_id, sent_map):
         if linker == "name":
@@ -193,48 +237,78 @@ class SLinker120(SLinker110):
 
     # ── the one judging call ─────────────────────────────────────────────────
 
-    def _prompt_union(self, comp_names, sentence_table, cases) -> str:
-        """One rule, one reply shape, the evidence carrying the rest."""
+    def _prompt_union(self, comp_names, sentence_table, cases, named=True) -> str:
+        """The active iteration's rule, demand and reply contract, around the cases.
+
+        Every version this round measured is a row of `union_iterations.ITERATIONS`;
+        nothing about the prompt is written here, so the file that holds the trail is
+        the file a reader compares versions in.
+        """
+        spec = self.iteration
         table = (f"\nSENTENCES\n{json.dumps(sentence_table)}\n"
                  if sentence_table else "")
+        clauses = f"\n{spec.clauses}\n" if spec.clauses else ""
+        blind_call = spec.contract_follows_batch and not named
+        catalog = "" if blind_call else f"\nCOMPONENTS: {', '.join(comp_names)}\n"
+        demand = (self.DENOTATION_DEMAND if blind_call else spec.demand)
+        reply = (self.DENOTATION_REPLY if blind_call else spec.reply)
         return f"""Validate components in a document.
-
-COMPONENTS: {', '.join(comp_names)}
-
-{UNION_LINK_RULES}
-
-{UNION_CLAUSES}
-{table}
-For each case, first quote the EXACT words from the sentence that state the
-architectural claim about the component (or write "none" if the sentence makes no
-such claim), then decide approve true/false based on that claim.
+{catalog}
+{spec.rule}
+{clauses}{table}
+{demand}
 
 CASES:
 {chr(10).join(cases)}
 
 Return JSON:
-{{"validations": [{{"case": 1, "claim": "<exact quote or none>", "approve": true}}]}}
+{reply}
 JSON only:"""
 
     def _format_union_case(self, index, candidate, evidence, sent_map, shown_in=0):
+        """One case, in the active iteration's format.
+
+        The component slot is filled by the evidence, not by the case's existence: an
+        iteration with `blind_word_only` leaves it empty where the match wrote only one
+        word of a name, because that match computed no component for this sentence.
+        Measured: with the slot filled for every case, luna's word-only gold reads 12.3
+        of 26 against a control's 21.7 (`union_iterations.ITERATIONS['v8'].measured`) —
+        `s_linker25`'s refusal, reappearing on the model the branch reads second.
+        """
+        spec = self.iteration
+        blind = spec.blind_word_only and evidence["naming"] == "word only"
         previous = self._prev_prefix(candidate.sentence_number, sent_map)
-        facts = [f"source={evidence['source']}", f"naming={evidence['naming']}"]
-        if evidence["mention"]:
-            facts.append(f"mention={evidence['mention']}")
-        if evidence["alternatives"]:
-            facts.append(f"alternatives={', '.join(evidence['alternatives'])}")
-        if evidence["last_named"] >= 0:
-            facts.append(f"named {evidence['last_named']} sentences earlier")
+        labels = {
+            "source": lambda: f"source={evidence['source']}",
+            "naming": lambda: f"naming={evidence['naming']}",
+            "writes": lambda: f"writes={self.WRITES[evidence['naming']]}",
+            "mention": (lambda: f"mention={evidence['mention']}"
+                        if evidence["mention"] else None),
+            "alternatives": (lambda: "alternatives="
+                             + ", ".join(evidence["alternatives"])
+                             if evidence["alternatives"] else None),
+            "last_named": (lambda: f"named {evidence['last_named']} sentences earlier"
+                           if evidence["last_named"] >= 0 else None),
+        }
+        facts = []
+        for name in spec.fields:
+            if blind and name in ("alternatives", "mention", "last_named"):
+                continue          # every one of these names a component
+            rendered = labels[name]()
+            if rendered:
+                facts.append(rendered)
         lines = [
-            f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}',
+            (f'Case {index}: "{evidence["span"]}"' if blind else
+             f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}'),
             f'  {previous}"{candidate.sentence_text}"',
             f"  Evidence: {', '.join(facts)}",
         ]
-        if evidence["anchors"]:
+        if not blind and evidence["anchors"]:
             if shown_in:
-                lines.append(f"  Anchors (confirmed refs): as shown in Case {shown_in}.")
+                lines.append(f"  Anchors (other sentences naming it): "
+                             f"as shown in Case {shown_in}.")
             else:
-                lines.append("  Anchors (confirmed refs):")
+                lines.append("  Anchors (other sentences naming it):")
                 lines.extend(f"    {anchor}" for anchor in evidence["anchors"])
         return "\n".join(lines)
 
@@ -249,7 +323,22 @@ JSON only:"""
         from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names
         comp_names = get_comp_names(components)
         approved, decisions = [], {}
-        for _, batch in self._iter_batches(candidates, self.JUDGE_BATCH):
+        # The evidence groups the cases as well as filling them: a case whose match
+        # computed no component is judged among its own kind. One rule, one prompt
+        # template, and the same call count the head pays for its two stages.
+        if self.iteration.batch_by_evidence:
+            named, blind = [], []
+            for candidate in candidates:
+                bucket = (blind if self._union_evidence(
+                    candidate, components, sent_map)["naming"] == "word only"
+                    else named)
+                bucket.append(candidate)
+            groups = [group for group in (named, blind) if group]
+        else:
+            groups = [candidates]
+        batches = [batch for group in groups
+                   for _, batch in self._iter_batches(group, self.JUDGE_BATCH)]
+        for batch in batches:
             evidences = {
                 (c.sentence_number, c.component_id):
                     self._union_evidence(c, components, sent_map)
@@ -272,21 +361,36 @@ JSON only:"""
                     shown[candidate.component_name] = index
                 cases.append(self._format_union_case(
                     index, candidate, evidence, sent_map, first))
+            named_batch = any(
+                evidences[(c.sentence_number, c.component_id)]["naming"] != "word only"
+                for c in batch)
             self.llm.set_phase("phase_25_name_union_judge")
             data = self._ask(
-                self._prompt_union(comp_names, table, cases),
+                self._prompt_union(comp_names, table, cases, named=named_batch),
                 timeout=120, label="Union validation", require="validations",
             )
             verdicts = {}
             for item in (data or {}).get("validations", []):
                 position = item.get("case", 0) - 1
-                if 0 <= position < len(batch):
+                if not 0 <= position < len(batch):
+                    continue
+                candidate = batch[position]
+                row = evidences[(candidate.sentence_number,
+                                 candidate.component_id)]["naming"]
+                claim = str(item.get("claim", "")).strip().strip("\"'\u201c\u201d\u2018\u2019")
+                blind_call = (self.iteration.contract_follows_batch
+                              and not named_batch)
+                if blind_call or (self.iteration.verdict == "per_row"
+                                  and row == "word only"):
+                    # The head's denotation contract, unchanged: the enum keeps only a
+                    # positive classification and the quote must be committed to.
+                    keep = (str(item.get("denotation", "")).strip() == "participant"
+                            and bool(claim))
+                else:
                     value = item.get("approve", False)
-                    verdicts[position] = (
-                        value is True
-                        or (isinstance(value, str) and value.lower() == "true"),
-                        str(item.get("claim", "")).strip(),
-                    )
+                    keep = (value is True
+                            or (isinstance(value, str) and value.lower() == "true"))
+                verdicts[position] = (keep, claim)
             for position, candidate in enumerate(batch):
                 ok, claim = verdicts.get(position, (False, ""))
                 stage = self._stage_of(candidate)
