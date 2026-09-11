@@ -43,7 +43,7 @@ REPORTS = EVAL / "reports"
 # instead of editing four paths. $ALINKER_ARM selects the arm (default below is the arm
 # the paper reports; check.py asserts every generator declares the same DEFAULT_ARM).
 # $RQ34_REPORTS still names the RQ3/RQ4 directory outright, for one named off-pattern.
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"   # matches rq12.py's output naming
 
@@ -504,9 +504,15 @@ def main():
     if floor_available():
         build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
     else:
+        # Remove a previous arm's rendering as well as skipping this one: a table left
+        # behind in the shared output directory is indistinguishable from a current one,
+        # and csv_to_tex.py would render it under this arm's name.
+        stale = TEX_SRC / "rq4_floor.csv"
+        note = "" if not stale.exists() else " (a previous arm's copy removed)"
+        stale.unlink(missing_ok=True)
         print(f"[rq_tables] no one-call floor for arm {ARM} "
-              f"({RQ34_FLOOR / 'rq4_floor.csv'} absent): rq4_floor.csv not written",
-              file=sys.stderr)
+              f"({RQ34_FLOOR / 'rq4_floor.csv'} absent): rq4_floor.csv not written"
+              + note, file=sys.stderr)
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()

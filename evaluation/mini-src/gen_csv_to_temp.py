@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import filecmp
+import re
 import os
 import shutil
 import subprocess
@@ -35,7 +36,21 @@ DEFAULT_EVAL = Path(os.environ.get("EVAL_ROOT") or Path(__file__).resolve().pare
 # Committed RQ3/RQ4 baseline for the reported arm: reports/rq34/<arm>/. NOT reports/rq34/s21,
 # which holds the retired arm. Keep this in step with rq_tables.py (it reads the same env
 # var) or every rq34 cell reads as DIFFERS.
-ARM = os.environ.get("RQ34_REPORTS") or os.environ.get("ALINKER_ARM", "s110")
+def _default_arm() -> str:
+    """The reported arm, read out of `rq34.py`'s source.
+
+    Not a literal of its own: this module is not one of the seven `check.py` holds to
+    a common `DEFAULT_ARM`, so a literal here would be the one copy a promotion could
+    leave behind -- and it was ("s110", after the arm moved to s120).
+    """
+    found = re.search(r'^DEFAULT_ARM\s*=\s*["\'](?P<arm>[^"\']+)["\']',
+                      (Path(__file__).parent / "rq34.py").read_text(encoding="utf-8"),
+                      re.M)
+    return found.group("arm") if found else "s110"
+
+
+ARM = (os.environ.get("RQ34_REPORTS")
+       or os.environ.get("ALINKER_ARM", _default_arm()))
 
 
 def jobs(eval_root: Path, out: Path):
@@ -53,10 +68,23 @@ def jobs(eval_root: Path, out: Path):
         ("rq34_rq2  (RQ3/RQ4 size-aware)",
          [py, "mini-src/rq34_rq2.py", "--csv-root", str(out / "rq34_rq2")],
          out / "rq34_rq2", eval_root / "reports" / "rq34" / ARM),
+    ] + ([
         ("rq4_floor  (RQ4 one-call floor)",
          [py, "mini-src/rq4_floor.py", "--csv-root", str(out / "rq4_floor")],
          out / "rq4_floor", eval_root / "reports" / "rq34" / f"{ARM}_floor"),
-    ]
+    ] if floor_sweep_exists() else [])
+
+
+def floor_sweep_exists() -> bool:
+    """Does the reported arm have a one-call floor sweep to regenerate?
+
+    `rq4_floor.py` refuses to run for an arm with no sweep of its own -- the floor's
+    control is the arm itself -- so for such an arm this gate must not call it. Read
+    from the source text, like ARM above, rather than by import.
+    """
+    source = (Path(__file__).parent / "rq4_floor.py").read_text(encoding="utf-8")
+    block = source.split("FLOOR_SWEEPS = {", 1)[-1].split("}", 1)[0]
+    return f'"{ARM}"' in block
 
 
 def diff_tree(temp_base: Path, repo_base: Path):

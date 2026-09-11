@@ -87,7 +87,7 @@ RUNS = ["run1", "run2", "run3"]
 # override one field each, which is what the no-knowledge A/B needs (HOWTO §4).
 # check.py reads the DEFAULT_ARM literal out of every generator and fails if any two
 # disagree, so an arm cannot be promoted by halves.
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
 ARMS = {                       # reported arm -> (phase-state variant, run-sweep template)
     "s110": ("s_linker110", "consolidation_e2e_{model}_r{i}_20260825"),
     "s92a": ("s_linker92a", "regex_e2e_{model}_r{i}_20260822"),

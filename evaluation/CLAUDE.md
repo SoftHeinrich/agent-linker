@@ -27,10 +27,17 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
   `metrics.PANELS` → `rq12.COLUMNS` → `rq_tables` → `csv_to_tex.SPECS`; a lone F1
   column is a bug. `csv_to_tex.check_specs()` runs on import and will refuse a
   spec whose `\multicolumn` bands no longer cover its columns.
-  The canonical arm is **s_linker110** (terra = paper body, luna = mirror); the
-  s21 / s20union arms were retired from the roster on 2026-08-26. Six modules
-  declare `DEFAULT_ARM` and `check.py` fails if any two disagree, so an arm
-  cannot be promoted by halves.
+  The canonical arm is **s_linker120** (terra = paper body, luna = mirror), the
+  union arm promoted on 2026-09-11; `s110` and the in-set `s110ctl` keep their
+  suffixed CSVs so the promotion stays reproducible. The s21 / s20union arms were
+  retired from the roster on 2026-08-26. Seven modules declare `DEFAULT_ARM` and
+  `check.py` fails if any two disagree, so an arm cannot be promoted by halves.
+  **Two things are per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s120
+  has two judges, every earlier arm three) and its `FORM_SETS` (RQ4 prices three
+  proposal forms on every arm, splitting s120's one name phase by the stage label
+  each link carries). An arm with no one-call floor sweep of its own has no floor
+  table: `rq4_floor.py` refuses, `rq_tables.py` drops it, `csv_to_tex.py` skips it
+  and `sync_paper.py` removes the previous arm's copy from the paper.
 - `mini-inequality/` — RQ2 motivation (gold-link concentration inequality).
   `motivation.py` writes `paper/table/gold_concentration.tex`, which is why the
   engine lives here; `sync_paper.py` imports it lazily. A self-contained GSD

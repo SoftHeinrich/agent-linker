@@ -26,7 +26,7 @@ EVAL = HERE.parent
 # in step with rq12.py / rq_tables.py.
 import os
 
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"
 
