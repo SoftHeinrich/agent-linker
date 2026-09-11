@@ -201,6 +201,12 @@ def compute_sadcode_link_conc(project):
     return {
         "project": project,
         "links_total": len(enrolled),
+        # Distinct SAD sentences carrying at least one enrolled doc-code gold link
+        # whose target file maps to a scored component. This is the denominator of
+        # every "share of documented sentences" figure the paper reports (it is NOT
+        # the SAD's sentence count -- see motivation.py _sentence_count), and it
+        # matches tot_sent in alinker-paper/figures/jabref_motivation.py.
+        "gold_sent_n": len({s for s, f in enrolled if file_to_comps.get(f)}),
         "comp_n": ss["n"],
         "link_median": ss["median"], "link_max": ss["max"],
         "link_gini": _gini(counts),
