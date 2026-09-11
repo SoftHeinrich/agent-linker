@@ -1,0 +1,190 @@
+SIMMERGE AUDIT — one similarity proposer against the head's two scans
+  alias source: ../results/consolidation_e2e_terra_r1_20260825
+
+M1 — SWATTR's relation, reimplemented
+
+M2 — the yield table
+
+  mediastore — 37 sentences, 14 components, 31 gold links, 4 recorded aliases
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                  31     28      0.903    0.903
+    partial (ANY_WORD, refusal on)               0      0      0.000    0.000
+    partial_all (ANY_WORD, no refusal)           0      0      0.000    0.000
+    HEAD UNION (full + partial)                 31     28      0.903    0.903
+    sim_whole (fuzzy whole name)                14     10      0.714    0.323
+    sim_part (fuzzy name part)                 136     29      0.213    0.935
+    SIM UNION (sim_whole + sim_part)           136     29      0.213    0.935
+    ALL PAIRS (sentence x component)           518     31      0.060    1.000
+    swattr published links                      18     17      0.944    0.548
+
+  teastore — 43 sentences, 11 components, 27 gold links, 5 recorded aliases
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                  25     21      0.840    0.778
+    partial (ANY_WORD, refusal on)               0      0      0.000    0.000
+    partial_all (ANY_WORD, no refusal)           0      0      0.000    0.000
+    HEAD UNION (full + partial)                 25     21      0.840    0.778
+    sim_whole (fuzzy whole name)                20     13      0.650    0.481
+    sim_part (fuzzy name part)                  89     23      0.258    0.852
+    SIM UNION (sim_whole + sim_part)            89     23      0.258    0.852
+    ALL PAIRS (sentence x component)           473     27      0.057    1.000
+    swattr published links                      20     20      1.000    0.741
+
+  teammates — 198 sentences, 8 components, 57 gold links, 8 recorded aliases
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                  97     49      0.505    0.860
+    partial (ANY_WORD, refusal on)              33      4      0.121    0.070
+    partial_all (ANY_WORD, no refusal)          33      4      0.121    0.070
+    HEAD UNION (full + partial)                130     53      0.408    0.930
+    sim_whole (fuzzy whole name)                86     41      0.477    0.719
+    sim_part (fuzzy name part)                 213     53      0.249    0.930
+    SIM UNION (sim_whole + sim_part)           213     53      0.249    0.930
+    ALL PAIRS (sentence x component)          1584     57      0.036    1.000
+    swattr published links                      81     49      0.605    0.860
+
+  bigbluebutton — 87 sentences, 12 components, 62 gold links, 11 recorded aliases
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                  42     38      0.905    0.613
+    partial (ANY_WORD, refusal on)              48     22      0.458    0.355
+    partial_all (ANY_WORD, no refusal)          60     22      0.367    0.355
+    HEAD UNION (full + partial)                 90     60      0.667    0.968
+    sim_whole (fuzzy whole name)                11     10      0.909    0.161
+    sim_part (fuzzy name part)                 144     60      0.417    0.968
+    SIM UNION (sim_whole + sim_part)           144     60      0.417    0.968
+    ALL PAIRS (sentence x component)          1044     62      0.059    1.000
+    swattr published links                      49     44      0.898    0.710
+
+  jabref — 13 sentences, 6 components, 18 gold links, 1 recorded aliases
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                  20     18      0.900    1.000
+    partial (ANY_WORD, refusal on)               0      0      0.000    0.000
+    partial_all (ANY_WORD, no refusal)           0      0      0.000    0.000
+    HEAD UNION (full + partial)                 20     18      0.900    1.000
+    sim_whole (fuzzy whole name)                20     18      0.900    1.000
+    sim_part (fuzzy name part)                  21     18      0.857    1.000
+    SIM UNION (sim_whole + sim_part)            21     18      0.857    1.000
+    ALL PAIRS (sentence x component)            78     18      0.231    1.000
+    swattr published links                      20     18      0.900    1.000
+
+  ALL FIVE PROJECTS — 195 gold links
+    arm                                      pairs   gold  gold/pair   recall
+    full (ANY_CASE whole name)                 215    154      0.716    0.790
+    partial (ANY_WORD, refusal on)              81     26      0.321    0.133
+    partial_all (ANY_WORD, no refusal)          93     26      0.280    0.133
+    HEAD UNION (full + partial)                296    180      0.608    0.923
+    sim_whole (fuzzy whole name)               151     92      0.609    0.472
+    sim_part (fuzzy name part)                 603    183      0.303    0.938
+    SIM UNION (sim_whole + sim_part)           603    183      0.303    0.938
+    ALL PAIRS (sentence x component)          3697    195      0.053    1.000
+    swattr published links                     188    148      0.787    0.759
+
+M3 — containment
+
+  mediastore
+    head union   31 ( 28 gold)   sim union  136 ( 29 gold)
+    sim adds    105 (  1 gold)   sim loses    0 (  0 gold)   shared   31 ( 28 gold)
+    gold no scan reaches (coreference territory): 2
+
+  teastore
+    head union   25 ( 21 gold)   sim union   89 ( 23 gold)
+    sim adds     64 (  2 gold)   sim loses    0 (  0 gold)   shared   25 ( 21 gold)
+    gold no scan reaches (coreference territory): 4
+
+  teammates
+    head union  130 ( 53 gold)   sim union  213 ( 53 gold)
+    sim adds     83 (  0 gold)   sim loses    0 (  0 gold)   shared  130 ( 53 gold)
+    gold no scan reaches (coreference territory): 4
+
+  bigbluebutton
+    head union   90 ( 60 gold)   sim union  144 ( 60 gold)
+    sim adds     55 (  0 gold)   sim loses    1 (  0 gold)   shared   89 ( 60 gold)
+    gold no scan reaches (coreference territory): 2
+
+  jabref
+    head union   20 ( 18 gold)   sim union   21 ( 18 gold)
+    sim adds      1 (  0 gold)   sim loses    0 (  0 gold)   shared   20 ( 18 gold)
+    gold no scan reaches (coreference territory): 0
+
+  ALL FIVE PROJECTS
+    head union 296 (180 gold)  sim union 603 (183 gold)  of 195 gold
+    sim adds 308 pairs carrying 3 gold; sim loses 1 pairs carrying 0 gold
+    gold neither scan reaches: 12
+
+    every pair the head scans reach and the similarity scan does not:
+      bigbluebutton S49 Recording Service: When a meeting is recorded, all events are stored in Redis DB.
+
+    gold the similarity scan adds:
+      mediastore S28 MediaAccess: Furthermore, it fetches a list of all available audio files.
+      teastore S11 ImageProvider: It matches the provided product ID or UI name (the filename for images not representing a 
+      teastore S24 Persistence: It features endpoints for general CRUD-Operations (Create, Read, Update, Delete) for the p
+
+M4 — the form label
+
+  the merged candidate set, split by the form the code can compute
+    form                       pairs   gold  gold/pair
+    exact whole name             215    154      0.716
+    fuzzy whole name               9      0      0.000
+    lemma word of name            81     26      0.321
+    fuzzy name part only         299      3      0.010
+
+    mediastore      exact 31/28g  fuzzy 1/0g  lemma 0/0g  fuzzy 104/1g
+    teastore        exact 25/21g  fuzzy 3/0g  lemma 0/0g  fuzzy 61/2g
+    teammates       exact 97/49g  fuzzy 4/0g  lemma 33/4g  fuzzy 79/0g
+    bigbluebutton   exact 42/38g  fuzzy 1/0g  lemma 48/22g  fuzzy 54/0g
+    jabref          exact 20/18g  fuzzy 0/0g  lemma 0/0g  fuzzy 1/0g
+
+M5 — cost
+
+  judge cases and calls at JUDGE_BATCH = 25
+    project           full   part  2-stage  calls |  merged head  calls |  merged sim  calls
+    mediastore          31      0       31      2 |           31      2 |         136      6
+    teastore            25      0       25      1 |           25      1 |          89      4
+    teammates           97     33      130      6 |          130      6 |         213      9
+    bigbluebutton       42     48       90      4 |           90      4 |         145      6
+    jabref              20      0       20      1 |           20      1 |          21      1
+    TOTAL              215     81      296     14 |          296     14 |         604     26
+
+  SWATTR's published links against the two candidate sets (its output is a floor under whatever it proposed)
+    project          links  gold  in head  in sim  in neither
+    mediastore          18    17       17      18           0
+    teastore            20    20       20      20           0
+    teammates           81    49       81      81           0
+    bigbluebutton       49    44       49      49           0
+    jabref              20    18       20      20           0
+    TOTAL              188   148      187     188           0
+
+M6 — the two judges on their two streams
+
+  the audit's scans against the scans the recorded runs wrote
+    full_name:match        30
+    partial_name:match     30
+
+  each judge on its own stream, per project-run (3 runs x 5 projects a model)
+    model  stage           cases  gold in   kept     TP     FP  keep rate  gold kept  precision
+    luna   full_name       221.0    163.7  203.7  162.3   41.3      0.922      0.992      0.797
+    luna   partial_name     84.7     16.3   25.7   11.0   14.7      0.303      0.673      0.429
+    terra  full_name       221.0    155.7  167.0  149.7   17.3      0.756      0.961      0.896
+    terra  partial_name     79.3     24.3   26.7   19.7    7.0      0.336      0.808      0.738
+
+M7 — the marginal gold, against the runs that already exist
+
+  every gold pair the similarity scan adds, against six recorded runs
+    pair                                            runs found  sources
+    mediastore S28 MediaAccess [sim adds]              6/6      coreference
+    mediastore S9 MediaManagement [no scan reaches]     6/6      coreference
+    mediastore S24 DB [no scan reaches]                6/6      coreference
+    teastore S11 ImageProvider [sim adds]              6/6      coreference
+    teastore S24 Persistence [sim adds]                6/6      coreference
+    teastore S6 WebUI [no scan reaches]                6/6      coreference
+    teastore S23 Persistence [no scan reaches]         6/6      coreference
+    teastore S26 Persistence [no scan reaches]         2/6      coreference
+    teastore S28 Recommender [no scan reaches]         6/6      coreference
+    teammates S19 Client [no scan reaches]             6/6      coreference
+    teammates S78 Logic [no scan reaches]              6/6      coreference
+    teammates S119 Storage [no scan reaches]           6/6      coreference
+    teammates S120 Storage [no scan reaches]           6/6      coreference
+    bigbluebutton S38 BBB web [no scan reaches]        6/6      coreference
+    bigbluebutton S53 Apps [no scan reaches]           6/6      coreference
+
+    no scan reaches:2/6      1 pairs
+    no scan reaches:6/6      11 pairs
+    sim adds:6/6             3 pairs

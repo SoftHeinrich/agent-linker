@@ -1192,3 +1192,39 @@ prompts, no calls); arms `pilot/nextgen_pilots.py --gate {lenient,sortal}` drive
   guidance is about *E2E batches*, not about a five-call stage gate where the null is one
   arm of four.
 - **The head does not move. `s_linker110` stands.** No arm composed, no E2E owed.
+
+### The similarity-merge audit — one SWATTR-style proposer for both name scans
+
+Can the full-name and partial-name scans be one string-similarity relation, SWATTR's or
+a superset of it, judged once by a judge allowed to refuse? Level 1 only, no LLM calls.
+Report: `../results/simmerge_audit/README.md`; audit `pilot/simmerge_audit.py` (M1–M7,
+16 relation checks, both scans replayed against six recorded runs, 60/60 identical).
+
+- **The superset exists and is refused on its exchange rate.** ArDoCo's relation
+  (`splitLengthTest` then equality / levenshtein ≤ min(1, 0.9·min|w|) / Jaro-Winkler
+  ≥ 0.90, against `nameParts` = the camel-split name plus the identifier) reaches
+  **603 pairs carrying 183 of 195 gold** against the head union's **296 carrying 180**.
+  That is **+308 cases (+104%), +12 judge calls (+86%), for +3 gold** — and **all three
+  are already found by the coreference linker in 6 recorded runs of 6, on both models**.
+  Marginal gold against the pipeline that exists: **zero**.
+- **The fuzzy rows are empty, and the strictness axis extends cleanly.** Gold per pair by
+  code-computed form over the merged set: exact whole name **0.716** (215 pairs), lemma
+  word **0.321** (81), *fuzzy whole name* **0.000** (9), *fuzzy name part only* **0.010**
+  (299). The relation's extra mass is 71× less gold-dense than the row it generalizes.
+- **A fuzzy relation is not a superset by itself.** It loses exactly one head pair —
+  bigbluebutton S49 `Recording Service` against *recorded*, the pair `s_linker85` adopted
+  WordNet for. A merged proposer must be `similarity ∪ lemma-word`, so the dependency it
+  was meant to replace stays.
+- **SWATTR's published output is inside our candidate set: 187 of 188 pairs.** Its one
+  outsider is mediastore S37 `Reencoding` against *re-encoding* (the `ANY_SPELLING` row
+  s82 deleted) and is **not gold**; the head's scans propose **32 gold pairs SWATTR never
+  emits**.
+- **What *is* free is merging the scans, not the relation.** One stream of 296 cases
+  costs the same 14 judging calls as two streams of 215 and 81 (2/1/6/4/1 a project
+  either way). **What must not be merged is the judging**: the two streams are judged at
+  opposite defaults — keep rate **0.756 terra / 0.922 luna** at the lenient gate against
+  **0.336 / 0.303** at the target-blind one — because their gold densities differ 2.2×,
+  and `s_linker119` already priced collapsing two defaults into one schema at net
+  **−9.0 / −16.0**. The registered arm is therefore *one scan emitting a `form` field
+  that selects the rubric inside the call*, which is the design law applied to the rubric
+  rather than to the candidate. Unbuilt.
