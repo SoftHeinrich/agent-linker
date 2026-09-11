@@ -139,7 +139,9 @@ def add_average(rows: List[Dict[str, str]], keys: List[str],
 
 
 # RQ4 doc-to-code set names, in display order: the pipeline output then each linker alone.
-LINKER_SET_NAMES = ["Full"] + [f"{ph['linker']}Only" for ph in rq.PHASES]
+# RQ4's unit is the proposal form (rq34.FORMS), which is the phase list for every arm
+# through s110 and three forms behind two judges for s120.
+LINKER_SET_NAMES = ["Full"] + [f"{fm['linker']}Only" for fm in rq.FORMS]
 
 
 def build_rows(backends: List[str], runs: List[str]):
@@ -166,8 +168,9 @@ def build_rows(backends: List[str], runs: List[str]):
                                        **{c: f"{score[c]:.6f}" for c in PANEL}})
 
                 linker_sets = {"Full": cell.final}
-                linker_sets.update({f"{ph['linker']}Only": cell.kept[ph["key"]]
-                                    for ph in rq.PHASES})
+                linker_sets.update({f"{fm['linker']}Only":
+                                    cell.kept_form[fm["linker"]]
+                                    for fm in rq.FORMS})
                 linker_scores = score_project_sets(project, linker_sets)
                 for name, score in linker_scores.items():
                     linker_project_rows[name].append(score)
@@ -273,8 +276,12 @@ def main() -> int:
         deviations.append(f"--backends {' '.join(args.backends)}")
     if set(args.runs) != set(rq.RUNS):
         deviations.append(f"--runs {' '.join(args.runs)}")
-    args.csv_root = rq.resolve_out(ap, args.csv_root, m.RQ34_REPORTS / DEFAULT_ARM,
-                                   deviations)
+    # The default output is the REPORTED arm's directory, not this module's literal:
+    # $ALINKER_ARM moves rq34.py's inputs, and an engine that read the literal instead
+    # wrote a candidate arm's numbers into the incumbent's directory (caught by
+    # gen_csv_to_temp.py, which is what that check is for).
+    args.csv_root = rq.resolve_out(ap, args.csv_root,
+                                   m.RQ34_REPORTS / rq.REPORTED_ARM, deviations)
     print(f"[rq34-rq2] runs-from = {rq.S92_DIR_TMPL}  (variant {rq.VARIANT})")
 
     rq.install_unpickler()

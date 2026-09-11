@@ -1274,5 +1274,43 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   carried and its absence is asserted. 0 of 63 catalog words, 0 dotted identifiers, 0
   document-shape words, 0 corpus-grounded sentences. The judge punches on two things: the
   architectural claim, and what an expression denotes where no name is written.
-- **The head does not move on this evidence alone** — one stage is measured, and adoption
-  into the pipeline is an E2E decision for a whole variant.
+- **End to end, three paired runs a model, both arms in every invocation, arm order
+  alternating by run** (`pilot/run_union_e2e.sh`,
+  `../results/union_e2e_{terra,luna}_r{1,2,3}_20260911`, `pilot/score_runs.py`):
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls |
+  |---|---|---|---|---|---|---|
+  | terra | `s_linker110` | 183.7 | 27.3 | 92.91 | 94.58 | 74.0 |
+  | terra | **`s_linker120`** | **189.0** | **22.3** | **95.16** | **96.54** | 73.7 |
+  | luna | `s_linker110` | 189.0 | 64.3 | 88.77 | 93.48 | 74.0 |
+  | luna | **`s_linker120`** | **190.7** | **60.7** | **90.03** | **94.21** | 74.7 |
+
+  **terra QUALITY-CHANGING in the arm's favour on all four** (TP +5.3, FP -5.0, F1 +2.3,
+  F2 +2.0, every p at the n=3 floor, every arm run ahead of every control run on every
+  statistic); **luna QUALITY-NEUTRAL with every point estimate favourable**. Same shape
+  the head itself was adopted on, at the same call count. In-set through the paper's own
+  engines (`studies/compare_arms.py s120 --base s110ctl`): terra BETTER 3/3 on all six
+  moving metrics, luna BETTER on both doc-code metrics.
+- **The union rejects more and costs less.** Two judges reject **146.0** distinct false
+  positives a run against the head's three rejecting 143.7, at **6.0** true links lost
+  outright against 8.7. Merging the two name judges removed a rejection the head was
+  making twice; it did not trade recall for precision.
+- **MediaStore is repaired, and it was the paper's one honest-failure project.** The head
+  reads 0.954 doc-model F1 there; the union reads **1.000**. That project's gold hangs on
+  `FileStorage` being written "the DataStorage" -- three sentences the head's coreference
+  judge rejected *because they name a component explicitly*. Under one rule they are name
+  cases. **The union beats ArTEMiS on all five projects at both grains**, which the head
+  did not.
+- **`s_linker120` IS THE HEAD (2026-09-11) and the paper reports it.** It is a
+  STANDALONE file by the branch's one-file-per-reported-variant policy, checked against
+  its ancestor method by method (`pilot/test_s120_standalone.py`, 85 checks: 38 methods
+  byte-identical, 3 rewritten and declared, 9 replaced by the union, every rule constant
+  and every other prompt identical -- including the coreference judging prompt against
+  `s_linker110._prompt_validation(..., strict=True)`).
+- **Two shape changes in the RQ engines**, both per-arm and both leaving `s110`'s CSVs
+  byte-identical (`gen_csv_to_temp.py`): RQ3 reads **two judges** (`rq34.py` `PHASE_SETS`
+  is arm-keyed), and RQ4 still prices **three forms** -- the links carry the stage label
+  their scan gave them, so `FORM_SETS` splits the name phase by `source`. **After the
+  union, "how many judges" and "how many forms" are no longer the same question**, which
+  is exactly what the round set out to separate. No one-call floor was built on this arm;
+  `rq_tables.py` drops that table and prints the absence rather than borrowing s110's.

@@ -74,8 +74,17 @@ BASELINE_RELEASED = "Artemis (GPT-5.4)"
 # recorded run ("single") -- there is no second one to average.
 BASELINE_RUN = "average"
 
-# The judges/linkers this arm records, in pipeline order. Keys match rq34.py PHASES.
-JUDGES = ["full_name", "partial_name", "coref"]
+# The judges this arm records, in pipeline order. Keys match rq34.py's PHASES, which
+# is per-arm: every arm through s110 has one judge per reference form, and s120 unions
+# the two name judges, so RQ3 has two rows there and RQ4 still has three.
+JUDGE_SETS = {
+    "s110": ["full_name", "partial_name", "coref"],
+    "s120": ["name", "coref"],
+}
+JUDGES = JUDGE_SETS.get(ARM, JUDGE_SETS["s110"])
+# The *forms* RQ4 prices, which are the same three for every arm: the links carry the
+# stage label their scan gave them whether or not one judge or two ruled on them.
+FORM_KEYS = ["full_name", "partial_name", "coref"]     # rq34.py's FORMS keys
 LINKER_LABELS = ["FullName", "PartialName", "Coref"]   # rq4_linkers.csv linker column
                                                        # (also the rq34_rq2 doc-code set names)
 RQ4_VARIANTS = ["Full", "FullName", "PartialName", "Coref", "No knowledge"]
@@ -203,8 +212,13 @@ RQ3_RUNS = ["run1", "run2", "run3"]
 RQ3_COLS = ["rej_fp", "rej_tp", "keep_tp", "keep_fp", "d_f1", "d_f2"]
 # judge key -> (display key, the rq3_variants row that switches it off)
 RQ3_ROW_ORDER = JUDGES + ["all_combined"]
-RQ3_OFF_VARIANT = {"full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
-                   "coref": "NoCitation", "all_combined": "NoValidator"}
+# judge key -> the rq3_variants row that switches it off. Scoped to THIS arm's judges:
+# the map is read by `.values()` in two places, so carrying another arm's keys asks
+# rq3_variants.csv for a row it does not have.
+_OFF_VARIANT = {"full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
+                "name": "NoNameValid",
+                "coref": "NoCitation", "all_combined": "NoValidator"}
+RQ3_OFF_VARIANT = {key: _OFF_VARIANT[key] for key in RQ3_ROW_ORDER}
 
 
 def _rq3_rows(audits, variants, extra=None):
@@ -272,7 +286,7 @@ def _rq4_variant_cells(backend, run, dm_full, dm_noknow, size_link, size_noknow,
     rows = [{"variant": "Full", "doc_to_model_macro_f1": dm_full["full"][0],
              "doc_to_model_macro_f2": dm_full["full"][1],
              **panel(size_link[(backend, run, "Full")]), "unique_tps": ""}]
-    for label, key in zip(LINKER_LABELS, JUDGES):
+    for label, key in zip(LINKER_LABELS, FORM_KEYS):
         rows.append({"variant": label,
                      "doc_to_model_macro_f1": dm_full[f"{key}_only"][0],
                      "doc_to_model_macro_f2": dm_full[f"{key}_only"][1],
@@ -316,6 +330,17 @@ def build_rq4():
     # Body table shows only the headline tail metrics (each as \fone + \ftwo).
     rows = [{k: r[k] for k in fields} for r in rows]
     write_csv("rq4.csv", fields, rows)
+
+
+def floor_available():
+    """Has this arm's one-call floor been measured?
+
+    Same rule as the no-knowledge row: a sweep an arm does not have is DROPPED and the
+    absence is printed, never filled from another arm. The floor's control is the arm
+    itself, so borrowing s110's would compare one arm's workflow against another arm's
+    one-call reply.
+    """
+    return (RQ34_FLOOR / "rq4_floor.csv").is_file()
 
 
 def build_rq4_floor(backend, out):
@@ -414,7 +439,8 @@ def build_bigtable_rq4_perproject():
     fields = ["backend", "variant", "project"] + [f"dm_{c}" for c in DM_SUITE] \
         + [f"dc_{c}" for c in DC_SUITE]
     setmap = {"Full": "Full", **{l: f"{l}Only" for l in LINKER_LABELS}}
-    dm_setmap = {"Full": "full", **{l: f"{k}_only" for l, k in zip(LINKER_LABELS, JUDGES)}}
+    dm_setmap = {"Full": "full",
+                 **{l: f"{k}_only" for l, k in zip(LINKER_LABELS, FORM_KEYS)}}
     rows = []
     for backend in BACKENDS:
         has_noknow = noknow_available(backend)
@@ -475,7 +501,12 @@ def main():
     big = index(read_csv(RQ12_BIGTABLE), "system", "run")
     build_rq1(big)
     build_rq2(big)
-    build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
+    if floor_available():
+        build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
+    else:
+        print(f"[rq_tables] no one-call floor for arm {ARM} "
+              f"({RQ34_FLOOR / 'rq4_floor.csv'} absent): rq4_floor.csv not written",
+              file=sys.stderr)
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()

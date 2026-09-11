@@ -232,6 +232,7 @@ CANONICAL_VARIANTS = [
     "s_linker118",  # s114 + the sortal gate's reply carries a ground too
     "s_linker119",  # s114 + one reply schema at all three judges
     "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
+    "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2325,6 +2326,25 @@ VARIANT_SPECS = {
             "neutral, same 14 calls); thirteen iterations as data in "
             "union_iterations.py."
         ),
+    ),
+    "s_linker120_noknow": dict(
+        aliases=("unijudgenoknow",),
+        module="llm_sad_sam.linkers.experimental.s_linker120",
+        class_name="SLinker120",
+        description=(
+            "S-Linker120 NO-KNOWLEDGE - RQ4's knowledge A/B on the union arm "
+            "(experimental=True, NOT canonical). s_linker120 with no_knowledge=True: the "
+            "document-alias stage is skipped and an empty DocumentKnowledge is set "
+            "directly, so both name scans see canonical component names only and the "
+            "union's `writes` evidence can never read `alias`. All other phases run "
+            "unchanged. Mirrors s_linker110_noknow one variant over. "
+            "LANDMINE: _VARIANT_NAME stays 's_linker120', so its phase states nest under "
+            "phase_states/s_linker120/ -- give every run its own PHASE_CACHE_DIR or it "
+            "clobbers the Full arm's states."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
     ),
     "s_linker114": dict(
         aliases=("skills",),

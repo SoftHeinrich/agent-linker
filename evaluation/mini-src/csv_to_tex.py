@@ -193,8 +193,12 @@ BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
               "Artemis (GPT-5.6-terra)": "\\Artemis{} (GPT-5.6-terra)",
               "Artemis (GPT-5.4)": "\\Artemis{} (GPT-5.4)", "TransArC": "\\TransArc{}$^{\\dagger}$"}
 
+#: How many judges this arm has, in words -- the `all_combined` row and the RQ3
+#: caption both name it, and s120 has two where every arm before it had three.
+JUDGE_COUNT_WORD = {"s120": "both"}.get(ARM, "all three")
 JUDGE_MAP = {"full_name": "\\entValidator{}", "partial_name": "\\partValidator{}",
-             "coref": "\\corefValidator{}", "all_combined": "all three"}
+             "name": "\\nameValidator{}",
+             "coref": "\\corefValidator{}", "all_combined": JUDGE_COUNT_WORD}
 VAR_MAP = {"Full": "Full", "FullName": "\\linkerB{} only", "PartialName": "\\linkerD{} only",
            "Coref": "\\linkerC{} only", "No knowledge": "No knowledge"}
 
@@ -285,7 +289,8 @@ SPECS = [
      "caption": "RQ3 per judge on the GPT-5.6-terra backend, averaged over the three runs: "
                 "the links it rejects and keeps, and the \\fone/\\ftwo\\ the pipeline loses "
                 "when it is switched off. REJ-TP counts only true links no other linker "
-                "recovers; the \\emph{all three} row is measured on the union, not summed.",
+                f"recovers; the \\emph{{{JUDGE_COUNT_WORD}}} row is measured on the union, "
+                "not summed.",
      "labels": [{"field": "judge", "header": "Judge", "map": JUDGE_MAP}],
      "groups": [("rejects", 2), ("keeps", 2), ("judge off (pp)", 2)],
      "cols": [
@@ -467,9 +472,20 @@ check_specs()
 
 
 def main():
+    # A table whose source CSV this arm does not have is SKIPPED and reported, not
+    # rendered from another arm's data: `rq_tables.py` drops the one-call floor for an
+    # arm with no floor sweep, exactly as it drops the no-knowledge row.
+    written = skipped = 0
     for spec in SPECS:
+        if not (TEX_SRC / spec["csv"]).is_file():
+            print(f"[csv2tex] {spec['csv']} absent for arm {ARM}: "
+                  f"{spec['out']} not written")
+            skipped += 1
+            continue
         render(spec)
-    print(f"\n[csv2tex] {len(SPECS)} tables written under {TEX_OUT}")
+        written += 1
+    print(f"\n[csv2tex] {written} tables written under {TEX_OUT}"
+          + (f", {skipped} skipped (no source CSV for arm {ARM})" if skipped else ""))
 
 
 if __name__ == "__main__":

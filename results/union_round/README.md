@@ -144,11 +144,77 @@ gold pairs (teammates S185 `Logic`, bigbluebutton S73 `HTML5 Server`) are remove
 re-proposed downstream — ~1.3 a run, **below the recorded TP floor of 4.8**, so an E2E
 batch would measure drift rather than the change. Reported rather than resolved.
 
+## End to end, three paired runs a model, both arms in every invocation
+
+The stage result is not the head's answer: the union changes which pairs the two name
+streams emit, and the coreference linker runs behind them. Level 3 read the composition
+risk at 0 distinct gold pairs on terra and 2 on luna, so the batch was owed on luna and
+bought for both (`pilot/run_union_e2e.sh`, `../results/union_e2e_{terra,luna}_r{1,2,3}_20260911`,
+scored by `pilot/score_runs.py`). **Arm order alternates by run** — control first on odd
+runs, arm first on even — because the finetune round's batch could not separate its arm
+from its slot.
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| terra | `s_linker110` | 183.7 | 27.3 | 92.91 | 94.58 | 74.0 |
+| terra | **`s_linker120`** | **189.0** | **22.3** | **95.16** | **96.54** | 73.7 |
+| luna | `s_linker110` | 189.0 | 64.3 | 88.77 | 93.48 | 74.0 |
+| luna | **`s_linker120`** | **190.7** | **60.7** | **90.03** | **94.21** | 74.7 |
+
+**terra is QUALITY-CHANGING in the union's favour on all four statistics** — TP +5.3,
+FP −5.0, macro F1 +2.3, macro F2 +2.0, every p at the n=3 floor of 0.10 and **every
+union run ahead of every control run on every one of the four**. **luna is
+QUALITY-NEUTRAL with every point estimate favourable** (TP +1.7 p=0.50, FP −3.7 p=0.90,
+F1 +1.3 p=0.30, F2 +0.7 p=0.30). That is the same shape the head itself was adopted on
+(`s_linker110`: terra quality-changing, luna neutral-and-favourable), at the same call
+count.
+
+Scored through the paper's own engines, in-set against the `s_linker110` control that
+ran beside it (`studies/compare_arms.py s120 --base s110ctl`), terra reads **BETTER with
+3/3 sign agreement on all six moving metrics** — doc-model F1 +2.25, F2 +1.96, doc-code
+F1 +2.21, F2 +1.12, worst-component F1 +4.46, harmonic-component F1 +2.77 — and luna
+BETTER on both doc-code metrics, INSIDE NOISE (2/3, positive mean) on the rest.
+Component miss rate is 0.0% for both arms on both models: neither abandons a component.
+
+**Two results the E2E adds that the stage could not see.**
+
+1. **The union rejects more and costs less.** Two judges reject **146.0** distinct false
+   positives a run against the head's three rejecting 143.7, and cost **6.0** true links
+   outright against 8.7. Merging the two name judges did not trade recall for precision;
+   it removed a rejection the head was making twice.
+2. **MediaStore, the paper's one honest-failure project, is repaired.** The head scores
+   0.954 doc-model F1 there against ArTEMiS's 0.933; the union scores **1.000**, and it
+   is the project whose gold hangs on `FileStorage` being called "the DataStorage" —
+   three sentences the head's coreference judge rejected for naming a component
+   explicitly. Under one rule those cases are name cases, and the rule that reads them
+   is the same rule that reads every other case. **The union arm beats ArTEMiS on all
+   five projects at both grains**, which the head did not.
+
 ## Status
 
-`s_linker120` runs iteration **v13** (`union_iterations.ACTIVE`), and any earlier
-iteration can be run as its own arm beside it. The head does not move on this evidence
-alone: what is measured is one stage, and adoption into the pipeline is an E2E decision
-the branch takes for a whole variant. What this round establishes is that **the two name
-judges were not two questions** — one rule, one format, and evidence computed from the
-match reproduce them at better precision and lower cost.
+**`s_linker120` is the head, and the paper reports it.** `s_linker120` runs iteration
+**v13** (`union_iterations.ACTIVE`), and any earlier
+iteration can be run as its own arm beside it, and the file is **standalone** — the whole
+workflow, no subclass, checked against the ancestor method by method
+(`pilot/test_s120_standalone.py`: 38 methods byte-identical, 3 rewritten and declared,
+9 replaced, every rule constant and every other prompt identical).
+
+What this round establishes is that **the two name judges were not two questions** — one
+rule, one format, and evidence computed from the match reproduce them at better
+precision, at a lower recall cost, and at the same call count.
+
+## What the paper reads
+
+RQ1–RQ4 are regenerated on this arm (`ALINKER_ARM=s120`, `evaluation/reports/rq34/s120`,
+`reports/tex_src_s120`). Two things change shape and not only value:
+
+- **RQ3 has two judges, not three.** `rq34.py`'s `PHASE_SETS` is per-arm; the union
+  writes `linker_name.pkl` beside `linker_coreference.pkl`.
+- **RQ4 still prices three forms.** The links carry the stage label their scan gave them
+  (`_stage_of`), so `rq34.py`'s new `FORM_SETS` splits the name phase by `source` and the
+  form decomposition survives the judge merge. For every arm through `s110` a form is a
+  phase and the two lists coincide, which is why the s110 CSVs still reproduce byte for
+  byte (`gen_csv_to_temp.py`).
+- **No one-call floor on this arm.** `s_linker120_onecall` was not built, so
+  `rq_tables.py` drops `rq4_floor.csv` and reports the absence rather than borrowing
+  `s110`'s — the floor's control is the arm itself. The paper never printed that table.
