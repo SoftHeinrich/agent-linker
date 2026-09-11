@@ -2313,13 +2313,17 @@ VARIANT_SPECS = {
         module="llm_sad_sam.linkers.experimental.s_linker120",
         class_name="SLinker120",
         description=(
-            "S-Linker120 - s110 with the full-name and partial-name judges unioned: "
-            "one rule, one reply, and an evidence line computed from the match "
-            "(naming=whole name|alias|word only, the competing components, the "
-            "recency of the last naming). The defaults stay two, stated per row of "
-            "the rule rather than per stream, so s119's polarity refusal is not "
-            "repeated. Level 1 only: priced by pilot/unijudge_audit.py, pinned by "
-            "pilot/test_s120_union.py (1700 checks), never run."
+            "S-Linker120 - s110's two name judges unioned behind ONE rule: what a "
+            "trace link is and how to read each piece of evidence, with every "
+            "candidate in one case format and the difference carried by the evidence "
+            "the match computed (what the sentence writes of the name, the competing "
+            "components, the mention label, the anchors). No lenient row and no "
+            "strict row, so s119's polarity refusal is not repeated. The evidence "
+            "also decides which batch a case joins and what its call is asked. "
+            "STANDALONE, like s110: the whole workflow is in the file. Stage-measured "
+            "on both models (spurious -12.6 terra p=0.000, -17.7 luna p=0.008, gold "
+            "neutral, same 14 calls); thirteen iterations as data in "
+            "union_iterations.py."
         ),
     ),
     "s_linker114": dict(

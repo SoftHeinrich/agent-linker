@@ -170,22 +170,33 @@ def denotation_is_quoted() -> tuple[bool, str]:
     import inspect
     source = inspect.getsource(HEAD)
     head_line = " ".join(DENOTATION_QUESTION.split())
-    ours = UNION.UNION_LINK_RULES
+    ours = UNION.TRACE_LINK_RULE
     return (head_line.replace("each expression", "the expression") in
             " ".join(ours.split()) and head_line in " ".join(source.split()),
             head_line)
 
 
+def quoted_constant(name: str) -> str:
+    """The union's own copy of a quoted constant.
+
+    `s_linker120` is standalone, so it holds its own copy of every rule constant and
+    computes its own slices of them. That copy is what the prompt actually sends, so
+    it is what this audit reads — and V0 checks it byte-for-byte against the
+    ancestor's, which is the check the copy makes possible.
+    """
+    return getattr(UNION, name, None) or getattr(ITER, name)
+
+
 def residue(rule: str) -> str:
     """The rule with every quoted head constant removed."""
     for name, _why in QUOTED:
-        rule = rule.replace(getattr(HEAD, name, None) or getattr(ITER, name.lstrip("_")), " ")
+        rule = rule.replace(quoted_constant(name), " ")
     return rule
 
 
 def main() -> int:
-    rule = UNION.UNION_LINK_RULES
-    clauses = UNION.UNION_CLAUSES
+    rule = UNION.TRACE_LINK_RULE
+    clauses = UNION.UNION_V13.clauses
     checks = failures = 0
 
     def check(condition, what):
@@ -200,7 +211,7 @@ def main() -> int:
 
     print("V0 — the quotation")
     for name, why in QUOTED:
-        text = getattr(HEAD, name, None) or getattr(ITER, name.lstrip("_"))
+        text = quoted_constant(name)
         where = "rule" if text in rule else ("clauses" if text in clauses else "")
         check(bool(where), f"{name} appears verbatim")
         print(f"    {name:<22} {len(text):>5} B  verbatim in the {where or 'NOWHERE'}"
@@ -209,16 +220,43 @@ def main() -> int:
     for name, source in (("MENTION_COUNTS", "LAYERED_ENTITY_RULES"),
                          ("POSITIVE_GROUND", "LAYERED_ENTITY_RULES"),
                          ("ACTS_ON", "LAYERED_COREF_RULES")):
-        check(getattr(ITER, name.lstrip("_")).strip() in getattr(HEAD, source),
+        check(quoted_constant(name).strip() in getattr(HEAD, source),
               f"{name} is a slice of the head's {source}, not a retyping")
+        check(quoted_constant(name).strip() in getattr(UNION, source),
+              f"{name} is a slice of the union's own {source} too")
     check("Approve the link by default" not in rule,
           "no stream default survives in the rule")
+
+    # The variant is standalone: it carries its own copy of every rule constant. A
+    # copy is only quotation while it is byte-identical to what it copied, so the
+    # copy is checked here rather than trusted.
+    print("\n    the standalone copy, against the ancestor it was copied from")
+    for name in ("LAYERED_ENTITY_RULES", "LAYERED_COREF_RULES", "QUALIFIED_CLAUSE",
+                 "STRICTER_CLAUSE", "COREF_RULES", "COREF_VALIDATION_FOCUS",
+                 "DOC_KNOWLEDGE_JUDGE_RULES", "DOC_KNOWLEDGE_EXTRACTION_RULES",
+                 "ALIAS_EXCLUSION_RULES"):
+        check(getattr(UNION, name) == getattr(HEAD, name),
+              f"{name} is byte-identical to s_linker110's")
+    print(f"    9 rule constants byte-identical to `s_linker110`'s")
+
+    # And the rule the file runs is the rule the round measured, not a re-edit of it.
+    measured = ITER.ITERATIONS[UNION.ACTIVE_ITERATION]
+    check(rule == measured.rule,
+          f"the file's rule is ITERATIONS[{UNION.ACTIVE_ITERATION!r}].rule, byte for byte")
+    check(UNION.UNION_DEMAND == measured.demand and UNION.UNION_REPLY == measured.reply,
+          "the demand and the reply contract are the measured iteration's")
+    check(UNION.UNION_V13.fields == measured.fields
+          and UNION.UNION_V13.blind_word_only == measured.blind_word_only
+          and UNION.UNION_V13.batch_by_evidence == measured.batch_by_evidence
+          and UNION.UNION_V13.contract_follows_batch == measured.contract_follows_batch,
+          "the case format and the batching are the measured iteration's")
+    print(f"    the rule, demand, reply and format are "
+          f"`union_iterations.ITERATIONS[{UNION.ACTIVE_ITERATION!r}]` byte for byte")
 
     leftover = residue(rule)
     leftover_bytes = len(re.sub(r"\s+", " ", leftover).strip())
     total = len(rule) + len(clauses)
-    quoted_bytes = sum(len(getattr(HEAD, name, None) or getattr(ITER, name.lstrip("_")))
-                       for name, _ in QUOTED)
+    quoted_bytes = sum(len(quoted_constant(name)) for name, _ in QUOTED)
     print(f"\n    the union's prompt carries {total} B of authored instruction: "
           f"{quoted_bytes} B quoted from the head, {leftover_bytes} B authored here.")
 

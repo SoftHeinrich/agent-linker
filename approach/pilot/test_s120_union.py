@@ -36,8 +36,9 @@ from design_audit import PROJECTS                                    # noqa: E40
 from simmerge_audit import (                                         # noqa: E402
     arm_full, arm_partial, head_instance, load_project,
 )
-from llm_sad_sam.linkers.experimental.s_linker110 import NameForm    # noqa: E402
-from llm_sad_sam.linkers.experimental.s_linker120 import SLinker120  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker120 import (           # noqa: E402
+    NameForm, SLinker120,
+)
 
 
 class _Recorder:
