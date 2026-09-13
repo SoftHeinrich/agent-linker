@@ -35,7 +35,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from llm_sad_sam.core.document_loader_v2 import build_sent_map, load_sentences  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker110 import SLinker110  # noqa: E402
-from llm_sad_sam.linkers.experimental.s_linker120 import SLinker120  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker120 import (  # noqa: E402
+    MentionType, SLinker120,
+)
 from llm_sad_sam.linkers.experimental.union_iterations import ITERATIONS  # noqa: E402
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
@@ -49,6 +51,27 @@ ARMS = {"control": SLinker110, "union": SLinker120}
 #: builds `SLinker120` with that iteration pinned, in the same invocation, so two
 #: versions of the rule are comparable without trusting two invocations.
 ARMS.update({name: SLinker120 for name in ITERATIONS})
+
+#: Which computed mention labels a case prints. The head keeps two of the five
+#: `MentionType` values on the ground that the judge cannot re-derive them from the
+#: sentence it is shown; these arms are that ground, measured rather than asserted.
+#: Same rule, same candidates, same call count -- only the `mention=` line differs
+#: (`pilot/mention_label_audit.py` counts the cases each arm changes).
+#:
+#:   alllabels  every label the classifier can compute, on every case that has one
+#:   aliasmute  drop `via known alias`, which restates the case's own `writes` line
+#:   nomention  print no computed label at all: the floor of the field
+LABEL_ARMS = {
+    "alllabels": frozenset(MentionType),
+    "aliasmute": frozenset({MentionType.CODE_TOKEN}),
+    "nomention": frozenset(),
+}
+ARMS.update({
+    name: type(f"SLinker120_{name}", (SLinker120,),
+               {"RETAINED_MENTION_TYPES": retained,
+                "_VARIANT_NAME": f"s_linker120_{name}"})
+    for name, retained in LABEL_ARMS.items()
+})
 ROWS = ("whole name", "alias", "word only")
 
 

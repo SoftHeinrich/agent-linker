@@ -32,8 +32,13 @@ below the recorded TP floor of 4.8 (`pilot/union_composition.py`).
 They live in `union_iterations.py` as data — rule text, case format, verdict contract and
 numbers — so the trail can be read and re-run (`pilot/union_pilots.py --arms control v3
 v13` puts two of them in one invocation; this file runs `v13`, written out below, and
-`pilot/union_defensibility.py` checks the two are the same bytes). Three results from the
-round are worth more than the arm:
+`pilot/union_defensibility.py` checks the two are the same bytes). A fourteenth, `v14n`,
+was added afterwards by the label-and-rule round and refused: it is this rule with every
+carried criterion paraphrased into general English and nothing else changed, and it reads
+net -5.0 a run with the whole estimate in spurious. **Quotation is not a style choice
+here** — it is what makes the clauses checkable against the constants they came from, so
+a paraphrase has to win to be worth its defensibility cost, and it does not. Three
+results from the round are worth more than the arm:
 
   * **An evidence field restrains when it is stated and misleads when it is weighted.**
     Iteration 1 stated the alternative set as a ground for rejecting and lost 7.6 gold on
@@ -51,7 +56,7 @@ round are worth more than the arm:
     nothing on luna. What that stream actually loses to is being asked an identity
     question, in any of the several ways a merged prompt can ask one.
 
-**Defensibility is enforced, not asserted.** `pilot/union_defensibility.py` (25 checks)
+**Defensibility is enforced, not asserted.** `pilot/union_defensibility.py` (40 checks)
 holds the rule to GATE-06/GATE-07: every clause that states a criterion is a **verbatim
 slice of a rule constant this branch already had** — `MENTION_COUNTS` and
 `POSITIVE_GROUND` are computed slices of `LAYERED_ENTITY_RULES`, `ACTS_ON` is asserted
@@ -81,6 +86,20 @@ including the coreference prompt byte for byte). The eleven blocks that are byte
 across the whole family — the tracing wrapper, the JSON call path, the checkpoint and log
 writers, the per-phase metrics, the batching and the log's views — live in `linker_infra`
 and are called from the methods that used to hold them, exactly as in the ancestor.
+
+**What is this variant's own, and what is a copy.** Of the file's methods, **41 are the
+ancestor's text byte for byte** and 9 are this round's; the copy is not refactorable
+without deleting the claim above, so every readability change this file has had is inside
+the union's own methods. Those are written as one named step per thing the judge does —
+`_union_batches`, `_word_only_window`, `_union_cases`, `_union_verdicts`, and
+`_naming_of` / `_alternatives_for` / `_anchors_for` under `_union_evidence` — so that
+each carries the measurement that put it there. **The evidence is computed once per
+candidate** in `_judge_union` and read by the grouping, the window, the case and the
+decision record alike, so no candidate can be bucketed on one reading of its match and
+printed on another. `pilot/union_render_snapshot.py` is the guard: it hashes every case,
+every prompt and every judged decision over five projects x two alias tables x every
+iteration of the trail (280 renderings), and a refactor is only allowed to be a refactor
+if `--check` reports all of them identical.
 
 **Lineage.** `s_linker110`, unchanged except at the judging of the two name streams.
 """
@@ -1079,6 +1098,19 @@ JSON only:"""
     #: The mention labels the judge cannot re-derive from the sentence it is shown.
     #: Everything else `_classify_mention_typed` can say is a restatement of the case
     #: header, and s80 measured the cost of dropping it at 3-21% of those approvals.
+    #:
+    #: **Both halves of that are now measured on this variant** rather than argued
+    #: (`pilot/union_pilots.py --arms union alllabels aliasmute nomention`, three
+    #: samples, fixed candidates, `../results/labelrule_round/`). Printing *every*
+    #: label the classifier can compute adds a `mention=` line to 144 of 296 cases and
+    #: moves gold by **0.00 a unit, p = 1.000** (spurious +1.3 a run, n.s.): the three
+    #: labels left out are exactly the three a judge holding the sentence can read off
+    #: it, so stating them is bytes without verdicts. Printing *none* is the round's
+    #: only significant result -- **net -15.0 a run, p = 0.031**, at spurious +10.0 --
+    #: so the field as a whole is load-bearing and it is `CODE_TOKEN` that carries it.
+    #: Dropping only `VIA_ALIAS`, which restates the case's own `writes` line on all 43
+    #: alias cases, is gold-neutral at net -1.0 (p = 0.875): free to within the noise,
+    #: and kept, because an unnecessary change is not a defensible one.
     RETAINED_MENTION_TYPES = frozenset({
         MentionType.VIA_ALIAS,
         MentionType.CODE_TOKEN,
@@ -1168,15 +1200,42 @@ JSON only:"""
         """
         text = candidate.sentence_text
         name = candidate.component_name
-        whole = self._writes_name(text, name)
-        alias = ""
-        if not whole:
-            for term, owner in getattr(
-                    getattr(self, "doc_knowledge", None), "aliases", {}).items():
-                if owner == name and self._find_exact_form(text, term):
-                    alias = term
-                    break
-        naming = ("whole name" if whole else "alias" if alias else "word only")
+        anchors, last_named = self._anchors_for(name, candidate.sentence_number,
+                                                sent_map)
+        return {
+            "source": self._stage_of(candidate),
+            "span": candidate.matched_text or name,
+            "naming": self._naming_of(text, name),
+            "mention": self._retained_mention_label(name, text),
+            "alternatives": self._alternatives_for(text, name, components),
+            "last_named": last_named,
+            "anchors": anchors,
+        }
+
+    def _naming_of(self, text, name) -> str:
+        """Which of N(c) this sentence writes: the whole name, an alias, or a word.
+
+        `_states_a_name` decomposed. This is the one evidence field the rest of the
+        design branches on — it fills the `writes` line, it decides whether the case
+        is blinded, and it decides which batch the case joins.
+        """
+        if self._writes_name(text, name):
+            return "whole name"
+        aliases = getattr(getattr(self, "doc_knowledge", None), "aliases", {})
+        for term, owner in aliases.items():
+            if owner == name and self._find_exact_form(text, term):
+                return "alias"
+        return "word only"
+
+    def _alternatives_for(self, text, name, components) -> list:
+        """The other components the expression in this sentence could be reaching.
+
+        Not "components with similar names": the same relation the match itself ran,
+        asked of every other component against the words this sentence actually
+        matched. `s_linker107`'s enumeration, moved from the resolver to the name
+        streams — and stated as context, never as a ground to reject (iteration 1
+        priced that at -7.6 gold, iteration 6 priced its absence at +26.4 spurious).
+        """
         mine = {text[start:end].casefold() for start, end
                 in self._name_spans(text, name, NameForm.ANY_WORD)}
         alternatives = []
@@ -1186,24 +1245,25 @@ JSON only:"""
             spans = self._name_spans(text, other.name, NameForm.ANY_WORD)
             if spans and {text[s:e].casefold() for s, e in spans} & mine:
                 alternatives.append(other.name)
+        return alternatives
+
+    def _anchors_for(self, name, number, sent_map):
+        """The other sentences that name this component, and how far back the last is.
+
+        One pass in sentence order: `anchors` is capped at `ANCHOR_LIMIT` and fixes
+        what the name means in the document; `last_named` is the recency those anchors
+        were being read for, and is -1 when no earlier sentence names it.
+        """
         anchors, last_named = [], -1
         for sentence in sorted(sent_map.values(), key=lambda s: s.number):
-            if sentence.number == candidate.sentence_number:
+            if sentence.number == number:
                 continue
             if self._find_exact_form(sentence.text, name):
-                if sentence.number < candidate.sentence_number:
-                    last_named = candidate.sentence_number - sentence.number
+                if sentence.number < number:
+                    last_named = number - sentence.number
                 if len(anchors) < self.ANCHOR_LIMIT:
                     anchors.append(f"S{sentence.number}: {sentence.text}")
-        return {
-            "source": self._stage_of(candidate),
-            "span": candidate.matched_text or name,
-            "naming": naming,
-            "mention": self._retained_mention_label(name, text),
-            "alternatives": alternatives,
-            "last_named": last_named,
-            "anchors": anchors,
-        }
+        return anchors, last_named
 
     # ── the one judging call ─────────────────────────────────────────────────
 
@@ -1235,6 +1295,35 @@ Return JSON:
 {reply}
 JSON only:"""
 
+    #: Evidence fields that name a component. A blinded case carries none of them,
+    #: because the match that produced it computed no component for this sentence.
+    BLIND_WITHHOLDS = ("alternatives", "mention", "last_named")
+
+    def _evidence_facts(self, evidence, fields, blind) -> list:
+        """The items of a case's `Evidence:` line, in the order the iteration declares.
+
+        A field the match did not compute is not printed; a field the iteration does
+        not declare is not printable at all. Nothing here weighs anything — each item
+        says what the match found, and the rule above the cases says how to read it.
+        """
+        written = {
+            "source": evidence["source"],
+            "naming": evidence["naming"],
+            "writes": self.WRITES[evidence["naming"]],
+            "mention": evidence["mention"],
+            "alternatives": ", ".join(evidence["alternatives"]),
+        }
+        facts = []
+        for slot in fields:
+            if blind and slot in self.BLIND_WITHHOLDS:
+                continue
+            if slot == "last_named":
+                if evidence["last_named"] >= 0:
+                    facts.append(f"named {evidence['last_named']} sentences earlier")
+            elif written[slot]:
+                facts.append(f"{slot}={written[slot]}")
+        return facts
+
     def _format_union_case(self, index, candidate, evidence, sent_map, shown_in=0):
         """One case, in the active iteration's format.
 
@@ -1248,25 +1337,7 @@ JSON only:"""
         spec = self.iteration
         blind = spec.blind_word_only and evidence["naming"] == "word only"
         previous = self._prev_prefix(candidate.sentence_number, sent_map)
-        labels = {
-            "source": lambda: f"source={evidence['source']}",
-            "naming": lambda: f"naming={evidence['naming']}",
-            "writes": lambda: f"writes={self.WRITES[evidence['naming']]}",
-            "mention": (lambda: f"mention={evidence['mention']}"
-                        if evidence["mention"] else None),
-            "alternatives": (lambda: "alternatives="
-                             + ", ".join(evidence["alternatives"])
-                             if evidence["alternatives"] else None),
-            "last_named": (lambda: f"named {evidence['last_named']} sentences earlier"
-                           if evidence["last_named"] >= 0 else None),
-        }
-        facts = []
-        for name in spec.fields:
-            if blind and name in ("alternatives", "mention", "last_named"):
-                continue          # every one of these names a component
-            rendered = labels[name]()
-            if rendered:
-                facts.append(rendered)
+        facts = self._evidence_facts(evidence, spec.fields, blind)
         lines = [
             (f'Case {index}: "{evidence["span"]}"' if blind else
              f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}'),
@@ -1282,93 +1353,131 @@ JSON only:"""
                 lines.extend(f"    {anchor}" for anchor in evidence["anchors"])
         return "\n".join(lines)
 
-    def _judge_union(self, candidates, components, sentences, sent_map):
-        """One pass over the merged stream. The head's batching and parser.
+    @staticmethod
+    def _case_key(candidate):
+        """The pair every view of a candidate is filed under."""
+        return candidate.sentence_number, candidate.component_id
 
-        The word-only rows are shown the window the denotation judge shows them today,
-        as one table per call rather than one per stream, so no case is shown less.
+    def _union_batches(self, candidates, evidence):
+        """The merged stream cut into judging calls.
+
+        The evidence groups the cases as well as filling them: a case whose match
+        computed no component is judged among its own kind. One rule, one prompt
+        template, and the same call count the head pays for its two stages.
         """
-        if not candidates:
-            return [], {}
-        from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names
-        comp_names = get_comp_names(components)
-        approved, decisions = [], {}
-        # The evidence groups the cases as well as filling them: a case whose match
-        # computed no component is judged among its own kind. One rule, one prompt
-        # template, and the same call count the head pays for its two stages.
         if self.iteration.batch_by_evidence:
-            named, blind = [], []
-            for candidate in candidates:
-                bucket = (blind if self._union_evidence(
-                    candidate, components, sent_map)["naming"] == "word only"
-                    else named)
-                bucket.append(candidate)
+            named = [c for c in candidates
+                     if evidence[self._case_key(c)]["naming"] != "word only"]
+            blind = [c for c in candidates
+                     if evidence[self._case_key(c)]["naming"] == "word only"]
             groups = [group for group in (named, blind) if group]
         else:
             groups = [candidates]
-        batches = [batch for group in groups
-                   for _, batch in self._iter_batches(group, self.JUDGE_BATCH)]
-        for batch in batches:
-            evidences = {
-                (c.sentence_number, c.component_id):
-                    self._union_evidence(c, components, sent_map)
-                for c in batch
-            }
-            window = set()
-            for candidate in batch:
-                if evidences[(candidate.sentence_number,
-                              candidate.component_id)]["naming"] == "word only":
-                    window.update(s.number for s in
-                                  self._window(candidate.sentence_number, sentences))
-            table = [{"sentence": n, "text": sent_map[n].text}
-                     for n in sorted(window) if n in sent_map]
-            cases, shown = [], {}
-            for index, candidate in enumerate(batch, 1):
-                evidence = evidences[(candidate.sentence_number,
-                                      candidate.component_id)]
-                first = shown.get(candidate.component_name, 0)
-                if evidence["anchors"] and not first:
-                    shown[candidate.component_name] = index
-                cases.append(self._format_union_case(
-                    index, candidate, evidence, sent_map, first))
-            named_batch = any(
-                evidences[(c.sentence_number, c.component_id)]["naming"] != "word only"
-                for c in batch)
-            self.llm.set_phase("phase_25_name_union_judge")
-            data = self._ask(
-                self._prompt_union(comp_names, table, cases, named=named_batch),
-                timeout=120, label="Union validation", require="validations",
+        return [batch for group in groups
+                for _, batch in self._iter_batches(group, self.JUDGE_BATCH)]
+
+    def _word_only_window(self, batch, evidence, sentences, sent_map):
+        """The `SENTENCES` table this call shows, or [] when no case needs one.
+
+        Only the word-only cases are given a window \u2014 they are the ones being asked
+        what an expression denotes \u2014 and it is one table per call rather than one per
+        stream, so no case is shown less than the head's denotation judge shows it.
+        """
+        window: set[int] = set()
+        for candidate in batch:
+            if evidence[self._case_key(candidate)]["naming"] == "word only":
+                window.update(s.number for s in
+                              self._window(candidate.sentence_number, sentences))
+        return [{"sentence": n, "text": sent_map[n].text}
+                for n in sorted(window) if n in sent_map]
+
+    def _union_cases(self, batch, evidence, sent_map):
+        """Every case of this call, with each component's anchors printed once.
+
+        A batch is 25 cases and several usually concern one component, so the later
+        cases point at the first one that printed the list rather than repeating it
+        (`s_linker88`; the union form, not the first-case form, so no case is shown
+        an anchor list shorter than its own).
+        """
+        cases, shown = [], {}
+        for index, candidate in enumerate(batch, 1):
+            facts = evidence[self._case_key(candidate)]
+            first = shown.get(candidate.component_name, 0)
+            if facts["anchors"] and not first:
+                shown[candidate.component_name] = index
+            cases.append(self._format_union_case(
+                index, candidate, facts, sent_map, first))
+        return cases
+
+    def _union_verdict(self, item, row, named_batch):
+        """One reply row read under the contract its call was asked in.
+
+        Either way the quote is committed to first and the verdict rests on it: the
+        demand is `s_linker48`'s, worth 35.2 TP, and the strip is for models that
+        answer a quoted quote.
+        """
+        claim = str(item.get("claim", "")).strip().strip("\"'\u201c\u201d\u2018\u2019")
+        blind_call = self.iteration.contract_follows_batch and not named_batch
+        if blind_call or (self.iteration.verdict == "per_row" and row == "word only"):
+            # The head's denotation contract, unchanged: the enum keeps only a
+            # positive classification and the quote must be committed to.
+            keep = (str(item.get("denotation", "")).strip() == "participant"
+                    and bool(claim))
+        else:
+            value = item.get("approve", False)
+            keep = (value is True
+                    or (isinstance(value, str) and value.lower() == "true"))
+        return keep, claim
+
+    def _union_verdicts(self, data, batch, evidence, named_batch):
+        """{position in the batch: (keep, claim)}. A row nothing answered is absent.
+
+        An unparseable reply, a case number out of range and a missing row all land
+        in the same place: the case is not in this mapping, and the caller rejects it.
+        """
+        verdicts = {}
+        for item in (data or {}).get("validations", []):
+            position = item.get("case", 0) - 1
+            if not 0 <= position < len(batch):
+                continue
+            row = evidence[self._case_key(batch[position])]["naming"]
+            verdicts[position] = self._union_verdict(item, row, named_batch)
+        return verdicts
+
+    def _judge_union(self, candidates, components, sentences, sent_map):
+        """One pass over the merged stream. The head's batching and parser.
+
+        The evidence is computed once per candidate here and read by everything
+        below \u2014 the grouping, the window, the case and the decision record \u2014 so one
+        candidate cannot be bucketed on one reading of the match and printed on
+        another.
+        """
+        if not candidates:
+            return [], {}
+        evidence = {self._case_key(c): self._union_evidence(c, components, sent_map)
+                    for c in candidates}
+        comp_names = get_comp_names(components)
+        approved, decisions = [], {}
+        for batch in self._union_batches(candidates, evidence):
+            named_batch = any(evidence[self._case_key(c)]["naming"] != "word only"
+                              for c in batch)
+            prompt = self._prompt_union(
+                comp_names,
+                self._word_only_window(batch, evidence, sentences, sent_map),
+                self._union_cases(batch, evidence, sent_map),
+                named=named_batch,
             )
-            verdicts = {}
-            for item in (data or {}).get("validations", []):
-                position = item.get("case", 0) - 1
-                if not 0 <= position < len(batch):
-                    continue
-                candidate = batch[position]
-                row = evidences[(candidate.sentence_number,
-                                 candidate.component_id)]["naming"]
-                claim = str(item.get("claim", "")).strip().strip("\"'\u201c\u201d\u2018\u2019")
-                blind_call = (self.iteration.contract_follows_batch
-                              and not named_batch)
-                if blind_call or (self.iteration.verdict == "per_row"
-                                  and row == "word only"):
-                    # The head's denotation contract, unchanged: the enum keeps only a
-                    # positive classification and the quote must be committed to.
-                    keep = (str(item.get("denotation", "")).strip() == "participant"
-                            and bool(claim))
-                else:
-                    value = item.get("approve", False)
-                    keep = (value is True
-                            or (isinstance(value, str) and value.lower() == "true"))
-                verdicts[position] = (keep, claim)
+            self.llm.set_phase("phase_25_name_union_judge")
+            data = self._ask(prompt, timeout=120, label="Union validation",
+                             require="validations")
+            verdicts = self._union_verdicts(data, batch, evidence, named_batch)
             for position, candidate in enumerate(batch):
                 ok, claim = verdicts.get(position, (False, ""))
                 stage = self._stage_of(candidate)
-                decisions[(candidate.sentence_number, candidate.component_id)] = {
+                decisions[self._case_key(candidate)] = {
                     "approved": ok,
                     "claim": claim,
-                    "naming": evidences[(candidate.sentence_number,
-                                         candidate.component_id)]["naming"],
+                    "naming": evidence[self._case_key(candidate)]["naming"],
                     "path": f"{stage}_judged" if ok else f"{stage}_rejected",
                     "stage": "name_union_judge",
                 }

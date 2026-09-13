@@ -1241,7 +1241,7 @@ every candidate in one case format. Level 1 `pilot/unijudge_audit.py`; level 2
 pinned), statistics `pilot/union_stats.py`, error analysis `pilot/union_diff.py`, level 3
 `pilot/union_composition.py`; arm `s_linker120` (`unijudge`), its thirteen iterations as
 data in `union_iterations.py`, invariants `pilot/test_s120_union.py` (2593 checks),
-defensibility `pilot/union_defensibility.py` (25 checks). Report:
+defensibility `pilot/union_defensibility.py` (40 checks). Report:
 `../results/union_round/README.md`.
 
 - **Adopted at the stage, on both models.** terra (n=5, 25 paired units): gold **+0.2
@@ -1317,3 +1317,71 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   union, "how many judges" and "how many forms" are no longer the same question**, which
   is exactly what the round set out to separate. No one-call floor was built on this arm;
   `rq_tables.py` drops that table and prints the absence rather than borrowing s110's.
+
+### The label-and-rule round — what the union judge is shown, and in whose words
+
+Four arms against `s_linker120`'s one judge, all at level 2 on fixed recorded candidates
+(296 cases, 180 gold, 14 calls, identical across every arm and sample), three samples a
+side, every arm in the same invocation. Report: `../results/labelrule_round/README.md`;
+arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; statistics
+`pilot/union_stats.py`; level-0 guard `pilot/union_render_snapshot.py`.
+
+| arm | change | gold | spurious | net | p(net) |
+|---|---|---|---|---|---|
+| `alllabels` | print every `MentionType` the classifier computes | ±0.0 (p=1.00) | +1.3 | −1.3 | 0.750 |
+| `aliasmute` | drop `VIA_ALIAS`, which restates the case's `writes` line | ±0.0 (p=1.00) | +1.0 | −1.0 | 0.875 |
+| `v14n` | every carried criterion clause paraphrased | +0.3 (p=1.00) | +6.0 | −5.0 | 0.336 |
+| `nomention` | print no computed label at all | −1.7 | +10.0 | **−15.0** | **0.031** |
+
+- **Showing every label is free to build and buys nothing.** One frozenset; it adds a
+  `mention=` line to **144 of 296 cases, 131 of them gold**, and moves gold **0.00 a unit
+  at p = 1.000**. The census says why: the three labels left out are a function of the
+  case's own `naming` row and its capitalization, so a judge holding the sentence reads
+  them off the sentence (`proper case, standalone` 108 cases at 0.963 gold,
+  `lowercase mention` 36 at 0.750, `indirect/unclear match` 81 at 0.321), and
+  `STRICTER_CLAUSE` already says what capitalization is worth. **The retained set was
+  chosen by an argument about re-derivability and the argument holds.**
+- **The field as a whole is load-bearing, and that is the round's only significant
+  result.** `nomention` is net −15.0 at p = 0.031, all of it at the whole-name row
+  (spurious +2.00 a unit) — the 28 `lowercase, inside qualified name` cases, a 0.071-gold
+  bucket that `QUALIFIED_CLAUSE` speaks to in every prompt and does not catch.
+  **A clause stating the criterion is not a substitute for a fact saying this case is an
+  instance of it** — the design law from the side usually taken for granted, and a fifth
+  measurement of the mention label after s42/s43/s44, s80 and the concept round.
+- **Naturalizing the rule loses, and a tie would also have lost.** `v14n` holds the
+  definition, field lines, format contract, demand, reply, fields and every flag, and
+  paraphrases only the four carried criterion clauses into plain general English. Net
+  −5.0, gold +0.3 (p = 1.00) with the whole point estimate in spurious, concentrated on
+  the word-only row (+1.07 a unit). **Quotation is not a style choice here**: it is what
+  lets `union_defensibility.py` check each clause against the ancestor constant it was
+  sliced from, so a paraphrase must be scored as authored text against GATE-07 and the
+  arm had to win to be worth adopting. **First clean measurement of quotation against
+  paraphrase on this branch** — v1 → v2 moved the same way and is unreadable for it,
+  having moved the alternative set in the same step.
+- **`VIA_ALIAS` is a genuine redundancy and is kept anyway.** All 43 alias cases print
+  the same fact twice (`writes=a short form ...` and `mention=via known alias`); removing
+  it is gold-neutral at net −1.0 (p = 0.875). Point estimate unfavourable, nothing bought
+  — **an unnecessary change is not a defensible one** (the finetune round's rule).
+- **There is no dead code in `s_linker120.py`, and this is now checked rather than
+  assumed.** A mechanical pass over defs, constants, class attributes and imports against
+  comment- and docstring-stripped source found no unreferenced symbol, no commented-out
+  block, no TODO, and one dead line (a function-level import shadowing the module-level
+  one), removed. What looks dead is either **reachable by trail iterations v1–v6** (the
+  `source`/`naming`/`last_named` label branches, the `clauses` slot, the `per_row`
+  verdict, the un-grouped batching) or part of the **41 methods pinned byte-identical to
+  `s_linker110`** by `test_s120_standalone.py` T2 — refactoring which would delete the
+  claim the standalone file exists to make, not clean it.
+- **The cleanup is therefore decomposition inside the 9 union-only methods**:
+  `_judge_union` 93 lines → 40 plus five named steps (`_union_batches`,
+  `_word_only_window`, `_union_cases`, `_union_verdicts`, `_union_verdict`),
+  `_union_evidence` 46 → 21 plus `_naming_of` / `_alternatives_for` / `_anchors_for`, and
+  the case renderer's dict-of-lambdas → `_evidence_facts`. **The evidence is computed
+  once per candidate** instead of twice, so nothing can bucket a candidate on one reading
+  of its match and print it on another.
+- **`pilot/union_render_snapshot.py` is the equivalence test, written before the
+  refactor.** It hashes every case, every prompt and every judged decision — under a stub
+  that answers both contracts and alternates the verdict, per the uniform round's lesson
+  — over 5 projects x 2 alias tables x 14 iterations: **280 renderings, all identical**.
+  Use it for any future change to this file that is supposed to be a refactor.
+- **The head does not move. `s_linker120` stands, at `v13`, with the label set it had.**
+  No E2E owed: every arm is refused or neutral-and-not-adopted.

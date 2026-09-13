@@ -1,11 +1,12 @@
 """Every iteration of the union judge, in one file, side by side.
 
 `s_linker120` merges the head's two name judges into one call. What that judge *says*
-went through nine iterations, each one a single named change measured against a control
-that ran beside it in the same invocation. This module holds all nine as data: the rule
-text, the case format, the verdict contract, and the numbers each one read. The variant
-imports the active one; the pilot can run any of them as an arm; the defensibility audit
-scores whichever is active.
+went through thirteen iterations, each one a single named change measured against a
+control that ran beside it in the same invocation, and the label-and-rule round added a
+fourteenth (`v14n`). This module holds them all as data: the rule text, the case format,
+the verdict contract, and the numbers each one read. The variant imports the active one;
+the pilot can run any of them as an arm; the defensibility audit scores whichever is
+active.
 
     from llm_sad_sam.linkers.experimental.union_iterations import ITERATIONS, ACTIVE
     ITERATIONS["v3"].rule           # what that iteration told the judge
@@ -453,6 +454,104 @@ ITERATIONS["v13"] = Iteration(
                      note="15 units: gold neutral, spurious down at p = 0.008, net up "
                           "at p = 0.011. Precision 0.789 -> 0.859. The whole-name row "
                           "carries it: -1.3 gold at -21.0 spurious."),
+    },
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Iteration 14 — the same rule, said in the reader's English instead of the
+# ancestor's. The one thing it changes is *quotation*.
+#
+# v13's criterion clauses are verbatim slices of `s_linker110`'s constants, which is
+# what lets `pilot/union_defensibility.py` check each one against the constant it came
+# from. That construction has a cost the round never priced: the sentences were written
+# for two rubrics addressed to two streams, and carrying them whole carries their
+# phrasing too -- "a mention that says nothing further about the component still counts
+# as a valid link" is a sentence about a *stream's* default, stated negatively, in a
+# rule that has no streams.
+#
+# This arm paraphrases every carried criterion into a plain, positive, general
+# statement of the same thing, and changes NOTHING else: same definition, same field
+# lines, same format contract, same demand, same reply, same fields, same flags. So the
+# delta is quotation versus paraphrase, and nothing is confounded with it. (v1 -> v2
+# moved in this direction and is not evidence, because it moved the alternative set from
+# a reject-ground to context in the same step.)
+#
+# **If it is neutral it is still not free**: the defensibility audit can no longer
+# derive these clauses from an ancestor constant, and would have to score them as
+# authored text against GATE-07 instead. It is adopted only on a win, not on a tie.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_DEFINITION_NAT = ("A trace link holds between a sentence and a component when the "
+                   "sentence makes an architectural claim about that component -- when "
+                   "it says something about it as a participant in the system this "
+                   "document describes. ")
+
+#: `MENTION_COUNTS`, said positively. The original defines the easy case by what it
+#: lacks ("says nothing further ... still counts"); this states the sufficient
+#: condition directly.
+_MENTION_COUNTS_NAT = ("An architectural mention of the component is enough to justify "
+                       "a link, even where the sentence says nothing further about it. ")
+
+#: `POSITIVE_GROUND`, with "a positive ground" -- a term of art from the rubric it was
+#: lifted out of -- replaced by what it means.
+_POSITIVE_GROUND_NAT = ("Reject only for a reason you can point to in the sentence: it "
+                        "says nothing of this component, because its name is serving "
+                        "some other purpose here, or because the sentence denies what "
+                        "it would otherwise be saying of it.")
+
+#: `STRICTER_CLAUSE`, same three moves: the coincidence, the use/mention test, and
+#: capitalization as evidence that does not settle the question.
+_STRICTER_NAT = ("A component's name can coincide with an ordinary English word. "
+                 "Approve where the sentence uses that word as the component's name; "
+                 "where it carries its everyday sense and the component is not what "
+                 "the sentence is about, reject. Capitalization points towards a name "
+                 "and its absence points away, but neither decides it alone.")
+
+#: `QUALIFIED_CLAUSE` and `ACTS_ON`, as one reference paragraph in the same voice.
+_QUALIFIED_NAT = ("Where an expression appears only inside a longer joined or dotted "
+                  "identifier, it is naming a part of that identifier rather than a "
+                  "participant in what the sentence describes.")
+_ACTS_ON_NAT = ("An expression naming what a component acts on or produces refers to "
+                "that thing rather than to the component, however plainly the "
+                "component is the one acting on it.")
+
+_V14N_RULE = f"""{_DEFINITION_NAT}{_MENTION_COUNTS_NAT}
+
+{_FORMAT_V9} The evidence says what the expression is doing here; none of it is a verdict.
+
+{_WRITES_V8}
+{_FIELD_LINES}
+
+{_POSITIVE_GROUND_NAT}
+
+Where the case gives you a component: {_STRICTER_NAT}
+
+{_QUALIFIED_NAT} {_ACTS_ON_NAT}"""
+
+ITERATIONS["v14n"] = Iteration(
+    name="v14n", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    summary="v13 with every carried criterion paraphrased into general English; "
+            "structure, fields, demand, reply and flags all held",
+    rule=_V14N_RULE, demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="quotation -> paraphrase, and nothing else",
+    measured={
+        "terra": dict(gold=+0.3, spurious=+6.0, net=-5.0, samples=3, p_gold=1.000,
+                      p_spurious=0.109, p_net=0.336,
+                      note="REFUSED. 15 units: gold neutral (p = 1.000), spurious up "
+                           "6.0 a run, net -5.0, v13 ahead or level on 8 of 15 units "
+                           "and behind on 7. Nothing here is significant, and that is "
+                           "the point: the paraphrase buys no gold and its whole "
+                           "point estimate is spurious, concentrated on the word-only "
+                           "row (+1.07 spurious a unit against +0.33 on whole name). "
+                           "A tie would still be a loss, because the paraphrase is "
+                           "the one thing that makes the rule's clauses unquotable "
+                           "from the ancestor's constants -- the construction the "
+                           "defensibility audit checks. This is the round's clean "
+                           "measurement of quotation against paraphrase: v1 -> v2 "
+                           "moved the same way and cannot be read for it, because it "
+                           "moved the alternative set in the same step."),
     },
 )
 
