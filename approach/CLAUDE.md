@@ -1399,6 +1399,16 @@ arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; st
   **51 methods -> 33**: the proposer is one `_name_candidates`, the label one
   `_mention_label`, the judge `_judge_union`'s four blocks, evidence computed once per
   candidate instead of twice.
+- **`pilot/method_dup_audit.py` — the duplicate check, generalised.** Two passes, no
+  calls: structural (each method's AST, docstrings dropped and parameters renamed
+  positionally, so a rename cannot hide a copy) and behavioural (every 2-argument
+  method run over all 3697 (sentence, name) pairs, and any two that agree everywhere
+  reported). It is validated against the bug it was written for: run on `s_linker110`
+  it reports **`_find_exact_form == _writes_name`**; run on `s_linker120` it reports
+  none. **A byte-identical-copy policy hides this class of duplicate by construction**
+  -- the two names were kept apart only because the ancestor kept them apart -- so a
+  standalone file wants a check that does not care what anything is called. `s_linker110`
+  keeps its duplicate: it is a recorded control and does not move.
 - **What the byte comparison claimed is now claimed by behaviour, and more strictly.**
   T6 runs the ancestor's own `_extract_named_mentions` and `_scan` beside this file's
   `_name_candidates` and compares every candidate — pair, component, source label and the
