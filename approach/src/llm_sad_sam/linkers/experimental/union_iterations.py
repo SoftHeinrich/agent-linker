@@ -102,6 +102,15 @@ class Iteration:
     #: prompt template either way; what the grouping changes is the company a case
     #: keeps, and the call count is unchanged (the control pays the same two batches).
     batch_by_evidence: bool = False
+    #: Where a case whose sentence writes only one word of a name still prints the
+    #: component that word came from: `hidden` (v13), `header`, or `evidence` (on the
+    #: `writes` line). Only read when `blind_word_only` is True — an un-blinded case
+    #: names its component in the header by construction.
+    word_only_component: str = "hidden"
+    #: Whether a word-only case prints its anchors — the other sentences that name
+    #: this component. False through v17: an anchor names a component and a blind
+    #: case carries none.
+    word_only_anchors: bool = False
     #: True when a call whose cases carry no component is not given the catalog and
     #: answers the head's denotation contract. The prompt carries what the batch's
     #: evidence has: a call with no component in any case has no catalog to check
@@ -214,6 +223,56 @@ _FIELD_LINES = (
     "  anchors -- other sentences of this document that name this component. They fix "
     "what the name means in the document; they do not decide this sentence."
 )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Iterations 14-16 — the unblinding round: can an instruction replace the refusal?
+#
+# v13 keeps the word-only row healthy by removing every way a merged prompt can ask
+# an identity question of it: the target in the header (`blind_word_only`), the
+# catalog above it and the claim demand (`contract_follows_batch`), and the named
+# cases beside it (`batch_by_evidence`). Three of those four are properties of the
+# CALL and stay. These arms put the fourth back -- the case names its component --
+# and ask whether the rule can say what that slot means well enough to keep the
+# question a denotation question.
+#
+# The cell is untested: every earlier un-blinded arm (v7, v8) was un-blinded with
+# all three of the other carriers still present, so v8's -10.3 gold on luna prices
+# "un-blinded AND catalogued AND claim-demanded AND mixed", not the slot.
+# ─────────────────────────────────────────────────────────────────────────────
+
+#: The input contract with the component always present. `_FORMAT_V9`'s second
+#: sentence is about a case that carries none, so it cannot be carried as it stands:
+#: an un-blinded prompt that keeps it is describing a case format it does not use.
+#: This is the naive un-blinding -- the contract restated truthfully and nothing more.
+_FORMAT_V14 = ("Every case gives you the expression the sentence uses, the sentence "
+               "itself, the evidence the document supplies, and the component whose "
+               "name that expression reaches.")
+
+#: The same contract, plus what the component slot IS where the sentence writes one
+#: word of a name: the provenance of the word, not a claim under test. The closing
+#: clause is `_FORMAT_V9`'s own -- the question the head's denotation judge asks --
+#: moved from "the case carries no component" to "the case carries one, and here is
+#: what it is for".
+_FORMAT_V15 = _FORMAT_V14 + (
+    " Where the sentence writes only one word of that name, the component tells you "
+    "which name the word came from and nothing more: decide what the expression "
+    "denotes there, and nothing about identity.")
+
+#: `STRICTER_CLAUSE`'s scope, stated by what the SENTENCE writes rather than by what
+#: the case carries. v11 scoped it "Where the case gives you a component"; once every
+#: case gives one, that phrase excludes nothing and the use/mention clause becomes
+#: live on the word-only row -- which is an identity question in the one place these
+#: arms are trying not to ask one. The clause is about an ordinary word coinciding
+#: with a component's *name*, so the condition it was always about is that the
+#: sentence writes the name.
+_STRICTER_SCOPE_BY_WRITING = "Where the sentence writes a name of the component: "
+
+
+def _unblinded_rule(form: str) -> str:
+    """`_rowless_rule` with the use/mention clause scoped by what the sentence writes."""
+    return _rowless_rule(form, _WRITES_V8).replace(
+        STRICTER_CLAUSE, _STRICTER_SCOPE_BY_WRITING + STRICTER_CLAUSE, 1)
 
 
 def _rowless_rule(form: str, writes: str, scope_stricter: bool = False) -> str:
@@ -660,6 +719,132 @@ ITERATIONS["v14n"] = Iteration(
                            "measurement of quotation against paraphrase: v1 -> v2 "
                            "moved the same way and cannot be read for it, because it "
                            "moved the alternative set in the same step."),
+    },
+)
+
+ITERATIONS["v14"] = Iteration(
+    name="v14", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    word_only_component="header",
+    summary="+ the word-only case names its component again, with the input contract "
+            "restated and nothing else said about the slot",
+    rule=_rowless_rule(_FORMAT_V14, _WRITES_V8, scope_stricter=True),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="v13's three call-level removals kept; the header slot filled. What a "
+            "reader would write if they simply stopped withholding the name",
+    measured={
+        "terra": dict(gold=-2.3, spurious=-2.3, net=-4.7, samples=3, p_gold=0.656,
+                      p_spurious=0.438, p_net=0.750,
+                      note="against v13 in the same invocation. Word-only row 20.7 -> "
+                           "18.3 gold at 7.0 -> 6.0 spurious; precision 0.909 -> "
+                           "0.919. Replicated in a second invocation: gold -3.3 "
+                           "(p = 0.562) at spurious +/-0.0, word-only 22.0 -> 19.0. "
+                           "Gold-negative in 2 of 2, each inside its own noise."),
+        "luna": dict(gold=-0.7, spurious=-17.7, net=+15.7, samples=3, p_gold=0.906,
+                     p_spurious=0.250, p_net=0.406,
+                     note="against v13 in the same invocation. Word-only row 22.7 -> "
+                          "22.3 gold (p = 1.000 on that row) at 18.0 -> 11.3 spurious; "
+                          "precision 0.770 -> 0.835. Second invocation: gold -0.7 "
+                          "(p = 0.875), spurious -4.7, precision 0.773 -> 0.789. "
+                          "**v8 read -10.3 gold on this model for the same slot** -- "
+                          "what it was pricing was the slot PLUS the catalog, the "
+                          "claim demand and the mixed batch, not the slot."),
+    },
+)
+
+ITERATIONS["v15"] = Iteration(
+    name="v15", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    word_only_component="header",
+    summary="+ the rule says what the component slot is for on a word-only case "
+            "(provenance of the word, not a claim under test) and scopes the "
+            "use/mention clause by what the sentence writes",
+    rule=_unblinded_rule(_FORMAT_V15),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="the instruction the round is testing: two sentences against v14",
+    measured={"luna": dict(gold=-1.0, spurious=+25.3, net=-28.3, samples=3,
+                           note="against v14 in the same invocation: word-only "
+                                "spurious 11.3 -> 35.0 at 22.3 -> 21.3 gold. The "
+                                "rescoping is the loosener, not the sentence -- v17 "
+                                "moves the sentence alone and tightens instead. An "
+                                "instruction that says which clause does NOT apply "
+                                "removes a restraint and states no criterion in its "
+                                "place.")},
+)
+
+ITERATIONS["v16"] = Iteration(
+    name="v16", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    word_only_component="evidence",
+    summary="+ the component printed on the `writes` line instead of the case header",
+    rule=_unblinded_rule(_FORMAT_V15),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="placement: the same bytes of information, off the slot that reads as the "
+            "claim under test and onto the field it is evidence of",
+    measured={"luna": dict(gold=-0.3, spurious=+19.4, net=-20.3, samples=3,
+                           note="against v14 in the same invocation: word-only 22.0 "
+                                "gold at 30.7 spurious against v14's 22.3 at 11.3. "
+                                "Placement is not the lever -- v16 carries v15's "
+                                "rescoping and reads v15's loosening, off the header "
+                                "slot entirely.")},
+)
+
+ITERATIONS["v17"] = Iteration(
+    name="v17", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    word_only_component="header",
+    summary="+ v14 with the provenance sentence, and the use/mention clause left "
+            "where v13 had it",
+    rule=_rowless_rule(_FORMAT_V15, _WRITES_V8, scope_stricter=True),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="the decomposition arm: v15 moved two things at once (the sentence and "
+            "the clause's scope) and read 35.0 spurious on the word-only row against "
+            "v14's 11.3. This holds the scope and moves only the sentence",
+    measured={
+        "luna": dict(gold=-4.7, spurious=-6.3, net=-7.7, samples=3, p_gold=0.094,
+                     p_spurious=0.469, p_net=0.340,
+                     note="against v14 in the same invocation. The sentence alone is "
+                          "a TIGHTENER: word-only 23.3 -> 19.7 gold at 25.7 -> 15.7 "
+                          "spurious. So v15's loosening was the rescoping, and the "
+                          "instruction itself costs gold at p = 0.094."),
+        "terra": dict(gold=0.0, spurious=+1.0, net=-1.0, samples=3,
+                      note="against v14 in the same invocation: 170.0 gold either "
+                           "way, word-only 18.3 -> 18.7. The sentence buys nothing "
+                           "on the model that pays for the slot."),
+    },
+)
+
+ITERATIONS["v18"] = Iteration(
+    name="v18", rows=False, blind_word_only=True, verdict="boolean",
+    batch_by_evidence=True, contract_follows_batch=True,
+    word_only_component="header", word_only_anchors=True,
+    summary="+ the word-only case carries its anchors too: the other sentences of "
+            "this document that name the component whose word it writes",
+    rule=_rowless_rule(_FORMAT_V14, _WRITES_V8, scope_stricter=True),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="v14's remaining gold losses are all a generic word of a multi-word name "
+            "whose whole name the document writes elsewhere; the anchors line is the "
+            "evidence that says so, and v13 could not carry it because its case "
+            "carried no component for the anchors to be about",
+    measured={
+        "terra": dict(gold=+1.3, spurious=+3.7, net=+0.3, samples=3, p_gold=0.250,
+                      p_spurious=0.062, p_net=1.000,
+                      note="against v14 in the same invocation: word-only 19.0 -> "
+                           "20.0 gold at 6.3 -> 9.0 spurious. The anchors recover "
+                           "about a third of what the slot costs terra and loosen the "
+                           "row at p = 0.062 doing it -- against v13 the arm is still "
+                           "gold -2.0 at spurious +3.7."),
+        "luna": dict(gold=+0.3, spurious=+4.3, net=-3.3, samples=3, p_gold=1.000,
+                     p_spurious=0.438,
+                     note="against v14 in the same invocation: word-only 23.3 -> 24.0 "
+                          "gold at 17.0 -> 26.3 spurious. Against v13 the arm reads "
+                          "gold -0.3 / spurious -0.3, i.e. it gives back the precision "
+                          "v14 won."),
     },
 )
 

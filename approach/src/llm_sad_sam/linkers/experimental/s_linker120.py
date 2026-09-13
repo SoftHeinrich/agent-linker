@@ -382,6 +382,19 @@ class RuleSpec:
     #: A case whose sentence writes only one word of a name carries no component,
     #: no anchors and no alternatives — every one of those names a component.
     blind_word_only: bool = True
+    #: Where a blind case may still print the component its word came from. `hidden`
+    #: is v13: the slot is filled by the evidence, so a match that computed no
+    #: component prints none. `header` puts the component back in the case header;
+    #: `evidence` puts it on the `writes` line, which is the fact it came from. The
+    #: two are the arms of the unblinding round — the question is whether an
+    #: instruction can say what that slot means well enough that withholding it is
+    #: not needed (`union_iterations` v14-v16).
+    word_only_component: str = "hidden"
+    #: Whether a blind case prints its anchors — the other sentences of the document
+    #: that name this component. False is v13 (an anchor names a component, and a
+    #: blind case carries none). A case that already names its component can carry
+    #: them, and they are what fixes a generic word as this document's name for it.
+    word_only_anchors: bool = False
     #: Cases are grouped by what the match computed: every case carrying a component
     #: in one batch, every case carrying none in another. Same rule, same template,
     #: same call count — what it changes is the company a case keeps.
@@ -1171,11 +1184,17 @@ JSON only:"""
         spec = self.iteration
         blind = spec.blind_word_only and evidence["naming"] == "word only"
 
+        # where this case names its component: a case that is not blind names it in
+        # the header; a blind one names it where its iteration says, or nowhere
+        carries = spec.word_only_component if blind else "header"
+        of_name = (f' of "{candidate.component_name}"' if carries == "evidence"
+                   else "")
+
         # the Evidence: line, in the order the iteration declares its fields
         written = {
             "source": evidence["source"],
             "naming": evidence["naming"],
-            "writes": self.WRITES[evidence["naming"]],
+            "writes": f"{self.WRITES[evidence['naming']]}{of_name}",
             "mention": evidence["mention"],
             "alternatives": ", ".join(evidence["alternatives"]),
         }
@@ -1191,15 +1210,15 @@ JSON only:"""
 
         previous = self._prev_prefix(candidate.sentence_number, sent_map)
         lines = [
-            (f'Case {index}: "{evidence["span"]}"' if blind else
-             f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}'),
+            (f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}'
+             if carries == "header" else f'Case {index}: "{evidence["span"]}"'),
             f'  {previous}"{candidate.sentence_text}"',
             f"  Evidence: {', '.join(facts)}",
         ]
 
         # a batch is 25 cases and several usually concern one component, so the later
         # ones point at the first that printed the list rather than repeating it
-        if not blind and evidence["anchors"]:
+        if evidence["anchors"] and (not blind or spec.word_only_anchors):
             if shown_in:
                 lines.append(f"  Anchors (other sentences naming it): "
                              f"as shown in Case {shown_in}.")

@@ -218,3 +218,125 @@ RQ1–RQ4 are regenerated on this arm (`ALINKER_ARM=s120`, `evaluation/reports/r
 - **No one-call floor on this arm.** `s_linker120_onecall` was not built, so
   `rq_tables.py` drops `rq4_floor.csv` and reports the absence rather than borrowing
   `s110`'s — the floor's control is the arm itself. The paper never printed that table.
+
+## The unblinding round (v14–v18) — is the withheld component name still load-bearing?
+
+`v13` keeps the word-only row healthy by removing **every** way a merged prompt can ask
+an identity question of it: the target in the case header (`blind_word_only`), the
+catalog above the cases and the claim demand (`contract_follows_batch`), and the named
+cases beside it (`batch_by_evidence`). Three of those four are properties of the **call**.
+This round puts the fourth back — the case names its component again — and asks whether
+the rule can be instructed well enough that withholding the name is not needed.
+
+**The cell was never measured.** Every earlier un-blinded arm (v7, v8) was un-blinded
+with the other three carriers still present, so **v8's −10.3 gold on luna prices "the
+slot *and* the catalog *and* the claim demand *and* the mixed batch", not the slot.**
+
+| arm | change against | terra gold | terra sp | luna gold | luna sp |
+| --- | --- | ---: | ---: | ---: | ---: |
+| **v14** | v13 — the header slot filled, nothing else said | −2.3 / −3.3 | −2.3 / ±0.0 | **−0.7 / −0.7** | **−17.7 / −4.7** |
+| v15 | v14 — provenance sentence + use/mention clause rescoped | | | −1.0 | **+25.3** |
+| v16 | v14 — v15's rule, component on the `writes` line instead | | | −0.3 | +19.4 |
+| v17 | v14 — the provenance sentence alone | ±0.0 | +1.0 | −4.7 (p=0.094) | −6.3 |
+| v18 | v14 — the anchors line restored to the word-only case | +1.3 | +3.7 (p=0.062) | +0.3 | +4.3 |
+
+(v14 and v18 ran against v13 in two independent invocations a model; v15–v17 against v14.
+Every p is a two-sided sign-flip test over 15 paired (sample, project) units.)
+
+### 1. The slot alone is cheap — the refusal was never about the slot
+
+`v14` is `v13` plus one line of code and **zero new prompt bytes**. On luna it is
+gold-neutral in both invocations (−0.7, p = 0.906 and 0.875) and **cleaner**: spurious
+−17.7 and −4.7, precision **0.770 → 0.835** and 0.773 → 0.789. On terra it is
+gold-negative by 2–3 links a run (−2.3 p = 0.656, −3.3 p = 0.562) at spurious −2.3 / ±0.0,
+precision 0.909 → 0.919 and 0.919 → 0.917. Every delta sits inside its own invocation's
+noise; what is consistent is the **sign**, and it points opposite ways on the two models
+(`net = 3·gold − sp`: terra −4.7 / −10.0, luna **+15.7 / +2.7**).
+
+**So the withholding is not doing the work v8 attributed to it.** What it is still worth,
+on terra, is 2–3 recall links a run traded for 2 precision — which on this branch's F2
+exchange rate is why `v13` stays the head, not because the name cannot be shown.
+
+### 2. What the judge does with the name is a trade, not a collapse
+
+The word-only disagreement between v13 and v14 is the same family on both models
+(`pilot/union_diff.py <dump> --arms v13 v14 --row "word only"`):
+
+* **v14 rejects and v13 keeps (gold)** — a *generic* word of a multi-word name:
+  `"server"` → `HTML5 Server` (S10, S39, S47, S73), `"html5"` → `HTML5 Server` (S19–S21),
+  `"WebRTC"` → `WebRTC-SFU` (S65, S73), `"testing"` → `Test Driver` (S168). Shown the
+  component, the judge asks whether *this* expression is *that* name, and a generic word
+  is not.
+* **v14 keeps and v13 rejects (gold)** — a *distinctive* word of one:
+  `"datastore"` → `GAE Datastore` (S122, S138, S141). Blind, "the datastore" is just a
+  thing; named, it is the component's own word.
+* **v14 rejects and v13 keeps (spurious, 17 distinct cases)** — `"bbb"` inside
+  `bbb-html5` / `bbb-conf`, `"server"` in *"a media server"*, `"tests"` / `"testing"` in
+  ordinary use. With the component visible, `QUALIFIED_CLAUSE` and `STRICTER_CLAUSE`
+  finally have a subject and fire correctly.
+
+That third bucket is where v14's precision comes from, and it is the same mechanism as
+the first bucket's losses: **the use/mention question is right for an ordinary word and
+wrong for a generic one.**
+
+### 3. The instruction does not pay — in either direction
+
+Two authored formulations were measured, and this is the round's answer to "instruct the
+judge instead of blinding it":
+
+* **Releasing** (v15/v16): *"the component tells you which name the word came from and
+  nothing more: decide what the expression denotes there, and nothing about identity"*,
+  plus `STRICTER_CLAUSE` rescoped from "where the case gives you a component" to "where
+  the sentence writes a name of the component". Word-only **spurious 11.3 → 35.0** in the
+  same invocation, at 22.3 → 21.3 gold. Placement (v16) changes nothing: same loosening
+  with the component off the header entirely.
+* **Decomposed** (v17): the same sentence with the clause's scope left alone. It is a
+  **tightener**, not a loosener — word-only 23.3 → 19.7 gold at 25.7 → 15.7 spurious,
+  gold −4.7 a run at p = 0.094 — and on terra it buys exactly nothing (170.0 gold either
+  way).
+
+So v15's damage was the *rescoping*, and the sentence itself costs gold on one model and
+is inert on the other. **An instruction that says which clause does not apply removes a
+restraint and states no criterion in its place**; an instruction that restates the
+question the call already asks is a tightener the row does not want. Neither is a
+substitute for the arrangement.
+
+### 4. The residue is a fact gap, not a wording gap — and the fact loosens too
+
+Every case v14 loses is a component the document names *elsewhere*, so the evidence that
+would settle it is the `anchors` line — which v13 cannot print, because its case carries
+no component for the anchors to be about. `v18` prints it. It recovers about a third of
+what the slot costs terra (word-only 19.0 → 20.0 gold) and **loosens the row doing it**
+(6.3 → 9.0 spurious, p = 0.062); on luna it gives back the precision v14 won
+(+4.3 spurious). Against v13 the arm is still gold −2.0 at spurious +3.7.
+
+### Status
+
+**`v13` remains the head.** The question this round was asked — *can the prompt be
+instructed well enough that the component name need not be withheld?* — has a measured
+answer in two parts:
+
+1. **The name does not need to be withheld to keep the row.** With v13's three
+   call-level removals in place, filling the slot is gold-neutral on luna and
+   precision-positive on both models. The `s_linker25` refusal, as this branch has
+   carried it since, over-attributes to the target what belongs to the call.
+2. **No instruction recovered terra's 2–3 links.** Not the provenance sentence, not the
+   rescoped clause, not the placement, and the one *fact* that addresses the losses
+   (`anchors`) costs more spurious than it recovers gold. The lever that decides this row
+   is the arrangement of the call, which is what v12 and v13 already found and what this
+   round confirms from the other side.
+
+Reproduce (from `approach/`, both arms in one invocation, fixed candidates):
+
+    OPENAI_MODEL_NAME=gpt-5.6-luna LLM_BACKEND=openai OPENAI_REASONING_EFFORT=none \
+    OPENAI_SERVICE_TIER=default \
+      ../.venv/bin/python pilot/union_pilots.py --arms v13 v14 v15 v16 --samples 3 \
+      --dump ../results/union_round/dump_luna_unblind.json
+    ../.venv/bin/python pilot/union_stats.py ../results/union_round/dump_luna_unblind.json \
+      --arms v13 v14
+
+Dumps and stage logs: `dump_{terra,luna}_unblind.json` (v13/v14/v15/v16 and v13/v14/v17),
+`dump_luna_unblind2.json` (v14/v17), `dump_{terra,luna}_anchors.json` (v13/v14/v18), with
+`stage_*.log` and `llm_logs_*` beside each. The knobs are `RuleSpec.word_only_component`
+(`hidden` | `header` | `evidence`) and `RuleSpec.word_only_anchors`, both defaulting to
+v13's behaviour — checked inert over 592 renderings against the committed head.
