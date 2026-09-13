@@ -107,7 +107,8 @@ and a four-method label chain — 18 methods a reader of the *approach* had to w
 none of which said anything, two of them the same function twice (`_writes_name` was
 `_find_exact_form` behind an always-false flag). They are gone: the proposer is one
 `_name_candidates`, the label is one `_mention_label`, and the judge is `_judge_union`'s
-four blocks. 33 methods, longest 89 lines.
+four blocks. 31 methods, longest 89 lines, and 7 hops from `link()` to the relation against the
+ancestor's 9 (`pilot/call_chain_audit.py`).
 
 **What replaces the byte-identity claim.** Holding every shared method identical to
 `s_linker110` is what made the file a diff; the claim it was making — this does what the
@@ -521,10 +522,16 @@ class SLinker120:
 
         current: list[SadSamLink] = []
         history: list[dict] = []
+        # Two stages, not three: both name scans propose into one stream judged by one
+        # call, and what used to be the order between them is a fact in the case
+        # (`naming`). No stage is shown what an earlier one linked; `_union` merges by
+        # pair and `_stage_of` decides the label, not the order.
+        runners = {"name": self._run_name_linker,
+                   "coreference": self._run_coreference_linker}
         for linker in self.LINKERS:
             print(f"\n[Linker] {linker}")
-            produced, feedback = self._run_linker(
-                linker, sentences, components, name_to_id, sent_map
+            produced, feedback = runners[linker](
+                sentences, components, name_to_id, sent_map
             )
             current = self._union(current, produced)
             history.append({
@@ -558,22 +565,6 @@ class SLinker120:
         print(f"\nFinal: {len(current)} links "
               f"({time.time() - started:.1f}s, {len(self._llm_calls)} LLM calls)")
         return current
-
-    def _run_linker(self, linker, sentences, components, name_to_id, sent_map):
-        """Dispatch. No linker receives the links the earlier one produced.
-
-        Two entries, not three: the full-name and partial-name scans propose into
-        one stream judged by one call, and what used to be the order between them is
-        now a fact in the case (`naming`). Whatever coreference re-proposes, `_union`
-        merges by pair, and the merge is decided by `_stage_of`, not by order.
-        """
-        if linker == "name":
-            return self._run_name_linker(
-                sentences, components, name_to_id, sent_map)
-        if linker == "coreference":
-            return self._run_coreference_linker(
-                sentences, components, name_to_id, sent_map)
-        raise RuntimeError(f"unknown linker: {linker!r}")
 
     # ── Concurrency and small helpers ────────────────────────────────────────
 
@@ -716,26 +707,21 @@ Return JSON:
 JSON only:"""
 
     # ── the resolver's per-case antecedent shortlist ─────────────────────────
-    def _named_before(self, comp_names, sentence_table, target):
-        """Components the table names strictly before ``target``, latest first.
-
-        Exact, not heuristic: the same name relation the rest of the module reads
-        names with, applied to the sentences the case was already shown.
-        """
-        latest: dict[str, int] = {}
-        for row in sentence_table:
-            number = row.get("sentence")
-            if not isinstance(number, int) or number >= target:
-                continue
-            for name in comp_names:
-                if self._states_a_name(row.get("text", ""), name):
-                    latest[name] = max(latest.get(name, 0), number)
-        return sorted(latest.items(), key=lambda item: -item[1])
-
     def _prompt_coref(self, comp_names, sentence_table, targets) -> str:
         blocks = []
         for target in targets:
-            near = self._named_before(comp_names, sentence_table, target["target"])
+            # the components the sentences above this case actually name, latest
+            # first -- exact, by the same relation the rest of the module reads
+            # names with, over the sentences the case was already shown
+            latest: dict[str, int] = {}
+            for row in sentence_table:
+                number = row.get("sentence")
+                if not isinstance(number, int) or number >= target["target"]:
+                    continue
+                for name in comp_names:
+                    if self._states_a_name(row.get("text", ""), name):
+                        latest[name] = max(latest.get(name, 0), number)
+            near = sorted(latest.items(), key=lambda item: -item[1])
             listed = (", ".join(f"{name} (S{number})" for name, number in near)
                       if near else "none")
             blocks.append(

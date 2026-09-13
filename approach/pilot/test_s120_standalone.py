@@ -94,6 +94,9 @@ INLINED = {
     "_scan": "_name_candidates",
     "_covering_names": "_name_candidates",
     "_only_inside_another_name": "_name_candidates",
+    # pure hops: one caller, and a body that belongs in it
+    "_run_linker": "link() — two entries dispatched by name is a dict, not a method",
+    "_named_before": "_prompt_coref",
     # the label chain, now one `_mention_label`
     "_classify_mention_typed": "_mention_label",
     "_all_occurrences_in_qualified_path": "_mention_label",
@@ -101,9 +104,9 @@ INLINED = {
     "_retained_mention_label": "_mention_label",
 }
 
-#: The methods that differ in source, and why each had to.
+#: The methods that differ in source, and why each had to. (`_run_linker` is not here:
+#: two entries dispatched by name is a dict in `link()`, not a method.)
 CHANGED = {
-    "_run_linker": "two linkers, not three",
     "_run_validation_pass": "no `strict` argument: one rubric reaches it",
     "_validate_coref_links": "the same call, without the `strict` argument",
     # the rest differ only because an `INLINED` wrapper was removed from under them:
@@ -113,6 +116,9 @@ CHANGED = {
     "_save_log": "calls `backend_tag` directly",
     "_resolve_references": "calls `iter_batches` and the views directly",
     "_run_coreference_linker": "calls the views directly",
+    # absorbed `_named_before`; T4 is what holds it — the prompt it RENDERS is still
+    # the ancestor's byte for byte on all five projects.
+    "_prompt_coref": "the antecedent list is built in the loop that prints it",
 }
 
 #: Every authored rule constant. A standalone file that drifts from the ancestor on

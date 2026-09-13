@@ -1409,6 +1409,15 @@ arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; st
   -- the two names were kept apart only because the ancestor kept them apart -- so a
   standalone file wants a check that does not care what anything is called. `s_linker110`
   keeps its duplicate: it is a recorded control and does not move.
+- **`pilot/call_chain_audit.py` — depth, not length, is what a standalone file costs a
+  reader.** It prints the longest chain of self-calls from `link()` and the methods that
+  are **pure hops** (one caller, and a body that belongs in it). `s_linker110` reads
+  **9 hops**; `s_linker120` read 9 too until `_run_linker` (a two-entry dispatch, now a
+  dict in `link()`) and `_named_before` (built in the loop that prints it) came out —
+  **7 hops, 31 methods**. Not every hop is waste: a prompt builder is one f-string and
+  belongs alone, and a primitive with several callers is depth worth paying for.
+  `_run_validation_pass` is kept on those grounds — folding it saves one hop and makes a
+  75-line method.
 - **What the byte comparison claimed is now claimed by behaviour, and more strictly.**
   T6 runs the ancestor's own `_extract_named_mentions` and `_scan` beside this file's
   `_name_candidates` and compares every candidate — pair, component, source label and the
