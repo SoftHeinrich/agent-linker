@@ -86,7 +86,61 @@ against GATE-07 instead, so the arm had to *win* to be worth adopting, and it di
 iterations v1 → v2 moved the same way and cannot be read for it, because they moved the
 alternative set from a reject-ground to context in the same step.
 
-## The level-0 result: no dead code, and why the file cannot get much shorter
+## The naturalization ablation — which clause pays
+
+`v14n` moves four paragraphs at once, so a second batch asks each of them alone: five
+arms, each `v13` with exactly one paragraph paraphrased and everything else the head's
+bytes, plus `v14n` re-run **in the same invocation** so the composite and its parts are
+comparable. Seven arms, three samples, 294 calls. Dump: `dump_terra_naturalize.json`.
+
+| arm | paragraph | gold | p | spurious | p | net | p |
+|---|---|---|---|---|---|---|---|
+| `v14def` | the trace-link definition | −1.0 | 0.500 | −2.3 | 0.125 | −0.7 | 0.938 |
+| **`v14mention`** | **`MENTION_COUNTS`** | **−5.3** | **0.062** | −2.3 | 0.250 | **−13.7** | **0.062** |
+| `v14ground` | `POSITIVE_GROUND` | −2.7 | 0.250 | −2.0 | 0.125 | −6.0 | 0.250 |
+| `v14stricter` | `STRICTER_CLAUSE` | −0.3 | 1.000 | −1.7 | 0.438 | **+0.7** | 0.906 |
+| `v14ref` | `QUALIFIED_CLAUSE` + `ACTS_ON` | −0.7 | 0.625 | +1.3 | 0.562 | −3.3 | 0.188 |
+| `v14n` | all four | ±0.0 | 1.000 | +0.3 | 1.000 | −0.3 | 1.000 |
+
+**The clause that pays is the one a reader is likeliest to want reworded.**
+`MENTION_COUNTS` is "a mention that says nothing further about the component still
+counts as a valid link". The obvious naturalization — "an architectural mention of the
+component is enough to justify a link, even where the sentence says nothing further
+about it" — reads as a synonym and is not one. **The original lowers a bar; the
+paraphrase restates it.** Saying the mention must be *architectural* reimports exactly
+the criterion the sentence exists to relax, and the judge duly applies it: gold −5.3 a
+run at p = 0.062, the lowest p in either naturalization batch.
+
+**It lands where the mechanism predicts.** The cost is concentrated on the word-only
+row — the cases with the least surface to go on — which goes from 29.0 kept / 22.0 gold
+to 22.7 / 18.3. The whole-name row, where the sentence writes the name outright and the
+licence is not what carries the verdict, barely moves. `v14ground` is the same effect at
+half the size, from spelling out "a positive ground": word-only kept 29.0 → 24.7.
+
+**`STRICTER_CLAUSE` is the one paragraph that is safe to reword** (net +0.7, the only
+non-negative estimate in the family), and the asymmetry is readable: it is a *test*, not
+a licence, so restating it does not move what it licenses. `v14ref` is the only arm that
+costs precision rather than recall, and both of its clauses are folded code gates — the
+one part of the rule with a measured deletion cost behind it (FP +7.0, p = 0.01).
+
+**The parts do not sum to the whole, and this is the round's transferable result.**
+`v14mention` alone is net −13.7 and `v14ground` alone −6.0, yet all four paraphrased
+together is **−0.3, every p = 1.000**. **A clause is not independently priceable** —
+s77/s78 measured that with two losers composing to a winner; this is the third
+instance and the third direction, two losers composing to a wash. A rule read as a
+whole has a register, and moving every paragraph into the same register is not the sum
+of moving each one into it alone.
+
+**And the same arm read differently in two invocation sets.** `v14n` is net −5.0 in the
+label batch and −0.3 here. Both are real; neither is a trend. This is why the branch's
+rule is that arms are comparable only inside one invocation, and it is why the
+composite was re-run here instead of being compared across.
+
+**Verdict unchanged, reason sharpened.** Naturalization is refused — but not as "prose
+is risky". It is refused because one specific sentence in it is not a paraphrase at all,
+and because none of the five arms buys anything to pay for the quotation it spends.
+
+## The level-0 result: the file stops being a diff against its ancestor
 
 A mechanical pass over `s_linker120.py` (defs, module constants, class attributes,
 imports, all counted against the source with comments and docstrings stripped) found
@@ -94,34 +148,48 @@ imports, all counted against the source with comments and docstrings stripped) f
 — a function-level `from ... import get_comp_names` shadowing the module-level import of
 the same name, now removed.
 
-What *looks* dead at the head is not:
+What *looks* dead is not: the `source` / `naming` / `last_named` label branches, the
+`clauses` slot, the `per_row` verdict and the un-grouped batching are all **reachable by
+trail iterations v1–v6**, which `union_pilots.py --arms control v3` runs as arms.
 
-* the `source`, `naming` and `last_named` label branches in `_evidence_facts`, and the
-  `clauses` slot, the `per_row` verdict and the un-grouped batching in `_prompt_union` /
-  `_judge_union`, are all **reachable by iterations v1–v6 of the trail**, which
-  `pilot/union_pilots.py --arms control v3` runs as arms. They are the price of the
-  iterations being data rather than prose.
-* 41 of the file's methods are **`s_linker110`'s text byte for byte**, pinned by
-  `pilot/test_s120_standalone.py` T2. That copy is the evidence for the claim the file
-  exists to make — that only the name judging changed — so refactoring it would delete
-  the claim, not clean it. `_named_spans` is a one-line indirection whose documented
-  purpose (an override point for `s_linker92c`/`92d`) nothing in this file's lineage
-  uses, and it stays for exactly that reason.
+**The real finding is structural, and it was hiding behind the byte-identity rule.**
+Holding every shared method identical to `s_linker110` is what kept the file a diff
+against its ancestor rather than a file in its own right, and what it kept was:
 
-So the cleanup is confined to the 9 methods that are this round's own, and it is
-decomposition rather than deletion: `_judge_union` 93 lines → 40 plus five named steps,
-`_union_evidence` 46 → 21 plus three named facts, and the case renderer's
-dict-of-lambdas → one `_evidence_facts`. **The evidence is now computed once per
-candidate** and read by the grouping, the window, the case and the decision record
-alike, where it used to be computed twice and could in principle have bucketed a
-candidate on one reading of its match and printed it on another.
+* `HEAD DELTA 1/2/3` banners naming **`s_linker110`'s** derivation from `s_linker92` —
+  archaeology from two variants back, in the file that is the current paper supplement,
+  with no key in its own docstring;
+* seven 1:1 wrappers around `linker_infra` (`_iter_batches`, `_link_view`,
+  `_decision_view`, `_linker_feedback`, `_compute_phase_metrics`, `_backend_tag`,
+  `_checkpoint_dir`) plus `_named_spans`, a one-line indirection whose documented
+  purpose was an override point for two variants that do not fork this file;
+* a five-method proposer chain (`_extract_named_mentions`, `_scan_all`, `_scan`,
+  `_covering_names`, `_only_inside_another_name`) and a four-method label chain
+  (`_classify_mention_typed`, `_all_occurrences_in_qualified_path`, `_in_dotted_path`,
+  `_retained_mention_label`);
+* **`_writes_name`, which is `_find_exact_form`** — the same function, behind a
+  `SKIP_QUALIFIED` flag the head declares `False`. Two names for one predicate, kept
+  apart only because the ancestor had them apart.
+
+All 18 are inlined and declared in `INLINED`; `SKIP_QUALIFIED` is deleted. The proposer
+is one `_name_candidates` in four labelled blocks, the label is one `_mention_label`,
+the judge is `_judge_union`'s four blocks. **51 methods → 33**, and the evidence is
+computed once per candidate instead of twice.
+
+**The claim the byte comparison was making is now made by behaviour, and more
+strictly.** T6 runs `s_linker110`'s own `_extract_named_mentions` and `_scan` beside this
+file's `_name_candidates` and compares every candidate — pair, component, source label
+and the matched surface, which is what a rewritten span loop would move first — over
+five projects under both alias settings. Byte identity never said what the bytes did;
+this does. The suite goes **85 → 133 checks**, not 85 → fewer.
 
 `pilot/union_render_snapshot.py` is the guard the compaction round's lesson asks for —
 written before the refactor, not after. It hashes every case, every prompt and every
 judged decision (under a stub that answers both contracts and alternates the verdict)
 over 5 projects × 2 alias tables × 14 iterations: **280 renderings, all identical across
-the refactor.** `test_s120_standalone.py` 85/85, `test_s120_union.py` 2593/2593,
-`union_defensibility.py` 40/40.
+the refactor** (380 once the ablation arms are in the trail). `test_s120_standalone.py`
+133/133, `test_s120_union.py` 2593/2593, `union_defensibility.py` 40/40,
+`test_s110_shortlist.py` 235/235.
 
 **A note on speed, since it was checked before it was claimed.** The deterministic layer
 first reads 3.4 s on bigbluebutton, which is WordNet's one-time corpus load and not the

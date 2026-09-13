@@ -1331,6 +1331,12 @@ arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; st
 | `alllabels` | print every `MentionType` the classifier computes | ±0.0 (p=1.00) | +1.3 | −1.3 | 0.750 |
 | `aliasmute` | drop `VIA_ALIAS`, which restates the case's `writes` line | ±0.0 (p=1.00) | +1.0 | −1.0 | 0.875 |
 | `v14n` | every carried criterion clause paraphrased | +0.3 (p=1.00) | +6.0 | −5.0 | 0.336 |
+| `v14mention` | only `MENTION_COUNTS` paraphrased | **−5.3 (p=0.062)** | −2.3 | **−13.7** | 0.062 |
+| `v14ground` | only `POSITIVE_GROUND` paraphrased | −2.7 | −2.0 | −6.0 | 0.250 |
+| `v14ref` | only `QUALIFIED_CLAUSE` + `ACTS_ON` | −0.7 | +1.3 | −3.3 | 0.188 |
+| `v14def` | only the definition (no GATE-07 cost) | −1.0 | −2.3 | −0.7 | 0.938 |
+| `v14stricter` | only `STRICTER_CLAUSE` | −0.3 | −1.7 | +0.7 | 0.906 |
+| `v14n` (in the ablation set) | all four, re-run | ±0.0 | +0.3 | −0.3 | 1.000 |
 | `nomention` | print no computed label at all | −1.7 | +10.0 | **−15.0** | **0.031** |
 
 - **Showing every label is free to build and buys nothing.** One frozenset; it adds a
@@ -1362,22 +1368,44 @@ arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; st
   the same fact twice (`writes=a short form ...` and `mention=via known alias`); removing
   it is gold-neutral at net −1.0 (p = 0.875). Point estimate unfavourable, nothing bought
   — **an unnecessary change is not a defensible one** (the finetune round's rule).
-- **There is no dead code in `s_linker120.py`, and this is now checked rather than
-  assumed.** A mechanical pass over defs, constants, class attributes and imports against
-  comment- and docstring-stripped source found no unreferenced symbol, no commented-out
-  block, no TODO, and one dead line (a function-level import shadowing the module-level
-  one), removed. What looks dead is either **reachable by trail iterations v1–v6** (the
-  `source`/`naming`/`last_named` label branches, the `clauses` slot, the `per_row`
-  verdict, the un-grouped batching) or part of the **41 methods pinned byte-identical to
-  `s_linker110`** by `test_s120_standalone.py` T2 — refactoring which would delete the
-  claim the standalone file exists to make, not clean it.
-- **The cleanup is therefore decomposition inside the 9 union-only methods**:
-  `_judge_union` 93 lines → 40 plus five named steps (`_union_batches`,
-  `_word_only_window`, `_union_cases`, `_union_verdicts`, `_union_verdict`),
-  `_union_evidence` 46 → 21 plus `_naming_of` / `_alternatives_for` / `_anchors_for`, and
-  the case renderer's dict-of-lambdas → `_evidence_facts`. **The evidence is computed
-  once per candidate** instead of twice, so nothing can bucket a candidate on one reading
-  of its match and print it on another.
+- **The naturalization ablation: the clause that pays is the obvious one to reword.**
+  Five arms, each `v13` with exactly one paragraph paraphrased, plus `v14n` re-run in the
+  same invocation (7 arms, 294 calls). `MENTION_COUNTS` alone — "a mention that says
+  nothing further still counts" rewritten as "an architectural mention is enough" — is
+  **gold -5.3, net -13.7 (p = 0.062)**, the worst arm of either batch. The two read as
+  synonyms and are not: **the original lowers a bar and the paraphrase restates it**, so
+  the judge reimports the criterion the sentence exists to relax. It lands where that
+  predicts, on the word-only row (kept 29.0 -> 22.7, gold 22.0 -> 18.3), the cases with
+  the least surface to go on. `POSITIVE_GROUND` is the same effect at half size (-6.0);
+  `STRICTER_CLAUSE` is the only safe one (net +0.7) because it is a **test, not a
+  licence**, so restating it does not move what it licenses; `QUALIFIED_CLAUSE`+`ACTS_ON`
+  is the only arm costing precision rather than recall.
+- **The parts do not sum to the whole — third instance, third direction.** `v14mention`
+  alone is -13.7 and `v14ground` alone -6.0, yet all four paraphrased together is **-0.3,
+  every p = 1.000**. s77/s78 had two losers composing to a winner; this has two losers
+  composing to a wash. **A clause is not independently priceable**, and a rule read whole
+  has a register that moving every paragraph into does not equal moving each one alone.
+  The same `v14n` also read -5.0 in the label batch and -0.3 here: two invocation sets,
+  both real, which is why the composite was re-run in-set rather than compared across.
+- **`s_linker120.py` stops being a diff against its ancestor (2026-09-13).** The
+  byte-identity rule in `test_s120_standalone.py` T2 was keeping the file readable only
+  as a delta: `HEAD DELTA 1/2/3` banners naming **`s_linker110`'s** derivation from
+  `s_linker92` (archaeology two variants back, in the current paper supplement, with no
+  key in its own docstring); seven 1:1 `linker_infra` wrappers plus `_named_spans`; a
+  five-method proposer chain and a four-method label chain; and **`_writes_name`, which
+  IS `_find_exact_form`** behind a `SKIP_QUALIFIED` flag the head declares `False` — one
+  predicate under two names, kept apart only because the ancestor kept them apart. All 18
+  are inlined and declared in `INLINED`, `SKIP_QUALIFIED` is deleted, and the file is
+  **51 methods -> 33**: the proposer is one `_name_candidates`, the label one
+  `_mention_label`, the judge `_judge_union`'s four blocks, evidence computed once per
+  candidate instead of twice.
+- **What the byte comparison claimed is now claimed by behaviour, and more strictly.**
+  T6 runs the ancestor's own `_extract_named_mentions` and `_scan` beside this file's
+  `_name_candidates` and compares every candidate — pair, component, source label and the
+  **matched surface**, which is what a rewritten span loop moves first — over five
+  projects under both alias settings. Byte identity never said what the bytes did. The
+  suite goes **85 -> 133 checks**. Apply the same rule to any future standalone: pin what
+  the file DOES against its ancestor, not what it reads like.
 - **`pilot/union_render_snapshot.py` is the equivalence test, written before the
   refactor.** It hashes every case, every prompt and every judged decision — under a stub
   that answers both contracts and alternates the verdict, per the uniform round's lesson

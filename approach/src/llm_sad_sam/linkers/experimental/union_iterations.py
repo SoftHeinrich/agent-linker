@@ -515,28 +515,136 @@ _ACTS_ON_NAT = ("An expression naming what a component acts on or produces refer
                 "that thing rather than to the component, however plainly the "
                 "component is the one acting on it.")
 
-_V14N_RULE = f"""{_DEFINITION_NAT}{_MENTION_COUNTS_NAT}
+def _naturalized_rule(definition=_DEFINITION, mention=MENTION_COUNTS,
+                      ground=POSITIVE_GROUND, stricter=STRICTER_CLAUSE,
+                      qualified=QUALIFIED_CLAUSE, acts_on=ACTS_ON) -> str:
+    """`v13`'s rule with any subset of its five clauses swapped for a paraphrase.
+
+    Every default is the quoted text `v13` carries, so an arm names exactly the
+    clauses it paraphrases and the rest of the prompt is the head's byte for byte.
+    That is what makes the ablation family readable as one axis: the arms differ from
+    the control by one paragraph each and from each other by which paragraph.
+    """
+    return f"""{definition}{mention}
 
 {_FORMAT_V9} The evidence says what the expression is doing here; none of it is a verdict.
 
 {_WRITES_V8}
 {_FIELD_LINES}
 
-{_POSITIVE_GROUND_NAT}
+{ground}
 
-Where the case gives you a component: {_STRICTER_NAT}
+Where the case gives you a component: {stricter}
 
-{_QUALIFIED_NAT} {_ACTS_ON_NAT}"""
+{qualified} {acts_on}"""
+
+
+def _naturalized(name, summary, changed, note, numbers, **swaps) -> Iteration:
+    """One arm of the naturalization family: `v13`, with `swaps` paraphrased."""
+    return Iteration(
+        name=name, rows=False, blind_word_only=True, verdict="boolean",
+        batch_by_evidence=True, contract_follows_batch=True,
+        summary=summary, rule=_naturalized_rule(**swaps),
+        demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+        fields=("writes", "alternatives", "mention"),
+        changed=changed,
+        measured={"terra": dict(samples=3, note=note, **numbers)},
+    )
+
+
+# ── the single-clause arms ───────────────────────────────────────────────────
+# One paragraph each, so the family prices the axis clause by clause. The branch's
+# standing warning applies and is why the composed arm is measured beside them: **a
+# clause is not independently priceable** (s77/s78, measured in both directions), so
+# the singles do not have to sum to `v14n` and their disagreeing with it is a result
+# rather than an error.
+#
+# `v14def` is the one arm with no defensibility cost: `_DEFINITION` is this round's own
+# authored sentence, not a slice of an ancestor constant, so rewording it is free under
+# GATE-07 and only has to not lose. The other four are carried quotations, and each one
+# paraphrased is one clause `pilot/union_defensibility.py` can no longer derive.
+
+ITERATIONS["v14def"] = _naturalized(
+    "v14def", "only the trace-link definition reworded (no defensibility cost)",
+    "definition -> paraphrase",
+    "NEUTRAL, and the only arm of the family with no defensibility cost -- "
+    "`_DEFINITION` is this round's own authored sentence, not a carried slice, so "
+    "rewording it is free under GATE-07. It buys nothing: net -0.7 at p = 0.938.",
+    dict(gold=-1.0, spurious=-2.3, net=-0.7, p_gold=0.500, p_spurious=0.125,
+         p_net=0.938),
+    definition=_DEFINITION_NAT)
+
+ITERATIONS["v14mention"] = _naturalized(
+    "v14mention", "only `MENTION_COUNTS`: the sufficient condition said positively",
+    "mention-counts -> paraphrase",
+    "THE LOSS OF THE FAMILY, on the clause a reader is likeliest to want reworded. "
+    "`MENTION_COUNTS` says a mention that says NOTHING FURTHER still counts; the "
+    "paraphrase says an ARCHITECTURAL mention is enough. They read as synonyms and "
+    "are not: the original lowers a bar and the paraphrase restates it, so the judge "
+    "reimports the criterion the sentence exists to relax. It lands where that "
+    "predicts -- the word-only row, which has the least surface to go on, kept "
+    "29.0 -> 22.7 at gold 22.0 -> 18.3. gold -5.3 a run at p = 0.062, the lowest p "
+    "in either naturalization batch.",
+    dict(gold=-5.3, spurious=-2.3, net=-13.7, p_gold=0.062, p_spurious=0.250,
+         p_net=0.062),
+    mention=_MENTION_COUNTS_NAT)
+
+ITERATIONS["v14ground"] = _naturalized(
+    "v14ground", "only `POSITIVE_GROUND`: 'a positive ground' replaced by its meaning",
+    "positive-ground -> paraphrase",
+    "Negative on both axes, n.s. Spelling out 'a positive ground' tightens the gate "
+    "the same way v14mention does and by half as much: word-only kept 29.0 -> 24.7.",
+    dict(gold=-2.7, spurious=-2.0, net=-6.0, p_gold=0.250, p_spurious=0.125,
+         p_net=0.250),
+    ground=_POSITIVE_GROUND_NAT)
+
+ITERATIONS["v14stricter"] = _naturalized(
+    "v14stricter", "only `STRICTER_CLAUSE`: the use/mention test reworded",
+    "stricter -> paraphrase",
+    "The one arm whose point estimate is not negative (net +0.7). The use/mention "
+    "clause is a TEST, not a licence, so saying it differently does not move what it "
+    "licenses. Still refused: nothing is bought and a carried quotation is spent.",
+    dict(gold=-0.3, spurious=-1.7, net=+0.7, p_gold=1.000, p_spurious=0.438,
+         p_net=0.906),
+    stricter=_STRICTER_NAT)
+
+ITERATIONS["v14ref"] = _naturalized(
+    "v14ref", "only the reference paragraph (`QUALIFIED_CLAUSE` + `ACTS_ON`)",
+    "reference paragraph -> paraphrase",
+    "The only arm that costs precision rather than recall (spurious +1.3). Both "
+    "clauses are folded code gates, the one part of the rule with a measured "
+    "deletion cost behind it (FP +7.0, p = 0.01).",
+    dict(gold=-0.7, spurious=+1.3, net=-3.3, p_gold=0.625, p_spurious=0.562,
+         p_net=0.188),
+    qualified=_QUALIFIED_NAT, acts_on=_ACTS_ON_NAT)
 
 ITERATIONS["v14n"] = Iteration(
     name="v14n", rows=False, blind_word_only=True, verdict="boolean",
     batch_by_evidence=True, contract_follows_batch=True,
     summary="v13 with every carried criterion paraphrased into general English; "
             "structure, fields, demand, reply and flags all held",
-    rule=_V14N_RULE, demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    rule=_naturalized_rule(
+        definition=_DEFINITION_NAT, mention=_MENTION_COUNTS_NAT,
+        ground=_POSITIVE_GROUND_NAT, stricter=_STRICTER_NAT,
+        qualified=_QUALIFIED_NAT, acts_on=_ACTS_ON_NAT),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
     fields=("writes", "alternatives", "mention"),
     changed="quotation -> paraphrase, and nothing else",
     measured={
+        "terra_ablation": dict(gold=+0.0, spurious=+0.3, net=-0.3, samples=3,
+                               p_gold=1.000, p_spurious=1.000, p_net=1.000,
+                               note="The SAME arm, re-run inside the ablation batch: "
+                                    "dead neutral, every p = 1.000, against net -5.0 "
+                                    "in the batch below. Two results, both real, "
+                                    "different invocation sets -- which is why the "
+                                    "branch reads deltas only within a set. It also "
+                                    "makes the family's point: v14mention alone is "
+                                    "net -13.7 and v14ground alone -6.0, yet all four "
+                                    "paraphrased together is -0.3. **A clause is not "
+                                    "independently priceable**, now measured a third "
+                                    "time and in the third direction -- s77/s78 had "
+                                    "two losers composing to a winner, this has two "
+                                    "losers composing to a wash."),
         "terra": dict(gold=+0.3, spurious=+6.0, net=-5.0, samples=3, p_gold=1.000,
                       p_spurious=0.109, p_net=0.336,
                       note="REFUSED. 15 units: gold neutral (p = 1.000), spurious up "
