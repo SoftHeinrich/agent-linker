@@ -1392,3 +1392,66 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from the
   scoped run set above and not from the unscoped one.
 - Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
+
+### The shortlist-annotation round — the coreference shortlist marked with the name linker's verdicts (2026-09-14)
+
+`s_linker122`'s resolver prints a per-case shortlist, `NAMED BEFORE THIS CASE: kurento
+(S68), FreeSWITCH (S66), ...`, computed by `_named_before` from `_states_a_name` — a
+purely LEXICAL fact. The name linker has judged every one of those mentions by then and
+`_run_linker` withholds its verdicts on purpose. The round prices handing them over:
+`kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`. Report:
+`../results/coref_annot_round/README.md`; level 1 `pilot/coref_shortlist_audit.py`;
+level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; link-level diff
+`pilot/coref_annot_diff.py`. **REFUTED on both models. The head does not move.**
+
+- **Level 1 priced it at zero and cost nothing.** The shortlist is 1017.3 (terra) /
+  1064.0 (luna) entries a run over 378 cases; **83% would be marked `linked`** and 93% of
+  the informative `named only` rows are ONE project (teammates). mediastore's shortlist is
+  140/140 accepted on both models — the field is a constant there. The resolver does lean
+  on refused mentions (12.7 / 30.7 resolutions a run, at a third to a half the precision
+  of accepted-antecedent ones) and **the strict coreference judge already deletes 97% /
+  89% of them**; `link`'s merge deletes the rest because the name linker already carries
+  the pair. **Net new links a run with a refused antecedent: 0.3 on both models, 0.0 of
+  them gold** — 35x below the recorded FP floor. Reproduced at 0.0 on the independent
+  `union_e2e_*_20260911` set.
+- **A stage pilot with ZERO composition risk, checkable rather than argued.** `link`
+  merges by pair with the earlier linker winning, so the composed set is exactly
+  `pinned name links | kept coreference`; computed that way off the checkpoints it
+  reproduces the run's own final CSV with symmetric difference **0** (TP 183, FP 19,
+  F1 93.55, F2 94.77 both ways). Pinning the alias table AND the name-link set means only
+  the resolver is resampled, so the pilot reports the same four statistics an E2E does.
+  **When the merge rule is a union and the other half is pinned, level 2 IS level 4.**
+- **The resolver is not indifferent and the pipeline is.** Proposal volume moves 110.3 ->
+  156.3 a run on terra and 149.0 -> 195.0 on luna (a ±25% swing); **net contribution moves
+  by at most 1.3 pairs and 0.7 gold.** Composed, terra: head 183.0/19.0/93.55/94.77,
+  `annot` 183.7/19.7/93.58/95.07, `annot_clause` 182.7/19.7/93.27/94.58. The composed link
+  set differs from the head by **at most 2 links of 202** in any arm and any sample,
+  against a head whose own three samples are identical to each other.
+- **Nothing recovers a false positive, and the one target was added rather than removed.**
+  Across three arms, two models and six samples no arm shows a net FP reduction. The
+  single net link in the whole benchmark whose antecedent the name judge refused —
+  teammates S131 -> `Storage`, not gold — was **added** by `annot` and `annot_clause` on
+  terra: marking it `named only` made the resolver more likely to take it.
+- **SUPPRESSION REDIRECTS, IT DOES NOT REMOVE — the round's transferable result.**
+  `annot_only` (refused entries not listed at all) is the one arm that moves anything and
+  it moves the wrong way: luna TP -1.0, **FP +4.0, macro F2 -0.92**, worse in 3 samples of
+  3, and worse-or-equal in 3 of 3 on terra — **never better than the head in six samples
+  across two models.** It proposes 36 FEWER pairs a run and its net spurious DOUBLES (4.0
+  -> 8.0): **+17 false positives added against 5 removed.** Taking an entry off the list
+  does not make the resolver abstain; it makes it attach the same referring expression to
+  the next component down. `s_linker109` recorded the rule from the other side — **a
+  discovered fact may open a case and may not close one** — and a name verdict is a
+  discovered fact, resampled every run, so withholding an antecedent on it ends a case on
+  unstable evidence. The head's shortlist rests only on given input, which is why it has
+  no such failure mode.
+- **The design law says where a clause goes, not that it buys anything.** `annot` (the
+  fact, no rule speaking about it) makes the resolver propose **+17.6** a run on terra;
+  `annot_clause` (the same fact plus "a `named only` entry is the weaker antecedent")
+  makes it propose **-14.4** — a 32-pair spread from one sentence, both washing out to
+  nothing net, and the arm the law predicts should work is the marginally worse of the
+  two. Cost is real where benefit is not: **+4.1% resolver bytes for the mark, +8.5% with
+  its clause.**
+- **What would have to change to re-ask it.** The absorbing stage is the coreference
+  judge. If a future head weakens or removes it, the 12.7 / 30.7 refused-antecedent
+  resolutions a run stop being free. Until then the fact is already being used — just
+  downstream, by a judge that reads the sentence itself rather than a mark about it.

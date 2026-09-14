@@ -167,6 +167,27 @@ against the head it differs by:
 samples are identical to each other (symmetric difference 0), so this is not a delta
 hiding inside sampling noise — there is almost no sampling noise here to hide in.
 
+### The eight links that moved, and the one the round was aimed at
+
+`pilot/coref_annot_diff.py` differences the composed dumps. Over three samples, five
+projects and three arms, the **entire** effect is eight link changes:
+
+| arm | +gold | +FP | −gold | −FP |
+|---|---|---|---|---|
+| `annot` | 2 | 2 | 0 | 0 |
+| `annot_clause` | 0 | 2 | 1 | 0 |
+| `annot_only` | 0 | 1 | 0 | 0 |
+
+**Not one arm removes a single false positive**, which is the outcome the annotation
+exists to produce.
+
+And the sharpest line of the round: two of those changes are `teammates +S131`, which is
+**teammates S131 -> Storage** — the one net link in the whole benchmark, across three
+runs of three on both models, whose antecedent the name judge refused (level 1, R4). It
+is not gold. The head did not produce it in those samples; `annot` and `annot_clause`
+did. **The annotation's entire designed target is one false positive, and marking it
+`named only` made the resolver more likely to take it, not less.**
+
 ### The mark and the clause point opposite ways, and both wash out
 
 `annot` (the fact, no rule speaking about it) makes the resolver propose **+17.6** pairs
@@ -197,4 +218,83 @@ already won cannot be improved by making it a better proposer.** Which is `s_lin
 false-negative result standing on its head: there the bottleneck moved off the proposer
 and onto the gate, and this round is what it feels like to push on the proposer after
 that has happened.
+
+### luna — three samples, `../results/coref_annot_luna_20260914`
+
+The laxer model is where this should have worked: its coreference judge keeps 3.3 of the
+refused-antecedent resolutions a run against terra's 0.3, so it absorbs least.
+
+| arm | proposed | gold | kept | kept gold | **NET** | **net gold** | net spurious | calls |
+|---|---|---|---|---|---|---|---|---|
+| `head` | 184.7 | 74.0 | 46.3 | 42.0 | **18.0** | **14.0** | 4.0 | 50.3 |
+| `annot` | 178.3 | 70.7 | 42.7 | 38.0 | **19.3** | **14.7** | 4.7 | 49.7 |
+| `annot_clause` | 195.0 | 79.0 | 46.7 | 41.7 | **18.7** | **14.0** | 4.7 | 50.0 |
+| `annot_only` | 149.0 | 64.0 | 41.7 | 33.0 | **21.0** | **13.0** | **8.0** | 49.0 |
+
+| arm | TP | FP | macro F1 | macro F2 |
+|---|---|---|---|---|
+| `head` | 176.0 | 40.0 | 89.37 | 91.70 |
+| `annot` | 176.7 | 40.7 | 89.31 | 91.73 |
+| `annot_clause` | 176.0 | 40.7 | 89.28 | 91.53 |
+| `annot_only` | **175.0** | **44.0** | **88.44** | **90.78** |
+
+`annot` and `annot_clause` are neutral again — every statistic inside ±0.7 TP / ±0.7 FP /
+±0.2 F2. Link-level over three samples: `annot` +4 gold / +10 FP against −2 gold / −8 FP
+(net +0.7 gold, +0.7 FP a run); `annot_clause` +3 / +10 against −3 / −8 (net ±0.0 gold,
++0.7 FP).
+
+**`annot_only` is the one arm on either model that moves anything, and it moves the wrong
+way.** TP −1.0, FP +4.0, macro F2 **−0.92**, and the head beats it on F2 in **3 samples of
+3** (and on terra is worse-or-equal in 3 of 3) — so **the suppressing arm is never better
+than the head in six samples across two models.**
+
+### Suppression does not remove a resolution, it redirects it
+
+This is the round's mechanism result, and it is what a ceiling calculation could not have
+predicted. `annot_only` proposes **149.0** pairs a run against the head's 184.7 — it is
+offered 2 641 bytes fewer of shortlist and proposes 36 fewer pairs — and yet its **net
+spurious doubles, 4.0 to 8.0.** Link-level: **+17 false positives added against 5
+removed.**
+
+Taking an entry off the shortlist does not make the resolver abstain. It makes the
+resolver reach for the next entry down and attach the same referring expression to the
+wrong component. On teammates S131 the suppression does work exactly once — `annot_only`
+sample 3 drops it — and it buys that one true deletion at seventeen additions.
+
+`s_linker109` recorded the rule this breaks from the other side: **a discovered fact may
+open a case and may not close one.** A name verdict is a discovered fact — another
+judge's output, resampled every run — and using it to *withhold* an antecedent ends a case
+on evidence that is not stable. The head's shortlist rests only on given input (the
+catalog, the document, `_states_a_name`), which is why it has no such failure mode.
+
+---
+
+## Verdict
+
+**REFUTED, on both models, at levels 1 and 2 — do not build it.**
+
+| reading of the proposal | arm | terra | luna |
+|---|---|---|---|
+| suppress refused antecedents | `annot_only` | F2 −0.07, worse-or-equal 3/3 | **F2 −0.92, FP +4.0, worse 3/3** |
+| mark them, no rule | `annot` | F2 +0.30, ±2 links of 202 | F2 +0.03 |
+| mark them, one weighing sentence | `annot_clause` | F2 −0.19 | F2 −0.17 |
+
+- **The informative part of the annotation is 17–21% of entries and 93% of it is one
+  project.** 83% of the shortlist would carry a constant mark.
+- **The resolver is not indifferent to it** — proposal volume moves from 110.3 to 156.3 a
+  run on terra and 149.0 to 195.0 on luna, a ±25% swing — **and its net contribution moves
+  by at most 1.3 pairs.** Two stages absorb it: a judge that rejects by default, and a
+  merge an earlier linker has already won.
+- **Nothing recovers a false positive.** Across three arms, two models and six samples,
+  no arm shows a net FP reduction, and the one net link the annotation was designed to
+  catch (teammates S131 → Storage, not gold) was *added* by two arms on terra.
+- **The cost side is real and the benefit side is not**: +4.1% resolver bytes for the
+  mark, +8.5% for the mark with its clause.
+
+**What would have to change for this to be worth re-asking.** The absorbing stage is the
+coreference judge. If a future head weakens or removes it, the 12.7 / 30.7 refused-
+antecedent resolutions a run stop being free and the shortlist mark becomes the cheapest
+thing that touches them. Until then the fact is already being used — just downstream, by
+a judge that reads the sentence itself rather than a mark about it.
+
 
