@@ -269,32 +269,145 @@ catalog, the document, `_states_a_name`), which is why it has no such failure mo
 
 ---
 
-## Verdict
+## Is the pure mark better on F1 / F2? The paired read
 
-**REFUTED, on both models, at levels 1 and 2 — do not build it.**
+The tables above are means. `pilot/coref_annot_stats.py` gives the PAIRED per-sample
+deltas — both arms scored on the same sample — with an exact sign-flip permutation test.
+At n = 3 there are 2^3 sign assignments, so **the two-sided floor is p = 0.25** and no arm
+here reaches it.
 
-| reading of the proposal | arm | terra | luna |
-|---|---|---|---|
-| suppress refused antecedents | `annot_only` | F2 −0.07, worse-or-equal 3/3 | **F2 −0.92, FP +4.0, worse 3/3** |
-| mark them, no rule | `annot` | F2 +0.30, ±2 links of 202 | F2 +0.03 |
-| mark them, one weighing sentence | `annot_clause` | F2 −0.19 | F2 −0.17 |
+| arm | model | macro F1 | macro F2 | TP | FP | F2 signs |
+|---|---|---|---|---|---|---|
+| `annot` | terra | +0.04 (p 1.00) | **+0.31** (p 0.50) | +0.67 | +0.67 | 2+ / 1− |
+| `annot` | luna | −0.06 (p 1.00) | **+0.04** (p 1.00) | +0.67 | +0.67 | 1+ / 2− |
+| `annot_clause` | terra | −0.28 (p 0.50) | −0.19 (p 0.50) | −0.33 | +0.67 | 0+ / 2− |
+| `annot_clause` | luna | −0.09 (p 1.00) | −0.16 (p 0.75) | ±0.00 | +0.67 | 1+ / 2− |
+| `annot_only` | terra | −0.16 (p 1.00) | −0.07 (p 1.00) | ±0.00 | +0.33 | 0+ / 1− |
+| `annot_only` | luna | **−0.94** (p 0.25) | **−0.92** (p 0.25) | −1.00 | +4.00 | **0+ / 3−** |
 
-- **The informative part of the annotation is 17–21% of entries and 93% of it is one
-  project.** 83% of the shortlist would carry a constant mark.
-- **The resolver is not indifferent to it** — proposal volume moves from 110.3 to 156.3 a
-  run on terra and 149.0 to 195.0 on luna, a ±25% swing — **and its net contribution moves
-  by at most 1.3 pairs.** Two stages absorb it: a judge that rejects by default, and a
-  merge an earlier linker has already won.
-- **Nothing recovers a false positive.** Across three arms, two models and six samples,
-  no arm shows a net FP reduction, and the one net link the annotation was designed to
-  catch (teammates S131 → Storage, not gold) was *added* by two arms on terra.
-- **The cost side is real and the benefit side is not**: +4.1% resolver bytes for the
-  mark, +8.5% for the mark with its clause.
+**The pure mark's F2 point estimate is positive on both models and its F1 is a wash** —
+so the accurate statement about `annot` is *unresolved and favourable on F2, null on F1*,
+not "no effect". Nothing is significant and the F2 sign is not even consistent (2 of 3
+terra, 1 of 3 luna). `annot_only` is the only arm reaching the n = 3 floor, on luna,
+against itself.
 
-**What would have to change for this to be worth re-asking.** The absorbing stage is the
-coreference judge. If a future head weakens or removes it, the 12.7 / 30.7 refused-
-antecedent resolutions a run stop being free and the shortlist mark becomes the cheapest
-thing that touches them. Until then the fact is already being used — just downstream, by
-a judge that reads the sentence itself rather than a mark about it.
+### Why F2 moves and F1 does not: the exchange rate is one-for-one
 
+| arm | model | +gold | +FP | −gold | −FP | **net gold** | **net FP** |
+|---|---|---|---|---|---|---|---|
+| `annot` | terra | 0.67 | 0.67 | 0.00 | 0.00 | **+0.67** | **+0.67** |
+| `annot` | luna | 1.33 | 3.33 | 0.67 | 2.67 | **+0.67** | **+0.67** |
+| `annot_clause` | terra | 0.00 | 0.67 | 0.33 | 0.00 | −0.33 | +0.67 |
+| `annot_clause` | luna | 1.00 | 3.33 | 1.00 | 2.67 | ±0.00 | +0.67 |
+| `annot_only` | luna | 0.67 | 5.67 | 1.67 | 1.67 | **−1.00** | **+4.00** |
 
+**`annot` buys one true link per one spurious link, at the same rate on both models**
+(luna reaches it through 5× the churn). F2 weights recall 4:1, so a 1:1 trade scores
+mildly positive; F1 weights them evenly, so the same trade scores zero. **The +0.31 is
+the F2 weighting applied to a one-for-one exchange, not a precision gain** — which
+reinforces the round's headline rather than softening it: no arm removes a net false
+positive.
+
+### What it would cost to settle it
+
+Terra's F2 deltas are +0.60, −0.28, +0.60 — sd 0.51 against a mean of 0.31, so **~13
+paired samples per model** would be needed for p < 0.05. Luna's mean is +0.04 at sd 0.44:
+**~690**. Against +4.1% resolver bytes, a change that conditions a deliberately blind
+proposer on the earlier stage's output, and no precision gain at any sample size, the
+round does not buy them. **The open question is recorded, not closed by assertion.**
+
+---
+
+## Verdict — `s_linker123` ADOPTED, on the design argument, at a measured neutral
+
+**The pure mark is adopted and promoted; the two arms that try to ACT on the mark are
+refused.** The round was written up as a refutation first, on the ground that the effect
+is not separable from noise. That reading priced the change as a performance claim, and
+it is not one — it is a **design** claim with a neutral price, which is a different thing
+and a thing this branch has adopted six times.
+
+| reading of the proposal | arm | terra | luna | verdict |
+|---|---|---|---|---|
+| mark them, no rule | **`annot` → `s_linker123`** | **F2 +0.31, F1 +0.04** | **F2 +0.04, F1 −0.06** | **ADOPTED** |
+| mark them, one weighing sentence | `annot_clause` | F2 −0.19 | F2 −0.16 | refused |
+| suppress refused antecedents | `annot_only` | F2 −0.07 | **F2 −0.92, FP +4.0, worse 3/3** | refused |
+
+### Why it is adopted
+
+- **The shortlist is the one place in the module where a stage is shown an *unrefined*
+  version of a fact the pipeline has already refined.** `_named_before` asks "does this
+  sentence write the name?" and offers all the answers as equals, while the union judge
+  has already ruled on every one of those mentions. Every other piece of evidence any
+  judge in this module reads is the best the system knows at that point. **One fact
+  source, stated once, read everywhere** — and the file is shorter to describe for it,
+  which is the whole of the paper argument.
+- **Quality-neutral on both models with the F2 point estimate favourable on both, at the
+  same call count.** That is the standard `s_linker86` ("every point estimate in s86's
+  favour", 243 B removed for no measurable change), `s_linker89` ("smallest p 0.60") and
+  `s_linker110`-on-luna were adopted under. Three samples a side, both arms in one
+  invocation per model, alias table and name-link set pinned.
+- **It costs no call and no authored rule text.** The mark is rendered in the shortlist
+  line, not written into any constant, so the GATE-07 accounting does not move and
+  `pilot/prompt_defensibility.py` reads exactly what it read for `s_linker122`.
+
+### What the round does NOT claim, stated so the paper does not overreach
+
+- **It is not a precision result.** The exchange rate is **+0.67 gold and +0.67 spurious a
+  run on both models**; F2's 4:1 recall weighting is what turns a one-for-one trade into
+  a positive number, and F1 — which weights them evenly — reads +0.04 / −0.06.
+- **No arm removes a net false positive**, and the single net link the annotation would
+  have been *designed* to catch (teammates S131 → `Storage`, not gold) was **added** by
+  two arms on terra. If the paper motivates the mark as a precision device it will be
+  wrong; the defensible motivation is the information-flow one above.
+- **Nothing reaches significance.** At n = 3 the two-sided sign-flip floor is p = 0.25 and
+  `annot`'s best reading is p = 0.50. Settling the terra F2 estimate would take ~13 paired
+  samples and the luna one ~690. **The claim is neutrality plus a design argument, not an
+  improvement** — and neutrality is what three samples can support.
+- **The informative part of the mark is 17–21% of entries and 93% of it is one project**
+  (teammates); mediastore's shortlist is 140/140 `linked`. The mark is close to a constant
+  on three of five projects, which is a fair thing for a reviewer to notice and a fair
+  thing for the paper to say first.
+- **+4.1% resolver bytes.** This is not a compaction and the file does not pretend to be
+  one.
+
+### The two refusals, which are the round's transferable results
+
+1. **A fact can be enough, and a weighing about it can cost.** `annot_clause` adds one
+   sentence — "a `named only` entry is the weaker antecedent" — and is the worse arm on
+   both models. The two arms move the resolver **32 pairs apart in opposite directions**
+   (`annot` +17.6 proposals a run, `annot_clause` −14.4) and only the unweighted one lands
+   favourably. The design law says *where* a weighing goes when you want one; it does not
+   say you want one.
+2. **Suppression redirects, it does not remove.** `annot_only` proposes 36 fewer pairs a
+   run and its net spurious **doubles** — **+17 false positives added against 5 removed**.
+   Taking an entry off the shortlist does not make the resolver abstain; it makes the
+   resolver attach the same referring expression to the next component down.
+   `s_linker109` recorded the rule from the other side: **a discovered fact may open a
+   case and may not close one.** A name verdict is discovered — another judge's output,
+   resampled every run. **Marking is opening; withholding is closing. `s_linker123` marks
+   and does not withhold.**
+
+### What ships
+
+`s_linker123`, STANDALONE by the one-file-per-reported-variant policy, registered in
+`run_ablation.py` as `s_linker123` / `shortlistmark`.
+`pilot/test_s123_standalone.py` (**87 checks, no calls**): 27 methods byte-identical to
+`s_linker122`, 5 declared changes, every rule constant and bound unchanged, and — the
+check that matters — **the shipped file's resolver prompts are byte-identical to
+`coref_annot_pilots.Annot`, the arm that was measured, on all five projects**, with every
+non-shortlist byte of the prompt equal to `s_linker122`'s. A run with nothing linked
+degrades to every entry reading `named only` rather than breaking.
+
+Smoke: `pilot/run_s123_smoke.sh terra mediastore` → 31 links, F1 100.0, 9 calls.
+
+### What is still owed
+
+**An E2E batch, for the paper's numbers and not for the decision.** The measurement
+policy's level 3 makes a change to the LAST linker structurally free of composition risk
+("nothing downstream can be starved"), and this round proved the composition identity
+rather than assuming it — `pinned name links | kept coreference` reproduces a recorded
+run's own final CSV with symmetric difference 0. So the stage read IS the pipeline
+answer. But the RQ engines key an arm to its E2E run directories (`rq34.py`'s arm map),
+so the paper's `s123` row has to be generated from an `s123` run set:
+
+    pilot/run_coref_annot_e2e.sh terra 3   # to be written, on run_noanchor_e2e.sh's shape

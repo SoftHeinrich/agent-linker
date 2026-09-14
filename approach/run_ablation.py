@@ -235,6 +235,7 @@ CANONICAL_VARIANTS = [
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
     "s_linker121",  # s120 with the judge's three call-level arrangements removed
     "s_linker122",  # s121 with the anchor block removed and one clause in its place
+    "s_linker123",  # s122 with the antecedent shortlist marked with the name judge's verdicts
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2347,6 +2348,34 @@ VARIANT_SPECS = {
             "gold -7.3 at spurious -32.7 p=0.055 (precision 0.752 -> 0.871); projected "
             "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
             "one project. s_linker120 remains the reported arm; this is the simple one."
+        ),
+    ),
+    "s_linker123": dict(
+        aliases=("shortlistmark",),
+        module="llm_sad_sam.linkers.experimental.s_linker123",
+        class_name="SLinker123",
+        description=(
+            "S-Linker123 - s122 with the coreference resolver's antecedent shortlist "
+            "marked with the verdict the union judge already reached about each "
+            "mention: `kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`. The "
+            "list was computed lexically by `_states_a_name` and the verdicts were "
+            "being discarded; this is the same fact at the resolution the system "
+            "already has it at. No rule speaks about the mark and no authored rule "
+            "text changes - the mark is rendered in `_named_before`'s caller, so the "
+            "GATE-07 accounting does not move. Level 2, three samples a side, both "
+            "arms in one invocation per model with the alias table and the name-link "
+            "set pinned: terra macro F2 +0.31 / F1 +0.04, luna macro F2 +0.04 / "
+            "F1 -0.06, TP +0.67 and FP +0.67 on both - QUALITY-NEUTRAL on both models "
+            "with the F2 point estimate favourable on both, at the same call count. "
+            "Not a precision result: the exchange rate is one gold per one spurious "
+            "and F2's 4:1 recall weighting is what makes it positive. The two arms "
+            "that ACT on the mark are negative - adding a weighing sentence reads "
+            "terra F2 -0.19 / luna -0.16, and dropping the refused entries instead of "
+            "marking them reads luna F2 -0.92 at +17 false positives added against 5 "
+            "removed, because suppression redirects a resolution rather than removing "
+            "it. STANDALONE, by the one-file-per-reported-variant policy; checked "
+            "against s122 method by method (pilot/test_s123_standalone.py). "
+            "Round: ../results/coref_annot_round/README.md."
         ),
     ),
     "s_linker122": dict(
