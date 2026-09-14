@@ -55,11 +55,12 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   fixed **name-evidence order** (full-name → partial-name → coreference), no controller.
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
-- `s_linker26.py` … `s_linker120.py` — the rounds below. All `experimental=True`.
-  **THE HEAD IS `s_linker120` (the union arm) since 2026-09-11, and the paper reports
-  it**; it is a standalone file, like `s_linker110` before it. The ledger below is
-  chronological, so an earlier round's "X is the head" sentence is true of its own date
-  and superseded by the next round that moves it: s92a -> s109/s110 -> s120.
+- `s_linker26.py` … `s_linker122.py` — the rounds below. All `experimental=True`.
+  **THE HEAD IS `s_linker122` (the union arm, judged without the anchor block) since
+  2026-09-14, and the paper reports it**; it is a standalone file, like `s_linker120`
+  and `s_linker110` before it. The ledger below is chronological, so an earlier round's
+  "X is the head" sentence is true of its own date and superseded by the next round that
+  moves it: s92a -> s109/s110 -> s120 -> s121 -> s122.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
@@ -1317,3 +1318,77 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   union, "how many judges" and "how many forms" are no longer the same question**, which
   is exactly what the round set out to separate. No one-call floor was built on this arm;
   `rq_tables.py` drops that table and prints the absence rather than borrowing s110's.
+
+### s121 + s122 — the judge's arrangements out, then the anchor block out (2026-09-14)
+
+- **`s_linker121` is `s_linker120` with the judge's three call-level arrangements
+  removed** and its method set cut from 49 to 34: an indirection that only forwarded a
+  call, or named one step of a caller that had exactly one, is not structure.
+  `pilot/test_s121_standalone.py` checks self-containment and reachability rather than a
+  method-by-method copy, because the file is no longer a copy.
+- **The scan's one refusal is GONE** (`s_linker109`'s nesting predicate: a one-word pair
+  whose word is written only inside another component's whole name). It fires on **one
+  of five projects, drops 12 pairs, and 0 of them are gold**, so it could never gain a
+  link; the judge rejects those same pairs on its own in **140 of 144 case-samples across
+  two models**. Removed on the simplicity argument, at a cost of +1 judging call on
+  bigbluebutton. The deterministic layer now only OPENS cases — nothing in it ends one —
+  which is what `SKIP_QUALIFIED`'s second clause had always claimed. The predicate is
+  owned by `pilot/s121_ablations.py` so the round stays reproducible after the head moved.
+- **`s_linker122` is `s_linker121` with the union judge's `anchors` evidence removed.**
+  The block is up to five whole sentences a case and the largest single thing in a
+  judging call: the name judging goes **199,466 -> 156,519 characters over the five
+  projects (-21.5%) at the same 15 calls**. STANDALONE, by the one-file-per-reported-
+  variant policy, checked against its ancestor method by method
+  (`pilot/test_s122_standalone.py`, 99 checks, no calls: **28 methods byte-identical, 4
+  declared changes**, every rule constant identical except the two that carry the anchors
+  line, and every judging prompt on all five projects equal to the ancestor's bytes minus
+  the anchors plus the clause).
+- **What the anchors were holding, and the one clause that replaces them.** A case's
+  `writes` line can say the sentence writes "a short form the document established for
+  it" — a claim the case makes about itself, which the anchor block was the only thing in
+  the call able to bear on. `pilot/anchor_diff.py` located the leak: of the 33
+  sample-counts an anchor-free arm keeps and the head does not, 30 are on cases whose
+  block was printed, **22 are the alias row and 18 of those are one component**. In its
+  place, 125 bytes: *"Where the sentence does not write the name in full, that a surface
+  can name this component is not evidence that it does here."*
+- **THE SCOPE IS LOAD-BEARING, and it was learned the expensive way.** A 73-byte
+  unscoped version shipped first and the E2E refused it on a sign flip (terra better,
+  luna **TP -10.3** at unchanged precision). `pilot/noanchor_fn.py` named luna's loss
+  exactly: **seven of the eight lost links are one teammates sentence**, a bare
+  enumeration of component names, lost in **3 runs of 3**, every one `writes=whole name`.
+  Unscoped, the clause fires on whole-name bare mentions and contradicts the rule's own
+  `MENTION_COUNTS`. Scoped, luna's whole-name row goes **-2.07 -> -0.13 a unit** and its
+  run-level gold loss **-8.7 -> -2.3**, at no cost on terra (spurious -2.3 -> -3.7).
+- **A FACT CANNOT DO A WEIGHING'S JOB** — measured, and the round's transferable result.
+  A clause-free repair was built and refused: reword the alias evidence so it claims only
+  what the match computed ("a short form listed for it elsewhere in the document"), zero
+  added prompt bytes, and it **cannot reach a whole-name case** because a whole-name case
+  never renders that row. It recovers S1 on both models (luna whole-name -2.07 -> -0.47)
+  and **reopens the row the anchors were holding**: terra spurious **+7.3 a run
+  (p = 0.047)**, luna +7.0. Changing what the evidence says moved what the judge knows
+  about one field; it did not move the threshold the block was setting. The design law —
+  facts in code, weighings in the prompt — also runs the other way: a fact may not be
+  asked to stand in for a weighing.
+- **The stage understated the change in BOTH directions**, which is the round's
+  methodological result. On the unscoped arm the stage read terra neutral and the
+  composed run read FP -8.0 / F2 +0.9; the stage read luna -5.0 gold and the composed run
+  read TP -10.3, roughly double. Luna's composition statistic is **+24.1 (p = 0.10)**
+  against terra's +1.1. The standing caveat is that a stage arm flatters a change by
+  hiding composition; here it understated one twice.
+- **End to end, and what it does and does not cover.** The paired E2E that refused the
+  UNSCOPED arm stands as the measurement of that arm (three runs a model, both arms in
+  every invocation, arm order alternating; `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914`):
+  terra TP 182.3 -> 184.0, FP 28.0 -> 20.0, macro F1 92.51 -> 93.94, macro F2
+  94.18 -> 95.13 (p = 0.10, every s122 run above every s121 run); luna TP 185.0 -> 174.7
+  (p = 0.10), FP +0.3, macro F2 93.84 -> 90.94. Both models' whole effect is teammates.
+  **It does not describe the file that ships**, which carries the scope the sign flip was
+  traced to, so the shipped arm is re-measured on both models
+  (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
+  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`). This entry carries the
+  scoped numbers when they land; until then the honest statement is that the cut's E2E
+  price is known for the unscoped clause and predicted, not measured, for the scoped one.
+- **`s_linker122` IS THE HEAD (2026-09-14) and the paper reports it.** The RQ engines key
+  an arm to its E2E run directories (`rq34.py`'s arm map, `"s120": ("s_linker120",
+  "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from the
+  scoped run set above and not from the unscoped one.
+- Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
