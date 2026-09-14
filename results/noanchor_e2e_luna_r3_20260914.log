@@ -1,0 +1,631 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-luna)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker121, s_linker122
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 31 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S21 -> Reencoding
+    Coref reject: S32 -> DB
+    Coref reject: S33 -> FileStorage
+    Coref reject: S35 -> FileStorage
+    Coref reject: S36 -> FileStorage
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_mediastore_20260914_123912.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_mediastore_20260914_123912_calls.json (9 calls)
+
+Final: 33 links (34.2s, 9 LLM calls)
+  s_linker121: P=90.9% R=96.8% F1=93.7% F2=95.5% TP=30 FP=3 FN=1 (34s)
+    Sources: {'full_name': 30, 'coreference': 3}
+    FP by source: {'full_name': 3}
+
+  --- Variant: s_linker122 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: ReEncoder -> Reencoding
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 31 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S4 -> Facade
+    Coref reject: S21 -> Reencoding
+    Coref reject: S33 -> FileStorage
+    Coref reject: S35 -> FileStorage
+    Coref reject: S36 -> FileStorage
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_mediastore_20260914_123937.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_mediastore_20260914_123937_calls.json (9 calls)
+
+Final: 34 links (24.4s, 9 LLM calls)
+  s_linker122: P=91.2% R=100.0% F1=95.4% F2=98.1% TP=31 FP=3 FN=0 (24s)
+    Sources: {'full_name': 31, 'coreference': 3}
+    FP by source: {'full_name': 3}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+    Alias: GAE Datastore -> Storage
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 86 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S2 -> GAE Datastore
+    Coref reject: S4 -> UI
+    Coref reject: S6 -> UI
+    Coref reject: S7 -> UI
+    Coref reject: S24 -> UI
+    Coref reject: S27 -> UI
+    Coref reject: S28 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S87 -> Logic
+    Coref reject: S92 -> Logic
+    Coref reject: S94 -> Logic
+    Coref reject: S97 -> Logic
+    Coref reject: S98 -> Logic
+    Coref reject: S102 -> Storage
+    Coref reject: S103 -> Storage
+    Coref reject: S104 -> Storage
+    Coref reject: S105 -> Storage
+    Coref reject: S106 -> Storage
+    Coref reject: S107 -> Storage
+    Coref reject: S108 -> Storage
+    Coref reject: S109 -> Storage
+    Coref reject: S110 -> Storage
+    Coref reject: S121 -> Storage
+    Coref reject: S122 -> Logic
+    Coref reject: S124 -> Storage
+    Coref reject: S126 -> Storage
+    Coref reject: S127 -> Storage
+    Coref reject: S129 -> Logic
+    Coref reject: S130 -> Storage
+    Coref reject: S131 -> Storage
+    Coref reject: S132 -> Storage
+    Coref reject: S133 -> Storage
+    Coref reject: S134 -> Storage
+    Coref reject: S135 -> Storage
+    Coref reject: S136 -> Storage
+    Coref reject: S137 -> Storage
+    Coref reject: S138 -> GAE Datastore
+    Coref reject: S139 -> Storage
+    Coref reject: S140 -> Storage
+    Coref reject: S161 -> Common
+    Coref reject: S164 -> Common
+    Coref reject: S165 -> Common
+    Coref reject: S166 -> Common
+    Coref reject: S167 -> Common
+    Coref reject: S195 -> Client
+    Coref reject: S196 -> Client
+    Coref reject: S197 -> Client
+    Coref reject: S198 -> Client
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_teammates_20260914_124130.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_teammates_20260914_124130_calls.json (31 calls)
+
+Final: 82 links (113.0s, 31 LLM calls)
+  s_linker121: P=68.3% R=98.2% F1=80.6% F2=90.3% TP=56 FP=26 FN=1 (113s)
+    Sources: {'full_name': 66, 'partial_name': 9, 'coreference': 7}
+    FP by source: {'full_name': 19, 'coreference': 2, 'partial_name': 5}
+
+  --- Variant: s_linker122 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+    Alias: back end -> Logic
+    Alias: front-end -> UI
+    Alias: UI Browser -> UI
+    Alias: Test Driver -> Test Driver
+    Alias: E2E -> E2E
+    Alias: GAE -> GAE Datastore
+    Alias: datastore -> GAE Datastore
+    Alias: Logic API -> Logic
+    Alias: database -> GAE Datastore
+    Alias: Client -> Client
+    Alias: UI Server -> UI
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 107 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S4 -> UI
+    Coref reject: S7 -> UI
+    Coref reject: S8 -> Logic
+    Coref reject: S24 -> UI
+    Coref reject: S27 -> UI
+    Coref reject: S28 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S31 -> UI
+    Coref reject: S32 -> UI
+    Coref reject: S33 -> UI
+    Coref reject: S34 -> UI
+    Coref reject: S35 -> UI
+    Coref reject: S36 -> UI
+    Coref reject: S37 -> UI
+    Coref reject: S38 -> UI
+    Coref reject: S39 -> UI
+    Coref reject: S40 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S92 -> Logic
+    Coref reject: S94 -> Logic
+    Coref reject: S96 -> Logic
+    Coref reject: S101 -> Storage
+    Coref reject: S102 -> Logic
+    Coref reject: S103 -> Logic
+    Coref reject: S104 -> Storage
+    Coref reject: S105 -> Storage
+    Coref reject: S106 -> Logic
+    Coref reject: S107 -> Logic
+    Coref reject: S108 -> Logic
+    Coref reject: S109 -> Storage
+    Coref reject: S110 -> Logic
+    Coref reject: S121 -> Storage
+    Coref reject: S122 -> GAE Datastore
+    Coref reject: S122 -> Logic
+    Coref reject: S124 -> Storage
+    Coref reject: S126 -> Storage
+    Coref reject: S127 -> Storage
+    Coref reject: S130 -> Storage
+    Coref reject: S132 -> Storage
+    Coref reject: S133 -> Storage
+    Coref reject: S134 -> Storage
+    Coref reject: S135 -> Storage
+    Coref reject: S136 -> Storage
+    Coref reject: S137 -> Storage
+    Coref reject: S138 -> GAE Datastore
+    Coref reject: S139 -> GAE Datastore
+    Coref reject: S140 -> GAE Datastore
+    Coref reject: S156 -> Common
+    Coref reject: S157 -> Common
+    Coref reject: S158 -> Common
+    Coref reject: S159 -> Common
+    Coref reject: S160 -> Common
+    Coref reject: S161 -> Common
+    Coref reject: S163 -> Common
+    Coref reject: S164 -> Common
+    Coref reject: S165 -> Common
+    Coref reject: S166 -> Common
+    Coref reject: S167 -> Common
+    Coref reject: S182 -> UI
+    Coref reject: S187 -> E2E
+    Coref reject: S188 -> E2E
+    Coref reject: S189 -> E2E
+    Coref reject: S190 -> E2E
+    Coref reject: S191 -> E2E
+    Coref reject: S192 -> E2E
+    Coref reject: S193 -> E2E
+    Coref reject: S194 -> E2E
+    Coref reject: S195 -> Client
+    Coref reject: S196 -> Client
+    Coref reject: S197 -> Client
+    Coref reject: S198 -> Client
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_teammates_20260914_124338.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_teammates_20260914_124338_calls.json (32 calls)
+
+Final: 76 links (128.6s, 32 LLM calls)
+  s_linker122: P=61.8% R=82.5% F1=70.7% F2=77.3% TP=47 FP=29 FN=10 (129s)
+    Sources: {'full_name': 58, 'partial_name': 11, 'coreference': 7}
+    FP by source: {'partial_name': 10, 'full_name': 16, 'coreference': 3}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: WebUi -> WebUI
+    Alias: persistence provider -> Persistence
+    Alias: Image Provider -> ImageProvider
+    Alias: UI -> WebUI
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 25 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S9 -> WebUI
+    Coref reject: S13 -> ImageProvider
+    Coref reject: S14 -> ImageProvider
+    Coref reject: S15 -> ImageProvider
+    Coref reject: S16 -> ImageProvider
+    Coref reject: S17 -> ImageProvider
+    Coref reject: S31 -> Recommender
+    Coref reject: S33 -> SlopeOneRecommender
+    Coref reject: S34 -> SlopeOneRecommender
+    Coref reject: S34 -> SlopeOneRecommender
+    Coref reject: S35 -> OrderBasedRecommender
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S43 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_teastore_20260914_124421.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_teastore_20260914_124421_calls.json (10 calls)
+
+Final: 28 links (42.7s, 10 LLM calls)
+  s_linker121: P=92.9% R=96.3% F1=94.5% F2=95.6% TP=26 FP=2 FN=1 (43s)
+    Sources: {'full_name': 21, 'coreference': 7}
+    FP by source: {'full_name': 1, 'coreference': 1}
+
+  --- Variant: s_linker122 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+    Alias: Slope One -> SlopeOneRecommender
+    Alias: persistence provider -> Persistence
+    Alias: front-end -> WebUI
+    Alias: Image Provider -> ImageProvider
+    Alias: UI -> WebUI
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 25 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S12 -> ImageProvider
+    Coref reject: S13 -> ImageProvider
+    Coref reject: S14 -> ImageProvider
+    Coref reject: S15 -> ImageProvider
+    Coref reject: S26 -> Persistence
+    Coref reject: S31 -> Recommender
+    Coref reject: S32 -> SlopeOneRecommender
+    Coref reject: S33 -> SlopeOneRecommender
+    Coref reject: S34 -> SlopeOneRecommender
+    Coref reject: S34 -> SlopeOneRecommender
+    Coref reject: S35 -> OrderBasedRecommender
+    Coref reject: S37 -> Registry
+    Coref reject: S38 -> Registry
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S41 -> Registry
+    Coref reject: S43 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_teastore_20260914_124502.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_teastore_20260914_124502_calls.json (9 calls)
+
+Final: 26 links (40.4s, 9 LLM calls)
+  s_linker122: P=92.3% R=88.9% F1=90.6% F2=89.6% TP=24 FP=2 FN=3 (40s)
+    Sources: {'full_name': 20, 'coreference': 6}
+    FP by source: {'full_name': 1, 'coreference': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+    Alias: fsels -> FSESL
+    Alias: BigBlueButton client -> HTML5 Client
+    Alias: Recording Processor -> Recording Service
+    Alias: Apps Akka -> Apps
+    Alias: HTML5 client -> HTML5 Client
+    Alias: BigBlueButton web -> BBB web
+    Alias: BigBlueButton Apps -> Apps
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: KMS -> kurento
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: Kurento Media Server -> kurento
+    Alias: BigBlueButton web application -> BBB web
+    Alias: bbb-web -> BBB web
+    Alias: WebRTC-SFU -> WebRTC-SFU
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 46 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S8 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Client
+    Coref reject: S10 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Client
+    Coref reject: S11 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Client
+    Coref reject: S14 -> HTML5 Client
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S18 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Client
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S21 -> HTML5 Server
+    Coref reject: S22 -> HTML5 Server
+    Coref reject: S23 -> HTML5 Server
+    Coref reject: S24 -> HTML5 Server
+    Coref reject: S25 -> HTML5 Server
+    Coref reject: S26 -> HTML5 Server
+    Coref reject: S27 -> HTML5 Server
+    Coref reject: S28 -> HTML5 Server
+    Coref reject: S29 -> HTML5 Server
+    Coref reject: S30 -> HTML5 Server
+    Coref reject: S31 -> BBB web
+    Coref reject: S32 -> BBB web
+    Coref reject: S32 -> Apps
+    Coref reject: S33 -> BBB web
+    Coref reject: S34 -> BBB web
+    Coref reject: S36 -> BBB web
+    Coref reject: S39 -> BBB web
+    Coref reject: S40 -> BBB web
+    Coref reject: S56 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S59 -> FSESL
+    Coref reject: S60 -> Apps
+    Coref reject: S60 -> Redis PubSub
+    Coref reject: S61 -> FreeSWITCH
+    Coref reject: S64 -> FreeSWITCH
+    Coref reject: S65 -> WebRTC-SFU
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S73 -> FreeSWITCH
+    Coref reject: S74 -> HTML5 Client
+    Coref reject: S76 -> HTML5 Client
+    Coref reject: S79 -> HTML5 Client
+    Coref reject: S84 -> Presentation Conversion
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_bigbluebutton_20260914_124652.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_bigbluebutton_20260914_124652_calls.json (19 calls)
+
+Final: 68 links (110.0s, 19 LLM calls)
+  s_linker121: P=77.9% R=85.5% F1=81.5% F2=83.9% TP=53 FP=15 FN=9 (110s)
+    Sources: {'full_name': 46, 'partial_name': 20, 'coreference': 2}
+    FP by source: {'partial_name': 13, 'full_name': 2}
+
+  --- Variant: s_linker122 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+    Alias: Apps Akka -> Apps
+    Alias: BBB web -> BBB web
+    Alias: HTML5 client -> HTML5 Client
+    Alias: FreeSWITCH Event Socket Layer -> FSESL
+    Alias: BigBlueButton Apps -> Apps
+    Alias: Redis DB -> Redis DB
+    Alias: conversion process -> Presentation Conversion
+    Alias: Redis pubsub -> Redis PubSub
+    Alias: KMS -> kurento
+    Alias: bbb-html5 -> HTML5 Server
+    Alias: Kurento Media Server -> kurento
+    Alias: FreeSWITCH -> FreeSWITCH
+    Alias: bbb-web -> BBB web
+    Alias: BigBlueButton web application -> BBB web
+    Alias: fsels -> FSESL
+    Alias: HTML5 server -> HTML5 Server
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 45 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Server
+    Coref reject: S11 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Client
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S18 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Client
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S21 -> HTML5 Server
+    Coref reject: S22 -> HTML5 Server
+    Coref reject: S23 -> HTML5 Server
+    Coref reject: S24 -> HTML5 Server
+    Coref reject: S25 -> HTML5 Server
+    Coref reject: S26 -> HTML5 Server
+    Coref reject: S27 -> HTML5 Server
+    Coref reject: S28 -> HTML5 Server
+    Coref reject: S29 -> HTML5 Server
+    Coref reject: S30 -> Apps
+    Coref reject: S31 -> BBB web
+    Coref reject: S32 -> BBB web
+    Coref reject: S32 -> BBB web
+    Coref reject: S33 -> BBB web
+    Coref reject: S34 -> BBB web
+    Coref reject: S39 -> BBB web
+    Coref reject: S40 -> Apps
+    Coref reject: S54 -> Apps
+    Coref reject: S56 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S59 -> FSESL
+    Coref reject: S60 -> Apps
+    Coref reject: S60 -> Redis PubSub
+    Coref reject: S84 -> Presentation Conversion
+    Coref reject: S85 -> Presentation Conversion
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_bigbluebutton_20260914_124816.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_bigbluebutton_20260914_124816_calls.json (18 calls)
+
+Final: 57 links (84.3s, 18 LLM calls)
+  s_linker122: P=87.7% R=80.6% F1=84.0% F2=82.0% TP=50 FP=7 FN=12 (84s)
+    Sources: {'full_name': 45, 'partial_name': 10, 'coreference': 2}
+    FP by source: {'partial_name': 4, 'full_name': 3}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+    Alias: command line interface -> cli
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 20 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S2 -> gui
+    Coref reject: S3 -> logic
+    Coref reject: S4 -> logic
+    Coref reject: S5 -> logic
+    Coref reject: S6 -> model
+    Coref reject: S6 -> gui
+    Coref reject: S7 -> preferences
+    Coref reject: S7 -> gui
+    Coref reject: S7 -> gui
+    Coref reject: S8 -> gui
+    Coref reject: S9 -> model
+    Coref reject: S11 -> preferences
+    Coref reject: S12 -> gui
+    Coref reject: S13 -> model
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_jabref_20260914_124842.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker121_openai_jabref_20260914_124842_calls.json (6 calls)
+
+Final: 18 links (25.8s, 6 LLM calls)
+  s_linker121: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=18 FP=0 FN=0 (26s)
+    Sources: {'full_name': 18}
+    FP by source: {}
+
+  --- Variant: s_linker122 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+    Alias: command line interface -> cli
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 20 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S2 -> gui
+    Coref reject: S3 -> logic
+    Coref reject: S4 -> logic
+    Coref reject: S5 -> model
+    Coref reject: S7 -> preferences
+    Coref reject: S7 -> gui
+    Coref reject: S7 -> gui
+    Coref reject: S8 -> gui
+    Coref reject: S9 -> model
+    Coref reject: S9 -> model
+    Coref reject: S11 -> preferences
+    Coref reject: S12 -> gui
+    Coref reject: S13 -> model
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_jabref_20260914_124904.json
+  LLM call trace saved: ../results/noanchor_e2e_luna_r3_20260914/llm_logs/s_linker122_openai_jabref_20260914_124904_calls.json (6 calls)
+
+Final: 18 links (21.9s, 6 LLM calls)
+  s_linker122: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=18 FP=0 FN=0 (22s)
+    Sources: {'full_name': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |         s_linker121         |         s_linker122        
+-----------------+-----------------------------+----------------------------
+mediastore       | F1 93.7% F2 95.5% FP   3 | F1 95.4% F2 98.1% FP   3
+teammates        | F1 80.6% F2 90.3% FP  26 | F1 70.7% F2 77.3% FP  29
+teastore         | F1 94.5% F2 95.6% FP   2 | F1 90.6% F2 89.6% FP   2
+bigbluebutton    | F1 81.5% F2 83.9% FP  15 | F1 84.0% F2 82.0% FP   7
+jabref           | F1 100.0% F2 100.0% FP   0 | F1 100.0% F2 100.0% FP   0
+-----------------+-----------------------------+----------------------------
+Macro avg        | F1 90.1% F2 93.1% FP  46 | F1 88.1% F2 89.4% FP  41
+Pooled           | F1 86.3% F2 90.7% FP  46 | F1 83.7% F2 85.8% FP  41
+
+Results saved to ../results/noanchor_e2e_luna_r3_20260914/ablation_20260914_124904.json

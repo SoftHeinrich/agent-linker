@@ -5,8 +5,10 @@ nothing had yet priced on this variant: the `anchors` evidence the judge is show
 `_only_inside_another_name`, the single place the deterministic layer ends a case rather
 than opening one.
 
-**Anchors stay; the refusal is removed.** Anchors are worth ~7-12 spurious links a run
-on terra at no recall, and neither of the two substitutes tried in §3 replaces them. The
+**Anchors stay; the refusal is removed.** A 73-byte clause DOES replace the anchor block
+at the stage (§4), and the E2E then splits: `s_linker122` is quality-changing in its
+favour on terra (FP -8.0, macro F2 +0.9) and against it on luna (TP -10.3, F2 -2.9), both
+at the n=3 floor, so the cut is refused as the head and recorded as priced. The
 refusal is worth much less than it looks — the judge rejects 140 of 144 case-samples of
 exactly what it blocks, and it can never gain a gold link — so it was taken out for the
 simplification it buys: **no predicate in the deterministic layer now ends a case.**
@@ -142,7 +144,7 @@ The arms live on in the pilot as `refusal` / `refusal_split`, stated in the dire
 that now changes something. **A pilot that prices a removed predicate has to own it**, or
 the round stops being reproducible the moment the head moves.
 
-## 3. Can a clause do the anchors' job? — asked, and refused on a sign flip
+## 3. Can a clause do the anchors' job? — the first, verbose attempt (superseded by §4)
 
 The obvious follow-up to §1: **is the anchor block carrying a fact, or is it patching a
 rule that does not say enough?** Those have different repairs, and only one of them is
@@ -197,6 +199,85 @@ head, which lost the nesting refusal between the rounds — so this is not a tre
 reminder that **the anchors' value is confirmed twice on terra and is unstable on luna.**
 Absolute levels drift; only within-invocation comparisons count, and both sets are
 reported rather than the better one.
+
+## 4. Removing the anchors outright — `s_linker122`, end to end
+
+§3 said a clause cannot substitute for the anchors. That was measured against a 456-byte
+clause that enumerated readings and restated `STRICTER_CLAUSE`. **Rewritten to 73 bytes
+it can**, at the stage, and the cut is then worth an E2E of its own: the anchor block is
+27.9% of a judging call, the largest single cut available to it.
+
+    That a surface can name this component is not evidence that it does here.
+
+Not a restatement of `STRICTER_CLAUSE`, which is about an ordinary English word
+coinciding with a name: the row that leaks is the one the **alias stage** supplies, where
+the surface is not an ordinary English word at all, and no rule in the module spoke about
+it. `s_linker122` is the head with the block gone, the rule's anchors line gone with it,
+and this sentence in their place. Judging call **16 046 → 10 754 chars (−33.0%)**, a
+five-project run **86 090 → 63 022 (−26.8%)**, same call count.
+
+Stage, three samples a model, every arm in one invocation with its head:
+
+| arm | terra gold Δ | p | terra sp Δ | p | luna gold Δ | p | luna sp Δ | p |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `noanchor`, no clause | −0.3 | 1.000 | **+8.0** | **0.031** | −2.7 | 0.312 | +8.0 | 0.266 |
+| **73-byte clause** | **±0.0** | 1.000 | −1.0 | 0.750 | −5.0 | 0.438 | **−11.0** | **0.008** |
+| 456-byte clause | **−5.3** | **0.004** | −8.0 | 0.009 | −2.7 | 0.543 | −11.7 | 0.016 |
+
+Terra's alias row is the mechanism in one line: head **8.0** spurious, no clause **16.0**,
+73-byte clause **7.0** — closed, at a word-only row the long clause wrecked (16.3 → 12.3
+gold) and the short one leaves alone (16.3 → 15.7). `noanchor` without a clause has now
+reproduced its penalty in **three consecutive invocation sets**.
+
+**End to end, three paired runs a model, both arms in every invocation, arm order
+alternating by run** (`pilot/run_noanchor_e2e.sh`,
+`../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914`, scored by
+`pilot/score_runs.py`):
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| terra | `s_linker121` | 182.3 | 28.0 | 92.51 | 94.18 | 73.3 | 2.21 |
+| terra | **`s_linker122`** | **184.0** | **20.0** | **93.94** | **95.13** | 73.0 | **0.60** |
+| luna | `s_linker121` | 185.0 | 42.3 | 90.57 | 93.84 | 75.0 | 2.35 |
+| luna | `s_linker122` | **174.7** | 42.7 | 88.79 | 90.94 | 74.7 | 1.61 |
+
+**terra is QUALITY-CHANGING in the arm's favour** — TP +1.7 (p = 0.40), **FP −8.0**
+(0.20), macro F1 **+1.4** (0.20), macro F2 **+0.9** (0.10, the n=3 floor) — and **every
+s122 run's F2 is above every s121 run's** (94.77/95.01/95.60 against 94.10/94.05/94.40),
+at a run spread a quarter of the control's. **luna is QUALITY-CHANGING against it**:
+**TP −10.3** (p = 0.10), FP +0.3 (1.00), macro F1 −1.8 (0.20), macro F2 **−2.9** (0.10).
+Luna's loss is **pure recall at unchanged precision**, which is the signature of evidence
+removed rather than a rule mis-set.
+
+**REFUSED as the head**, on the branch's own sign-flip rule: the same cut is
+quality-changing in opposite directions on the two models, both at the n=3 floor. The
+saving is real and so is terra's gain; neither buys a regression of 10.3 true links on
+the other model.
+
+**Both models' whole effect is one project, and it is the project the error analysis
+named.** Per project, mean of three runs, s122 minus s121:
+
+| project | gold | terra ΔTP | terra ΔFP | luna ΔTP | luna ΔFP |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| teammates | 57 | **+2.0** | **−3.7** | **−8.0** | +2.3 |
+| bigbluebutton | 62 | −0.3 | **−4.3** | −2.0 | −1.3 |
+| mediastore | 31 | ±0.0 | ±0.0 | +0.7 | ±0.0 |
+| teastore | 27 | ±0.0 | ±0.0 | −1.0 | ±0.0 |
+| jabref | 18 | ±0.0 | ±0.0 | ±0.0 | −0.7 |
+
+Teammates is 8.0 of luna's 10.3 lost links and both of terra's gains. It is the project
+whose alias table binds `GAE` and whose sentences are dotted package paths — the exact
+population `pilot/anchor_why.py` found the anchor arms moving (31% of changed cases
+against 5.6–9.2% of agreed ones). **One clause, one population, opposite signs.**
+
+**The E2E disagreed with the stage on both models, in opposite directions, and that is
+the round's methodological result.** The stage read terra neutral (gold ±0.0, spurious
+−1.0) and the composed run reads FP −8.0 and F2 +0.9; the stage read luna −5.0 gold and
+the composed run reads TP −10.3, **roughly double**. The coreference linker behind the
+name stage neither recovered luna's dropped pairs nor stayed out of the way — luna's
+composition statistic is **+24.1 (p = 0.10)**, the largest in this round, against terra's
++1.1 (p = 0.50). The standing caveat on this branch is that a stage arm flatters a change
+by hiding composition; here it **understated** the change in both directions at once.
 
 ## What the ablations say together
 
