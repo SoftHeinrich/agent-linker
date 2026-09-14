@@ -5,14 +5,17 @@ nothing had yet priced on this variant: the `anchors` evidence the judge is show
 `_only_inside_another_name`, the single place the deterministic layer ends a case rather
 than opening one.
 
-**Both are kept.** Anchors are worth **~12 spurious links a run on both models** at no
-recall. The refusal is worth much less than it looks — the judge rejects almost
-everything it blocks — but removing it still costs a judging call and a little precision
-on the laxer model, and it cannot gain a gold link on this benchmark at all.
+**Anchors stay; the refusal is removed.** Anchors are worth ~7-12 spurious links a run
+on terra at no recall, and neither of the two substitutes tried in §3 replaces them. The
+refusal is worth much less than it looks — the judge rejects 140 of 144 case-samples of
+exactly what it blocks, and it can never gain a gold link — so it was taken out for the
+simplification it buys: **no predicate in the deterministic layer now ends a case.**
 
 Tooling: `approach/pilot/s121_ablations.py` (the arms, and a `--verify` mode that answers
-the deterministic half with no calls), scored by `approach/pilot/union_stats.py` — the
-union round's own paired sign-flip test, over the dumps here. Reproduce from `approach/`:
+the deterministic half with no calls), `approach/pilot/anchor_diff.py` (which cases two
+arms disagree on, and what evidence each carried — no calls), scored by
+`approach/pilot/union_stats.py` — the union round's own paired sign-flip test, over the
+dumps here. Reproduce from `approach/`:
 
     ../.venv/bin/python pilot/s121_ablations.py --verify
 
@@ -23,7 +26,7 @@ union round's own paired sign-flip test, over the dumps here. Reproduce from `ap
 
 Every arm of a claim ran in the same invocation as its head, per the measurement policy.
 
-## 1. The anchors block — REFUTED, on both models
+## 1. The anchors block — REFUTED (first set: both models; see §3 for luna)
 
 Arm `noanchor` removes both halves at once: the `anchors` block is not computed and not
 printed, and the rule's `anchors` line goes with it. Dropping the block but keeping the
@@ -49,7 +52,9 @@ Paired sign-flip over 15 (sample, project) units, `noanchor` minus head:
 
 **Anchors buy precision and nothing else.** Gold is flat on both models — the sign is not
 even consistent — and spurious is +11.7 a run on each, at identical candidates and
-identical call count. The bytes are not free (the union round measured the anchor block
+identical call count. (§3 re-runs `noanchor` against the post-removal head in a fresh
+invocation: terra reproduces at spurious +7.0 / net −11.0, **luna does not**, reading net
++0.7. Both are reported; only within-invocation comparisons count.) The bytes are not free (the union round measured the anchor block
 at 27.9% of a judging call, which is why `s_linker88` compacted it), but this says they
 are paid for.
 
@@ -67,7 +72,7 @@ about: other sentences of this document that do write it. **The field restrains 
 that need a document-level fact and is inert on the row that does not** (terra's
 whole-name row moves +0.33 spurious, p = 0.250).
 
-## 2. The scan's one refusal — KEPT, but its value is not what it was assumed to be
+## 2. The scan's one refusal — REMOVED, and not for the reason it was expected to be
 
 `_only_inside_another_name` drops a one-word candidate when *every* writing of that word
 sits inside some other component's fully written name.
@@ -120,21 +125,103 @@ on this project: **±3.3 gold over byte-identical prompts.** The plain `norefusa
 invite is **not supported**; terra's split arm reads gold ±0.0 (p = 1.000) against a
 plain arm at −2.0, on the same 12 pairs.
 
-**Verdict: keep it, on cost rather than on precision.** It is 12 lines of code, reads
-only the catalog and the sentence, spends no call and no prompt byte, and its removal
-adds a judging call on the one project it touches (4 → 5, i.e. ~1 of the 14 a
-five-project run makes) to buy a ceiling of zero gold. Removing it is a simplification of
-code, not of the approach — the rule the judge reads does not shrink by a byte — and it
-is paid for in calls and in luna precision.
+**Verdict: REMOVED.** The round first recommended keeping it on cost — 12 lines of code
+against +1 judging call and 1.3 spurious a run on the laxer model — and it was removed
+anyway, deliberately, for the simplification: **no predicate anywhere in `s_linker121`'s
+deterministic layer now ends a case.** That sentence was already in the module as the
+justification for `SKIP_QUALIFIED = False` and this is what makes it true.
 
-## What the two ablations say together
+What was bought and what was paid, stated plainly: the module loses a predicate, a helper
+and their two docstrings; it gains one judging call on bigbluebutton (4 → 5, ~1 of the 15
+a five-project run now makes) and 1.3 spurious links a run on luna, 0.0 on terra. Both
+invariant suites move with it rather than loosening — the one-word reference becomes the
+*unrefused* scan and the 12 pairs are pinned as cases that must now be present
+(`test_s121_standalone.py` 135/135, `test_s121_union.py` 2783/2783).
+
+The arms live on in the pilot as `refusal` / `refusal_split`, stated in the direction
+that now changes something. **A pilot that prices a removed predicate has to own it**, or
+the round stops being reproducible the moment the head moves.
+
+## 3. Can a clause do the anchors' job? — asked, and refused on a sign flip
+
+The obvious follow-up to §1: **is the anchor block carrying a fact, or is it patching a
+rule that does not say enough?** Those have different repairs, and only one of them is
+a prompt. Two substitutes, both against the head in one invocation per model, three
+samples, five projects, on the post-removal head (308 candidates, 15 calls):
+
+* **`noanchor_clause`** — anchors gone, plus one clause saying what they were evidence
+  for: that where the sentence does not write the name in full, the surface is what the
+  case *reports*, not something the document has certified, and a short form established
+  elsewhere is not established in this sentence. A **weighing**, which is what the design
+  law allows a prompt to carry.
+* **`anchor_count`** — the block replaced by its cardinality (`Anchors: 2`), and the
+  rule's anchors line reduced to match. This separates two readings of §1: is the judge
+  restrained by seeing **how** the document writes this name, or merely by learning
+  **that** it writes it elsewhere?
+
+Per five-project run, and the paired sign-flip against head over 15 units:
+
+| model | arm | gold | spurious | precision | gold Δ | p | sp Δ | p | net Δ | p |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| terra | head | 169.0 | 21.7 | 0.886 | | | | | | |
+| terra | `noanchor` | 167.7 | 28.7 | 0.854 | −1.3 | 0.312 | +7.0 | 0.055 | **−11.0** | **0.016** |
+| terra | `noanchor_clause` | 162.7 | 13.3 | **0.924** | **−6.3** | **0.008** | **−8.3** | **0.020** | **−10.7** | **0.027** |
+| terra | `anchor_count` | 166.7 | 20.3 | 0.891 | −2.3 | 0.062 | −1.3 | 0.578 | −5.7 | 0.070 |
+| luna | head | 162.0 | 31.7 | 0.836 | | | | | | |
+| luna | `noanchor` | 163.7 | 36.0 | 0.820 | +1.7 | 0.391 | +4.3 | 0.406 | +0.7 | 0.969 |
+| luna | `noanchor_clause` | 161.3 | 22.3 | **0.878** | −0.7 | 0.891 | −9.3 | 0.102 | +7.3 | 0.245 |
+| luna | `anchor_count` | 170.7 | 34.3 | 0.833 | **+8.7** | **0.008** | +2.7 | 0.652 | +23.3 | 0.066 |
+
+**The clause works, and that is not the same as being a substitute.** It targets exactly
+what §1's error analysis said was leaking: terra's alias row goes from 16.0 spurious
+under `noanchor` to **3.0**, against the head's 7.7 — the clause is *better* than the
+anchors at the thing the anchors were doing. It pays for it in recall on a row it was
+never aimed at: terra's word-only gold **16.7 → 12.0**. A clause cannot know which
+surfaces are genuine, so the only thing it can move is the judge's global threshold; the
+anchors move what the judge knows about **one name**. **A weighing cannot be aimed, and a
+fact is aimed by construction** — which is why the design law's fact/weighing split shows
+up here as a precision/recall split rather than as a right and a wrong answer.
+
+**The count is the round's real frontier and it splits by model.** On luna, replacing the
+anchor sentences with their number is **+8.7 gold a run (p = 0.008)** at +2.7 spurious —
+the word-only row goes 11.0 → 17.7 gold — while on terra the same arm is −2.3 gold
+(p = 0.062). Sign-flipped on the measure that matters, so it is **refused** by the
+branch's own rule; recorded because it is 26% off the judging call (16.0k chars → 11.9k)
+and because the disagreement is informative: on the stricter model the anchors' *content*
+is doing work, and on the laxer one the same content is a distraction that costs it gold
+it recovers when the block becomes a number.
+
+**§1's luna result did not reproduce in this set** (net +0.7, p = 0.97, against a first
+set that read spurious +11.7). Two things changed at once — the invocation set, and the
+head, which lost the nesting refusal between the rounds — so this is not a trend, only a
+reminder that **the anchors' value is confirmed twice on terra and is unstable on luna.**
+Absolute levels drift; only within-invocation comparisons count, and both sets are
+reported rather than the better one.
+
+## What the ablations say together
 
 The two pieces sit on opposite sides of the branch's design law and the measurements
 follow it. **Anchors are a fact the judge cannot derive** — other sentences of the
-document are not in the case it is holding — and removing them costs precision on both
-models. **The refusal is a fact the judge largely *can* derive**, because the covering
-name is written in the very sentence the case prints, and removing it costs almost
-nothing. The one thing the judge cannot do is decline to spend the call.
+document are not in the case it is holding — and removing them costs precision.
+**The refusal is a fact the judge largely *can* derive**, because the covering name is
+written in the very sentence the case prints, and removing it costs almost nothing. The
+one thing the judge cannot do is decline to spend the call.
+
+§3 sharpens that into the round's transferable result. The question "is this fact
+patching an under-specified rule?" has a **third** answer besides yes and no: the clause
+that states what the fact was evidence for is *better than the fact* at the failure the
+fact was covering (alias-row spurious 7.7 → 3.0 on terra) and *worse overall*, because a
+clause can only move the judge's threshold everywhere while a fact moves what it knows
+in one place. **Ask of a candidate clause not whether it repairs the failure, but whether
+it can be aimed at it.**
+
+It also produces a concrete error mechanism worth carrying: **the `writes=alias` line is
+an assertion the case makes and nothing else in the call can contradict.** The alias
+stage bound `GAE`, so six teammates sentences about the platform read to the judge as
+sentences about the component, and only the anchors — which show the document writing
+`GAE Datastore` — say otherwise. This is the alias table's **third** job, after admitting
+full-name candidates and (formerly) suppressing partial ones: it can also mislead one
+judge, and the anchors are what the head has against that.
 
 ## Caveats
 

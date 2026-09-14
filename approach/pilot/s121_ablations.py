@@ -50,7 +50,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from llm_sad_sam.core.document_loader_v2 import build_sent_map, load_sentences  # noqa: E402
 from llm_sad_sam.linkers.experimental import s_linker121 as head_module  # noqa: E402
-from llm_sad_sam.linkers.experimental.s_linker121 import NameForm, SLinker121  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker121 import (  # noqa: E402
+    NameForm, SLinker121, UNION_DEMAND,
+)
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
 
@@ -145,8 +147,75 @@ class RefusalSplit(Refusal):
                 decisions)
 
 
+#: The clause `noanchor_clause` puts in place of the anchor block. It is a WEIGHING, not
+#: a fact — it tells the judge how much authority the `writes` line carries — which is
+#: what the design law says may live in a prompt. It names no surface form, no component
+#: and no document shape (GATE-06/07): "short form" and "one word of the name" are the
+#: `writes` field's own values, and the readings it warns about are stated as categories
+#: a reader of any technical document would supply.
+#:
+#: What it is for: with the anchors gone, `writes=a short form the document established
+#: for it` is an unbacked assertion that this surface means this component, and nothing
+#: in the rule tells the judge it may doubt it. This says it may.
+ALIAS_NOT_AUTHORITY = (
+    "Where this sentence does not write the component's name in full, the surface it "
+    "does write is what the case reports of it, not something the document has "
+    "certified: the same letters can belong to a platform, a technology, a broader "
+    "product or an ordinary English sense as easily as to the component named here, "
+    "and a short form established elsewhere is not established in this sentence. "
+    "Approve only when this sentence uses that surface for this component."
+)
+
+#: The line `anchor_count` puts in place of the rule's anchors line. Same field, reduced
+#: to its cardinality, so the arm asks whether what restrains the judge is the anchors'
+#: CONTENT or merely the news that the document names this component elsewhere.
+ANCHOR_COUNT_LINE = (
+    "\n  anchors -- how many other sentences of this document name this component. "
+    "They fix that the name is the document's; they do not decide this sentence."
+)
+
+
+class NoAnchorClause(NoAnchors):
+    """`noanchor`, plus one clause saying what the anchors were evidence FOR.
+
+    The arm that answers "is the prompt not enough?" If a rule clause recovers what the
+    anchor block was buying, the anchors were patching an under-specified rule and are
+    removable; if it does not, they are carrying a fact no clause can state.
+    """
+
+    def _prompt_union(self, comp_names, sentence_table, cases) -> str:
+        prompt = super()._prompt_union(comp_names, sentence_table, cases)
+        placed = prompt.replace(
+            UNION_DEMAND, f"{ALIAS_NOT_AUTHORITY}\n\n{UNION_DEMAND}", 1)
+        assert placed != prompt, "the clause was not placed"
+        return placed
+
+
+class AnchorCount(SLinker121):
+    """The anchors reduced to their count: the fact stays, its content goes.
+
+    Between `head` and `noanchor` this is the arm that separates the two readings of the
+    same result — that the judge is restrained by seeing HOW the document writes this
+    name, or merely by learning THAT it writes it elsewhere.
+    """
+
+    def _format_union_case(self, index, candidate, evidence, sent_map, shown_in=0):
+        counted = dict(evidence, anchors=[])
+        case = super()._format_union_case(index, candidate, counted, sent_map, 0)
+        if evidence["anchors"]:
+            case += f"\n  Anchors (other sentences naming it): {len(evidence['anchors'])}"
+        return case
+
+    def _prompt_union(self, comp_names, sentence_table, cases) -> str:
+        prompt = super()._prompt_union(comp_names, sentence_table, cases)
+        counted = prompt.replace(ANCHOR_RULE_LINE, ANCHOR_COUNT_LINE, 1)
+        assert counted != prompt, "the anchors line was not replaced"
+        return counted
+
+
 ARMS = {"head": SLinker121, "noanchor": NoAnchors, "refusal": Refusal,
-        "refusal_split": RefusalSplit}
+        "refusal_split": RefusalSplit, "noanchor_clause": NoAnchorClause,
+        "anchor_count": AnchorCount}
 
 
 def pinned_knowledge(run: Path, project: str):
@@ -250,7 +319,8 @@ def verify(projects, run):
         data = load(project, run)
         base, base_candidates = prompts_of("head", data)
         line = f"  {project:<14} head: {len(base_candidates):3d} cases, {len(base)} calls"
-        for arm in ("noanchor", "refusal", "refusal_split"):
+        for arm in ("noanchor", "noanchor_clause", "anchor_count",
+                    "refusal", "refusal_split"):
             other, other_candidates = prompts_of(arm, data)
             if other == base:
                 verdict = "IDENTICAL"
