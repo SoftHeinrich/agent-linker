@@ -234,6 +234,7 @@ CANONICAL_VARIANTS = [
     "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
     "s_linker121",  # s120 with the judge's three call-level arrangements removed
+    "s_linker122",  # s121 with the anchor block removed and one clause in its place
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2346,6 +2347,26 @@ VARIANT_SPECS = {
             "gold -7.3 at spurious -32.7 p=0.055 (precision 0.752 -> 0.871); projected "
             "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
             "one project. s_linker120 remains the reported arm; this is the simple one."
+        ),
+    ),
+    "s_linker122": dict(
+        aliases=("noanchor",),
+        module="llm_sad_sam.linkers.experimental.s_linker122",
+        class_name="SLinker122",
+        description=(
+            "S-Linker122 - s121 with the union judge's `anchors` evidence removed: the "
+            "block of naming sentences is not computed and not printed, and the rule's "
+            "line about it goes with it. In its place one 73-byte weighing, 'That a "
+            "surface can name this component is not evidence that it does here.' The "
+            "block is 27.9% of a judging call (the compaction round's figure), so this "
+            "is the largest single cut available to the call. Stage arms, three samples "
+            "a model against s121 in one invocation: terra spurious +7.0 a run at gold "
+            "-1.3 (net -11.0, p=0.016), luna net +0.7 (p=0.97). The error analysis "
+            "locates terra's cost on the alias row - a surface the alias stage bound, "
+            "asserted by the case's own `writes` line, with nothing left in the call to "
+            "contradict it - which is what the clause is aimed at. Measured E2E because "
+            "the coreference linker behind the name stage re-proposes what it drops: "
+            "../results/s121_ablations/README.md."
         ),
     ),
     "s_linker120_noknow": dict(

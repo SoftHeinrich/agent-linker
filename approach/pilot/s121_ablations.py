@@ -147,16 +147,15 @@ class RefusalSplit(Refusal):
                 decisions)
 
 
-#: The clause `noanchor_clause` puts in place of the anchor block. It is a WEIGHING, not
-#: a fact — it tells the judge how much authority the `writes` line carries — which is
-#: what the design law says may live in a prompt. It names no surface form, no component
-#: and no document shape (GATE-06/07): "short form" and "one word of the name" are the
-#: `writes` field's own values, and the readings it warns about are stated as categories
-#: a reader of any technical document would supply.
+#: The clause `noanchor_clause` puts in place of the anchor block — the FIRST attempt,
+#: kept as an arm because it is what the tight clause is measured against. 456 B.
 #:
-#: What it is for: with the anchors gone, `writes=a short form the document established
-#: for it` is an unbacked assertion that this surface means this component, and nothing
-#: in the rule tells the judge it may doubt it. This says it may.
+#: It is too long and it says three things where the mechanism is one. Its enumeration
+#: of readings (a platform, a technology, a broader product, an ordinary English sense)
+#: is the shape s71/s72 priced at ~0.8 F1 and the general round caught twice; its last
+#: sentence — "Approve only when this sentence uses that surface for this component" —
+#: restates `STRICTER_CLAUSE`'s own last sentence, and a restatement at the lenient gate
+#: is the branch's standing redundancy (s86, s87, three instances).
 ALIAS_NOT_AUTHORITY = (
     "Where this sentence does not write the component's name in full, the surface it "
     "does write is what the case reports of it, not something the document has "
@@ -164,6 +163,22 @@ ALIAS_NOT_AUTHORITY = (
     "product or an ordinary English sense as easily as to the component named here, "
     "and a short form established elsewhere is not established in this sentence. "
     "Approve only when this sentence uses that surface for this component."
+)
+
+#: The same weighing with everything that is not the mechanism removed. 99 B.
+#:
+#: What the anchors were doing, in one sentence of the error analysis: they let the judge
+#: tell "this surface names this component in this document" from "this surface could".
+#: With the block gone the judge cannot check the first, so the only honest thing to say
+#: is that the second is not the first. Nothing else in the round's data is load-bearing.
+#:
+#: It is NOT a restatement of `STRICTER_CLAUSE`, which is about an ordinary English word
+#: coinciding with a name. An established short form is not an ordinary English word, and
+#: it is the row the error analysis found leaking (22 of 30 spurious on terra, 18 of them
+#: one component). This generalizes that clause's principle to the surface the alias
+#: stage supplied, which is the one surface no rule in the module speaks about.
+SURFACE_NOT_EVIDENCE = (
+    "That a surface can name this component is not evidence that it does here."
 )
 
 #: The line `anchor_count` puts in place of the rule's anchors line. Same field, reduced
@@ -175,20 +190,34 @@ ANCHOR_COUNT_LINE = (
 )
 
 
-class NoAnchorClause(NoAnchors):
-    """`noanchor`, plus one clause saying what the anchors were evidence FOR.
+class _ClausedNoAnchors(NoAnchors):
+    """`noanchor`, plus one clause in place of the block. Subclasses set `CLAUSE`.
 
-    The arm that answers "is the prompt not enough?" If a rule clause recovers what the
-    anchor block was buying, the anchors were patching an under-specified rule and are
-    removable; if it does not, they are carrying a fact no clause can state.
+    The arm family that answers "is the prompt not enough?" If a clause recovers what
+    the anchor block was buying, the anchors were patching an under-specified rule and
+    are removable; if it does not, they are carrying a fact no clause can state.
     """
+
+    CLAUSE = ""
 
     def _prompt_union(self, comp_names, sentence_table, cases) -> str:
         prompt = super()._prompt_union(comp_names, sentence_table, cases)
         placed = prompt.replace(
-            UNION_DEMAND, f"{ALIAS_NOT_AUTHORITY}\n\n{UNION_DEMAND}", 1)
+            UNION_DEMAND, f"{self.CLAUSE}\n\n{UNION_DEMAND}", 1)
         assert placed != prompt, "the clause was not placed"
         return placed
+
+
+class NoAnchorClause(_ClausedNoAnchors):
+    """The first, verbose clause. 456 B."""
+
+    CLAUSE = ALIAS_NOT_AUTHORITY
+
+
+class NoAnchorTight(_ClausedNoAnchors):
+    """The same weighing at 99 B: only what the error analysis showed is load-bearing."""
+
+    CLAUSE = SURFACE_NOT_EVIDENCE
 
 
 class AnchorCount(SLinker121):
@@ -213,9 +242,30 @@ class AnchorCount(SLinker121):
         return counted
 
 
+class AnchorTrim(SLinker121):
+    """One anchor instead of `ANCHOR_LIMIT`: the content stays, the volume goes.
+
+    `anchor_count` moved the two models in opposite directions and `pilot/anchor_why.py`
+    says the cases that flip are the dotted-identifier ones (31% of the changed cases
+    against 5.6-9.2% of the agreed ones) and that terra's losses carry the LONGEST
+    anchor blocks (538 chars against a 353 population mean). Two readings fit that:
+    the judge is using what the anchors SAY, or it is being crowded by how much they
+    say. This arm separates them — a judge that only needed one example keeps its
+    verdicts, a judge that needed the evidence loses them the way it lost them to the
+    count.
+
+    **An arm, not an adoption candidate.** `ANCHOR_LIMIT` and `CONTEXT_SENTENCES` are
+    deliberately one value, and a value chosen by search is not defensible on this
+    branch; a win here would have to be argued into a unification, not read off.
+    """
+
+    ANCHOR_LIMIT = 1
+
+
 ARMS = {"head": SLinker121, "noanchor": NoAnchors, "refusal": Refusal,
         "refusal_split": RefusalSplit, "noanchor_clause": NoAnchorClause,
-        "anchor_count": AnchorCount}
+        "anchor_count": AnchorCount, "anchor_trim": AnchorTrim,
+        "noanchor_tight": NoAnchorTight}
 
 
 def pinned_knowledge(run: Path, project: str):
@@ -319,8 +369,8 @@ def verify(projects, run):
         data = load(project, run)
         base, base_candidates = prompts_of("head", data)
         line = f"  {project:<14} head: {len(base_candidates):3d} cases, {len(base)} calls"
-        for arm in ("noanchor", "noanchor_clause", "anchor_count",
-                    "refusal", "refusal_split"):
+        for arm in ("noanchor", "noanchor_clause", "noanchor_tight", "anchor_count",
+                    "anchor_trim", "refusal", "refusal_split"):
             other, other_candidates = prompts_of(arm, data)
             if other == base:
                 verdict = "IDENTICAL"
