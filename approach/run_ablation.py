@@ -233,6 +233,7 @@ CANONICAL_VARIANTS = [
     "s_linker119",  # s114 + one reply schema at all three judges
     "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
+    "s_linker121",  # s120 with the judge's three call-level arrangements removed
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2325,6 +2326,26 @@ VARIANT_SPECS = {
             "on both models (spurious -12.6 terra p=0.000, -17.7 luna p=0.008, gold "
             "neutral, same 14 calls); thirteen iterations as data in "
             "union_iterations.py."
+        ),
+    ),
+    "s_linker121": dict(
+        aliases=("unisimple",),
+        module="llm_sad_sam.linkers.experimental.s_linker121",
+        class_name="SLinker121",
+        description=(
+            "S-Linker121 - s120 with the union judge's three call-level arrangements "
+            "removed: one-word cases are no longer batched apart, the call they were "
+            "batched into no longer answers a second contract, and the case format no "
+            "longer withholds the component. ONE prompt shape for every candidate - "
+            "same catalog, same rule, same demand, same reply, same case template, "
+            "batched by size in candidate order - so a partial-name case and a "
+            "whole-name case differ only in the CONTENT of their evidence fields. "
+            "STANDALONE, like s110 and s120. This is iteration v19 of "
+            "union_iterations.py, measured twice a model against s120 at the same 14 "
+            "calls: terra gold -4.0 at spurious +4.7 (precision 0.919 -> 0.894), luna "
+            "gold -7.3 at spurious -32.7 p=0.055 (precision 0.752 -> 0.871); projected "
+            "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
+            "one project. s_linker120 remains the reported arm; this is the simple one."
         ),
     ),
     "s_linker120_noknow": dict(
