@@ -402,12 +402,39 @@ Smoke: `pilot/run_s123_smoke.sh terra mediastore` → 31 links, F1 100.0, 9 call
 
 ### What is still owed
 
-**An E2E batch, for the paper's numbers and not for the decision.** The measurement
-policy's level 3 makes a change to the LAST linker structurally free of composition risk
-("nothing downstream can be starved"), and this round proved the composition identity
-rather than assuming it — `pinned name links | kept coreference` reproduces a recorded
-run's own final CSV with symmetric difference 0. So the stage read IS the pipeline
-answer. But the RQ engines key an arm to its E2E run directories (`rq34.py`'s arm map),
-so the paper's `s123` row has to be generated from an `s123` run set:
+**The promotion gate, which this round did not run and whose grain it did not measure.**
 
-    pilot/run_coref_annot_e2e.sh terra 3   # to be written, on run_noanchor_e2e.sh's shape
+Everything above is `pilot/score_runs.py` — **link-level**. The read this branch actually
+promotes an arm on is `studies/compare_arms.py`, which adds the **doc-code,
+component-weighted** metrics and per-run sign agreement, and it needs `rq12.py`-scored
+E2E run directories that do not exist for s123.
+
+**`s_linker122` is the standing warning, and it is exact.** Link-level, `score_runs.py`
+called it QUALITY-NEUTRAL on both models. Through `compare_arms.py`, in-set against an
+s121 control from the same invocations, terra read **doc-code F1 −1.02 and F2 −0.71 with
+3/3 runs agreeing on the sign** — that engine's strongest negative verdict — so s122 is
+the head and **not** the reported arm, and the paper arm stays `s_linker120`. The reason
+generalizes directly to this round: removing the anchors did not change *how many* links
+were found, it changed **which components they landed on**, and that only shows at a grain
+where components are weighted rather than pooled.
+
+**s123's entire measured effect is +0.67 gold and +0.67 spurious a run — which is to say,
+which components a handful of links land on.** That is precisely the quantity the
+link-level grain cannot see and the doc-code grain is built to. So the honest status is:
+
+- **s123 is the HEAD** — the base later rounds fork from, adopted on the design argument
+  at a link-level neutral.
+- **s123 is NOT the reported arm and is not yet a candidate for one.** The paper arm is
+  `s_linker120`.
+- **The composition identity proved above does not substitute for the gate.** It shows the
+  stage read equals the *link-level* pipeline answer; it says nothing about the doc-code
+  grain, which re-weights the same link set.
+
+Owed, in order:
+
+    pilot/run_s123_e2e.sh terra 3          # and luna
+    python3 evaluation/mini-src/rq12.py --arm s123
+    python3 studies/compare_arms.py s123
+
+**Three reads of one change at three grains can give three answers** (the s122 round's
+result). Until the third read exists, this round has two of them.

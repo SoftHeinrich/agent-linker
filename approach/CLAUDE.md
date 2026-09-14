@@ -58,11 +58,16 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
 - `s_linker26.py` … `s_linker123.py` — the rounds below. All `experimental=True`.
   **THE HEAD IS `s_linker123` (the union arm, judged without the anchor block, with the
   resolver's antecedent shortlist marked with the judge's own verdicts) since
-  2026-09-14**; it is a standalone file, like `s_linker122`, `s_linker120` and
-  `s_linker110` before it. **The paper still reports `s_linker122` until s123's E2E run
-  set exists** — the RQ engines key an arm to its run directories, and s123 was adopted
-  on a stage read that the composition identity makes the pipeline answer, not on a
-  batch. The ledger below is chronological, so an earlier round's "X is the head"
+  2026-09-14; the PAPER ARM is still `s_linker120`** — s122 is link-level neutral at 21.5%
+  less judging but reads WORSE on terra's doc-code metrics 3/3 and did not clear the
+  promotion gate, and **s123 has not been put to that gate at all**: it was adopted on
+  `score_runs.py`, which is LINK-LEVEL, and the gate is `studies/compare_arms.py`, which
+  adds the component-weighted doc-code metrics and needs `rq12.py`-scored E2E run
+  directories that do not exist for s123 yet. **A cut that is free at the grain you are
+  not reporting is not free** — s122 is the standing instance and s123 is exposed to the
+  same reading, since its whole effect is which components a handful of links land on.
+  It is a standalone file, like `s_linker122`, `s_linker120` and `s_linker110` before it.
+  The ledger below is chronological, so an earlier round's "X is the head"
   sentence is true of its own date and superseded by the next round that moves it:
   s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
@@ -1483,8 +1488,17 @@ level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
   entry reading `named only` rather than breaking. *Write the equivalence test against
   the measured arm, not just against the ancestor* — the compaction round's lesson applied
   to a promotion rather than to a compaction.
-- **STILL OWED: an E2E batch, for the paper's numbers and not for the decision.** The RQ
-  engines key an arm to its E2E run directories (`rq34.py`'s arm map), so the paper's
-  s123 row must come from an s123 run set; the adoption itself rests on the stage read,
-  which the composition identity above makes the pipeline answer. Until that batch lands
-  the paper should keep reporting `s_linker122`.
+- **STILL OWED, AND THE ROUND MEASURED THE WRONG GRAIN TO CLOSE IT.** Every number above
+  is `pilot/score_runs.py`, which is **LINK-LEVEL**. The read this branch actually
+  promotes an arm on is `studies/compare_arms.py`, which adds the **doc-code,
+  component-weighted** metrics and per-run sign agreement, and it needs `rq12.py`-scored
+  E2E run directories that do not exist for s123. **s122 is the standing warning and it
+  is exact**: link-level QUALITY-NEUTRAL on both models, then terra doc-code F1 −1.02 and
+  F2 −0.71 with 3/3 runs agreeing on the sign, which is that engine's strongest negative
+  verdict — because removing the anchors did not change how many links are found, it
+  changed **which components they land on**. s123's entire effect is +0.67 gold and +0.67
+  spurious a run, i.e. *which components a handful of links land on*, so it is exposed to
+  that reading in full. **s123 is the head (the base later rounds fork from); it is NOT
+  the reported arm, and it is not yet a candidate for one.** The paper arm stays
+  `s_linker120`. Owed, in order: `pilot/run_s123_e2e.sh`, then `rq12.py --arm s123`, then
+  `studies/compare_arms.py s123`.
