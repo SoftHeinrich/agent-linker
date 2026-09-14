@@ -1,19 +1,18 @@
 """S-Linker121 — one rule, one prompt shape, for every name candidate.
 
-`s_linker110` judges its two name streams with two prompts whose rubrics state opposite
-defaults, and routes a case to one or the other by which scan proposed it. This variant
-asks **one question of every candidate**: a trace link holds when the sentence makes an
-architectural claim about the component. There is no lenient row and no strict row. What
-differs between candidates is the **evidence computed from the match** — what the
-sentence writes of the name, which components the same word could reach, what the code
-can tell about the expression's place in the sentence, and which other sentences name
-the component — and the rule says how to read each of those, not which rubric to apply.
+The linker asks **one question of every candidate**: does this sentence make an
+architectural claim about this component? There is no lenient row and no strict row,
+and nothing routes a candidate to a second rubric. What differs between candidates is
+the **evidence computed from the match** — what the sentence writes of the name, which
+components the same word could reach, what the code can tell about the expression's
+place in the sentence, and which other sentences name the component — and the rule says
+how to read each of those.
 
 **One prompt shape, and the evidence is the only thing that varies.** Every case is
 built by one template, every call carries the same catalog, the same rule, the same
-demand and the same reply contract, and batches are the head's — by size, in candidate
-order. A candidate whose sentence writes one word of a name and a candidate whose
-sentence writes the whole name differ **only in what their evidence fields say**:
+demand and the same reply contract, and batches are by size in candidate order. A
+candidate whose sentence writes one word of a name and a candidate whose sentence writes
+the whole name differ **only in what their evidence fields say**:
 
     Case 1: "HTML5 client" -> HTML5 Client
       "HTML5 client."
@@ -25,61 +24,42 @@ sentence writes the whole name differ **only in what their evidence fields say**
       Evidence: writes=one word of the name
       Anchors (other sentences naming it): ...
 
-**Two stages become one.** `LINKERS` is `("name", "coreference")`: both scans are merged
-by pair, judged in one pass, and relabelled `full_name` / `partial_name` at the link, so
-every downstream view — the links CSV, the phase log, the RQ3/RQ4 attribution — reads the
-two stages it always read. The coreference linker is untouched and outside this union:
-its cases are not matches — there is no span the code computed — so evidence computed
-from the match has nothing to say about them.
+**Two linkers.** `LINKERS` is `("name", "coreference")`. Both name scans — the one that
+finds a whole name or an established short form, and the one that finds a single word of
+a name — propose into one stream, which one judging pass reads. Each link carries the
+label of the scan that proposed it (`full_name` / `partial_name`, see `_stage_of`), so
+the links CSV, the phase log and the RQ3/RQ4 attribution read two stages. The
+coreference linker runs last and is outside the union: its cases are not matches — there
+is no span the code computed — so evidence computed from the match has nothing to say
+about them.
 
-**What it reads, and what it costs** (`pilot/union_pilots.py`, fixed recorded candidates,
-both arms in the same invocation, five projects, alias table pinned; this arrangement is
-iteration `v19` of `union_iterations.py`, measured twice a model):
-
-    model  gold         spurious               precision       projected macro F2
-    terra  -4.0 / -4.0  +4.7 / +4.7            0.919 -> 0.894  -1.20 / -1.38
-    luna   -7.3 / -7.7  -32.7 / -19.3 (p=.03)  0.752 -> 0.871  +0.36 / -0.08
-
-against `s_linker120`, at the same 14 judging calls. **This is a simplification bought at
-about one point of F2 on one model and none on the other**, and the cost is not diffuse:
-five gold pairs, all in one project, all one generic word of a multi-word name in a
-sentence whose claim is about a phrase the catalog does not spell ("the BigBlueButton
-server" for `HTML5 Server`, "WebRTC" for `WebRTC-SFU`). `s_linker120` keeps those by
-asking such a case a different question in a different call; this file does not ask a
-different question anywhere. `../results/union_round/README.md` has the full round.
-
-**Defensibility is enforced, not asserted.** Every clause of the rule that states a
-criterion is a **verbatim slice of a rule constant this branch already had** —
-`MENTION_COUNTS` and `POSITIVE_GROUND` are computed slices of `LAYERED_ENTITY_RULES`,
-`ACTS_ON` is asserted inside `LAYERED_COREF_RULES`, `QUALIFIED_CLAUSE` and
-`STRICTER_CLAUSE` are carried whole — and the residue is the definition of a trace link
-plus one line per evidence field, each with a declared ground. Zero benchmark words of 63
-catalog names, zero dotted identifiers, zero document-shape enumerations (GATE-06,
+**Defensibility.** Every clause of the rule that states a criterion is a computed slice
+of a rule constant declared in this file, so quotation is mechanical rather than retyped,
+and the residue is the definition of a trace link plus one line per evidence field. No
+benchmark vocabulary, no dotted identifiers, no document-shape enumerations (GATE-06,
 GATE-07). What the judge punches on is exactly two things: whether the sentence makes an
 architectural claim about the component, and what the expression denotes where the name
 is not written as such. `LAYERED_ENTITY_RULES`' first sentence — "Approve the link by
 default" — is deliberately **not** carried, and its absence is asserted: a default
-belongs to a stream, and this rule has none.
+belongs to a stream, and this rule judges one stream.
+`pilot/s121_defensibility.py` enforces this; it does not take the file's word for it.
 
-**Invariants.** `pilot/test_s121_union.py` (five projects, no calls): the merged stream is
-exactly `full ∪ partial` at the head's own bytes, every candidate keeps the stage label
-its links and phase log are read by, every case names its component and carries its
-sentence and span, no case invents an evidence field, every call carries the same
-envelope, and an empty reply keeps nothing.
+**Invariants.** `pilot/test_s121_union.py` (five projects, no LLM calls): the merged
+stream is exactly the union of the two scans, every candidate keeps the stage label its
+links and phase log are read by, every case names its component and carries its span and
+its sentence, no case invents an evidence field, every call carries the same envelope,
+and an empty reply keeps nothing.
 
 **Standalone.** This file is the whole workflow, not a subclass: the scan, the name
 relation, the knowledge module, the union judge, the coreference linker, every prompt and
-every rule constant are here, and `SLinker121`'s MRO is `(SLinker121, object)`. What is
-inherited from `s_linker110` is its *text*, copied. The eleven blocks that are
-byte-identical across the whole family — the tracing wrapper, the JSON call path, the
-checkpoint and log writers, the per-phase metrics, the batching and the log's views —
-live in `linker_infra` and are called from the methods that used to hold them, exactly as
-in the ancestor.
+every rule constant are here, and `SLinker121`'s MRO is `(SLinker121, object)`. Only
+`linker_infra` and `helper_v3` are shared, and those are plumbing — the tracing wrapper,
+the JSON call path, the checkpoint and log writers, the per-phase metrics, the batching
+and the log's views — not any part of the approach.
+`pilot/test_s121_standalone.py` checks the claim rather than asserting it.
 
-**Lineage.** `s_linker120`, with the judge's three call-level arrangements removed: no
-separate batch for one-word cases, no second contract for the call they were batched
-into, and no case format that withholds the component. `s_linker120` remains the arm the
-paper reports; this file is the simple one.
+**Measurements** for this arm, and the round that arrived at it, are in
+`../results/union_round/README.md`. None of them live in this file.
 """
 from __future__ import annotations
 
@@ -109,7 +89,7 @@ from llm_sad_sam.llm_client import LLMClient, LLMBackend
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Prompt constants. Every clause states a principle, not an enumeration of shapes
-# (`pilot/prompt_audit.py` sized each generalization off six recorded s49 runs).
+# (`pilot/prompt_audit.py` sized each generalization off six recorded runs).
 # No benchmark vocabulary appears here (GATE-06) and no clause names a surface
 # form peculiar to these documents (GATE-07).
 # ─────────────────────────────────────────────────────────────────────────────
@@ -140,13 +120,11 @@ COREF_VALIDATION_FOCUS = (
 #: run), all subsumed by "under any form the document uses for it". Dropped here: the
 #: opening sentence, which restated the question the prompt's own preamble already asks
 #: ("identify any pronoun or noun phrase in THAT sentence that refers back to a
-#: component listed above"). s56 measured deleting that preamble at TP -16.2, because
+#: component listed above"). Deleting that preamble whole costs TP -16.2, because
 #: it is also the input-format contract -- which block is the TARGET, that a target
 #: with no referring expression yields nothing -- and this cut is the untried other
 #: half: the contract stays, the restatement goes. 163 B leave each of the 40 resolver
-#: calls a five-project run makes, the largest instruction item in the module
-#: (`pilot/typed_prompt_pilots.py --group resolve`): terra composed TP +1.7, macro F1
-#: -0.2 (p = 0.80), F2 +0.2; luna TP +/-0.0 (p = 1.00), macro F1 +0.2, F2 +0.3.
+#: calls a five-project run makes, and cutting it is composed-neutral on both models.
 COREF_RULES = """Resolve when the surrounding sentences make one component the clear antecedent, under any form the document uses for it. Avoid resolving when two or more equally plausible antecedents exist."""
 
 #: Full-name gate -- lenient: a stated name is a link unless a reject signal fires.
@@ -195,7 +173,7 @@ def lemmas(word: str) -> frozenset:
                          for reading in LEMMA_READINGS)
     except LookupError as missing:  # the corpus is data, not a pip dependency
         raise RuntimeError(
-            "s_linker85 needs WordNet: python -m nltk.downloader wordnet"
+            "this linker needs WordNet: python -m nltk.downloader wordnet"
         ) from missing
 
 #: The tokenizer that cuts a name or a sentence into words. Word boundaries only --
@@ -226,9 +204,9 @@ STRICTER_CLAUSE = (
 # rubric — what differs between candidates is the value of the evidence fields.
 #
 # Every clause that states a criterion is a **slice of a rule constant above**,
-# computed rather than retyped, so quotation is mechanical and a drift in the
-# ancestor's text is a drift here (`pilot/union_defensibility.py` checks each one
-# against the constant it came from, and against `s_linker110`'s copy of it).
+# computed rather than retyped, so quotation is mechanical and a drift in a rule
+# constant is a drift in the rule (`pilot/s121_defensibility.py` checks each slice
+# against the constant it was computed from).
 # ─────────────────────────────────────────────────────────────────────────────
 
 _ENTITY_SENTENCES = [s.strip() for s in LAYERED_ENTITY_RULES.split(". ") if s.strip()]
@@ -269,9 +247,8 @@ _FORMAT = ("Every case gives you the expression the sentence uses, the sentence 
            "name that expression reaches.")
 
 #: One line per evidence field, each saying what the field is evidence *of*. The
-#: `writes` line ends in the head's own denotation question (`_classify_denotations`,
-#: `s_linker25`), which is the reading a case is left with when the sentence writes
-#: one word of a name rather than the name.
+#: `writes` line ends in the denotation question, which is the reading a case is left
+#: with when the sentence writes one word of a name rather than the name.
 _WRITES_LINE = ("  writes -- what this sentence writes of the component's name: the "
                 "whole name, a short form the document established for it, or one word "
                 "of the name. A shorter surface leaves more readings open; it does not "
@@ -307,8 +284,8 @@ TRACE_LINK_RULE = f"""{_DEFINITION}{MENTION_COUNTS}
 {QUALIFIED_CLAUSE} {ACTS_ON}"""
 
 #: The quote-before-verdict demand, and the reply contract it names. Demanding a
-#: committed quote is worth 35.2 TP (s_linker48); verifying it against the sentence
-#: voided 0 of 380 verdicts over six runs, so it is demanded and not re-checked.
+#: committed quote is measurably worth its bytes; verifying the quote back against the
+#: sentence voided nothing over six runs, so it is demanded and not re-checked.
 UNION_DEMAND = ('For each case, first quote the EXACT words from the sentence the '
                 'verdict rests on -- the words that state the architectural claim '
                 'about the component, or "none" if the sentence makes no such claim '
@@ -334,10 +311,10 @@ class NameForm(Enum):
 
         ANY_WORD   one word of the name, under an English inflectional ending
 
-    s_linker64 scanned four points with four hand-written methods; s79-s81 retired
-    all but these two, and s82 deletes the two enum members and `_name_spans`
-    branches nothing reached (`AS_SPELLED`, `ANY_SPELLING`). ANY_CASE is the name
-    test every stage shares; ANY_WORD is what the partial-name linker scans.
+    These two points are the whole relation: ANY_CASE is the name test every stage
+    shares, and ANY_WORD is what the partial-name scan looks for. Fidelity below
+    case-folding and extent between one word and the whole name were both measured
+    and neither earned a member.
     """
 
     ANY_CASE = "any_case"
@@ -363,18 +340,18 @@ class MentionType(Enum):
 class SLinker121:
     """Two linkers, one rule over both name streams, no controller. Standalone.
 
-    The two name scans of `s_linker110` are merged by pair and judged in one pass
-    against one rule — what a trace link is, and how to read the evidence the match
-    computed — and the coreference linker is the head's, untouched. No linker base
-    class: see the module docstring for what is inlined from where.
+    The two name scans are merged by pair and judged in one pass against one rule —
+    what a trace link is, and how to read the evidence the match computed. The
+    coreference linker runs behind them against its own rule. There is no linker base
+    class and no controller: the module docstring says what the whole file holds.
     """
 
     _VARIANT_NAME = "s_linker121"
 
-    #: Execution order. The two name scans are one stage here: they propose into one
-    #: stream, one judge reads it, and the links carry the stage labels the head's
-    #: two linkers gave them (`_stage_of`). Coreference runs last, as before. No
-    #: linker is shown what the earlier one linked.
+    #: Execution order. The two name scans are one stage: they propose into one
+    #: stream, one judge reads it, and each link carries the label of the scan that
+    #: proposed it (`_stage_of`). Coreference runs last. No linker is shown what the
+    #: earlier one linked.
     LINKERS = ("name", "coreference")
 
     # ── Resource bounds ──────────────────────────────────────────────────────
@@ -388,11 +365,10 @@ class SLinker121:
     COREFERENCE_BATCH = 10         # sentences per coreference-resolution call
     ASK_ATTEMPTS = 2               # initial call + one retry on an empty parse
 
-    # ══ HEAD DELTA 1 (s_linker92a) ══════════════════════════════════════════
-    #: Whether a name written inside a longer dotted identifier is skipped here.
-    #: False in this variant: `QUALIFIED_CLAUSE` states the same thing to the judge
-    #: that reads every one of these cases, and `s_linker92b` is the arm that asks
-    #: whether saying it twice is worth the pairs.
+    #: Whether a name written inside a longer dotted identifier is skipped by the
+    #: scan. False: `QUALIFIED_CLAUSE` states the same thing to the judge that reads
+    #: every one of these cases, and a deterministic layer that only ever admits a
+    #: case for a judge should not also refuse one.
     SKIP_QUALIFIED = False
 
     def __init__(
@@ -527,11 +503,10 @@ class SLinker121:
     def _states_a_name(self, text: str, comp_name: str) -> bool:
         """Does this sentence state the component's name, or one the document gave it?
 
-        One predicate for a question three stages once asked with three copies of the
-        same expression. Two of those callers are gone (the full-name admission filter,
-        s79; the coreference antecedent gate, s80), so the live caller is the
-        partial-name scan's whole-name exclusion. The mention-label classifier asks the
-        same question decomposed, because it must know *which* name matched.
+        One predicate for a question that was once asked with three copies of the
+        same expression. The live caller is the partial-name scan's whole-name
+        exclusion. The mention-label classifier asks the same question decomposed,
+        because it must know *which* name matched.
         """
         names = (comp_name, *self._names_by_component().get(comp_name, ()))
         return any(self._find_exact_form(text, name) for name in names)
@@ -606,8 +581,9 @@ JSON only:"""
     def _prompt_doc_knowledge_judge(comp_names, proposals) -> str:
         """Judge the proposed aliases, term with component.
 
-        s81 asked for bare terms, so a term two components both claimed came back
-        undecidable and the caller kept whichever the extractor recorded last.
+        The reply pairs a term with the component it was claimed for, because asking
+        for bare terms leaves a term two components both claimed undecidable and the
+        caller keeping whichever the extractor recorded last.
         """
         return f"""JUDGE: Review these component name mappings for correctness.
 
@@ -625,15 +601,13 @@ JSON only:"""
 
     @staticmethod
     def _prompt_coref_validation(comp_names, cases, focus) -> str:
-        """The coreference judging prompt. The head's strict rubric, byte for byte.
+        """The coreference judging prompt, and the only rubric it has.
 
-        The ancestor built this and the full-name judge's prompt from one function
-        with a ``strict`` flag, because it had two judging rubrics to select between.
-        This variant has one name rule and one coreference rule, and they are not
-        variants of each other: the name cases carry a surface the code matched and
-        the coreference cases carry a resolution the model committed to. So the flag
-        is gone and this is what it built when it was set — `pilot/test_s120_
-        standalone.py` checks the two byte for byte over recorded cases.
+        The name cases and the coreference cases are not variants of one question:
+        a name case carries a surface the code matched, and a coreference case
+        carries a resolution the model committed to. So there is no flag selecting
+        between two rubrics here — this prompt is built one way, and the name
+        stream's prompt is built in `_prompt_union`.
 
         The ground against the link is asked here and nowhere else. "Approve by
         default" and "state the strongest ground for rejecting" are contradictory
@@ -659,7 +633,6 @@ Return JSON:
 {{"validations": [{{"case": 1, "claim": "<exact quote or none>", "objection": "<strongest ground to reject, or none>", "approve": true}}]}}
 JSON only:"""
 
-    # ══ HEAD DELTA 3 (s_linker110) ══════════════════════════════════════════
     def _named_before(self, comp_names, sentence_table, target):
         """Components the table names strictly before ``target``, latest first.
 
@@ -743,10 +716,10 @@ JSON only:"""
     def _learn_document_knowledge(self, sentences, components):
         """Propose aliases over the whole document, then judge them.
 
-        s81 tested the judge's reply for truthiness, and one event -- "the judge did
-        not answer" -- came out three ways: an unparseable reply approved *every*
-        proposal, a parsed reply with no ``approved`` key approved none, and a genuine
-        empty approval list was honoured only after a wasted retry. Here an empty list
+        Testing the judge's reply for truthiness makes one event -- "the judge did
+        not answer" -- come out three ways: an unparseable reply approves *every*
+        proposal, a parsed reply with no ``approved`` key approves none, and a genuine
+        empty approval list is honoured only after a wasted retry. Here an empty list
         is an empty result, both no-answer shapes fall back to the lenient default this
         stage is documented to have, and the fallback says so. Proposals are carried as
         (term, component) pairs rather than a term-keyed dict, so two components
@@ -814,14 +787,13 @@ JSON only:"""
         return knowledge
 
 
-    # ══ HEAD DELTA 1 (s_linker92a) ══════════════════════════════════════════
     # ── the proposer ─────────────────────────────────────────────────────────
 
     def _named_spans(self, text, name):
         """Spans of ``text`` that write ``name`` whole, at this variant's fidelity.
 
-        The one place a subclass changes the relation point. `s_linker92c` and
-        `s_linker92d` override it; nothing else in the family does.
+        The one place the relation point is named, so a fork that wants a different
+        fidelity changes it here and nowhere else.
         """
         return self._name_spans(text, name, NameForm.ANY_CASE)
 
@@ -840,9 +812,8 @@ JSON only:"""
     def _extract_named_mentions(self, sentences, components, name_to_id, sent_map):
         """Every pair whose sentence writes a name of the component. No call.
 
-        Signature and return type are the head's — a dict keyed
-        (sentence, component_id) of `CandidateLink` — so `_run_full_name_linker`,
-        the evidence bundles and the judge are reached unchanged.
+        Returns a dict keyed (sentence, component_id) of `CandidateLink`, which is
+        what `_name_candidates` merges the partial-name scan into.
         """
         by_component = self._names_by_component()
         candidates: dict = {}
@@ -865,17 +836,14 @@ JSON only:"""
         carries one word of the component's name, unless the sentence writes a whole
         name of it -- that pair is the full-name linker's, and the target-blind,
         single-pass denotation judge that hears partial names is not the judge for
-        it. Of the 161 pairs the ungated scan adds, 140 come from dropping that skip
-        (s80 post-mortem, replayed over the five catalogs).
+        it. Of the 161 pairs the ungated scan adds, 140 come from dropping that skip,
+        replayed over the five catalogs.
 
-        s_linker64 wrote three generators with three regexes; s79-s81 reduced them to
-        one row of a `SCANS` table with two options that were never set, and s82
-        deletes the table. Nothing here admits a link: every pair is a case for a
-        judge. Later spans of the same pair overwrite earlier ones, so the recorded
-        `matched_text` is the last surface found in the sentence -- s_linker64's
-        behaviour at both rebuilt sites.
+        Nothing here admits a link: every pair is a case for a judge. Later spans of
+        the same pair overwrite earlier ones, so the recorded `matched_text` is the
+        last surface found in the sentence.
 
-        Called only by `_scan`, which is this loop plus HEAD DELTA 2's refusal.
+        Called only by `_scan`, which is this loop plus `_covering_names`' refusal.
         """
         candidates = {}
         for sentence in sentences:
@@ -891,12 +859,11 @@ JSON only:"""
                     )
         return list(candidates.values())
 
-    # ══ HEAD DELTA 2 (s_linker109) ══════════════════════════════════════════
     def _covering_names(self, text, exclude, components):
         """Spans where ``text`` writes some *other* component's **catalog** name.
 
         `_name_spans` at `ANY_CASE` is the whole-name row of the relation — the row
-        `_states_a_name` reads and the row `s_linker92a` scans — so this introduces no
+        `_states_a_name` reads and the row the scan uses — so this introduces no
         fidelity the module does not already implement.
 
         **Discovered aliases are deliberately not consulted here, and that asymmetry
@@ -908,8 +875,8 @@ JSON only:"""
         the output of an LLM stage that varies by ~2.8 terms a run. Letting it veto
         makes one stage's sampling a silent refusal in another's — and it does, if
         allowed: the alias form of this predicate costs **3 gold links in one recorded
-        luna run**, all three where the run's table bound a document term to the
-        sibling of the component the gold names.
+        run**, all three where the run's table bound a document term to the sibling of
+        the component the gold names.
         """
         covering = []
         for component in components:
@@ -939,8 +906,8 @@ JSON only:"""
     def _scan(self, sentences, components):
         """`_scan_all`, minus the pairs another component's name covers.
 
-        The loop is the head's, called and filtered rather than restated: a restated
-        candidate loop is where this line's one real bug hid.
+        `_scan_all` is called and filtered rather than restated: a restated candidate
+        loop is where this line's one real bug hid.
         """
         kept, refused = [], 0
         for candidate in self._scan_all(sentences, components):
@@ -963,9 +930,8 @@ JSON only:"""
         and nothing else; no benchmark vocabulary reaches it, and since the swap off
         `INFLECTIONS` no word list either (GATE-06).
 
-        The branches were separate methods in ``s_linker64``, verified identical to
-        these over every (name, sentence) pair of all five projects
-        (`pilot/rule_audit.py --only A2`, `pilot/test_s65_one_relation.py`).
+        The two branches were once two methods, verified identical to these over
+        every (name, sentence) pair of all five projects.
         """
         if form is NameForm.ANY_CASE:
             return [(m.start(), m.end()) for m in re.finditer(
@@ -1034,7 +1000,7 @@ JSON only:"""
 
     #: The mention labels the judge cannot re-derive from the sentence it is shown.
     #: Everything else `_classify_mention_typed` can say is a restatement of the case
-    #: header, and s80 measured the cost of dropping it at 3-21% of those approvals.
+    #: header, and dropping it was measured to cost 3-21% of those approvals.
     RETAINED_MENTION_TYPES = frozenset({
         MentionType.VIA_ALIAS,
         MentionType.CODE_TOKEN,
@@ -1079,11 +1045,11 @@ JSON only:"""
 
     @staticmethod
     def _stage_of(candidate):
-        """The stage label the head would have recorded for this candidate.
+        """Which scan proposed this candidate.
 
-        `_scan` marks its candidates `partial_name_candidate`; the head relabels at
-        the link, and so does this variant, so every downstream view — the links CSV,
-        the phase log, the RQ3/RQ4 attribution — reads the two stages it always read.
+        `_scan` marks its candidates `partial_name_candidate`; the label is resolved
+        at the link, so every downstream view — the links CSV, the phase log, the
+        RQ3/RQ4 attribution — reads two name stages even though one judge read both.
         """
         return "full_name" if candidate.source == "full_name" else "partial_name"
 
@@ -1092,7 +1058,7 @@ JSON only:"""
 
         `naming` is `_states_a_name` decomposed into which of N(c) matched;
         `alternatives` is the same relation asked of every other component, which is
-        `s_linker107`'s enumeration moved from the resolver to the name streams;
+        the components a case could be reaching instead of the one it names;
         `anchors` are the document's other sentences that name this component.
         Every key here is printed by `_format_union_case` — a fact the case does not
         carry is a fact this method does not compute.
@@ -1139,8 +1105,8 @@ JSON only:"""
         """One call shape for every case: the rule, the demand, the cases, the reply.
 
         The sentence window is printed whenever some case in this call writes only one
-        word of a name — those are the cases the head's denotation judge showed a
-        window, and they are shown no less here.
+        word of a name — what such an expression denotes is a question about its
+        local context, so the context is printed.
         """
         table = (f"\nSENTENCES\n{json.dumps(sentence_table)}\n"
                  if sentence_table else "")
@@ -1191,9 +1157,8 @@ JSON only:"""
     def _judge_union(self, candidates, components, sentences, sent_map):
         """One pass over the merged stream. The head's batching and parser.
 
-        Batches are the head's — by size, in candidate order — so every call holds
-        whatever mix of naming the document gave it, and the call count is the one the
-        head pays for its two name stages.
+        Batches are by size, in candidate order, so every call holds whatever mix of
+        naming the document gave it and nothing routes a case to a second call shape.
         """
         if not candidates:
             return [], {}
@@ -1275,15 +1240,14 @@ JSON only:"""
         }
 
     # ═════════════════════════════════════════════════════════════════════════
-    # Linker 2 — COREFERENCE: the head's resolver and its strict gate.
+    # Linker 2 — COREFERENCE: the resolver and its strict gate.
     # ═════════════════════════════════════════════════════════════════════════
 
     def _run_validation_pass(self, comp_names, cases, focus, phase_tag=None):
         """One coreference judging call, and the verdicts it answered.
 
-        The ancestor's parser, minus the ``strict`` argument it no longer has to
-        pass: the name streams parse their own reply in `_judge_union`, where the
-        contract depends on what the batch's evidence carries.
+        There is no ``strict`` argument to pass: this is the coreference rubric and
+        the only one, and the name stream parses its own reply in `_judge_union`.
         """
         if phase_tag:
             self.llm.set_phase(phase_tag)
@@ -1385,11 +1349,11 @@ JSON only:"""
     def _validate_coref_links(self, coref_links, sent_map, components, metadata):
         """Single judging pass, shown the resolution it is judging.
 
-        s82 gave this judge a sentence and a component name, so it had to guess which
-        expression was claimed to refer and to what, and it rejected half the gold
-        resolutions put to it (terra kept 49.8%). The resolver had already committed to
-        both -- the referring expression and the quote it read as the antecedent --
-        and neither is recoverable from the case.
+        Shown only a sentence and a component name, this judge has to guess which
+        expression was claimed to refer and to what, and it rejects about half the
+        gold resolutions put to it. The resolver had already committed to both -- the
+        referring expression and the quote it read as the antecedent -- and neither is
+        recoverable from the case, so both are printed.
         """
         if not coref_links:
             return [], {}
