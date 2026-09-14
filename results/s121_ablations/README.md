@@ -402,6 +402,51 @@ this is a luna effect, not a general one.
 the coreference linker behind the name stage is still moving pairs, which is why this
 round was never settleable at the stage.
 
+## 7. The paper's own arm engine does not clear it — and why that is the read to trust
+
+§6 scored the shipped file with `pilot/score_runs.py`, which is **link-level
+(doc-model)** and called the arm QUALITY-NEUTRAL on both models. The branch promotes a
+paper arm through a different read: `studies/compare_arms.py`, which adds the
+**doc-code (file-level, composed)** metrics and reports **per-run sign agreement** rather
+than a mean, because on this benchmark one run moves the headline metrics by more than a
+typical arm delta.
+
+Scored in-set off the same invocations — `s122` against an `s121ctl` built from the very
+same runs, so nothing is compared across invocation sets
+(`../results/s12{1ctl,2}_extracts`, dump slots `{terra,luna}_s12{1ctl,2}`,
+`evaluation/reports/ARM_COMPARE_s122_vs_inset.csv`):
+
+| metric | terra | luna |
+| --- | --- | --- |
+| dm F1 | INSIDE NOISE (−0.34) | INSIDE NOISE (−0.58) |
+| dm F2 | INSIDE NOISE (−0.30) | INSIDE NOISE (−0.75) |
+| **dc F1** | **WORSE −1.02 (3/3)** | **BETTER +0.79 (3/3)** |
+| **dc F2** | **WORSE −0.71 (3/3)** | INSIDE NOISE (−0.37) |
+| dm CMR% | NO CHANGE | NO CHANGE |
+| dc worst F1 | INSIDE NOISE (−1.06) | INSIDE NOISE (−0.82) |
+| dc harm F1 | INSIDE NOISE (−0.35) | INSIDE NOISE (−0.58) |
+
+**Terra reads WORSE on both doc-code metrics with every run agreeing on the sign** — the
+engine's strongest negative verdict — and luna reads BETTER on one.
+`evaluation/HOWTO-REGENERATE-RQ.md` promotes the paper arm only *"if the candidate
+wins"*, so **`DEFAULT_ARM` is not moved and `sync_paper.py` is not run**. The head moves;
+the reported numbers do not.
+
+**Why the two engines disagree, and why this is the round's last result.** The link-level
+view sees the cut as free: the same number of links, found about as accurately. The
+file-level composed view sees terra lose ground. Removing the anchors did not change how
+many links are found — it changed **which components they land on**, and that only shows
+at a grain where components are weighted rather than pooled. The paper's own argument is
+that link-level F1 is the wrong place to read an architecture-traceability result, which
+is why RQ2 carries a size-aware block at all. The same argument applies to choosing an
+arm: **a cut that is free at the grain you are not reporting is not free.**
+
+That also retires the temptation §6 sets up. §6's honest reading was "parity, so the
+21.5% is bought for nothing"; §7's is "parity **at one grain**, and the grain the paper
+reports says terra pays". `s_linker122` is adopted as the head — the base later rounds
+fork from, at 21.5% less judging — and **not** as the arm the paper reports, which stays
+`s_linker120` until a candidate clears the doc-code gate.
+
 ## What the ablations say together
 
 The two pieces sit on opposite sides of the branch's design law. **The refusal is a fact
@@ -411,12 +456,20 @@ judge cannot derive** — other sentences of the document are not in the case it
 holding — and at the stage, removing them costs precision. The one thing the judge
 cannot do is decline to spend the call.
 
-**But the anchors came out anyway, and end to end the cut is free** (§6): with the right
+**The anchors came out anyway, and at link level the cut is free** (§6): with the right
 one-sentence weighing in their place, `s_linker122` is QUALITY-NEUTRAL against
 `s_linker121` on both models at **21.5% less name judging**. The stage said the fact was
 load-bearing; the composed pipeline said its job could be done by a clause aimed at the
 row it was actually holding. Both are true, and the difference between them is the
 coreference linker, whose composition statistic sits at the n=3 floor on both models.
+
+**And then the grain changed the answer again** (§7). At doc-code — the grain the paper
+reports, and the one RQ2's size-aware block exists for — terra reads WORSE 3/3 and luna
+BETTER 3/3, so s122 becomes the head without becoming the reported arm. Three reads of
+one cut, at three grains, giving three answers: the stage said it costs precision, the
+link-level composed run said it is free, the component-weighted composed run said terra
+pays. **None of them is wrong; the question "is this cut free?" simply has no answer
+until the grain is named.**
 
 §3 sharpens that into the round's transferable result. The question "is this fact
 patching an under-specified rule?" has a **third** answer besides yes and no: the clause

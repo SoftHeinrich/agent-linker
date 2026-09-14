@@ -57,7 +57,9 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   Everything from s26 on is measured against this design or a descendant of it.
 - `s_linker26.py` … `s_linker122.py` — the rounds below. All `experimental=True`.
   **THE HEAD IS `s_linker122` (the union arm, judged without the anchor block) since
-  2026-09-14, and the paper reports it**; it is a standalone file, like `s_linker120`
+  2026-09-14; the PAPER ARM is still `s_linker120`** -- s122 is link-level neutral at
+  21.5% less judging but reads WORSE on terra's doc-code metrics 3/3, so it did not clear
+  the promotion gate (see its round entry); it is a standalone file, like `s_linker120`
   and `s_linker110` before it. The ledger below is chronological, so an earlier round's
   "X is the head" sentence is true of its own date and superseded by the next round that
   moves it: s92a -> s109/s110 -> s120 -> s121 -> s122.
@@ -1409,9 +1411,42 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   so the coreference linker is still moving pairs behind the name stage. The standing
   caveat holds: a stage arm cannot see this, and in this round the stage understated the
   unscoped change in both directions at once.
-- **`s_linker122` IS THE HEAD (2026-09-14) and the paper reports it.** The RQ engines key
-  an arm to its E2E run directories (`rq34.py`'s arm map, `"s120": ("s_linker120",
-  "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from
+- **`s_linker122` IS THE HEAD (2026-09-14). THE PAPER ARM IS STILL `s120`, and that gap
+  is deliberate.** The two questions came apart in this round and the ledger says so
+  rather than smoothing it.
+- **The paper's own arm engine does NOT clear s122**, and it is the read to trust here.
+  `pilot/score_runs.py` is link-level (doc-model) and called the arm QUALITY-NEUTRAL on
+  both models. `studies/compare_arms.py s122 --base s121ctl` adds the **doc-code
+  (file-level, composed)** metrics and per-run sign agreement, scored in-set off the same
+  invocations (`../results/s12{1ctl,2}_extracts`, dump slots `{terra,luna}_s12{1ctl,2}`,
+  `evaluation/reports/ARM_COMPARE_s122_vs_inset.csv`):
+
+  | metric | terra | luna |
+  |---|---|---|
+  | dm F1 / F2 | INSIDE NOISE | INSIDE NOISE |
+  | **dc F1** | **WORSE -1.02 (3/3)** | **BETTER +0.79 (3/3)** |
+  | **dc F2** | **WORSE -0.71 (3/3)** | INSIDE NOISE |
+  | dm CMR% | NO CHANGE | NO CHANGE |
+  | dc worst / harm F1 | INSIDE NOISE | INSIDE NOISE |
+
+  Terra reads WORSE on both doc-code metrics with every run agreeing on the sign, which
+  is the engine's strongest negative verdict, and luna reads BETTER on one. `HOWTO-
+  REGENERATE-RQ.md` promotes the paper arm only "if the candidate wins", so **`DEFAULT_ARM`
+  is NOT moved and `sync_paper.py` is not run**. Flipping it in the seven modules that
+  declare it is one edit away if that call is made deliberately.
+- **Why the two engines disagree, and why it matters.** The link-level view sees the cut
+  as free; the file-level composed view sees terra lose ground. Removing the anchors does
+  not change how many links are found, it changes WHICH components they land on, and the
+  doc-code grain is the one the paper's own argument says to read (RQ2's size-aware
+  block exists because link-level F1 is the wrong place to read an architecture-
+  traceability result). **A cut that is free at the grain you are not reporting is not
+  free.** That applies to picking an arm, which is exactly the note `HOWTO-REGENERATE-RQ.md`
+  already makes, arriving from the other direction.
+- **What s122 is therefore adopted ON:** the 21.5% reduction in name judging at
+  link-level parity, as the branch's head and the base every later round forks from. What
+  it is NOT adopted on: the paper's reported numbers, which stay `s120` until an arm
+  clears the doc-code gate. The RQ engines key an arm to its E2E run directories
+  (`rq34.py`'s arm map), so whenever that happens the s122 row is generated from
   `noanchor_e2e_{model}_r{i}_20260914scoped` and NOT from the unscoped `20260914` set,
   which measured a file that no longer exists.
 - Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
