@@ -1,17 +1,22 @@
-"""Is `s_linker121` the ancestor's text plus the union, and nothing else? No calls.
+"""Is `s_linker121` a complete workflow that changed only its name judging? No calls.
 
 The branch's policy is one self-contained file per reported variant: the paper's
 supplement is the file, so a reported variant carries its whole workflow and no linker
-base class. `s_linker120` used to subclass `SLinker110`, which made the claim "only the
-name judging changes" true by construction and unreadable in the file. Standing it up
-standalone makes the claim readable and unchecked — so this checks it instead:
+base class. A subclass would make the claim "only the name judging changes" true by
+construction and unreadable; `s_linker121` is standalone, which makes the claim
+readable and unchecked — so this checks it, against `s_linker110`, which holds the
+workflow it did not change. The comparison lives HERE and not in the linker, which is
+the point: the file describes itself, and this file is what ties it to the branch.
 
   T1  structure      the MRO is `(SLinker121, object)`, and no linker module is
-                     imported at module scope (the trail file is imported inside the
-                     one method an experiment reaches).
-  T2  the copy       every method the two classes share is **byte-identical source**,
-                     and the only ones that are not, plus the only ones the union
-                     drops, are the name-judging path this round replaces.
+                     imported at module scope.
+  T2  the copy       every method the two classes share has **identical code** —
+                     same AST, docstrings and comments stripped — except the ones
+                     declared in CHANGED, and the only methods the union drops are
+                     the name-judging path it replaces. Prose is deliberately NOT
+                     compared: this file describes itself, so its comments name no
+                     other variant, and pinning them to another file's wording is
+                     what would make it not standalone.
   T3  the constants  every rule constant is byte-identical to the ancestor's.
   T4  the prompts    the knowledge prompts, the resolver prompt and the coreference
                      judging prompt render byte-identically to the ancestor's over all
@@ -82,6 +87,32 @@ def check(condition, what):
     return condition
 
 
+def code_of(function) -> str:
+    """A method's code with every docstring and comment removed.
+
+    Comments never reach the AST; docstrings are stripped node by node. What is left
+    is the executable content, which is the part the claim "only the name judging
+    changes" is actually about.
+    """
+    source = inspect.getsource(function)
+    # Not `textwrap.dedent`: these methods hold f-strings whose lines start at
+    # column 0, so the common prefix is empty and dedent is a no-op. Strip the
+    # method's own indent instead, measured off its first line.
+    indent = len(source) - len(source.lstrip(" "))
+    source = "\n".join(line[indent:] if line[:indent].isspace() else line
+                       for line in source.splitlines())
+    tree = ast.parse(source)
+    for node in ast.walk(tree):
+        body = getattr(node, "body", None)
+        if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef,
+                              ast.Module))
+                and body and isinstance(body[0], ast.Expr)
+                and isinstance(body[0].value, ast.Constant)
+                and isinstance(body[0].value.value, str)):
+            node.body = body[1:] or [ast.Pass()]
+    return ast.dump(tree)
+
+
 def methods(cls):
     return {name for name, value in vars(cls).items()
             if not name.startswith("__")
@@ -108,20 +139,23 @@ def main() -> int:
 
     print("\nT2 — the copy, method by method")
     head_methods, union_methods = methods(HEAD.SLinker110), methods(UNION.SLinker121)
-    identical = []
+    identical, reworded = [], []
     for name in sorted(head_methods & union_methods):
-        left = inspect.getsource(getattr(HEAD.SLinker110, name))
-        right = inspect.getsource(getattr(UNION.SLinker121, name))
-        if left == right:
+        left = getattr(HEAD.SLinker110, name)
+        right = getattr(UNION.SLinker121, name)
+        if code_of(left) == code_of(right):
             identical.append(name)
+            if inspect.getsource(left) != inspect.getsource(right):
+                reworded.append(name)
         else:
-            check(name in CHANGED, f"{name} differs from the ancestor and is declared")
+            check(name in CHANGED, f"{name} differs in CODE and is declared")
     check(set(head_methods) - set(union_methods) == REPLACED,
           f"exactly the name-judging path is replaced "
           f"({sorted(set(head_methods) - set(union_methods) - REPLACED)} unexpected)")
     for name in CHANGED:
         check(name in union_methods, f"{name} is present and rewritten")
-    print(f"    {len(identical)} methods byte-identical to `s_linker110`, "
+    print(f"    {len(identical)} methods code-identical to `s_linker110` "
+          f"({len(reworded)} of them reworded so this file describes itself), "
           f"{len(CHANGED)} rewritten ({', '.join(sorted(CHANGED))}), "
           f"{len(REPLACED)} replaced by the union")
 

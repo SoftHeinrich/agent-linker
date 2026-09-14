@@ -133,7 +133,10 @@ RESIDUE_GROUNDS = [
 ]
 
 
-#: The iteration of `union_iterations.py` this file is, measured.
+#: Which row of the measurement trail `s_linker121`'s prompt is. The linker names no
+#: iteration and imports nothing from the trail — the pin lives here, so that "the
+#: bytes this file sends are the bytes that were measured" stays a checked claim
+#: without the linker carrying a reference to how it was arrived at.
 MEASURED_AS = "v19"
 
 
