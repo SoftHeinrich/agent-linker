@@ -340,3 +340,103 @@ Dumps and stage logs: `dump_{terra,luna}_unblind.json` (v13/v14/v15/v16 and v13/
 `stage_*.log` and `llm_logs_*` beside each. The knobs are `RuleSpec.word_only_component`
 (`hidden` | `header` | `evidence`) and `RuleSpec.word_only_anchors`, both defaulting to
 v13's behaviour — checked inert over 592 renderings against the committed head.
+
+## The simplification round (v19–v21) — can the two prompt structures become one?
+
+**The ask.** v13 buys its numbers with three call-level arrangements that make a
+partial-name candidate travel a *different prompt* from a whole-name one: a different
+batch (`batch_by_evidence`), a different contract (`contract_follows_batch` — no
+catalog, `DENOTATION_DEMAND`, the `denotation` enum, a ±5-sentence window), and a
+different case template (`blind_word_only` — no component in the header, three fields
+suppressed). This round switches all three **off**, so a partial-name case and a
+whole-name case differ **only in the content of the evidence fields they print**, and
+prices that simplification against a stated budget of ~1 pp macro F2.
+
+**What the arrangement looks like, on real data** (bigbluebutton, 90 candidates):
+
+| | v13 | v19–v21 |
+| --- | --- | --- |
+| calls | 4 | **4** — unchanged |
+| call shapes | **2** | **1** |
+| batch 1 rows | `whole name`, `alias` | `whole name`, `alias`, `word only` |
+| case templates | 2 | **1** |
+
+```
+-Case 1: "HTML5 client" -> HTML5 Client          +Case 3: "web" -> BBB web
+-  Evidence: writes=the whole name, alternatives=HTML5 Server
++  Evidence: writes=one word of the name
+   Anchors (other sentences naming it): ...        Anchors (other sentences naming it): ...
+```
+
+**No new authored prompt bytes.** Every sentence in all three arms was authored and
+grounded for v7–v17, so GATE-06/GATE-07 score exactly what they already scored
+(`union_defensibility.py` 40/40, `test_s120_union.py` 2593/2593).
+
+| arm | change | terra gold | terra sp | terra F2* | luna gold | luna sp | luna F2* |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **v19** | the three switches off, `_FORMAT_V14` | **−4.0** | +4.7 | **−1.20** | **−7.3** | **−32.7** | **+0.36** |
+| v20 | + the provenance sentence (`_FORMAT_V15`) | −5.7 | +4.3 | −1.27 | −10.3 | −24.0 | −0.54 |
+| v21 | + the row-aware demand and the `naming` field | −7.7 | +4.7 | −1.81 | −7.7 | −0.3 | −0.33 |
+
+\* projected macro F2: the stage delta applied to the six recorded final link sets, then
+scored. **A projection, not a measurement** — this branch's record is that offline
+projections over-state and can flip per project. It is used here only to decide whether
+the E2E batch is worth buying.
+
+**v19 is the answer to the ask, at terra −1.3 pp / luna ≈ 0.** Replicated in two
+invocations a model: terra gold −4.0 and −4.0 (precision 0.919 → 0.894), luna gold −7.3
+and −7.7 at spurious −32.7 and −19.3, p = 0.055 and 0.031 (precision 0.752 → 0.871).
+The two models pay in opposite currencies — terra loses precision, luna gains a great
+deal of it — and only terra's projection clears the budget from the wrong side.
+
+**The whole cost is five pairs.** Level 3 reads 5 distinct gold pairs at risk on terra
+and 7 on luna — **above the recorded TP floor of 4.8**, so an E2E batch can see this and
+is owed — and it is the same list on both models:
+
+```
+bigbluebutton S6, S39, S47  "server" -> HTML5 Server
+bigbluebutton S65, S73      "WebRTC" -> WebRTC-SFU
+```
+
+Every one is **one generic word of a multi-word name**, in a sentence whose architectural
+claim is about a phrase the catalog does not spell ("the BigBlueButton server"). Under
+v13 that case is asked only *what does "server" denote here*, and kept; under v19 it is
+asked *does this sentence claim something about HTML5 Server*, and dropped. Projected F2
+by project on terra: bigbluebutton **−6.20**, mediastore −1.27, jabref −0.12, teastore
+±0.00, teammates **+1.60**. One project carries the entire loss; on luna teammates gains
+**+9.88** and the macro goes positive.
+
+**Three findings.**
+
+1. **The structural routing is worth about 1 pp of F2, and it is not diffuse.** Merging
+   the two prompt structures costs one mechanism on one project, and the rest of the
+   benchmark is flat or better. v8 read this arrangement as "−10.3 gold on luna" and
+   could not say why; with the stage rows and level 3 it resolves to five named pairs.
+2. **An instruction's sign is a property of the call it is read in, not of the sentence.**
+   v17 measured the provenance sentence inside v13's blind call as a **tightener** worth
+   −10.0 word-only spurious on luna. The same sentence in v19's mixed approve-contract
+   call (v20) tightens the row that is already losing and buys nothing: terra net −21.3
+   at **p = 0.004**, the round's only significant net loss.
+3. **Naming the second reading in the demand leaks into the first.** v21 gives the
+   uniform demand both limbs (`_DEMAND_ROW_AWARE`, authored for v4) and prints the
+   `naming` field it refers to. It recovers **nothing** on the row it targets — luna
+   word-only gold 13.3 either way — and costs the whole-name row: 131.3 → 127.3 gold on
+   terra, 8.3 → 24.0 spurious on luna. Telling a named case that a denotation reading
+   exists is telling it that approval has an alternative.
+
+**Status: v13 remains `ACTIVE`.** v19 is the measured price of the simplification, not
+an adoption. What is owed before adopting it is the E2E batch — the composition risk is
+above the TP floor, and the projection is a projection.
+
+```
+cd approach
+OPENAI_MODEL_NAME=gpt-5.6-{terra,luna} LLM_BACKEND=openai OPENAI_REASONING_EFFORT=none \
+OPENAI_SERVICE_TIER=default \
+  ../.venv/bin/python pilot/union_pilots.py --arms v13 v19 v20 --samples 3 \
+    --dump ../results/union_round/dump_{terra,luna}_simple.json
+  ../.venv/bin/python pilot/union_pilots.py --arms v13 v19 v21 --samples 3 \
+    --dump ../results/union_round/dump_{terra,luna}_simple2.json
+../.venv/bin/python pilot/union_stats.py       <dump> --arms v13 v19
+../.venv/bin/python pilot/union_composition.py <dump> --arms v13 v19
+../.venv/bin/python pilot/union_diff.py        <dump> --arms v13 v19 --row "word only"
+```

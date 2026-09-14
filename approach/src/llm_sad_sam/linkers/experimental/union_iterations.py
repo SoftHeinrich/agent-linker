@@ -641,6 +641,133 @@ ITERATIONS["v18"] = Iteration(
     },
 )
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Iterations 19-20 — the simplification round: one call shape for every case
+#
+# v13 buys its numbers with three call-level arrangements (`batch_by_evidence`,
+# `contract_follows_batch`, `blind_word_only`) that make a word-only candidate travel
+# a different prompt from a named one: a different batch, a different contract, a
+# different case format. These arms switch all three OFF, so a partial-name case and
+# a whole-name case differ **only in the content of the evidence fields they print**
+# -- `writes=one word of the name` against `writes=the whole name`, and a populated
+# `alternatives`. Same batch, same catalog, same demand, same reply contract, same
+# case format, same call count (the batching is by size again, and 90 candidates take
+# 4 calls either way).
+#
+# This is v8's arrangement. v8 read parity on terra and -10.3 gold on luna, the
+# word-only row 21.7 -> 12.3: shown the component beside named cases under an approve
+# contract, luna judged that row by identity. What v14-v18 added since is a rule text
+# that no longer describes a case format it does not use, and a measurement of the one
+# sentence that tells the judge what the component slot is FOR on such a case (v17:
+# a tightener worth -10.0 word-only spurious on luna). These two arms are that text
+# in this arrangement, with and without that sentence.
+#
+# No new authored prompt bytes: every sentence here was authored and grounded for
+# v7-v17, so GATE-06/GATE-07 score exactly what they already scored.
+# ─────────────────────────────────────────────────────────────────────────────
+
+ITERATIONS["v19"] = Iteration(
+    name="v19", rows=False, blind_word_only=False, verdict="boolean",
+    batch_by_evidence=False, contract_follows_batch=False,
+    summary="one call shape for every case: no blinding, no evidence batching, no "
+            "contract routing -- a partial-name case differs from a whole-name one "
+            "only in what its evidence fields say",
+    rule=_rowless_rule(_FORMAT_V14, _WRITES_V8),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="v8's arrangement with v14's truthful input contract: the three call-level "
+            "removals v13 pays its complexity for, all reverted at once",
+    measured={
+        "terra": dict(gold=-4.0, spurious=+4.7, net=-16.7, samples=3, p_gold=0.344,
+                      p_spurious=0.066, p_net=0.199, f2_projected=-1.20,
+                      note="against v13 in the same invocation, replicated in a second "
+                           "(gold -4.0 again, spurious +4.7 again, F2 -1.38). "
+                           "Precision 0.919 -> 0.894; word-only row 22.0 -> 17.7 gold. "
+                           "Projected macro F2 -1.2 / -1.4, and ALL of it is one "
+                           "project: bigbluebutton -6.2 / -6.4, every other project "
+                           "flat or better."),
+        "luna": dict(gold=-7.3, spurious=-32.7, net=+10.7, samples=3, p_gold=0.316,
+                     p_spurious=0.055, p_net=0.749, f2_projected=+0.36,
+                     note="against v13 in the same invocation, replicated in a second "
+                           "(gold -7.7, spurious -19.3 at p = 0.031, F2 -0.08). "
+                           "Precision 0.752 -> 0.871; word-only row 22.3 -> 14.3 gold "
+                           "at 23.7 -> 8.0 spurious. **v8 read -10.3 gold here for "
+                           "this arrangement and could not say why**: the loss is not "
+                           "the arrangement in general, it is 5-7 named gold pairs, "
+                           "all in bigbluebutton, all one generic word of a multi-word "
+                           "name ('server' -> HTML5 Server, 'WebRTC' -> WebRTC-SFU) in "
+                           "a sentence whose claim is about a phrase the catalog does "
+                           "not spell. Composition risk 7 distinct, ABOVE the recorded "
+                           "TP floor of 4.8, so an E2E batch can see it and is owed."),
+    },
+)
+
+ITERATIONS["v20"] = Iteration(
+    name="v20", rows=False, blind_word_only=False, verdict="boolean",
+    batch_by_evidence=False, contract_follows_batch=False,
+    summary="+ the rule says what the component slot is for where the sentence writes "
+            "one word of the name: provenance, not a claim under test",
+    rule=_rowless_rule(_FORMAT_V15, _WRITES_V8),
+    demand=_DEMAND_ROWLESS, reply=_REPLY_BOOLEAN,
+    fields=("writes", "alternatives", "mention"),
+    changed="the one instruction v17 measured in isolation, moved into the arrangement "
+            "that needs it: v19 asks a mixed batch to approve links and shows a "
+            "word-only case a component, which is the shape v8 lost 10.3 gold in",
+    measured={
+        "terra": dict(gold=-5.7, spurious=+4.3, net=-21.3, samples=3, p_gold=0.062,
+                      p_spurious=0.156, p_net=0.004, f2_projected=-1.27,
+                      note="REFUTED against v13 in the same invocation, and worse than "
+                           "v19 beside it: net -21.3 at p = 0.004, the round's only "
+                           "significant net loss. The sentence costs the WHOLE-NAME "
+                           "row (130.3 -> 127.3) as well as the word-only one."),
+        "luna": dict(gold=-10.3, spurious=-24.0, net=-7.0, samples=3, p_gold=0.217,
+                     p_spurious=0.047, p_net=0.746, f2_projected=-0.54,
+                     note="REFUTED: word-only 22.3 -> 13.3 gold, worse than v19's 14.3 "
+                          "beside it. v17 measured this sentence as a TIGHTENER inside "
+                          "v13's blind call; in a mixed approve-contract call it "
+                          "tightens the row that is already losing and buys nothing. "
+                          "An instruction's sign is a property of the call it is read "
+                          "in, not of the sentence."),
+    },
+)
+
+#: `_DEMAND_ROW_AWARE` with the prefix `_DEMAND_ROWLESS` already carries. One demand
+#: for every case, applied uniformly; which limb of it a case falls under is decided by
+#: the case's own `naming` field, which is content, not structure.
+_DEMAND_ROW_AWARE_ALL = "For each case, " + _DEMAND_ROW_AWARE
+
+ITERATIONS["v21"] = Iteration(
+    name="v21", rows=False, blind_word_only=False, verdict="boolean",
+    batch_by_evidence=False, contract_follows_batch=False,
+    summary="+ the one demand names both readings, and the case prints the `naming` "
+            "field the demand refers to",
+    rule=_rowless_rule(_FORMAT_V14, _WRITES_V8),
+    demand=_DEMAND_ROW_AWARE_ALL, reply=_REPLY_BOOLEAN,
+    fields=("naming", "writes", "alternatives", "mention"),
+    changed="v19's loss is the word-only row answering the claim question instead of "
+            "the denotation one: every one of the 5-7 gold pairs it drops is a generic "
+            "word of a multi-word name ('server' -> HTML5 Server, 'WebRTC' -> "
+            "WebRTC-SFU) whose sentence makes its claim about a phrase the catalog does "
+            "not spell. The rule already states the denotation reading (`_WRITES_V8`'s "
+            "last sentence); the DEMAND directly under the cases does not, and asks "
+            "every case for the architectural claim about the component. This is the "
+            "last lever that is field content rather than call structure",
+    measured={
+        "terra": dict(gold=-7.7, spurious=+4.7, net=-27.7, samples=3, f2_projected=-1.81,
+                      note="REFUTED. Against v19 in the same invocation: -3.7 gold at "
+                           "+/-0.0 spurious. It buys 0.07 gold a unit on the row it "
+                           "targets and costs 0.80 on the whole-name row (131.3 -> "
+                           "127.3) -- naming the word-only reading in the demand tells "
+                           "the NAMED cases there is a second reading available."),
+        "luna": dict(gold=-7.7, spurious=-0.3, net=-22.7, samples=3, p_gold=0.293,
+                     p_spurious=1.000, p_net=0.305, f2_projected=-0.33,
+                     note="REFUTED, and more sharply: identical word-only gold to v19 "
+                          "(13.3 either way, so the demand recovers NOTHING on the "
+                          "target row) at whole-name spurious 8.3 -> 24.0. v19's whole "
+                          "precision win, given back for nothing."),
+    },
+)
+
 #: The iteration the variant runs. Override per process with `UNION_ITERATION`.
 ACTIVE = "v13"
 
