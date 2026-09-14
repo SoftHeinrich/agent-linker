@@ -125,7 +125,7 @@ Candidates and their evidence bundles are the input for the link judge.
 In the example, Sentence~23 writes ``Database'', an approved document alias for \texttt{DB}.
 The same form in Sentence~27's ``database access'' does not name \texttt{DB}; the judge rejects that candidate while retaining the sentence's \texttt{MediaAccess} link.
 The judge rules once on the candidate and its bundle, weighing together whether the sentence makes an architectural claim about the component and whether the name identifies that component rather than serving as ordinary vocabulary.
-The bundle is computed for all three written forms; for a one-word match, the first denotation decision withholds component-identifying fields so the word is judged before it is attached to a component.
+Every written-name case uses this format; cases differ only in the value of \texttt{written} and whether the scan found any \texttt{competitors}.
 
 
 % \begin{promptL}{\evidenceBacked Judge: one rule for both written forms}{judge}\\
@@ -229,7 +229,7 @@ The \corefValidator{} then receives the resolved component, \texttt{reference}, 
 % COMPONENTS: \{comp\_names\}\\
 % SENTENCES: \{Sn: text\}\\
 % \{per case: TARGET Sn + NAMED BEFORE THIS\\
-% ~~CASE: Name (Sm), ... nearest first\}\\
+% ~~CASE: Name (Sm, linked|named only), ...\}\\
 % Quote the referring expression, then the\\
 % entries it could point to, then the one\\
 % it does.\\

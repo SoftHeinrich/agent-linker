@@ -1,7 +1,8 @@
 Verification: MediaStore ground-truth running example (legacy artifact filename)
 Date: 2026-09-14
 Working directory: /mnt/hostshare/ardoco-home/agent-linker
-Configuration: Python 3; Matplotlib/Agg; plain draw.io XML
+Configuration: Python 3; Matplotlib/Agg; plain draw.io XML; s124 at commit a738981b
+Recorded trace: .claude/worktrees/coref-shortlist-annot/results/shortlistmark_e2e_terra_r1_20260914
 
 Scope:
 
@@ -19,7 +20,9 @@ Sentences 25--26 with an ellipsis and summarizes the benchmark's code links as c
 Sentence text, component names, sentence numbers, and gold-link assignments are unchanged.
 The candidate table uses the implementation's actual proposer names, `name` and
 `coreference`; it does not invent a `form` field. The detailed panel copies recorded
-name-judge cases 15 and 19, then follows S24 through resolver case 4 and judge case 4.
+name-judge cases 15 and 19, then follows S24 through resolver case 4 and judge case 5.
+The name evidence uses s124's `written` and optional `competitors` fields. The
+coreference shortlist uses s124's `linked` / `named only` marks.
 
 Commands:
 
@@ -42,26 +45,32 @@ Result (exit 0):
     PASS gold has S27 -> MediaAccess, not DB
     PASS gold has S28 -> MediaAccess only
     PASS code gold maps DB to 4 files and MediaAccess to 2
-    PASS recorded s120 run links S23 -> DB by name
-    PASS recorded s120 run resolves S24 -> DB
-    PASS recorded s120 run keeps S27 -> MediaAccess and rejects DB
-    PASS recorded s120 run resolves S28 -> MediaAccess
-    PASS one canonical MediaStore call log found
+    PASS recorded s124 run links S23 -> DB by name
+    PASS recorded s124 run resolves S24 -> DB
+    PASS recorded s124 run keeps S27 -> MediaAccess and rejects DB
+    PASS recorded s124 run resolves S28 -> MediaAccess
+    PASS one recorded s124 MediaStore call log found
+    PASS recorded s124 call log hash matches
+    PASS recorded s124 link CSV hash matches
     PASS run proposes Database -> DB
     PASS alias judge approves Database -> DB
     PASS name judge rejects S27 database -> DB
+    PASS s124 name cases use written=short form
+    PASS s124 S24 shortlist carries linked marks
     PASS resolver records S24 It -> DB via S23
     PASS S24 resolver emits the seven recorded bundle fields
     PASS S24 coreference judge approves the resolver commitment
     PASS resolver records S28 it -> MediaAccess via S27
+    PASS s124 source hash matches commit a738981b
+    PASS s123 bundle source hash matches commit a738981b
     PASS motivation and approach use S23/S24/S27/S28
     PASS older running examples removed from live assets
     PASS generator and draw.io contain DB and MediaAccess
     PASS all visual sources use S23/S24/S27/S28
     PASS table uses the implementation's name/coreference proposers
     PASS invented variant/ordinary form labels are absent
-    PASS name bundle uses the implementation's seven computed fields
-    PASS HTML shows recorded name cases and rendered evidence fields
+    PASS name bundle uses s124's real computed fields
+    PASS HTML shows recorded s124 name cases and evidence field
     PASS HTML shows S24 resolver prompt and response bundle
     PASS HTML shows S24 judge prompt and response
     PASS coreference illustration shows the two recorded LLM prompts
