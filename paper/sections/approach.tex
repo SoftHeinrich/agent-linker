@@ -65,17 +65,10 @@ Each proposer reports how the link it actually matched as a structured \emph{evi
 The judge is prompted  with that bundle and link candidate, so this makes each judge \evidenceBacked.
 This makes the result traceable to text in the document instead of to a second opinion.
 
-% Splitting the \emph{judging} does not follow from splitting the proposal, and \approach does not split it: both written forms are read by one \nameValidator under one rule, which states what a trace link is and how to read each field of the bundle.
-% What separates a sentence that writes a name from one that writes a single word of it is then a \emph{fact in the case} rather than a second standard applied to it, which is the division of labour \approach keeps throughout: the deterministic layer states facts about a case, and the \ac{LLM} weighs them.
 %%%%%%%%%% C- Vocab
 To address the vocabulary mismatch problem, \approach builds a reusable alias table.
 Before linking, \approach scans the components and the document to build that table.
 This is motivated by previous works on glossary mining for requirements~\cite{arora2017automated,gemkow2018automatic} and software synonym extraction~\cite{howard2013automatically,falleri2010automatic}.
-%CHECK [xx: benefit 3/3] (filled 2026-09-07) Was: 'The alias table is feed into XX, so xx
-%  benefit.' VERIFIED against s110: _names_by_component() is read by the full-name scan,
-%  by the partial-name whole-name exclusion (_states_a_name), by the mention-type
-%  classifier, and by the coreference shortlist (_named_before). The ONE exception is the
-%  nesting refusal, which reads the model catalog only -- see LOAD-BEARING above.
 Every scan and every judge reads that table, so no linker has to rediscover it mid-run.
 
 Together these decisions give the workflow of \approach in \autoref{fig:approach-overview}: the alias discovery module, two linkers reaching three reference forms, and \evidenceBacked judges.
