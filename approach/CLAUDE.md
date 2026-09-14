@@ -1331,6 +1331,121 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   is exactly what the round set out to separate. No one-call floor was built on this arm;
   `rq_tables.py` drops that table and prints the absence rather than borrowing s110's.
 
+### The label-and-rule round — what the union judge is shown, and in whose words
+
+Four arms against `s_linker120`'s one judge, all at level 2 on fixed recorded candidates
+(296 cases, 180 gold, 14 calls, identical across every arm and sample), three samples a
+side, every arm in the same invocation. Report: `../results/labelrule_round/README.md`;
+arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; statistics
+`pilot/union_stats.py`; level-0 guard `pilot/union_render_snapshot.py`.
+
+| arm | change | gold | spurious | net | p(net) |
+|---|---|---|---|---|---|
+| `alllabels` | print every `MentionType` the classifier computes | ±0.0 (p=1.00) | +1.3 | −1.3 | 0.750 |
+| `aliasmute` | drop `VIA_ALIAS`, which restates the case's `writes` line | ±0.0 (p=1.00) | +1.0 | −1.0 | 0.875 |
+| `v14n` | every carried criterion clause paraphrased | +0.3 (p=1.00) | +6.0 | −5.0 | 0.336 |
+| `v14mention` | only `MENTION_COUNTS` paraphrased | **−5.3 (p=0.062)** | −2.3 | **−13.7** | 0.062 |
+| `v14ground` | only `POSITIVE_GROUND` paraphrased | −2.7 | −2.0 | −6.0 | 0.250 |
+| `v14ref` | only `QUALIFIED_CLAUSE` + `ACTS_ON` | −0.7 | +1.3 | −3.3 | 0.188 |
+| `v14def` | only the definition (no GATE-07 cost) | −1.0 | −2.3 | −0.7 | 0.938 |
+| `v14stricter` | only `STRICTER_CLAUSE` | −0.3 | −1.7 | +0.7 | 0.906 |
+| `v14n` (in the ablation set) | all four, re-run | ±0.0 | +0.3 | −0.3 | 1.000 |
+| `nomention` | print no computed label at all | −1.7 | +10.0 | **−15.0** | **0.031** |
+
+- **Showing every label is free to build and buys nothing.** One frozenset; it adds a
+  `mention=` line to **144 of 296 cases, 131 of them gold**, and moves gold **0.00 a unit
+  at p = 1.000**. The census says why: the three labels left out are a function of the
+  case's own `naming` row and its capitalization, so a judge holding the sentence reads
+  them off the sentence (`proper case, standalone` 108 cases at 0.963 gold,
+  `lowercase mention` 36 at 0.750, `indirect/unclear match` 81 at 0.321), and
+  `STRICTER_CLAUSE` already says what capitalization is worth. **The retained set was
+  chosen by an argument about re-derivability and the argument holds.**
+- **The field as a whole is load-bearing, and that is the round's only significant
+  result.** `nomention` is net −15.0 at p = 0.031, all of it at the whole-name row
+  (spurious +2.00 a unit) — the 28 `lowercase, inside qualified name` cases, a 0.071-gold
+  bucket that `QUALIFIED_CLAUSE` speaks to in every prompt and does not catch.
+  **A clause stating the criterion is not a substitute for a fact saying this case is an
+  instance of it** — the design law from the side usually taken for granted, and a fifth
+  measurement of the mention label after s42/s43/s44, s80 and the concept round.
+- **Naturalizing the rule loses, and a tie would also have lost.** `v14n` holds the
+  definition, field lines, format contract, demand, reply, fields and every flag, and
+  paraphrases only the four carried criterion clauses into plain general English. Net
+  −5.0, gold +0.3 (p = 1.00) with the whole point estimate in spurious, concentrated on
+  the word-only row (+1.07 a unit). **Quotation is not a style choice here**: it is what
+  lets `union_defensibility.py` check each clause against the ancestor constant it was
+  sliced from, so a paraphrase must be scored as authored text against GATE-07 and the
+  arm had to win to be worth adopting. **First clean measurement of quotation against
+  paraphrase on this branch** — v1 → v2 moved the same way and is unreadable for it,
+  having moved the alternative set in the same step.
+- **`VIA_ALIAS` is a genuine redundancy and is kept anyway.** All 43 alias cases print
+  the same fact twice (`writes=a short form ...` and `mention=via known alias`); removing
+  it is gold-neutral at net −1.0 (p = 0.875). Point estimate unfavourable, nothing bought
+  — **an unnecessary change is not a defensible one** (the finetune round's rule).
+- **The naturalization ablation: the clause that pays is the obvious one to reword.**
+  Five arms, each `v13` with exactly one paragraph paraphrased, plus `v14n` re-run in the
+  same invocation (7 arms, 294 calls). `MENTION_COUNTS` alone — "a mention that says
+  nothing further still counts" rewritten as "an architectural mention is enough" — is
+  **gold -5.3, net -13.7 (p = 0.062)**, the worst arm of either batch. The two read as
+  synonyms and are not: **the original lowers a bar and the paraphrase restates it**, so
+  the judge reimports the criterion the sentence exists to relax. It lands where that
+  predicts, on the word-only row (kept 29.0 -> 22.7, gold 22.0 -> 18.3), the cases with
+  the least surface to go on. `POSITIVE_GROUND` is the same effect at half size (-6.0);
+  `STRICTER_CLAUSE` is the only safe one (net +0.7) because it is a **test, not a
+  licence**, so restating it does not move what it licenses; `QUALIFIED_CLAUSE`+`ACTS_ON`
+  is the only arm costing precision rather than recall.
+- **The parts do not sum to the whole — third instance, third direction.** `v14mention`
+  alone is -13.7 and `v14ground` alone -6.0, yet all four paraphrased together is **-0.3,
+  every p = 1.000**. s77/s78 had two losers composing to a winner; this has two losers
+  composing to a wash. **A clause is not independently priceable**, and a rule read whole
+  has a register that moving every paragraph into does not equal moving each one alone.
+  The same `v14n` also read -5.0 in the label batch and -0.3 here: two invocation sets,
+  both real, which is why the composite was re-run in-set rather than compared across.
+- **`s_linker120.py` stops being a diff against its ancestor (2026-09-13).** The
+  byte-identity rule in `test_s120_standalone.py` T2 was keeping the file readable only
+  as a delta: `HEAD DELTA 1/2/3` banners naming **`s_linker110`'s** derivation from
+  `s_linker92` (archaeology two variants back, in the current paper supplement, with no
+  key in its own docstring); seven 1:1 `linker_infra` wrappers plus `_named_spans`; a
+  five-method proposer chain and a four-method label chain; and **`_writes_name`, which
+  IS `_find_exact_form`** behind a `SKIP_QUALIFIED` flag the head declares `False` — one
+  predicate under two names, kept apart only because the ancestor kept them apart. All 18
+  are inlined and declared in `INLINED`, `SKIP_QUALIFIED` is deleted, and the file is
+  **51 methods -> 33**: the proposer is one `_name_candidates`, the label one
+  `_mention_label`, the judge `_judge_union`'s four blocks, evidence computed once per
+  candidate instead of twice.
+- **`pilot/method_dup_audit.py` — the duplicate check, generalised.** Two passes, no
+  calls: structural (each method's AST, docstrings dropped and parameters renamed
+  positionally, so a rename cannot hide a copy) and behavioural (every 2-argument
+  method run over all 3697 (sentence, name) pairs, and any two that agree everywhere
+  reported). It is validated against the bug it was written for: run on `s_linker110`
+  it reports **`_find_exact_form == _writes_name`**; run on `s_linker120` it reports
+  none. **A byte-identical-copy policy hides this class of duplicate by construction**
+  -- the two names were kept apart only because the ancestor kept them apart -- so a
+  standalone file wants a check that does not care what anything is called. `s_linker110`
+  keeps its duplicate: it is a recorded control and does not move.
+- **`pilot/call_chain_audit.py` — depth, not length, is what a standalone file costs a
+  reader.** It prints the longest chain of self-calls from `link()` and the methods that
+  are **pure hops** (one caller, and a body that belongs in it). `s_linker110` reads
+  **9 hops**; `s_linker120` read 9 too until `_run_linker` (a two-entry dispatch, now a
+  dict in `link()`) and `_named_before` (built in the loop that prints it) came out —
+  **7 hops, 31 methods**. Not every hop is waste: a prompt builder is one f-string and
+  belongs alone, and a primitive with several callers is depth worth paying for.
+  `_run_validation_pass` is kept on those grounds — folding it saves one hop and makes a
+  75-line method.
+- **What the byte comparison claimed is now claimed by behaviour, and more strictly.**
+  T6 runs the ancestor's own `_extract_named_mentions` and `_scan` beside this file's
+  `_name_candidates` and compares every candidate — pair, component, source label and the
+  **matched surface**, which is what a rewritten span loop moves first — over five
+  projects under both alias settings. Byte identity never said what the bytes did. The
+  suite goes **85 -> 133 checks**. Apply the same rule to any future standalone: pin what
+  the file DOES against its ancestor, not what it reads like.
+- **`pilot/union_render_snapshot.py` is the equivalence test, written before the
+  refactor.** It hashes every case, every prompt and every judged decision — under a stub
+  that answers both contracts and alternates the verdict, per the uniform round's lesson
+  — over 5 projects x 2 alias tables x 14 iterations: **280 renderings, all identical**.
+  Use it for any future change to this file that is supposed to be a refactor.
+- **The head does not move. `s_linker120` stands, at `v13`, with the label set it had.**
+  No E2E owed: every arm is refused or neutral-and-not-adopted.
+
 ### s121 + s122 — the judge's arrangements out, then the anchor block out (2026-09-14)
 
 - **`s_linker121` is `s_linker120` with the judge's three call-level arrangements

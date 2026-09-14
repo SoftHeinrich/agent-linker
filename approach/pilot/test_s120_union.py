@@ -163,7 +163,7 @@ def main():
                   f"{project}: no case invents an evidence field ({fields})")
             check(evidence["span"] and evidence["span"] in case,
                   f"{project}: case shows its span")
-            whole = bool(linker._writes_name(candidate.sentence_text,
+            whole = bool(linker._find_exact_form(candidate.sentence_text,
                                              candidate.component_name))
             check((evidence["naming"] == "whole name") == whole,
                   f"{project}: naming=whole name iff the name is written")

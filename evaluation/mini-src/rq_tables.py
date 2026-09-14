@@ -202,6 +202,34 @@ def build_rq2(big):
               rows)
 
 
+def build_rq1_transposed(big):
+    """Expanded body RQ1 table, transposed for project-wise comparison."""
+    per_project = index(read_csv(RQ12_PERPROJECT), "system", "project")
+    systems = [
+        ("approach", BODY_SYSTEM, (BODY_SYSTEM, "average")),
+        ("Artemis", BASELINE_SYSTEM, (BASELINE_SYSTEM, BASELINE_RUN)),
+        ("pipeline", "TransArC", ("TransArC", "single")),
+    ]
+    task_columns = {
+        "DM": ("doc_to_model_link_precision", "doc_to_model_link_recall",
+               "doc_to_model_link_f1", "doc_to_model_link_f2"),
+        "DC": ("doc_to_code_file_precision", "doc_to_code_file_recall",
+               "doc_to_code_file_f1", "doc_to_code_file_f2"),
+    }
+    rows = []
+    for project in [*PROJECTS, "Average"]:
+        for task, columns in task_columns.items():
+            row = {"project": project, "task": task}
+            for label, source, average_key in systems:
+                values = big[average_key] if project == "Average" else per_project[(source, project)]
+                for short, column in zip(("p", "r", "f1", "f2"), columns):
+                    row[f"{label}_{short}"] = values[column]
+            rows.append(row)
+    fields = ["project", "task"] + [f"{label}_{short}"
+             for label, _, _ in systems for short in ("p", "r", "f1", "f2")]
+    write_csv("rq1_transposed.csv", fields, rows)
+
+
 # --------------------------------------------------------------------------- #
 # RQ3 confusion matrix (per-judge): mean over the three runs for the body table
 # and the mirror backend, plus a per-run breakdown for the appendix. Both backends.
@@ -501,6 +529,7 @@ def main():
     big = index(read_csv(RQ12_BIGTABLE), "system", "run")
     build_rq1(big)
     build_rq2(big)
+    build_rq1_transposed(big)
     if floor_available():
         build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
     else:
