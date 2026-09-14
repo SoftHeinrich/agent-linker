@@ -42,7 +42,9 @@ sys.path.insert(0, "src")
 sys.path.insert(0, str(Path(__file__).parent))
 
 from design_audit import PROJECTS                                     # noqa: E402
-from simmerge_audit import arm_full, arm_partial, load_project        # noqa: E402
+from simmerge_audit import (                                          # noqa: E402
+    arm_full, arm_partial, arm_partial_all, load_project,
+)
 from llm_sad_sam.core.data_types_v2 import DocumentKnowledge          # noqa: E402
 from llm_sad_sam.core.document_loader_v2 import build_sent_map        # noqa: E402
 from llm_sad_sam.linkers.experimental import s_linker110 as HEAD      # noqa: E402
@@ -55,7 +57,7 @@ STAGES = {
     "link", "_run_linker", "_run_name_linker", "_run_coreference_linker",
     "_learn_document_knowledge", "_resolve_references", "_validate_coref_links",
     "_run_validation_pass", "_judge_union", "_union_evidence", "_format_union_case",
-    "_name_candidates", "_extract_named_mentions", "_scan", "_only_inside_another_name",
+    "_name_candidates", "_extract_named_mentions", "_scan",
     "_named_before", "_mention_label",
     "_prompt_union", "_prompt_coref", "_prompt_coref_validation",
     "_prompt_doc_knowledge_extract", "_prompt_doc_knowledge_judge",
@@ -220,7 +222,13 @@ def main() -> int:
     for use_alias in (False, True):
         for project in sorted(PROJECTS):
             data = load_project(project, use_alias)
-            full, partial = arm_full(data), arm_partial(data)
+            # The ancestor's one-word scan ends a case when the word is written only
+            # inside another component's name; `s_linker121` does not (the refusal is
+            # removed, `../results/s121_ablations/`), so the reference here is the
+            # UNREFUSED scan and the refused set is pinned below as the difference.
+            full = arm_full(data)
+            partial = arm_partial_all(data)
+            refused_by_ancestor = partial - arm_partial(data)
             union = UNION.SLinker121.__new__(UNION.SLinker121)
             union.doc_knowledge = data["linker"].doc_knowledge
             sent_map = build_sent_map(data["sentences"])
@@ -237,6 +245,9 @@ def main() -> int:
             check({(c.sentence_number, c.component_id) for c in merged
                    if union._stage_of(c) == "partial_name"} == partial - full,
                   f"{project}: the partial-name label is the rest of the stream")
+            check(refused_by_ancestor <= pairs,
+                  f"{project}: the pairs the ancestor's nesting refusal dropped are "
+                  f"cases here ({len(refused_by_ancestor)})")
     print(f"    both alias settings x {len(PROJECTS)} projects")
 
     print(f"\n{CHECKS - FAILS}/{CHECKS} checks pass")

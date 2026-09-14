@@ -6,13 +6,16 @@ table, so nothing is compared across invocation sets.
     arm `noanchor`    the case carries no `anchors` block and the rule carries no
                       `anchors` line (the line is *sliced* off `_FIELD_LINES`, not
                       retyped, so a drift in the constant is a drift in the arm)
-    arm `norefusal`   `_only_inside_another_name` never fires, so the one-word scan
-                      keeps every pair it finds
+    arm `refusal`     `s_linker109`'s nesting refusal put back: a one-word pair whose
+                      word is written only inside another component's whole name is
+                      dropped. It ran as `norefusal`/`norefusal_split` against a head
+                      that still had it; the head lost it on this round's result, so the
+                      arm is now stated in the direction that changes something
 
 The two ablations are not symmetric and the pilot does not pretend they are:
 
   * `noanchor` changes what the judge is shown for **every** candidate on every project.
-  * `norefusal` changes the **candidate set**, and only where the refusal fires. On four
+  * `refusal` changes the **candidate set**, and only where the predicate fires. On four
     of the five projects the arm is the head by construction — same candidates, same
     prompt bytes — which `--verify` checks with no calls. Calls are spent for it only
     where it differs.
@@ -81,49 +84,69 @@ class NoAnchors(SLinker121):
             ANCHOR_RULE_LINE, "")
 
 
-class NoRefusal(SLinker121):
-    """The head, minus the one-word scan's single refusal.
+def nests_inside_another_name(linker, text, name, components) -> bool:
+    """`s_linker109`'s nesting refusal, as it stood in `s_linker121` before this round.
 
-    `_only_inside_another_name` is the one place the deterministic layer ends a case
-    rather than opening one. With it off, every pair the scan finds reaches the judge.
+    True when EVERY writing of ``name``'s word lies inside a span where ``text`` writes
+    some other component's whole name. It lives here, in the pilot, because the head no
+    longer carries it: an arm that prices a removed predicate has to own it, or the
+    round stops being reproducible the moment the head moves.
+
+    Catalog names only, never discovered aliases — the asymmetry the predicate was
+    designed with, since this is the one thing that would END a case rather than open
+    one (the alias form cost 3 gold links in one recorded run).
     """
-
-    def _only_inside_another_name(self, text, name, components) -> bool:
+    mine = linker._name_spans(text, name, NameForm.ANY_WORD)
+    if not mine:
         return False
+    covering = []
+    for component in components:
+        if component.name != name:
+            covering.extend(
+                linker._name_spans(text, component.name, NameForm.ANY_CASE))
+    if not covering:
+        return False
+    return all(any(start <= a and b <= end for start, end in covering)
+               for a, b in mine)
 
 
-class NoRefusalSplit(NoRefusal):
-    """`norefusal`, with the head's batches held byte-identical.
+class Refusal(SLinker121):
+    """The head with the nesting refusal put back, for the arm that prices it."""
 
-    The plain `norefusal` arm changes two things at once: the judge sees 12 more cases,
-    and those cases change where the batch boundaries fall (bigbluebutton goes 4 calls
-    to 5). The union round measured the batch boundary as an effect in its own right,
-    so an arm that moves both cannot say which one it measured.
+    def _scan(self, sentences, components):
+        return [candidate for candidate in super()._scan(sentences, components)
+                if not nests_inside_another_name(
+                    self, candidate.sentence_text, candidate.component_name,
+                    components)]
 
-    This arm judges the head's candidates in the head's own batches — the same call
-    bytes, verified by `--verify` — and then judges the refused pairs in one extra call
-    of their own. Whatever it differs from the head by is the added cases and nothing
-    else.
+
+class RefusalSplit(Refusal):
+    """`refusal`, with the head's batches held byte-identical.
+
+    The plain `refusal` arm changes two things at once: the judge sees 12 fewer cases,
+    and that changes where the batch boundaries fall (bigbluebutton goes 5 calls to 4).
+    The union round measured the batch boundary as an effect in its own right, so an arm
+    that moves both cannot say which one it measured.
+
+    This arm judges the head's full candidate set in the head's own batches — the same
+    call bytes — and discards the refused pairs' verdicts afterwards. Whatever it
+    differs from the head by is the refusal and nothing else.
     """
+
+    def _scan(self, sentences, components):
+        return SLinker121._scan(self, sentences, components)
 
     def _judge_union(self, candidates, components, sentences, sent_map):
-        base, extra = [], []
-        for candidate in candidates:
-            refused = SLinker121._only_inside_another_name(
-                self, candidate.sentence_text, candidate.component_name, components)
-            (extra if refused else base).append(candidate)
         approved, decisions = super()._judge_union(
-            base, components, sentences, sent_map)
-        if extra:
-            more_approved, more_decisions = super()._judge_union(
-                extra, components, sentences, sent_map)
-            approved = list(approved) + list(more_approved)
-            decisions = {**decisions, **more_decisions}
-        return approved, decisions
+            candidates, components, sentences, sent_map)
+        return ([c for c in approved
+                 if not nests_inside_another_name(
+                     self, c.sentence_text, c.component_name, components)],
+                decisions)
 
 
-ARMS = {"head": SLinker121, "noanchor": NoAnchors, "norefusal": NoRefusal,
-        "norefusal_split": NoRefusalSplit}
+ARMS = {"head": SLinker121, "noanchor": NoAnchors, "refusal": Refusal,
+        "refusal_split": RefusalSplit}
 
 
 def pinned_knowledge(run: Path, project: str):
@@ -199,14 +222,14 @@ def refused_pairs(data):
                 start, end = spans[-1]
                 everything[(sentence.number, component.id)] = (
                     component.name, sentence.text[start:end], sentence.text)
-    kept = {(c.sentence_number, c.component_id)
-            for c in linker._scan(data["sentences"], data["components"])}
-    return {pair: everything[pair] for pair in everything if pair not in kept}
+    return {pair: everything[pair] for pair in everything
+            if nests_inside_another_name(
+                linker, everything[pair][2], everything[pair][0], data["components"])}
 
 
 def verify(projects, run):
     """The zero-call half: what the refusal drops, and which arms differ at all."""
-    print("=== the refusal: what it drops, and whether any of it is gold ===")
+    print("=== the nesting refusal: what it would drop, and is any of it gold ===")
     total = gold_total = 0
     for project in projects:
         data = load(project, run)
@@ -227,7 +250,7 @@ def verify(projects, run):
         data = load(project, run)
         base, base_candidates = prompts_of("head", data)
         line = f"  {project:<14} head: {len(base_candidates):3d} cases, {len(base)} calls"
-        for arm in ("noanchor", "norefusal", "norefusal_split"):
+        for arm in ("noanchor", "refusal", "refusal_split"):
             other, other_candidates = prompts_of(arm, data)
             if other == base:
                 verdict = "IDENTICAL"
@@ -243,7 +266,7 @@ def verify(projects, run):
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--arms", nargs="+", default=["head", "noanchor", "norefusal"])
+    parser.add_argument("--arms", nargs="+", default=["head", "noanchor", "refusal"])
     parser.add_argument("--samples", type=int, default=3)
     parser.add_argument("--datasets", nargs="+", default=sorted(DATASETS))
     parser.add_argument("--run", type=Path, default=DEFAULT_RUN)
@@ -312,7 +335,7 @@ def main() -> int:
                     per_row[(arm, row)]["case_gold"] += sum(
                         1 for pair, value in row_of.items()
                         if value == row and pair in gold)
-                if arm.startswith("norefusal"):
+                if arm.startswith("refusal"):
                     for pair in dropped:
                         added_verdicts[project][
                             "approved" if pair in kept else "rejected"] += 1
@@ -350,7 +373,7 @@ def main() -> int:
         print(line)
 
     if added_verdicts:
-        print("\nthe pairs the refusal drops, once the judge is allowed to see them:")
+        print("\nthe pairs the refusal would drop, as the head's judge answers them:")
         for project, counter in sorted(added_verdicts.items()):
             seen = counter["approved"] + counter["rejected"]
             print(f"  {project:<14} {counter['approved']} approved, "
