@@ -1686,5 +1686,26 @@ mark alone.
   spurious a run, i.e. *which components a handful of links land on*, so it is exposed to
   that reading in full. **s124 is the head (the base later rounds fork from); it is NOT
   the reported arm, and it is not yet a candidate for one.** The paper arm stays
-  `s_linker120`. Owed, in order: `pilot/run_s124_e2e.sh`, then `rq12.py --arm s124`, then
-  `studies/compare_arms.py s124`.
+  `s_linker120`.
+- **THE GATE WAS RUN ON 2026-09-14 AND s124 DID NOT CLEAR IT.** Six paired E2E runs (three
+  a model, in-set `s_linker123` control, order alternating) ->
+  `evaluation/reports/ARM_COMPARE_s124.csv`. Terra reads **dc F1 −1.67 (3/3 WORSE)** and
+  **dc worst F1 −2.33 (3/3 WORSE)**, dc harm F1 −0.50 (3/3 WEAK); luna's only BETTER is
+  dm F2 +0.71, at the doc-MODEL grain, which does not promote an arm. **Every doc-code
+  metric on both models has a negative mean.** This is s122's failure mode reproduced and
+  amplified — s122's dc worst F1 was INSIDE NOISE, s124's is 3/3 WORSE at more than twice
+  the magnitude. **The prediction written above was exact, and it came true against the
+  arm.** `s_linker124` is REFUTED as a reported-arm candidate; the paper arm stays
+  `s_linker120`. Round: `../results/coref_annot_round/README.md`.
+- **THE E2E HARNESS DOES NOT PIN THE NAME STAGE, AND THAT IS THIS ROUND'S REAL
+  METHODOLOGICAL FINDING.** The mark can only reach coreference links, so both arms run an
+  *identical, independently sampled* name stage and every `full_name`/`partial_name` delta
+  is noise the arm cannot have caused — summed over six runs: terra full_name +8 links at
+  **+12 FP**, luna full_name +16 links at +1 FP, against a coreference row of +8/+5 and
+  +13/+9. Terra's regression and luna's improvement are largely the same sampling
+  phenomenon with opposite signs, both at the recorded floor (TP 4.8 / FP 10.7). **This
+  does not rescue the arm** — the confound is symmetric, so it could as easily have
+  flattered s124; sign agreement of 3/3 on two component-weighted metrics is what noise is
+  not supposed to do; and the mark's *attributable* exchange rate is +7 gold against +14
+  spurious (1 : 2), twice as bad as the pinned pilot's 1 : 1. **Any future E2E comparing a
+  late-stage arm must pin the earlier stages across arms, or six runs a model minimum.**

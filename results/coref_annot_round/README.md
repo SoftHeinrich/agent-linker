@@ -438,3 +438,97 @@ Owed, in order:
 
 **Three reads of one change at three grains can give three answers** (the s122 round's
 result). Until the third read exists, this round has two of them.
+
+---
+
+## The third read — the doc-code gate, run 2026-09-14. **s124 does not clear it.**
+
+The section above closes with "until the third read exists, this round has two of them."
+It exists now. Six paired E2E runs (three a model, `s_linker124` against an in-set
+`s_linker123` control, arm order alternating by run, `pilot/run_s124_e2e.sh`), scored
+through `build_alinker_extracts.py` -> `build_dump.py` -> `rq12.py` -> `compare_arms.py`.
+
+    results/shortlistmark_e2e_{terra,luna}_r{1,2,3}_20260914
+    evaluation/reports/ARM_COMPARE_s124.csv
+
+### What the gate says
+
+    approach (GPT-5.6-terra)          mean            per-run   sign  verdict
+      dm F1                          -1.38   -1.16 +0.17 -3.14   2/3  INSIDE NOISE
+      dm F2                          -0.67   -0.62 +0.87 -2.25   2/3  INSIDE NOISE
+      dc F1                          -1.67   -1.22 -0.59 -3.19   3/3  WORSE
+      dc F2                          -0.52   -0.45 +0.32 -1.43   2/3  INSIDE NOISE
+      dc worst F1                    -2.33   -1.90 -2.22 -2.88   3/3  WORSE
+      dc harm F1                     -0.50   -0.27 -0.03 -1.21   3/3  WEAK
+
+    approach (GPT-5.6-luna)
+      dm F1                          +0.27   +0.62 +1.00 -0.81   2/3  INSIDE NOISE
+      dm F2                          +0.71   +0.81 +0.76 +0.55   3/3  BETTER
+      dc F1                          -0.67   +0.10 -0.35 -1.77   2/3  INSIDE NOISE
+      dc F2                          -0.11   -0.15 +0.07 -0.25   2/3  INSIDE NOISE
+      dc worst F1                    -0.64   -2.49 +1.86 -1.30   2/3  INSIDE NOISE
+      dc harm F1                     -0.65   +0.51 -0.58 -1.88   2/3  INSIDE NOISE
+
+**Terra reads WORSE on `dc F1` and on `dc worst F1`, both 3/3, and WEAK-negative on
+`dc harm F1`, also 3/3.** Luna's one BETTER is `dm F2` — the doc-MODEL grain, which is not
+what promotes an arm. **Every doc-code metric on both models has a negative mean.**
+
+### This is s122's failure mode, reproduced and amplified
+
+    metric          s122 vs s121ctl (terra)      s124 vs s123ctl (terra)
+    dc F1           -1.02   3/3  WORSE           -1.67   3/3  WORSE
+    dc F2           -0.71   3/3  WORSE           -0.52   2/3  INSIDE NOISE
+    dc worst F1     -1.06   2/3  INSIDE NOISE    -2.33   3/3  WORSE
+
+The prediction this round wrote down in advance was exact. The round said: "s124's whole
+delta is *which components* a handful of links land on — precisely the quantity the
+link-level grain cannot see and the doc-code grain is built to." The gate then read the
+worst-component metric at **-2.33, 3/3**, which is more than twice s122's and with the
+sign agreement s122 lacked. **The component-weighted tail is where the mark does its
+damage, and it is the metric the paper's RQ2 argues the decision should be made on.**
+
+### The confound, stated because it cuts both ways
+
+The mark can only reach links the COREFERENCE stage produced: `_named_before` feeds nothing
+else, and `pilot/test_s124.py` check A proves every union-judging prompt is `s_linker123`'s
+byte for byte. So s124 and s123 run an **identical name stage, independently sampled**, and
+any delta in the `full_name` / `partial_name` sources is resampling noise the mark cannot
+have caused. Splitting the link-level delta by source, summed over all runs and projects:
+
+    source          terra links/FP     luna links/FP    reachable by the mark?
+    coreference        +8 / +5            +13 / +9       yes
+    full_name          +8 / +12           +16 / +1       NO
+    partial_name       -5 / -3             -7 / +5       NO
+
+Terra drew +12 spurious name-stage links; luna drew +16 name-stage links at +1 FP. **Terra's
+regression and luna's improvement are substantially the same sampling phenomenon with
+opposite signs**, and both sit at the recorded harness floor (TP 4.8 / FP 10.7 a run).
+
+This does NOT rescue the arm, and saying so would be the error this round exists to avoid:
+
+* The confound is symmetric, so it is as likely to have *flattered* s124 as to have hurt it.
+  An arm that needs the noise to have gone against it is not an arm that has been cleared.
+* `dc worst F1` at 3/3 and `dc harm F1` at 3/3 are **sign-agreeing across resamples**, which
+  is the one thing pure noise is not supposed to do three times running.
+* The mark's own attributable effect — the `coreference` row — is **+21 links at +14 FP over
+  six runs, i.e. +7 gold against +14 spurious, an exchange rate of 1 : 2**. The level-2
+  pilot measured 1 : 1 with inputs pinned. Unpinned, the rate is twice as bad, and F2's 4:1
+  recall weighting is the only thing that was ever making it look positive.
+
+### Verdict — REFUTED at the grain that decides
+
+`s_linker124` is **not a reported-arm candidate.** The paper arm stays `s_linker120`.
+
+The round's two transferable results survive intact and are unaffected by this — they were
+never claims about the mark's score:
+
+* **A fact can be enough**; the design law says where a weighing goes when you want one, not
+  that you want one. (The clause arm was worse on both models.)
+* **A discovered fact may open a case and may not close one.** Suppression redirects, it
+  does not remove: `annot_only` proposed 36 fewer pairs a run and doubled its net spurious.
+
+What is owed if anyone wants to revisit the mark: **six paired runs a model, not three**
+(`CLAUDE.md`'s own bar — "three can manufacture a neutral as easily as a regression"), and
+a design that pins the name stage across arms so the `full_name` noise above cannot enter
+the doc-code read at all. The level-2 pilot already pins it; the E2E harness does not, and
+that gap is the round's real methodological finding.

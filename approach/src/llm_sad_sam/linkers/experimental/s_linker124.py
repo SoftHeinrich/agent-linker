@@ -71,9 +71,20 @@ base rather than composed. The read this branch promotes an arm on is
 the standing warning: link-level QUALITY-NEUTRAL, then terra doc-code F1 -1.02 / F2 -0.71
 with 3/3 runs agreeing on the sign — because the cut changed *which components* the links
 landed on, not how many. The mark's entire effect is +0.67 gold and +0.67 spurious a run,
-which is that same quantity. **This is a head candidate, not a reported arm**, until
-`rq12.py --arm s124` and `studies/compare_arms.py s124` exist. The paper arm is
-`s_linker120`.
+which is that same quantity. **This is a head candidate, not a reported arm.** The paper
+arm is `s_linker120`.
+
+**THE GATE HAS SINCE BEEN RUN, AND IT REFUSED THIS ARM (2026-09-14).** Six paired E2E runs
+against an in-set `s_linker123` control read, on terra, **dc F1 -1.67 with 3/3 runs
+agreeing and dc worst F1 -2.33 with 3/3 agreeing**; every doc-code metric on both models
+has a negative mean, and luna's single BETTER is at the doc-model grain, which does not
+promote an arm (`../evaluation/reports/ARM_COMPARE_s124.csv`). The warning in the paragraph
+above came true against this file: the effect *is* which components a handful of links land
+on, and the component-weighted metric is where it shows. **Do not cite this variant as an
+improvement at any grain.** It stays the head only in the sense that later rounds fork from
+it. What it would take to revisit the mark honestly -- six paired runs a model, and a
+harness that pins the name stage across arms so its resampling noise cannot enter the
+doc-code read -- is in the round README.
 
 Round: `../results/coref_annot_round/README.md`; the evidence vocabulary's round is
 `../results/s123_written_field/README.md`. None of the measurements live here.
