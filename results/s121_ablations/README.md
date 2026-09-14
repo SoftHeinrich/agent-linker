@@ -200,7 +200,7 @@ reminder that **the anchors' value is confirmed twice on terra and is unstable o
 Absolute levels drift; only within-invocation comparisons count, and both sets are
 reported rather than the better one.
 
-## 4. Removing the anchors outright — `s_linker122`, end to end
+## 4. Removing the anchors outright — the UNSCOPED clause, end to end (superseded by §6)
 
 §3 said a clause cannot substitute for the anchors. That was measured against a 456-byte
 clause that enumerated readings and restated `STRICTER_CLAUSE`. **Rewritten to 73 bytes
@@ -358,14 +358,118 @@ the unscoped version, so it does not describe the file that ships and the arm is
 re-measured end to end against `s_linker121` on both models
 (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`).
 
+## 6. The shipped file, end to end — the cut is free on both models
+
+§5 repaired the clause; this prices the file that ships. Three paired runs a model, both
+arms in every invocation, arm order alternating by run
+(`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
+`../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`, `pilot/score_runs.py`).
+
+| model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| terra | `s_linker121` | 182.0 | 23.7 | 93.23 | 94.52 | 72.3 | 0.98 |
+| terra | `s_linker122` | 181.7 | 23.3 | 92.90 | 94.21 | 72.7 | 1.43 |
+| luna | `s_linker121` | 182.3 | 47.0 | 90.07 | 93.03 | 75.3 | 2.71 |
+| luna | `s_linker122` | 181.0 | 46.3 | 89.50 | 92.28 | 74.0 | **1.11** |
+
+**QUALITY-NEUTRAL on both models.** Terra TP −0.3 (p = 1.00), FP −0.3 (1.00), macro F1
+−0.3 (0.70), macro F2 −0.3 (0.50). Luna TP −1.3 (0.70), FP −0.7 (1.00), macro F1 −0.6
+(0.70), macro F2 −0.7 (0.40).
+
+**The sign flip is gone, and the repair is confirmed at the pair level.** The same cut
+read **TP −10.3** on luna with the unscoped clause and reads **−1.3** with the scope.
+`pilot/noanchor_fn.py` over the new run set: teammates **S1 is absent from the lost list
+in all three runs**, where it was seven pairs lost in three runs of three. Teammates now
+loses 2 gold pairs and gains 4. The diagnosis of §5 was not a story that fit the numbers
+— it named a sentence, predicted the repair, and the repair moved exactly that sentence.
+
+**What this licenses saying, and what it does not.** Both models' point estimates are
+slightly negative, so the claim is **not** that removing the anchors helps. It is that
+**21.5% of the name judging can be deleted without a measurable quality cost on either
+model**, and that luna's call count falls 75.3 → 74.0 as well. The scope also gave back
+the unscoped version's terra gain (FP 28.0 → 20.0 in its own invocation set): that gain
+and luna's regression were one clause firing on the whole-name row, and they leave
+together. A cut at parity is worth more here than a terra gain bought with a luna
+regression, because the second cannot be reported as a head at all.
+
+**The arm is steadier on the model that needs it.** Luna's control swings TP 183/176/188
+at FP 37/44/60 across its three runs; the arm reads 180/182/181 at 48/42/49, macro F1
+range **2.71 → 1.11**. Removing an evidence field the judge had to weigh removed a
+source of run-to-run disagreement with it. Terra moves the other way (0.98 → 1.43), so
+this is a luna effect, not a general one.
+
+**Composition is at the n=3 floor on both models** (+6.6 terra, +7.4 luna, p = 0.10):
+the coreference linker behind the name stage is still moving pairs, which is why this
+round was never settleable at the stage.
+
+## 7. The paper's own arm engine does not clear it — and why that is the read to trust
+
+§6 scored the shipped file with `pilot/score_runs.py`, which is **link-level
+(doc-model)** and called the arm QUALITY-NEUTRAL on both models. The branch promotes a
+paper arm through a different read: `studies/compare_arms.py`, which adds the
+**doc-code (file-level, composed)** metrics and reports **per-run sign agreement** rather
+than a mean, because on this benchmark one run moves the headline metrics by more than a
+typical arm delta.
+
+Scored in-set off the same invocations — `s122` against an `s121ctl` built from the very
+same runs, so nothing is compared across invocation sets
+(`../results/s12{1ctl,2}_extracts`, dump slots `{terra,luna}_s12{1ctl,2}`,
+`evaluation/reports/ARM_COMPARE_s122_vs_inset.csv`):
+
+| metric | terra | luna |
+| --- | --- | --- |
+| dm F1 | INSIDE NOISE (−0.34) | INSIDE NOISE (−0.58) |
+| dm F2 | INSIDE NOISE (−0.30) | INSIDE NOISE (−0.75) |
+| **dc F1** | **WORSE −1.02 (3/3)** | **BETTER +0.79 (3/3)** |
+| **dc F2** | **WORSE −0.71 (3/3)** | INSIDE NOISE (−0.37) |
+| dm CMR% | NO CHANGE | NO CHANGE |
+| dc worst F1 | INSIDE NOISE (−1.06) | INSIDE NOISE (−0.82) |
+| dc harm F1 | INSIDE NOISE (−0.35) | INSIDE NOISE (−0.58) |
+
+**Terra reads WORSE on both doc-code metrics with every run agreeing on the sign** — the
+engine's strongest negative verdict — and luna reads BETTER on one.
+`evaluation/HOWTO-REGENERATE-RQ.md` promotes the paper arm only *"if the candidate
+wins"*, so **`DEFAULT_ARM` is not moved and `sync_paper.py` is not run**. The head moves;
+the reported numbers do not.
+
+**Why the two engines disagree, and why this is the round's last result.** The link-level
+view sees the cut as free: the same number of links, found about as accurately. The
+file-level composed view sees terra lose ground. Removing the anchors did not change how
+many links are found — it changed **which components they land on**, and that only shows
+at a grain where components are weighted rather than pooled. The paper's own argument is
+that link-level F1 is the wrong place to read an architecture-traceability result, which
+is why RQ2 carries a size-aware block at all. The same argument applies to choosing an
+arm: **a cut that is free at the grain you are not reporting is not free.**
+
+That also retires the temptation §6 sets up. §6's honest reading was "parity, so the
+21.5% is bought for nothing"; §7's is "parity **at one grain**, and the grain the paper
+reports says terra pays". `s_linker122` is adopted as the head — the base later rounds
+fork from, at 21.5% less judging — and **not** as the arm the paper reports, which stays
+`s_linker120` until a candidate clears the doc-code gate.
+
 ## What the ablations say together
 
-The two pieces sit on opposite sides of the branch's design law and the measurements
-follow it. **Anchors are a fact the judge cannot derive** — other sentences of the
-document are not in the case it is holding — and removing them costs precision.
-**The refusal is a fact the judge largely *can* derive**, because the covering name is
-written in the very sentence the case prints, and removing it costs almost nothing. The
-one thing the judge cannot do is decline to spend the call.
+The two pieces sit on opposite sides of the branch's design law. **The refusal is a fact
+the judge largely *can* derive**, because the covering name is written in the very
+sentence the case prints, and removing it costs almost nothing. **Anchors are a fact the
+judge cannot derive** — other sentences of the document are not in the case it is
+holding — and at the stage, removing them costs precision. The one thing the judge
+cannot do is decline to spend the call.
+
+**The anchors came out anyway, and at link level the cut is free** (§6): with the right
+one-sentence weighing in their place, `s_linker122` is QUALITY-NEUTRAL against
+`s_linker121` on both models at **21.5% less name judging**. The stage said the fact was
+load-bearing; the composed pipeline said its job could be done by a clause aimed at the
+row it was actually holding. Both are true, and the difference between them is the
+coreference linker, whose composition statistic sits at the n=3 floor on both models.
+
+**And then the grain changed the answer again** (§7). At doc-code — the grain the paper
+reports, and the one RQ2's size-aware block exists for — terra reads WORSE 3/3 and luna
+BETTER 3/3, so s122 becomes the head without becoming the reported arm. Three reads of
+one cut, at three grains, giving three answers: the stage said it costs precision, the
+link-level composed run said it is free, the component-weighted composed run said terra
+pays. **None of them is wrong; the question "is this cut free?" simply has no answer
+until the grain is named.**
 
 §3 sharpens that into the round's transferable result. The question "is this fact
 patching an under-specified rule?" has a **third** answer besides yes and no: the clause
@@ -381,13 +485,37 @@ stage bound `GAE`, so six teammates sentences about the platform read to the jud
 sentences about the component, and only the anchors — which show the document writing
 `GAE Datastore` — say otherwise. This is the alias table's **third** job, after admitting
 full-name candidates and (formerly) suppressing partial ones: it can also mislead one
-judge, and the anchors are what the head has against that.
+judge, and the anchors were what the head had against that.
+
+§5 then priced the obvious repair of that mechanism and **refused it**, which is the
+round's second transferable result. If the leak is an assertion in the evidence, weaken
+the assertion: say "a short form listed for it elsewhere in the document" instead of "a
+short form the document established for it", costing zero prompt bytes and — by
+construction — unable to touch a whole-name case. It recovers everything the over-cut
+clause lost and **reopens the row the anchors were holding** (terra spurious +7.3 a run,
+p = 0.047; luna +7.0). **A fact cannot do a weighing's job.** The design law is usually
+read as "do not smuggle a weighing into the evidence"; it runs the other way too.
+
+And §5 is where the round's own error lives, so it is stated rather than filed: the
+73-byte clause that shipped first was a correct weighing with its scope cut off, and the
+scope was the load-bearing part. Unscoped it contradicted the rule's own
+`MENTION_COUNTS` on whole-name bare mentions and cost seven gold links in one sentence.
+**Ask of a shortened clause not whether it still says the right thing, but whether it
+still says it about the right rows.**
 
 ## Caveats
 
-* Stage-level, not end to end. The coreference linker runs behind the name stage and
-  re-proposes some of what it declines; no composition check or E2E was bought, because
-  both arms read negative and the head does not move.
+* §1–§3 are stage-level, and §4–§6 are why that matters. The coreference linker runs
+  behind the name stage and re-proposes some of what it declines, and on the anchors the
+  stage and the composed run **disagreed on both models in opposite directions** — the
+  stage read terra neutral where the E2E read FP −8.0, and read luna −5.0 gold where the
+  E2E read TP −10.3. Treat every stage number in §1–§3 as a ranking signal only.
+* The E2E results of §4 (`...20260914`) measured the UNSCOPED clause and describe a file
+  that no longer exists. §6 (`...20260914scoped`) is the shipped file. They are separate
+  invocation sets and their control rows differ accordingly (terra s121 FP 28.0 against
+  23.7), which is the branch's standing no-cross-set rule visible inside one document.
+* "QUALITY-NEUTRAL" in §6 is parity, not improvement: both models' point estimates are
+  slightly negative. What is bought is the 21.5% cut, not a score.
 * The refusal claims rest on 3 samples of one project (the only one where the predicate
   fires), so the sign-flip floor there is p = 0.25. The decisive numbers for it are the
   deterministic ones (12 pairs, 0 gold, 4 of 5 projects untouched) and the 140-of-144
