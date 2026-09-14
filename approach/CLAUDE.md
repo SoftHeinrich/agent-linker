@@ -1375,20 +1375,43 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   read TP -10.3, roughly double. Luna's composition statistic is **+24.1 (p = 0.10)**
   against terra's +1.1. The standing caveat is that a stage arm flatters a change by
   hiding composition; here it understated one twice.
-- **End to end, and what it does and does not cover.** The paired E2E that refused the
-  UNSCOPED arm stands as the measurement of that arm (three runs a model, both arms in
-  every invocation, arm order alternating; `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914`):
-  terra TP 182.3 -> 184.0, FP 28.0 -> 20.0, macro F1 92.51 -> 93.94, macro F2
-  94.18 -> 95.13 (p = 0.10, every s122 run above every s121 run); luna TP 185.0 -> 174.7
-  (p = 0.10), FP +0.3, macro F2 93.84 -> 90.94. Both models' whole effect is teammates.
-  **It does not describe the file that ships**, which carries the scope the sign flip was
-  traced to, so the shipped arm is re-measured on both models
-  (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
-  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`). This entry carries the
-  scoped numbers when they land; until then the honest statement is that the cut's E2E
-  price is known for the unscoped clause and predicted, not measured, for the scoped one.
+- **End to end, three paired runs a model, both arms in every invocation, arm order
+  alternating by run** (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
+  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`, `pilot/score_runs.py`):
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+  |---|---|---|---|---|---|---|---|
+  | terra | `s_linker121` | 182.0 | 23.7 | 93.23 | 94.52 | 72.3 | 0.98 |
+  | terra | `s_linker122` | 181.7 | 23.3 | 92.90 | 94.21 | 72.7 | 1.43 |
+  | luna | `s_linker121` | 182.3 | 47.0 | 90.07 | 93.03 | 75.3 | 2.71 |
+  | luna | `s_linker122` | 181.0 | 46.3 | 89.50 | 92.28 | 74.0 | **1.11** |
+
+  **QUALITY-NEUTRAL on BOTH models** — terra TP -0.3 (p = 1.00), FP -0.3 (1.00), macro
+  F1 -0.3 (0.70), macro F2 -0.3 (0.50); luna TP -1.3 (0.70), FP -0.7 (1.00), macro F1
+  -0.6 (0.70), macro F2 -0.7 (0.40). **The sign flip is gone**: the same cut that read
+  TP -10.3 on luna with the unscoped clause reads -1.3 with the scope, and
+  `pilot/noanchor_fn.py` confirms it at the pair level — teammates S1 is absent from the
+  lost list in all three runs, where it was seven pairs lost in three runs of three.
+  Teammates now loses 2 gold pairs and gains 4.
+- **So the anchor block comes out for FREE, and that is the claim — not that removing it
+  helps.** Both models' point estimates are slightly negative, so what is defensible is
+  that **21.5% of the name judging can be deleted without a measurable quality cost**,
+  and luna's calls fall 75.3 -> 74.0 as well. The scope also gave back the unscoped
+  version's terra GAIN (FP 28.0 -> 20.0 in its own set): that gain and luna's regression
+  were the same clause firing on the whole-name row, and they leave together. A round
+  that buys a 21.5% cut at parity is worth more to the paper than one that buys a terra
+  gain at the price of a luna regression, because the latter cannot be reported as a head.
+- **The arm is also STEADIER on the model that needs it.** Luna's control swings TP
+  183/176/188 at FP 37/44/60 across its three runs; the arm reads 180/182/181 at 48/42/49,
+  macro F1 range **2.71 -> 1.11**. Removing an evidence field the judge had to weigh
+  removed a source of run-to-run disagreement with it.
+- **Composition is at the n=3 floor on both models** (+6.6 terra, +7.4 luna, p = 0.10),
+  so the coreference linker is still moving pairs behind the name stage. The standing
+  caveat holds: a stage arm cannot see this, and in this round the stage understated the
+  unscoped change in both directions at once.
 - **`s_linker122` IS THE HEAD (2026-09-14) and the paper reports it.** The RQ engines key
   an arm to its E2E run directories (`rq34.py`'s arm map, `"s120": ("s_linker120",
-  "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from the
-  scoped run set above and not from the unscoped one.
+  "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from
+  `noanchor_e2e_{model}_r{i}_20260914scoped` and NOT from the unscoped `20260914` set,
+  which measured a file that no longer exists.
 - Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
