@@ -170,8 +170,8 @@
   <h1>The <em>coreference linker</em>, end to end</h1>
   <p class="sub">One worked case from MediaStore — sentence&nbsp;24, <span class="mono">&ldquo;It stores user information&hellip;&rdquo;</span> &rarr; <span class="mono">DB</span> — followed by the same stage measured over the whole benchmark.</p>
   <div class="provenance">
-    <b>arm</b> s_linker110 &nbsp;·&nbsp; <b>model</b> GPT-5.6-terra &nbsp;·&nbsp; <b>run</b> consolidation_e2e_terra_r1_20260825 &nbsp;·&nbsp; <b>project</b> mediastore (37 sentences, 14 components)<br>
-    <b>trace</b> phase_states/s_linker110/openai/mediastore/linker_coreference.pkl &nbsp;·&nbsp; <b>gold</b> goldstandard_sad_2016-sam_2016.csv
+    <b>worked trace</b> s_linker124 &nbsp;·&nbsp; <b>model</b> GPT-5.6-terra &nbsp;·&nbsp; <b>run</b> shortlistmark_e2e_terra_r1_20260914 &nbsp;·&nbsp; <b>project</b> mediastore (37 sentences, 14 components)<br>
+    <b>trace</b> phase_states/s_linker124/openai/mediastore/linker_coreference.pkl &nbsp;·&nbsp; <b>gold</b> goldstandard_sad_2016-sam_2016.csv
   </div>
 </header>
 
@@ -223,7 +223,7 @@
 
 <!-- ═════════════ 2. PROMPT ═════════════ -->
 <section class="stage">
-  <h2><span class="num">2</span> How we prompt &mdash; the facts are computed, the reading is asked</h2>
+  <h2><span class="num">2</span> LLM 1 &mdash; resolver prompt: the facts are computed, the reading is asked</h2>
   <p class="lede">No rule decides in advance which sentences carry a reference: every sentence goes to the model as a case, in batches of ten, with a &plusmn;5-sentence window of the document around it. What the prompt does <em>not</em> leave open is the antecedent search space. For each case the code computes <span class="mono">NAMED&nbsp;BEFORE&nbsp;THIS&nbsp;CASE</span> &mdash; the components the sentences above it actually name, each with the sentence that names it, nearest first &mdash; using the same exact name relation the rest of the workflow reads names with. That list is a prior, not a constraint: the model may answer outside it, and the code checks the sentence numbers it reports, not its membership.</p>
 
   <div class="cols c32">
@@ -254,11 +254,11 @@ point to.</span>
 
 <span class="marker">the ten cases — one per sentence of the batch</span>--- Case 1 ---
 TARGET S21: This can result in reduction of file sizes.
-NAMED BEFORE THIS CASE: <span class="slot">Reencoding (S20), Packaging (S19), MediaManagement (S17), TagWatermarking (S17), UserManagement (S13), UserDBAdapter (S12), DB (S12), Facade (S6)</span>
+NAMED BEFORE THIS CASE: <span class="slot">Reencoding (S20, linked), Packaging (S19, linked), TagWatermarking (S17, linked), MediaManagement (S17, linked)</span>
 <span class="schema">--- Case 2 (S22) --- … --- Case 3 (S23) --- …</span>
 --- Case 4 ---
 TARGET S24: It stores user information and meta-data of audio files such as the name and the genre.
-NAMED BEFORE THIS CASE: <span class="slot">DB (S23), Reencoding (S20), Packaging (S19), MediaManagement (S17), TagWatermarking (S17), UserManagement (S13), UserDBAdapter (S12), Facade (S6)</span>
+NAMED BEFORE THIS CASE: <span class="slot">DB (S23, linked), Reencoding (S20, linked), Packaging (S19, linked), TagWatermarking (S17, linked), MediaManagement (S17, linked)</span>
 <span class="schema">--- Case 5 (S25) --- … --- Case 10 (S30) --- …</span>
 
 <span class="marker">the standard — and only the standard</span><span class="rule-txt">Resolve when the surrounding sentences make one component the clear antecedent,
@@ -300,7 +300,7 @@ JSON only:</span></pre>
       <div class="box" style="margin-top:14px">
         <div class="cap"><span>Yield of this document</span><span class="tag">4 batches</span></div>
         <div class="body" style="font-size:12.5px">
-          37 sentences in, <b>7 resolutions</b> out. The other 30 carry no referring expression to a listed component and the model returns nothing for them &mdash; no rule had to guess in advance which 30 those were.
+          37 sentences in, <b>15 resolutions</b> out. The other 22 produce no resolver output; the coreference judge subsequently keeps three of the 15 candidates.
         </div>
       </div>
     </div>
@@ -309,31 +309,28 @@ JSON only:</span></pre>
 
 <!-- ═════════════ 3. EVIDENCE BUNDLE ═════════════ -->
 <section class="stage">
-  <h2><span class="num">3</span> The evidence bundle &mdash; what the coreference judge is shown</h2>
-  <p class="lede">The judge does not re-do the resolution; it rules on the commitment the resolver already made. So the bundle is not the computed mention bundle the two name judges receive &mdash; a coreference case has no name surface to anchor. It is the resolver&rsquo;s own two commitments, carried forward verbatim, plus the sentence in its immediate context. Withholding them is expensive: an earlier arm that handed the judge only a sentence and a component name made it guess which expression was claimed to refer and to what, and it rejected about half the gold resolutions put to it (49.8&thinsp;% kept).</p>
+  <h2><span class="num">3</span> LLM 2 &mdash; judge prompt: the resolver&rsquo;s real fields are carried forward</h2>
+  <p class="lede">The resolver response has seven fields: <span class="mono">case</span>, <span class="mono">sentence</span>, <span class="mono">reference</span>, <span class="mono">candidates</span>, <span class="mono">component</span>, <span class="mono">antecedent_sentence</span>, and <span class="mono">antecedent_text</span>. The implementation validates the reported sentence numbers, then builds the judge case from the resolved component, reference, antecedent sentence and text, and the target sentence with its predecessor. The judge therefore rules on the resolver&rsquo;s actual commitment instead of reconstructing one.</p>
 
   <div class="cols c23">
     <div class="box judge">
-      <div class="cap"><span>Evidence bundle for case S24 &rarr; DB</span><span class="tag">4 items</span></div>
+      <div class="cap"><span>LLM 1 response &mdash; resolver case 4</span><span class="tag">7 fields</span></div>
       <div class="body">
         <dl class="ev">
-          <dt>Catalogue</dt>
-          <dd><span class="src">all 14 component names</span> <span class="chip code">code</span></dd>
-
-          <dt>Claimed<br>reference</dt>
-          <dd>&ldquo;<b>It</b>&rdquo; <span class="chip llm">carried from the resolver</span></dd>
-
-          <dt>Claimed<br>antecedent</dt>
-          <dd>(S23) &ldquo;The Database component represents an actual database (e.g., MySQL).&rdquo; <span class="chip llm">carried from the resolver</span><br><span class="src note" style="margin-top:3px;display:block">Sentence number checked against the document before the case is built.</span></dd>
-
-          <dt>Sentence<br>in context</dt>
-          <dd>[prev: The Database component represents an actual database (e.g., MySQL).]<br>&ldquo;It stores user information and meta-data of audio files such as the name and the genre.&rdquo; <span class="chip code">code</span></dd>
+          <dt><span class="mono">case</span></dt><dd><span class="src">4</span></dd>
+          <dt><span class="mono">sentence</span></dt><dd><span class="src">24</span></dd>
+          <dt><span class="mono">reference</span></dt><dd>&ldquo;<b>It</b>&rdquo;</dd>
+          <dt><span class="mono">candidates</span></dt><dd><span class="src">[&ldquo;DB&rdquo;]</span></dd>
+          <dt><span class="mono">component</span></dt><dd><span class="src">DB</span></dd>
+          <dt><span class="mono">antecedent_sentence</span></dt><dd><span class="src">23</span></dd>
+          <dt><span class="mono">antecedent_text</span></dt><dd>&ldquo;The Database component represents an actual database (e.g., MySQL).&rdquo;</dd>
         </dl>
+        <p class="note"><span class="mono">reference</span>, <span class="mono">antecedent_sentence</span>, and <span class="mono">antecedent_text</span> are copied into the second prompt; <span class="mono">component</span> supplies its case target.</p>
       </div>
     </div>
 
     <div class="box code judge">
-      <div class="cap"><span>Judge prompt (strict rubric) and reply</span><span class="tag">1 call / 25 cases</span></div>
+      <div class="cap"><span>LLM 2 prompt and response &mdash; judge case 5</span><span class="tag">1 call / 25 cases</span></div>
       <div class="body">
 <pre class="prompt"><span class="marker">question</span><span class="instr">Validate components in a document. Check coref resolution: does the
 referring expression in this sentence actually refer to the named
@@ -379,8 +376,8 @@ most sentences is not a ground for rejecting this one.</span>
 
 <!-- ═════════════ 4. RESULTS ═════════════ -->
 <section class="stage">
-  <h2><span class="num">4</span> Results</h2>
-  <p class="lede">All seven resolutions this document produced, with the judge&rsquo;s verdict and the gold verdict beside it. Three survive; all three are true, and all three are links no other linker in the workflow produces.</p>
+  <h2><span class="num">4</span> Historical s110 results (separate from the s124 worked trace)</h2>
+  <p class="lede">The table and aggregate measurements below retain the earlier reported s110 evaluation. They are not evidence for the s124 prompt format shown above.</p>
 
   <div class="cols" style="grid-template-columns:1fr; margin-bottom:16px">
     <div class="box">
@@ -479,7 +476,7 @@ most sentences is not a ground for rejecting this one.</span>
 </section>
 
 <footer>
-  All prompt text, shortlists, model replies, judge objections and verdicts are reproduced verbatim from the recorded run; the <span class="mono">NAMED BEFORE THIS CASE</span> lines were recomputed with the arm&rsquo;s own <code>_named_before</code> against this document and alias table. Ellipses mark elided prompt bulk only. Aggregate figures: <code>evaluation/reports/rq34/s110/rq3_validators.csv</code>, <code>rq4_variants.csv</code>, <code>rq4_linkers.csv</code>, <code>rq34_rq2_linkers.csv</code> (terra averages over three five-project runs).
+  Stages 1&ndash;3 reproduce the recorded s124 MediaStore trace; ellipses mark elided prompt bulk only. Stage 4 is explicitly historical. Its aggregate figures come from <code>evaluation/reports/rq34/s110/rq3_validators.csv</code>, <code>rq4_variants.csv</code>, <code>rq4_linkers.csv</code>, and <code>rq34_rq2_linkers.csv</code> (terra averages over three five-project runs).
 </footer>
 
 </div>

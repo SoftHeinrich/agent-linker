@@ -17,6 +17,7 @@ Editable **draw.io / diagrams.net** sources for the paper's figures. Keep the
 | Source | Figure | Notes |
 |--------|--------|-------|
 | `approach-overview.drawio` | §\ref{sec:approach} pipeline | Wang-style "in a nutshell" overview: three numbered stages (knowledge layer → proposal by reference form → judging & consolidation), matching the reported `s_linker120` arm — one knowledge table (alias table), **three proposers** (whole name and one word by scanning, coreference by an LLM resolution) and **two** single-pass judges, because the two written forms are judged together under one rule. Redrawn 2026-09-01 for `s_linker110`, rewired 2026-09-11 for the union arm; the revision before that drew the retired `s_linker21` design (two linkers, two validators, a Model-Understanding/Ambiguity-Map second table, and a `p₁ ∧ p₂` validation conjunction), none of which any reported arm runs. |
+| `jabref_trace_example.drawio` | Motivation running example | Legacy filename, now a MediaStore ground-truth excerpt using S23/S24/S27/S28. Sentence text and links are copied from the benchmark; the omitted sentence gap is explicit and code-file sets are summarized by counts. The Matplotlib generator in `../jabref_trace_example.py` produces the included PDF/PNG. |
 
 > **Arm: `s_linker120`.** The figure was drawn against `s_linker92a` and re-labelled for
 > `s_linker110`, whose two changes (the sibling-name refusal in the word scan, the

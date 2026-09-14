@@ -80,3 +80,23 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
 - **GSD planning** for `mini-inequality/` lives in its own subdir
   (`mini-inequality/.planning/`); there is no repo-root `.planning/` on this
   branch (the legacy two-pillar planning is on `master`).
+
+## Paper-writing gate
+
+Paper prose must remain evidence-bounded and generic in the same sense as the
+approach guide's GATE-07:
+
+- distinguish measured results, interpretation, rationale, hypothesis, and
+  limitation;
+- trace every numerical or comparative claim to a committed report, table,
+  figure, or reproducible command, with its arm, data scope, model, repetitions,
+  and metric;
+- do not use causal, superiority, robustness, or generality language beyond
+  what the recorded evaluation supports, and do not treat N=1 as replicated
+  evidence or neutrality as equivalence; and
+- keep benchmark-specific names and surface forms scoped to the observation or
+  threat they document, never as universal method rules.
+
+When changing a load-bearing rule or its wording, validate the rewording on
+fixed inputs before relying on an end-to-end result. If tracked evidence cannot
+support a sentence, narrow it or label it as an open hypothesis.

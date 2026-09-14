@@ -19,20 +19,16 @@ Each link $(s_i, c_j) \in L$ asserts that sentence $s_i$ discusses the architect
 
 Recovering these links has three challenges, and the workflow answers each with one design decision.
 
-%CHECK [running example] The motivation figure and the detailed illustration share
-%  one compact excerpt: S6 uses the alias "UI" for gui, S7 uses "It" with S6 as
-%  its visible antecedent, S8 writes the partial name "model" for Data Model, and
-%  S11 writes the exact name "preferences". The same excerpt is used below for
-%  all three name forms and for coreference.
+%CHECK [running example] The motivation figure and this section share the verbatim
+%  MediaStore excerpt S23/S24/S27/S28 and its benchmark gold links. The drawing marks
+%  the S24--S27 gap and summarizes long code-file sets by their counts.
 First, links are carried by various reference forms.
-A sentence may state a component's exact name, as Sentence~11 of \autoref{fig:example} names \texttt{preferences};
-it may carry only one word of a multi-word name, as Sentence~8 writes ``model'' for the illustrative \texttt{Data Model};
-it may give only an alias the document coined, as Sentence~6 introduces \texttt{gui} as ``UI'';
-or it may lean on a pronoun, as Sentence~7 refers to \texttt{gui} by ``It'' using Sentence~6 as its antecedent.
-Prompting an \ac{LLM} therefore requires considering each of these forms, because one rule strict enough for the last is blind to the first.
+A sentence may state a component's catalog name, give an alias the document uses, carry only one word of a multi-word name, or lean on a pronoun.
+In \autoref{fig:example}, Sentence~23 writes ``Database'' for the catalog component \texttt{DB}, and Sentence~24 refers to it by ``It'' using Sentence~23 as its antecedent.
+The evidence needed differs by form: names can be checked in the sentence itself, whereas pronouns require surrounding context.
 
 Secondly, an \ac{LLM} can return a link that reads as plausible but has no support in the sentence.
-In Sentence~7, ``preferences'' is ordinary vocabulary even though it is also the name of a component elsewhere in the excerpt; the resulting \texttt{preferences} candidate is a useful false positive for the judge to reject.
+Sentence~27 contains the known form ``database'', but ``database access'' describes a responsibility of \texttt{MediaAccess}; the benchmark assigns Sentence~27 no \texttt{DB} link.
 
 Thirdly, a project has a rich vocabulary about its components, which appear under aliases the document coins as it goes.
 The underlying difficulty is the well-known vocabulary problem~\cite{furnas1987vocabulary}: people tend to use different terms to refer to the same object.
@@ -54,15 +50,14 @@ Handing the whole document to an \ac{LLM} does not settle this by itself, becaus
 Targeting the challenge of various reference forms, \approach reaches them with two linker modules: the \linkerN and the \linkerC.
 The \linkerN proposes candidate links by a lexical scan;
 the \linkerC proposes by resolving a referring expression against the surrounding sentences.
-Splitting the link recovery by form can make specialized modules do corresponding task, achieving the benefit
-previous monolithic LLM call can't have.
+Splitting recovery by reference form lets each module use the evidence its cases require.
 
 %%%%%%%%%% C - Hallucination
 
-To reduce the plausible but un-supported trace links, every proposed link is checked by an \ac{LLM} based judge.
+To reduce plausible but unsupported trace links, every proposed link is checked by an \ac{LLM}-based judge.
 Instead of merely guessing on the proposed link, we guide the judge with augmented context to reason about the architectural responsibility of the link.
-Each proposer reports how the link it actually matched as a structured \emph{evidence bundle}.
-The judge is prompted  with that bundle and link candidate, so this makes each judge \evidenceBacked.
+Each proposer reports how it obtained the link as a structured \emph{evidence bundle}.
+The judge receives that bundle with the candidate, making each decision \evidenceBacked.
 This makes the result traceable to text in the document instead of to a second opinion.
 
 %%%%%%%%%% C- Vocab
@@ -119,20 +114,18 @@ A term that two components both claim is taken to name neither, and is dropped b
 % Both proposers scan the document $S$ together with the alias table, spend no \ac{LLM} call, and return candidate links, $(s,c)$ pairs.
 % The \linkerB marks a sentence that writes a whole name of a component or its alias.
 % The \linkerD reaches a sentence that writes only part of one: it matches a sentence word against the words of a component's name under English inflection, so a document that names an \texttt{HTML5 Client} and later writes only ``each client'' is reached where the \linkerB sees nothing.
-% For example, in \autoref{fig:example} Sentence~11 writes the name of the \texttt{preferences} component, so the \linkerB proposes $(s_{11}, \texttt{preferences})$; Sentence~7 uses the same word as ordinary English while its topic is \texttt{gui}, and the proposer cannot tell the two apart, because what it knows is only that the characters are there.
+% In the running example, Sentence~23 writes Database for DB. Sentence~27 uses the
+% same form inside "database access", where it does not denote the DB component.
 
-Because this linking targets the simple named mention, a substring scan is enough and the proposer spends no \ac{LLM} call.
-Each candidate is tagged with the matched sentence and the source, 
-forming the candidate's full evidence bundle 
-\texttt{\{span, naming, alias, mention\}}.
-TODO XXX, explain each field.
+Because this linking targets written name forms, a substring scan is enough and the proposer spends no \ac{LLM} call.
+For each candidate, s124 computes \texttt{span}, \texttt{written}, and \texttt{competitors}; it also derives \texttt{naming} from \texttt{written} for the decision record.
+Its prompt puts the span and component in the case header and prints \texttt{written} plus \texttt{competitors} when the latter is nonempty.
 
 Candidates and their evidence bundles are the input for the link judge.
-In the example, Sentence~11 names \texttt{preferences} exactly, Sentence~8 writes the partial span ``model'' for \texttt{Data Model}, and Sentence~6 writes the alias ``UI'' for \texttt{gui}.
-Sentence~7 uses the same word ``preferences'' while its topic is \texttt{gui}; this produces a competing name candidate even though the word is ordinary vocabulary there.
-When the scanner proposes the false link $(s_{7}, \texttt{preferences})$, it is the judge's responsibility to reject it.
-The judge rules once on the candidate and its bundle, weighing together whether the sentence makes an architectural claim about the component and whether the name identifies that component rather than serving as ordinary vocabulary (\autoref{prompt:judge}).
-The same full bundle is used for all three written forms; only the computed field values change with the source and matched span.
+In the example, Sentence~23 writes ``Database'', an approved document alias for \texttt{DB}.
+The same form in Sentence~27's ``database access'' does not name \texttt{DB}; the judge rejects that candidate while retaining the sentence's \texttt{MediaAccess} link.
+The judge rules once on the candidate and its bundle, weighing together whether the sentence makes an architectural claim about the component and whether the name identifies that component rather than serving as ordinary vocabulary.
+The bundle is computed for all three written forms; for a one-word match, the first denotation decision withholds component-identifying fields so the word is judged before it is attached to a component.
 
 
 % \begin{promptL}{\evidenceBacked Judge: one rule for both written forms}{judge}\\
@@ -156,20 +149,15 @@ The same full bundle is used for all three written forms; only the computed fiel
 % about identity. The evidence says what the\\
 % expression is doing here; none of it is a\\
 % verdict.\\
-% ~~writes: what this sentence writes of the\\
-% ~~name: the whole name, a short form the\\
-% ~~document established, or one word of it. A\\
+% ~~written: how much of the component's name\\
+% ~~this sentence writes: the whole name, a short\\
+% ~~form the document established, or one word. A\\
 % ~~shorter surface leaves more readings open; it\\
 % ~~does not make the reading in front of you\\
 % ~~wrong.\\
-% ~~alternatives: other components whose names\\
+% ~~competitors: other components whose names\\
 % ~~carry the same word. They are what the\\
 % ~~expression could be reaching instead.\\
-% ~~mention: what the code can tell about the\\
-% ~~expression's place in the sentence.\\
-% ~~anchors: other sentences that name this\\
-% ~~component. They fix what the name means in\\
-% ~~the document; they do not decide this one.\\
 % Reject only on a positive ground: the sentence\\
 % asserts nothing of this component, the name is\\
 % doing some other job here, or the sentence\\
@@ -221,18 +209,18 @@ The same full bundle is used for all three written forms; only the computed fiel
 \subsection{\linkerC}\label{sec:coref-linker}
 
 \linkerC recovers links where a component is mentioned by a referring expression rather than by its own name.
-The coreference case may also contain an unrelated name, as Sentence~7 contains ``preferences'' while referring to \texttt{gui}; the name and coreference linkers can therefore expose different readings of the same sentence.
+The example contains two coreference cases: Sentence~24 refers to \texttt{DB}, and Sentence~28 refers to \texttt{MediaAccess}.
 %CHECK [correction: no pronoun filter] (2026-09-07) The draft said 'For each sentence with
 %  a pronoun like it'. s110's _resolve_references: 'Every sentence goes to the LLM in
 %  context; no pronoun regex.' MANUAL CHECK: this contradicts any earlier text describing
 %  a pronoun-triggered coreference stage.
-A preprocessing step is annotate each sentence the exact component mentioned.
-This used for the pronoun resolution. 
-The resolver reads each sentence with its surrounding context and reports the referring expression, the candidate components named earlier, and the exact antecedent sentence it used.
-%TODO bunblde structure. 
-For illustration, Sentence~6 says ``The UI renders the main application window'', and the later Sentence~7 says ``It knows the user and their preferences.''
-The resolver resolves ``It'' to \texttt{gui} through the alias-bearing antecedent in Sentence~6 and carries that exact antecedent into the judge case.
-The candidates are then judged by the \corefValidator{}, which is shown the referring expression and the antecedent the resolver committed to, and rules on whether that commitment holds.
+Before resolution, a deterministic scan lists the components named earlier in the context and the nearest sentence that names each one; each entry is marked \texttt{linked} or \texttt{named only} using the name judge's existing verdict.
+The resolver reads each target with its surrounding sentences and the \texttt{NAMED BEFORE THIS CASE} shortlist.
+Its response contains \texttt{case}, \texttt{sentence}, \texttt{reference}, \texttt{candidates}, \texttt{component}, \texttt{antecedent\_sentence}, and \texttt{antecedent\_text}.
+In the benchmark excerpt, Sentence~23 says ``The Database component represents an actual database'', and Sentence~24 begins ``It stores user information''.
+The resolver resolves ``It'' to \texttt{DB} through Sentence~23 and carries that exact antecedent into the judge case.
+It likewise resolves Sentence~28's ``it'' to \texttt{MediaAccess} through Sentence~27.
+The \corefValidator{} then receives the resolved component, \texttt{reference}, \texttt{antecedent\_sentence}, \texttt{antecedent\_text}, and the target with its preceding sentence, and rules on that commitment.
 
 % \begin{promptL}{\linkerC: Coreference Resolution}{coref}\\
 % {\scriptsize\ttfamily\raggedright

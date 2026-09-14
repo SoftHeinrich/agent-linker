@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Figure — four reference forms in a shared JabRef-inspired example</title>
+<title>Figure — a MediaStore ground-truth example</title>
 <style>
   /* Laid out at the paper's measure: acmsmall \textwidth = 395.82pt = 5.477in.
      Print at 100% and crop #plate; it drops into \includegraphics[width=\linewidth]. */
@@ -25,6 +25,7 @@
   .split > *{padding:4px 5px}
   .split > * + *{border-left:0.5px solid var(--hair)}
   .s73{grid-template-columns:2.15fr 1fr}
+  .s55{grid-template-columns:1fr 1fr}
 
   p{margin:0; font-size:6.9pt; line-height:1.36}
   .qt{font-style:italic; color:var(--mut)}
@@ -41,6 +42,7 @@
 
   pre{margin:0; font-size:6.4pt; line-height:1.42; white-space:pre; overflow:visible;
       background:var(--wash); border:0.5px solid var(--hair); padding:3px 4px}
+  pre.compact{font-size:5.75pt; white-space:pre-wrap; overflow-wrap:anywhere}
   .slot{color:var(--code); font-weight:700}
   .yes{color:var(--ok); font-weight:700}
   .nay{color:var(--no); font-weight:700}
@@ -66,97 +68,89 @@
 <figure class="fig">
 <div id="plate">
 
-<!-- Shared illustrative example used by the motivation and approach discussions:
-     S6 reaches gui by alias, S7 reaches gui by coreference, S8 reaches the
-     multi-word Data Model by a partial name, and S11 reaches preferences exactly. -->
+<!-- Verbatim MediaStore sentences and hand-labeled links used by the motivation
+     and approach discussions. The S24--S27 gap is explicit. -->
 
 <!-- (a) the sentences, and what comes out -->
 <div class="panel">
-  <h3><span>(a)&nbsp; One shared illustrative excerpt, and the links recovered from it</span>
-      <span class="cnt">3 components</span></h3>
+  <h3><span>(a)&nbsp; MediaStore benchmark excerpt and its ground-truth links</span>
+      <span class="cnt">2 components</span></h3>
   <div class="split s73">
     <div class="doc">
-      <div><span class="n">S6</span><span>The <span class="rf">UI</span> renders the main application window.</span></div>
-      <div><span class="n">S7</span><span><span class="rf">It</span> knows the user and their <span class="nm">preferences</span>.</span></div>
-      <div><span class="n">S8</span><span>The <span class="nm">model</span> stores entries and metadata.</span></div>
-      <div><span class="n">S11</span><span>The <span class="nm">preferences</span> component stores user settings.</span></div>
-      <p class="qt" style="margin-top:4px">Underlined&thinsp;= a written span. Shaded&thinsp;= a referring expression. The alias table contains <span class="mono">UI&rarr;gui</span>; <span class="mono">model</span> is the partial form of <span class="mono">Data Model</span>. In S7, <span class="mono">preferences</span> is ordinary vocabulary, not the component.</p>
+      <div><span class="n">S23</span><span>The <span class="nm">Database</span> component represents an actual database (e.g., MySQL).</span></div>
+      <div><span class="n">S24</span><span><span class="rf">It</span> stores user information and meta-data of audio files such as the name and the genre.</span></div>
+      <div><span class="n">&vellip;</span><span></span></div>
+      <div><span class="n">S27</span><span>The <span class="nm">MediaAccess</span> component encapsulates <span class="rf">database access</span> for meta-data of audio files.</span></div>
+      <div><span class="n">S28</span><span>Furthermore, <span class="rf">it</span> fetches a list of all available audio files.</span></div>
+      <p class="qt" style="margin-top:4px">Text is verbatim from the benchmark. Underlined&thinsp;= a written name. Shaded&thinsp;= a referring or ambiguous expression. In S27, <span class="mono">database access</span> describes <span class="mono">MediaAccess</span>, not <span class="mono">DB</span>.</p>
     </div>
     <div style="padding:0">
       <table>
-        <thead><tr><th>Candidate</th><th>form</th><th class="c">name<br>judge</th><th class="c">coref<br>judge</th><th class="c">gold</th></tr></thead>
+        <thead><tr><th>Candidate</th><th>proposer</th><th class="c">judge</th><th class="c">gold</th></tr></thead>
         <tbody>
-          <tr><td class="m">S6&rarr;gui</td><td>alias</td><td class="c ok">keep</td><td class="c">&mdash;</td><td class="c ok">&check;</td></tr>
-          <tr><td class="m">S7&rarr;gui</td><td>coref</td><td class="c">&mdash;</td><td class="c ok">keep</td><td class="c ok">&check;</td></tr>
-          <tr><td class="m">S7&rarr;prefs</td><td>ordinary</td><td class="c no">rej</td><td class="c no">rej</td><td class="c no">&times;</td></tr>
-          <tr><td class="m">S8&rarr;data model</td><td>partial</td><td class="c ok">keep</td><td class="c">&mdash;</td><td class="c ok">&check;</td></tr>
-          <tr><td class="m">S11&rarr;prefs</td><td>exact</td><td class="c ok">keep</td><td class="c">&mdash;</td><td class="c ok">&check;</td></tr>
+          <tr><td class="m">S23&rarr;DB</td><td class="m">name</td><td class="c ok">keep</td><td class="c ok">&check;</td></tr>
+          <tr><td class="m">S24&rarr;DB</td><td class="m">coreference</td><td class="c ok">keep</td><td class="c ok">&check;</td></tr>
+          <tr><td class="m">S27&rarr;MediaAccess</td><td class="m">name</td><td class="c ok">keep</td><td class="c ok">&check;</td></tr>
+          <tr><td class="m">S27&rarr;DB</td><td class="m">name</td><td class="c no">reject</td><td class="c no">&times;</td></tr>
+          <tr><td class="m">S28&rarr;MediaAccess</td><td class="m">coreference</td><td class="c ok">keep</td><td class="c ok">&check;</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- (b) name route -->
+<!-- (b) knowledge and name route -->
 <div class="panel">
-  <h3><span>(b)&nbsp; Name route: the same judge sees exact, partial, and alias evidence</span>
-      <span class="cnt">3 forms &rarr; 3 candidates</span></h3>
+  <h3><span>(b)&nbsp; Knowledge and name route: the same form requires two verdicts</span>
+      <span class="cnt">recorded s124 run</span></h3>
   <div class="pbody">
-    <p class="qt">&ldquo;Approve when the sentence uses that word as the name of the component; if it is used in its ordinary sense, reject. Reject only on a positive ground. The evidence bundle supplies facts, not the verdict.&rdquo;</p>
-<pre style="margin-top:3px">Case 1: "preferences" -&gt; preferences   [exact]
-  "The preferences component stores user settings."
-  Evidence: <span class="slot">{source=full_name, span="preferences",
-    naming=whole_name, mention="preferences",
-    alternatives=[], last_named=none}</span>
--&gt; {"claim":"stores user settings", "approve":<span class="yes">true</span>}
+    <p class="qt">The discovery judge approves the document-wide mapping, but the link judge still checks what the same word means in each sentence.</p>
+<pre style="margin-top:3px">discovered: "Database" -&gt; DB   -&gt; <span class="yes">approved</span>
 
-Case 2: "model" -&gt; Data Model             [partial]
-  "The model stores entries and metadata."
-  Evidence: <span class="slot">{source=partial_name, span="model",
-    naming=partial_name, mention="model",
-    alternatives=[], last_named=none}</span>
--&gt; {"claim":"stores entries and metadata", "approve":<span class="yes">true</span>}
+Case 15: "Database" -&gt; DB
+  "The Database component represents an actual database (e.g., MySQL)."
+  Evidence: <span class="slot">written=short form</span>
+-&gt; {"claim":"The Database component represents an actual database",
+    "approve":<span class="yes">true</span>}
 
-Case 3: "UI" -&gt; gui                       [alias]
-  "The UI renders the main application window."
-  Evidence: <span class="slot">{source=alias, span="UI", naming=alias,
-    mention="UI", alternatives=[], last_named=none}</span>
--&gt; {"claim":"renders the main application window", "approve":<span class="yes">true</span>}</pre>
-    <p class="qt" style="margin-top:3px">The match computes <span class="mono" style="font-style:normal">{source, span, naming, mention, alternatives, last_named}</span>; every name case carries the full bundle. The source distinguishes the exact name, a partial name, and a known alias; the judge then checks the sentence&rsquo;s architectural claim.</p>
+Case 19: "database" -&gt; DB
+  "The MediaAccess component encapsulates database access for meta-data of audio files."
+  Evidence: <span class="slot">written=short form</span>
+-&gt; {"claim":"none", "approve":<span class="nay">false</span>}</pre>
+    <p class="qt" style="margin-top:3px">The mapping supplies candidates, not verdicts: S23 discusses <span class="mono">DB</span>; S27 uses the same word to name a responsibility of <span class="mono">MediaAccess</span>.</p>
   </div>
 </div>
 
 <!-- (c) reference route -->
 <div class="panel">
-  <h3><span>(c)&nbsp; Reference route: one case &mdash; what the resolver commits to is the bundle the judge rules on</span>
-      <span class="cnt">S7 &rarr; gui &middot; approved</span></h3>
+  <h3><span>(c)&nbsp; Reference route: two recorded LLM prompts for one S24 case</span>
+      <span class="cnt">S24 &rarr; DB</span></h3>
   <div class="split s55">
     <div>
-      <span class="lbl">the judge&rsquo;s case, verbatim</span>
-<pre>Case 1: pronoun/role-ref -&gt; gui
-  Claimed reference: <span class="slot">"It"</span>
-  Claimed antecedent (S6): <span class="slot">"The UI"</span>
-  [prev: The UI renders the main application window.]
-    "It knows the user and their preferences."
--&gt; {"claim":"It knows the user and their preferences.",
-    "objection":<span class="yes">"none"</span>, "approve":<span class="yes">true</span>}</pre>
-      <p class="qt" style="margin-top:3px">&ldquo;Approve only when the sentence contains a genuine referring expression that unambiguously points to THIS component and makes an architectural claim about it; when uncertain, reject.&rdquo;</p>
+      <span class="lbl">LLM 1 &mdash; resolver prompt (case excerpt)</span>
+<pre class="compact">--- Case 4 ---
+TARGET S24: It stores user information and meta-data of audio files such as the name and the genre.
+NAMED BEFORE THIS CASE: DB (S23, linked), Reencoding (S20, linked), Packaging (S19, linked), TagWatermarking (S17, linked), MediaManagement (S17, linked)</pre>
+      <span class="lbl">resolver response: the coreference bundle</span>
+<pre class="compact">{"case":4, "sentence":24,
+ "reference":<span class="slot">"It"</span>, "candidates":["DB"],
+ "component":<span class="slot">"DB"</span>,
+ "antecedent_sentence":<span class="slot">23</span>,
+ "antecedent_text":<span class="slot">"The Database component represents an actual database (e.g., MySQL)."</span>}</pre>
+      <p class="qt" style="margin-top:3px">These are the resolver&rsquo;s real response fields; the highlighted commitment is carried into the second prompt.</p>
     </div>
     <div>
-      <span class="lbl">the input: target, and the antecedent</span>
-      <div class="doc">
-        <div><span class="n">S6</span><span>The <span class="nm">UI</span> renders the main application window. <span class="qt">&larr; antecedent</span></span></div>
-        <div><span class="n">S7</span><span><span class="rf">It</span> knows the user and their <span class="nm">preferences</span>.</span></div>
-      </div>
-      <p class="qt" style="margin-top:2px">The pronoun names no component; the resolver follows the alias-bearing antecedent in S6 and commits to <span class="mono">gui</span>.</p>
-      <span class="lbl">computed prior</span>
-<pre>NAMED BEFORE THIS CASE: <span class="slot">gui (S6)</span></pre>
-      <span class="lbl">the resolver&rsquo;s commitment</span>
-<pre>-&gt; {"case":1, "sentence":7,
-    "reference":<span class="b">"It"</span>, "candidates":["gui"],
-    "component":<span class="b">"gui"</span>,
-    "antecedent_sentence":<span class="b">6</span>,
-    "antecedent_text":<span class="b">"The UI"</span>}</pre>
+      <span class="lbl">LLM 2 &mdash; judge prompt (case excerpt)</span>
+<pre class="compact">Case 5: pronoun/role-ref -&gt; DB
+  Claimed reference: "It"
+  Claimed antecedent (S23): "The Database component represents an actual database (e.g., MySQL)."
+  [prev: The Database component represents an actual database (e.g., MySQL).] "It stores user information and meta-data of audio files such as the name and the genre."</pre>
+      <span class="lbl">judge response</span>
+<pre class="compact">{"case":5,
+ "claim":"It stores user information and meta-data of audio files such as the name and the genre.",
+ "objection":<span class="yes">"none"</span>,
+ "approve":<span class="yes">true</span>}</pre>
+      <p class="qt" style="margin-top:3px">The judge sees the resolver&rsquo;s exact reference and antecedent, rather than reconstructing them from the sentence.</p>
     </div>
   </div>
 </div>
@@ -164,16 +158,10 @@ Case 3: "UI" -&gt; gui                       [alias]
 </div><!-- /plate -->
 
 <figcaption>
-  <span class="fnum">Figure&nbsp;3:</span> Four ways an illustrative documentation excerpt reaches architecture components.
-  <span class="sub">(a)</span> The shared excerpt contains an alias mention in S6, a pronoun in S7 whose antecedent is shown
-  immediately above it, a partial name in S8, and an exact name in S11. The ordinary use of &ldquo;preferences&rdquo; in S7
-  creates the false candidate that the name judge rejects.
-  <span class="sub">(b)</span> The name route records the full computed bundle for each written form:
-  <span class="mono">{source, span, naming, mention, alternatives, last_named}</span>. The source field distinguishes
-  exact, partial, and alias matches; the judge then checks the sentence&rsquo;s architectural claim.
-  <span class="sub">(c)</span> The coreference route has no name-match bundle. It carries the target&rsquo;s exact referring expression
-  and the exact antecedent sentence used to resolve it; here &ldquo;It&rdquo; in S7 follows &ldquo;The UI&rdquo; in S6 and resolves to
-  <span class="mono">gui</span>.
+  <span class="fnum">Figure&nbsp;3:</span> One real MediaStore excerpt through the workflow.
+  <span class="sub">(a)</span> Verbatim benchmark Sentences 23, 24, 27, and 28 and their hand-labeled links; the vertical ellipsis marks the omitted sentences.
+  <span class="sub">(b)</span> The recorded s124 run uses <span class="mono">Database&rarr;DB</span> to keep S23 but rejects S27&rsquo;s <span class="mono">DB</span> candidate because &ldquo;database access&rdquo; describes <span class="mono">MediaAccess</span>.
+  <span class="sub">(c)</span> For S24, the first recorded prompt resolves <span class="mono">It</span> through S23 to <span class="mono">DB</span>; the second judges that exact commitment and approves it. The table also reports the corresponding S28 result.
 </figcaption>
 
 <p class="exportnote">Export note: the graphic is <span class="mono">#plate</span> only &mdash; print at 100&thinsp;% and crop, or screenshot the node. It is already at the paper&rsquo;s measure (395.82&thinsp;pt = 5.477&thinsp;in). The caption is draft <span class="mono">\caption{}</span> text; the figure number is a placeholder.</p>
