@@ -66,22 +66,23 @@ On doc-model \approach{} leads on both components of the score, precision $0.93$
 The scan-plus-judge split is what makes both possible at once: the scans over-propose by design, marking every sentence that writes a name or a word of one rather than extracting one mention, and the judges remove what they over-propose before the link set is emitted.
 A single extraction pass has to make that trade in one decision and cannot recover a mention it did not emit.
 
-\paragraph{Weakest case: Teammates.}
-%SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
-%  datum, name the cause, close on the aggregate. The datum moved to Teammates when the
-%  reported arm became the union one: MediaStore, the previous datum, is now 1.000 on
-%  doc-model, because the three FileStorage sentences that call the component "the
-%  DataStorage" are name cases under one rule and were coreference cases under two.
-\approach{} beats \Artemis{} on all five projects at both grains, so the honest datum is no longer a loss but a floor: Teammates is the weakest project at doc-model \fone\ $0.869$, against \Artemis{}'s $0.755$.
-It is weak on one side only, precision $0.813$ against recall $0.936$, and the cause is the same mechanism that earns the recall.
-Teammates is the project whose sentences most often refer to a component by a phrase the document coins rather than by its catalog name, so the alias table is what reaches them: it binds ``front-end'' to \texttt{UI} and ``back end'' to \texttt{Logic}.
-Those two terms then carry most of the residual false links, because a coined short form can be broader than the component it names---``Front-end files are tested separately with Jest'' is about the front end and not about the \texttt{UI} component.
-Of roughly twelve false links a run on this project, all but one come from the whole-name scan, and they concentrate on the components whose names are ordinary English (\texttt{UI}, \texttt{Logic}, \texttt{Storage}, \texttt{Client}).
-This is the one call the rule leaves to judgement rather than deciding in code, and a catalog of generic names is where it is hardest.
+% \paragraph{Weakest case: Teammates.}
+% %SPEC [t8] The section's one honest-failure paragraph (Wang T8): own the single worst
+% %  datum, name the cause, close on the aggregate. The datum moved to Teammates when the
+% %  reported arm became the union one: MediaStore, the previous datum, is now 1.000 on
+% %  doc-model, because the three FileStorage sentences that call the component "the
+% %  DataStorage" are name cases under one rule and were coreference cases under two.
+% \approach{} beats \Artemis{} on all five projects at both grains, so the honest datum is no longer a loss but a floor: Teammates is the weakest project at doc-model \fone\ $0.869$, against \Artemis{}'s $0.755$.
+% It is weak on one side only, precision $0.813$ against recall $0.936$, and the cause is the same mechanism that earns the recall.
+% Teammates is the project whose sentences most often refer to a component by a phrase the document coins rather than by its catalog name, so the alias table is what reaches them: it binds ``front-end'' to \texttt{UI} and ``back end'' to \texttt{Logic}.
+% Those two terms then carry most of the residual false links, because a coined short form can be broader than the component it names---``Front-end files are tested separately with Jest'' is about the front end and not about the \texttt{UI} component.
+% Of roughly twelve false links a run on this project, all but one come from the whole-name scan, and they concentrate on the components whose names are ordinary English (\texttt{UI}, \texttt{Logic}, \texttt{Storage}, \texttt{Client}).
+% This is the one call the rule leaves to judgement rather than deciding in code, and a catalog of generic names is where it is hardest.
 
 The same picture holds on the downstream doc-code task, where \approach{} reaches code files transitively.
-\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.813$ to $0.918$ ($+10.6$pp) and the \avgftwo\ from $0.844$ to $0.914$ ($+7.1$pp); the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
-This is because the composition step inherits the doc-model gain at every sentence, so the advantage \approach{} earns over \Artemis{} upstream carries through to the task developers care about.
+\approach{} lifts the doc-code \avgfone\ from \Artemis{}'s $0.813$ to $0.918$ ($+10.6$pp) and the \avgftwo\ from $0.844$ to $0.914$ ($+7.1$pp), 
+where the heuristic \TransArc{} pipeline reaches $0.803$ and $0.782$.
+This is because the transitive link inherits the doc-model gain at sentences, so the advantage \approach{} earns over \Artemis{} upstream carries through to the task developers care about.
 
 \begin{rqanswer}
 \paragraph{Answer to RQ1.}

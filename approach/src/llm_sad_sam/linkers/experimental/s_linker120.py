@@ -1,14 +1,5 @@
 """S-Linker120 — one judge, one rule: what a trace link is and how to read the evidence.
 
-`s_linker110` judges its two name streams with two prompts whose rubrics state opposite
-defaults, and routes a case to one or the other by which scan proposed it. This variant
-asks **one question of every candidate**: a trace link holds when the sentence makes an
-architectural claim about the component. There is no lenient row and no strict row. What
-differs between candidates is the **evidence computed from the match** — what the
-sentence writes of the name, which components the same word could reach, what the code
-can tell about the expression's place in the sentence, and which other sentences name
-the component — and the rule says how to read each of those, not which rubric to apply.
-
 **Two stages become one.** `LINKERS` is `("name", "coreference")`: both scans are merged
 by pair, judged in one pass, and relabelled `full_name` / `partial_name` at the link, so
 every downstream view — the links CSV, the phase log, the RQ3/RQ4 attribution — reads the
@@ -1467,14 +1458,6 @@ JSON only:"""
 
     def _resolve_references(self, sentences, components, name_to_id, sent_map):
         """Every sentence goes to the LLM in context; no pronoun regex.
-
-        There is no antecedent gate: requiring the antecedent sentence to state a name
-        of the component is TP +/-0.0 / FP +/-0.0 on what coreference actually
-        contributes -- pairs no earlier linker produced -- when replayed on the runs'
-        own recorded resolutions (`pilot/fold_pilots.py --pilot foldantecedent_net`).
-        The resolution must still *report* an antecedent, and both sentence numbers it
-        reports are checked against the document: a number the model invents cannot
-        name a real sentence.
         """
         comp_names = get_comp_names(components)
         all_coref = []

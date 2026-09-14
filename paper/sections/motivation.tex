@@ -11,13 +11,13 @@
 % % edges are the resulting direct doc-code links, and the dashed red edge is the false positive a
 % % judge must reject.
 % }
-\Description{An example with documentation sentences on the left, architecture components in the middle, and code packages on the right. It shows correct trace links from the documentation to the gui and preferences components and to their code packages, plus one false positive link from a sentence mentioning preferences as an ordinary word.}
+\Description{An illustrative example with documentation sentences on the left, architecture components in the middle, and code packages on the right. It shows a gui link reached through the alias UI, a later coreference to gui through It, a partial model mention reaching the Data Model component, an exact preferences mention, and one false positive where preferences is ordinary vocabulary.}
 \label{fig:example}
 \end{figure}
 
 %SPEC style: short declaratives, one claim per sentence, low clause depth.
 %SPEC framing: challenge-first -> consequence -> required capability / evaluation implication.
-%SPEC thread: keep the JabRef running example across all subsections; reuse S6/S7/S11 consistently.
+%SPEC thread: keep the shared illustrative example across motivation and approach; reuse S6/S7/S8/S11 consistently.
 %SPEC scope: kp+jd merged = missed true link AND false positive from the same sentence; ev = misleading aggregate score from long-tailed link distribution.
 %SPEC wording: prefer mention/refer/link/support; avoid surface; avoid inflated LLM language unless the text evidence supports it.
 %SPEC metrics: do not call link-level \fone invalid; frame it as answering a different, size-weighted question that can hide component abandonment.
@@ -27,12 +27,11 @@
 
 \subsection{Motivating Example}
 A trace link connects a documentation sentence to an architecture component (doc-model) or to code (doc-code).
-\autoref{fig:example} shows this setup on JabRef, a reference manager software.
-Sentence~11 describes the \texttt{preferences} component, which maps to the code package \texttt{org/jabref/preferences/}.
-So there is a trace link between this sentence and the corresponding \texttt{preferences} component.
-Sentence~7 describes the \texttt{gui} component, but it also contains the word ``preferences'' by coincidence. 
-That one sentence shows two problems that make automatic recovery hard.
-A reference uses no component name, and a word matches the wrong component.
+\autoref{fig:example} shows this setup on a compact JabRef-inspired example.
+Sentence~6 reaches the \texttt{gui} component through the alias ``UI'', and Sentence~7 refers back to that visible antecedent with ``It''.
+Sentence~8 reaches the illustrative \texttt{Data Model} component through the partial name ``model''.
+Sentence~11 names the \texttt{preferences} component exactly, while Sentence~7 also contains ``preferences'' as ordinary vocabulary.
+The four sentences therefore show exact, partial, alias, and coreference references, plus a false positive that a judge must reject.
 The next two subsections develop these problems in detail.
 
 %SPEC [merged kp+jd] job: show that name matching structurally fails both ways on the same sentence (S7): missed true link from cross-sentence reference AND false positive from ambiguous word. One root cause, two faces.
@@ -53,14 +52,13 @@ This gap between how a document refers and how a name match works cuts both ways
 %  OPEN: if space allows, say in one clause that whole-document context does not by itself
 %  resolve the reference, which is the finding \linkerC{} and the \corefValidator{} rest on.
 \autoref{fig:example} shows the miss.
-Sentence~6 introduces the \texttt{gui} component under the alias ``the UI.''
-Sentence~7 then refers to it only through the pronoun ``it.''
-A name match on Sentence~7 finds no component name, because neither \texttt{gui} nor ``UI'' appears in it.
-The trace link to \texttt{gui} is missed.
+Sentence~6 introduces the \texttt{gui} component under the alias ``UI'', and Sentence~7 then refers to the visible antecedent only through the pronoun ``It''.
+A name match on Sentence~7 finds no \texttt{gui} name or alias, so the trace link to \texttt{gui} is missed by lexical matching.
+Sentence~8 similarly writes only ``model'', a partial form of the illustrative \texttt{Data Model} name.
 
 %SPEC [fp] role: the false-positive face, grounded in the same S7.
 The same sentence shows the false positive links.
-Sentence~7 uses the word ``preferences'' as ordinary language: the UI knows the user and his preferences.
+Sentence~7 uses the word ``preferences'' as ordinary language: ``It knows the user and their preferences.''
 A name match proposes a link to the \texttt{preferences} component, because the word matches.
 But the sentence is actually about the \texttt{gui} component, not about \texttt{preferences} component.
 % Nothing in the sentence supports that link.

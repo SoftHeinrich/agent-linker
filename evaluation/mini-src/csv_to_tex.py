@@ -125,6 +125,8 @@ def render(spec):
     # column headers
     head = [lab["header"] for lab in labels] + [c["header"] for c in cols]
     out.append(" & ".join(head) + " \\\\")
+    if spec.get("subheaders"):
+        out.append(" & ".join([""] * nlab + spec["subheaders"]) + r" \\")
     out.append("\\midrule")
 
     # body. Each label flagged group_by blanks when its value repeats the row above.
@@ -157,13 +159,32 @@ def render(spec):
                 shown = f"\\textbf{{{shown}}}"
             cells.append(shown)
         for c in cols:
-            v = r.get(c["field"], "")
-            s = fmt(v, c["kind"])
-            n = _num(v)
-            if c["field"] in best and n is not None and abs(n - best[c["field"]]) < 1e-9:
-                s = f"\\textbf{{{s}}}"
-            elif is_summary and s != "--":
-                s = f"\\textbf{{{s}}}"
+            # Pair F1/F2 in one cell when a table needs many per-project rows.
+            if "lines" in c:
+                parts = [
+                    "/".join(fmt(r.get(field, ""), kind) for field, kind in line)
+                    for line in c["lines"]]
+                if c.get("multiline"):
+                    linebreak = r"\\[-1pt]"
+                    s = f"\\makecell[c]{{{linebreak.join(parts)}}}"
+                else:
+                    s = c.get("line_separator", " ").join(parts)
+                if is_summary:
+                    s = f"\\textbf{{{s}}}"
+            elif "fields" in c:
+                kinds = c.get("kinds") or [c["kind"]] * len(c["fields"])
+                s = "/".join(fmt(r.get(field, ""), kind)
+                             for field, kind in zip(c["fields"], kinds))
+                if is_summary and s != "--/--":
+                    s = f"\\textbf{{{s}}}"
+            else:
+                v = r.get(c["field"], "")
+                s = fmt(v, c["kind"])
+                n = _num(v)
+                if c["field"] in best and n is not None and abs(n - best[c["field"]]) < 1e-9:
+                    s = f"\\textbf{{{s}}}"
+                elif is_summary and s != "--":
+                    s = f"\\textbf{{{s}}}"
             cells.append(s)
         out.append(" & ".join(cells) + " \\\\")
         for lab in labels:
@@ -238,27 +259,32 @@ SUITE_NOCMR_GROUPS = [("doc-model (link)", 4), ("doc-code (file)", 4),
 # Spec registry
 # --------------------------------------------------------------------------- #
 SPECS = [
-    # ---- RQ1 body ----
-    {"csv": "rq1.csv", "out": "rq1-results.tex", "label": "tab:rq1", "size": "\\footnotesize", "colsep": "3pt",
-     "colspec": "@{}l ZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
-     "caption": "RQ1 macro precision, recall, \\fone\\ and \\ftwo. "
-                "Both \\ac{LLM} systems run on GPT-5.6-terra and are reported as the mean of three runs; \\TransArc{} is deterministic.",
-     "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
-     "groups": [("doc-model (link)", 4), ("doc-code (file)", 4)],
+    # ---- RQ1 body: primary-backend comparison, transposed by project ----
+    {"csv": "rq1_transposed.csv", "out": "rq1-results.tex", "label": "tab:rq1",
+     "star": True, "size": "\\scriptsize", "colsep": "3pt", "no_bold": True,
+     "summary": {"field": "project", "value": "Average"}, "block_by": ["project"],
+     "colspec": "@{}llccc@{}",
+     "caption": "RQ1 precision, recall, \\fone, and \\ftwo per project on GPT-5.6-terra. "
+                "All values use three decimal places. LLM results are means of three runs; "
+                "the deterministic SWATTR$\\rightarrow$\\TransArc{} pipeline supplies the corresponding doc-model and doc-code stages.",
+     "labels": [{"field": "project", "header": "Project", "group_by": True},
+                {"field": "task", "header": "Task", "map": {"DM": "doc-model", "DC": "doc-code"}}],
+     "subheaders": ["Prec./Rec.; \\fone/\\ftwo", "Prec./Rec.; \\fone/\\ftwo", "Prec./Rec.; \\fone/\\ftwo"],
      "cols": [
-         {"field": "dm_p", "header": "P", "kind": "f2"},
-         {"field": "dm_r", "header": "R", "kind": "f2"},
-         {"field": "dm_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
-         {"field": "dm_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
-         {"field": "dc_p", "header": "P", "kind": "f2"},
-         {"field": "dc_r", "header": "R", "kind": "f2"},
-         {"field": "dc_f1", "header": "\\fone", "kind": "f3", "bold": "max"},
-         {"field": "dc_f2", "header": "\\ftwo", "kind": "f3", "bold": "max"},
+         {"header": "\\approach{}", "line_separator": "\\,;\\,", "lines": [
+             [("approach_p", "f3"), ("approach_r", "f3")],
+             [("approach_f1", "f3"), ("approach_f2", "f3")]]},
+         {"header": "\\Artemis{}", "line_separator": "\\,;\\,", "lines": [
+             [("Artemis_p", "f3"), ("Artemis_r", "f3")],
+             [("Artemis_f1", "f3"), ("Artemis_f2", "f3")]]},
+         {"header": "SWATTR$\\rightarrow$\\TransArc{}", "line_separator": "\\,;\\,", "lines": [
+             [("pipeline_p", "f3"), ("pipeline_r", "f3")],
+             [("pipeline_f1", "f3"), ("pipeline_f2", "f3")]]},
      ],
-     "footnote": "$^{\\dagger}$SWATTR is the deterministic doc-model stage of \\TransArc{}; "
-                 "\\TransArc{} has no standalone doc-model output."},
+     "footnote": "SWATTR is the deterministic doc-model stage of \\TransArc{}; \\TransArc{} has no "
+                 "standalone doc-model output."},
 
-    # ---- RQ2 body (was fig:rq2-profile) ----
+    # ---- RQ2 body (size-aware macro suite) ----
     {"csv": "rq2.csv", "out": "rq2-results.tex", "label": "tab:rq2", "colsep": "3pt",
      "colspec": "@{}l ZZZZZZZZZ@{}", "tabularx": "\\columnwidth", "fit": True,
      "caption": "RQ2 size-aware suite, both tasks: reference \\fone/\\ftwo\\ beside the "
