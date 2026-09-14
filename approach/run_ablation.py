@@ -235,6 +235,7 @@ CANONICAL_VARIANTS = [
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
     "s_linker121",  # s120 with the judge's three call-level arrangements removed
     "s_linker122",  # s121 with the anchor block removed and one clause in its place
+    "s_linker123",  # s122 with the judge's three evidence fields merged into one
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2374,6 +2375,33 @@ VARIANT_SPECS = {
             "were holding (terra spurious +7.3 a run, p=0.047; luna +7.0), which is "
             "what a fact cannot do for a weighing. Stage arms and the E2E: "
             "../results/s121_ablations/README.md."
+        ),
+    ),
+    "s_linker123": dict(
+        aliases=("written",),
+        module="llm_sad_sam.linkers.experimental.s_linker123",
+        class_name="SLinker123",
+        description=(
+            "S-Linker123 - s122 with the union judge's three evidence fields merged "
+            "into one readable field. Staged on s122: the clause stays, the anchors "
+            "stay gone, and every shared method including the coreference shortlist is "
+            "byte-identical (pilot/s123_inherits.py, 19/19). `writes`, `alternatives` "
+            "and `mention` become `written` and `competitors`, where `written` takes "
+            "the four values the recorded runs actually produce - whole name 46.0%, "
+            "one word 29.1%, short form 15.9%, whole name (qualified) 9.0% - computed "
+            "by ONE function instead of two predicates that had to agree. The merge is "
+            "entailed, not fitted: `qualified` implies the whole name because both go "
+            "through `_find_exact_form`, which `_written_as` asserts via "
+            "SKIP_QUALIFIED. It removes a duplicate the head prints on 598 of 598 "
+            "alias cases (`mention=via known alias` restates `writes=a short form`) "
+            "and drops three MentionType values that never fire. Level 1, no calls "
+            "(pilot/written_field_audit.py, 11,586 checks): candidate sets equal on "
+            "30/30 project-runs, the head's prompts rebuilt byte-identically to the "
+            "ones actually sent, evidence lines -33.7%, whole judging call -311 B mean "
+            "and -4,768 B a five-project run. NOT YET MEASURED at the stage: read it "
+            "on the `short form` row, which keeps at 0.741 against a gold rate of "
+            "0.532 and is the row whose duplicate this removes. "
+            "../results/s123_written_field/README.md."
         ),
     ),
     "s_linker120_noknow": dict(
