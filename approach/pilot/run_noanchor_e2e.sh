@@ -28,7 +28,25 @@ set -u
 STAMP=$(date +%Y%m%d)
 MODEL=${1:?usage: run_noanchor_e2e.sh <terra|luna> [runs]}
 RUNS=${2:-3}
-if [ -f ../.env ]; then set -a; . ../.env; set +a; fi
+
+# The interpreter, resolved rather than assumed: `../.venv` is right in a normal
+# checkout and wrong in a git worktree, where the venv stays in the main one. Override
+# with PY=... . Resolving it late and loudly beats six runs that fail in a second each.
+PY=${PY:-}
+if [ -z "${PY}" ]; then
+  for candidate in ../.venv/bin/python \
+                   "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)/../.venv/bin/python"; do
+    if [ -x "${candidate}" ]; then PY="${candidate}"; break; fi
+  done
+fi
+if [ -z "${PY}" ] || [ ! -x "${PY}" ]; then
+  echo "no project interpreter found; set PY=/path/to/.venv/bin/python" >&2; exit 2
+fi
+echo "interpreter: ${PY}"
+
+for env_file in ../.env "$(dirname "${PY}")/../../.env"; do
+  if [ -f "${env_file}" ]; then set -a; . "${env_file}"; set +a; break; fi
+done
 for i in $(seq 1 "${RUNS}"); do
   RUN="../results/noanchor_e2e_${MODEL}_r${i}_${STAMP}"
   if [ -f "${RUN}/s_linker122_jabref_links.csv" ]; then
@@ -44,9 +62,9 @@ for i in $(seq 1 "${RUNS}"); do
   OPENAI_SERVICE_TIER=${OPENAI_SERVICE_TIER:-default} \
   PHASE_CACHE_DIR="${RUN}/phase_states" \
   LLM_LOG_DIR="${RUN}/llm_logs" \
-    ../.venv/bin/python run_ablation.py \
+    "${PY}" run_ablation.py \
     --variants ${ARMS} \
     --datasets mediastore teammates teastore bigbluebutton jabref \
     --results-dir "${RUN}" 2>&1 | tee "${RUN}.log"
 done
-echo "score with: ../.venv/bin/python pilot/score_runs.py ../results/noanchor_e2e_${MODEL}_r{1,2,3}_${STAMP}"
+echo "score with: ${PY} pilot/score_runs.py ../results/noanchor_e2e_${MODEL}_r{1,2,3}_${STAMP}"

@@ -1,0 +1,33 @@
+interpreter: /mnt/hostshare/ardoco-home/agent-linker/.git/../.venv/bin/python
+=== terra run 1 (s_linker121 s_linker122) -> ../results/noanchor_e2e_terra_r1_20260914
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-terra)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker121, s_linker122
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker121 ---
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+    Alias: Database -> DB
+    Alias: DataStorage -> FileStorage
+    Alias: AudioAccess -> MediaAccess
+    Alias: ReEncoder -> Reencoding
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 31 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
