@@ -23,8 +23,13 @@ below the recorded TP floor of 4.8 (`pilot/union_composition.py`).
 They live in `union_iterations.py` as data — rule text, case format, verdict contract and
 numbers — so the trail can be read and re-run (`pilot/union_pilots.py --arms control v3
 v13` puts two of them in one invocation; this file runs `v13`, written out below, and
-`pilot/union_defensibility.py` checks the two are the same bytes). Three results from the
-round are worth more than the arm:
+`pilot/union_defensibility.py` checks the two are the same bytes). A fourteenth, `v14n`,
+was added afterwards by the label-and-rule round and refused: it is this rule with every
+carried criterion paraphrased into general English and nothing else changed, and it reads
+net -5.0 a run with the whole estimate in spurious. **Quotation is not a style choice
+here** — it is what makes the clauses checkable against the constants they came from, so
+a paraphrase has to win to be worth its defensibility cost, and it does not. Three
+results from the round are worth more than the arm:
 
   * **An evidence field restrains when it is stated and misleads when it is weighted.**
     Iteration 1 stated the alternative set as a ground for rejecting and lost 7.6 gold on
@@ -42,7 +47,7 @@ round are worth more than the arm:
     nothing on luna. What that stream actually loses to is being asked an identity
     question, in any of the several ways a merged prompt can ask one.
 
-**Defensibility is enforced, not asserted.** `pilot/union_defensibility.py` (25 checks)
+**Defensibility is enforced, not asserted.** `pilot/union_defensibility.py` (40 checks)
 holds the rule to GATE-06/GATE-07: every clause that states a criterion is a **verbatim
 slice of a rule constant this branch already had** — `MENTION_COUNTS` and
 `POSITIVE_GROUND` are computed slices of `LAYERED_ENTITY_RULES`, `ACTS_ON` is asserted
@@ -72,6 +77,38 @@ including the coreference prompt byte for byte). The eleven blocks that are byte
 across the whole family — the tracing wrapper, the JSON call path, the checkpoint and log
 writers, the per-phase metrics, the batching and the log's views — live in `linker_infra`
 and are called from the methods that used to hold them, exactly as in the ancestor.
+
+**How to read this file, in its own terms.** It runs top to bottom in the order the
+workflow does, and nothing in it refers to a marker scheme belonging to another variant:
+
+    prompt constants         every rule the workflow states, each with its ground
+    the name relation        `NameForm`, `lemmas`, `_name_spans` — the whole
+                             deterministic layer, and the only thing in the file that
+                             decides what a case IS rather than how it reads
+    Linker 0 — KNOWLEDGE     the alias table: one document-wide pass, one judge
+    Linker 1 — NAME          both scans merged into one stream (`_name_candidates`),
+                             one evidence bundle per case (`_union_evidence`), one
+                             rule and one judging pass (`_judge_union`)
+    Linker 2 — COREFERENCE   the resolver and its strict judge, untouched
+    plumbing                 one-line delegations to `linker_infra`
+
+**Written as a file, not as a diff.** It carried `HEAD DELTA` markers naming another
+variant's derivation, 1:1 wrappers around `linker_infra`, a five-method proposer chain
+and a four-method label chain — 18 methods a reader of the *approach* had to walk and
+none of which said anything, two of them the same function twice (`_writes_name` was
+`_find_exact_form` behind an always-false flag). They are gone: the proposer is one
+`_name_candidates`, the label is one `_mention_label`, and the judge is `_judge_union`'s
+four blocks. 31 methods, longest 89 lines, and 7 hops from `link()` to the relation against the
+ancestor's 9 (`pilot/call_chain_audit.py`).
+
+**What replaces the byte-identity claim.** Holding every shared method identical to
+`s_linker110` is what made the file a diff; the claim it was making — this does what the
+ancestor does, except at the judging — is now checked by behaviour instead, and more
+strictly: `pilot/test_s120_standalone.py` T6 runs the ancestor's own scans beside this
+file's and compares every candidate, surface included, and
+`pilot/union_render_snapshot.py` hashes every case, every prompt and every judged
+decision over five projects x two alias tables x every iteration of the trail. A
+refactor is only a refactor if `--check` reports all of them identical.
 
 **Lineage.** `s_linker110`, unchanged except at the judging of the two name streams.
 """
@@ -436,12 +473,6 @@ class SLinker120:
     COREFERENCE_BATCH = 10         # sentences per coreference-resolution call
     ASK_ATTEMPTS = 2               # initial call + one retry on an empty parse
 
-    # ══ HEAD DELTA 1 (s_linker92a) ══════════════════════════════════════════
-    #: Whether a name written inside a longer dotted identifier is skipped here.
-    #: False in this variant: `QUALIFIED_CLAUSE` states the same thing to the judge
-    #: that reads every one of these cases, and `s_linker92b` is the arm that asks
-    #: whether saying it twice is worth the pairs.
-    SKIP_QUALIFIED = False
 
     def __init__(
         self,
@@ -495,22 +526,28 @@ class SLinker120:
 
         current: list[SadSamLink] = []
         history: list[dict] = []
+        # Two stages, not three: both name scans propose into one stream judged by one
+        # call, and what used to be the order between them is a fact in the case
+        # (`naming`). No stage is shown what an earlier one linked; `_union` merges by
+        # pair and `_stage_of` decides the label, not the order.
+        runners = {"name": self._run_name_linker,
+                   "coreference": self._run_coreference_linker}
         for linker in self.LINKERS:
             print(f"\n[Linker] {linker}")
-            produced, feedback = self._run_linker(
-                linker, sentences, components, name_to_id, sent_map
+            produced, feedback = runners[linker](
+                sentences, components, name_to_id, sent_map
             )
             current = self._union(current, produced)
             history.append({
                 "linker": linker,
-                "feedback": self._linker_feedback(feedback),
+                "feedback": linker_feedback(feedback),
             })
             self._save_phase(text_path, f"linker_{linker}", {
                 "links": produced, "feedback": feedback, "workflow": history,
             })
 
         self.workflow = history
-        self._phase_metrics = self._compute_phase_metrics()
+        self._phase_metrics = phase_metrics(self._llm_calls)
         self._log(
             "s25_summary",
             {"components": len(components), "sentences": len(sentences)},
@@ -533,28 +570,7 @@ class SLinker120:
               f"({time.time() - started:.1f}s, {len(self._llm_calls)} LLM calls)")
         return current
 
-    def _run_linker(self, linker, sentences, components, name_to_id, sent_map):
-        """Dispatch. No linker receives the links the earlier one produced.
-
-        Two entries, not three: the full-name and partial-name scans propose into
-        one stream judged by one call, and what used to be the order between them is
-        now a fact in the case (`naming`). Whatever coreference re-proposes, `_union`
-        merges by pair, and the merge is decided by `_stage_of`, not by order.
-        """
-        if linker == "name":
-            return self._run_name_linker(
-                sentences, components, name_to_id, sent_map)
-        if linker == "coreference":
-            return self._run_coreference_linker(
-                sentences, components, name_to_id, sent_map)
-        raise RuntimeError(f"unknown linker: {linker!r}")
-
     # ── Concurrency and small helpers ────────────────────────────────────────
-
-    @staticmethod
-    def _iter_batches(items, n):
-        """Yield (batch_num, batch_slice) — batch_num is 1-indexed."""
-        return iter_batches(items, n)
 
     @staticmethod
     def _prev_prefix(snum, sent_map) -> str:
@@ -614,19 +630,6 @@ class SLinker120:
                 result.append(link)
                 keys.add(key)
         return result
-
-    @staticmethod
-    def _link_view(links, sent_map):
-        return link_view(links, sent_map)
-
-    @staticmethod
-    def _decision_view(decisions):
-        return decision_view(decisions)
-
-    @staticmethod
-    def _linker_feedback(feedback):
-        """Reduce detailed linker evidence to accepted/rejected references."""
-        return linker_feedback(feedback)
 
     # ── Prompt builders ──────────────────────────────────────────────────────
 
@@ -707,27 +710,22 @@ Return JSON:
 {{"validations": [{{"case": 1, "claim": "<exact quote or none>", "objection": "<strongest ground to reject, or none>", "approve": true}}]}}
 JSON only:"""
 
-    # ══ HEAD DELTA 3 (s_linker110) ══════════════════════════════════════════
-    def _named_before(self, comp_names, sentence_table, target):
-        """Components the table names strictly before ``target``, latest first.
-
-        Exact, not heuristic: the same name relation the rest of the module reads
-        names with, applied to the sentences the case was already shown.
-        """
-        latest: dict[str, int] = {}
-        for row in sentence_table:
-            number = row.get("sentence")
-            if not isinstance(number, int) or number >= target:
-                continue
-            for name in comp_names:
-                if self._states_a_name(row.get("text", ""), name):
-                    latest[name] = max(latest.get(name, 0), number)
-        return sorted(latest.items(), key=lambda item: -item[1])
-
+    # ── the resolver's per-case antecedent shortlist ─────────────────────────
     def _prompt_coref(self, comp_names, sentence_table, targets) -> str:
         blocks = []
         for target in targets:
-            near = self._named_before(comp_names, sentence_table, target["target"])
+            # the components the sentences above this case actually name, latest
+            # first -- exact, by the same relation the rest of the module reads
+            # names with, over the sentences the case was already shown
+            latest: dict[str, int] = {}
+            for row in sentence_table:
+                number = row.get("sentence")
+                if not isinstance(number, int) or number >= target["target"]:
+                    continue
+                for name in comp_names:
+                    if self._states_a_name(row.get("text", ""), name):
+                        latest[name] = max(latest.get(name, 0), number)
+            near = sorted(latest.items(), key=lambda item: -item[1])
             listed = (", ".join(f"{name} (S{number})" for name, number in near)
                       if near else "none")
             blocks.append(
@@ -786,7 +784,16 @@ JSON only:"""
         )
 
 
-    # ── Knowledge module ─────────────────────────────────────────────────────
+    # ═════════════════════════════════════════════════════════════════════════
+    # Linker 0 — KNOWLEDGE: the alias table, one document-wide pass and one judge.
+    # ═════════════════════════════════════════════════════════════════════════
+    # The table has two jobs and both are load-bearing: it ADMITS full-name
+    # candidates (23 gold links) and it SUPPRESSES partial-name ones, so its size
+    # trades recall between two linkers and no single-stage arm can see it. Measured
+    # four ways — s26's diagnosis, s46 at F1 -1.5, the partial-name round, s60 at
+    # F1 -2.7. It runs over the whole document because alias definitions are stated
+    # once and used far away (s27's passage-length effect), which is the opposite
+    # granularity from the one the name stages want.
 
     def _learn_document_knowledge(self, sentences, components):
         """Propose aliases over the whole document, then judge them.
@@ -862,146 +869,9 @@ JSON only:"""
         return knowledge
 
 
-    # ══ HEAD DELTA 1 (s_linker92a) ══════════════════════════════════════════
-    # ── the proposer ─────────────────────────────────────────────────────────
+    # ── the proposer: both name scans, no LLM call ───────────────────────────
 
-    def _named_spans(self, text, name):
-        """Spans of ``text`` that write ``name`` whole, at this variant's fidelity.
-
-        The one place a subclass changes the relation point. `s_linker92c` and
-        `s_linker92d` override it; nothing else in the family does.
-        """
-        return self._name_spans(text, name, NameForm.ANY_CASE)
-
-    def _writes_name(self, text, name):
-        """The surface ``text`` uses to write ``name``, or "" if it does not.
-
-        The first span wins, which is `_find_exact_form`'s rule and the one the
-        recorded `matched_text` of every earlier full-name candidate follows.
-        """
-        for start, end in self._named_spans(text, name):
-            if self.SKIP_QUALIFIED and self._in_dotted_path(text, start, end):
-                continue
-            return text[start:end]
-        return ""
-
-    def _extract_named_mentions(self, sentences, components, name_to_id, sent_map):
-        """Every pair whose sentence writes a name of the component. No call.
-
-        Signature and return type are the head's — a dict keyed
-        (sentence, component_id) of `CandidateLink` — so `_run_full_name_linker`,
-        the evidence bundles and the judge are reached unchanged.
-        """
-        by_component = self._names_by_component()
-        candidates: dict = {}
-        for sentence in sentences:
-            for component in components:
-                for name in (component.name, *by_component.get(component.name, ())):
-                    surface = self._writes_name(sentence.text, name)
-                    if not surface:
-                        continue
-                    candidates[(sentence.number, component.id)] = CandidateLink(
-                        sentence.number, sentence.text, component.name,
-                        component.id, surface, source="full_name",
-                    )
-                    break
-        print(f"    Extracted: {len(candidates)} (scan, 0 calls)")
-        return candidates
-
-    def _scan_all(self, sentences, components):
-        """THE CANDIDATE GENERATOR: every (sentence, component) pair whose sentence
-        carries one word of the component's name, unless the sentence writes a whole
-        name of it -- that pair is the full-name linker's, and the target-blind,
-        single-pass denotation judge that hears partial names is not the judge for
-        it. Of the 161 pairs the ungated scan adds, 140 come from dropping that skip
-        (s80 post-mortem, replayed over the five catalogs).
-
-        s_linker64 wrote three generators with three regexes; s79-s81 reduced them to
-        one row of a `SCANS` table with two options that were never set, and s82
-        deletes the table. Nothing here admits a link: every pair is a case for a
-        judge. Later spans of the same pair overwrite earlier ones, so the recorded
-        `matched_text` is the last surface found in the sentence -- s_linker64's
-        behaviour at both rebuilt sites.
-
-        Called only by `_scan`, which is this loop plus HEAD DELTA 2's refusal.
-        """
-        candidates = {}
-        for sentence in sentences:
-            text = sentence.text
-            for component in components:
-                if self._states_a_name(text, component.name):
-                    continue  # a whole name is stated: the full-name linker's pair
-                for start, end in self._name_spans(text, component.name,
-                                                   NameForm.ANY_WORD):
-                    candidates[(sentence.number, component.id)] = CandidateLink(
-                        sentence.number, text, component.name, component.id,
-                        text[start:end], source="partial_name_candidate",
-                    )
-        return list(candidates.values())
-
-    # ══ HEAD DELTA 2 (s_linker109) ══════════════════════════════════════════
-    def _covering_names(self, text, exclude, components):
-        """Spans where ``text`` writes some *other* component's **catalog** name.
-
-        `_name_spans` at `ANY_CASE` is the whole-name row of the relation — the row
-        `_states_a_name` reads and the row `s_linker92a` scans — so this introduces no
-        fidelity the module does not already implement.
-
-        **Discovered aliases are deliberately not consulted here, and that asymmetry
-        is the design.** The module's scans use N(c) = the catalog name *and* the
-        run's aliases, because a scan only ever *admits* a case for a judge, and the
-        branch's law is that nothing in the deterministic layer admits a link. This
-        predicate is the one thing in the layer that *ends* a case, so it may rest
-        only on what is given: a catalog name is an input, while the alias table is
-        the output of an LLM stage that varies by ~2.8 terms a run. Letting it veto
-        makes one stage's sampling a silent refusal in another's — and it does, if
-        allowed: the alias form of this predicate costs **3 gold links in one recorded
-        luna run**, all three where the run's table bound a document term to the
-        sibling of the component the gold names.
-        """
-        covering = []
-        for component in components:
-            if component.name == exclude:
-                continue
-            covering.extend(
-                self._name_spans(text, component.name, NameForm.ANY_CASE))
-        return covering
-
-    def _only_inside_another_name(self, text, name, components) -> bool:
-        """True when every writing of ``name``'s word lies inside another whole name.
-
-        *Every* one, not any: a sentence that also writes the word on its own has said
-        something about this component somewhere else in it, and that pair is a case
-        for the judge as before. The predicate is the reason for the refusal stated
-        exactly — it does not fire on a component that merely has a sibling.
-        """
-        mine = self._name_spans(text, name, NameForm.ANY_WORD)
-        if not mine:
-            return False
-        covering = self._covering_names(text, name, components)
-        if not covering:
-            return False
-        return all(any(start <= a and b <= end for start, end in covering)
-                   for a, b in mine)
-
-    def _scan(self, sentences, components):
-        """`_scan_all`, minus the pairs another component's name covers.
-
-        The loop is the head's, called and filtered rather than restated: a restated
-        candidate loop is where this line's one real bug hid.
-        """
-        kept, refused = [], 0
-        for candidate in self._scan_all(sentences, components):
-            if self._only_inside_another_name(
-                    candidate.sentence_text, candidate.component_name, components):
-                refused += 1
-                continue
-            kept.append(candidate)
-        if refused:
-            print(f"    Partial-name scan refused {refused} "
-                  f"(word written only inside another component's name)")
-        return kept
-
+    # ── the one refusal: a word written only inside another whole name ───────
     @classmethod
     def _name_spans(cls, text, name, form: NameForm):
         """**The relation.** Spans of ``text`` that write ``name`` at ``form``.
@@ -1034,65 +904,67 @@ JSON only:"""
 
         raise ValueError(f"unknown name form: {form!r}")
 
-    @staticmethod
-    def _in_dotted_path(text, start, end) -> bool:
-        """True when text[start:end] is glued to a dot on either side, as in x.y.
-
-        The single definition of "inside a qualified name". Two divergent copies used
-        to exist; the divergence never changed a result over 3697 (name, sentence)
-        pairs, so the stricter reading is the one kept.
-        """
-        before = (start > 1 and text[start - 1] == "."
-                  and text[start - 2].isalnum())
-        after = (end + 1 < len(text) and text[end] == "."
-                 and text[end + 1].isalnum())
-        return before or after
 
 
     # ── Mention labels ────────────────────────────────────────────────────────
 
-    def _classify_mention_typed(self, comp_name: str, text: str) -> MentionType:
-        """Label how the name appears, using the one matching test.
-
-        The case distinction compares the matched surface against the name rather
-        than running a second case-sensitive predicate: `_find_exact_form` already
-        returns what it matched. Measured indistinguishable from the two-predicate
-        form it replaces, at the stage and end to end.
-        """
-        matched = self._find_exact_form(text, comp_name)
-        if matched:
-            if self._all_occurrences_in_qualified_path(comp_name.lower(), text):
-                return MentionType.CODE_TOKEN
-            return (MentionType.PROPER_STANDALONE if matched == comp_name
-                    else MentionType.LOWERCASE_PROSE)
-        for alias in self._names_by_component().get(comp_name, ()):
-            if self._find_exact_form(text, alias):
-                return MentionType.VIA_ALIAS
-        return MentionType.INDIRECT
-
-    @classmethod
-    def _all_occurrences_in_qualified_path(cls, comp_lower: str, text: str) -> bool:
-        any_match = False
-        for m in re.finditer(rf'\b{re.escape(comp_lower)}\b', text):
-            any_match = True
-            if not cls._in_dotted_path(text, m.start(), m.end()):
-                return False
-        return any_match
 
 
     #: The mention labels the judge cannot re-derive from the sentence it is shown.
     #: Everything else `_classify_mention_typed` can say is a restatement of the case
     #: header, and s80 measured the cost of dropping it at 3-21% of those approvals.
+    #:
+    #: **Both halves of that are now measured on this variant** rather than argued
+    #: (`pilot/union_pilots.py --arms union alllabels aliasmute nomention`, three
+    #: samples, fixed candidates, `../results/labelrule_round/`). Printing *every*
+    #: label the classifier can compute adds a `mention=` line to 144 of 296 cases and
+    #: moves gold by **0.00 a unit, p = 1.000** (spurious +1.3 a run, n.s.): the three
+    #: labels left out are exactly the three a judge holding the sentence can read off
+    #: it, so stating them is bytes without verdicts. Printing *none* is the round's
+    #: only significant result -- **net -15.0 a run, p = 0.031**, at spurious +10.0 --
+    #: so the field as a whole is load-bearing and it is `CODE_TOKEN` that carries it.
+    #: Dropping only `VIA_ALIAS`, which restates the case's own `writes` line on all 43
+    #: alias cases, is gold-neutral at net -1.0 (p = 0.875): free to within the noise,
+    #: and kept, because an unnecessary change is not a defensible one.
     RETAINED_MENTION_TYPES = frozenset({
         MentionType.VIA_ALIAS,
         MentionType.CODE_TOKEN,
     })
 
-    def _retained_mention_label(self, comp_name: str, text: str) -> str:
-        """The computed label, or "" where the judge is holding the fact already."""
-        mention = self._classify_mention_typed(comp_name, text)
-        return mention.value if mention in self.RETAINED_MENTION_TYPES else ""
 
+
+    def _mention_label(self, comp_name: str, text: str) -> str:
+        """The computed label the judge cannot re-derive, or "".
+
+        Five values classified, two printed (`RETAINED_MENTION_TYPES`). The case
+        distinction compares the matched surface against the name rather than running
+        a second predicate. Measured: printing all five moves gold 0.00 a unit
+        (p = 1.000); printing none is net -15.0 a run (p = 0.031).
+        """
+        matched = self._find_exact_form(text, comp_name)
+        if matched:
+            dotted, any_match = True, False
+            for m in re.finditer(rf"\b{re.escape(comp_name.lower())}\b", text):
+                any_match = True
+                start, end = m.start(), m.end()
+                before = (start > 1 and text[start - 1] == "."
+                          and text[start - 2].isalnum())
+                after = (end + 1 < len(text) and text[end] == "."
+                         and text[end + 1].isalnum())
+                if not (before or after):
+                    dotted = False
+                    break
+            if any_match and dotted:
+                mention = MentionType.CODE_TOKEN
+            else:
+                mention = (MentionType.PROPER_STANDALONE if matched == comp_name
+                           else MentionType.LOWERCASE_PROSE)
+        elif any(self._find_exact_form(text, alias) for alias
+                 in self._names_by_component().get(comp_name, ())):
+            mention = MentionType.VIA_ALIAS
+        else:
+            mention = MentionType.INDIRECT
+        return mention.value if mention in self.RETAINED_MENTION_TYPES else ""
 
     # ═════════════════════════════════════════════════════════════════════════
     # Linker 1 — NAME: both scans, one stream, one rule, one judging pass.
@@ -1139,17 +1011,60 @@ JSON only:"""
     # ── the merged stream ────────────────────────────────────────────────────
 
     def _name_candidates(self, sentences, components, name_to_id, sent_map):
-        """Both scans, unchanged, merged by pair. The whole-name scan wins a tie.
+        """Both scans, merged by pair. No LLM call, and nothing here admits a link.
 
-        There is no tie by construction — `_scan_all` skips a pair whose sentence
-        states a whole name — and the rule is stated anyway so the merge does not
-        depend on that property holding in a fork.
+        The refusal reads catalog names only, never discovered aliases: a scan may
+        admit a case on an LLM's output, but this is the one predicate that ENDS one,
+        so it rests on given input. The alias form costs 3 gold in a recorded luna run.
         """
-        merged = dict(self._extract_named_mentions(
-            sentences, components, name_to_id, sent_map))
-        for candidate in self._scan(sentences, components):
-            merged.setdefault(
-                (candidate.sentence_number, candidate.component_id), candidate)
+        by_component = self._names_by_component()
+
+        # whole name, case-insensitive, over the catalog name and the run's aliases
+        merged: dict = {}
+        for sentence in sentences:
+            for component in components:
+                for name in (component.name, *by_component.get(component.name, ())):
+                    surface = self._find_exact_form(sentence.text, name)
+                    if surface:
+                        merged[(sentence.number, component.id)] = CandidateLink(
+                            sentence.number, sentence.text, component.name,
+                            component.id, surface, source="full_name",
+                        )
+                        break
+        print(f"    Extracted: {len(merged)} (scan, 0 calls)")
+
+        # one word of the name, at any WordNet reading of it
+        word_only, refused = {}, 0
+        for sentence in sentences:
+            text = sentence.text
+            for component in components:
+                if self._states_a_name(text, component.name):
+                    continue
+                spans = self._name_spans(text, component.name, NameForm.ANY_WORD)
+                if not spans:
+                    continue
+                # refuse when EVERY writing of the word sits inside another whole name
+                covering = []
+                for other in components:
+                    if other.name != component.name:
+                        covering.extend(self._name_spans(text, other.name,
+                                                         NameForm.ANY_CASE))
+                if covering and all(any(s <= a and b <= e for s, e in covering)
+                                    for a, b in spans):
+                    refused += 1
+                    continue
+                # the last span wins, which is what the recorded matched_text follows
+                start, end = spans[-1]
+                word_only[(sentence.number, component.id)] = CandidateLink(
+                    sentence.number, text, component.name, component.id,
+                    text[start:end], source="partial_name_candidate",
+                )
+        if refused:
+            print(f"    Partial-name scan refused {refused} "
+                  f"(word written only inside another component's name)")
+
+        for key, candidate in word_only.items():
+            merged.setdefault(key, candidate)
         return [merged[key] for key in sorted(merged)]
 
     @staticmethod
@@ -1165,22 +1080,26 @@ JSON only:"""
     def _union_evidence(self, candidate, components, sent_map):
         """Every fact of the match this case carries. No weighing lives here.
 
-        `naming` is `_states_a_name` decomposed into which of N(c) matched;
-        `alternatives` is the same relation asked of every other component, which is
-        `s_linker107`'s enumeration moved from the resolver to the name streams;
-        `last_named` is the recency the anchors were being read for.
+        `naming` is the field everything branches on. `alternatives` is the same
+        relation asked of every other component: stated as context, never as a ground
+        to reject (iteration 1 priced that at -7.6 gold, iteration 6 priced deleting
+        the field at +26.4 spurious).
         """
         text = candidate.sentence_text
         name = candidate.component_name
-        whole = self._writes_name(text, name)
-        alias = ""
-        if not whole:
-            for term, owner in getattr(
-                    getattr(self, "doc_knowledge", None), "aliases", {}).items():
+
+        # naming -- the whole name, else a document-established alias, else one word.
+        naming = "word only"
+        if self._find_exact_form(text, name):
+            naming = "whole name"
+        else:
+            aliases = getattr(getattr(self, "doc_knowledge", None), "aliases", {})
+            for term, owner in aliases.items():
                 if owner == name and self._find_exact_form(text, term):
-                    alias = term
+                    naming = "alias"
                     break
-        naming = ("whole name" if whole else "alias" if alias else "word only")
+
+        # alternatives -- other components matching one of the same words, here.
         mine = {text[start:end].casefold() for start, end
                 in self._name_spans(text, name, NameForm.ANY_WORD)}
         alternatives = []
@@ -1190,6 +1109,8 @@ JSON only:"""
             spans = self._name_spans(text, other.name, NameForm.ANY_WORD)
             if spans and {text[s:e].casefold() for s, e in spans} & mine:
                 alternatives.append(other.name)
+
+        # anchors and last_named -- one pass over the document, in sentence order.
         anchors, last_named = [], -1
         for sentence in sorted(sent_map.values(), key=lambda s: s.number):
             if sentence.number == candidate.sentence_number:
@@ -1199,11 +1120,12 @@ JSON only:"""
                     last_named = candidate.sentence_number - sentence.number
                 if len(anchors) < self.ANCHOR_LIMIT:
                     anchors.append(f"S{sentence.number}: {sentence.text}")
+
         return {
             "source": self._stage_of(candidate),
             "span": candidate.matched_text or name,
             "naming": naming,
-            "mention": self._retained_mention_label(name, text),
+            "mention": self._mention_label(name, text),
             "alternatives": alternatives,
             "last_named": last_named,
             "anchors": anchors,
@@ -1239,52 +1161,55 @@ Return JSON:
 {reply}
 JSON only:"""
 
-    def _format_union_case(self, index, candidate, evidence, sent_map, shown_in=0):
-        """One case, in the active iteration's format.
+    #: Evidence fields that name a component. A blinded case carries none of them,
+    #: because the match that produced it computed no component for this sentence.
+    BLIND_WITHHOLDS = ("alternatives", "mention", "last_named")
 
-        The component slot is filled by the evidence, not by the case's existence: an
-        iteration with `blind_word_only` leaves it empty where the match wrote only one
-        word of a name, because that match computed no component for this sentence.
-        Measured: with the slot filled for every case, luna's word-only gold reads 12.3
-        of 26 against a control's 21.7 (`union_iterations.ITERATIONS['v8'].measured`) —
-        `s_linker25`'s refusal, reappearing on the model the branch reads second.
+    def _format_union_case(self, index, candidate, evidence, sent_map, shown_in=0):
+        """One case: the span, the sentence, the evidence line, and the anchors.
+
+        A word-only case names no component, because its match computed none. Filling
+        the slot anyway costs luna 12.3 of 26 word-only gold against a control's 21.7
+        (`ITERATIONS['v8']`) — `s_linker25`'s refusal, on the second model.
         """
         spec = self.iteration
         blind = spec.blind_word_only and evidence["naming"] == "word only"
-        # Where this case names its component. A case that is not blind always names it
-        # in the header; a blind one names it where its iteration says, or nowhere.
-        carries = (getattr(spec, "word_only_component", "hidden") if blind
-                   else "header")
+
+        # where this case names its component: a case that is not blind names it in
+        # the header; a blind one names it where its iteration says, or nowhere
+        carries = spec.word_only_component if blind else "header"
         of_name = (f' of "{candidate.component_name}"' if carries == "evidence"
                    else "")
-        previous = self._prev_prefix(candidate.sentence_number, sent_map)
-        labels = {
-            "source": lambda: f"source={evidence['source']}",
-            "naming": lambda: f"naming={evidence['naming']}",
-            "writes": lambda: f"writes={self.WRITES[evidence['naming']]}{of_name}",
-            "mention": (lambda: f"mention={evidence['mention']}"
-                        if evidence["mention"] else None),
-            "alternatives": (lambda: "alternatives="
-                             + ", ".join(evidence["alternatives"])
-                             if evidence["alternatives"] else None),
-            "last_named": (lambda: f"named {evidence['last_named']} sentences earlier"
-                           if evidence["last_named"] >= 0 else None),
+
+        # the Evidence: line, in the order the iteration declares its fields
+        written = {
+            "source": evidence["source"],
+            "naming": evidence["naming"],
+            "writes": f"{self.WRITES[evidence['naming']]}{of_name}",
+            "mention": evidence["mention"],
+            "alternatives": ", ".join(evidence["alternatives"]),
         }
         facts = []
-        for name in spec.fields:
-            if blind and name in ("alternatives", "mention", "last_named"):
-                continue          # every one of these names a component
-            rendered = labels[name]()
-            if rendered:
-                facts.append(rendered)
+        for slot in spec.fields:
+            if blind and slot in self.BLIND_WITHHOLDS:
+                continue
+            if slot == "last_named":
+                if evidence["last_named"] >= 0:
+                    facts.append(f"named {evidence['last_named']} sentences earlier")
+            elif written[slot]:
+                facts.append(f"{slot}={written[slot]}")
+
+        previous = self._prev_prefix(candidate.sentence_number, sent_map)
         lines = [
             (f'Case {index}: "{evidence["span"]}" -> {candidate.component_name}'
              if carries == "header" else f'Case {index}: "{evidence["span"]}"'),
             f'  {previous}"{candidate.sentence_text}"',
             f"  Evidence: {', '.join(facts)}",
         ]
-        if evidence["anchors"] and (
-                not blind or getattr(spec, "word_only_anchors", False)):
+
+        # a batch is 25 cases and several usually concern one component, so the later
+        # ones point at the first that printed the list rather than repeating it
+        if evidence["anchors"] and (not blind or spec.word_only_anchors):
             if shown_in:
                 lines.append(f"  Anchors (other sentences naming it): "
                              f"as shown in Case {shown_in}.")
@@ -1294,77 +1219,73 @@ JSON only:"""
         return "\n".join(lines)
 
     def _judge_union(self, candidates, components, sentences, sent_map):
-        """One pass over the merged stream. The head's batching and parser.
+        """One pass over the merged stream: evidence, grouping, call, reply.
 
-        The word-only rows are shown the window the denotation judge shows them today,
-        as one table per call rather than one per stream, so no case is shown less.
+        The evidence is computed once and read by all four blocks, so a candidate
+        cannot be bucketed on one reading of its match and printed on another. The
+        grouping costs no extra call: the head pays two batches either way.
         """
         if not candidates:
             return [], {}
-        from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names
-        comp_names = get_comp_names(components)
-        approved, decisions = [], {}
-        # The evidence groups the cases as well as filling them: a case whose match
-        # computed no component is judged among its own kind. One rule, one prompt
-        # template, and the same call count the head pays for its two stages.
+
+        # 1. the evidence
+        evidence = {(c.sentence_number, c.component_id):
+                    self._union_evidence(c, components, sent_map)
+                    for c in candidates}
+        row_of = {key: facts["naming"] for key, facts in evidence.items()}
+
+        # 2. the grouping
         if self.iteration.batch_by_evidence:
-            named, blind = [], []
-            for candidate in candidates:
-                bucket = (blind if self._union_evidence(
-                    candidate, components, sent_map)["naming"] == "word only"
-                    else named)
-                bucket.append(candidate)
-            groups = [group for group in (named, blind) if group]
+            named = [c for c in candidates
+                     if row_of[(c.sentence_number, c.component_id)] != "word only"]
+            wordonly = [c for c in candidates
+                        if row_of[(c.sentence_number, c.component_id)] == "word only"]
+            groups = [group for group in (named, wordonly) if group]
         else:
             groups = [candidates]
         batches = [batch for group in groups
-                   for _, batch in self._iter_batches(group, self.JUDGE_BATCH)]
+                   for _, batch in iter_batches(group, self.JUDGE_BATCH)]
+
+        comp_names = get_comp_names(components)
+        approved, decisions = [], {}
         for batch in batches:
-            evidences = {
-                (c.sentence_number, c.component_id):
-                    self._union_evidence(c, components, sent_map)
-                for c in batch
-            }
+            rows = [row_of[(c.sentence_number, c.component_id)] for c in batch]
+            named_batch = any(row != "word only" for row in rows)
+
+            # 3. the call
             window = set()
-            for candidate in batch:
-                if evidences[(candidate.sentence_number,
-                              candidate.component_id)]["naming"] == "word only":
+            for candidate, row in zip(batch, rows):
+                if row == "word only":
                     window.update(s.number for s in
                                   self._window(candidate.sentence_number, sentences))
             table = [{"sentence": n, "text": sent_map[n].text}
                      for n in sorted(window) if n in sent_map]
             cases, shown = [], {}
             for index, candidate in enumerate(batch, 1):
-                evidence = evidences[(candidate.sentence_number,
-                                      candidate.component_id)]
+                facts = evidence[(candidate.sentence_number, candidate.component_id)]
                 first = shown.get(candidate.component_name, 0)
-                if evidence["anchors"] and not first:
+                if facts["anchors"] and not first:
                     shown[candidate.component_name] = index
                 cases.append(self._format_union_case(
-                    index, candidate, evidence, sent_map, first))
-            named_batch = any(
-                evidences[(c.sentence_number, c.component_id)]["naming"] != "word only"
-                for c in batch)
+                    index, candidate, facts, sent_map, first))
             self.llm.set_phase("phase_25_name_union_judge")
             data = self._ask(
                 self._prompt_union(comp_names, table, cases, named=named_batch),
                 timeout=120, label="Union validation", require="validations",
             )
+
+            # 4. the reply
+            blind_call = self.iteration.contract_follows_batch and not named_batch
             verdicts = {}
             for item in (data or {}).get("validations", []):
                 position = item.get("case", 0) - 1
                 if not 0 <= position < len(batch):
                     continue
-                candidate = batch[position]
-                row = evidences[(candidate.sentence_number,
-                                 candidate.component_id)]["naming"]
-                claim = str(item.get("claim", "")).strip().strip("\"'\u201c\u201d\u2018\u2019")
-                blind_call = (self.iteration.contract_follows_batch
-                              and not named_batch)
+                claim = str(item.get("claim", "")).strip().strip("\"'“”‘’")
                 if blind_call or (self.iteration.verdict == "per_row"
-                                  and row == "word only"):
-                    # The head's denotation contract, unchanged: the enum keeps only a
-                    # positive classification and the quote must be committed to.
+                                  and rows[position] == "word only"):
+                    # the head's denotation contract, unchanged: the enum keeps only a
+                    # positive classification and the quote must be committed to
                     keep = (str(item.get("denotation", "")).strip() == "participant"
                             and bool(claim))
                 else:
@@ -1372,14 +1293,14 @@ JSON only:"""
                     keep = (value is True
                             or (isinstance(value, str) and value.lower() == "true"))
                 verdicts[position] = (keep, claim)
+
             for position, candidate in enumerate(batch):
                 ok, claim = verdicts.get(position, (False, ""))
                 stage = self._stage_of(candidate)
                 decisions[(candidate.sentence_number, candidate.component_id)] = {
                     "approved": ok,
                     "claim": claim,
-                    "naming": evidences[(candidate.sentence_number,
-                                         candidate.component_id)]["naming"],
+                    "naming": rows[position],
                     "path": f"{stage}_judged" if ok else f"{stage}_rejected",
                     "stage": "name_union_judge",
                 }
@@ -1398,14 +1319,14 @@ JSON only:"""
             for c in approved
         ]
         return links, {
-            "candidates": self._link_view(
+            "candidates": link_view(
                 [SadSamLink(c.sentence_number, c.component_id, c.component_name,
                             source=f"{self._stage_of(c)}_candidate")
                  for c in candidates],
                 sent_map,
             ),
-            "accepted": self._link_view(links, sent_map),
-            "judge_decisions": self._decision_view(decisions),
+            "accepted": link_view(links, sent_map),
+            "judge_decisions": decision_view(decisions),
         }
 
     # ═════════════════════════════════════════════════════════════════════════
@@ -1447,13 +1368,13 @@ JSON only:"""
         approved, decisions = self._validate_coref_links(
             raw, sent_map, components, metadata)
         return approved, {
-            "candidates": self._link_view(raw, sent_map),
-            "accepted": self._link_view(approved, sent_map),
+            "candidates": link_view(raw, sent_map),
+            "accepted": link_view(approved, sent_map),
             "metadata": [
                 {"sentence": sentence, "component_id": component, **value}
                 for (sentence, component), value in metadata.items()
             ],
-            "judge_decisions": self._decision_view(decisions),
+            "judge_decisions": decision_view(decisions),
         }
 
     def _resolve_references(self, sentences, components, name_to_id, sent_map):
@@ -1464,7 +1385,7 @@ JSON only:"""
         coref_metadata: dict = {}
         self.llm.set_phase("phase_25_coreference")
 
-        for batch_num, batch in self._iter_batches(sentences, self.COREFERENCE_BATCH):
+        for batch_num, batch in iter_batches(sentences, self.COREFERENCE_BATCH):
             targets = []
             window_ids = set()
             for i, sent in enumerate(batch, 1):
@@ -1523,7 +1444,7 @@ JSON only:"""
         validated = []
         decisions: dict = {}
         self.llm.set_phase("phase_25_coreference_judge")
-        for _, batch in self._iter_batches(coref_links, self.JUDGE_BATCH):
+        for _, batch in iter_batches(coref_links, self.JUDGE_BATCH):
             cases = []
             for i, lk in enumerate(batch):
                 # _resolve_references admits a resolution only for a sentence
@@ -1567,22 +1488,13 @@ JSON only:"""
 
     # ── Logging and checkpointing ────────────────────────────────────────────
 
-    def _backend_tag(self) -> str:
-        return backend_tag(self.llm)
-
-    def _checkpoint_dir(self, text_path):
-        return checkpoint_dir(text_path, self._VARIANT_NAME, self._backend_tag())
-
     def _save_phase(self, text_path, phase_name, state):
-        save_phase_state(self._checkpoint_dir(text_path), phase_name, state)
+        save_phase_state(checkpoint_dir(text_path, self._VARIANT_NAME, backend_tag(self.llm)), phase_name, state)
 
     def _log(self, phase, input_summary, output_summary, links=None):
         self._phase_log.append(
             log_entry(phase, input_summary, output_summary, links))
 
     def _save_log(self, text_path):
-        write_run_logs(text_path, self._VARIANT_NAME, self._backend_tag(),
+        write_run_logs(text_path, self._VARIANT_NAME, backend_tag(self.llm),
                        self._phase_log, self._llm_calls)
-
-    def _compute_phase_metrics(self) -> dict:
-        return phase_metrics(self._llm_calls)
