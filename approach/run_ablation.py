@@ -235,7 +235,8 @@ CANONICAL_VARIANTS = [
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
     "s_linker121",  # s120 with the judge's three call-level arrangements removed
     "s_linker122",  # s121 with the anchor block removed and one clause in its place
-    "s_linker123",  # s122 with the antecedent shortlist marked with the name judge's verdicts
+    "s_linker123",  # s122 with the judge's three evidence fields merged into one
+    "s_linker124",  # s123 + the antecedent shortlist marked with the judge's own verdicts
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2350,32 +2351,36 @@ VARIANT_SPECS = {
             "one project. s_linker120 remains the reported arm; this is the simple one."
         ),
     ),
-    "s_linker123": dict(
+    "s_linker124": dict(
         aliases=("shortlistmark",),
-        module="llm_sad_sam.linkers.experimental.s_linker123",
-        class_name="SLinker123",
+        module="llm_sad_sam.linkers.experimental.s_linker124",
+        class_name="SLinker124",
         description=(
-            "S-Linker123 - s122 with the coreference resolver's antecedent shortlist "
-            "marked with the verdict the union judge already reached about each "
-            "mention: `kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`. The "
-            "list was computed lexically by `_states_a_name` and the verdicts were "
-            "being discarded; this is the same fact at the resolution the system "
-            "already has it at. No rule speaks about the mark and no authored rule "
-            "text changes - the mark is rendered in `_named_before`'s caller, so the "
-            "GATE-07 accounting does not move. Level 2, three samples a side, both "
-            "arms in one invocation per model with the alias table and the name-link "
-            "set pinned: terra macro F2 +0.31 / F1 +0.04, luna macro F2 +0.04 / "
-            "F1 -0.06, TP +0.67 and FP +0.67 on both - QUALITY-NEUTRAL on both models "
-            "with the F2 point estimate favourable on both, at the same call count. "
-            "Not a precision result: the exchange rate is one gold per one spurious "
-            "and F2's 4:1 recall weighting is what makes it positive. The two arms "
-            "that ACT on the mark are negative - adding a weighing sentence reads "
-            "terra F2 -0.19 / luna -0.16, and dropping the refused entries instead of "
-            "marking them reads luna F2 -0.92 at +17 false positives added against 5 "
-            "removed, because suppression redirects a resolution rather than removing "
-            "it. STANDALONE, by the one-file-per-reported-variant policy; checked "
-            "against s122 method by method (pilot/test_s123_standalone.py). "
-            "Round: ../results/coref_annot_round/README.md."
+            "S-Linker124 - the two s123 mechanisms composed: s_linker123's merged "
+            "evidence vocabulary (`written` / `competitors`) at the union judge, plus "
+            "the coreference resolver's antecedent shortlist marked with the verdict "
+            "that judge already reached about each mention - `kurento (S68, linked)` / "
+            "`WebRTC-SFU (S68, named only)`. The shortlist was computed lexically by "
+            "`_states_a_name` and the verdicts were being discarded; the mark is the "
+            "same fact at the resolution the system already has it at. No rule speaks "
+            "about the mark and no authored rule text changes, so the GATE-07 "
+            "accounting does not move. The two changes touch different stages - the "
+            "judge's evidence format and the resolver's case - and are independent by "
+            "construction (pilot/test_s124.py checks the judging prompts are s123's "
+            "byte for byte and only the shortlist line differs). Priced SEPARATELY, "
+            "each on its own base, and NOT yet as a composition: the mark reads terra "
+            "macro F2 +0.31 / F1 +0.04 and luna F2 +0.04 / F1 -0.06, TP +0.67 and "
+            "FP +0.67 on both - link-level QUALITY-NEUTRAL with the F2 point estimate "
+            "favourable on both, at the same call count. NOT a precision result: the "
+            "exchange rate is one gold per one spurious. The two arms that ACT on the "
+            "mark are negative - a weighing sentence about it reads terra F2 -0.19 / "
+            "luna -0.16, and dropping the refused entries instead of marking them "
+            "reads luna F2 -0.92 at +17 false positives added against 5 removed, "
+            "because suppression redirects a resolution rather than removing it. "
+            "THE PROMOTION GATE (studies/compare_arms.py, doc-code grain) HAS NOT BEEN "
+            "RUN: s122 was link-level neutral and read terra doc-code F1 -1.02 3/3, so "
+            "a link-level neutral is not a clearance. Rounds: "
+            "../results/coref_annot_round/README.md and ../results/s123_written_field/."
         ),
     ),
     "s_linker122": dict(
@@ -2403,6 +2408,33 @@ VARIANT_SPECS = {
             "were holding (terra spurious +7.3 a run, p=0.047; luna +7.0), which is "
             "what a fact cannot do for a weighing. Stage arms and the E2E: "
             "../results/s121_ablations/README.md."
+        ),
+    ),
+    "s_linker123": dict(
+        aliases=("written",),
+        module="llm_sad_sam.linkers.experimental.s_linker123",
+        class_name="SLinker123",
+        description=(
+            "S-Linker123 - s122 with the union judge's three evidence fields merged "
+            "into one readable field. Staged on s122: the clause stays, the anchors "
+            "stay gone, and every shared method including the coreference shortlist is "
+            "byte-identical (pilot/s123_inherits.py, 19/19). `writes`, `alternatives` "
+            "and `mention` become `written` and `competitors`, where `written` takes "
+            "the four values the recorded runs actually produce - whole name 46.0%, "
+            "one word 29.1%, short form 15.9%, whole name (qualified) 9.0% - computed "
+            "by ONE function instead of two predicates that had to agree. The merge is "
+            "entailed, not fitted: `qualified` implies the whole name because both go "
+            "through `_find_exact_form`, which `_written_as` asserts via "
+            "SKIP_QUALIFIED. It removes a duplicate the head prints on 598 of 598 "
+            "alias cases (`mention=via known alias` restates `writes=a short form`) "
+            "and drops three MentionType values that never fire. Level 1, no calls "
+            "(pilot/written_field_audit.py, 11,586 checks): candidate sets equal on "
+            "30/30 project-runs, the head's prompts rebuilt byte-identically to the "
+            "ones actually sent, evidence lines -33.7%, whole judging call -311 B mean "
+            "and -4,768 B a five-project run. NOT YET MEASURED at the stage: read it "
+            "on the `short form` row, which keeps at 0.741 against a gold rate of "
+            "0.532 and is the row whose duplicate this removes. "
+            "../results/s123_written_field/README.md."
         ),
     ),
     "s_linker120_noknow": dict(

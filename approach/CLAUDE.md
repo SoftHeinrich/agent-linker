@@ -55,21 +55,24 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   fixed **name-evidence order** (full-name → partial-name → coreference), no controller.
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
-- `s_linker26.py` … `s_linker123.py` — the rounds below. All `experimental=True`.
-  **THE HEAD IS `s_linker123` (the union arm, judged without the anchor block, with the
-  resolver's antecedent shortlist marked with the judge's own verdicts) since
-  2026-09-14; the PAPER ARM is still `s_linker120`** — s122 is link-level neutral at 21.5%
-  less judging but reads WORSE on terra's doc-code metrics 3/3 and did not clear the
-  promotion gate, and **s123 has not been put to that gate at all**: it was adopted on
-  `score_runs.py`, which is LINK-LEVEL, and the gate is `studies/compare_arms.py`, which
-  adds the component-weighted doc-code metrics and needs `rq12.py`-scored E2E run
-  directories that do not exist for s123 yet. **A cut that is free at the grain you are
-  not reporting is not free** — s122 is the standing instance and s123 is exposed to the
-  same reading, since its whole effect is which components a handful of links land on.
-  It is a standalone file, like `s_linker122`, `s_linker120` and `s_linker110` before it.
-  The ledger below is chronological, so an earlier round's "X is the head"
-  sentence is true of its own date and superseded by the next round that moves it:
-  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123.
+- `s_linker26.py` … `s_linker124.py` — the rounds below. All `experimental=True`.
+  **THE HEAD IS `s_linker124` (the union arm, judged without the anchor block, one merged
+  evidence vocabulary, and the resolver's antecedent shortlist marked with that judge's
+  own verdicts) since 2026-09-14; the PAPER ARM is still `s_linker120`.** Three
+  head-moves landed in one day and none of them cleared the reporting gate:
+  `s_linker122` is link-level neutral at 21.5% less judging but reads WORSE on terra's
+  doc-code metrics 3/3; `s_linker123` and the shortlist mark composed into `s_linker124`
+  were each priced at the LINK-LEVEL grain (`score_runs.py`) and **neither has been put
+  to the gate at all**, which is `studies/compare_arms.py` — the component-weighted
+  doc-code read, needing `rq12.py`-scored E2E run directories that do not exist for them.
+  **A cut that is free at the grain you are not reporting is not free**: s122 is the
+  standing instance, and s124's whole delta is *which components* a handful of links land
+  on, which is precisely what the link-level grain cannot see. `s_linker122` is a
+  standalone file like `s_linker120` and `s_linker110`; `s_linker123` and `s_linker124`
+  are subclasses, because the one-file policy is for the REPORTED arm and neither is one.
+  The ledger below is chronological, so an earlier round's "X is the head" sentence is
+  true of its own date and superseded by the next round that moves it:
+  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
@@ -1384,38 +1387,105 @@ defensibility `pilot/union_defensibility.py` (25 checks). Report:
   read TP -10.3, roughly double. Luna's composition statistic is **+24.1 (p = 0.10)**
   against terra's +1.1. The standing caveat is that a stage arm flatters a change by
   hiding composition; here it understated one twice.
-- **End to end, and what it does and does not cover.** The paired E2E that refused the
-  UNSCOPED arm stands as the measurement of that arm (three runs a model, both arms in
-  every invocation, arm order alternating; `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914`):
-  terra TP 182.3 -> 184.0, FP 28.0 -> 20.0, macro F1 92.51 -> 93.94, macro F2
-  94.18 -> 95.13 (p = 0.10, every s122 run above every s121 run); luna TP 185.0 -> 174.7
-  (p = 0.10), FP +0.3, macro F2 93.84 -> 90.94. Both models' whole effect is teammates.
-  **It does not describe the file that ships**, which carries the scope the sign flip was
-  traced to, so the shipped arm is re-measured on both models
-  (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
-  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`). This entry carries the
-  scoped numbers when they land; until then the honest statement is that the cut's E2E
-  price is known for the unscoped clause and predicted, not measured, for the scoped one.
-- **`s_linker122` IS THE HEAD (2026-09-14) and the paper reports it.** The RQ engines key
-  an arm to its E2E run directories (`rq34.py`'s arm map, `"s120": ("s_linker120",
-  "union_e2e_{model}_r{i}_20260911")`), so the paper's s122 row is generated from the
-  scoped run set above and not from the unscoped one.
+- **End to end, three paired runs a model, both arms in every invocation, arm order
+  alternating by run** (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
+  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`, `pilot/score_runs.py`):
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+  |---|---|---|---|---|---|---|---|
+  | terra | `s_linker121` | 182.0 | 23.7 | 93.23 | 94.52 | 72.3 | 0.98 |
+  | terra | `s_linker122` | 181.7 | 23.3 | 92.90 | 94.21 | 72.7 | 1.43 |
+  | luna | `s_linker121` | 182.3 | 47.0 | 90.07 | 93.03 | 75.3 | 2.71 |
+  | luna | `s_linker122` | 181.0 | 46.3 | 89.50 | 92.28 | 74.0 | **1.11** |
+
+  **QUALITY-NEUTRAL on BOTH models** — terra TP -0.3 (p = 1.00), FP -0.3 (1.00), macro
+  F1 -0.3 (0.70), macro F2 -0.3 (0.50); luna TP -1.3 (0.70), FP -0.7 (1.00), macro F1
+  -0.6 (0.70), macro F2 -0.7 (0.40). **The sign flip is gone**: the same cut that read
+  TP -10.3 on luna with the unscoped clause reads -1.3 with the scope, and
+  `pilot/noanchor_fn.py` confirms it at the pair level — teammates S1 is absent from the
+  lost list in all three runs, where it was seven pairs lost in three runs of three.
+  Teammates now loses 2 gold pairs and gains 4.
+- **So the anchor block comes out for FREE, and that is the claim — not that removing it
+  helps.** Both models' point estimates are slightly negative, so what is defensible is
+  that **21.5% of the name judging can be deleted without a measurable quality cost**,
+  and luna's calls fall 75.3 -> 74.0 as well. The scope also gave back the unscoped
+  version's terra GAIN (FP 28.0 -> 20.0 in its own set): that gain and luna's regression
+  were the same clause firing on the whole-name row, and they leave together. A round
+  that buys a 21.5% cut at parity is worth more to the paper than one that buys a terra
+  gain at the price of a luna regression, because the latter cannot be reported as a head.
+- **The arm is also STEADIER on the model that needs it.** Luna's control swings TP
+  183/176/188 at FP 37/44/60 across its three runs; the arm reads 180/182/181 at 48/42/49,
+  macro F1 range **2.71 -> 1.11**. Removing an evidence field the judge had to weigh
+  removed a source of run-to-run disagreement with it.
+- **Composition is at the n=3 floor on both models** (+6.6 terra, +7.4 luna, p = 0.10),
+  so the coreference linker is still moving pairs behind the name stage. The standing
+  caveat holds: a stage arm cannot see this, and in this round the stage understated the
+  unscoped change in both directions at once.
+- **`s_linker122` IS THE HEAD (2026-09-14). THE PAPER ARM IS STILL `s120`, and that gap
+  is deliberate.** The two questions came apart in this round and the ledger says so
+  rather than smoothing it.
+- **The paper's own arm engine does NOT clear s122**, and it is the read to trust here.
+  `pilot/score_runs.py` is link-level (doc-model) and called the arm QUALITY-NEUTRAL on
+  both models. `studies/compare_arms.py s122 --base s121ctl` adds the **doc-code
+  (file-level, composed)** metrics and per-run sign agreement, scored in-set off the same
+  invocations (`../results/s12{1ctl,2}_extracts`, dump slots `{terra,luna}_s12{1ctl,2}`,
+  `evaluation/reports/ARM_COMPARE_s122_vs_inset.csv`):
+
+  | metric | terra | luna |
+  |---|---|---|
+  | dm F1 / F2 | INSIDE NOISE | INSIDE NOISE |
+  | **dc F1** | **WORSE -1.02 (3/3)** | **BETTER +0.79 (3/3)** |
+  | **dc F2** | **WORSE -0.71 (3/3)** | INSIDE NOISE |
+  | dm CMR% | NO CHANGE | NO CHANGE |
+  | dc worst / harm F1 | INSIDE NOISE | INSIDE NOISE |
+
+  Terra reads WORSE on both doc-code metrics with every run agreeing on the sign, which
+  is the engine's strongest negative verdict, and luna reads BETTER on one. `HOWTO-
+  REGENERATE-RQ.md` promotes the paper arm only "if the candidate wins", so **`DEFAULT_ARM`
+  is NOT moved and `sync_paper.py` is not run**. Flipping it in the seven modules that
+  declare it is one edit away if that call is made deliberately.
+- **Why the two engines disagree, and why it matters.** The link-level view sees the cut
+  as free; the file-level composed view sees terra lose ground. Removing the anchors does
+  not change how many links are found, it changes WHICH components they land on, and the
+  doc-code grain is the one the paper's own argument says to read (RQ2's size-aware
+  block exists because link-level F1 is the wrong place to read an architecture-
+  traceability result). **A cut that is free at the grain you are not reporting is not
+  free.** That applies to picking an arm, which is exactly the note `HOWTO-REGENERATE-RQ.md`
+  already makes, arriving from the other direction.
+- **What s122 is therefore adopted ON:** the 21.5% reduction in name judging at
+  link-level parity, as the branch's head and the base every later round forks from. What
+  it is NOT adopted on: the paper's reported numbers, which stay `s120` until an arm
+  clears the doc-code gate. The RQ engines key an arm to its E2E run directories
+  (`rq34.py`'s arm map), so whenever that happens the s122 row is generated from
+  `noanchor_e2e_{model}_r{i}_20260914scoped` and NOT from the unscoped `20260914` set,
+  which measured a file that no longer exists.
 - Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
 
 
-### The shortlist-annotation round (s123) — the antecedent list says what the system already decided (2026-09-14)
+### The shortlist-annotation round (s124) — the antecedent list says what the system already decided (2026-09-14)
 
 `s_linker122`'s resolver prints a per-case shortlist, `NAMED BEFORE THIS CASE: kurento
 (S68), WebRTC-SFU (S68), ...`, computed by `_named_before` from `_states_a_name` — a
 purely LEXICAL fact. The union judge has already ruled on every one of those mentions by
 then and the module was discarding the verdicts and offering all the entries as equals.
-`s_linker123` carries them: `kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`.
+`s_linker124` carries them: `kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`.
 Report: `../results/coref_annot_round/README.md`; level 1 `pilot/coref_shortlist_audit.py`;
 level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
 `pilot/coref_annot_stats.py`; error analysis `pilot/coref_annot_diff.py`; invariants
-`pilot/test_s123_standalone.py` (87 checks, no calls).
+`pilot/test_s124.py` (29 checks, no calls).
 
-- **`s_linker123` IS THE HEAD (2026-09-14). ADOPTED on the design argument at a measured
+**It is a COMPOSITION, and the two halves were priced apart.** `s_linker123` (the union
+judge's `writes`/`alternatives`/`mention` merged into `written`/`competitors`, its own
+round at `../results/s123_written_field/README.md`) and the shortlist mark landed on
+`s_linker122` at the same time, from two sessions, and both claimed the number 123. They
+touch different stages -- the judge's evidence format and the resolver's case -- and
+`pilot/test_s124.py` checks they do not interact rather than asserting it: every
+union-judging prompt is `s_linker123`'s byte for byte, every resolver prompt differs only
+in the shortlist lines. **Neither half was measured with the other in place**, which is
+the first thing an E2E of this arm settles and the reason the entry below is about the
+mark alone.
+
+- **`s_linker124` IS THE HEAD (2026-09-14). ADOPTED on the design argument at a measured
   neutral, which is a different claim from an improvement and the ledger states it as
   such.** terra macro F2 **+0.31** (p 0.50) / F1 +0.04 (p 1.00); luna macro F2 **+0.04**
   (p 1.00) / F1 −0.06 (p 1.00); TP +0.67 and FP +0.67 on both, **at the same call count
@@ -1457,10 +1527,10 @@ level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
   expression to the next component down. `s_linker109` recorded the rule from the other
   side: **a discovered fact may open a case and may not close one.** A name verdict is
   discovered — another judge's output, resampled every run. **Marking is opening;
-  withholding is closing, and s123 marks.**
+  withholding is closing, and s124 marks.**
 - **The blindness that is spent, and the blindness that is not.** `s_linker100`
   conditioned the second proposer on the first's OUTPUT LIST and added zero pairs in two
-  of three samples. s123 does not: the resolver still reads every sentence, proposes
+  of three samples. s124 does not: the resolver still reads every sentence, proposes
   independently, and is never told which pairs to produce. What it receives is a property
   of each candidate ANTECEDENT — evidence about a case, not a proposal to copy. **The two
   proposal stages stay blind to each other's link sets.**
@@ -1479,10 +1549,11 @@ level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
   resampled. **When the change is to the LAST linker, the merge is a union and the other
   half is pinned, level 2 IS level 4** — which is the measurement policy's level 3 made
   arithmetic instead of an argument.
-- **`s_linker123.py` is a STANDALONE file** by the one-file-per-reported-variant policy,
-  checked against `s_linker122` method by method (`pilot/test_s123_standalone.py`, 87
-  checks: **27 methods byte-identical, 5 declared changes**, every rule constant and bound
-  unchanged) and — the check that matters — **its resolver prompts are byte-identical to
+- **`s_linker124.py` is a SUBCLASS of `s_linker123`**, not a standalone file: the one-file
+  policy is for the REPORTED arm and this is not one. **Exactly two methods differ**
+  (`pilot/test_s124.py`, 29 checks: every union-judging prompt is `s_linker123`'s byte for
+  byte on all five projects, and every resolver prompt differs from it in the
+  `NAMED BEFORE THIS CASE` lines and nothing else) and — the check that matters — **its resolver prompts are byte-identical to
   `coref_annot_pilots.Annot`, the arm that was measured, on all five projects**, with
   every non-shortlist byte equal to s122's. A run with nothing linked degrades to every
   entry reading `named only` rather than breaking. *Write the equivalence test against
@@ -1492,13 +1563,13 @@ level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
   is `pilot/score_runs.py`, which is **LINK-LEVEL**. The read this branch actually
   promotes an arm on is `studies/compare_arms.py`, which adds the **doc-code,
   component-weighted** metrics and per-run sign agreement, and it needs `rq12.py`-scored
-  E2E run directories that do not exist for s123. **s122 is the standing warning and it
+  E2E run directories that do not exist for s124. **s122 is the standing warning and it
   is exact**: link-level QUALITY-NEUTRAL on both models, then terra doc-code F1 −1.02 and
   F2 −0.71 with 3/3 runs agreeing on the sign, which is that engine's strongest negative
   verdict — because removing the anchors did not change how many links are found, it
-  changed **which components they land on**. s123's entire effect is +0.67 gold and +0.67
+  changed **which components they land on**. the mark's entire effect is +0.67 gold and +0.67
   spurious a run, i.e. *which components a handful of links land on*, so it is exposed to
-  that reading in full. **s123 is the head (the base later rounds fork from); it is NOT
+  that reading in full. **s124 is the head (the base later rounds fork from); it is NOT
   the reported arm, and it is not yet a candidate for one.** The paper arm stays
-  `s_linker120`. Owed, in order: `pilot/run_s123_e2e.sh`, then `rq12.py --arm s123`, then
-  `studies/compare_arms.py s123`.
+  `s_linker120`. Owed, in order: `pilot/run_s124_e2e.sh`, then `rq12.py --arm s124`, then
+  `studies/compare_arms.py s124`.
