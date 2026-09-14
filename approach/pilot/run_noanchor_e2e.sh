@@ -24,8 +24,13 @@
 #
 #     pilot/run_noanchor_e2e.sh terra
 #     pilot/run_noanchor_e2e.sh luna 3
+#
+# STAMP is overridable because this round runs it twice on the same day: once against
+# the subclass that carried the unscoped clause, and once against the promoted
+# standalone file. Two run sets from one date must not share a directory, and the
+# "already complete" skip below would silently reuse the first set's CSVs if they did.
 set -u
-STAMP=$(date +%Y%m%d)
+STAMP=${STAMP:-$(date +%Y%m%d)}
 MODEL=${1:?usage: run_noanchor_e2e.sh <terra|luna> [runs]}
 RUNS=${2:-3}
 

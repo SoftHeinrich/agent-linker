@@ -279,6 +279,85 @@ composition statistic is **+24.1 (p = 0.10)**, the largest in this round, agains
 +1.1 (p = 0.50). The standing caveat on this branch is that a stage arm flatters a change
 by hiding composition; here it **understated** the change in both directions at once.
 
+## 5. The clause was over-cut — the scope, and what a fact cannot do for a weighing
+
+§4 refused `s_linker122` as the head on a sign flip: terra quality-changing in its
+favour, luna quality-changing against it at **TP −10.3**, pure recall at unchanged
+precision. That signature says evidence was removed rather than a rule mis-set, and it
+was worth naming before the arm was either dropped or adopted.
+
+**Luna's loss is one sentence.** `pilot/noanchor_fn.py` (no calls) reads the two arms'
+per-project link CSVs out of the six E2E runs and counts a lost gold pair by how many
+runs lost it, so a pair lost in three runs of three is separated from one lost in one.
+Of the 8.0 TP luna loses on teammates, **seven are teammates S1**, each lost in **3 runs
+of 3**:
+
+    S1  "Architecture contains UI Component, Logic Component, Storage Component,
+         Common Component, Test Driver Component, E2E Component, Client Component."
+         -> UI, Logic, Storage, Common, Test Driver, E2E, Client   (7 gold links)
+
+Every one is `writes=whole name`. Not the alias row the clause was aimed at, not the
+dotted-path row the anchors were moving: the row that was never in question.
+
+**The cause is a scope the rewrite dropped.** The 456-byte clause of §3 opened with
+*"Where this sentence does not write the component's name in full…"*. The 73-byte
+rewrite kept the weighing and lost the scope, so it reads on every case. Unscoped it
+asks for evidence that the surface is used **for** this component **here**, and S1 is a
+bare enumeration that says nothing further about anything — which is exactly the case
+the rule's own `MENTION_COUNTS` protects: *"A mention that says nothing further about
+the component still counts as a valid link."* The clause and the rule contradict each
+other on whole-name bare mentions. Terra resolves it toward the rule, luna toward the
+clause, and that is the whole of the sign flip.
+
+**Two repairs, and they are different kinds of thing.**
+
+  * `noanchor_scoped` — the clause with its scope restored, **125 B**. A *weighing*,
+    narrowed to the rows it was ever about.
+  * `noanchor_plain` — **no clause at all**. The leak is an assertion in the EVIDENCE:
+    `WRITES["alias"]` renders the row as *"a short form the document established for
+    it"*, and `established for it` is an authority claim the case makes about itself.
+    With the block present the judge could check it against the document's own
+    sentences; with the block gone nothing in the call can contradict it. So state what
+    the match computed and no more — *"a short form listed for it elsewhere in the
+    document"*. Provenance stays, authority goes. A *fact*, changed in code, costing
+    zero prompt bytes, and it cannot reach a whole-name case through any case line: a
+    whole-name case never renders the alias row.
+
+Each arm ran against the head **in its own invocation, with the head and the 73-byte
+clause alongside it**, so every column below is a within-set comparison. The two sets
+are NOT comparable to each other — the branch's standing finding is that absolute
+levels drift between invocation sets, and the 73-byte row drifting between them (terra
++3.3 against +0.3 gold) is that finding reproducing inside this table.
+
+| set | arm | terra gold | terra sp | p | luna gold | luna sp | luna whole-name gold |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| A | 73 B, unscoped | +0.3 | −2.3 | 0.328 | −8.7 | −1.0 | **−2.07** |
+| A | **125 B, scoped** | ±0.0 | **−3.7** | 0.150 | −2.3 | −0.7 | **−0.13** |
+| B | 73 B, unscoped | +3.3 | −0.7 | 0.906 | −5.0 | −3.7 | **−2.07** |
+| B | no clause, fact | +2.0 | **+7.3** | **0.047** | +0.3 | +7.0 | −0.47 |
+
+(gold and spurious are per five-project run; the last column is per unit, the row the
+defect lives on.)
+
+**The scope is confirmed, at the row the diagnosis named.** In set A the whole-name row
+goes **−2.07 → −0.13** on luna, and luna's run-level gold loss goes −8.7 → −2.3, at no
+cost on terra — terra's spurious improves, −2.3 → −3.7.
+
+**The clause-free repair is REFUSED, and it is the more interesting result.** It does
+what it was built to do: luna's whole-name row goes −2.07 → −0.47 and run-level gold
+goes −5.0 → +0.3, S1 recovered without a clause. But it **reopens the row the anchors
+were holding** — terra spurious **+7.3 a run (p = 0.047)**, of which the alias row is
++1.47 a unit, and luna +7.0. Changing what the evidence *says* about one field moved
+what the judge knows; it did not move the threshold the anchor block was setting. **A
+fact cannot do a weighing's job.** That is the branch's design law — facts in code,
+weighings in the prompt — read in the direction it is usually not: not only may a
+weighing not be smuggled into the evidence, a fact may not be asked to stand in for one.
+
+**What ships is the scoped clause**, and `s_linker122` carries it. The E2E of §4 priced
+the unscoped version, so it does not describe the file that ships and the arm is
+re-measured end to end against `s_linker121` on both models
+(`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`).
+
 ## What the ablations say together
 
 The two pieces sit on opposite sides of the branch's design law and the measurements

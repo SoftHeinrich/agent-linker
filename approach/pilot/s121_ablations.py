@@ -181,6 +181,23 @@ SURFACE_NOT_EVIDENCE = (
     "That a surface can name this component is not evidence that it does here."
 )
 
+#: The same sentence with the scope the 456-byte version had and the 73-byte version
+#: dropped. 131 B.
+#:
+#: Dropping it was a defect, and `pilot/noanchor_fn.py` names its cost exactly: on luna,
+#: `s_linker122` loses SEVEN gold links on one teammates sentence, in three runs of
+#: three, and that sentence is a bare enumeration of component names — the case
+#: `MENTION_COUNTS` exists to protect ("A mention that says nothing further about the
+#: component still counts as a valid link"). Unscoped, the clause asks for evidence that
+#: the surface is used FOR the component HERE, and a bare mention offers none, so the
+#: rule's own leniency sentence and the clause contradict each other. Scoped to the rows
+#: where the sentence does not write the name in full, they cannot meet: a whole-name
+#: case is out of the clause's reach, and the alias row it was aimed at is not.
+SURFACE_NOT_EVIDENCE_SCOPED = (
+    "Where the sentence does not write the name in full, that a surface can name this "
+    "component is not evidence that it does here."
+)
+
 #: The line `anchor_count` puts in place of the rule's anchors line. Same field, reduced
 #: to its cardinality, so the arm asks whether what restrains the judge is the anchors'
 #: CONTENT or merely the news that the document names this component elsewhere.
@@ -215,9 +232,58 @@ class NoAnchorClause(_ClausedNoAnchors):
 
 
 class NoAnchorTight(_ClausedNoAnchors):
-    """The same weighing at 99 B: only what the error analysis showed is load-bearing."""
+    """The same weighing at 73 B: only what the error analysis showed is load-bearing.
+
+    What `s_linker122` shipped, and what the E2E priced. Its defect is the missing scope
+    — see `NoAnchorScoped`.
+    """
 
     CLAUSE = SURFACE_NOT_EVIDENCE
+
+
+class NoAnchorScoped(_ClausedNoAnchors):
+    """The tight clause with its scope restored. 131 B."""
+
+    CLAUSE = SURFACE_NOT_EVIDENCE_SCOPED
+
+
+#: The third repair, and the one that touches no rule at all.
+#:
+#: `SURFACE_NOT_EVIDENCE` and its scoped variant both answer an assertion with a second
+#: assertion. The assertion they are answering is in the EVIDENCE, not in the rule:
+#: `SLinker121.WRITES["alias"]` renders the alias row as "a short form the document
+#: established for it", and `established for it` is an authority claim the case makes
+#: about itself. With the anchor block present the judge could check that claim against
+#: the document's own sentences; with the block gone nothing in the call can contradict
+#: it, which is the `GAE` -> `GAE Datastore` leak in one line. Removing the anchors and
+#: leaving `established` standing is not a neutral cut -- it promotes an unchecked claim.
+#:
+#: So state the fact the match actually computed. `alias` is a term in
+#: `doc_knowledge.aliases` whose owner is this component: a document-level binding,
+#: which says nothing about whether THIS occurrence is that use. Provenance stays
+#: ("elsewhere in the document"), authority goes.
+#:
+#: Costs zero prompt bytes, adds no clause, and cannot reach a whole-name case through
+#: any case line: a whole-name case never renders the alias row. Facts in code,
+#: weighings in the prompt -- this is the branch's design law applied to the leak
+#: instead of around it.
+ALIAS_WRITES_HEAD = "a short form the document established for it"
+ALIAS_WRITES_PLAIN = "a short form listed for it elsewhere in the document"
+
+
+class NoAnchorPlainFact(NoAnchors):
+    """No clause anywhere. The alias row stops claiming authority it cannot support.
+
+    The replacement runs over the whole prompt on purpose, so the rule's `writes` line
+    and every alias case's evidence line move together: they are two renderings of one
+    code fact, and a prompt that disagreed with itself about it would measure nothing.
+    """
+
+    def _prompt_union(self, comp_names, sentence_table, cases) -> str:
+        prompt = super()._prompt_union(comp_names, sentence_table, cases)
+        plain = prompt.replace(ALIAS_WRITES_HEAD, ALIAS_WRITES_PLAIN)
+        assert plain != prompt, "the head's alias phrasing was not found"
+        return plain
 
 
 class AnchorCount(SLinker121):
@@ -265,7 +331,8 @@ class AnchorTrim(SLinker121):
 ARMS = {"head": SLinker121, "noanchor": NoAnchors, "refusal": Refusal,
         "refusal_split": RefusalSplit, "noanchor_clause": NoAnchorClause,
         "anchor_count": AnchorCount, "anchor_trim": AnchorTrim,
-        "noanchor_tight": NoAnchorTight}
+        "noanchor_tight": NoAnchorTight, "noanchor_scoped": NoAnchorScoped,
+        "noanchor_plain": NoAnchorPlainFact}
 
 
 def pinned_knowledge(run: Path, project: str):
@@ -369,8 +436,9 @@ def verify(projects, run):
         data = load(project, run)
         base, base_candidates = prompts_of("head", data)
         line = f"  {project:<14} head: {len(base_candidates):3d} cases, {len(base)} calls"
-        for arm in ("noanchor", "noanchor_clause", "noanchor_tight", "anchor_count",
-                    "anchor_trim", "refusal", "refusal_split"):
+        for arm in ("noanchor", "noanchor_clause", "noanchor_tight",
+                    "noanchor_scoped", "noanchor_plain",
+                    "anchor_count", "anchor_trim", "refusal", "refusal_split"):
             other, other_candidates = prompts_of(arm, data)
             if other == base:
                 verdict = "IDENTICAL"
