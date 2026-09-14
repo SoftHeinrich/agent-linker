@@ -234,6 +234,7 @@ CANONICAL_VARIANTS = [
     "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
     "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
     "s_linker121",  # s120 with the judge's three call-level arrangements removed
+    "s_linker122",  # s121 with the anchor block removed and one clause in its place
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2346,6 +2347,33 @@ VARIANT_SPECS = {
             "gold -7.3 at spurious -32.7 p=0.055 (precision 0.752 -> 0.871); projected "
             "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
             "one project. s_linker120 remains the reported arm; this is the simple one."
+        ),
+    ),
+    "s_linker122": dict(
+        aliases=("noanchor",),
+        module="llm_sad_sam.linkers.experimental.s_linker122",
+        class_name="SLinker122",
+        description=(
+            "S-Linker122 - s121 with the union judge's `anchors` evidence removed: the "
+            "block of naming sentences is not computed and not printed, and the rule's "
+            "line about it goes with it. STANDALONE, by the one-file-per-reported-"
+            "variant policy, and checked against s121 method by method "
+            "(pilot/test_s122_standalone.py, 99 checks, no calls: 28 methods byte-"
+            "identical, 4 declared changes, and every judging prompt on all five "
+            "projects equal to s121's bytes minus the anchors plus the clause). The "
+            "name judging goes 199,466 -> 156,519 chars over the five projects "
+            "(-21.5%) at the same 15 calls. In its place one 125-byte weighing, SCOPED: "
+            "'Where the sentence does not write the name in full, that a surface can "
+            "name this component is not evidence that it does here.' The scope is "
+            "load-bearing and was measured: unscoped, the same sentence reaches the "
+            "whole-name row and contradicts MENTION_COUNTS - luna -2.07 gold a unit "
+            "there, and E2E seven gold links lost on one bare enumeration of component "
+            "names (pilot/noanchor_fn.py). Scoped, that row reads -0.13. A clause-free "
+            "repair was also measured and REFUSED: rewording the alias evidence so it "
+            "claims no authority recovers the recall but reopens the row the anchors "
+            "were holding (terra spurious +7.3 a run, p=0.047; luna +7.0), which is "
+            "what a fact cannot do for a weighing. Stage arms and the E2E: "
+            "../results/s121_ablations/README.md."
         ),
     ),
     "s_linker120_noknow": dict(

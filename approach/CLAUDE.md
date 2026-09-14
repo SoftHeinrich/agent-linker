@@ -1432,3 +1432,15 @@ arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; st
   Use it for any future change to this file that is supposed to be a refactor.
 - **The head does not move. `s_linker120` stands, at `v13`, with the label set it had.**
   No E2E owed: every arm is refused or neutral-and-not-adopted.
+
+### s121 + s122 — simplify the judge and replace anchors with a scoped clause
+
+`s_linker121` removes the judge's call-level forwarding arrangements and reduces its
+method set from 49 to 34; `pilot/test_s121_standalone.py` verifies self-containment and
+reachability. `s_linker122` removes the union judge's sentence-anchor evidence block,
+reducing name-judge input by 21.5% over the five projects at the same 15 calls. The
+replacement is a scoped clause: where a sentence does not write a name in full, a known
+surface elsewhere is not evidence that it names the component here. The scope is
+required: an unscoped clause hurt Luna recall on whole-name enumerations. Standalone
+checks are in `pilot/test_s122_standalone.py`; the complete ablation and E2E record is
+`../results/s121_ablations/README.md`.

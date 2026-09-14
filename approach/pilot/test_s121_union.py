@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from design_audit import PROJECTS                                    # noqa: E402
 from simmerge_audit import (                                         # noqa: E402
-    arm_full, arm_partial, head_instance, load_project,
+    arm_full, arm_partial, arm_partial_all, head_instance, load_project,
 )
 from llm_sad_sam.linkers.experimental.helper_v3 import get_comp_names  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker121 import (           # noqa: E402
@@ -102,7 +102,11 @@ def main():
         data = load_project(project, True)
         linker = _variant(data)
         sent_map = {s.number: s for s in data["sentences"]}
-        head_full, head_partial = arm_full(data), arm_partial(data)
+        # The one-word reference is the UNREFUSED scan: `s_linker121` dropped the
+        # ancestor's nesting refusal (`../results/s121_ablations/`), so the pairs it
+        # used to end are cases here. The dropped set is pinned, not waved through.
+        head_full, head_partial = arm_full(data), arm_partial_all(data)
+        head_refused = head_partial - arm_partial(data)
 
         # T1 — the stream
         candidates = linker._name_candidates(
@@ -110,6 +114,9 @@ def main():
         pairs = {(c.sentence_number, c.component_id) for c in candidates}
         check(pairs == head_full | head_partial,
               f"{project}: merged stream is full | partial")
+        check(head_refused <= pairs,
+              f"{project}: the ancestor's refused pairs are cases here "
+              f"({len(head_refused)})")
         check(len(candidates) == len(pairs), f"{project}: no duplicate pairs")
         stages = {(c.sentence_number, c.component_id): linker._stage_of(c)
                   for c in candidates}

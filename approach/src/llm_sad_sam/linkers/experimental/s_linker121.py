@@ -368,7 +368,9 @@ class SLinker121:
     #: Whether a name written inside a longer dotted identifier is skipped by the
     #: scan. False: `QUALIFIED_CLAUSE` states the same thing to the judge that reads
     #: every one of these cases, and a deterministic layer that only ever admits a
-    #: case for a judge should not also refuse one.
+    #: case for a judge should not also refuse one. Since the nesting refusal came out
+    #: of `_scan` that second clause is **literally true of this module**: no predicate
+    #: anywhere in the deterministic layer ends a case.
     SKIP_QUALIFIED = False
 
     def __init__(
@@ -801,54 +803,25 @@ JSON only:"""
         print(f"    Extracted: {len(candidates)} (scan, 0 calls)")
         return candidates
 
-    def _only_inside_another_name(self, text, name, components) -> bool:
-        """True when every writing of ``name``'s word lies inside another whole name.
-
-        *Every* one, not any: a sentence that also writes the word on its own has said
-        something about this component somewhere else in it, and that pair is a case
-        for the judge as before. The predicate is the reason for the refusal stated
-        exactly — it does not fire on a component that merely has a sibling.
-
-        The covering names are read at `ANY_CASE`, the whole-name row of the relation
-        — the row `_states_a_name` reads and the row the scan uses — so this
-        introduces no fidelity the module does not already implement.
-
-        **Discovered aliases are deliberately not consulted here, and that asymmetry
-        is the design.** The module's scans use N(c) = the catalog name *and* the
-        run's aliases, because a scan only ever *admits* a case for a judge, and the
-        branch's law is that nothing in the deterministic layer admits a link. This
-        predicate is the one thing in the layer that *ends* a case, so it may rest
-        only on what is given: a catalog name is an input, while the alias table is
-        the output of an LLM stage that varies by ~2.8 terms a run. Letting it veto
-        makes one stage's sampling a silent refusal in another's — and it does, if
-        allowed: the alias form of this predicate costs **3 gold links in one recorded
-        run**, all three where the run's table bound a document term to the sibling of
-        the component the gold names.
-        """
-        mine = self._name_spans(text, name, NameForm.ANY_WORD)
-        if not mine:
-            return False
-        covering = []
-        for component in components:
-            if component.name != name:
-                covering.extend(
-                    self._name_spans(text, component.name, NameForm.ANY_CASE))
-        if not covering:
-            return False
-        return all(any(start <= a and b <= end for start, end in covering)
-                   for a, b in mine)
-
     def _scan(self, sentences, components):
         """Every (sentence, component) pair whose sentence writes one word of a name.
 
-        Nothing here admits a link: every pair is a case for a judge. Later spans of
-        the same pair overwrite earlier ones, so the recorded `matched_text` is the
-        last surface found in the sentence.
+        Nothing here admits a link and **nothing here ends one either**: every pair the
+        relation finds is a case for the judge. Later spans of the same pair overwrite
+        earlier ones, so the recorded `matched_text` is the last surface found in the
+        sentence.
 
-        The one refusal is `_only_inside_another_name`: a word that appears only
-        inside some *other* component's written name is that name's, not a mention of
-        this component. It is the single place the deterministic layer ends a case
-        rather than opening one, which is why it rests on catalog names alone.
+        This is the whole deterministic layer of the one-word stream — the relation and
+        the whole-name exclusion, and no third rule. `s_linker109`'s nesting refusal
+        (`_only_inside_another_name`: a word written only inside some *other*
+        component's name is that name's) stood here and is **removed as of
+        `../results/s121_ablations/`**. It was never able to gain a link — over five
+        projects it fires on one, drops 12 pairs and 0 of them are gold — and the judge
+        rejects those pairs on its own: **140 of 144 case-samples across two models**,
+        under `QUALIFIED_CLAUSE` and `STRICTER_CLAUSE`, which are about exactly this.
+        What it cost was a judging call on the project it touched. Its remaining value
+        was the 4 of 144 the laxer model approved, all of them non-gold, which is 1.3
+        spurious links a run on that model and 0.0 on the other.
         """
         candidates = {}
         for sentence in sentences:
@@ -862,18 +835,7 @@ JSON only:"""
                         sentence.number, text, component.name, component.id,
                         text[start:end], source="partial_name_candidate",
                     )
-
-        kept, refused = [], 0
-        for candidate in candidates.values():
-            if self._only_inside_another_name(
-                    candidate.sentence_text, candidate.component_name, components):
-                refused += 1
-                continue
-            kept.append(candidate)
-        if refused:
-            print(f"    Partial-name scan refused {refused} "
-                  f"(word written only inside another component's name)")
-        return kept
+        return list(candidates.values())
 
     @classmethod
     def _name_spans(cls, text, name, form: NameForm):
