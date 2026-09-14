@@ -23,6 +23,7 @@ def require(condition: bool, message: str):
 roster = rows(AUDIT / "fse2027_research_pc.csv")
 clusters = rows(AUDIT / "reviewer_clusters.csv")
 citations = rows(AUDIT / "citation_candidates.csv")
+evidence = rows(AUDIT / "reviewer_paper_evidence.csv")
 
 require(len(roster) == 461, f"roster row count: {len(roster)}")
 profiles = [row["official_profile_url"] for row in roster]
@@ -36,13 +37,42 @@ by_name = {row["name"]: row for row in roster}
 
 require(len(clusters) == 33, f"cluster shortlist row count: {len(clusters)}")
 require({row["cluster_id"] for row in clusters} == {"C1", "C2", "C3", "C4", "C5"}, "cluster IDs")
+cluster_by_reviewer = {}
 for row in clusters:
     require(row["reviewer"] in by_name, f"cluster reviewer missing from roster: {row['reviewer']}")
     require(row["official_role"] == by_name[row["reviewer"]]["role"], f"role mismatch: {row['reviewer']}")
     require(row["official_profile_url"] == by_name[row["reviewer"]]["official_profile_url"], f"profile mismatch: {row['reviewer']}")
     require(row["expertise_evidence_url"].startswith("https://"), f"non-HTTPS expertise evidence: {row['reviewer']}")
+    cluster_by_reviewer[row["reviewer"]] = row
 require(sum(row["conflict_status"] == "POTENTIAL_CHECK" for row in clusters) == 1, "expected one explicit conflict-review flag")
 require(any(row["reviewer"] == "Anne Koziolek" and row["conflict_status"] == "POTENTIAL_CHECK" for row in clusters), "Anne Koziolek check flag missing")
+
+require(len(evidence) == 67, f"paper-evidence row count: {len(evidence)}")
+evidence_ids = [row["evidence_id"] for row in evidence]
+require(len(set(evidence_ids)) == len(evidence), "paper-evidence IDs are not unique")
+evidence_by_reviewer = {}
+for row in evidence:
+    reviewer = row["reviewer"]
+    require(reviewer in by_name, f"paper-evidence reviewer missing from roster: {reviewer}")
+    require(reviewer in cluster_by_reviewer, f"paper-evidence reviewer missing from clusters: {reviewer}")
+    require(row["cluster_id"] == cluster_by_reviewer[reviewer]["cluster_id"], f"paper-evidence cluster mismatch: {row['evidence_id']}")
+    require(row["fit_level"] in {"Direct", "Adjacent"}, f"unknown fit level: {row['evidence_id']}")
+    expected_points = "3" if row["fit_level"] == "Direct" else "1"
+    require(row["points"] == expected_points, f"fit points mismatch: {row['evidence_id']}")
+    require(row["source_url"].startswith("https://"), f"non-HTTPS paper source: {row['evidence_id']}")
+    require(row["citation_recommendation"] in {"HIGH", "CONTEXT"}, f"unknown citation recommendation: {row['evidence_id']}")
+    evidence_by_reviewer.setdefault(reviewer, []).append(row)
+for reviewer, cluster in cluster_by_reviewer.items():
+    ev = evidence_by_reviewer.get(reviewer, [])
+    direct = sum(row["fit_level"] == "Direct" for row in ev)
+    adjacent = sum(row["fit_level"] == "Adjacent" for row in ev)
+    require(int(cluster["evidence_paper_count"]) == len(ev), f"paper count mismatch: {reviewer}")
+    require(int(cluster["direct_paper_count"]) == direct, f"direct-paper count mismatch: {reviewer}")
+    require(int(cluster["adjacent_paper_count"]) == adjacent, f"adjacent-paper count mismatch: {reviewer}")
+    require(int(cluster["topic_fit_score"]) == direct * 3 + adjacent, f"fit score mismatch: {reviewer}")
+    require(cluster["evidence_ids"] == ";".join(row["evidence_id"] for row in ev), f"evidence ID list mismatch: {reviewer}")
+    expected_status = "MULTI_PAPER_CHECKED" if len(ev) >= 3 else ("LIMITED_PAPER_CHECKED" if ev else "PROFILE_ONLY")
+    require(cluster["paper_evidence_status"] == expected_status, f"paper evidence status mismatch: {reviewer}")
 
 bib = (ROOT / "paper" / "agent-linker.bib").read_text(encoding="utf-8")
 for row in citations:
@@ -61,6 +91,7 @@ for row in citations:
 print("PASS offline: 461 roster rows; 461 unique official profiles")
 print("PASS offline: role counts Chair=2, Area Chair=19, Member=440")
 print("PASS offline: 33 shortlisted reviewers across C1-C5")
+print("PASS offline: 67 paper-evidence rows; counts and score aggregation checked")
 print("PASS offline: 18 citation candidates; PC-author and HTTPS checks passed")
 print("PASS offline: local BibTeX PRESENT/ABSENT statuses and conflict flag checked")
 

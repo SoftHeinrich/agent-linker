@@ -21,12 +21,15 @@ The actionable shortlist is in [\`reviewer_clusters.csv\`](reviewer_clusters.csv
 - C4: program analysis, testing, and software quality;
 - C5: software evolution, mining, and adjacent empirical methods.
 
-The citation inventory is in [\`citation_candidates.csv\`](citation_candidates.csv). The strongest direct-fit candidates are CIT-06 (anaphoric ambiguity), CIT-07 (trace-link recovery), CIT-08 (textual + structural recovery), and CIT-09 (query reformulation). Use CIT-01/02/04/18 for architecture/traceability foundations and CIT-11/12/14/15/16/17 only for LLM or empirical-workflow context.
+The citation inventory is in [\`citation_candidates.csv\`](citation_candidates.csv). The expanded paper evidence is in [\`reviewer_paper_evidence.csv\`](reviewer_paper_evidence.csv): 67 paper-level rows covering 17 shortlisted reviewers. The strongest direct-fit candidates are CIT-06 (anaphoric ambiguity), CIT-07 (trace-link recovery), CIT-08 (textual + structural recovery), and CIT-09 (query reformulation). Use CIT-01/02/04/18 for architecture/traceability foundations and CIT-11/12/14/15/16/17 only for LLM or empirical-workflow context.
+
+The cluster ranking now uses an explicit evidence score: \`topic_fit_score = 3 × direct papers + 1 × adjacent papers\`. “Direct” means the paper addresses traceability, architecture/lifecycle artifact linking, requirements NLP/ambiguity, or documentation/code references; “adjacent” means LLM/AI4SE, empirical workflow, testing, or broader software-evolution context. More papers increase confidence only when their topic is also direct; the score is a transparent triage heuristic, not a measure of scientific quality.
 
 ## Files
 
 - [\`fse2027_research_pc.csv\`](fse2027_research_pc.csv): complete official roster snapshot, with role, affiliation, country, and profile URL.
-- [\`reviewer_clusters.csv\`](reviewer_clusters.csv): relevance-ranked, evidence-linked shortlist; fit tier A is direct, B is adjacent/contextual.
+- [\`reviewer_clusters.csv\`](reviewer_clusters.csv): relevance-ranked shortlist with paper counts, direct/adjacent counts, scores, and evidence IDs; fit tier A is direct, B is adjacent/contextual.
+- [\`reviewer_paper_evidence.csv\`](reviewer_paper_evidence.csv): multiple checkable publication signals per reviewer where found, with fit level, source URL, and citation-use recommendation.
 - [\`citation_candidates.csv\`](citation_candidates.csv): paper-level candidates, claim fit, PC author overlap, DOI/canonical URL, and local BibTeX status.
 - [\`verify.py\`](verify.py): offline consistency checker plus optional live roster comparison.
 - [\`verification/2026-09-14-fse-2027-reviewer-audit.md\`](../../verification/2026-09-14-fse-2027-reviewer-audit.md): preserved command/configuration/output evidence.
@@ -37,8 +40,9 @@ The citation inventory is in [\`citation_candidates.csv\`](citation_candidates.c
 2. Use C1/C2 for the related-work backbone; use C3–C5 to position LLM workflow design and evaluation.
 3. Verify every DOI/title/venue against the linked publisher, author, institutional, or repository source before final submission.
 4. Check the local BibTeX status. Existing keys are not automatically correct; inspect the entry and cite only after claim-level review.
-5. Treat author overlap as a discovery aid, never as a reason to add a citation. Do not imply that any listed person reviewed this paper.
-6. Re-run the live check close to submission because committee membership and page content can change.
+5. Sort [\`reviewer_clusters.csv\`](reviewer_clusters.csv) by \`topic_fit_rank\`, then open every linked row in [\`reviewer_paper_evidence.csv\`](reviewer_paper_evidence.csv) before assigning a fit judgment.
+6. Treat author overlap as a discovery aid, never as a reason to add a citation. Do not imply that any listed person reviewed this paper.
+7. Re-run the live check close to submission because committee membership and page content can change.
 
 ## Suggested related-work mapping
 
@@ -66,6 +70,8 @@ python3 research/fse-2027-reviewer-audit/verify.py --live
 
 The offline check verifies row counts, unique official profiles, role totals, cluster membership, citation-author membership, HTTPS evidence URLs, local BibTeX keys, and the explicit conflict-review flag. The live check fetches the official committee page and compares the profile set to this snapshot. Network failure should be recorded in the verification file rather than silently treated as current.
 
+The paper-evidence check also verifies that every paper row belongs to a public PC member in the cluster sheet, that direct/adjacent point values are consistent, and that each cluster’s counts and rank score are reproducible from the evidence rows.
+
 ## Primary sources
 
 - Official committee: https://conf.researchr.org/committee/fse-2027/fse-2027-papers-program-committee
@@ -75,4 +81,4 @@ The offline check verifies row counts, unique official profiles, role totals, cl
 
 ## Limitations
 
-This is a public-source, relevance-first audit as of 2026-09-14. It does not claim that the 33 shortlisted people are the only experts, that a public profile is current, or that a person will review this submission. Several B-tier rows are intentionally marked for a second publication-level screen. The citation list is a checked starting set, not permission to add all entries to the paper.
+This is a public-source, relevance-first audit as of 2026-09-14. It does not claim that the 33 shortlisted people are the only experts, that a public profile is current, or that a person will review this submission. The expanded paper evidence covers 17 of the 33 shortlist rows; remaining \`PROFILE_ONLY\` rows are intentionally not promoted by paper count. Several B-tier rows are still marked for a second publication-level screen. The citation list is a checked starting set, not permission to add all entries to the paper.
