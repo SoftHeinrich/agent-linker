@@ -1,0 +1,51 @@
+    Extracted: 42 (scan, 0 calls)
+    Partial-name scan refused 12 (word written only inside another component's name)
+    Partial-name scan refused 12 (word written only inside another component's name)
+    Extracted: 42 (scan, 0 calls)
+    Partial-name scan refused 12 (word written only inside another component's name)
+    Extracted: 42 (scan, 0 calls)
+
+=== bigbluebutton: 87 sentences, 12 components, 62 gold, 90 candidates (whole name 35, alias 7, word only 48), refusal drops 12 (0 gold) ===
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+    Partial-name scan refused 12 (word written only inside another component's name)
+  head       sample 1:   66 kept,   54 gold,   12 spurious (of 90 candidates, 4 calls)
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+  norefusal_split sample 1:   62 kept,   52 gold,   10 spurious (of 102 candidates, 5 calls)
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+    Partial-name scan refused 12 (word written only inside another component's name)
+  head       sample 2:   65 kept,   54 gold,   11 spurious (of 90 candidates, 4 calls)
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+  norefusal_split sample 2:   66 kept,   54 gold,   12 spurious (of 102 candidates, 5 calls)
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+    Partial-name scan refused 12 (word written only inside another component's name)
+  head       sample 3:   61 kept,   53 gold,    8 spurious (of 90 candidates, 4 calls)
+SLinker121 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-terra)
+    Extracted: 42 (scan, 0 calls)
+  norefusal_split sample 3:   67 kept,   55 gold,   12 spurious (of 102 candidates, 5 calls)
+
+gpt-5.6-terra, 3 samples, per run over 1 projects:
+  arm        candidates    kept    gold  spurious  precision  calls
+  head             90.0    64.0    53.7      10.3      0.839    4.0
+  norefusal_split      102.0    65.0    53.7      11.3      0.826    5.0
+
+per naming row (cases are fixed; kept/gold/spurious are per run):
+  row           cases  gold in      head   gold    sp  norefusa   gold    sp
+  whole name       35       34      35.0   34.0   1.0      35.0   34.0   1.0
+  alias             7        4       6.0    4.0   2.0       6.3    4.0   2.3
+  word only        48       22      23.0   15.7   7.3      23.7   15.7   8.0
+
+the pairs the refusal drops, once the judge is allowed to see them:
+  bigbluebutton  0 approved, 36 rejected, of 36 case-samples (0.0 spurious a run)
+
+kept pairs written to /mnt/hostshare/ardoco-home/agent-linker/results/s121_ablations/dump_terra_split.json
