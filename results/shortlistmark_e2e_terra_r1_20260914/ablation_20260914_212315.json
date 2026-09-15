@@ -1,0 +1,596 @@
+{
+  "mediastore": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 31,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 31,
+      "time": 40.919554233551025,
+      "sources": {
+        "full_name": 28,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 9
+    },
+    "s_linker124": {
+      "variant": "s_linker124",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "F2": 0.974025974025974,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 27.764501571655273,
+      "sources": {
+        "full_name": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 9
+    }
+  },
+  "teammates": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.9107142857142857,
+      "R": 0.8947368421052632,
+      "F1": 0.9026548672566371,
+      "F2": 0.897887323943662,
+      "tp": 51,
+      "fp": 5,
+      "fn": 6,
+      "n_links": 56,
+      "time": 87.31373381614685,
+      "sources": {
+        "full_name": 50,
+        "partial_name": 2,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "full_name": 4,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "UI",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 78,
+          "component": "Logic",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 120,
+          "component": "Storage",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 31
+    },
+    "s_linker124": {
+      "variant": "s_linker124",
+      "P": 0.8620689655172413,
+      "R": 0.8771929824561403,
+      "F1": 0.8695652173913043,
+      "F2": 0.8741258741258742,
+      "tp": 50,
+      "fp": 8,
+      "fn": 7,
+      "n_links": 58,
+      "time": 92.81855416297913,
+      "sources": {
+        "full_name": 51,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "full_name": 6,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 117,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Refer to the API for the cascade logic."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "UI",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 128,
+          "component": "Storage",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 30
+    }
+  },
+  "teastore": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 1.0,
+      "R": 0.9629629629629629,
+      "F1": 0.9811320754716981,
+      "F2": 0.9701492537313433,
+      "tp": 26,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 26,
+      "time": 30.67986273765564,
+      "sources": {
+        "full_name": 21,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 9
+    },
+    "s_linker124": {
+      "variant": "s_linker124",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 27,
+      "time": 30.955445051193237,
+      "sources": {
+        "full_name": 21,
+        "coreference": 6
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 9
+    }
+  },
+  "bigbluebutton": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.8888888888888888,
+      "R": 0.9032258064516129,
+      "F1": 0.8959999999999999,
+      "F2": 0.9003215434083601,
+      "tp": 56,
+      "fp": 7,
+      "fn": 6,
+      "n_links": 63,
+      "time": 68.59370374679565,
+      "sources": {
+        "full_name": 42,
+        "partial_name": 19,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 5,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 16,
+          "component": "HTML5 Client",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+        },
+        {
+          "sentence": 27,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 31,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 18
+    },
+    "s_linker124": {
+      "variant": "s_linker124",
+      "P": 0.8888888888888888,
+      "R": 0.9032258064516129,
+      "F1": 0.8959999999999999,
+      "F2": 0.9003215434083601,
+      "tp": 56,
+      "fp": 7,
+      "fn": 6,
+      "n_links": 63,
+      "time": 81.70627999305725,
+      "sources": {
+        "full_name": 42,
+        "partial_name": 19,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 5,
+        "full_name": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 16,
+          "component": "HTML5 Client",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+        },
+        {
+          "sentence": 27,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 31,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 19
+    }
+  },
+  "jabref": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 20.994786739349365,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 6
+    },
+    "s_linker124": {
+      "variant": "s_linker124",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 14.720676898956299,
+      "sources": {
+        "full_name": 19
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 5,
+          "component": "logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The model represents the most important data structures (BibDatases, BibEntries, Events, and related aspects) and has on"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 6
+    }
+  }
+}

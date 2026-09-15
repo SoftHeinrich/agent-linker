@@ -237,6 +237,8 @@ CANONICAL_VARIANTS = [
     "s_linker122",  # s121 with the anchor block removed and one clause in its place
     "s_linker123",  # s122 with the judge's three evidence fields merged into one
     "s_linker124",  # s123 + the antecedent shortlist marked with the judge's own verdicts
+    "s_linker125",  # s123 with the resolver's antecedent shortlist removed entirely
+    "s_linker126",  # s125 + the antecedent contract the deleted prompt used to assert
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2350,6 +2352,54 @@ VARIANT_SPECS = {
             "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
             "one project. s_linker120 remains the reported arm; this is the simple one."
         ),
+    ),
+    "s_linker126": dict(
+        aliases=("antecedentrule",),
+        module="llm_sad_sam.linkers.experimental.s_linker126",
+        class_name="SLinker126",
+        description=(
+            "S-Linker126 - s_linker125 (no antecedent shortlist) plus the contract that "
+            "shortlist's paragraph used to ASSERT: a coreference resolution whose cited "
+            "antecedent sentence does not write the component's name as a name is not "
+            "put to the judge. The prompt used to claim the list `is where the "
+            "antecedent will be if there is one` and could not enforce it; over six "
+            "recorded runs 17 surviving false positives cite an antecedent that writes "
+            "the name only inside a dotted identifier (10) or not at all (7), against "
+            "ZERO gold, on both models. The predicate reads `_written_as`, already "
+            "computed for every union-judging case, so no new computation and no new "
+            "concept is introduced; `_named_before` is dead once the list goes and "
+            "`_states_a_name` keeps its other caller. It may close a case where "
+            "s_linker124's mark may not, because `written` is a GIVEN fact (catalog plus "
+            "document, identical every run) and a judge's verdict is a DISCOVERED one - "
+            "s_linker109's rule, and its nesting predicate is the precedent. The refusal "
+            "measured with the list still present costs ZERO true positives on both "
+            "models (terra FP 13.0 -> 12.3, luna 40.3 -> 38.3 with -2 in 3 of 3 samples). "
+            "Coreference is the last linker, so composition risk is structurally zero "
+            "(pilot/test_s126.py, no calls)."),
+    ),
+    "s_linker125": dict(
+        aliases=("noshortlist",),
+        module="llm_sad_sam.linkers.experimental.s_linker125",
+        class_name="SLinker125",
+        description=(
+            "S-Linker125 - s_linker123 with the coreference resolver's antecedent "
+            "shortlist removed entirely: the `NAMED BEFORE THIS CASE` line, the scan "
+            "behind it, and the paragraph telling the model that list `is where the "
+            "antecedent will be if there is one`. Built after s_linker124's mark on "
+            "that same list was refused by the doc-code gate, and after the diagnosis "
+            "said the failure was over-attachment rather than mis-discrimination (the "
+            "gold component was among the resolver's own candidates in 0 of the "
+            "surviving false positives; 10 of the mark's 15 extra FPs had a single "
+            "candidate). Read on SIMPLICITY, not on quality: the stage pilot's two "
+            "models disagree on the sign (terra F1 -0.40, luna +0.40), which is inside "
+            "noise by this branch's rule. What it buys is a whole mechanism gone and "
+            "-8680 B (bigbluebutton) / -18327 B (teammates) off the resolver a run; "
+            "what it costs is judging calls, because the resolver proposes 69%% / 53%% "
+            "more gold without the list and NONE of it reaches the output - net gold "
+            "is flat at ~15 a run, since `link` merges by pair and the name stage "
+            "already holds those pairs. Two overrides, no authored rule constant "
+            "changed, so GATE-07's accounting does not move (pilot/test_s125.py, 33 "
+            "checks, no calls - including byte-identity with the measured pilot arm)."),
     ),
     "s_linker124": dict(
         aliases=("shortlistmark",),
