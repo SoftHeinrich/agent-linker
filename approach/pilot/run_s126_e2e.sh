@@ -48,8 +48,13 @@ for i in $(seq 1 "${RUNS}"); do
   if [ -f "${RUN}/s_linker126_jabref_links.csv" ]; then
     echo "run ${i} already complete -- skipping"; continue
   fi
-  if [ $((i % 2)) -eq 1 ]; then ARMS="s_linker123 s_linker126";
-  else ARMS="s_linker126 s_linker123"; fi
+  # ONE arm, by decision: the control is not re-run. `s_linker123` was measured end to
+  # end on 2026-09-14 (`../results/shortlistmark_e2e_*`) and is already scored as the
+  # `s123ctl` dump slot, so s126's rows are read against those. NOTE, because it bears on
+  # how these numbers may be cited: this makes the comparison CROSS-SET, and an E2E
+  # resamples every stage -- this round measured terra's name-stage noise at +12 FP over
+  # six runs, which is larger than the effect under test.
+  ARMS="s_linker126"
   mkdir -p "${RUN}"
   echo "=== ${MODEL} run ${i} (${ARMS}) -> ${RUN}"
   LLM_BACKEND=openai \
