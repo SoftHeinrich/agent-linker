@@ -121,6 +121,22 @@ Never write either credential value to `.env`, logs, results, or tracked files.
 - **GATE-06**: no benchmark-derived vocabulary introduced in any new code —
   prompts/rubrics stay generic English; the runtime catalog (component names,
   code identifiers) is the only project-specific input.
+- **GATE-07**: every prompt clause and every code gate must stand on one of
+  three grounds — a general rule or logical distinction that holds for any
+  text, general software-engineering practice, or prior work measured on this
+  branch or in the literature. A clause that names a surface form or syntax
+  merely because it occurs in these benchmark documents is inadmissible,
+  however well it scores. GATE-06 forbids benchmark vocabulary; GATE-07 also
+  forbids benchmark-shaped rules.
+
+Prompt and rubric wording is semantic: keep facts in case evidence and put
+judgment or weighting in the rubric. A proposed rewording of a load-bearing
+criterion requires a fixed-input validation before an end-to-end run.
+
+Paper-facing claims also follow the repository-wide restrictions in the root
+`AGENTS.md`: report the measured scope, distinguish observation from
+interpretation, avoid unsupported causal or superiority language, and keep
+benchmark-specific forms scoped to observations rather than general rules.
 
 ## Notes
 

@@ -4,7 +4,8 @@
 
 The package contains the benchmark inputs, gold standards, recovered links, and
 recorded run results needed to reproduce the paper's deterministic metrics. No
-network access, API key, sibling checkout, or untracked data is needed for:
+network access, API key, sibling checkout, or initialized paper submodule is
+needed for:
 
 ```bash
 ./scripts/verify.sh
@@ -56,6 +57,13 @@ artifacts in `sota-links/`; do not replace those artifacts when reproducing the
 reported results.
 
 ## Paper build
+
+The manuscript is a Git submodule. Initialize it before compiling a fresh
+checkout:
+
+```bash
+git submodule update --init paper
+```
 
 ```bash
 ./scripts/build-paper.sh

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+paper_changed=false
+while IFS= read -r path; do
+  if [[ "$path" == "paper" ]]; then
+    paper_changed=true
+    break
+  fi
+done < <(git diff-tree --no-commit-id --name-only -r HEAD -- paper || true)
+
+if [[ "$paper_changed" == true ]]; then
+  if [[ ! -x "$root/paper/scripts/sync-paper.sh" ]]; then
+    echo "Paper submodule is not initialized; run git submodule update --init paper." >&2
+    exit 1
+  fi
+  "$root/scripts/sync-paper-overleaf.sh"
+fi

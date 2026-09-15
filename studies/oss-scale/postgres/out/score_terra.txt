@@ -1,0 +1,23 @@
+BM25 retrieval of the human owner (universe 141 components): top-12 49/59 = 0.831; top-1 0.322; median rank 3
+  same query pooled over the whole document: top-12 10/10 = 1.000  (ranks [1, 3, 0, 0, 2, 0, 0, 0, 2, 2])
+
+sentences labelled: 274 (no ABOUT at all: 17)
+  owner among ABOUT:   238/274 = 0.869
+  owner only REFERS:   8
+  owner absent:        28
+  of the sentences that got any ABOUT: 238/257 = 0.926
+  ABOUT labels per sentence: 1.00 (candidates shown: 12)
+
+document                                             owner-ABOUT                top voted subsystem
+src/backend/optimizer/plan/README                      23/34         src/backend/optimizer/plan  23
+src/backend/access/brin/README                         55/58            src/backend/access/brin  55
+src/test/modules/test_shm_mq/README                    15/15       src/test/modules/test_shm_mq  15
+src/backend/storage/page/README                        24/26           src/backend/storage/page  24
+src/backend/replication/README                         19/23            src/backend/replication  19
+src/backend/storage/smgr/README                        13/15           src/backend/storage/smgr  13
+src/backend/access/rmgrdesc/README                     19/19        src/backend/access/rmgrdesc  19
+src/backend/statistics/README                          21/22             src/backend/statistics  21
+src/backend/nodes/README                               23/31                  src/backend/nodes  23
+src/timezone/README                                    26/31                       src/timezone  26
+
+documents whose most-voted subsystem is the human owner: 10/10

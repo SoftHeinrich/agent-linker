@@ -100,6 +100,14 @@ The faithfulness is mechanical rather than asserted: every block of this file th
 not a marked delta is `s_linker92`'s block unchanged, and the derivation is checked
 from outside by `pilot/test_s110_shortlist.py`, which compares this file's prompts,
 scan and shortlist against `s_linker92` and `s_linker109` over all five projects.
+One block is exempt from the byte comparison. `MentionType` here has three members
+where the head has five: `LOWERCASE_PROSE` never reached a prompt (`RETAINED_MENTION_
+TYPES` blanks it) and `INDIRECT` cannot be produced at all, because this file builds
+bundles only for the full-name proposer's candidates and that proposer emits a pair
+only when the classifier's own predicate matched. `_classify_mention_typed` is pruned
+to match, and the test replaces byte-equality for that block with equality of the
+label the prompt carries, over every (component, sentence) pair of all five projects
+under an empty alias table and a populated one.
 `s_linker92`, `s_linker92a` and `s_linker109` are untouched and remain the arms the
 ledger records; the variants that fork this one (`s_linker111`, `s_linker112`,
 `s_linker114`, `s_linker110_onecall`) subclass `SLinker110` exactly as before.
@@ -303,12 +311,22 @@ class NameForm(Enum):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class MentionType(Enum):
-    """How a component name appears in a sentence."""
+    """How a component name appears in a sentence.
+
+    Three members, where `s_linker92` has five. `LOWERCASE_PROSE` and `INDIRECT` are
+    pruned here: neither can reach a prompt, because `RETAINED_MENTION_TYPES` blanks
+    every label but the two below, and `INDIRECT` cannot even be produced -- bundles
+    are built only for the full-name proposer's candidates, and that proposer emits a
+    pair only when `_find_exact_form` matched the name or an alias, which is the very
+    test this classifier re-asks. The case `LOWERCASE_PROSE` used to name -- a name
+    written in another case (`WebUi` for WebUI) -- now returns `PROPER_STANDALONE`,
+    which no caller distinguishes from it, and the unreachable fallback returns None.
+    Removal is label-only: over the three-run consolidation logs the two pruned values
+    account for 216 and 0 of 1326 evidence lines, and all 216 already printed nothing.
+    """
     PROPER_STANDALONE = "proper case, standalone"
-    LOWERCASE_PROSE = "lowercase mention"
     CODE_TOKEN = "lowercase, inside qualified name"
     VIA_ALIAS = "via known alias"
-    INDIRECT = "indirect/unclear match"
 
 
 @dataclass
@@ -1025,24 +1043,28 @@ JSON only:"""
 
     # ── Evidence bundles and the judge ───────────────────────────────────────
 
-    def _classify_mention_typed(self, comp_name: str, text: str) -> MentionType:
+    def _classify_mention_typed(self, comp_name: str, text: str) -> MentionType | None:
         """Label how the name appears, using the one matching test.
 
-        The case distinction compares the matched surface against the name rather
-        than running a second case-sensitive predicate: `_find_exact_form` already
-        returns what it matched. Measured indistinguishable from the two-predicate
-        form it replaces, at the stage and end to end.
+        One matching predicate answers it: `_find_exact_form` is ANY_CASE, so a name
+        written in any case reaches the first branch, and the surface it returns is
+        not compared against the name any more -- `s_linker92` split that branch into
+        `PROPER_STANDALONE` and `LOWERCASE_PROSE`, and no caller reads the difference.
+
+        None where the sentence does not write the name or any alias of it. Unreachable
+        from this file's only caller (`_build_evidence_bundle`, over the full-name
+        proposer's candidates, which are proposed by this same predicate); it is
+        `s_linker92`'s `INDIRECT`, which that file produces because its bundles also
+        cover the partial-name and coreference proposers.
         """
-        matched = self._find_exact_form(text, comp_name)
-        if matched:
+        if self._find_exact_form(text, comp_name):
             if self._all_occurrences_in_qualified_path(comp_name.lower(), text):
                 return MentionType.CODE_TOKEN
-            return (MentionType.PROPER_STANDALONE if matched == comp_name
-                    else MentionType.LOWERCASE_PROSE)
+            return MentionType.PROPER_STANDALONE
         for alias in self._names_by_component().get(comp_name, ()):
             if self._find_exact_form(text, alias):
                 return MentionType.VIA_ALIAS
-        return MentionType.INDIRECT
+        return None
 
     @classmethod
     def _all_occurrences_in_qualified_path(cls, comp_lower: str, text: str) -> bool:

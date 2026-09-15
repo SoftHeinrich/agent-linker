@@ -20,7 +20,7 @@ def write_repository(components: list[dict], path: Path) -> None:
         '<repository:Repository xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" '
         'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
         'xmlns:repository="http://palladiosimulator.org/PalladioComponentModel/Repository/5.2" '
-        'entityName="oss-scale">',
+        'id="oss-scale-repository" entityName="oss-scale">',  # ArDoCo's PCM parser needs a repository id
     ]
     for comp in components:
         lines.append(

@@ -1,0 +1,41 @@
+$ ardoco-cli -t sad-sam -n rustc_core -d sentences.txt -m rustc_core.repository
+  TextPreprocessing 17:03, ModelProvider 0.05s, TextExtraction 14:15, RecommendationGenerator 13s, ConnectionGenerator 4:08
+  266 unique links after mapping ArDoCo sentence ids (CoreNLP split, 1915 sentences) back to dataset lines
+
+== gold gold_plus
+gold tier gold_plus: 1327 pairs on 1200 sentences; explicit 147 implicit 1180; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                            266     2  0.008  0.002  0.003  0.008  0.014  0.000          3
+stage swattr                          266     2  0.008  0.002  0.003  0.008  0.014  0.000          3
+
+== gold gold
+gold tier gold: 1236 pairs on 1146 sentences; explicit 126 implicit 1110; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                            266     2  0.008  0.002  0.003  0.008  0.016  0.000          3
+stage swattr                          266     2  0.008  0.002  0.003  0.008  0.016  0.000          3
+
+== gold 3way
+gold tier 3way: 980 pairs on 943 sentences; explicit 118 implicit 862; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                            266     2  0.008  0.002  0.003  0.008  0.017  0.000          3
+stage swattr                          266     2  0.008  0.002  0.003  0.008  0.017  0.000          3
+
+== gold anchor
+gold tier anchor: 393 pairs on 341 sentences; explicit 168 implicit 225; refers 427 silver 681
+view                                links    TP      P      R     F1  P_len R_expl R_impl FP->silver
+all stages                            266     0  0.000  0.000  0.000  0.000  0.000  0.000          3
+stage swattr                          266     0  0.000  0.000  0.000  0.000  0.000  0.000          3
+
+== surface strata
+gold gold_plus: 1327 pairs
+  verbatim      147  0.111
+  name-echo     504  0.380
+  no-surface    676  0.509
+
+view                    links    TP      P      R  R_verb  R_echo  R_nosurf
+all stages                266     2  0.008  0.002   0.014   0.000     0.000
+stage swattr              266     2  0.008  0.002   0.014   0.000     0.000
+minus partial_name        266     2  0.008  0.002   0.014   0.000     0.000
+
+stratum of predicted links (whether or not correct):
+  all stages             verbatim    45  name-echo   207  no-surface    14

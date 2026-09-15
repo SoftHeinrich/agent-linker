@@ -1,0 +1,13 @@
+$ coref_autopsy.py results/oss_scale_rustc_core_r1_20260904_0011
+resolver proposed 377 pairs on 362 of 1762 sentences (0.205)
+  by component: [('rustc_middle', 59), ('rustc_hir', 56), ('rustc', 56), ('rustc_ast', 31), ('rustc_parse', 24), ('rustc_expand', 22)]
+  correct among proposals: 176 (0.467); REFERS 38
+judge approved 47 -> correct 22 (0.468)
+judge rejected 330 -> correct 154 (0.467)
+  correct links the judge threw away: 154
+  -> the judge keeps the same hit rate it was given: it removes volume, not error
+
+for contrast, the topic-propagation judge (same model, anchor sentence in the prompt):
+  proposals 1066, correct 170 (0.159)
+  approved 214 -> correct 99 (0.463); rejected 852 -> correct 71 (0.083)
+  lift over its own base rate: 2.9x; it keeps 0.582 of the correct proposals

@@ -368,3 +368,265 @@ is refuted semantically as well as syntactically: 184/2,536 correct, 107 more si
   paper needs); the crate grouping into ~12 maintainer-confirmed components (design 7),
   so the sibling confusions can be scored at both granularities; co-change is not a
   scalable source on rustc and should be tried on PostgreSQL/Linux instead.
+  *Partly closed on 2026-09-04*: §9.4 and §9.6 audit the recipe against two
+  developer-written assignments (Linux `MAINTAINERS`, PostgreSQL in-tree READMEs) instead
+  of paid annotators — 0.784 and 0.869 of sentences put the human owner in ABOUT, 20 of 22
+  documents vote for it.
+
+## 9. Where the recall goes: surface strata, coreference, and a human audit (2026-09-04)
+
+§8 split the gold into *explicit* (crate named verbatim) and *implicit*. That split was too
+coarse: it counts "the borrow checker" as implicit even though a matcher working on the
+component name alone can fire on it. `semgold/surface.py` re-splits by what surface of the
+name the sentence carries, using one generic morphological rule — a crate-id token (minus
+the vendor prefix every component shares) and a sentence token that agree on their first
+four characters. No word lists.
+
+### 9.1 Three strata, and where s110 lives (`reports/semgold_surface_strata.txt`)
+
+| stratum | gold_plus pairs | share |
+|---|---|---|
+| verbatim (`rustc_borrowck`) | 147 | 0.111 |
+| name-echo ("the borrow checker", "MIR", "name resolution") | 504 | 0.380 |
+| no-surface (only meaning connects them) | 676 | 0.509 |
+
+The rule was audited rather than assumed: the tokens that trigger an echo are `lint` (51
+pairs), `mir` (48), `trait` (33), `expand` (33), `hir` (29), `infer`, `query`, `borrowck`,
+`resolve` — domain words, not stopwords — and only 73 of the 504 echo pairs fire on a token
+that appears in more than 5% of sentences.
+
+| view | links | P | R | R verbatim | R name-echo | R no-surface |
+|---|---|---|---|---|---|---|
+| all stages | 3,176 | 0.143 | 0.342 | 0.973 | 0.530 | **0.065** |
+| full_name | 618 | 0.426 | 0.198 | 0.973 | 0.167 | 0.053 |
+| partial_name | 2,536 | 0.073 | 0.139 | 0.000 | 0.363 | 0.001 |
+| coreference | 22 | 0.318 | 0.005 | 0.000 | 0.000 | 0.010 |
+
+Three things this changes:
+
+* The "full-name" stage is not a literal matcher — **392 of its 618 links (63%) are not a
+  verbatim occurrence** of the id. It is already doing name-word paraphrase, which is why it
+  reaches part of the echo stratum.
+* The partial-name stage, refuted three times on precision, is **the only stage covering the
+  name-echo stratum** (R 0.363 there against full-name's 0.167). Dropping it still wins on F1,
+  but the honest statement is that it buys echo recall at P 0.073, and nothing replaces it.
+* Half the gold has no name surface at all and the whole pipeline recovers 6.5% of it. That
+  is the tail, stated in one number.
+
+### 9.2 Coreference: the ceiling is the design, not the prompt (`semgold/coref_headroom.py`)
+
+s110's coreference stage resolves a referring expression to a component that an **earlier
+sentence names**; `_prompt_coref` is handed the "NAMED BEFORE THIS CASE" list, so no
+antecedent means no link. Against the semantic gold:
+
+| antecedent must be … | share of no-surface gold reachable, window 3 | anywhere earlier in chapter |
+|---|---|---|
+| a literal crate id | 0.109 | 0.451 |
+| any name echo | **0.479** | **0.846** |
+
+With literal antecedents, **60.5% of implicit gold has no preceding mention in the chapter
+at all** (514 pairs whose crate is never named in the chapter; 211 gold pairs involve crates
+never named anywhere in the document, and only 33 of 79 crates are ever named). The stage
+produced 22 links and 7 true ones — 5.6% of even the narrow literal-antecedent ceiling.
+
+**Autopsy of the stage's own run** (`semgold/coref_autopsy.py`, reading the run's phase state):
+
+| | pairs | correct |
+|---|---|---|
+| resolver proposed | 377, on 362 of 1,762 sentences (20.5%) | 176 (0.467) |
+| judge approved | 47 | 22 (0.468) |
+| judge rejected | 330 | **154** (0.467) |
+
+Two separate failures. First, the stage never looks at four fifths of the document: a
+proposal needs a component some earlier sentence names, and it is run blind to what the
+other stages linked, so it cannot reuse them. Second — and worse — **its judge does not
+discriminate**: 46.7% of what it was handed was right, 46.8% of what it kept was right, and
+46.7% of what it threw away was right. It removed volume, not error, and 154 correct links
+went with it. Add to that: only 19% of the no-name gold sentences even open with a pronoun or
+demonstrative, so most of them are topic continuations rather than references, and a
+resolver asked for genuine coreference is right to stay silent about them.
+
+The judge in §9.5 is the same model on the same document; the difference is that it is shown
+the sentence that established the topic and asked an aboutness question rather than a
+reference question. It was handed a much dirtier pile (15.9% correct) and returned 46.3% —
+a 2.9x lift, keeping 58% of the correct proposals.
+
+The cheap fix is therefore not a better coref prompt, it is a wider antecedent plus a judge
+that has something to check against: name echoes are already
+what the linker's own stages fire on, and they raise the reachable share of the hard stratum
+from 0.11 to 0.48. A sticky-topic baseline (propagate every naming sentence forward K
+sentences, no LLM at all) is a useful yardstick — K=0: P 0.628 R 0.111; K=3: P 0.370 R 0.206;
+K=10: P 0.261 R 0.310; whole chapter: P 0.104 R 0.613. The pipeline's all-stages point
+(P 0.143, R 0.342) sits *below* the K=10 line.
+
+### 9.3 Developer-annotated links in the wild (`DATA-SOURCES.md`)
+
+Where do developers already record which component a piece of prose belongs to, as part of
+normal work? Four patterns generalise: an **ownership registry** (components with their code
+*and doc* paths), **per-directory metadata**, a **doc filed inside the unit it describes**, and
+**explicit citation directives**. The first three do not say what a sentence names, they say
+what a document belongs to — so they escape the anchor bias §8 measured. Measured, not quoted:
+
+| source | measured | what it gives |
+|---|---|---|
+| Linux `MAINTAINERS` | 3,395 subsystems, **1,715 with `Documentation/` paths**, 2,432 doc patterns, **607 docs owned by exactly one** | doc file → component + its code paths |
+| Chromium `DIR_METADATA` | ≥525 files (listing truncated) | directory → component, with `docs/*.md` in the same directories |
+| Mozilla `mots.yaml` | 163 modules, 149 with authored descriptions | component model with prose, for free |
+| `CODEOWNERS` (grafana) | 1,276 path rules, 51 teams | path → team, in any repo that keeps one |
+| rust `triagebot.toml` | 8 compiler autolabels, 52 path descriptions | label → crate, for this very system |
+| PostgreSQL `src/**/README` | 91 in-tree design documents | prose already filed under its module |
+| `.. kernel-doc::` / Sphinx `automodule` / Doxygen `@ingroup` | few hundred / thousands / uneven | explicit citations — votes, never gold |
+| Bugzilla / JIRA / `area/*` labels | 10^5 reports | text → component, but bug text |
+
+### 9.4 The audit: our recipe against Linux `MAINTAINERS` (`linux/`)
+
+12 documentation files that exactly one subsystem claims, 383 sentences, candidates by BM25
+over 3,282 subsystem profiles, the §8 ABOUT/REFERS prompt, one family (terra). The annotator
+is never shown the owner.
+
+* **owner among the ABOUT labels: 298/380 sentences = 0.784**; 0.879 of the sentences that got
+  any ABOUT; 0.93 ABOUT labels per sentence, so not a yes-to-everything labeller.
+* **10 of 12 documents** have the human owner as their most-voted subsystem.
+* Both misses are ownership-vs-content disagreements (`dlmfs.rst` is maintained by OCFS2 but is
+  about the DLM; `afbc.rst` is maintained by a DRM driver but describes a buffer format) — the
+  human source is *who maintains the file*, which is not exactly aboutness.
+
+This is the external check §8.4 was missing, on a system with no relation to rustc, against a
+mapping written by maintainers for their own use.
+
+It also produced the most actionable number of the round: BM25 finds the human owner in the
+top 12 of 3,282 for **0.346** of 5-sentence batches but **0.750** of whole documents. Same
+index, same components, only the query changes. Candidate retrieval belongs at document level;
+judging stays at sentence level.
+
+### 9.5 Coreference, fixed: topic propagation with a judge (`semgold/topic_probe.py`)
+
+§9.2 says the coreference stage's ceiling is its antecedent gate, not its prompt. This tests
+the replacement without touching the linker: take every link the full-name stage made, propose
+the same component for the next K sentences of the chapter, and put each proposal in front of
+one judging call ("is the target still making a claim about this component, given the sentence
+that established it?"). No new retrieval, no new knowledge — only a wider antecedent.
+
+Three runs of the judge (cache salts `""`, `r2`, `r3`), k=3, gold_plus:
+
+| view | links | TP | P | R | F1 |
+|---|---|---|---|---|---|
+| s110 coreference stage | 22 | 7 | 0.318 | 0.005 | 0.010 |
+| topic propagation, judged | 214 / 225 / 219 | 99 / 97 / 102 | 0.463 / 0.431 / 0.466 | 0.075 | 0.128 |
+| full-name stage alone | 618 | 263 | 0.426 | 0.198 | 0.270 |
+| **full-name + topic propagation** | **832 / 843 / 837** | **362 / 360 / 365** | **0.435** | **0.273** | **0.335** |
+| all s110 stages | 3,176 | 454 | 0.143 | 0.342 | 0.202 |
+| all s110 stages + topic propagation | 3,390 | 553 | 0.163 | 0.417 | 0.234 |
+
+* 14x the true links of the stage it replaces, at *higher* precision than the full-name stage
+  that seeded it (0.46 vs 0.43), and the three runs agree to +/-3 links and +/-3 true links --
+  well outside the +/-55-link coreference noise this project measured on the small benchmark.
+* +6.5 pp F1 on the precision-side arm (full-name only: 0.270 -> 0.335) for 107 calls.
+* k=5 proposes 1,568 instead of 1,066 and the judge approves 275: recall +0.007, precision
+  -0.04, F1 unchanged (0.335). k=3 is the knee.
+* All of it lands in the no-surface stratum, which is where §9.1 says the tail is.
+
+The verdict on coreference is therefore not "it does not work at scale" but **"the antecedent
+gate, not the resolver, is what fails"** -- and the gate is cheap to widen.
+
+### 9.6 Second audit, second pattern: PostgreSQL in-tree READMEs (`postgres/`)
+
+The Linux audit tests an *ownership registry*. PostgreSQL tests the other common in-the-wild
+pattern — a design document filed **inside** the directory it describes (42 such READMEs in C
+source directories). Components are the 141 source directories with at least two C files; same
+prompt, same scorer, 10 documents, 278 sentences.
+
+| | Linux `MAINTAINERS` | PostgreSQL READMEs |
+|---|---|---|
+| components in the index | 3,282 | 141 |
+| owner among ABOUT | 0.784 | **0.869** |
+| documents voting for the owner | 10/12 | **10/10** |
+| BM25 owner in top-12, per sentence batch | 0.346 | 0.831 |
+| BM25 owner in top-12, per document | 0.750 | 1.000 |
+
+The recipe holds on a C codebase and on design notes rather than a guide, and the gap between
+the two audits is index size, not labelling — the same failure mode as the rustc partial-name
+stage. Residual misses in both are content-vs-placement disagreements, which is the known limit
+of any human source that records *where code lives* rather than *what prose is about*.
+
+### 9.7 The deterministic baseline: SWATTR on the same dataset (`rustc/reports/swattr_rustc_core.txt`)
+
+ArDoCo's own SAD-SAM stage (SWATTR) run through `ardoco-cli` on exactly this dataset —
+`sentences.txt` + the generated PCM repository, no API key, no LLM.
+
+```
+java -jar ardoco-cli-*-jar-with-dependencies.jar -t sad-sam -n rustc_core \
+  -d studies/oss-scale/rustc/data/core/sentences.txt \
+  -m studies/oss-scale/rustc/data/core/rustc_core.repository -o <out>
+```
+
+Wall clock 36 min: preprocessing 17:03, text extraction 14:15, recommendation 13 s,
+connection 4:08. (The generated repository first had to gain a repository `id`; ArDoCo's PCM
+parser rejects the file without one. Fixed in `tools/make_dataset.py`.) ArDoCo re-splits the
+text with CoreNLP into 1,915 sentences, so its sentence ids were mapped back to dataset lines
+through the same splitter before scoring (`semgold/from_ardoco.py --corenlp-json`, which
+reproduces the committed `reports/swattr_rustc_core_links.csv` exactly).
+
+| gold | links | TP | P | R |
+|---|---|---|---|---|
+| gold_plus | 266 | 2 | 0.008 | 0.002 |
+| gold (strict) | 266 | 2 | 0.008 | 0.002 |
+| three-way | 266 | 2 | 0.008 | 0.002 |
+| anchor (the old syntactic gold) | 266 | 0 | 0.000 | 0.000 |
+
+**All 266 links point at one component — `rustc`, the umbrella entry.** Not a single link to
+any of the other 78 crates. The failure is not sentence selection: **198 of its 266 sentences
+(74%) are gold for some crate** — it picks documentation sentences that really are about the
+architecture and then attributes every one of them to the only component name that surfaces as
+an ordinary noun phrase. The two true positives are the two sentences the annotators did mark
+as being about `rustc` itself.
+
+This is the baseline number the study needed, and it is worth stating plainly: the deterministic
+SAD-SAM stage does not degrade at OSS scale, it collapses. Snake-case implementation names
+(`rustc_mir_transform`) do not appear as noun phrases in prose, so name-similarity has nothing
+to match, while s110 — however weak in absolute terms (§9.1) — still reaches 0.973 of the
+verbatim stratum and 0.53 of the name-echo stratum on the same input.
+
+### 9.8 Is the no-name half actually continuous? (`semgold/continuity.py`)
+
+§9.5 assumes a sentence with no name in it continues the previous sentence's topic. Measured
+on the gold alone — no linker, no model:
+
+| stratum | pairs | previous sentence carries it | next does | either | neither |
+|---|---|---|---|---|---|
+| verbatim | 147 | 0.395 | 0.483 | 0.612 | 0.388 |
+| name-echo | 504 | 0.490 | 0.565 | 0.714 | 0.286 |
+| **no-surface** | **676** | **0.731** | 0.655 | **0.868** | 0.132 |
+
+The no-name sentences are the *most* continuous, and the ones that spell a name out are the
+least — naming a component is how the guide opens a topic, not how it continues one. But the
+document is not made of long blocks either: the 1,327 pairs fall into 527 stretches of
+consecutive sentences, mean length 2.5, and **288 of those stretches are a single sentence**
+(22% of all pairs). One in eight no-name pairs has neither neighbour on the same component.
+
+Chapters are concentrated but unevenly so — the top component holds 0.629 of a chapter's pairs
+on average, from 1.00 (`mir/dataflow.md`, `mir/optimizations.md`) and 0.98 (`name-resolution.md`)
+down to 0.30 (`diagnostics.md`) and 0.18 (`overview.md`).
+
+Which raises the uncomfortable baseline:
+
+| rule | links | correct | found | no-name found |
+|---|---|---|---|---|
+| chapter topic from the linker's own full-name links | 1,733 | 0.166 | 0.216 | 0.271 |
+| the same, unioned with the full-name links | 2,090 | 0.211 | 0.332 | 0.284 |
+| the linker, all stages | 3,176 | 0.143 | 0.342 | 0.065 |
+| **ORACLE chapter topic (from the answer key)** | 1,762 | **0.437** | **0.580** | **0.670** |
+
+Labelling every sentence of a chapter with that chapter's main component — one decision per
+chapter, 32 decisions for the whole book — is right 0.437 of the time and covers 0.580 of the
+gold, beating the pipeline on both. Even the automatic version, which reads the chapter topic
+off the linker's own links and uses no gold at all, beats it on the no-name stratum four times
+over at lower cost. The oracle gap (0.166 vs 0.437) says the leverage is in **identifying the
+chapter's topic**, not in judging sentences: 32 hard decisions instead of 1,762 easy-looking ones.
+
+Caveat on where the continuity number comes from: the annotators were shown ±2 sentences and
+told that a sentence continuing the previous topic counts, so some continuity is by
+construction. Two things argue it is real anyway — the component-first annotator, which never
+sees sentence order that way, agrees at κ 0.69, and the topic-propagation judge in §9.5 approves
+only about a fifth of the propagated proposals and is right on 46% of those. If the document
+were uniformly continuous, that judge would say yes to nearly everything.

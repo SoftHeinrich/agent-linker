@@ -1,0 +1,39 @@
+$ surface.py --gold gold_plus --links s_linker110_rustc_core_links.csv
+gold gold_plus: 1327 pairs
+  verbatim      147  0.111
+  name-echo     504  0.380
+  no-surface    676  0.509
+
+view                    links    TP      P      R  R_verb  R_echo  R_nosurf
+all stages               3176   454  0.143  0.342   0.973   0.530     0.065
+stage coreference          22     7  0.318  0.005   0.000   0.000     0.010
+stage full_name           618   263  0.426  0.198   0.973   0.167     0.053
+stage partial_name       2536   184  0.073  0.139   0.000   0.363     0.001
+minus partial_name        640   270  0.422  0.203   0.973   0.167     0.064
+
+stratum of predicted links (whether or not correct):
+  all stages             verbatim   226  name-echo  2738  no-surface   212
+  stage coreference      verbatim     0  name-echo     1  no-surface    21
+  stage full_name        verbatim   226  name-echo   256  no-surface   136
+  stage partial_name     verbatim     0  name-echo  2481  no-surface    55
+  minus partial_name     verbatim   226  name-echo   257  no-surface   157
+
+$ surface.py --gold gold --links ...
+gold gold: 1236 pairs
+  verbatim      126  0.102
+  name-echo     492  0.398
+  no-surface    618  0.500
+
+view                    links    TP      P      R  R_verb  R_echo  R_nosurf
+all stages               3176   424  0.134  0.343   0.976   0.528     0.066
+stage coreference          22     7  0.318  0.006   0.000   0.000     0.011
+stage full_name           618   237  0.383  0.192   0.976   0.165     0.053
+stage partial_name       2536   180  0.071  0.146   0.000   0.364     0.002
+minus partial_name        640   244  0.381  0.197   0.976   0.165     0.065
+
+stratum of predicted links (whether or not correct):
+  all stages             verbatim   226  name-echo  2738  no-surface   212
+  stage coreference      verbatim     0  name-echo     1  no-surface    21
+  stage full_name        verbatim   226  name-echo   256  no-surface   136
+  stage partial_name     verbatim     0  name-echo  2481  no-surface    55
+  minus partial_name     verbatim   226  name-echo   257  no-surface   157
