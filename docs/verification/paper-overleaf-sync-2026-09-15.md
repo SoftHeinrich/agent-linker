@@ -77,6 +77,22 @@ origin/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
 overleaf/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
 ```
 
+The same script was exercised against two local bare remotes with
+`PAPER_BRANCH=sync-test OVERLEAF_BRANCH=sync-test`:
+
+```text
+origin/sync-test already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
+overleaf/sync-test already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
+Dry-run push would update origin/sync-test to f85be34b89ab1d8f4e0a2288c5c76cde8114ef68.
+Dry-run push would update overleaf/sync-test to f85be34b89ab1d8f4e0a2288c5c76cde8114ef68.
+origin/sync-test is behind HEAD; sync is ready.
+overleaf/sync-test and HEAD have diverged; reconcile them before syncing.
+divergence_exit=1
+```
+
+The divergence result is intentional: the script refuses to overwrite a
+remote that is ahead or has a different history.
+
 ### Deterministic package verification
 
 ```bash
