@@ -69,6 +69,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from llm_sad_sam.core.document_loader_v2 import build_sent_map, load_sentences  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker123 import SLinker123  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker126 import SLinker126  # noqa: E402
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
 
@@ -136,7 +137,12 @@ class RefuseAntecedent(SLinker123):
             sent_map, components, metadata)
 
 
-ARMS = {"head": SLinker123, "annotexact": AnnotExact, "refuse": RefuseAntecedent}
+ARMS = {"head": SLinker123, "annotexact": AnnotExact, "refuse": RefuseAntecedent,
+        # The shipped composition: the shortlist GONE and the contract it used to
+        # assert enforced in code instead. Run beside `refuse` (which keeps the
+        # list) so the question "does the list still earn its place once the
+        # predicate exists?" is answered inside ONE invocation.
+        "s126": SLinker126}
 
 
 def phase(run: Path, project: str, name: str, variant="s_linker123"):

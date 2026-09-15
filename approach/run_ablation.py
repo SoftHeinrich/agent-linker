@@ -238,6 +238,7 @@ CANONICAL_VARIANTS = [
     "s_linker123",  # s122 with the judge's three evidence fields merged into one
     "s_linker124",  # s123 + the antecedent shortlist marked with the judge's own verdicts
     "s_linker125",  # s123 with the resolver's antecedent shortlist removed entirely
+    "s_linker126",  # s125 + the antecedent contract the deleted prompt used to assert
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2351,6 +2352,30 @@ VARIANT_SPECS = {
             "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
             "one project. s_linker120 remains the reported arm; this is the simple one."
         ),
+    ),
+    "s_linker126": dict(
+        aliases=("antecedentrule",),
+        module="llm_sad_sam.linkers.experimental.s_linker126",
+        class_name="SLinker126",
+        description=(
+            "S-Linker126 - s_linker125 (no antecedent shortlist) plus the contract that "
+            "shortlist's paragraph used to ASSERT: a coreference resolution whose cited "
+            "antecedent sentence does not write the component's name as a name is not "
+            "put to the judge. The prompt used to claim the list `is where the "
+            "antecedent will be if there is one` and could not enforce it; over six "
+            "recorded runs 17 surviving false positives cite an antecedent that writes "
+            "the name only inside a dotted identifier (10) or not at all (7), against "
+            "ZERO gold, on both models. The predicate reads `_written_as`, already "
+            "computed for every union-judging case, so no new computation and no new "
+            "concept is introduced; `_named_before` is dead once the list goes and "
+            "`_states_a_name` keeps its other caller. It may close a case where "
+            "s_linker124's mark may not, because `written` is a GIVEN fact (catalog plus "
+            "document, identical every run) and a judge's verdict is a DISCOVERED one - "
+            "s_linker109's rule, and its nesting predicate is the precedent. The refusal "
+            "measured with the list still present costs ZERO true positives on both "
+            "models (terra FP 13.0 -> 12.3, luna 40.3 -> 38.3 with -2 in 3 of 3 samples). "
+            "Coreference is the last linker, so composition risk is structurally zero "
+            "(pilot/test_s126.py, no calls)."),
     ),
     "s_linker125": dict(
         aliases=("noshortlist",),
