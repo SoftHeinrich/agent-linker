@@ -65,6 +65,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from llm_sad_sam.core.document_loader_v2 import build_sent_map, load_sentences  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker123 import SLinker123  # noqa: E402
+from llm_sad_sam.linkers.experimental.s_linker125 import SLinker125  # noqa: E402
 from llm_sad_sam.llm_client import LLMBackend  # noqa: E402
 from llm_sad_sam.pcm_parser_v2 import parse_pcm_repository  # noqa: E402
 
@@ -121,7 +122,11 @@ class NoShortlist(SLinker123):
         return out.replace(SHORTLIST_PARA, NO_LIST_PARA, 1)
 
 
-ARMS = {"head": SLinker123, "noprior": NoPrior, "noshortlist": NoShortlist}
+ARMS = {"head": SLinker123, "noprior": NoPrior, "noshortlist": NoShortlist,
+        # the shipped variant. `pilot/test_s125.py` proves its resolver
+        # prompts are `NoShortlist`'s byte for byte, so running it here
+        # raises n on the same arm rather than measuring a new one.
+        "s125": SLinker125}
 
 
 def phase(run: Path, project: str, name: str, variant="s_linker123"):

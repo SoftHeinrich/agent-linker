@@ -12,8 +12,11 @@
 # `tee` would otherwise mask a crashed pilot as exit 0 -- which it did, once.
 set -u
 set -o pipefail
-MODEL=${1:?usage: run_coref_shortlist.sh <terra|luna> [samples]}
+MODEL=${1:?usage: run_coref_shortlist.sh <terra|luna> [samples] [pilot args...]}
 SAMPLES=${2:-3}
+# Anything after the sample count goes to the pilot verbatim, so a caller can select a
+# subset of arms (`--arms head s125`) without a second runner.
+shift $(( $# > 2 ? 2 : $# ))
 STAMP=${STAMP:-$(date +%Y%m%d)}
 RUN=${RUN:-../results/shortlistmark_e2e_${MODEL}_r1_20260914}
 
@@ -42,7 +45,7 @@ OPENAI_SERVICE_TIER=${OPENAI_SERVICE_TIER:-default} \
 LLM_LOG_DIR="${OUT}/llm_logs" \
   "${PY}" pilot/coref_shortlist_pilots.py \
   --samples "${SAMPLES}" --run "${RUN}" \
-  --dump "${OUT}/dump.json" 2>&1 | tee "${OUT}/pilot.log"
+  --dump "${OUT}/dump.json" "$@" 2>&1 | tee "${OUT}/pilot.log"
 # `pipefail` alone is not enough: a trailing command would overwrite the script's
 # exit status, which is how a crashed pilot reported success twice.
 status=$?
