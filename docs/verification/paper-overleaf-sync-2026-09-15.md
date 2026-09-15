@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-15
 **Package source before migration:** `4b6db31c8b0a77a08b8a699e82aae9a608b496fb`
-**Paper commit:** `26b4c584bc2d29be5c2743b3e6df56c44ca5b809`
+**Paper commit:** `15af9fac53389ad47792c3cb7bc5f61438b05007`
 
 ## Configuration checked
 
@@ -35,16 +35,28 @@ git -C paper ls-remote overleaf refs/heads/main
 ```
 
 ```text
-26b4c584bc2d29be5c2743b3e6df56c44ca5b809  refs/heads/main
-26b4c584bc2d29be5c2743b3e6df56c44ca5b809  refs/heads/main
+15af9fac53389ad47792c3cb7bc5f61438b05007  refs/heads/main
+15af9fac53389ad47792c3cb7bc5f61438b05007  refs/heads/main
 ```
 
 With `core.hooksPath=.githooks` enabled in a temporary paper checkout, the
 paper post-commit hook ran during the final paper commit and reported:
 
 ```text
-Pushed 26b4c584bc2d29be5c2743b3e6df56c44ca5b809 to origin/main.
-Pushed 26b4c584bc2d29be5c2743b3e6df56c44ca5b809 to overleaf/main.
+Pushed 15af9fac53389ad47792c3cb7bc5f61438b05007 to origin/main.
+Pushed 15af9fac53389ad47792c3cb7bc5f61438b05007 to overleaf/main.
+
+The first parent post-commit invocation exposed the inherited parent Git index
+context when the hook called into the submodule:
+
+```text
+fatal: .git/index: index file open failed: Not a directory
+Paper worktree is not clean; commit the paper before syncing.
+```
+
+The paper sync script now clears the inherited repository context before its
+paper-repository checks. The subsequent paper commit exercised the nested hook
+and pushed the corrected commit to both remotes.
 ```
 
 ### Hook and sync checks
@@ -59,10 +71,10 @@ bash -n .githooks/post-commit paper/.githooks/post-commit \
 
 ```text
 PASS: hook and sync scripts parse
-origin/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
-overleaf/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
-origin/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
-overleaf/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
+origin/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
+overleaf/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
+origin/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
+overleaf/main already contains 15af9fac53389ad47792c3cb7bc5f61438b05007.
 ```
 
 ### Deterministic package verification
