@@ -1,0 +1,1194 @@
+{
+  "mediastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.875,
+      "R": 0.9032258064516129,
+      "F1": 0.8888888888888888,
+      "tp": 28,
+      "fp": 4,
+      "fn": 3,
+      "n_links": 32,
+      "time": 70.78787565231323,
+      "sources": {
+        "entity": 25,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 1,
+        "entity": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 4,
+          "component": "Facade",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "After the user has logged into the system, he or she will be forwarded to a site to list the audio files."
+        },
+        {
+          "sentence": 35,
+          "component": "DB",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Afterwards, based on the user request and the corresponding meta-data, the file will be retrieved from the DataStorage."
+        },
+        {
+          "sentence": 36,
+          "component": "DB",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When a user uploads a file, it will be stored in the DataStorage without any change."
+        },
+        {
+          "sentence": 37,
+          "component": "Reencoding",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "However, a download can cause re-encoding of the audio file."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 17,
+          "component": "TagWatermarking",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 36,
+          "component": "FileStorage",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.65,
+      "R": 0.9629629629629629,
+      "F1": 0.7761194029850746,
+      "tp": 26,
+      "fp": 14,
+      "fn": 1,
+      "n_links": 40,
+      "time": 42.63598322868347,
+      "sources": {
+        "entity": 27,
+        "coreference": 13
+      },
+      "fp_by_source": {
+        "entity": 6,
+        "coreference": 8
+      },
+      "fp_details": [
+        {
+          "sentence": 9,
+          "component": "Registry",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The status view lists the instance count and hosts for all registered service instances."
+        },
+        {
+          "sentence": 13,
+          "component": "ImageProvider",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "If the product ID or UI name is found but not in the requested size, the largest image will be loaded and scaled."
+        },
+        {
+          "sentence": 16,
+          "component": "ImageProvider",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "To speed up image delivery, an in-memory cache with Least Frequently Used (LFU) replacemenent strategy is in place."
+        },
+        {
+          "sentence": 19,
+          "component": "Auth",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Passwords are hashed using BCrypt."
+        },
+        {
+          "sentence": 20,
+          "component": "Auth",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "To validate sessions, the SessionBlob is salted and hashed using SHA512 and stored in a cookie."
+        },
+        {
+          "sentence": 21,
+          "component": "Auth",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "When a SessionBlob is received, the cookie content is re-salted and checked against the hash to check for session tamper"
+        },
+        {
+          "sentence": 31,
+          "component": "PopularityBasedRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+        },
+        {
+          "sentence": 32,
+          "component": "SlopeOneRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        },
+        {
+          "sentence": 33,
+          "component": "SlopeOneRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We implemented two versions of the algorithm."
+        },
+        {
+          "sentence": 34,
+          "component": "PreprocessedSlopeOneRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 35,
+          "component": "OrderBasedRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        },
+        {
+          "sentence": 36,
+          "component": "OrderBasedRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        },
+        {
+          "sentence": 39,
+          "component": "Registry",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Services are also required to send a heartbeat signal by re-registering periodically."
+        },
+        {
+          "sentence": 40,
+          "component": "Registry",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Services missing their heartbeat for more than 10 s are assumed to be offline until the register function is called agai"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teammates": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.421875,
+      "R": 0.9473684210526315,
+      "F1": 0.5837837837837838,
+      "tp": 54,
+      "fp": 74,
+      "fn": 3,
+      "n_links": 128,
+      "time": 175.95477867126465,
+      "sources": {
+        "entity": 73,
+        "coreference": 55
+      },
+      "fp_by_source": {
+        "entity": 26,
+        "coreference": 48
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 21,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The diagram below shows how the code in each component is organized into packages and the dependencies between them."
+        },
+        {
+          "sentence": 22,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 23,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "ui.website is not a real package."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 26,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "ui.website is not a Java package."
+        },
+        {
+          "sentence": 27,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "It is written in Angular framework and consists of HTML, SCSS, and TypeScript files."
+        },
+        {
+          "sentence": 30,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Such a request will go through the following steps."
+        },
+        {
+          "sentence": 51,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Requests for static asset files (e.g. CSS, JS files, images) are served directly without going through web.xml configura"
+        },
+        {
+          "sentence": 52,
+          "component": "UI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The Web API is protected by two layers of access control check."
+        },
+        {
+          "sentence": 52,
+          "component": "Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The Web API is protected by two layers of access control check."
+        },
+        {
+          "sentence": 58,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Automated requests are all requests sent automatically by the GAE server during specific periods of time."
+        },
+        {
+          "sentence": 59,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This type of request will be processed as follows."
+        },
+        {
+          "sentence": 63,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Third, administrators can manually invoke these requests."
+        },
+        {
+          "sentence": 70,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These configurations are cron jobs or task queue workers."
+        },
+        {
+          "sentence": 76,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Since the high-level workflow of processing a request is same for any request (differing by the two request types only),"
+        },
+        {
+          "sentence": 79,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Managing relationships between entities, e.g. cascade logic for create/update/delete."
+        },
+        {
+          "sentence": 80,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Managing transactions, e.g. ensuring atomicity of a transaction."
+        },
+        {
+          "sentence": 82,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Providing a mechanism for checking access control rights."
+        },
+        {
+          "sentence": 83,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+        },
+        {
+          "sentence": 84,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains logic.api, logic.core."
+        },
+        {
+          "sentence": 86,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.core contains the core logic of the system."
+        },
+        {
+          "sentence": 89,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "GateKeeper checks access rights of a user for a given action."
+        },
+        {
+          "sentence": 90,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "EmailGenerator generates emails to be sent."
+        },
+        {
+          "sentence": 91,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "EmailSender sends email with the provider chosen based on the build configuration."
+        },
+        {
+          "sentence": 93,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "TaskQueuer adds tasks to the task queue."
+        },
+        {
+          "sentence": 98,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "To API for creating entities the following information are presented."
+        },
+        {
+          "sentence": 102,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "To API for retrieving entities the following information are presented."
+        },
+        {
+          "sentence": 113,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "In general, delete operation do not throw exceptions if the target entity does not exist."
+        },
+        {
+          "sentence": 114,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This is because if it does not exist, it is as good as deleted."
+        },
+        {
+          "sentence": 115,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The following explains the Cascade policy."
+        },
+        {
+          "sentence": 116,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "When a parent entity is deleted, entities that have referential integrity with the deleted entity should also be deleted"
+        },
+        {
+          "sentence": 117,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Refer to the API for the cascade logic."
+        },
+        {
+          "sentence": 121,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Validating data inside entities before creating/updating them, to ensure they are in a valid state."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 126,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Instead, a corresponding non-persistent data transfer object named Attributes (e.g., CourseAttributes is the data transf"
+        },
+        {
+          "sentence": 127,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+        },
+        {
+          "sentence": 130,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains storage.api, storage.entity, storage.search."
+        },
+        {
+          "sentence": 132,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "storage.entity contains classes that represent persistable entities."
+        },
+        {
+          "sentence": 133,
+          "component": "Storage",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "storage.search contains classes for dealing with searching and indexing."
+        },
+        {
+          "sentence": 136,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Represented by the Db classes."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 142,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "As a result, the data may be in an inconsistent states for short periods of time although things should become consisten"
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 151,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Attempt to update an entity that does not exist throws EntityDoesNotExistException."
+        },
+        {
+          "sentence": 152,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Attempt to update an entity with invalid data throws InvalidParametersException."
+        },
+        {
+          "sentence": 154,
+          "component": "Logic",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Attempt to delete an entity that does not exist fails silently."
+        },
+        {
+          "sentence": 156,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+        },
+        {
+          "sentence": 157,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "common.util contains utility classes."
+        },
+        {
+          "sentence": 158,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "common.exceptions contains custom exceptions."
+        },
+        {
+          "sentence": 159,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "common.datatransfer contains data transfer objects."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 164,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This structure can be used to transfer data of a course (e.g., when constructing the home page for an instructor)."
+        },
+        {
+          "sentence": 165,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This structure can be used to send results of a feedback session (e.g., when showing a feedback session report to an ins"
+        },
+        {
+          "sentence": 166,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Some of these classes are methodless and thus more of a data structure rather than a class."
+        },
+        {
+          "sentence": 167,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These classes use public variables for data for easy access."
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        },
+        {
+          "sentence": 181,
+          "component": "Test Driver",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests th"
+        },
+        {
+          "sentence": 181,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests th"
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 183,
+          "component": "Test Driver",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The test cases are found in x.spec.ts files."
+        },
+        {
+          "sentence": 185,
+          "component": "Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The E2E component has no knowledge of the internal workings of the application and can only interact either with Web bro"
+        },
+        {
+          "sentence": 187,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Package overview contains e2e.util, e2e.pageobjects, e2e.cases, x.util, x.e2e, x.lnp."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 189,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.pageobjects contains abstractions of the pages as they appear on a Browser (i.e. SUTs)."
+        },
+        {
+          "sentence": 189,
+          "component": "E2E",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "e2e.pageobjects contains abstractions of the pages as they appear on a Browser (i.e. SUTs)."
+        },
+        {
+          "sentence": 190,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 191,
+          "component": "Test Driver",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "x.util contains component test cases for testing the test helpers."
+        },
+        {
+          "sentence": 192,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "x.e2e contains system test cases for testing the application as a whole."
+        },
+        {
+          "sentence": 195,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains client.util, client.remoteapi, client.scripts."
+        },
+        {
+          "sentence": 196,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "client.util contains helpers needed for client scripts."
+        },
+        {
+          "sentence": 197,
+          "component": "Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Client",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.5591397849462365,
+      "R": 0.8387096774193549,
+      "F1": 0.6709677419354838,
+      "tp": 52,
+      "fp": 41,
+      "fn": 10,
+      "n_links": 93,
+      "time": 99.25667238235474,
+      "sources": {
+        "entity": 84,
+        "coreference": 9
+      },
+      "fp_by_source": {
+        "entity": 37,
+        "coreference": 4
+      },
+      "fp_details": [
+        {
+          "sentence": 6,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The HTML5 client connects directly with the BigBlueButton server over port 443 (SSL), from loading the BigBlueButton cli"
+        },
+        {
+          "sentence": 7,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "These connections are all handled by nginx."
+        },
+        {
+          "sentence": 9,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The HTML5 server is built upon Meteor.js in ECMA2015 for communication between client and server and upon MongoDB for ke"
+        },
+        {
+          "sentence": 13,
+          "component": "Redis DB",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Updates to MongoDB on the server side are automatically pushed to MiniMongo on the client side."
+        },
+        {
+          "sentence": 16,
+          "component": "HTML5 Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+        },
+        {
+          "sentence": 16,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+        },
+        {
+          "sentence": 24,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends receive the ValidateAuthTokenResp event to complete authentication."
+        },
+        {
+          "sentence": 25,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends collect subscriptions and publishers."
+        },
+        {
+          "sentence": 26,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends receive other DDP events including method calls to send events to akka-apps."
+        },
+        {
+          "sentence": 27,
+          "component": "Redis PubSub",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 27,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 28,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Frontends still require MeetingStarted and MeetingEnded events to create/destroy per-meeting event processing queues."
+        },
+        {
+          "sentence": 29,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Backends handle all the non-streamer events."
+        },
+        {
+          "sentence": 31,
+          "component": "Redis PubSub",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 31,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 32,
+          "component": "HTML5 Server",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "ValidateAuthTokenResp is passed to backends as well, which is needed for the cases where you only have a backend, no fro"
+        },
+        {
+          "sentence": 33,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When you use sudo bbb-conf --setip <hostname> or sudo bbb-conf --restart, bbb-conf will run /etc/bigbluebutton/bbb-conf/"
+        },
+        {
+          "sentence": 34,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "In this way, you can change configuration values of BigBlueButton, or use some of the helper functions in apply-lib.sh."
+        },
+        {
+          "sentence": 39,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The BigBlueButton API provides a third-party integration (such as the BigBlueButtonBN plugin for Moodle) with an endpoin"
+        },
+        {
+          "sentence": 40,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Every access to BigBlueButton comes through a front-end portal (we refer to as a third-party application)."
+        },
+        {
+          "sentence": 41,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "BigBlueButton integrates Moodle, Wordpress, Canvas, Sakai, and others (see third-party integrations)."
+        },
+        {
+          "sentence": 42,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "BigBlueButton comes with its own front-end called Greenlight."
+        },
+        {
+          "sentence": 43,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course"
+        },
+        {
+          "sentence": 43,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course"
+        },
+        {
+          "sentence": 44,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The BigBlueButton comes with some simple API demos."
+        },
+        {
+          "sentence": 45,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Regardless of which front-end you use, they all use the API under the hood."
+        },
+        {
+          "sentence": 47,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Redis PubSub provides a communication channel between different applications running on the BigBlueButton server."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 55,
+          "component": "Apps",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The meeting business logic is in the MeetingActor."
+        },
+        {
+          "sentence": 56,
+          "component": "Apps",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "This is where information about the meeting is stored and where all messages for a meeting is processed."
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 64,
+          "component": "FreeSWITCH",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Users are able to join the voice conference through the headset."
+        },
+        {
+          "sentence": 71,
+          "component": "FreeSWITCH",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Joining a voice conference."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 78,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 82,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion."
+        },
+        {
+          "sentence": 83,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Then below the SVG conversion flow."
+        },
+        {
+          "sentence": 84,
+          "component": "Presentation Conversion",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "It covers the conversion fallback."
+        },
+        {
+          "sentence": 87,
+          "component": "BBB web",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The following diagram shows how the various components of BigBlueButton connect to each other via sockets."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 58,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 59,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 79,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.782608695652174,
+      "R": 1.0,
+      "F1": 0.878048780487805,
+      "tp": 18,
+      "fp": 5,
+      "fn": 0,
+      "n_links": 23,
+      "time": 22.69748854637146,
+      "sources": {
+        "entity": 22,
+        "coreference": 1
+      },
+      "fp_by_source": {
+        "entity": 4,
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 3,
+          "component": "model",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "The dependencies are only directed towards the center."
+        },
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        },
+        {
+          "sentence": 8,
+          "component": "logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "For each layer, we form packages according to their responsibility, i.e., vertical structuring."
+        },
+        {
+          "sentence": 13,
+          "component": "gui",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+        },
+        {
+          "sentence": 13,
+          "component": "model",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "This allows us to keep the architecture but still react upon changes within the core in the outer layers."
+        }
+      ],
+      "fn_details": []
+    }
+  }
+}

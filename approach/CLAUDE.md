@@ -55,8 +55,24 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   fixed **name-evidence order** (full-name → partial-name → coreference), no controller.
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
-- `s_linker26.py` … `s_linker89.py` — the rounds below. All `experimental=True`; the
-  head is the highest-numbered one the compaction round confirms.
+- `s_linker26.py` … `s_linker124.py` — the rounds below. All `experimental=True`.
+  **THE HEAD IS `s_linker124` (the union arm, judged without the anchor block, one merged
+  evidence vocabulary, and the resolver's antecedent shortlist marked with that judge's
+  own verdicts) since 2026-09-14; the PAPER ARM is still `s_linker120`.** Three
+  head-moves landed in one day and none of them cleared the reporting gate:
+  `s_linker122` is link-level neutral at 21.5% less judging but reads WORSE on terra's
+  doc-code metrics 3/3; `s_linker123` and the shortlist mark composed into `s_linker124`
+  were each priced at the LINK-LEVEL grain (`score_runs.py`) and **neither has been put
+  to the gate at all**, which is `studies/compare_arms.py` — the component-weighted
+  doc-code read, needing `rq12.py`-scored E2E run directories that do not exist for them.
+  **A cut that is free at the grain you are not reporting is not free**: s122 is the
+  standing instance, and s124's whole delta is *which components* a handful of links land
+  on, which is precisely what the link-level grain cannot see. `s_linker122` is a
+  standalone file like `s_linker120` and `s_linker110`; `s_linker123` and `s_linker124`
+  are subclasses, because the one-file policy is for the REPORTED arm and neither is one.
+  The ledger below is chronological, so an earlier round's "X is the head" sentence is
+  true of its own date and superseded by the next round that moves it:
+  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
@@ -1210,3 +1226,483 @@ prompts, no calls); arms `pilot/nextgen_pilots.py --gate {lenient,sortal}` drive
   guidance is about *E2E batches*, not about a five-call stage gate where the null is one
   arm of four.
 - **The head does not move. `s_linker110` stands.** No arm composed, no E2E owed.
+
+### The similarity-merge audit — one SWATTR-style proposer for both name scans
+
+Can the full-name and partial-name scans be one string-similarity relation, SWATTR's or
+a superset of it, judged once by a judge allowed to refuse? Level 1 only, no LLM calls.
+Report: `../results/simmerge_audit/README.md`; audit `pilot/simmerge_audit.py` (M1–M7,
+16 relation checks, both scans replayed against six recorded runs, 60/60 identical).
+
+- **The superset exists and is refused on its exchange rate.** ArDoCo's relation
+  (`splitLengthTest` then equality / levenshtein ≤ min(1, 0.9·min|w|) / Jaro-Winkler
+  ≥ 0.90, against `nameParts` = the camel-split name plus the identifier) reaches
+  **603 pairs carrying 183 of 195 gold** against the head union's **296 carrying 180**.
+  That is **+308 cases (+104%), +12 judge calls (+86%), for +3 gold** — and **all three
+  are already found by the coreference linker in 6 recorded runs of 6, on both models**.
+  Marginal gold against the pipeline that exists: **zero**.
+- **The fuzzy rows are empty, and the strictness axis extends cleanly.** Gold per pair by
+  code-computed form over the merged set: exact whole name **0.716** (215 pairs), lemma
+  word **0.321** (81), *fuzzy whole name* **0.000** (9), *fuzzy name part only* **0.010**
+  (299). The relation's extra mass is 71× less gold-dense than the row it generalizes.
+- **A fuzzy relation is not a superset by itself.** It loses exactly one head pair —
+  bigbluebutton S49 `Recording Service` against *recorded*, the pair `s_linker85` adopted
+  WordNet for. A merged proposer must be `similarity ∪ lemma-word`, so the dependency it
+  was meant to replace stays.
+- **SWATTR's published output is inside our candidate set: 187 of 188 pairs.** Its one
+  outsider is mediastore S37 `Reencoding` against *re-encoding* (the `ANY_SPELLING` row
+  s82 deleted) and is **not gold**; the head's scans propose **32 gold pairs SWATTR never
+  emits**.
+- **What *is* free is merging the scans, not the relation.** One stream of 296 cases
+  costs the same 14 judging calls as two streams of 215 and 81 (2/1/6/4/1 a project
+  either way). **What must not be merged is the judging**: the two streams are judged at
+  opposite defaults — keep rate **0.756 terra / 0.922 luna** at the lenient gate against
+  **0.336 / 0.303** at the target-blind one — because their gold densities differ 2.2×,
+  and `s_linker119` already priced collapsing two defaults into one schema at net
+  **−9.0 / −16.0**. The registered arm is therefore *one scan emitting a `form` field
+  that selects the rubric inside the call*, which is the design law applied to the rubric
+  rather than to the candidate. Unbuilt.
+
+### The union round (s120) — one judge, one rule, evidence computed from the match
+
+Can the head's two name judges be one? Not two rubrics addressed by a code fact, but
+**one rule stating what a trace link is and how to read each piece of evidence**, with
+every candidate in one case format. Level 1 `pilot/unijudge_audit.py`; level 2
+`pilot/union_pilots.py` (both arms in one invocation, fixed candidates, alias table
+pinned), statistics `pilot/union_stats.py`, error analysis `pilot/union_diff.py`, level 3
+`pilot/union_composition.py`; arm `s_linker120` (`unijudge`), its thirteen iterations as
+data in `union_iterations.py`, invariants `pilot/test_s120_union.py` (2593 checks),
+defensibility `pilot/union_defensibility.py` (25 checks). Report:
+`../results/union_round/README.md`.
+
+- **Adopted at the stage, on both models.** terra (n=5, 25 paired units): gold **+0.2
+  (p = 1.00)**, spurious **−12.6 (p = 0.000)**, net **+13.2 (p = 0.025)**, precision
+  0.878 → 0.939. luna (n=3): gold **+0.3 (p = 1.00)**, spurious **−17.7 (p = 0.008)**,
+  net **+18.7 (p = 0.011)**, precision 0.789 → 0.859. **Same 14 judging calls, one
+  prompt instead of two.** Composition is clean on terra (0 gold pairs removed that
+  nothing re-proposes) and 2 distinct pairs on luna, below the TP floor of 4.8.
+- **The level-1 finding that motivated it held up.** Routing by stream is coarser than
+  the facts in code: whole-name/capitalized is 101 cases at base 0.980, whole-name/
+  lowercase 71 at 0.479 carrying **13.8 FP a run** under "approve by default", and
+  word-only/lowercase 72 at 0.306 carrying 1.8 under the strictest gate. The union's
+  whole-name row is where its win comes from on both models (terra gold +0.36/unit at
+  p = 0.007 with spurious −0.60 at p = 0.002; luna −1.3 gold at **−21.0 spurious**).
+- **An evidence field restrains when it is stated and misleads when it is weighted.**
+  Iteration 1 stated the alternative set as a ground for rejecting: **−7.6 gold** on a
+  bucket that is 0.765 gold. Iteration 6 deleted the same field from the case:
+  **+26.4 spurious** at +0.7 gold. Same fact, opposite errors, a number on each side of
+  the design law.
+- **The company a case keeps is part of its evidence.** Three rewrites of the rule left
+  luna's word-only row at 9.7–12.3 gold against a control's ~21. Grouping those cases by
+  what the match computed moved it to 15.3 with no prompt change; letting the call carry
+  only what its batch has (no catalog, the head's denotation contract) finished it at
+  22.0. **No sentence of any rule moved that row as far as the batch boundary did.**
+- **`s_linker25`'s refusal is about the question, not the target.** Blinding the
+  word-only case recovered 1.4 of 6.4 gold on terra and nothing on luna; what that stream
+  loses to is being asked an identity question in any of the ways a merged prompt can ask
+  one. And **a row-free prompt cannot carry a per-row reply contract**: iteration 10 asked
+  those cases for `denotation`, luna kept answering `approve`, and the row kept 1.0 of 81.
+- **Defensible by construction, checked mechanically.** Every clause of the rule that
+  states a criterion is a verbatim slice of a head constant, verified against the constant
+  it came from; `LAYERED_ENTITY_RULES`' "Approve the link by default" is deliberately not
+  carried and its absence is asserted. 0 of 63 catalog words, 0 dotted identifiers, 0
+  document-shape words, 0 corpus-grounded sentences. The judge punches on two things: the
+  architectural claim, and what an expression denotes where no name is written.
+- **End to end, three paired runs a model, both arms in every invocation, arm order
+  alternating by run** (`pilot/run_union_e2e.sh`,
+  `../results/union_e2e_{terra,luna}_r{1,2,3}_20260911`, `pilot/score_runs.py`):
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls |
+  |---|---|---|---|---|---|---|
+  | terra | `s_linker110` | 183.7 | 27.3 | 92.91 | 94.58 | 74.0 |
+  | terra | **`s_linker120`** | **189.0** | **22.3** | **95.16** | **96.54** | 73.7 |
+  | luna | `s_linker110` | 189.0 | 64.3 | 88.77 | 93.48 | 74.0 |
+  | luna | **`s_linker120`** | **190.7** | **60.7** | **90.03** | **94.21** | 74.7 |
+
+  **terra QUALITY-CHANGING in the arm's favour on all four** (TP +5.3, FP -5.0, F1 +2.3,
+  F2 +2.0, every p at the n=3 floor, every arm run ahead of every control run on every
+  statistic); **luna QUALITY-NEUTRAL with every point estimate favourable**. Same shape
+  the head itself was adopted on, at the same call count. In-set through the paper's own
+  engines (`studies/compare_arms.py s120 --base s110ctl`): terra BETTER 3/3 on all six
+  moving metrics, luna BETTER on both doc-code metrics.
+- **The union rejects more and costs less.** Two judges reject **146.0** distinct false
+  positives a run against the head's three rejecting 143.7, at **6.0** true links lost
+  outright against 8.7. Merging the two name judges removed a rejection the head was
+  making twice; it did not trade recall for precision.
+- **MediaStore is repaired, and it was the paper's one honest-failure project.** The head
+  reads 0.954 doc-model F1 there; the union reads **1.000**. That project's gold hangs on
+  `FileStorage` being written "the DataStorage" -- three sentences the head's coreference
+  judge rejected *because they name a component explicitly*. Under one rule they are name
+  cases. **The union beats ArTEMiS on all five projects at both grains**, which the head
+  did not.
+- **`s_linker120` IS THE HEAD (2026-09-11) and the paper reports it.** It is a
+  STANDALONE file by the branch's one-file-per-reported-variant policy, checked against
+  its ancestor method by method (`pilot/test_s120_standalone.py`, 85 checks: 38 methods
+  byte-identical, 3 rewritten and declared, 9 replaced by the union, every rule constant
+  and every other prompt identical -- including the coreference judging prompt against
+  `s_linker110._prompt_validation(..., strict=True)`).
+- **Two shape changes in the RQ engines**, both per-arm and both leaving `s110`'s CSVs
+  byte-identical (`gen_csv_to_temp.py`): RQ3 reads **two judges** (`rq34.py` `PHASE_SETS`
+  is arm-keyed), and RQ4 still prices **three forms** -- the links carry the stage label
+  their scan gave them, so `FORM_SETS` splits the name phase by `source`. **After the
+  union, "how many judges" and "how many forms" are no longer the same question**, which
+  is exactly what the round set out to separate. No one-call floor was built on this arm;
+  `rq_tables.py` drops that table and prints the absence rather than borrowing s110's.
+
+### The label-and-rule round — what the union judge is shown, and in whose words
+
+Four arms against `s_linker120`'s one judge, all at level 2 on fixed recorded candidates
+(296 cases, 180 gold, 14 calls, identical across every arm and sample), three samples a
+side, every arm in the same invocation. Report: `../results/labelrule_round/README.md`;
+arms `pilot/union_pilots.py --arms union alllabels aliasmute nomention v14n`; statistics
+`pilot/union_stats.py`; level-0 guard `pilot/union_render_snapshot.py`.
+
+| arm | change | gold | spurious | net | p(net) |
+|---|---|---|---|---|---|
+| `alllabels` | print every `MentionType` the classifier computes | ±0.0 (p=1.00) | +1.3 | −1.3 | 0.750 |
+| `aliasmute` | drop `VIA_ALIAS`, which restates the case's `writes` line | ±0.0 (p=1.00) | +1.0 | −1.0 | 0.875 |
+| `v14n` | every carried criterion clause paraphrased | +0.3 (p=1.00) | +6.0 | −5.0 | 0.336 |
+| `v14mention` | only `MENTION_COUNTS` paraphrased | **−5.3 (p=0.062)** | −2.3 | **−13.7** | 0.062 |
+| `v14ground` | only `POSITIVE_GROUND` paraphrased | −2.7 | −2.0 | −6.0 | 0.250 |
+| `v14ref` | only `QUALIFIED_CLAUSE` + `ACTS_ON` | −0.7 | +1.3 | −3.3 | 0.188 |
+| `v14def` | only the definition (no GATE-07 cost) | −1.0 | −2.3 | −0.7 | 0.938 |
+| `v14stricter` | only `STRICTER_CLAUSE` | −0.3 | −1.7 | +0.7 | 0.906 |
+| `v14n` (in the ablation set) | all four, re-run | ±0.0 | +0.3 | −0.3 | 1.000 |
+| `nomention` | print no computed label at all | −1.7 | +10.0 | **−15.0** | **0.031** |
+
+- **Showing every label is free to build and buys nothing.** One frozenset; it adds a
+  `mention=` line to **144 of 296 cases, 131 of them gold**, and moves gold **0.00 a unit
+  at p = 1.000**. The census says why: the three labels left out are a function of the
+  case's own `naming` row and its capitalization, so a judge holding the sentence reads
+  them off the sentence (`proper case, standalone` 108 cases at 0.963 gold,
+  `lowercase mention` 36 at 0.750, `indirect/unclear match` 81 at 0.321), and
+  `STRICTER_CLAUSE` already says what capitalization is worth. **The retained set was
+  chosen by an argument about re-derivability and the argument holds.**
+- **The field as a whole is load-bearing, and that is the round's only significant
+  result.** `nomention` is net −15.0 at p = 0.031, all of it at the whole-name row
+  (spurious +2.00 a unit) — the 28 `lowercase, inside qualified name` cases, a 0.071-gold
+  bucket that `QUALIFIED_CLAUSE` speaks to in every prompt and does not catch.
+  **A clause stating the criterion is not a substitute for a fact saying this case is an
+  instance of it** — the design law from the side usually taken for granted, and a fifth
+  measurement of the mention label after s42/s43/s44, s80 and the concept round.
+- **Naturalizing the rule loses, and a tie would also have lost.** `v14n` holds the
+  definition, field lines, format contract, demand, reply, fields and every flag, and
+  paraphrases only the four carried criterion clauses into plain general English. Net
+  −5.0, gold +0.3 (p = 1.00) with the whole point estimate in spurious, concentrated on
+  the word-only row (+1.07 a unit). **Quotation is not a style choice here**: it is what
+  lets `union_defensibility.py` check each clause against the ancestor constant it was
+  sliced from, so a paraphrase must be scored as authored text against GATE-07 and the
+  arm had to win to be worth adopting. **First clean measurement of quotation against
+  paraphrase on this branch** — v1 → v2 moved the same way and is unreadable for it,
+  having moved the alternative set in the same step.
+- **`VIA_ALIAS` is a genuine redundancy and is kept anyway.** All 43 alias cases print
+  the same fact twice (`writes=a short form ...` and `mention=via known alias`); removing
+  it is gold-neutral at net −1.0 (p = 0.875). Point estimate unfavourable, nothing bought
+  — **an unnecessary change is not a defensible one** (the finetune round's rule).
+- **The naturalization ablation: the clause that pays is the obvious one to reword.**
+  Five arms, each `v13` with exactly one paragraph paraphrased, plus `v14n` re-run in the
+  same invocation (7 arms, 294 calls). `MENTION_COUNTS` alone — "a mention that says
+  nothing further still counts" rewritten as "an architectural mention is enough" — is
+  **gold -5.3, net -13.7 (p = 0.062)**, the worst arm of either batch. The two read as
+  synonyms and are not: **the original lowers a bar and the paraphrase restates it**, so
+  the judge reimports the criterion the sentence exists to relax. It lands where that
+  predicts, on the word-only row (kept 29.0 -> 22.7, gold 22.0 -> 18.3), the cases with
+  the least surface to go on. `POSITIVE_GROUND` is the same effect at half size (-6.0);
+  `STRICTER_CLAUSE` is the only safe one (net +0.7) because it is a **test, not a
+  licence**, so restating it does not move what it licenses; `QUALIFIED_CLAUSE`+`ACTS_ON`
+  is the only arm costing precision rather than recall.
+- **The parts do not sum to the whole — third instance, third direction.** `v14mention`
+  alone is -13.7 and `v14ground` alone -6.0, yet all four paraphrased together is **-0.3,
+  every p = 1.000**. s77/s78 had two losers composing to a winner; this has two losers
+  composing to a wash. **A clause is not independently priceable**, and a rule read whole
+  has a register that moving every paragraph into does not equal moving each one alone.
+  The same `v14n` also read -5.0 in the label batch and -0.3 here: two invocation sets,
+  both real, which is why the composite was re-run in-set rather than compared across.
+- **`s_linker120.py` stops being a diff against its ancestor (2026-09-13).** The
+  byte-identity rule in `test_s120_standalone.py` T2 was keeping the file readable only
+  as a delta: `HEAD DELTA 1/2/3` banners naming **`s_linker110`'s** derivation from
+  `s_linker92` (archaeology two variants back, in the current paper supplement, with no
+  key in its own docstring); seven 1:1 `linker_infra` wrappers plus `_named_spans`; a
+  five-method proposer chain and a four-method label chain; and **`_writes_name`, which
+  IS `_find_exact_form`** behind a `SKIP_QUALIFIED` flag the head declares `False` — one
+  predicate under two names, kept apart only because the ancestor kept them apart. All 18
+  are inlined and declared in `INLINED`, `SKIP_QUALIFIED` is deleted, and the file is
+  **51 methods -> 33**: the proposer is one `_name_candidates`, the label one
+  `_mention_label`, the judge `_judge_union`'s four blocks, evidence computed once per
+  candidate instead of twice.
+- **`pilot/method_dup_audit.py` — the duplicate check, generalised.** Two passes, no
+  calls: structural (each method's AST, docstrings dropped and parameters renamed
+  positionally, so a rename cannot hide a copy) and behavioural (every 2-argument
+  method run over all 3697 (sentence, name) pairs, and any two that agree everywhere
+  reported). It is validated against the bug it was written for: run on `s_linker110`
+  it reports **`_find_exact_form == _writes_name`**; run on `s_linker120` it reports
+  none. **A byte-identical-copy policy hides this class of duplicate by construction**
+  -- the two names were kept apart only because the ancestor kept them apart -- so a
+  standalone file wants a check that does not care what anything is called. `s_linker110`
+  keeps its duplicate: it is a recorded control and does not move.
+- **`pilot/call_chain_audit.py` — depth, not length, is what a standalone file costs a
+  reader.** It prints the longest chain of self-calls from `link()` and the methods that
+  are **pure hops** (one caller, and a body that belongs in it). `s_linker110` reads
+  **9 hops**; `s_linker120` read 9 too until `_run_linker` (a two-entry dispatch, now a
+  dict in `link()`) and `_named_before` (built in the loop that prints it) came out —
+  **7 hops, 31 methods**. Not every hop is waste: a prompt builder is one f-string and
+  belongs alone, and a primitive with several callers is depth worth paying for.
+  `_run_validation_pass` is kept on those grounds — folding it saves one hop and makes a
+  75-line method.
+- **What the byte comparison claimed is now claimed by behaviour, and more strictly.**
+  T6 runs the ancestor's own `_extract_named_mentions` and `_scan` beside this file's
+  `_name_candidates` and compares every candidate — pair, component, source label and the
+  **matched surface**, which is what a rewritten span loop moves first — over five
+  projects under both alias settings. Byte identity never said what the bytes did. The
+  suite goes **85 -> 133 checks**. Apply the same rule to any future standalone: pin what
+  the file DOES against its ancestor, not what it reads like.
+- **`pilot/union_render_snapshot.py` is the equivalence test, written before the
+  refactor.** It hashes every case, every prompt and every judged decision — under a stub
+  that answers both contracts and alternates the verdict, per the uniform round's lesson
+  — over 5 projects x 2 alias tables x 14 iterations: **280 renderings, all identical**.
+  Use it for any future change to this file that is supposed to be a refactor.
+- **The head does not move. `s_linker120` stands, at `v13`, with the label set it had.**
+  No E2E owed: every arm is refused or neutral-and-not-adopted.
+
+### s121 + s122 — the judge's arrangements out, then the anchor block out (2026-09-14)
+
+- **`s_linker121` is `s_linker120` with the judge's three call-level arrangements
+  removed** and its method set cut from 49 to 34: an indirection that only forwarded a
+  call, or named one step of a caller that had exactly one, is not structure.
+  `pilot/test_s121_standalone.py` checks self-containment and reachability rather than a
+  method-by-method copy, because the file is no longer a copy.
+- **The scan's one refusal is GONE** (`s_linker109`'s nesting predicate: a one-word pair
+  whose word is written only inside another component's whole name). It fires on **one
+  of five projects, drops 12 pairs, and 0 of them are gold**, so it could never gain a
+  link; the judge rejects those same pairs on its own in **140 of 144 case-samples across
+  two models**. Removed on the simplicity argument, at a cost of +1 judging call on
+  bigbluebutton. The deterministic layer now only OPENS cases — nothing in it ends one —
+  which is what `SKIP_QUALIFIED`'s second clause had always claimed. The predicate is
+  owned by `pilot/s121_ablations.py` so the round stays reproducible after the head moved.
+- **`s_linker122` is `s_linker121` with the union judge's `anchors` evidence removed.**
+  The block is up to five whole sentences a case and the largest single thing in a
+  judging call: the name judging goes **199,466 -> 156,519 characters over the five
+  projects (-21.5%) at the same 15 calls**. STANDALONE, by the one-file-per-reported-
+  variant policy, checked against its ancestor method by method
+  (`pilot/test_s122_standalone.py`, 99 checks, no calls: **28 methods byte-identical, 4
+  declared changes**, every rule constant identical except the two that carry the anchors
+  line, and every judging prompt on all five projects equal to the ancestor's bytes minus
+  the anchors plus the clause).
+- **What the anchors were holding, and the one clause that replaces them.** A case's
+  `writes` line can say the sentence writes "a short form the document established for
+  it" — a claim the case makes about itself, which the anchor block was the only thing in
+  the call able to bear on. `pilot/anchor_diff.py` located the leak: of the 33
+  sample-counts an anchor-free arm keeps and the head does not, 30 are on cases whose
+  block was printed, **22 are the alias row and 18 of those are one component**. In its
+  place, 125 bytes: *"Where the sentence does not write the name in full, that a surface
+  can name this component is not evidence that it does here."*
+- **THE SCOPE IS LOAD-BEARING, and it was learned the expensive way.** A 73-byte
+  unscoped version shipped first and the E2E refused it on a sign flip (terra better,
+  luna **TP -10.3** at unchanged precision). `pilot/noanchor_fn.py` named luna's loss
+  exactly: **seven of the eight lost links are one teammates sentence**, a bare
+  enumeration of component names, lost in **3 runs of 3**, every one `writes=whole name`.
+  Unscoped, the clause fires on whole-name bare mentions and contradicts the rule's own
+  `MENTION_COUNTS`. Scoped, luna's whole-name row goes **-2.07 -> -0.13 a unit** and its
+  run-level gold loss **-8.7 -> -2.3**, at no cost on terra (spurious -2.3 -> -3.7).
+- **A FACT CANNOT DO A WEIGHING'S JOB** — measured, and the round's transferable result.
+  A clause-free repair was built and refused: reword the alias evidence so it claims only
+  what the match computed ("a short form listed for it elsewhere in the document"), zero
+  added prompt bytes, and it **cannot reach a whole-name case** because a whole-name case
+  never renders that row. It recovers S1 on both models (luna whole-name -2.07 -> -0.47)
+  and **reopens the row the anchors were holding**: terra spurious **+7.3 a run
+  (p = 0.047)**, luna +7.0. Changing what the evidence says moved what the judge knows
+  about one field; it did not move the threshold the block was setting. The design law —
+  facts in code, weighings in the prompt — also runs the other way: a fact may not be
+  asked to stand in for a weighing.
+- **The stage understated the change in BOTH directions**, which is the round's
+  methodological result. On the unscoped arm the stage read terra neutral and the
+  composed run read FP -8.0 / F2 +0.9; the stage read luna -5.0 gold and the composed run
+  read TP -10.3, roughly double. Luna's composition statistic is **+24.1 (p = 0.10)**
+  against terra's +1.1. The standing caveat is that a stage arm flatters a change by
+  hiding composition; here it understated one twice.
+- **End to end, three paired runs a model, both arms in every invocation, arm order
+  alternating by run** (`STAMP=20260914scoped pilot/run_noanchor_e2e.sh`,
+  `../results/noanchor_e2e_{terra,luna}_r{1,2,3}_20260914scoped`, `pilot/score_runs.py`):
+
+  | model | arm | TP | FP | macro F1 | macro F2 | calls | F1 range |
+  |---|---|---|---|---|---|---|---|
+  | terra | `s_linker121` | 182.0 | 23.7 | 93.23 | 94.52 | 72.3 | 0.98 |
+  | terra | `s_linker122` | 181.7 | 23.3 | 92.90 | 94.21 | 72.7 | 1.43 |
+  | luna | `s_linker121` | 182.3 | 47.0 | 90.07 | 93.03 | 75.3 | 2.71 |
+  | luna | `s_linker122` | 181.0 | 46.3 | 89.50 | 92.28 | 74.0 | **1.11** |
+
+  **QUALITY-NEUTRAL on BOTH models** — terra TP -0.3 (p = 1.00), FP -0.3 (1.00), macro
+  F1 -0.3 (0.70), macro F2 -0.3 (0.50); luna TP -1.3 (0.70), FP -0.7 (1.00), macro F1
+  -0.6 (0.70), macro F2 -0.7 (0.40). **The sign flip is gone**: the same cut that read
+  TP -10.3 on luna with the unscoped clause reads -1.3 with the scope, and
+  `pilot/noanchor_fn.py` confirms it at the pair level — teammates S1 is absent from the
+  lost list in all three runs, where it was seven pairs lost in three runs of three.
+  Teammates now loses 2 gold pairs and gains 4.
+- **So the anchor block comes out for FREE, and that is the claim — not that removing it
+  helps.** Both models' point estimates are slightly negative, so what is defensible is
+  that **21.5% of the name judging can be deleted without a measurable quality cost**,
+  and luna's calls fall 75.3 -> 74.0 as well. The scope also gave back the unscoped
+  version's terra GAIN (FP 28.0 -> 20.0 in its own set): that gain and luna's regression
+  were the same clause firing on the whole-name row, and they leave together. A round
+  that buys a 21.5% cut at parity is worth more to the paper than one that buys a terra
+  gain at the price of a luna regression, because the latter cannot be reported as a head.
+- **The arm is also STEADIER on the model that needs it.** Luna's control swings TP
+  183/176/188 at FP 37/44/60 across its three runs; the arm reads 180/182/181 at 48/42/49,
+  macro F1 range **2.71 -> 1.11**. Removing an evidence field the judge had to weigh
+  removed a source of run-to-run disagreement with it.
+- **Composition is at the n=3 floor on both models** (+6.6 terra, +7.4 luna, p = 0.10),
+  so the coreference linker is still moving pairs behind the name stage. The standing
+  caveat holds: a stage arm cannot see this, and in this round the stage understated the
+  unscoped change in both directions at once.
+- **`s_linker122` IS THE HEAD (2026-09-14). THE PAPER ARM IS STILL `s120`, and that gap
+  is deliberate.** The two questions came apart in this round and the ledger says so
+  rather than smoothing it.
+- **The paper's own arm engine does NOT clear s122**, and it is the read to trust here.
+  `pilot/score_runs.py` is link-level (doc-model) and called the arm QUALITY-NEUTRAL on
+  both models. `studies/compare_arms.py s122 --base s121ctl` adds the **doc-code
+  (file-level, composed)** metrics and per-run sign agreement, scored in-set off the same
+  invocations (`../results/s12{1ctl,2}_extracts`, dump slots `{terra,luna}_s12{1ctl,2}`,
+  `evaluation/reports/ARM_COMPARE_s122_vs_inset.csv`):
+
+  | metric | terra | luna |
+  |---|---|---|
+  | dm F1 / F2 | INSIDE NOISE | INSIDE NOISE |
+  | **dc F1** | **WORSE -1.02 (3/3)** | **BETTER +0.79 (3/3)** |
+  | **dc F2** | **WORSE -0.71 (3/3)** | INSIDE NOISE |
+  | dm CMR% | NO CHANGE | NO CHANGE |
+  | dc worst / harm F1 | INSIDE NOISE | INSIDE NOISE |
+
+  Terra reads WORSE on both doc-code metrics with every run agreeing on the sign, which
+  is the engine's strongest negative verdict, and luna reads BETTER on one. `HOWTO-
+  REGENERATE-RQ.md` promotes the paper arm only "if the candidate wins", so **`DEFAULT_ARM`
+  is NOT moved and `sync_paper.py` is not run**. Flipping it in the seven modules that
+  declare it is one edit away if that call is made deliberately.
+- **Why the two engines disagree, and why it matters.** The link-level view sees the cut
+  as free; the file-level composed view sees terra lose ground. Removing the anchors does
+  not change how many links are found, it changes WHICH components they land on, and the
+  doc-code grain is the one the paper's own argument says to read (RQ2's size-aware
+  block exists because link-level F1 is the wrong place to read an architecture-
+  traceability result). **A cut that is free at the grain you are not reporting is not
+  free.** That applies to picking an arm, which is exactly the note `HOWTO-REGENERATE-RQ.md`
+  already makes, arriving from the other direction.
+- **What s122 is therefore adopted ON:** the 21.5% reduction in name judging at
+  link-level parity, as the branch's head and the base every later round forks from. What
+  it is NOT adopted on: the paper's reported numbers, which stay `s120` until an arm
+  clears the doc-code gate. The RQ engines key an arm to its E2E run directories
+  (`rq34.py`'s arm map), so whenever that happens the s122 row is generated from
+  `noanchor_e2e_{model}_r{i}_20260914scoped` and NOT from the unscoped `20260914` set,
+  which measured a file that no longer exists.
+- Round report, every arm and every caveat: `../results/s121_ablations/README.md`.
+
+
+### The shortlist-annotation round (s124) — the antecedent list says what the system already decided (2026-09-14)
+
+`s_linker122`'s resolver prints a per-case shortlist, `NAMED BEFORE THIS CASE: kurento
+(S68), WebRTC-SFU (S68), ...`, computed by `_named_before` from `_states_a_name` — a
+purely LEXICAL fact. The union judge has already ruled on every one of those mentions by
+then and the module was discarding the verdicts and offering all the entries as equals.
+`s_linker124` carries them: `kurento (S68, linked)` / `WebRTC-SFU (S68, named only)`.
+Report: `../results/coref_annot_round/README.md`; level 1 `pilot/coref_shortlist_audit.py`;
+level 2 `pilot/coref_annot_pilots.py` + `pilot/run_coref_annot.sh`; statistics
+`pilot/coref_annot_stats.py`; error analysis `pilot/coref_annot_diff.py`; invariants
+`pilot/test_s124.py` (29 checks, no calls).
+
+**It is a COMPOSITION, and the two halves were priced apart.** `s_linker123` (the union
+judge's `writes`/`alternatives`/`mention` merged into `written`/`competitors`, its own
+round at `../results/s123_written_field/README.md`) and the shortlist mark landed on
+`s_linker122` at the same time, from two sessions, and both claimed the number 123. They
+touch different stages -- the judge's evidence format and the resolver's case -- and
+`pilot/test_s124.py` checks they do not interact rather than asserting it: every
+union-judging prompt is `s_linker123`'s byte for byte, every resolver prompt differs only
+in the shortlist lines. **Neither half was measured with the other in place**, which is
+the first thing an E2E of this arm settles and the reason the entry below is about the
+mark alone.
+
+- **`s_linker124` IS THE HEAD (2026-09-14). ADOPTED on the design argument at a measured
+  neutral, which is a different claim from an improvement and the ledger states it as
+  such.** terra macro F2 **+0.31** (p 0.50) / F1 +0.04 (p 1.00); luna macro F2 **+0.04**
+  (p 1.00) / F1 −0.06 (p 1.00); TP +0.67 and FP +0.67 on both, **at the same call count
+  and with no authored rule text changed**. QUALITY-NEUTRAL on both models with the F2
+  point estimate favourable on both — the standard `s_linker86`, `s_linker89` and
+  `s_linker110`-on-luna were adopted under.
+- **The design argument, which is what the paper reports.** The shortlist was the one
+  place in the module where a stage is shown an UNREFINED version of a fact the pipeline
+  has already refined; every other piece of evidence any judge reads is the best the
+  system knows at that point. **One fact source, stated once, read everywhere.** The mark
+  is rendered in the shortlist line and not written into any constant, so GATE-07's
+  accounting does not move and `prompt_defensibility.py` reads what it read for s122.
+- **NOT a precision result, and the round says so in the file.** The exchange rate is
+  **+0.67 gold per +0.67 spurious a run on both models**; F2's 4:1 recall weighting is
+  what makes a one-for-one trade positive, and F1 reads +0.04 / −0.06. **No arm removes a
+  net false positive**, and the one net link an annotation would have been designed to
+  catch (teammates S131 -> `Storage`, not gold) was *added* by two arms on terra. A paper
+  that motivates the mark as a precision device will be wrong.
+- **Nothing reaches significance and the entry does not pretend otherwise.** At n = 3 the
+  two-sided sign-flip floor is p = 0.25 and the arm's best reading is 0.50. Settling the
+  terra F2 estimate needs ~13 paired samples, the luna one ~690. **The claim is
+  neutrality plus a design argument; neutrality is what three samples can support.**
+- **The mark is close to a constant on three of five projects**, and that is the first
+  thing to say rather than the last: 83% (terra) / 79% (luna) of the 1017–1064 entries a
+  run read `linked`, mediastore's shortlist is 140/140 `linked`, and **93% of the
+  informative `named only` rows are teammates alone.**
+- **A FACT CAN BE ENOUGH, AND A WEIGHING ABOUT IT CAN COST — refused arm 1.**
+  `annot_clause` adds one sentence ("a `named only` entry is the weaker antecedent") and
+  is the worse arm on both models (terra F2 −0.19, luna −0.16). The two arms move the
+  resolver **32 pairs apart in opposite directions** (+17.6 proposals a run against
+  −14.4) and only the unweighted one lands favourably. **The design law says where a
+  weighing goes when you want one; it does not say you want one.**
+- **SUPPRESSION REDIRECTS, IT DOES NOT REMOVE — refused arm 2, and the round's sharpest
+  transferable result.** `annot_only` drops the refused entries instead of marking them:
+  luna TP −1.0, **FP +4.0, macro F2 −0.92**, worse in 3 samples of 3 and worse-or-equal
+  in 3 of 3 on terra. It proposes **36 fewer** pairs a run and its net spurious
+  **doubles** — **+17 false positives added against 5 removed** — because taking an entry
+  off the list does not make the resolver abstain, it makes it attach the same referring
+  expression to the next component down. `s_linker109` recorded the rule from the other
+  side: **a discovered fact may open a case and may not close one.** A name verdict is
+  discovered — another judge's output, resampled every run. **Marking is opening;
+  withholding is closing, and s124 marks.**
+- **The blindness that is spent, and the blindness that is not.** `s_linker100`
+  conditioned the second proposer on the first's OUTPUT LIST and added zero pairs in two
+  of three samples. s124 does not: the resolver still reads every sentence, proposes
+  independently, and is never told which pairs to produce. What it receives is a property
+  of each candidate ANTECEDENT — evidence about a case, not a proposal to copy. **The two
+  proposal stages stay blind to each other's link sets.**
+- **Level 1 settled the suppressing reading for nothing, and it is why arm 3 existed at
+  all.** Off the recorded checkpoints: the resolver leans on refused mentions (12.7 /
+  30.7 resolutions a run at a third to a half the precision of accepted-antecedent ones)
+  and **the strict coreference judge already deletes 97% / 89% of them**; `link`'s merge
+  deletes the rest. **Net new links a run with a refused antecedent: 0.3 on both models,
+  0.0 gold** — 35x below the recorded FP floor. Reproduced at 0.0 on the independent
+  `union_e2e_*_20260911` set.
+- **A STAGE PILOT WITH ZERO COMPOSITION RISK, PROVED RATHER THAN ARGUED.** `link` merges
+  by pair with the earlier linker winning, so the composed set is exactly `pinned name
+  links | kept coreference`; computed that way off the checkpoints it reproduces a run's
+  own final CSV with symmetric difference **0** (TP 183, FP 19, F1 93.55, F2 94.77 both
+  ways). Pinning the alias table AND the name-link set means only the resolver is
+  resampled. **When the change is to the LAST linker, the merge is a union and the other
+  half is pinned, level 2 IS level 4** — which is the measurement policy's level 3 made
+  arithmetic instead of an argument.
+- **`s_linker124.py` is a SUBCLASS of `s_linker123`**, not a standalone file: the one-file
+  policy is for the REPORTED arm and this is not one. **Exactly two methods differ**
+  (`pilot/test_s124.py`, 29 checks: every union-judging prompt is `s_linker123`'s byte for
+  byte on all five projects, and every resolver prompt differs from it in the
+  `NAMED BEFORE THIS CASE` lines and nothing else) and — the check that matters — **its resolver prompts are byte-identical to
+  `coref_annot_pilots.Annot`, the arm that was measured, on all five projects**, with
+  every non-shortlist byte equal to s122's. A run with nothing linked degrades to every
+  entry reading `named only` rather than breaking. *Write the equivalence test against
+  the measured arm, not just against the ancestor* — the compaction round's lesson applied
+  to a promotion rather than to a compaction.
+- **STILL OWED, AND THE ROUND MEASURED THE WRONG GRAIN TO CLOSE IT.** Every number above
+  is `pilot/score_runs.py`, which is **LINK-LEVEL**. The read this branch actually
+  promotes an arm on is `studies/compare_arms.py`, which adds the **doc-code,
+  component-weighted** metrics and per-run sign agreement, and it needs `rq12.py`-scored
+  E2E run directories that do not exist for s124. **s122 is the standing warning and it
+  is exact**: link-level QUALITY-NEUTRAL on both models, then terra doc-code F1 −1.02 and
+  F2 −0.71 with 3/3 runs agreeing on the sign, which is that engine's strongest negative
+  verdict — because removing the anchors did not change how many links are found, it
+  changed **which components they land on**. the mark's entire effect is +0.67 gold and +0.67
+  spurious a run, i.e. *which components a handful of links land on*, so it is exposed to
+  that reading in full. **s124 is the head (the base later rounds fork from); it is NOT
+  the reported arm, and it is not yet a candidate for one.** The paper arm stays
+  `s_linker120`. Owed, in order: `pilot/run_s124_e2e.sh`, then `rq12.py --arm s124`, then
+  `studies/compare_arms.py s124`.

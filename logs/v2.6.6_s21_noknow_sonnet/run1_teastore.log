@@ -1,0 +1,73 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: claude (sonnet)
+Datasets: teastore
+Variants: s_linker21_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: claude (sonnet)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=27 P2=27 ∪=27
+  Framing C: 27 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 20 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 17
+    Coref reject: S3 -> Auth
+    Coref reject: S4 -> Recommender
+    Coref reject: S5 -> WebUI
+    Coref reject: S8 -> WebUI
+    Coref reject: S10 -> WebUI
+    Coref reject: S18 -> Auth
+    Coref reject: S22 -> Persistence
+    Coref reject: S25 -> Persistence
+    Coref reject: S27 -> Recommender
+    Coref reject: S38 -> Registry
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S41 -> Registry
+  Coref validated: 4 / 17
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 24 (from 24 raw)
+  Phase log saved: results/v2.6.6_s21_noknow_sonnet/run1/llm_logs/s_linker21_claude_teastore_20260628_183044.json
+  LLM call trace saved: results/v2.6.6_s21_noknow_sonnet/run1/llm_logs/s_linker21_claude_teastore_20260628_183044_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 24 links (164.2s, 12 LLM calls)
+  s_linker21_noknow: P=100.0% R=88.9% F1=94.1% TP=24 FP=0 FN=3 (164s)
+    Sources: {'entity': 20, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker21_noknow 
+-----------------+-------------------
+teastore         | F1 94.1% FP   0
+-----------------+-------------------
+Macro avg        | F1 94.1% FP   0
+
+Results saved to results/v2.6.6_s21_noknow_sonnet/run1/teastore/ablation_20260628_183044.json

@@ -87,10 +87,11 @@ RUNS = ["run1", "run2", "run3"]
 # override one field each, which is what the no-knowledge A/B needs (HOWTO §4).
 # check.py reads the DEFAULT_ARM literal out of every generator and fails if any two
 # disagree, so an arm cannot be promoted by halves.
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
 ARMS = {                       # reported arm -> (phase-state variant, run-sweep template)
     "s110": ("s_linker110", "consolidation_e2e_{model}_r{i}_20260825"),
     "s92a": ("s_linker92a", "regex_e2e_{model}_r{i}_20260822"),
+    "s120": ("s_linker120", "union_e2e_{model}_r{i}_20260911"),
 }
 REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
@@ -111,10 +112,18 @@ REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 # Every downstream row is keyed by phase name, so the third phase adds a row/column
 # instead of a special case. $RQ34_ARM selects the layout -- separate from the arm above,
 # because every s25-lineage arm shares the s92 layout.
-LAYOUT = os.environ.get("RQ34_ARM", "s92")
+#: The phase layout an arm records. Every s25-lineage arm through s110 writes the
+#: three-phase `s92` shape; `s120` unions the two name judges, so it writes two phases
+#: and its RQ3 has two judges. The layout is a property of the arm, not a second knob --
+#: $RQ34_ARM still overrides it, which is what scoring a retired arm needs.
+ARM_LAYOUT = {"s120": "s120"}
+LAYOUT = os.environ.get("RQ34_ARM", ARM_LAYOUT.get(REPORTED_ARM, "s92"))
+#: Layouts that keep their phase state in `<rundir>/phase_states/<variant>/openai/...`.
+#: Only the retired `s21` layout does not.
+S92_LIKE = ("s92", "s120")
 VARIANT = os.environ.get(
     "RQ34_VARIANT",
-    ARMS[REPORTED_ARM][0] if LAYOUT == "s92" and REPORTED_ARM in ARMS else "s_linker21")
+    ARMS[REPORTED_ARM][0] if LAYOUT in S92_LIKE and REPORTED_ARM in ARMS else "s_linker21")
 
 PHASE_SETS = {
     "s21": [
@@ -131,10 +140,43 @@ PHASE_SETS = {
         {"key": "coref", "linker": "Coref", "file": "linker_coreference.pkl",
          "variant": "NoCitation"},
     ],
+    # s120 unions the two name judges: both scans propose into one stream, one judge
+    # rules on it, and the links keep the stage label the two scans gave them. So the
+    # arm has TWO judges (this list) and still THREE proposal forms (FORM_SETS below) --
+    # RQ3 counts judges, RQ4 counts what each form contributes, and after the union
+    # those are no longer the same list.
+    "s120": [
+        {"key": "name", "linker": "Name", "file": "linker_name.pkl",
+         "variant": "NoNameValid"},
+        {"key": "coref", "linker": "Coref", "file": "linker_coreference.pkl",
+         "variant": "NoCitation"},
+    ],
 }
 PHASES = PHASE_SETS[LAYOUT]
 PHASE_KEYS = [ph["key"] for ph in PHASES]
-LINKERS = [ph["linker"] for ph in PHASES]
+
+#: RQ4's unit is the **proposal form**, not the judge. Through s110 the two are the
+#: same list: one form per linker, one judge per linker. s120 unions the two name
+#: judges while both scans keep proposing, so its RQ4 still has three forms behind two
+#: judges -- the links carry the stage label their scan gave them (`_stage_of`), which
+#: is what makes the split readable off the phase state rather than re-derived.
+#: A form names the phase it is read from and, where a phase carries more than one,
+#: the link `source` values that belong to it.
+FORM_SETS = {
+    layout: [{"key": ph["key"], "linker": ph["linker"], "phase": ph["key"],
+              "sources": None}
+             for ph in phases]
+    for layout, phases in PHASE_SETS.items()
+}
+FORM_SETS["s120"] = [
+    {"key": "full_name", "linker": "FullName", "phase": "name",
+     "sources": {"full_name"}},
+    {"key": "partial_name", "linker": "PartialName", "phase": "name",
+     "sources": {"partial_name"}},
+    {"key": "coref", "linker": "Coref", "phase": "coref", "sources": None},
+]
+FORMS = FORM_SETS[LAYOUT]
+LINKERS = [fm["linker"] for fm in FORMS]
 KEY_OF_LINKER = {ph["linker"]: ph["key"] for ph in PHASES}
 
 # backend -> results slot (s21) or the ordered per-run directories (s92).
@@ -161,7 +203,8 @@ S92_DIR_TMPL = os.environ.get("RQ34_S92_DIR_TMPL", DEFAULT_RUNS_TMPL)
 S92_RUN_DIRS: Dict[str, Dict[str, Path]] = {}
 # Key under which the run's ablation JSON records the Full result (the tp/fp/fn oracle).
 ABLATION_KEY = os.environ.get("RQ34_ABLATION_KEY", VARIANT)
-BACKENDS = {"s21": ["claude", "openai"], "s92": ["terra", "luna"]}[LAYOUT]
+BACKENDS = {"s21": ["claude", "openai"], "s92": ["terra", "luna"],
+            "s120": ["terra", "luna"]}[LAYOUT]
 
 
 def select_runs(tmpl: str, variant: str, ablation_key: str) -> None:
@@ -317,6 +360,10 @@ class Cell:
         self.final: Set[LinkKey] = set()
         self.kept: Dict[str, Set[LinkKey]] = {k: set() for k in PHASE_KEYS}
         self.rejected: Dict[str, Set[LinkKey]] = {k: set() for k in PHASE_KEYS}
+        #: What each *form* kept, for RQ4. Equal to `kept` wherever one phase is one
+        #: form (every arm through s110); split by the link's own stage label where a
+        #: phase judges more than one form (s120).
+        self.kept_form: Dict[str, Set[LinkKey]] = {fm["linker"]: set() for fm in FORMS}
         self.warnings: List[str] = []
 
     def others(self, key: str) -> Set[LinkKey]:
@@ -324,9 +371,14 @@ class Cell:
         return set().union(*(self.kept[k] for k in PHASE_KEYS if k != key)) \
             if len(PHASE_KEYS) > 1 else set()
 
+    def other_forms(self, linker: str) -> Set[LinkKey]:
+        """Everything the OTHER forms kept -- the baseline for `unique to this form`."""
+        return set().union(*(self.kept_form[fm["linker"]] for fm in FORMS
+                             if fm["linker"] != linker)) if len(FORMS) > 1 else set()
+
 
 def _phase_dir(slot: Path, run: str, backend: str, project: str) -> Path:
-    if LAYOUT == "s92":
+    if LAYOUT in S92_LIKE:
         return S92_RUN_DIRS[backend][run] / "phase_states" / VARIANT / "openai" / project
     return slot / run / "phase_cache" / VARIANT / PCACHE_BACKEND[backend] / project
 
@@ -347,6 +399,19 @@ def _judged_sets(state: Dict) -> Tuple[Set[LinkKey], Set[LinkKey]]:
     return kept, rejected
 
 
+def _kept_by_source(state: Dict) -> Dict[str, Set[LinkKey]]:
+    """The phase's kept links grouped by the stage label each one carries.
+
+    s120's name phase emits both name forms; `SadSamLink.source` is `full_name` or
+    `partial_name` exactly as the two separate linkers set it, which is why RQ4 can
+    still price the forms after the judges were merged.
+    """
+    out: Dict[str, Set[LinkKey]] = {}
+    for link in state["links"]:
+        out.setdefault(getattr(link, "source", "") or "", set()).add(_key(link))
+    return out
+
+
 def compute_cell(slot: Path, run: str, backend: str, project: str) -> Cell:
     pdir = _phase_dir(slot, run, backend, project)
     cell = Cell(project)
@@ -354,14 +419,32 @@ def compute_cell(slot: Path, run: str, backend: str, project: str) -> Cell:
     with (pdir / "final.pkl").open("rb") as f:
         cell.final = {_key(x) for x in pickle.load(f)["final"]}
 
+    by_source: Dict[str, Dict[str, Set[LinkKey]]] = {}
     for ph in PHASES:
         with (pdir / ph["file"]).open("rb") as f:
             state = pickle.load(f)
-        if LAYOUT == "s92":
+        if LAYOUT in S92_LIKE:
             kept, rejected = _judged_sets(state)
+            by_source[ph["key"]] = _kept_by_source(state)
         else:
             kept, rejected = _validated_sets(state[ph["cand"]], state[ph["kept"]])
         cell.kept[ph["key"]], cell.rejected[ph["key"]] = kept, rejected
+
+    for fm in FORMS:
+        kept = cell.kept[fm["phase"]]
+        if fm["sources"]:
+            labelled = by_source.get(fm["phase"], {})
+            kept = set().union(*(labelled.get(src, set()) for src in fm["sources"]))
+            if kept - cell.kept[fm["phase"]]:
+                cell.warnings.append(
+                    f"{fm['linker']}: {len(kept - cell.kept[fm['phase']])} links carry "
+                    f"its stage label but are not in the phase's kept set")
+        cell.kept_form[fm["linker"]] = kept
+    union_forms = set().union(*cell.kept_form.values()) if FORMS else set()
+    if union_forms != set().union(*cell.kept.values()):
+        cell.warnings.append(
+            f"forms({len(union_forms)}) != phases({len(set().union(*cell.kept.values()))}); "
+            f"a kept link carries a stage label no form claims")
 
     union = set().union(*cell.kept.values())
     if union != cell.final:
@@ -430,10 +513,10 @@ def rq4_linkers(cell: Cell) -> Dict[str, Dict[str, float]]:
     G = cell.gold
     _, _, _, f1_full = prf(set().union(*cell.kept.values()), G)
     out = {}
-    for ph in PHASES:
-        key, mine, rest = ph["key"], cell.kept[ph["key"]], cell.others(ph["key"])
+    for fm in FORMS:
+        mine, rest = cell.kept_form[fm["linker"]], cell.other_forms(fm["linker"])
         _, _, _, f1_without = prf(rest, G)
-        out[ph["linker"]] = {"tps_caught": len(mine & G),
+        out[fm["linker"]] = {"tps_caught": len(mine & G),
                              "unique_tps": len((mine & G) - rest),
                              "fps": len(mine - G),
                              "delta_f1_if_removed": f1_full - f1_without}
@@ -443,9 +526,10 @@ def rq4_linkers(cell: Cell) -> Dict[str, Dict[str, float]]:
 def rq4_upset(cell: Cell) -> Dict[str, int]:
     """TP overlap: exclusive TPs per linker plus the TPs at least two of them share."""
     G = cell.gold
-    out = {f"only_{ph['key']}": len((cell.kept[ph["key"]] & G) - cell.others(ph["key"]))
-           for ph in PHASES}
-    caught = [cell.kept[k] & G for k in PHASE_KEYS]
+    out = {f"only_{fm['key']}":
+           len((cell.kept_form[fm["linker"]] & G) - cell.other_forms(fm["linker"]))
+           for fm in FORMS}
+    caught = [cell.kept_form[fm["linker"]] & G for fm in FORMS]
     shared = {link for link in set().union(*caught)
               if sum(link in c for c in caught) > 1}
     out["shared"] = len(shared)
@@ -473,7 +557,7 @@ def read_ablation_full(slot: Path, run: str, project: str, backend: str = "") ->
 
     s21 writes one JSON per (run, project); s92 writes one per run directory, keyed by
     project. Both carry ``{project: {variant: {tp, fp, fn, ...}}}``."""
-    root = S92_RUN_DIRS[backend][run] if LAYOUT == "s92" else slot / run / project
+    root = S92_RUN_DIRS[backend][run] if LAYOUT in S92_LIKE else slot / run / project
     files = sorted(root.glob("ablation_*.json"))
     if not files:
         return None
@@ -494,8 +578,10 @@ def require_phase_files(slot: Path, run: str, backend: str, project: str) -> Non
 # --------------------------------------------------------------------------- #
 # RQ3 variant names, in display order, and the single-linker RQ4 set labels.
 RQ3_VARIANTS = ["Full"] + [ph["variant"] for ph in PHASES] + ["NoValidator"]
-RQ4_SET_LABELS = [f"{ph['key']}_only" for ph in PHASES] + ["full"]
-UPSET_CELLS = [f"only_{ph['key']}" for ph in PHASES] + ["shared"]
+# RQ4 reads forms, RQ3 reads judges. Through s110 the two lists coincide; s120's
+# name judge covers two forms, so these stay keyed by form.
+RQ4_SET_LABELS = [f"{fm['key']}_only" for fm in FORMS] + ["full"]
+UPSET_CELLS = [f"only_{fm['key']}" for fm in FORMS] + ["shared"]
 
 
 class BackendAgg:
@@ -653,9 +739,10 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
             agg.dm_pp["full"][project] = prf3(cell.final, cell.gold)
             only_f1["full"].append(agg.dm_pp["full"][project][2])
             only_f2["full"].append(agg.dm_pp["full"][project][3])
-            for ph in PHASES:
-                label = f"{ph['key']}_only"
-                agg.dm_pp[label][project] = prf3(cell.kept[ph["key"]], cell.gold)
+            for fm in FORMS:
+                label = f"{fm['key']}_only"
+                agg.dm_pp[label][project] = prf3(
+                    cell.kept_form[fm["linker"]], cell.gold)
                 only_f1[label].append(agg.dm_pp[label][project][2])
                 only_f2[label].append(agg.dm_pp[label][project][3])
             for v in PHASE_KEYS:

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ArchLinker — the coreference linker, end to end</title>
+<style>
+  :root{
+    --kit-green:#009682; --kit-blue:#4664aa; --kit-red:#a22223;
+    --kit-orange:#df9b1b; --kit-purple:#a3107c; --kit-cyan:#23a1e0;
+    --ink:#1a1a1a; --mut:#6b6b6b; --rule:#d7d7d7; --wash:#f7f8f9;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  body{
+    margin:0; padding:28px 24px 48px; background:#fff; color:var(--ink);
+    font-family:"Linux Libertine O","Libertine",Georgia,"Times New Roman",serif;
+    font-size:14px; line-height:1.5;
+  }
+  .sheet{max-width:1180px; margin:0 auto}
+  code,kbd,pre,.mono{font-family:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace}
+
+  /* ---- header ---- */
+  header{border-bottom:2.5px solid var(--ink); padding-bottom:10px; margin-bottom:6px}
+  h1{font-size:23px; margin:0 0 3px; letter-spacing:-.2px}
+  h1 em{font-style:italic; color:var(--kit-green)}
+  .sub{color:var(--mut); font-size:13px; margin:0}
+  .provenance{
+    margin-top:10px; font-size:11.5px; color:var(--mut);
+    font-family:"IBM Plex Mono",Menlo,Consolas,monospace; line-height:1.7;
+  }
+  .provenance b{color:var(--ink); font-weight:600}
+
+  /* ---- stage scaffolding ---- */
+  .stage{margin:26px 0 0; border-top:1px solid var(--rule); padding-top:14px}
+  .stage > h2{
+    font-size:15px; margin:0 0 2px; display:flex; align-items:baseline; gap:9px;
+  }
+  .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:21px; height:21px; border-radius:50%; background:var(--ink); color:#fff;
+    font-size:12px; font-weight:700; font-family:"IBM Plex Mono",monospace; flex:none;
+  }
+  .stage > .lede{margin:2px 0 13px 30px; color:var(--mut); font-size:13px; max-width:96ch}
+  .cols{display:grid; gap:14px; margin-left:30px}
+  .c2{grid-template-columns:1fr 1fr}
+  .c23{grid-template-columns:1.15fr 1fr}
+  .c32{grid-template-columns:1.6fr 1fr}
+
+  /* ---- boxes ---- */
+  .box{border:1px solid var(--rule); border-radius:5px; overflow:hidden; background:#fff}
+  .box > .cap{
+    font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; font-weight:700;
+    padding:5px 10px; background:var(--wash); border-bottom:1px solid var(--rule);
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+  }
+  .box > .cap .tag{font-weight:600; letter-spacing:.02em; text-transform:none; font-size:10.5px}
+  .box .body{padding:9px 11px}
+  .box.code .body{
+    font-family:"IBM Plex Mono",Menlo,Consolas,monospace; font-size:11px; line-height:1.55;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .box.llm > .cap{background:#e8f5f2; border-bottom-color:#a8d8d0; color:#03574c}
+  .box.llm{border-color:#a8d8d0}
+  .box.codeside > .cap{background:#eaeef6; border-bottom-color:#b3c1de; color:#2b3d6b}
+  .box.codeside{border-color:#b3c1de}
+  .box.judge > .cap{background:#fbf1de; border-bottom-color:#e8cf9c; color:#7a5407}
+  .box.judge{border-color:#e8cf9c}
+
+  /* ---- provenance chips ---- */
+  .chip{
+    display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    font-weight:600; letter-spacing:.05em; padding:1px 6px; border-radius:3px;
+    vertical-align:2px; white-space:nowrap;
+  }
+  .chip.code{background:#e4eaf5; color:var(--kit-blue); border:1px solid #b3c1de}
+  .chip.llm{background:#dff0ed; color:#03574c; border:1px solid #a8d8d0}
+  .chip.fix{background:#efefef; color:#555; border:1px solid #cfcfcf}
+
+  /* ---- document excerpt ---- */
+  .doc .s{display:flex; gap:8px; padding:1.5px 0; align-items:baseline}
+  .doc .n{
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--mut);
+    min-width:26px; text-align:right; flex:none; padding-top:1px;
+  }
+  .doc .t{font-size:12.5px; line-height:1.45}
+  .doc .s.target{background:#fff6e2; margin:3px -6px; padding:5px 6px; border-radius:4px;
+                 box-shadow:inset 3px 0 0 var(--kit-orange)}
+  .doc .s.target .t{font-weight:600}
+  .doc .s.ant{background:#eef4fb; margin:2px -6px; padding:3px 6px; border-radius:4px;
+              box-shadow:inset 3px 0 0 var(--kit-blue)}
+  .nm{background:#e4eaf5; border-radius:2px; padding:0 2px; font-weight:600; color:#243d72}
+  .ref{background:#ffe0a8; border-radius:2px; padding:0 3px; font-weight:700; color:#7a4b02}
+  .note{font-size:11.5px; color:var(--mut); margin:7px 0 0; font-style:italic}
+
+  /* ---- catalog / alias ---- */
+  .pill{
+    display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    border:1px solid var(--rule); border-radius:3px; padding:1px 5px; margin:0 3px 4px 0;
+    background:#fafafa;
+  }
+  .pill.seen{background:#e4eaf5; border-color:#b3c1de; color:#243d72}
+  .alias{font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.8}
+  .alias .arr{color:var(--kit-green); font-weight:700; padding:0 4px}
+
+  /* ---- prompt rendering ---- */
+  pre.prompt{margin:0; white-space:pre-wrap; word-break:break-word;
+             font-family:"IBM Plex Mono",Menlo,Consolas,monospace; font-size:10.5px; line-height:1.6}
+  .slot{background:#e4eaf5; border-radius:2px; padding:0 2px; color:#243d72}
+  .instr{color:#03574c}
+  .rule-txt{background:#dff0ed; border-radius:2px; padding:0 2px}
+  .schema{color:var(--mut)}
+  .marker{
+    display:block; margin:9px 0 3px; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; font-weight:700; color:var(--mut);
+    border-top:1px dashed var(--rule); padding-top:6px;
+  }
+  .marker:first-child{border-top:0; margin-top:0; padding-top:0}
+
+  /* ---- evidence bundle ---- */
+  .ev{display:grid; grid-template-columns:auto 1fr; gap:5px 10px; align-items:baseline}
+  .ev dt{font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
+         color:var(--mut); white-space:nowrap}
+  .ev dd{margin:0; font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.5}
+  .ev .src{font-family:inherit}
+
+  /* ---- tables ---- */
+  table{border-collapse:collapse; width:100%; font-size:11.5px}
+  th,td{text-align:left; padding:4.5px 7px; border-bottom:1px solid #ececec; vertical-align:top}
+  thead th{
+    font-size:9.8px; letter-spacing:.07em; text-transform:uppercase; color:var(--mut);
+    border-bottom:1.5px solid var(--ink); font-weight:700; white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:1.5px solid var(--ink)}
+  td.m,th.m{font-family:"IBM Plex Mono",monospace; font-size:10.5px}
+  td.r,th.r{text-align:right}
+  .ok{color:#03574c; font-weight:700}
+  .no{color:var(--kit-red); font-weight:700}
+  .dim{color:var(--mut)}
+  tr.kept{background:#f2faf8}
+  tr.lost{background:#fdf3f3}
+
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-left:30px; margin-bottom:14px}
+  .kpi{border:1px solid var(--rule); border-radius:5px; padding:9px 11px; background:var(--wash)}
+  .kpi .v{font-size:21px; font-weight:700; letter-spacing:-.5px; line-height:1.15}
+  .kpi .v small{font-size:12px; font-weight:600; color:var(--mut)}
+  .kpi .k{font-size:10.5px; color:var(--mut); margin-top:2px; line-height:1.35}
+  .kpi.g .v{color:var(--kit-green)} .kpi.b .v{color:var(--kit-blue)}
+  .kpi.o .v{color:#b87d10} .kpi.r .v{color:var(--kit-red)}
+
+  .takeaway{
+    margin:14px 0 0 30px; border-left:3px solid var(--kit-green); background:#f2faf8;
+    padding:9px 13px; font-size:12.5px; border-radius:0 4px 4px 0;
+  }
+  .takeaway b{color:#03574c}
+  footer{margin-top:32px; border-top:1px solid var(--rule); padding-top:10px;
+         font-size:11px; color:var(--mut); line-height:1.7}
+  footer code{font-size:10.5px}
+
+  @media print{
+    body{padding:0; font-size:12px}
+    .stage{break-inside:avoid}
+    .box{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header>
+  <h1>The <em>coreference linker</em>, end to end</h1>
+  <p class="sub">One worked case from MediaStore — sentence&nbsp;24, <span class="mono">&ldquo;It stores user information&hellip;&rdquo;</span> &rarr; <span class="mono">DB</span> — followed by the same stage measured over the whole benchmark.</p>
+  <div class="provenance">
+    <b>worked trace</b> s_linker124 &nbsp;·&nbsp; <b>model</b> GPT-5.6-terra &nbsp;·&nbsp; <b>run</b> shortlistmark_e2e_terra_r1_20260914 &nbsp;·&nbsp; <b>project</b> mediastore (37 sentences, 14 components)<br>
+    <b>trace</b> phase_states/s_linker124/openai/mediastore/linker_coreference.pkl &nbsp;·&nbsp; <b>gold</b> goldstandard_sad_2016-sam_2016.csv
+  </div>
+</header>
+
+<!-- ═════════════ 1. INPUT ═════════════ -->
+<section class="stage">
+  <h2><span class="num">1</span> Input &mdash; a sentence that names no component</h2>
+  <p class="lede">The linker sees the documentation text, the component catalogue, and the alias table the knowledge module learned from this document. Sentence&nbsp;24 states an architectural fact about a component but contains no component name, no alias, and no name part: every name-matching relation in the workflow returns nothing on it.</p>
+
+  <div class="cols c23">
+    <div class="box doc">
+      <div class="cap"><span>Document excerpt (S19&ndash;S28 of 37)</span><span class="tag chip fix">given</span></div>
+      <div class="body doc">
+        <div class="s"><span class="n">S19</span><span class="t">To allow users to download several files at a time, we provide the <span class="nm">Packaging</span> component, which archives multiple audio files into a single compressed file.</span></div>
+        <div class="s"><span class="n">S20</span><span class="t">The <span class="nm">ReEncoder</span> component converts the bit rates of audio files.</span></div>
+        <div class="s"><span class="n">S21</span><span class="t">This can result in reduction of file sizes.</span></div>
+        <div class="s"><span class="n">S22</span><span class="t">The persistence tier contains components that are concerned with the storage of audio files and their meta-data.</span></div>
+        <div class="s ant"><span class="n">S23</span><span class="t">The <span class="nm">Database</span> component represents an actual database (e.g., MySQL). <span class="dim">&nbsp;&larr; antecedent</span></span></div>
+        <div class="s target"><span class="n">S24</span><span class="t"><span class="ref">It</span> stores user information and meta-data of audio files such as the name and the genre. <span class="dim">&nbsp;&larr; target</span></span></div>
+        <div class="s"><span class="n">S25</span><span class="t">After the user calls the page to list all available audio files, <span class="nm">AudioAccess</span> creates a query that is sent to the <span class="nm">Database</span> component.</span></div>
+        <div class="s"><span class="n">S26</span><span class="t">When a user uploads an audio file, the <span class="nm">MediaAccess</span> component stores it at the predefined location.</span></div>
+        <div class="s"><span class="n">S27</span><span class="t">The <span class="nm">MediaAccess</span> component encapsulates database access for meta-data of audio files.</span></div>
+        <div class="s"><span class="n">S28</span><span class="t">Furthermore, <span class="ref">it</span> fetches a list of all available audio files.</span></div>
+        <p class="note">Shaded words are writings of a component name the code can match; the two orange words are the referring expressions this stage exists for. S24 and S28 carry an architectural claim and no name &mdash; they are invisible to both name linkers.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="box codeside">
+        <div class="cap"><span>Component catalogue</span><span class="tag chip code">code</span></div>
+        <div class="body">
+          <span class="pill seen">UserDBAdapter</span><span class="pill">AudioWatermarking</span><span class="pill seen">Reencoding</span><span class="pill seen">MediaManagement</span><span class="pill seen">Facade</span><span class="pill seen">MediaAccess</span><span class="pill seen">Packaging</span><span class="pill seen">DB</span><span class="pill seen">FileStorage</span><span class="pill seen">TagWatermarking</span><span class="pill">Cache</span><span class="pill seen">UserManagement</span><span class="pill">DownloadLoadBalancer</span><span class="pill">ParallelWatermarking</span>
+          <p class="note">Shaded = the document writes this name somewhere. All 14 go into the prompt.</p>
+        </div>
+      </div>
+
+      <div class="box llm" style="margin-top:14px">
+        <div class="cap"><span>Alias table (knowledge module)</span><span class="tag chip llm">LLM, judged</span></div>
+        <div class="body alias">
+          DataStorage <span class="arr">&rarr;</span> FileStorage<br>
+          AudioAccess <span class="arr">&rarr;</span> MediaAccess<br>
+          Database <span class="arr">&rarr;</span> DB<br>
+          ReEncoder <span class="arr">&rarr;</span> Reencoding
+          <p class="note">This is what lets S23&rsquo;s &ldquo;Database&rdquo; count as a writing of <span class="mono">DB</span> &mdash; and therefore what puts <span class="mono">DB&nbsp;(S23)</span> at the head of the shortlist in stage&nbsp;2.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 2. PROMPT ═════════════ -->
+<section class="stage">
+  <h2><span class="num">2</span> LLM 1 &mdash; resolver prompt: the facts are computed, the reading is asked</h2>
+  <p class="lede">No rule decides in advance which sentences carry a reference: every sentence goes to the model as a case, in batches of ten, with a &plusmn;5-sentence window of the document around it. What the prompt does <em>not</em> leave open is the antecedent search space. For each case the code computes <span class="mono">NAMED&nbsp;BEFORE&nbsp;THIS&nbsp;CASE</span> &mdash; the components the sentences above it actually name, each with the sentence that names it, nearest first &mdash; using the same exact name relation the rest of the workflow reads names with. That list is a prior, not a constraint: the model may answer outside it, and the code checks the sentence numbers it reports, not its membership.</p>
+
+  <div class="cols c32">
+    <div class="box code">
+      <div class="cap"><span>Resolver prompt &mdash; batch 3 (S21&ndash;S30), case 4 shown in full</span><span class="tag">1 call / 10 sentences</span></div>
+      <div class="body">
+<pre class="prompt"><span class="marker">task</span><span class="instr">Resolve references (pronouns and noun phrases that refer back) to components.</span>
+
+<span class="marker">catalogue &amp; window — computed</span>COMPONENTS: <span class="slot">UserDBAdapter, AudioWatermarking, Reencoding, MediaManagement, Facade, MediaAccess, Packaging, DB, FileStorage, TagWatermarking, Cache, UserManagement, DownloadLoadBalancer, ParallelWatermarking</span>
+
+SENTENCES (the document text the cases are drawn from)
+<span class="slot">[{"sentence": 16, "text": "The re-encoded files are then digitally…"},
+ … 20 rows, S16–S35, the union of the batch's ±5 windows …
+ {"sentence": 35, "text": "Afterwards, based on the user request…"}]</span>
+
+<span class="marker">contract — what a case is, and that a case may yield nothing</span><span class="instr">For each TARGET sentence below, identify any pronoun or noun phrase in THAT
+sentence that refers back to a component listed above. Read the TARGET's
+context in SENTENCES. If a target sentence has no such reference to a listed
+component, return no resolution for it. Be conservative — only include
+resolutions you are CERTAIN about.</span>
+
+<span class="marker">the shortlist, and what it is for</span><span class="instr">Each case lists NAMED BEFORE THIS CASE: the components the sentences above it
+actually name, with the sentence that names each, nearest first. That list has
+already been checked against the document, so it is where the antecedent will
+be if there is one. Quote the referring expression first, then say which
+entries of that list could be what it points to, then name the one it does
+point to.</span>
+
+<span class="marker">the ten cases — one per sentence of the batch</span>--- Case 1 ---
+TARGET S21: This can result in reduction of file sizes.
+NAMED BEFORE THIS CASE: <span class="slot">Reencoding (S20, linked), Packaging (S19, linked), TagWatermarking (S17, linked), MediaManagement (S17, linked)</span>
+<span class="schema">--- Case 2 (S22) --- … --- Case 3 (S23) --- …</span>
+--- Case 4 ---
+TARGET S24: It stores user information and meta-data of audio files such as the name and the genre.
+NAMED BEFORE THIS CASE: <span class="slot">DB (S23, linked), Reencoding (S20, linked), Packaging (S19, linked), TagWatermarking (S17, linked), MediaManagement (S17, linked)</span>
+<span class="schema">--- Case 5 (S25) --- … --- Case 10 (S30) --- …</span>
+
+<span class="marker">the standard — and only the standard</span><span class="rule-txt">Resolve when the surrounding sentences make one component the clear antecedent,
+under any form the document uses for it. Avoid resolving when two or more
+equally plausible antecedents exist.</span>
+
+<span class="marker">reply contract</span><span class="schema">Return JSON:
+{"resolutions": [{"case": 1, "sentence": N_INTEGER, "reference": "the server",
+  "candidates": ["Name", "OtherName"], "component": "Name",
+  "antecedent_sentence": M_INTEGER, "antecedent_text": "exact quote with component name"}]}
+JSON only:</span></pre>
+      </div>
+    </div>
+
+    <div>
+      <div class="box codeside">
+        <div class="cap"><span>The division of labour</span><span class="tag">per case</span></div>
+        <div class="body" style="font-size:12.5px">
+          <p style="margin:0 0 8px"><span class="chip code">code</span> &nbsp;<b>Which components the earlier sentences name.</b> A fact, settled exactly by the name relation plus the alias table &mdash; no model is asked for it, and no model can get it wrong.</p>
+          <p style="margin:0 0 8px"><span class="chip llm">LLM</span> &nbsp;<b>Which reading a referring expression carries in its sentence.</b> This is in no table. It is the one judgement only the model can make, and it is where the coreference linker does its real work.</p>
+          <p style="margin:0" class="note">The shortlist is a prior, not a filter. The code validates the two sentence numbers the reply reports against the document &mdash; an invented sentence cannot name a real one &mdash; and does <em>not</em> require the answer to be a member of the list.</p>
+        </div>
+      </div>
+
+      <div class="box llm" style="margin-top:14px">
+        <div class="cap"><span>Model reply &mdash; case 4</span><span class="tag chip llm">LLM</span></div>
+        <div class="body code" style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.55;white-space:pre-wrap">{
+  "case": 4,
+  "sentence": 24,
+  "reference": "It",
+  "candidates": ["DB"],
+  "component": "DB",
+  "antecedent_sentence": 23,
+  "antecedent_text": "The Database component
+    represents an actual database (e.g., MySQL)."
+}</div>
+      </div>
+
+      <div class="box" style="margin-top:14px">
+        <div class="cap"><span>Yield of this document</span><span class="tag">4 batches</span></div>
+        <div class="body" style="font-size:12.5px">
+          37 sentences in, <b>15 resolutions</b> out. The other 22 produce no resolver output; the coreference judge subsequently keeps three of the 15 candidates.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 3. EVIDENCE BUNDLE ═════════════ -->
+<section class="stage">
+  <h2><span class="num">3</span> LLM 2 &mdash; judge prompt: the resolver&rsquo;s real fields are carried forward</h2>
+  <p class="lede">The resolver response has seven fields: <span class="mono">case</span>, <span class="mono">sentence</span>, <span class="mono">reference</span>, <span class="mono">candidates</span>, <span class="mono">component</span>, <span class="mono">antecedent_sentence</span>, and <span class="mono">antecedent_text</span>. The implementation validates the reported sentence numbers, then builds the judge case from the resolved component, reference, antecedent sentence and text, and the target sentence with its predecessor. The judge therefore rules on the resolver&rsquo;s actual commitment instead of reconstructing one.</p>
+
+  <div class="cols c23">
+    <div class="box judge">
+      <div class="cap"><span>LLM 1 response &mdash; resolver case 4</span><span class="tag">7 fields</span></div>
+      <div class="body">
+        <dl class="ev">
+          <dt><span class="mono">case</span></dt><dd><span class="src">4</span></dd>
+          <dt><span class="mono">sentence</span></dt><dd><span class="src">24</span></dd>
+          <dt><span class="mono">reference</span></dt><dd>&ldquo;<b>It</b>&rdquo;</dd>
+          <dt><span class="mono">candidates</span></dt><dd><span class="src">[&ldquo;DB&rdquo;]</span></dd>
+          <dt><span class="mono">component</span></dt><dd><span class="src">DB</span></dd>
+          <dt><span class="mono">antecedent_sentence</span></dt><dd><span class="src">23</span></dd>
+          <dt><span class="mono">antecedent_text</span></dt><dd>&ldquo;The Database component represents an actual database (e.g., MySQL).&rdquo;</dd>
+        </dl>
+        <p class="note"><span class="mono">reference</span>, <span class="mono">antecedent_sentence</span>, and <span class="mono">antecedent_text</span> are copied into the second prompt; <span class="mono">component</span> supplies its case target.</p>
+      </div>
+    </div>
+
+    <div class="box code judge">
+      <div class="cap"><span>LLM 2 prompt and response &mdash; judge case 5</span><span class="tag">1 call / 25 cases</span></div>
+      <div class="body">
+<pre class="prompt"><span class="marker">question</span><span class="instr">Validate components in a document. Check coref resolution: does the
+referring expression in this sentence actually refer to the named
+component as an architectural participant?</span>
+
+<span class="marker">rubric — strict, because the name is absent</span><span class="rule-txt">These are coreference links: a pronoun or noun phrase in the sentence is
+claimed to refer back to the component, which is NOT named in the sentence
+itself. Approve only when the sentence contains a genuine referring
+expression that unambiguously points to THIS component and makes an
+architectural claim about it. Reject when there is no such referring
+expression or when the antecedent could equally be a different component.
+An expression denoting what a component acts on or produces refers to that
+thing and not to the component, however clearly the component is the one
+acting on it. When uncertain, reject.</span>
+
+<span class="marker">reply contract — quote, then object, then decide</span><span class="instr">first quote the EXACT words from the sentence that state the architectural
+claim …, then state the strongest ground there is for rejecting this case
+under the rules above (or "none"), then decide: approve unless that ground
+is one the rules above make decisive. An objection you could raise against
+most sentences is not a ground for rejecting this one.</span>
+
+<span class="marker">case 5 of 7</span>Case 5: pronoun/role-ref -&gt; DB
+  Claimed reference: "It"
+  Claimed antecedent (S23): "The Database component represents an actual
+    database (e.g., MySQL)."
+  [prev: The Database component represents an actual database (e.g., MySQL).]
+  "It stores user information and meta-data of audio files such as the name
+   and the genre."
+
+<span class="marker">reply</span>{"case": 5,
+ "claim": "It stores user information and meta-data of audio files
+           such as the name and the genre.",
+ "objection": "none",
+ "approve": <span class="ok">true</span>}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <b>Why the objection field.</b> The strict rubric asks for the strongest ground <em>against</em> the link before the verdict, and then discounts objections that would fire on most sentences. On this document that field is what kills the three false resolutions &mdash; and, as stage&nbsp;4 shows, it also fires on two links that were true but that another linker already holds.
+  </div>
+</section>
+
+<!-- ═════════════ 4. RESULTS ═════════════ -->
+<section class="stage">
+  <h2><span class="num">4</span> Historical s110 results (separate from the s124 worked trace)</h2>
+  <p class="lede">The table and aggregate measurements below retain the earlier reported s110 evaluation. They are not evidence for the s124 prompt format shown above.</p>
+
+  <div class="cols" style="grid-template-columns:1fr; margin-bottom:16px">
+    <div class="box">
+      <div class="cap"><span>MediaStore &mdash; every coreference candidate, run 1</span><span class="tag">7 proposed &rarr; 3 kept</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr>
+            <th class="m">Sent.</th><th>Referring expr.</th><th class="m">&rarr; Component</th><th class="m">Antecedent</th>
+            <th>Judge</th><th>Objection recorded</th><th>Gold</th><th>Net effect on the workflow</th>
+          </tr></thead>
+          <tbody>
+            <tr class="kept">
+              <td class="m">S9</td><td>&ldquo;it&rdquo;</td><td class="m">MediaManagement</td><td class="m">S8</td>
+              <td class="ok">approve</td><td class="dim">none</td><td class="ok">true</td><td><b>+1 unique true link</b></td>
+            </tr>
+            <tr>
+              <td class="m">S15</td><td>&ldquo;this end&rdquo;</td><td class="m">MediaManagement</td><td class="m">S8</td>
+              <td class="no">reject</td><td>&ldquo;this end&rdquo; refers to the purpose of reducing copyright-infringement risk, not to MediaManagement as an architectural participant</td>
+              <td class="no">false</td><td>false positive removed</td>
+            </tr>
+            <tr>
+              <td class="m">S17</td><td>&ldquo;these audio files&rdquo;</td><td class="m">TagWatermarking</td><td class="m">S16</td>
+              <td class="no">reject</td><td>&ldquo;these audio files&rdquo; denotes the files being forwarded, not the TagWatermarking component</td>
+              <td class="ok">true</td><td class="dim">no loss &mdash; S17 names <span class="mono">TagWatermarking</span> outright, the full-name linker holds it</td>
+            </tr>
+            <tr>
+              <td class="m">S21</td><td>&ldquo;This&rdquo;</td><td class="m">Reencoding</td><td class="m">S20</td>
+              <td class="no">reject</td><td>&ldquo;This&rdquo; refers to the preceding conversion operation/result, not unambiguously to the Reencoding component</td>
+              <td class="no">false</td><td>false positive removed</td>
+            </tr>
+            <tr class="kept">
+              <td class="m">S24</td><td>&ldquo;It&rdquo;</td><td class="m">DB</td><td class="m">S23</td>
+              <td class="ok">approve</td><td class="dim">none</td><td class="ok">true</td><td><b>+1 unique true link</b> &nbsp;<span class="dim">(the worked case above)</span></td>
+            </tr>
+            <tr>
+              <td class="m">S26</td><td>&ldquo;it&rdquo;</td><td class="m">MediaAccess</td><td class="m">S25</td>
+              <td class="no">reject</td><td>the claimed expression &ldquo;it&rdquo; does not occur in the sentence; moreover, MediaAccess is named directly rather than referred to</td>
+              <td class="ok">true</td><td class="dim">no loss &mdash; S26 names <span class="mono">MediaAccess</span> outright, the full-name linker holds it</td>
+            </tr>
+            <tr class="kept">
+              <td class="m">S28</td><td>&ldquo;it&rdquo;</td><td class="m">MediaAccess</td><td class="m">S27</td>
+              <td class="ok">approve</td><td class="dim">none</td><td class="ok">true</td><td><b>+1 unique true link</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <p class="lede" style="margin-bottom:10px">The same shape holds over the benchmark. Averages per run, five projects, three runs, GPT-5.6-terra.</p>
+
+  <div class="kpis">
+    <div class="kpi b"><div class="v">127.0</div><div class="k">coreference candidates proposed per run</div></div>
+    <div class="kpi g"><div class="v">40.7 <small>kept</small></div><div class="k">39.0 true, 1.7 false &mdash; the judge&rsquo;s output is 95.9&thinsp;% precise</div></div>
+    <div class="kpi o"><div class="v">52.7 <small>FP killed</small></div><div class="k">false candidates the judge rejects, the largest of the three judges</div></div>
+    <div class="kpi r"><div class="v">4.7 <small>TP lost</small></div><div class="k">of 33.7 true candidates rejected, only 4.7 are held by no other linker</div></div>
+  </div>
+
+  <div class="cols c2">
+    <div class="box">
+      <div class="cap"><span>What the coreference judge is worth</span><span class="tag">RQ3</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr><th>Judge switched off</th><th class="r">&Delta; macro F<sub>1</sub></th><th class="r">&Delta; macro F<sub>2</sub></th><th class="r">FP rej.</th><th class="r">TP cost</th></tr></thead>
+          <tbody>
+            <tr><td>full-name judge</td><td class="r m">&minus;6.3 pp</td><td class="r m">&minus;2.4 pp</td><td class="r m">48.0</td><td class="r m">3.3</td></tr>
+            <tr><td>partial-name judge</td><td class="r m">&minus;4.9 pp</td><td class="r m">&minus;1.6 pp</td><td class="r m">48.0</td><td class="r m">4.3</td></tr>
+            <tr style="background:#fbf7ee"><td><b>coreference judge</b></td><td class="r m"><b>&minus;7.4 pp</b></td><td class="r m"><b>&minus;2.3 pp</b></td><td class="r m"><b>52.7</b></td><td class="r m"><b>4.7</b></td></tr>
+            <tr><td class="dim">all three</td><td class="r m dim">&minus;15.3 pp</td><td class="r m dim">&minus;6.2 pp</td><td class="r m dim">143.7</td><td class="r m dim">8.7</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">The coreference judge carries the most weight of the three, because it judges the least precise input: 54.3 of the 127.0 candidates it sees are false. A judge can only remove links, so under F<sub>2</sub> &mdash; which weights recall four times as heavily &mdash; the same contribution reads about a third as large.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="cap"><span>What the coreference linker is worth</span><span class="tag">RQ4</span></div>
+      <div class="body" style="padding:0">
+        <table>
+          <thead><tr><th>Variant</th><th class="r">avg&nbsp;F<sub>1</sub></th><th class="r">avg&nbsp;F<sub>2</sub></th><th class="r">unique TPs</th></tr></thead>
+          <tbody>
+            <tr><td>full approach</td><td class="r m">0.939</td><td class="r m">0.955</td><td class="r m dim">&mdash;</td></tr>
+            <tr><td>full-name linker alone</td><td class="r m">0.861</td><td class="r m">0.832</td><td class="r m">131</td></tr>
+            <tr><td>partial-name linker alone</td><td class="r m">0.095</td><td class="r m">0.074</td><td class="r m">16</td></tr>
+            <tr style="background:#f2faf8"><td><b>coreference linker alone</b></td><td class="r m"><b>0.293</b></td><td class="r m"><b>0.214</b></td><td class="r m"><b>17</b></td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="padding:7px 9px 9px">Read as a whole system the row is low &mdash; but that is scope, not quality: the stage fires only on sentences carrying a referring expression, so scoring it against the entire gold standard charges it for every sentence it was never meant to see. On the sentences it does answer it is the <em>most</em> precise proposer in the workflow. Removing it costs only 4.6&thinsp;pp of link-level F<sub>1</sub>, yet it is what reaches the components a document never names twice: dropping both small linkers takes worst-component F<sub>1</sub> from 0.81 to 0.70 and harmonic per-component F<sub>1</sub> from 0.93 to 0.86.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <b>The stage in one line.</b> Exactly one question is put to the model &mdash; what does this expression refer to &mdash; on a shortlist the code has already settled; the judge then rules on the resolver&rsquo;s own quoted commitment rather than re-reading the sentence; and the links that survive are few, almost entirely true, and reachable by no other route.
+  </div>
+</section>
+
+<footer>
+  Stages 1&ndash;3 reproduce the recorded s124 MediaStore trace; ellipses mark elided prompt bulk only. Stage 4 is explicitly historical. Its aggregate figures come from <code>evaluation/reports/rq34/s110/rq3_validators.csv</code>, <code>rq4_variants.csv</code>, <code>rq4_linkers.csv</code>, and <code>rq34_rq2_linkers.csv</code> (terra averages over three five-project runs).
+</footer>
+
+</div>
+</body>
+</html>

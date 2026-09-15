@@ -1,0 +1,451 @@
+{
+  "mediastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.9655172413793104,
+      "R": 0.9032258064516129,
+      "F1": 0.9333333333333333,
+      "tp": 28,
+      "fp": 1,
+      "fn": 3,
+      "n_links": 29,
+      "time": 115.27489233016968,
+      "sources": {
+        "entity": 25,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 21,
+          "component": "Reencoding",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This can result in reduction of file sizes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "FileStorage",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 1.0,
+      "R": 0.9629629629629629,
+      "F1": 0.9811320754716981,
+      "tp": 26,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 26,
+      "time": 120.11640429496765,
+      "sources": {
+        "entity": 21,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teammates": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.7777777777777778,
+      "R": 0.8596491228070176,
+      "F1": 0.8166666666666668,
+      "tp": 49,
+      "fp": 14,
+      "fn": 8,
+      "n_links": 63,
+      "time": 921.9246604442596,
+      "sources": {
+        "entity": 45,
+        "coreference": 18
+      },
+      "fp_by_source": {
+        "coreference": 13,
+        "entity": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 127,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 140,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in "
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 156,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+        },
+        {
+          "sentence": 161,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "They can be combined in various ways to transfer structured data between components."
+        },
+        {
+          "sentence": 166,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Some of these classes are methodless and thus more of a data structure rather than a class."
+        },
+        {
+          "sentence": 167,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "These classes use public variables for data for easy access."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 196,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "client.util contains helpers needed for client scripts."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 87,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 141,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.9347826086956522,
+      "R": 0.6935483870967742,
+      "F1": 0.7962962962962964,
+      "tp": 43,
+      "fp": 3,
+      "fn": 19,
+      "n_links": 46,
+      "time": 225.21848344802856,
+      "sources": {
+        "entity": 37,
+        "coreference": 9
+      },
+      "fp_by_source": {
+        "coreference": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "HTML5 Server",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the cor"
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 9,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 13,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 61,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 66,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 67,
+          "component": "kurento",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 67,
+          "component": "WebRTC-SFU",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 80,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 81,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.9411764705882353,
+      "R": 0.8888888888888888,
+      "F1": 0.9142857142857143,
+      "tp": 16,
+      "fp": 1,
+      "fn": 2,
+      "n_links": 17,
+      "time": 63.96540403366089,
+      "sources": {
+        "entity": 16,
+        "coreference": 1
+      },
+      "fp_by_source": {
+        "coreference": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 2,
+          "component": "cli",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 2,
+          "component": "preferences",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  }
+}

@@ -125,8 +125,13 @@ def main():
         # tool looking for RQ12_BIGTABLE_s110.csv after s110 was promoted. Read from the
         # source text, not by import: the arm names are the same length, so an edit and a
         # run in the same second leave a stale .pyc (same reason as check.py).
+        # `rq12.py` sits beside this file in the replication package and under
+        # evaluation/mini-src/ in the source tree; read whichever exists.
+        source = next(path for path in (HERE / "rq12.py",
+                                        HERE.parent / "evaluation/mini-src/rq12.py")
+                      if path.exists())
         found = re.search(r'^DEFAULT_ARM\s*=\s*["\'](?P<arm>[^"\']+)["\']',
-                          (HERE / "rq12.py").read_text(encoding="utf-8"), re.M)
+                          source.read_text(encoding="utf-8"), re.M)
         incumbent = found.group("arm") if found else "s110"
         suffix = "" if arm == incumbent else f"_{arm}"
         return REPORTS / f"RQ12_BIGTABLE{suffix}.csv"

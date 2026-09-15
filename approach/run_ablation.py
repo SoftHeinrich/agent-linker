@@ -231,6 +231,12 @@ CANONICAL_VARIANTS = [
     "s_linker117",  # s114 + the lenient gate writes the verdict before the quote
     "s_linker118",  # s114 + the sortal gate's reply carries a ground too
     "s_linker119",  # s114 + one reply schema at all three judges
+    "s_linker120",  # s110 + both name judges unioned behind one evidence-graded rule
+    "s_linker120_noknow",  # RQ4 knowledge A/B for the union arm: s120, alias table off
+    "s_linker121",  # s120 with the judge's three call-level arrangements removed
+    "s_linker122",  # s121 with the anchor block removed and one clause in its place
+    "s_linker123",  # s122 with the judge's three evidence fields merged into one
+    "s_linker124",  # s123 + the antecedent shortlist marked with the judge's own verdicts
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2306,6 +2312,149 @@ VARIANT_SPECS = {
         description=(
             "S-Linker119 - s114 with all three judges replying in ONE structure: the sortal gate adopts the other two's reply key, field order and boolean verdict. Composed with s116 at the lenient gate this is the whole uniform design; the polarity, the withheld target and the withheld catalog do not move."
         ),
+    ),
+    "s_linker120": dict(
+        aliases=("unijudge",),
+        module="llm_sad_sam.linkers.experimental.s_linker120",
+        class_name="SLinker120",
+        description=(
+            "S-Linker120 - s110's two name judges unioned behind ONE rule: what a "
+            "trace link is and how to read each piece of evidence, with every "
+            "candidate in one case format and the difference carried by the evidence "
+            "the match computed (what the sentence writes of the name, the competing "
+            "components, the mention label, the anchors). No lenient row and no "
+            "strict row, so s119's polarity refusal is not repeated. The evidence "
+            "also decides which batch a case joins and what its call is asked. "
+            "STANDALONE, like s110: the whole workflow is in the file. Stage-measured "
+            "on both models (spurious -12.6 terra p=0.000, -17.7 luna p=0.008, gold "
+            "neutral, same 14 calls); thirteen iterations as data in "
+            "union_iterations.py."
+        ),
+    ),
+    "s_linker121": dict(
+        aliases=("unisimple",),
+        module="llm_sad_sam.linkers.experimental.s_linker121",
+        class_name="SLinker121",
+        description=(
+            "S-Linker121 - s120 with the union judge's three call-level arrangements "
+            "removed: one-word cases are no longer batched apart, the call they were "
+            "batched into no longer answers a second contract, and the case format no "
+            "longer withholds the component. ONE prompt shape for every candidate - "
+            "same catalog, same rule, same demand, same reply, same case template, "
+            "batched by size in candidate order - so a partial-name case and a "
+            "whole-name case differ only in the CONTENT of their evidence fields. "
+            "STANDALONE, like s110 and s120. This is iteration v19 of "
+            "union_iterations.py, measured twice a model against s120 at the same 14 "
+            "calls: terra gold -4.0 at spurious +4.7 (precision 0.919 -> 0.894), luna "
+            "gold -7.3 at spurious -32.7 p=0.055 (precision 0.752 -> 0.871); projected "
+            "macro F2 -1.2 terra / +0.4 luna, and the whole cost is five gold pairs in "
+            "one project. s_linker120 remains the reported arm; this is the simple one."
+        ),
+    ),
+    "s_linker124": dict(
+        aliases=("shortlistmark",),
+        module="llm_sad_sam.linkers.experimental.s_linker124",
+        class_name="SLinker124",
+        description=(
+            "S-Linker124 - the two s123 mechanisms composed: s_linker123's merged "
+            "evidence vocabulary (`written` / `competitors`) at the union judge, plus "
+            "the coreference resolver's antecedent shortlist marked with the verdict "
+            "that judge already reached about each mention - `kurento (S68, linked)` / "
+            "`WebRTC-SFU (S68, named only)`. The shortlist was computed lexically by "
+            "`_states_a_name` and the verdicts were being discarded; the mark is the "
+            "same fact at the resolution the system already has it at. No rule speaks "
+            "about the mark and no authored rule text changes, so the GATE-07 "
+            "accounting does not move. The two changes touch different stages - the "
+            "judge's evidence format and the resolver's case - and are independent by "
+            "construction (pilot/test_s124.py checks the judging prompts are s123's "
+            "byte for byte and only the shortlist line differs). Priced SEPARATELY, "
+            "each on its own base, and NOT yet as a composition: the mark reads terra "
+            "macro F2 +0.31 / F1 +0.04 and luna F2 +0.04 / F1 -0.06, TP +0.67 and "
+            "FP +0.67 on both - link-level QUALITY-NEUTRAL with the F2 point estimate "
+            "favourable on both, at the same call count. NOT a precision result: the "
+            "exchange rate is one gold per one spurious. The two arms that ACT on the "
+            "mark are negative - a weighing sentence about it reads terra F2 -0.19 / "
+            "luna -0.16, and dropping the refused entries instead of marking them "
+            "reads luna F2 -0.92 at +17 false positives added against 5 removed, "
+            "because suppression redirects a resolution rather than removing it. "
+            "THE PROMOTION GATE (studies/compare_arms.py, doc-code grain) HAS NOT BEEN "
+            "RUN: s122 was link-level neutral and read terra doc-code F1 -1.02 3/3, so "
+            "a link-level neutral is not a clearance. Rounds: "
+            "../results/coref_annot_round/README.md and ../results/s123_written_field/."
+        ),
+    ),
+    "s_linker122": dict(
+        aliases=("noanchor",),
+        module="llm_sad_sam.linkers.experimental.s_linker122",
+        class_name="SLinker122",
+        description=(
+            "S-Linker122 - s121 with the union judge's `anchors` evidence removed: the "
+            "block of naming sentences is not computed and not printed, and the rule's "
+            "line about it goes with it. STANDALONE, by the one-file-per-reported-"
+            "variant policy, and checked against s121 method by method "
+            "(pilot/test_s122_standalone.py, 99 checks, no calls: 28 methods byte-"
+            "identical, 4 declared changes, and every judging prompt on all five "
+            "projects equal to s121's bytes minus the anchors plus the clause). The "
+            "name judging goes 199,466 -> 156,519 chars over the five projects "
+            "(-21.5%) at the same 15 calls. In its place one 125-byte weighing, SCOPED: "
+            "'Where the sentence does not write the name in full, that a surface can "
+            "name this component is not evidence that it does here.' The scope is "
+            "load-bearing and was measured: unscoped, the same sentence reaches the "
+            "whole-name row and contradicts MENTION_COUNTS - luna -2.07 gold a unit "
+            "there, and E2E seven gold links lost on one bare enumeration of component "
+            "names (pilot/noanchor_fn.py). Scoped, that row reads -0.13. A clause-free "
+            "repair was also measured and REFUSED: rewording the alias evidence so it "
+            "claims no authority recovers the recall but reopens the row the anchors "
+            "were holding (terra spurious +7.3 a run, p=0.047; luna +7.0), which is "
+            "what a fact cannot do for a weighing. Stage arms and the E2E: "
+            "../results/s121_ablations/README.md."
+        ),
+    ),
+    "s_linker123": dict(
+        aliases=("written",),
+        module="llm_sad_sam.linkers.experimental.s_linker123",
+        class_name="SLinker123",
+        description=(
+            "S-Linker123 - s122 with the union judge's three evidence fields merged "
+            "into one readable field. Staged on s122: the clause stays, the anchors "
+            "stay gone, and every shared method including the coreference shortlist is "
+            "byte-identical (pilot/s123_inherits.py, 19/19). `writes`, `alternatives` "
+            "and `mention` become `written` and `competitors`, where `written` takes "
+            "the four values the recorded runs actually produce - whole name 46.0%, "
+            "one word 29.1%, short form 15.9%, whole name (qualified) 9.0% - computed "
+            "by ONE function instead of two predicates that had to agree. The merge is "
+            "entailed, not fitted: `qualified` implies the whole name because both go "
+            "through `_find_exact_form`, which `_written_as` asserts via "
+            "SKIP_QUALIFIED. It removes a duplicate the head prints on 598 of 598 "
+            "alias cases (`mention=via known alias` restates `writes=a short form`) "
+            "and drops three MentionType values that never fire. Level 1, no calls "
+            "(pilot/written_field_audit.py, 11,586 checks): candidate sets equal on "
+            "30/30 project-runs, the head's prompts rebuilt byte-identically to the "
+            "ones actually sent, evidence lines -33.7%, whole judging call -311 B mean "
+            "and -4,768 B a five-project run. NOT YET MEASURED at the stage: read it "
+            "on the `short form` row, which keeps at 0.741 against a gold rate of "
+            "0.532 and is the row whose duplicate this removes. "
+            "../results/s123_written_field/README.md."
+        ),
+    ),
+    "s_linker120_noknow": dict(
+        aliases=("unijudgenoknow",),
+        module="llm_sad_sam.linkers.experimental.s_linker120",
+        class_name="SLinker120",
+        description=(
+            "S-Linker120 NO-KNOWLEDGE - RQ4's knowledge A/B on the union arm "
+            "(experimental=True, NOT canonical). s_linker120 with no_knowledge=True: the "
+            "document-alias stage is skipped and an empty DocumentKnowledge is set "
+            "directly, so both name scans see canonical component names only and the "
+            "union's `writes` evidence can never read `alias`. All other phases run "
+            "unchanged. Mirrors s_linker110_noknow one variant over. "
+            "LANDMINE: _VARIANT_NAME stays 's_linker120', so its phase states nest under "
+            "phase_states/s_linker120/ -- give every run its own PHASE_CACHE_DIR or it "
+            "clobbers the Full arm's states."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
     ),
     "s_linker114": dict(
         aliases=("skills",),

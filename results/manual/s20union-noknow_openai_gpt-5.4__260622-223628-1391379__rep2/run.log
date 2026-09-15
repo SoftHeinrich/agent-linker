@@ -1,0 +1,315 @@
+RUN_ID   : s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+variant  : s_linker20_union_noknow
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+command  : python run_ablation.py --variants s_linker20_union_noknow --results-dir results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+started  : 2026-06-22 22:36:28
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 14 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=29 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 24 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 4
+    Coref reject: S18 -> UserManagement
+  Coref validated: 3 / 4
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 27 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_224222.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_224222_calls.json (11 calls)
+  Checkpoint: final saved
+
+Final: 26 links (353.8s, 11 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=83.9% F1=91.2% TP=26 FP=0 FN=5 (354s)
+    Sources: {'entity': 24, 'coreference': 2}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    Consensus: P1=22 P2=22 ∪=22
+  Framing C: 22 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 20 / 22
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 7
+    Coref reject: S26 -> Persistence
+  Coref validated: 6 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 24 (from 26 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_224538.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_224538_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 24 links (195.7s, 10 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=88.9% F1=94.1% TP=24 FP=0 FN=3 (196s)
+    Sources: {'entity': 20, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 8 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=54 P2=57 ∪=58
+  Framing C: 58 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Entity validated: 45 / 58
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 45
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S47 -> Logic
+    Coref reject: S50 -> Logic
+  Coref validated: 36 / 45
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 61 (from 81 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_230202.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_230202_calls.json (36 calls)
+  Checkpoint: final saved
+
+Final: 61 links (984.2s, 36 LLM calls)
+  s_linker20_union_noknow: P=83.6% R=89.5% F1=86.4% TP=51 FP=10 FN=6 (984s)
+    Sources: {'entity': 45, 'coreference': 16}
+    FP by source: {'coreference': 9, 'entity': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    Consensus: P1=47 P2=46 ∪=52
+  Framing C: 52 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Entity validated: 40 / 52
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 23
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S44 -> BBB web
+    Coref reject: S58 -> FSESL
+    Coref reject: S74 -> WebRTC-SFU
+  Coref validated: 16 / 23
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 45 (from 56 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_231051.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_231051_calls.json (20 calls)
+  Checkpoint: final saved
+
+Final: 45 links (529.1s, 20 LLM calls)
+  s_linker20_union_noknow: P=93.3% R=67.7% F1=78.5% TP=42 FP=3 FN=20 (529s)
+    Sources: {'entity': 40, 'coreference': 5}
+    FP by source: {'entity': 3}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 8
+    Coref reject: S3 -> model
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> logic
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+  Coref validated: 3 / 8
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 19 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_231257.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_231257_calls.json (7 calls)
+  Checkpoint: final saved
+
+Final: 17 links (125.4s, 7 LLM calls)
+  s_linker20_union_noknow: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (125s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_noknow
+-----------------+-------------------
+mediastore       | F1 91.2% FP   0
+teastore         | F1 94.1% FP   0
+teammates        | F1 86.4% FP  10
+bigbluebutton    | F1 78.5% FP   3
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 88.3% FP  14
+
+Results saved to results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/ablation_20260622_231257.json
+----------------------------------------------------------------------
+finished : 2026-06-22 23:12:57   rc=0
+artifacts: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2

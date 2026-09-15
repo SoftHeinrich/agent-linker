@@ -1,4 +1,4 @@
-\section{Architecture-Driven Evaluation}
+\section{An Architecture-Driven Metric Suite}
 \label{sec:metric}
 
 The trace link distribution is long-tailed, so link-level averaged metrics hide whether a system covers every documented component.
@@ -10,19 +10,31 @@ This section quantifies that long tail across all five projects and builds a met
 The directory expansion that expands one doc-code directory link to multiple doc-code file links spans from $1.0\times$ on MediaStore to $217.6\times$ on JabRef.
 Within each project the expanded links concentrate in a few components.
 \autoref{tab:gold_concentration} quantifies this with the Gini coefficient, which measures inequality in the per-component link counts ($0$ = uniform, $1$ = all links in one component).
-Gini ranges from $0.474$ on TeaStore to $0.591$ on JabRef.
+Gini ranges from $0.474$ on TeaStore to $0.591$ on JabRef,
+so no project in the benchmark is close to the uniform distribution a link-level macro average assumes.
+%TODO [gini-intuition] (from the 2026-09-07 hand draft) an intuitive explanation of the
+%  Gini, so the numbers are not dry. Still open.
 The median-to-maximum distribution also shows the concentration: 
 on Teammates the median component owns $861$ expanded links while the largest owns $3{,}622$; on JabRef the ratio is $768$ to $3{,}888$.
 Overall, the three largest components hold between $69.3\%$ (BBB) and $99.3\%$ (JabRef) of all expanded links.
 Link-level metrics therefore mainly reflect these few large components, hiding whether the system recovers the rest.
-This motivates us to define a suite that weights each component equally exposes what the link-level average buries.
+An architect does not read the benchmark. 
+They read the architecture, and a hole in it is relevant regardless the benchmark score.
+We therefore define a suite that weights each component equally and reports what the link-level average buries.
 \input{table/gold_concentration}
 
 \subsection{The Metric Suite}
 \label{sec:metric:suite}
 
-we propose size-aware metrics: worst-component $F_\beta$, harmonic-mean $F_\beta$, and the \cmrname{}, each exposing a component miss that a link-level average can hide.
-Our suite also keeps link-level $F_\beta$ as the reference metric. 
+Our metric suite for this task has three advantages.
+First, it weights a TLR system for every component. 
+Second, it must stay readable beside link-level $F_\beta$, so a reader can see what the standard metric hides rather than replacing it.
+Third, it needs no further annotation.
+We propose three size-aware metrics, each answering one of these requirements: 
+%TODO, replace word serve with xx
+(i) worst-component $F_\beta$ reports the component a system serves worst on doc-code task; % use a lower boundary
+(ii) harmonic-mean $F_\beta$ reports how much of the doc-code tail it serves overall;  % use term distribution
+and (iii) the \cmrname{} reports the component lost where a system never reaches on doc-model task.
 We define the family over the $F_\beta$ score,
 \begin{equation}
 F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
@@ -30,52 +42,52 @@ F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
 \end{equation}
 where $F_1$ ($\beta = 1$) weights precision and recall equally, and $F_2$ ($\beta = 2$) weights recall twice as heavily.
 Previous studies have suggested that both are essential in the trace-link recovery task.
-%TODO [fbeta-cite] (rewritten 2026-08-31) the sentence above appeals to the literature and
-%  cites nothing, which is the kind of claim a reviewer stops on. Two ways to close it, pick
-%  one: (a) cite a specific trace-recovery paper that reports both \fone\ and a
-%  recall-weighted measure, or (b) delete the sentence -- the paper does not need it, because
-%  eval.tex already argues the point from the task itself ("a spurious link is visible to the
-%  developer who reads it, while a link the system never proposes is not"), which is stronger
-%  than an uncited appeal. Fixed here regardless: a stray "/" was rendering as "task/".
+%TODO cite 
 
 \paragraph{Doc-code: worst-component and harmonic-mean \texorpdfstring{$F_\beta$}{F-beta}.}
-On the doc-code task, directory expansion maps each directory annotation into file-level links, creating the long-tailed distribution that lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
-Therefore, we propose finer-grained metric on component level.
-Each component~$k$ owns a set of code files; 
-$F_\beta(k)$ denotes $F_\beta$ computed over only the links whose target belongs to~$k$.
-A file realizing two components contributes its links to both, so every gold link is scored under each component it reaches.
-The worst-component $F_\beta$ is the minimum over the gold components:
+On the doc-code task, the long-tailed distribution of component-file links lets a system score high on link-level $F_\beta$ while missing a whole component. %~\cite{du2023noone,sagawa2020distributionally}.
+Therefore, we propose a finer-grained metric at the component level.
+Let $\mathcal{K}$ be the components with at least one gold doc-code link; the
+``Components'' column in \autoref{tab:gold_concentration} reports its size $K$.
+Each component~$k$ is linked to a set of code files; 
+$F_\beta(k)$ denotes $F_\beta$ computed over only the links whose target belongs to component~$k$.
+The worst-component $F_\beta$ is the minimum over the components:
 \begin{equation}
 F_\beta^{\min} = \min_{k \in \mathcal{K}} F_\beta(k).
 \label{eq:worst}
 \end{equation}
 A single missed component drives it to zero, even when link-level $F_\beta$ stays high.
+Same as $F_\beta$, Worst-component $F_\beta$ ranges in $[0,1]$ and is a floor.
+It reports the score of a system's weakest component and says nothing about how many components sit near it.
+A missed component is invisible to link-level $F_\beta$ in proportion to how small it is, so the standard metric is quietest exactly where the component is smallest; 
+The minimum inverts that weighting.
 Because a single minimum can be noisy, we also report the harmonic mean of the per-component $F_\beta$:
-
 \begin{equation}
 F_\beta^{H} = \frac{|\mathcal{K}|}{\sum_{k \in \mathcal{K}} 1/F_\beta(k)}.
 \label{eq:harm}
 \end{equation}
+It is built on the insight that a low score should be expensive to average away.
 It down-weights every low-scoring component, not just the worst.
-%TODO [suite-close] (rewritten 2026-08-31) the original shorthand was "small sum + promotion
-%  sent"; read as: close this paragraph with (i) a one-line summary of what the two doc-code
-%  metrics jointly buy and (ii) a sentence promoting why they belong in the suite. NOTE this
-%  reading is an interpretation of the shorthand -- confirm before acting. If it is right,
-%  the content already exists in results.tex ("a missed small component costs almost nothing
-%  in a volume-weighted average, but a developer who reads the architecture still sees the
-%  hole") and would only need condensing to one sentence here.
+We set $F_\beta^{H} = 0$ whenever any component scores $0$, so a system that abandons a component cannot recover the harmonic mean by scoring well everywhere else.
+With harmonic mean, $F_\beta$ of one component at $0.2$ pulls the mean further than four components at $0.9$ can restore it.
+In arithmetic mean, macro-average lets a wide tail hide behind a strong head.
 
 \paragraph{Doc-model: \cmrname.}
-Doc-model links are sentence-to-component links, which are with no directory expansion. 
-The per-component distribution is not long-tailed, so the worst-component and harmonic $F_\beta$ are redundant.
+Doc-model links are sentence-to-component pairs, with no folder directory expansion.
+This makes tail metrics have no long tail to expose.
 But a system can still miss a component entirely, leaving its documented sentences with no correct link.
-The \cmrname{} (\cmr) is a sentence-weighted component-miss rate: it measures the share of gold sentence--component assignments belonging to such components:
+Let $R_k$ for a system's recall on component~$k$ and $\mathcal{S}_k$ for the linked sentences.
+A component is \emph{abandoned} when $R_k = 0$, that is, when the system recovers not one of its correct links.
+
+% frame from component view, num of component weighted by doc sentences 
+A component the system abandons still has documentation describing it, and \cmr\ is built on this idea: 
+it weights the miss by the sentences the reader loses.
 \begin{equation}
 \cmr = \frac{\sum_{k:\,R_k=0} |\mathcal{S}_k|}{\sum_{k \in \mathcal{K}} |\mathcal{S}_k|} \in [0,1],
 \label{eq:cmr}
 \end{equation}
-Here, a sentence linked to two components contributes once for each gold assignment. \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
-We report \cmr{} as a percentage throughout.
+\cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
+
 
 On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$.
 On doc-model it reports the \cmrname{}.

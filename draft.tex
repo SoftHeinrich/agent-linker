@@ -1,0 +1,143 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+
+\begin{filecontents*}{draft-api.bib}
+% citation_id: CIT-01
+% API: https://api.crossref.org/works/10.1016%2Fj.jss.2008.08.026/transform/application/x-bibtex
+ @article{Lago_2009, title={A scoped approach to traceability management}, volume={82}, ISSN={0164-1212}, url={http://dx.doi.org/10.1016/j.jss.2008.08.026}, DOI={10.1016/j.jss.2008.08.026}, number={1}, journal={Journal of Systems and Software}, publisher={Elsevier BV}, author={Lago, Patricia and Muccini, Henry and van Vliet, Hans}, year={2009}, month=Jan, pages={168–182} }
+
+% citation_id: CIT-02
+% API: https://api.crossref.org/works/10.1007%2F978-3-642-23798-0_33/transform/application/x-bibtex
+ @inbook{Capilla_2011, title={An Enhanced Architectural Knowledge Metamodel Linking Architectural Design Decisions to other Artifacts in the Software Engineering Lifecycle}, ISBN={9783642237980}, ISSN={1611-3349}, url={http://dx.doi.org/10.1007/978-3-642-23798-0_33}, DOI={10.1007/978-3-642-23798-0_33}, booktitle={Software Architecture}, publisher={Springer Berlin Heidelberg}, author={Capilla, Rafael and Zimmermann, Olaf and Zdun, Uwe and Avgeriou, Paris and Küster, Jochen M.}, year={2011}, pages={303–318} }
+
+% citation_id: CIT-03
+% API: https://arxiv.org/api/query?id_list=0910.0493
+% API status: 200 OK (one-record fallback after batch endpoint timeout)
+ @misc{Bucchiarone_2009, author={Antonio Bucchiarone and Davide Di Ruscio and Henry Muccini and Patrizio Pelliccione}, title={From Requirements to code: an Architecture-centric Approach for producing Quality Systems}, year={2009}, eprint={0910.0493}, primaryClass={cs.SE}, url={https://arxiv.org/abs/0910.0493v1}, note={Chapter of the book "Model-Driven Software Development: Integrating Quality Assurance". Idea Group Inc., Information Science Publishing, IRM Press. 2008} }
+
+% citation_id: CIT-04
+% API: https://arxiv.org/api/query?id_list=1710.03129
+% API status: 200 OK (one-record fallback after batch endpoint timeout)
+ @misc{Antoniol_2017, author={Giuliano Antoniol and Jane Cleland-Huang and Jane Huffman Hayes and Michael Vierhauser}, title={Grand Challenges of Traceability: The Next Ten Years}, year={2017}, eprint={1710.03129}, primaryClass={cs.SE}, url={https://arxiv.org/abs/1710.03129v1} }
+
+% citation_id: CIT-05
+% API: https://api.crossref.org/works/10.1109%2FTSE.2016.2635134/transform/application/x-bibtex
+ @article{Arora_2017, title={Automated Extraction and Clustering of Requirements Glossary Terms}, volume={43}, ISSN={1939-3520}, url={http://dx.doi.org/10.1109/TSE.2016.2635134}, DOI={10.1109/tse.2016.2635134}, number={10}, journal={IEEE Transactions on Software Engineering}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Arora, Chetan and Sabetzadeh, Mehrdad and Briand, Lionel and Zimmer, Frank}, year={2017}, month=Oct, pages={918–945} }
+
+% citation_id: CIT-06
+% API: https://api.crossref.org/works/10.1145%2F3510003.3510157/transform/application/x-bibtex
+ @inproceedings{Ezzini_2022, series={ICSE ’22}, title={Automated handling of anaphoric ambiguity in requirements: a multi-solution study}, url={http://dx.doi.org/10.1145/3510003.3510157}, DOI={10.1145/3510003.3510157}, booktitle={Proceedings of the 44th International Conference on Software Engineering}, publisher={ACM}, author={Ezzini, Saad and Abualhaija, Sallam and Arora, Chetan and Sabetzadeh, Mehrdad}, year={2022}, month=May, pages={187–199}, collection={ICSE ’22} }
+
+% citation_id: CIT-07
+% API: https://api.crossref.org/works/10.1145%2F3377811.3380418/transform/application/x-bibtex
+ @inproceedings{Moran_2020, series={ICSE ’20}, title={Improving the effectiveness of traceability link recovery using hierarchical bayesian networks}, url={http://dx.doi.org/10.1145/3377811.3380418}, DOI={10.1145/3377811.3380418}, booktitle={Proceedings of the ACM/IEEE 42nd International Conference on Software Engineering}, publisher={ACM}, author={Moran, Kevin and Palacio, David N. and Bernal-Cárdenas, Carlos and McCrystal, Daniel and Poshyvanyk, Denys and Shenefiel, Chris and Johnson, Jeff}, year={2020}, month=June, pages={873–885}, collection={ICSE ’20} }
+
+% citation_id: CIT-08
+% API: https://api.crossref.org/works/10.1109%2FTEFSE.2009.5069582/transform/application/x-bibtex
+ @inproceedings{McMillan_2009, title={Combining textual and structural analysis of software artifacts for traceability link recovery}, url={http://dx.doi.org/10.1109/TEFSE.2009.5069582}, DOI={10.1109/tefse.2009.5069582}, booktitle={2009 ICSE Workshop on Traceability in Emerging Forms of Software Engineering}, publisher={IEEE}, author={McMillan, Collin and Poshyvanyk, Denys and Revelle, Meghan}, year={2009}, month=May, pages={41–48} }
+
+% citation_id: CIT-09
+% API: https://api.crossref.org/works/10.1109%2FICSE.2013.6606630/transform/application/x-bibtex
+ @inproceedings{Haiduc_2013, title={Automatic query reformulations for text retrieval in software engineering}, url={http://dx.doi.org/10.1109/ICSE.2013.6606630}, DOI={10.1109/icse.2013.6606630}, booktitle={2013 35th International Conference on Software Engineering (ICSE)}, publisher={IEEE}, author={Haiduc, Sonia and Bavota, Gabriele and Marcus, Andrian and Oliveto, Rocco and De Lucia, Andrea and Menzies, Tim}, year={2013}, month=May, pages={842–851} }
+
+% citation_id: CIT-10
+% API: https://api.crossref.org/works/10.1109%2FRE.2015.7320403/transform/application/x-bibtex
+ @inproceedings{Arora_2015, title={Change impact analysis for Natural Language requirements: An NLP approach}, url={http://dx.doi.org/10.1109/RE.2015.7320403}, DOI={10.1109/re.2015.7320403}, booktitle={2015 IEEE 23rd International Requirements Engineering Conference (RE)}, publisher={IEEE}, author={Arora, Chetan and Sabetzadeh, Mehrdad and Goknil, Arda and Briand, Lionel C. and Zimmer, Frank}, year={2015}, month=Aug, pages={6–15} }
+
+% citation_id: CIT-11
+% API: https://api.crossref.org/works/10.1145%2F3643991.3644918/transform/application/x-bibtex
+ @inproceedings{Tufano_2024, series={MSR ’24}, title={Unveiling ChatGPT’s Usage in Open Source Projects: A Mining-based Study}, url={http://dx.doi.org/10.1145/3643991.3644918}, DOI={10.1145/3643991.3644918}, booktitle={Proceedings of the 21st International Conference on Mining Software Repositories}, publisher={ACM}, author={Tufano, Rosalia and Mastropaolo, Antonio and Pepe, Federica and Dabic, Ozren and Di Penta, Massimiliano and Bavota, Gabriele}, year={2024}, month=Apr, pages={571–583}, collection={MSR ’24} }
+
+% citation_id: CIT-12
+% API: https://api.crossref.org/works/10.1145%2F3695988/transform/application/x-bibtex
+ @article{Hou_2024, title={Large Language Models for Software Engineering: A Systematic Literature Review}, volume={33}, ISSN={1557-7392}, url={http://dx.doi.org/10.1145/3695988}, DOI={10.1145/3695988}, number={8}, journal={ACM Transactions on Software Engineering and Methodology}, publisher={Association for Computing Machinery (ACM)}, author={Hou, Xinyi and Zhao, Yanjie and Liu, Yue and Yang, Zhou and Wang, Kailong and Li, Li and Luo, Xiapu and Lo, David and Grundy, John and Wang, Haoyu}, year={2024}, month=Nov, pages={1–79} }
+
+% citation_id: CIT-13
+% API: https://api.crossref.org/works/10.1016%2Fj.scico.2017.06.009/transform/application/x-bibtex
+ @article{Bacchelli_2017, title={Mining structured data in natural language artifacts with island parsing}, volume={150}, ISSN={0167-6423}, url={http://dx.doi.org/10.1016/j.scico.2017.06.009}, DOI={10.1016/j.scico.2017.06.009}, journal={Science of Computer Programming}, publisher={Elsevier BV}, author={Bacchelli, Alberto and Mocci, Andrea and Cleve, Anthony and Lanza, Michele}, year={2017}, month=Dec, pages={31–55} }
+
+% citation_id: CIT-14
+% API: https://arxiv.org/api/query?id_list=2502.08108
+% API status: 200 OK (one-record fallback after batch endpoint timeout)
+ @misc{Treude_2025, author={Christoph Treude and Margaret-Anne Storey}, title={Generative AI and Empirical Software Engineering: A Paradigm Shift}, year={2025}, eprint={2502.08108}, primaryClass={cs.SE}, url={https://arxiv.org/abs/2502.08108v2}, note={Published at 2nd IEEE/ACM International Conference on AI-powered Software (AIware 2025)} }
+
+% citation_id: CIT-15
+% API: https://api.crossref.org/works/10.1145%2F3368089.3409715/transform/application/x-bibtex
+ @inproceedings{Pradel_2020, series={ESEC/FSE ’20}, title={TypeWriter: neural type prediction with search-based validation}, url={http://dx.doi.org/10.1145/3368089.3409715}, DOI={10.1145/3368089.3409715}, booktitle={Proceedings of the 28th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering}, publisher={ACM}, author={Pradel, Michael and Gousios, Georgios and Liu, Jason and Chandra, Satish}, year={2020}, month=Nov, pages={209–220}, collection={ESEC/FSE ’20} }
+
+% citation_id: CIT-16
+% API: https://arxiv.org/api/query?id_list=2401.01701
+% API status: 200 OK (one-record fallback after batch endpoint timeout)
+ @misc{Eghbali_2024, author={Aryaz Eghbali and Michael Pradel}, title={De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative Grounding}, year={2024}, eprint={2401.01701}, primaryClass={cs.SE}, url={https://arxiv.org/abs/2401.01701v3} }
+
+% citation_id: CIT-17
+% API: https://arxiv.org/api/query?id_list=2407.09726
+% API status: 200 OK (one-record fallback after batch endpoint timeout)
+ @misc{Jain_2024, author={Nihal Jain and Robert Kwiatkowski and Baishakhi Ray and Murali Krishna Ramanathan and Varun Kumar}, title={On Mitigating Code LLM Hallucinations with API Documentation}, year={2024}, eprint={2407.09726}, primaryClass={cs.CL}, url={https://arxiv.org/abs/2407.09726v1} }
+
+% citation_id: CIT-18
+% API: https://api.crossref.org/works/10.1109%2FTSE.2004.1271170/transform/application/x-bibtex
+ @article{Muccini_2004, title={Using software architecture for code testing}, volume={30}, ISSN={0098-5589}, url={http://dx.doi.org/10.1109/TSE.2004.1271170}, DOI={10.1109/tse.2004.1271170}, number={3}, journal={IEEE Transactions on Software Engineering}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Muccini, H. and Bertolino, A. and Inverardi, P.}, year={2004}, month=Mar, pages={160–171} }
+\end{filecontents*}
+
+\title{API-sourced BibTeX candidates for the FSE 2027 reviewer audit}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Citation map}
+The 13 Crossref bibliography entries in \texttt{draft-api.bib} are copied
+verbatim from Crossref's BibTeX transform API.  The five arXiv entries were
+mechanically constructed only from fields returned by the official arXiv API;
+their API URLs and response statuses are recorded above each entry.
+
+\begin{longtable}{p{0.13\linewidth}p{0.70\linewidth}p{0.12\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Paper title} & \textbf{Cluster} \\
+\midrule
+\endhead
+\texttt{CIT-01} & A scoped approach to traceability management & C1 \\
+\texttt{CIT-02} & An Enhanced Architectural Knowledge Metamodel Linking Architectural Design Decisions to other Artifacts in the Software Engineering Lifecycle & C1 \\
+\texttt{CIT-03} & From Requirements to code: an Architecture-centric Approach for producing Quality Systems & C1 \\
+\texttt{CIT-04} & Grand Challenges of Traceability: The Next Ten Years & C1 \\
+\texttt{CIT-05} & Automated Extraction and Clustering of Requirements Glossary Terms & C2 \\
+\texttt{CIT-06} & Automated Handling of Anaphoric Ambiguity in Requirements: A Multi-Solution Study & C2 \\
+\texttt{CIT-07} & Improving the Effectiveness of Traceability Link Recovery using Hierarchical Bayesian Networks & C2 \\
+\texttt{CIT-08} & Combining Textual and Structural Analysis of Software Artifacts for Traceability Link Recovery & C2 \\
+\texttt{CIT-09} & Automatic Query Reformulations for Text Retrieval in Software Engineering & C2 \\
+\texttt{CIT-10} & Change Impact Analysis for Natural Language Requirements: An NLP Approach & C2 \\
+\texttt{CIT-11} & Unveiling ChatGPT’s Usage in Open Source Projects: A Mining-based Study & C3 \\
+\texttt{CIT-12} & Large Language Models for Software Engineering: A Systematic Literature Review & C3 \\
+\texttt{CIT-13} & Mining Structured Data in Natural Language Artifacts with Island Parsing & C3 \\
+\texttt{CIT-14} & Generative AI and Empirical Software Engineering: A Paradigm Shift & C3 \\
+\texttt{CIT-15} & TypeWriter: Neural Type Prediction with Search-based Validation & C3 \\
+\texttt{CIT-16} & De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative Grounding & C3 \\
+\texttt{CIT-17} & On Mitigating Code LLM Hallucinations with API Documentation & C3 \\
+\texttt{CIT-18} & Using Software Architecture for Code Testing & C1 \\
+\bottomrule
+\end{longtable}
+
+\nocite{Lago_2009,Capilla_2011,Bucchiarone_2009,Antoniol_2017,Arora_2017,Ezzini_2022,Moran_2020,
+McMillan_2009,Haiduc_2013,Arora_2015,Tufano_2024,Hou_2024,Bacchelli_2017,
+Treude_2025,Pradel_2020,Eghbali_2024,Jain_2024,Muccini_2004}
+\bibliographystyle{plain}
+\bibliography{draft-api}
+
+% Verification record (2026-09-14 UTC):
+% Batch command: curl --fail --silent --show-error --location --retry 3
+%   --retry-delay 2 --retry-max-time 20 --max-time 30
+%   https://export.arxiv.org/api/query?id_list=0910.0493,1710.03129,2502.08108,2401.01701,2407.09726
+% Batch result: timeout after 30002 ms with 0 bytes; fallback required.
+% Fallback command: curl --fail --silent --show-error --location --retry 3
+%   --retry-delay 2 --retry-max-time 20 --max-time 30
+%   https://arxiv.org/api/query?id_list=<one-record-id>
+% Fallback result: five requests, each HTTP 200 on attempt 1.
+% Metadata result: PASS; titles, authors, publication years, eprint IDs,
+%   primary categories, alternate URLs, and API comments match the returned XML.
+
+\end{document}

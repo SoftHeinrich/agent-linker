@@ -95,12 +95,19 @@ def main(argv=None):
         return 2
 
     items = plan(args.only, regenerate_gold=True)
-    drift = changed = 0
+    drift = changed = dropped = 0
     for gen, subdir, name in items:
         dest = paper / subdir / name
         if not gen.is_file():
-            print(f"MISSING generated source: {gen}  (run rq_tables.py + csv_to_tex.py)")
-            drift += 1
+            # A table this arm does not have (the one-call floor on an arm with no floor
+            # sweep) is DROPPED, not drift: leaving the previous arm's copy in the paper
+            # is how a stale number survives a promotion. A table the generators should
+            # have written and did not is still an error there, where it is diagnosable.
+            print(f"absent for this arm: {gen.name}"
+                  + (f"  (removing {dest})" if dest.is_file() else ""))
+            if dest.is_file() and not args.check:
+                dest.unlink()
+            dropped += 1
             continue
         if args.check:
             old = dest.read_text() if dest.is_file() else ""
@@ -117,11 +124,14 @@ def main(argv=None):
             shutil.copyfile(gen, dest)
             changed += 1
 
+    tail = f" ({dropped} absent for this arm)" if dropped else ""
     if args.check:
-        print(f"\n{'DRIFT' if drift else 'IN SYNC'}: {drift} file(s) out of date." if drift
-              else f"IN SYNC: all {len(items)} paper file(s) match the generated output.")
+        print(f"\n{'DRIFT' if drift else 'IN SYNC'}: {drift} file(s) out of date.{tail}"
+              if drift else
+              f"IN SYNC: all {len(items) - dropped} paper file(s) match the generated "
+              f"output.{tail}")
         return 1 if drift else 0
-    print(f"synced {changed} file(s) into {paper}")
+    print(f"synced {changed} file(s) into {paper}{tail}")
     return 0
 
 

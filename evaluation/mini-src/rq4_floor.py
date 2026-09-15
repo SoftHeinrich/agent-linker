@@ -59,7 +59,18 @@ import metrics as m  # noqa: E402  (shared core: benchmark layout, gold, F-measu
 # The *reported arm*: it only names the output directory. Declared per module rather
 # than imported, matching rq12/rq_tables/csv_to_tex -- check.py reads the literal out of
 # each file's source text and fails if any two disagree.
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
+
+#: Which arms have a one-call floor sweep recorded, and where. The floor's control is
+#: the arm itself, so an arm with no sweep of its own has NO floor -- borrowing another
+#: arm's would compare one workflow against a different arm's one-call reply.
+#: `s_linker120_onecall` was never built, so `s120` is deliberately absent here and
+#: `rq_tables.py` drops the floor table for it (and prints that it did).
+FLOOR_SWEEPS = {
+    "s110": ("noevidence_e2e_{model}_r{i}_20260902", "onecall_e2e_{model}_r{i}_20260902",
+             "s_linker110", "s_linker110_onecall"),
+}
+ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
 
 _ARDOCO_HOME = _HERE.parents[1]                    # .../alinker-replication-package
@@ -68,10 +79,11 @@ RESULTS = Path(os.environ.get(
     _ARDOCO_HOME / "results" if (_ARDOCO_HOME / "results").is_dir()
     else _ARDOCO_HOME / "agent-linker/results"))
 
-HEAD_TMPL = os.environ.get("RQ4_FLOOR_HEAD_TMPL", "noevidence_e2e_{model}_r{i}_20260902")
-ARM_TMPL = os.environ.get("RQ4_FLOOR_ARM_TMPL", "onecall_e2e_{model}_r{i}_20260902")
-HEAD_KEY = os.environ.get("RQ4_FLOOR_HEAD_KEY", "s_linker110")
-ARM_KEY = os.environ.get("RQ4_FLOOR_ARM_KEY", "s_linker110_onecall")
+_SWEEP = FLOOR_SWEEPS.get(ARM)
+HEAD_TMPL = os.environ.get("RQ4_FLOOR_HEAD_TMPL", _SWEEP[0] if _SWEEP else "")
+ARM_TMPL = os.environ.get("RQ4_FLOOR_ARM_TMPL", _SWEEP[1] if _SWEEP else "")
+HEAD_KEY = os.environ.get("RQ4_FLOOR_HEAD_KEY", _SWEEP[2] if _SWEEP else "")
+ARM_KEY = os.environ.get("RQ4_FLOOR_ARM_KEY", _SWEEP[3] if _SWEEP else "")
 
 BACKENDS = ("terra", "luna")
 RUNS = (1, 2, 3)
@@ -136,13 +148,19 @@ def main():
     # as this arm's floor, and a `--backends terra` pass rewrites the whole file with that
     # one backend rather than merging. The guard is inline rather than imported from
     # rq34.py because this engine deliberately does not depend on the phase-state reader.
+    if not (args.head_runs and args.arm_runs):
+        ap.error(f"arm {ARM} has no one-call floor sweep (FLOOR_SWEEPS has no row for "
+                 "it), so there is nothing to score. Record one and add its row, or "
+                 "pass --head-runs/--arm-runs and --csv-root explicitly. The floor's "
+                 "control is the arm itself, so another arm's sweep is not a "
+                 "substitute.")
     arms = (("Full", args.head_runs, HEAD_KEY), ("OneCall", args.arm_runs, ARM_KEY))
     deviations = [f"--{n} {v}" for n, v, d in
                   (("head-runs", args.head_runs, HEAD_TMPL),
                    ("arm-runs", args.arm_runs, ARM_TMPL)) if v != d]
     if set(args.backends) != set(BACKENDS):
         deviations.append(f"--backends {' '.join(args.backends)}")
-    default_root = m.RQ34_REPORTS / f"{DEFAULT_ARM}_floor"
+    default_root = m.RQ34_REPORTS / f"{ARM}_floor"
     if args.csv_root is None and deviations:
         ap.error("this run is not the default one (" + "; ".join(deviations) + "), so it "
                  f"needs an explicit --csv-root: writing it to {default_root} would "

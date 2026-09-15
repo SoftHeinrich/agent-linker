@@ -1,0 +1,391 @@
+{
+  "mediastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 1.0,
+      "R": 0.967741935483871,
+      "F1": 0.9836065573770492,
+      "tp": 30,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 30,
+      "time": 86.07956385612488,
+      "sources": {
+        "entity": 27,
+        "coreference": 3
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teastore": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 1.0,
+      "R": 0.9629629629629629,
+      "F1": 0.9811320754716981,
+      "tp": 26,
+      "fp": 0,
+      "fn": 1,
+      "n_links": 26,
+      "time": 193.9854097366333,
+      "sources": {
+        "entity": 21,
+        "coreference": 5
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "teammates": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.7846153846153846,
+      "R": 0.8947368421052632,
+      "F1": 0.8360655737704918,
+      "tp": 51,
+      "fp": 14,
+      "fn": 6,
+      "n_links": 65,
+      "time": 323.6500406265259,
+      "sources": {
+        "entity": 51,
+        "coreference": 14
+      },
+      "fp_by_source": {
+        "entity": 5,
+        "coreference": 9
+      },
+      "fp_details": [
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 36,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "User-invoked requests are all requests made by the users of the application, typically from the Web browser (i.e. by nav"
+        },
+        {
+          "sentence": 41,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Third, the browser will render the page and execute the page scripts, most of the time requiring AJAX requests to the se"
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 121,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Validating data inside entities before creating/updating them, to ensure they are in a valid state."
+        },
+        {
+          "sentence": 124,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Hiding the persistable objects."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 156,
+          "component": "Common",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+        },
+        {
+          "sentence": 188,
+          "component": "E2E",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "e2e.util contains helpers needed for running E2E tests."
+        },
+        {
+          "sentence": 196,
+          "component": "Client",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "client.util contains helpers needed for client scripts."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 7,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 8,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 88,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 122,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 138,
+          "component": "GAE Datastore",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "bigbluebutton": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 0.9056603773584906,
+      "R": 0.7741935483870968,
+      "F1": 0.8347826086956522,
+      "tp": 48,
+      "fp": 5,
+      "fn": 14,
+      "n_links": 53,
+      "time": 263.4751832485199,
+      "sources": {
+        "entity": 40,
+        "coreference": 13
+      },
+      "fp_by_source": {
+        "coreference": 4,
+        "entity": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 17,
+          "component": "HTML5 Server",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "This process would start to bottleneck (the nodejs process, running on a single CPU core, started to use 100% of the cor"
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 58,
+          "component": "FSESL",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We have extracted out the component that integrates with FreeSWITCH into it\u2019s own application."
+        },
+        {
+          "sentence": 77,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 61,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 67,
+          "component": "kurento",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 67,
+          "component": "WebRTC-SFU",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 80,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 81,
+          "component": "Presentation Conversion",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  },
+  "jabref": {
+    "s_linker20_union": {
+      "variant": "s_linker20_union",
+      "P": 1.0,
+      "R": 0.8888888888888888,
+      "F1": 0.9411764705882353,
+      "tp": 16,
+      "fp": 0,
+      "fn": 2,
+      "n_links": 16,
+      "time": 69.01760292053223,
+      "sources": {
+        "entity": 16
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [
+        {
+          "sentence": 2,
+          "component": "cli",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 2,
+          "component": "preferences",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ]
+    }
+  }
+}

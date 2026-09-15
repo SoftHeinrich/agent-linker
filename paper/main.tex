@@ -149,12 +149,12 @@
 Trace links between software architecture artifacts and code support impact analysis, change propagation, and compliance review, yet they are the hardest to recover: the artifacts describe the system on a higher level of abstraction and rarely directly match the names in the code.
 Lexical recovery overlooks aliases and implicit references, while a per-sentence \ac{LLM} rebuilds that knowledge on every call and accepts plausible-but-wrong links.
 We present \approach, the first training-free, multi-stage \ac{LLM} workflow for architecture-to-code traceability link recovery that keeps the runtime knowledge module separate from the linker.
-A first stage derives an alias table over the document and component set; a second runs three linkers specialized by reference form---a whole name, one word of a name, and an implicit reference checked against earlier sentences---each with a judge that rejects hallucinated links.
+A first stage derives an alias table over the document and component set; a second proposes candidates by reference form---a whole name, one word of a name, and an implicit reference checked against earlier sentences---and judges them, the two written forms under one rule that reads the evidence each match computed, and the resolved references under a stricter one, so that hallucinated links are rejected.
 On five open-source benchmark projects, we evaluate \approach against the state of the art. %under both the standard metric and a new one.
-\approach improves performance in comparison to the strongest baseline, run on the same \ac{LLM} backend, by 10.4 percentage points in architecture doc-model \avgfone, and by 10.3\,pp in the recall-weighted \avgftwo.
-This gain carries through to 9.6\,pp of \avgfone on the downstream doc-code task.
+\approach improves performance in comparison to the strongest baseline, run on the same \ac{LLM} backend, by 14.2 percentage points in architecture doc-model \avgfone, and by 13.7\,pp in the recall-weighted \avgftwo.
+This gain carries through to 10.6\,pp of \avgfone on the downstream doc-code task.
 %The doc-code \avgfone is the metric on which the advantage is \emph{smallest}.
-Under an architecture-driven suite that adds a per-component tail, the gap widens to 25.8 and 26.4\,pp.
+Under an architecture-driven suite that adds a per-component tail, the gap widens to 35.3 and 30.6\,pp.
 %A replication package provides prompts, module code, raw \ac{LLM} responses, and per-project results.
 \end{abstract}
 

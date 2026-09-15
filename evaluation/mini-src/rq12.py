@@ -74,7 +74,7 @@ REPORTS = m.REPO / "evaluation" / "reports"      # where the committed CSVs live
 # arm s110 replaced, s92a). Only the \approach rows move -- the baselines are
 # arm-independent and stay pinned.
 # Precedence: --arm > $ALINKER_ARM > DEFAULT_ARM.
-DEFAULT_ARM = "s110"
+DEFAULT_ARM = "s120"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
 

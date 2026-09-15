@@ -1,0 +1,1935 @@
+[2026-06-22 21:52:06] GPT TRACK START — gpt x3 + gpt-noknow x3, all 5 datasets, sequential (parallel to sonnet track)
+[2026-06-22 21:52:06] >>> START gpt/rep1 :: -b openai -m gpt-5.4 -t rep1
+RUN_ID   : s20union_openai_gpt-5.4__260622-215206-1370286__rep1
+variant  : s_linker20_union
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1
+command  : python run_ablation.py --variants s_linker20_union --results-dir results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1
+started  : 2026-06-22 21:52:06
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+    Alias: AudioAccess -> MediaAccess [global]
+  Model: 3 ambiguous of 14 components
+  Doc knowledge: 4 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=30 ∪=30
+  Framing C: 30 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 23 / 30
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 10
+    Coref reject: S21 -> Reencoding
+    Coref reject: S33 -> FileStorage
+  Coref validated: 8 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 29 (from 31 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_mediastore_20260622_215306.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_mediastore_20260622_215306_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 29 links (60.5s, 14 LLM calls)
+  s_linker20_union: P=100.0% R=93.5% F1=96.7% TP=29 FP=0 FN=2 (60s)
+    Sources: {'entity': 23, 'coreference': 6}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: registry -> Registry [local]
+  Model: 4 ambiguous of 11 components
+  Doc knowledge: 7 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=26 P2=26 ∪=26
+  Framing C: 26 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 21 / 26
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 10
+    Coref reject: S26 -> Persistence
+    Coref reject: S43 -> Registry
+  Coref validated: 8 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 29 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_teastore_20260622_215350.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_teastore_20260622_215350_calls.json (15 calls)
+  Checkpoint: final saved
+
+Final: 26 links (43.3s, 15 LLM calls)
+  s_linker20_union: P=100.0% R=96.3% F1=98.1% TP=26 FP=0 FN=1 (43s)
+    Sources: {'entity': 21, 'coreference': 5}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: GAE -> GAE Datastore [global]
+    Alias: E2E -> E2E [global]
+    Alias: UI -> UI [global]
+    Alias: Common component -> Common [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [local]
+    Alias: storage -> Storage [local]
+    Alias: Test Driver component -> Test Driver [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [local]
+    Alias: Client component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: GAE Datastore -> GAE Datastore [global]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: Google's distributed datastore -> GAE Datastore [global]
+    Alias: database -> GAE Datastore [local]
+  Model: 5 ambiguous of 8 components
+  Doc knowledge: 24 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=66 P2=65 ∪=77
+  Framing C: 77 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 53 / 77
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 49
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S37 -> UI
+    Coref reject: S38 -> UI
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S59 -> GAE Datastore
+    Coref reject: S60 -> GAE Datastore
+    Coref reject: S122 -> GAE Datastore
+  Coref validated: 36 / 49
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 65 (from 89 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_teammates_20260622_215610.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_teammates_20260622_215610_calls.json (41 calls)
+  Checkpoint: final saved
+
+Final: 65 links (140.2s, 41 LLM calls)
+  s_linker20_union: P=80.0% R=91.2% F1=85.2% TP=52 FP=13 FN=5 (140s)
+    Sources: {'entity': 53, 'coreference': 12}
+    FP by source: {'entity': 6, 'coreference': 7}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: BBB web -> BBB web [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: fsels -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton client -> HTML5 Client [global]
+    Alias: BigBlueButton server -> HTML5 Server [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [global]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: presentation conversion -> Presentation Conversion [local]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 24 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    Consensus: P1=47 P2=47 ∪=50
+  Framing C: 50 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 37 / 50
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 23
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S36 -> BBB web
+    Coref reject: S44 -> BBB web
+    Coref reject: S58 -> FSESL
+  Coref validated: 18 / 23
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 44 (from 55 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_215730.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_215730_calls.json (21 calls)
+  Checkpoint: final saved
+
+Final: 44 links (79.5s, 21 LLM calls)
+  s_linker20_union: P=95.5% R=67.7% F1=79.2% TP=42 FP=2 FN=20 (80s)
+    Sources: {'entity': 37, 'coreference': 7}
+    FP by source: {'coreference': 1, 'entity': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: outer shell -> gui [global]
+    Alias: user interface -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> model [local]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 5 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=21 ∪=21
+  Framing C: 21 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 21
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 9
+    Coref reject: S3 -> model
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+    Coref reject: S13 -> model
+  Coref validated: 4 / 9
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 18 (from 20 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_jabref_20260622_215809.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/llm_logs/s_linker20_union_openai_jabref_20260622_215809_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 18 links (39.8s, 10 LLM calls)
+  s_linker20_union: P=88.9% R=88.9% F1=88.9% TP=16 FP=2 FN=2 (40s)
+    Sources: {'entity': 16, 'coreference': 2}
+    FP by source: {'coreference': 2}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 96.7% FP   0
+teastore         | F1 98.1% FP   0
+teammates        | F1 85.2% FP  13
+bigbluebutton    | F1 79.2% FP   2
+jabref           | F1 88.9% FP   2
+-----------------+-------------------
+Macro avg        | F1 89.6% FP  17
+
+Results saved to results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1/ablation_20260622_215809.json
+----------------------------------------------------------------------
+finished : 2026-06-22 21:58:09   rc=0
+artifacts: results/manual/s20union_openai_gpt-5.4__260622-215206-1370286__rep1
+[2026-06-22 21:58:09] <<< END   gpt/rep1 rc=0
+[2026-06-22 21:58:54] >>> START gpt/rep2 :: -b openai -m gpt-5.4 -t rep2
+RUN_ID   : s20union_openai_gpt-5.4__260622-215854-1373389__rep2
+variant  : s_linker20_union
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2
+command  : python run_ablation.py --variants s_linker20_union --results-dir results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2
+started  : 2026-06-22 21:58:54
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+  Model: 3 ambiguous of 14 components
+  Doc knowledge: 3 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=29 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 26 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 13
+    Coref reject: S21 -> Reencoding
+    Coref reject: S36 -> FileStorage
+  Coref validated: 11 / 13
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 29 (from 37 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_215938.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_215938_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 29 links (44.0s, 14 LLM calls)
+  s_linker20_union: P=100.0% R=93.5% F1=96.7% TP=29 FP=0 FN=2 (44s)
+    Sources: {'entity': 26, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: WebUI service -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: Registry instance -> Registry [global]
+    Alias: registry -> Registry [local]
+    Alias: Image Provider -> ImageProvider [global]
+    Alias: Image Provider service -> ImageProvider [global]
+    Alias: Auth service -> Auth [global]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: Persistence service -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Recommender service -> Recommender [global]
+  Model: 4 ambiguous of 11 components
+  Doc knowledge: 12 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=21 P2=21 ∪=21
+  Framing C: 21 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 21 / 21
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 14
+    Coref reject: S19 -> Auth
+    Coref reject: S20 -> Auth
+    Coref reject: S26 -> Persistence
+  Coref validated: 11 / 14
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 32 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_220023.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_220023_calls.json (13 calls)
+  Checkpoint: final saved
+
+Final: 26 links (44.7s, 13 LLM calls)
+  s_linker20_union: P=100.0% R=96.3% F1=98.1% TP=26 FP=0 FN=1 (45s)
+    Sources: {'entity': 21, 'coreference': 5}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: Common component -> Common [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Browser -> UI [global]
+    Alias: UI Server -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [global]
+    Alias: storage -> Storage [local]
+    Alias: Test Driver component -> Test Driver [global]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [global]
+    Alias: Client component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: Datastore -> GAE Datastore [global]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: database -> GAE Datastore [local]
+  Model: 5 ambiguous of 8 components
+  Doc knowledge: 24 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=74 P2=70 ∪=81
+  Framing C: 81 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 52 / 81
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 51
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S37 -> UI
+    Coref reject: S38 -> UI
+    Coref reject: S52 -> UI
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S59 -> GAE Datastore
+    Coref reject: S60 -> GAE Datastore
+    Coref reject: S62 -> GAE Datastore
+    Coref reject: S122 -> GAE Datastore
+    Coref reject: S144 -> GAE Datastore
+  Coref validated: 35 / 51
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 68 (from 87 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_220315.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_220315_calls.json (42 calls)
+  Checkpoint: final saved
+
+Final: 68 links (172.1s, 42 LLM calls)
+  s_linker20_union: P=79.4% R=94.7% F1=86.4% TP=54 FP=14 FN=3 (172s)
+    Sources: {'entity': 52, 'coreference': 16}
+    FP by source: {'entity': 5, 'coreference': 9}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 20 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=45 P2=45 ∪=47
+  Framing C: 47 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 37 / 47
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 26
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S31 -> BBB web
+    Coref reject: S44 -> BBB web
+    Coref reject: S74 -> WebRTC-SFU
+    Coref reject: S80 -> Presentation Conversion
+  Coref validated: 20 / 26
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 43 (from 57 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_220546.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_220546_calls.json (22 calls)
+  Checkpoint: final saved
+
+Final: 43 links (150.6s, 22 LLM calls)
+  s_linker20_union: P=93.0% R=64.5% F1=76.2% TP=40 FP=3 FN=22 (151s)
+    Sources: {'entity': 37, 'coreference': 6}
+    FP by source: {'coreference': 3}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: outer shell -> gui [local]
+    Alias: user interface -> gui [local]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> logic [local]
+    Alias: center -> model [local]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 6 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 11
+    Coref reject: S3 -> model
+    Coref reject: S7 -> preferences
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> logic
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+    Coref reject: S13 -> model
+  Coref validated: 4 / 11
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 20 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_220733.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_220733_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 17 links (107.0s, 10 LLM calls)
+  s_linker20_union: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (107s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 96.7% FP   0
+teastore         | F1 98.1% FP   0
+teammates        | F1 86.4% FP  14
+bigbluebutton    | F1 76.2% FP   3
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 89.8% FP  18
+
+Results saved to results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2/ablation_20260622_220733.json
+----------------------------------------------------------------------
+finished : 2026-06-22 22:07:33   rc=0
+artifacts: results/manual/s20union_openai_gpt-5.4__260622-215854-1373389__rep2
+[2026-06-22 22:07:33] <<< END   gpt/rep2 rc=0
+[2026-06-22 22:08:18] >>> START gpt/rep3 :: -b openai -m gpt-5.4 -t rep3
+RUN_ID   : s20union_openai_gpt-5.4__260622-220818-1377489__rep3
+variant  : s_linker20_union
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3
+command  : python run_ablation.py --variants s_linker20_union --results-dir results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3
+started  : 2026-06-22 22:08:18
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: ReEncoder -> Reencoding [global]
+    Alias: Database -> DB [global]
+    Alias: DataStorage -> FileStorage [global]
+  Model: 3 ambiguous of 14 components
+  Doc knowledge: 3 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=28 P2=26 ∪=28
+  Framing C: 28 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Connection error....
+    OpenAI retry 2/3 after 3s: Connection error....
+    LLM error: OpenAI error after 3 retries: Connection error. — retrying in 3s (attempt 1/3)
+  Entity validated: 26 / 28
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 10
+    Coref reject: S21 -> Reencoding
+    Coref reject: S33 -> FileStorage
+  Coref validated: 8 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 29 (from 34 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_mediastore_20260622_221234.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_mediastore_20260622_221234_calls.json (14 calls)
+  Checkpoint: final saved
+
+Final: 29 links (255.9s, 14 LLM calls)
+  s_linker20_union: P=100.0% R=93.5% F1=96.7% TP=29 FP=0 FN=2 (256s)
+    Sources: {'entity': 26, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> WebUI [global]
+    Alias: WebUi -> WebUI [global]
+    Alias: front-end -> WebUI [global]
+    Alias: registry -> Registry [local]
+    Alias: PersistenceProvider -> Persistence [global]
+    Alias: persistence provider -> Persistence [local]
+    Alias: Image Provider -> ImageProvider [global]
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 7 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=23 P2=23 ∪=23
+  Framing C: 23 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 21 / 23
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 15
+    Coref reject: S19 -> Auth
+    Coref reject: S20 -> Auth
+    Coref reject: S26 -> Persistence
+  Coref validated: 12 / 15
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 33 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_teastore_20260622_221357.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_teastore_20260622_221357_calls.json (13 calls)
+  Checkpoint: final saved
+
+Final: 26 links (82.4s, 13 LLM calls)
+  s_linker20_union: P=100.0% R=96.3% F1=98.1% TP=26 FP=0 FN=1 (82s)
+    Sources: {'entity': 21, 'coreference': 5}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: UI -> UI [global]
+    Alias: E2E -> E2E [global]
+    Alias: GAE -> GAE Datastore [global]
+    Alias: Common component -> Common [global]
+    Alias: UI component -> UI [global]
+    Alias: UI Component -> UI [global]
+    Alias: front-end -> UI [global]
+    Alias: browser -> UI [local]
+    Alias: Logic component -> Logic [global]
+    Alias: logic -> Logic [local]
+    Alias: Storage component -> Storage [global]
+    Alias: storage layer -> Storage [global]
+    Alias: storage -> Storage [local]
+    Alias: Test Driver -> Test Driver [global]
+    Alias: Test Driver Component -> Test Driver [global]
+    Alias: test driver -> Test Driver [local]
+    Alias: E2E component -> E2E [global]
+    Alias: end-to-end component -> E2E [global]
+    Alias: Client component -> Client [global]
+    Alias: client -> Client [local]
+    Alias: datastore -> GAE Datastore [local]
+    Alias: NoSQL database -> GAE Datastore [global]
+  Model: 5 ambiguous of 8 components
+  Doc knowledge: 22 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=67 P2=70 ∪=75
+  Framing C: 75 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 48 / 75
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 46
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S30 -> UI
+    Coref reject: S37 -> UI
+    Coref reject: S38 -> UI
+    Coref reject: S52 -> UI
+    Coref reject: S58 -> GAE Datastore
+    Coref reject: S59 -> GAE Datastore
+    Coref reject: S60 -> GAE Datastore
+    Coref reject: S122 -> GAE Datastore
+  Coref validated: 31 / 46
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 61 (from 79 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_teammates_20260622_221841.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_teammates_20260622_221841_calls.json (39 calls)
+  Checkpoint: final saved
+
+Final: 61 links (284.4s, 39 LLM calls)
+  s_linker20_union: P=82.0% R=87.7% F1=84.7% TP=50 FP=11 FN=7 (284s)
+    Sources: {'entity': 48, 'coreference': 13}
+    FP by source: {'entity': 5, 'coreference': 6}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: client -> HTML5 Client [local]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: BigBlueButton API -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps akka -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: FreeSWITCH -> FreeSWITCH [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: conversion process -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 21 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    Consensus: P1=44 P2=46 ∪=47
+  Framing C: 47 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 36 / 47
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 28
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S19 -> HTML5 Client
+    Coref reject: S31 -> BBB web
+    Coref reject: S44 -> BBB web
+    Coref reject: S74 -> WebRTC-SFU
+  Coref validated: 22 / 28
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 46 (from 58 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_222247.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_222247_calls.json (22 calls)
+  Checkpoint: final saved
+
+Final: 46 links (246.2s, 22 LLM calls)
+  s_linker20_union: P=91.3% R=67.7% F1=77.8% TP=42 FP=4 FN=20 (246s)
+    Sources: {'entity': 36, 'coreference': 10}
+    FP by source: {'coreference': 4}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: outer shell -> gui [global]
+    Alias: command line interface -> cli [global]
+    Alias: intermediate layer -> logic [local]
+    Alias: core -> model [local]
+  Model: 6 ambiguous of 6 components
+  Doc knowledge: 4 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 10
+    Coref reject: S3 -> model
+    Coref reject: S7 -> preferences
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> logic
+    Coref reject: S12 -> preferences
+    Coref reject: S13 -> model
+  Coref validated: 4 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 20 raw)
+  Phase log saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_jabref_20260622_222343.json
+  LLM call trace saved: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/llm_logs/s_linker20_union_openai_jabref_20260622_222343_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 17 links (56.2s, 10 LLM calls)
+  s_linker20_union: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (56s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |  s_linker20_union 
+-----------------+-------------------
+mediastore       | F1 96.7% FP   0
+teastore         | F1 98.1% FP   0
+teammates        | F1 84.7% FP  11
+bigbluebutton    | F1 77.8% FP   4
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 89.7% FP  16
+
+Results saved to results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3/ablation_20260622_222343.json
+----------------------------------------------------------------------
+finished : 2026-06-22 22:23:43   rc=0
+artifacts: results/manual/s20union_openai_gpt-5.4__260622-220818-1377489__rep3
+[2026-06-22 22:23:43] <<< END   gpt/rep3 rc=0
+[2026-06-22 22:24:28] >>> START gpt-noknow/rep1 :: -k -b openai -m gpt-5.4 -t rep1
+RUN_ID   : s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1
+variant  : s_linker20_union_noknow
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1
+command  : python run_ablation.py --variants s_linker20_union_noknow --results-dir results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1
+started  : 2026-06-22 22:24:28
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 14 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=25 P2=27 ∪=27
+  Framing C: 27 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 24 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 3
+  Coref validated: 3 / 3
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 27 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_mediastore_20260622_222520.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_mediastore_20260622_222520_calls.json (11 calls)
+  Checkpoint: final saved
+
+Final: 26 links (51.1s, 11 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=83.9% F1=91.2% TP=26 FP=0 FN=5 (51s)
+    Sources: {'entity': 24, 'coreference': 2}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=22 P2=21 ∪=22
+  Framing C: 22 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 19 / 22
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    Coref skip (no antecedent): S20 -> WebUI
+  Coref raw: 10
+    Coref reject: S18 -> Auth
+    Coref reject: S19 -> Auth
+    Coref reject: S20 -> Auth
+    Coref reject: S26 -> Persistence
+  Coref validated: 6 / 10
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 23 (from 25 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_teastore_20260622_222552.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_teastore_20260622_222552_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 23 links (32.5s, 10 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=85.2% F1=92.0% TP=23 FP=0 FN=4 (33s)
+    Sources: {'entity': 19, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 8 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=60 P2=59 ∪=62
+  Framing C: 62 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 44 / 62
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 40
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S24 -> UI
+    Coref reject: S27 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S96 -> Logic
+  Coref validated: 29 / 40
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 57 (from 73 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_teammates_20260622_222942.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_teammates_20260622_222942_calls.json (36 calls)
+  Checkpoint: final saved
+
+Final: 57 links (230.1s, 36 LLM calls)
+  s_linker20_union_noknow: P=87.7% R=87.7% F1=87.7% TP=50 FP=7 FN=7 (230s)
+    Sources: {'entity': 44, 'coreference': 13}
+    FP by source: {'coreference': 7}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=48 P2=47 ∪=49
+  Framing C: 49 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 36 / 49
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 24
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S44 -> BBB web
+  Coref validated: 21 / 24
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 41 (from 57 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_223312.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_223312_calls.json (18 calls)
+  Checkpoint: final saved
+
+Final: 41 links (209.4s, 18 LLM calls)
+  s_linker20_union_noknow: P=92.7% R=61.3% F1=73.8% TP=38 FP=3 FN=24 (209s)
+    Sources: {'entity': 36, 'coreference': 5}
+    FP by source: {'coreference': 1, 'entity': 2}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 7
+    Coref reject: S3 -> model
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> cli
+  Coref validated: 4 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 20 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_jabref_20260622_223543.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/llm_logs/s_linker20_union_openai_jabref_20260622_223543_calls.json (7 calls)
+  Checkpoint: final saved
+
+Final: 17 links (151.6s, 7 LLM calls)
+  s_linker20_union_noknow: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (152s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_noknow
+-----------------+-------------------
+mediastore       | F1 91.2% FP   0
+teastore         | F1 92.0% FP   0
+teammates        | F1 87.7% FP   7
+bigbluebutton    | F1 73.8% FP   3
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 87.2% FP  11
+
+Results saved to results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1/ablation_20260622_223543.json
+----------------------------------------------------------------------
+finished : 2026-06-22 22:35:43   rc=0
+artifacts: results/manual/s20union-noknow_openai_gpt-5.4__260622-222428-1385851__rep1
+[2026-06-22 22:35:43] <<< END   gpt-noknow/rep1 rc=0
+[2026-06-22 22:36:28] >>> START gpt-noknow/rep2 :: -k -b openai -m gpt-5.4 -t rep2
+RUN_ID   : s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+variant  : s_linker20_union_noknow
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+command  : python run_ablation.py --variants s_linker20_union_noknow --results-dir results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+started  : 2026-06-22 22:36:28
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 14 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=29 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 24 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 4
+    Coref reject: S18 -> UserManagement
+  Coref validated: 3 / 4
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 27 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_224222.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_mediastore_20260622_224222_calls.json (11 calls)
+  Checkpoint: final saved
+
+Final: 26 links (353.8s, 11 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=83.9% F1=91.2% TP=26 FP=0 FN=5 (354s)
+    Sources: {'entity': 24, 'coreference': 2}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    Consensus: P1=22 P2=22 ∪=22
+  Framing C: 22 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 20 / 22
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 7
+    Coref reject: S26 -> Persistence
+  Coref validated: 6 / 7
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 24 (from 26 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_224538.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teastore_20260622_224538_calls.json (10 calls)
+  Checkpoint: final saved
+
+Final: 24 links (195.7s, 10 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=88.9% F1=94.1% TP=24 FP=0 FN=3 (196s)
+    Sources: {'entity': 20, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 8 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    Consensus: P1=54 P2=57 ∪=58
+  Framing C: 58 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Entity validated: 45 / 58
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 45
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S47 -> Logic
+    Coref reject: S50 -> Logic
+  Coref validated: 36 / 45
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 61 (from 81 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_230202.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_teammates_20260622_230202_calls.json (36 calls)
+  Checkpoint: final saved
+
+Final: 61 links (984.2s, 36 LLM calls)
+  s_linker20_union_noknow: P=83.6% R=89.5% F1=86.4% TP=51 FP=10 FN=6 (984s)
+    Sources: {'entity': 45, 'coreference': 16}
+    FP by source: {'coreference': 9, 'entity': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    Consensus: P1=47 P2=46 ∪=52
+  Framing C: 52 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    LLM error: OpenAI error after 3 retries: Error code: 500 - {'error': {'message': 'The server had an error while processing your request. Sorry about that!', 'type': 'server_error', 'param': None, 'code': None}} — retrying in 3s (attempt 1/3)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Entity validated: 40 / 52
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 2/3 after 3s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 23
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S44 -> BBB web
+    Coref reject: S58 -> FSESL
+    Coref reject: S74 -> WebRTC-SFU
+  Coref validated: 16 / 23
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 45 (from 56 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_231051.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_231051_calls.json (20 calls)
+  Checkpoint: final saved
+
+Final: 45 links (529.1s, 20 LLM calls)
+  s_linker20_union_noknow: P=93.3% R=67.7% F1=78.5% TP=42 FP=3 FN=20 (529s)
+    Sources: {'entity': 40, 'coreference': 5}
+    FP by source: {'entity': 3}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 8
+    Coref reject: S3 -> model
+    Coref reject: S12 -> gui
+    Coref reject: S12 -> logic
+    Coref reject: S12 -> cli
+    Coref reject: S12 -> preferences
+  Coref validated: 3 / 8
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 19 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_231257.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/llm_logs/s_linker20_union_openai_jabref_20260622_231257_calls.json (7 calls)
+  Checkpoint: final saved
+
+Final: 17 links (125.4s, 7 LLM calls)
+  s_linker20_union_noknow: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (125s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_noknow
+-----------------+-------------------
+mediastore       | F1 91.2% FP   0
+teastore         | F1 94.1% FP   0
+teammates        | F1 86.4% FP  10
+bigbluebutton    | F1 78.5% FP   3
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 88.3% FP  14
+
+Results saved to results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2/ablation_20260622_231257.json
+----------------------------------------------------------------------
+finished : 2026-06-22 23:12:57   rc=0
+artifacts: results/manual/s20union-noknow_openai_gpt-5.4__260622-223628-1391379__rep2
+[2026-06-22 23:12:57] <<< END   gpt-noknow/rep2 rc=0
+[2026-06-22 23:13:42] >>> START gpt-noknow/rep3 :: -k -b openai -m gpt-5.4 -t rep3
+RUN_ID   : s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3
+variant  : s_linker20_union_noknow
+backend  : openai    model: gpt-5.4    effort: <none>
+datasets : <all 5>
+results  : results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3
+command  : python run_ablation.py --variants s_linker20_union_noknow --results-dir results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3
+started  : 2026-06-22 23:13:42
+----------------------------------------------------------------------
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: mediastore, teastore, teammates, bigbluebutton, jabref
+Variants: s_linker20_union_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 14 components, 37 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 14 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=29 P2=29 ∪=29
+  Framing C: 29 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 24 / 29
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 3
+  Coref validated: 3 / 3
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 26 (from 27 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_mediastore_20260622_231655.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_mediastore_20260622_231655_calls.json (11 calls)
+  Checkpoint: final saved
+
+Final: 26 links (193.3s, 11 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=83.9% F1=91.2% TP=26 FP=0 FN=5 (193s)
+    Sources: {'entity': 24, 'coreference': 2}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 11 components, 43 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 11 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+    Consensus: P1=25 P2=26 ∪=27
+  Framing C: 27 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Entity validated: 20 / 27
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+    OpenAI retry 1/3 after 2s: Error code: 500 - {'error': {'message': 'The serve...
+  Coref raw: 9
+    Coref reject: S19 -> Auth
+    Coref reject: S20 -> Auth
+    Coref reject: S26 -> Persistence
+  Coref validated: 6 / 9
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 24 (from 26 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_teastore_20260622_232231.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_teastore_20260622_232231_calls.json (12 calls)
+  Checkpoint: final saved
+
+Final: 24 links (336.2s, 12 LLM calls)
+  s_linker20_union_noknow: P=100.0% R=88.9% F1=94.1% TP=24 FP=0 FN=3 (336s)
+    Sources: {'entity': 20, 'coreference': 4}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 8 components, 198 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 8 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S100 (50 sents)
+    [C1] batch 2: S51-S100 (50 sents)
+    [C2] batch 3: S101-S150 (50 sents)
+    [C2] batch 4: S151-S198 (48 sents)
+    [C1] batch 3: S101-S150 (50 sents)
+    [C1] batch 4: S151-S198 (48 sents)
+    Consensus: P1=58 P2=55 ∪=59
+  Framing C: 59 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 46 / 59
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 44
+    Coref reject: S3 -> UI
+    Coref reject: S3 -> Logic
+    Coref reject: S3 -> Storage
+    Coref reject: S3 -> Common
+    Coref reject: S3 -> Test Driver
+    Coref reject: S3 -> E2E
+    Coref reject: S3 -> Client
+    Coref reject: S96 -> Logic
+  Coref validated: 36 / 44
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 62 (from 82 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_teammates_20260622_232826.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_teammates_20260622_232826_calls.json (36 calls)
+  Checkpoint: final saved
+
+Final: 62 links (354.9s, 36 LLM calls)
+  s_linker20_union_noknow: P=82.3% R=89.5% F1=85.7% TP=51 FP=11 FN=6 (355s)
+    Sources: {'entity': 46, 'coreference': 16}
+    FP by source: {'coreference': 10, 'entity': 1}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    Consensus: P1=41 P2=43 ∪=47
+  Framing C: 47 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 30 / 47
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 23
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S44 -> BBB web
+    Coref reject: S74 -> WebRTC-SFU
+  Coref validated: 18 / 23
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 37 (from 48 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_233127.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_bigbluebutton_20260622_233127_calls.json (18 calls)
+  Checkpoint: final saved
+
+Final: 37 links (180.9s, 18 LLM calls)
+  s_linker20_union_noknow: P=91.9% R=54.8% F1=68.7% TP=34 FP=3 FN=28 (181s)
+    Sources: {'entity': 30, 'coreference': 7}
+    FP by source: {'coreference': 2, 'entity': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker20_union_noknow ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 6 components, 13 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+  [NOKNOW] Skipping knowledge layer — empty ModelKnowledge + DocumentKnowledge
+  Model: 0 ambiguous of 6 components
+  Doc knowledge: 0 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    Consensus: P1=20 P2=20 ∪=20
+  Framing C: 20 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 16 / 20
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 6
+    Coref reject: S3 -> model
+    Coref reject: S5 -> logic
+  Coref validated: 4 / 6
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 17 (from 20 raw)
+  Phase log saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_jabref_20260622_233219.json
+  LLM call trace saved: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/llm_logs/s_linker20_union_openai_jabref_20260622_233219_calls.json (7 calls)
+  Checkpoint: final saved
+
+Final: 17 links (51.6s, 7 LLM calls)
+  s_linker20_union_noknow: P=94.1% R=88.9% F1=91.4% TP=16 FP=1 FN=2 (52s)
+    Sources: {'entity': 16, 'coreference': 1}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          | s_linker20_union_noknow
+-----------------+-------------------
+mediastore       | F1 91.2% FP   0
+teastore         | F1 94.1% FP   0
+teammates        | F1 85.7% FP  11
+bigbluebutton    | F1 68.7% FP   3
+jabref           | F1 91.4% FP   1
+-----------------+-------------------
+Macro avg        | F1 86.2% FP  15
+
+Results saved to results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3/ablation_20260622_233219.json
+----------------------------------------------------------------------
+finished : 2026-06-22 23:32:19   rc=0
+artifacts: results/manual/s20union-noknow_openai_gpt-5.4__260622-231342-1407939__rep3
+[2026-06-22 23:32:19] <<< END   gpt-noknow/rep3 rc=0
+[2026-06-22 23:33:04] GPT TRACK COMPLETE

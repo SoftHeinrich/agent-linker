@@ -1,0 +1,79 @@
+{
+  "teastore": {
+    "s_linker21_noknow": {
+      "variant": "s_linker21_noknow",
+      "P": 0.8275862068965517,
+      "R": 0.8888888888888888,
+      "F1": 0.8571428571428572,
+      "tp": 24,
+      "fp": 5,
+      "fn": 3,
+      "n_links": 29,
+      "time": 176.71085572242737,
+      "sources": {
+        "entity": 25,
+        "coreference": 4
+      },
+      "fp_by_source": {
+        "entity": 5
+      },
+      "fp_details": [
+        {
+          "sentence": 31,
+          "component": "PopularityBasedRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "If the current user is unknown (e.g., if the user is not logged in or did not purchase anything yet), a fallback algorit"
+        },
+        {
+          "sentence": 32,
+          "component": "SlopeOneRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        },
+        {
+          "sentence": 34,
+          "component": "SlopeOneRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 34,
+          "component": "PreprocessedSlopeOneRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "One CPU-intensive, calculating the item-rankings per user on-the-go and one memory-intensive, calculating the total user"
+        },
+        {
+          "sentence": 35,
+          "component": "OrderBasedRecommender",
+          "source": "entity",
+          "confidence": 1.0,
+          "text": "Furthermore, one order-based nearest-neighbor approach is available."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 8,
+          "component": "WebUI",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 11,
+          "component": "ImageProvider",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ]
+    }
+  }
+}

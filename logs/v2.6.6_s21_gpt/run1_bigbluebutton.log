@@ -1,0 +1,106 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.4)
+Datasets: bigbluebutton
+Variants: s_linker21
+========================================================================================================================
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker21 ---
+SLinker20Union (s20 minimized + Framing C 2-pass UNION; the 's19U' candidate)
+  Backend: openai (gpt-5.4)
+Loaded 12 components, 87 sentences
+
+[Phase 1] Knowledge acquisition (parallel)
+    Alias: KMS -> kurento [global]
+    Alias: HTML5 client -> HTML5 Client [global]
+    Alias: bbb-html5 -> HTML5 Server [global]
+    Alias: HTML5 server -> HTML5 Server [global]
+    Alias: BigBlueButton web application -> BBB web [global]
+    Alias: bbb-web -> BBB web [global]
+    Alias: Redis PubSub -> Redis PubSub [global]
+    Alias: redis pubsub -> Redis PubSub [local]
+    Alias: Redis DB -> Redis DB [global]
+    Alias: BigBlueButton Apps -> Apps [global]
+    Alias: Apps Akka -> Apps [global]
+    Alias: apps -> Apps [local]
+    Alias: FSESL akka -> FSESL [global]
+    Alias: FreeSWITCH Event Socket Layer -> FSESL [global]
+    Alias: Kurento Media Server -> kurento [global]
+    Alias: WebRTC-SFU -> WebRTC-SFU [global]
+    Alias: media controller -> WebRTC-SFU [local]
+    Alias: conversion process -> Presentation Conversion [local]
+    Alias: presentation conversion -> Presentation Conversion [local]
+  Model: 0 ambiguous of 12 components
+  Doc knowledge: 19 aliases
+  Checkpoint: layer1 saved
+
+[Phase 2] Entity extraction (Framing C, 2-pass UNION)
+    [C1] batch 1: S1-S50 (50 sents)
+    [C2] batch 1: S1-S50 (50 sents)
+    [C1] batch 2: S51-S87 (37 sents)
+    [C2] batch 2: S51-S87 (37 sents)
+    Consensus: P1=43 P2=49 ∪=49
+  Framing C: 49 candidates
+  Checkpoint: layer2 saved
+
+[Phase 4] Twopass validation (V3 p1 + p2)
+  Entity validated: 40 / 49
+  Checkpoint: layer3 saved
+
+[Phase 5] Coreference ()
+  Coref raw: 35
+    Coref reject: S3 -> HTML5 Client
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S8 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S15 -> HTML5 Server
+    Coref reject: S17 -> HTML5 Server
+    Coref reject: S19 -> HTML5 Server
+    Coref reject: S20 -> HTML5 Server
+    Coref reject: S30 -> BBB web
+    Coref reject: S31 -> BBB web
+    Coref reject: S36 -> BBB web
+    Coref reject: S44 -> BBB web
+    Coref reject: S52 -> Apps
+    Coref reject: S54 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S60 -> Apps
+    Coref reject: S60 -> FSESL
+    Coref reject: S60 -> Redis PubSub
+    Coref reject: S69 -> kurento
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S73 -> HTML5 Client
+    Coref reject: S78 -> BBB web
+    Coref reject: S79 -> Redis PubSub
+    Coref reject: S80 -> Presentation Conversion
+  Coref validated: 11 / 35
+  Checkpoint: layer4 saved
+
+[Phase 6] Dedup merge
+  Final: 48 (from 51 raw)
+  Phase log saved: results/v2.6.6_s21_gpt/run1/llm_logs/s_linker21_openai_bigbluebutton_20260628_101031.json
+  LLM call trace saved: results/v2.6.6_s21_gpt/run1/llm_logs/s_linker21_openai_bigbluebutton_20260628_101031_calls.json (22 calls)
+  Checkpoint: final saved
+
+Final: 48 links (63.0s, 22 LLM calls)
+  s_linker21: P=97.9% R=75.8% F1=85.5% TP=47 FP=1 FN=15 (63s)
+    Sources: {'entity': 40, 'coreference': 8}
+    FP by source: {'coreference': 1}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker21    
+-----------------+-------------------
+bigbluebutton    | F1 85.5% FP   1
+-----------------+-------------------
+Macro avg        | F1 85.5% FP   1
+
+Results saved to results/v2.6.6_s21_gpt/run1/bigbluebutton/ablation_20260628_101031.json
