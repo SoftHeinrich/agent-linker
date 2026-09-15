@@ -69,5 +69,5 @@ for i in $(seq 1 "${RUNS}"); do
     --results-dir "${RUN}" 2>&1 | tee "${RUN}.log"
 done
 echo "score with: ${PY} pilot/score_runs.py \\"
-echo "  --arm s_linker123 ../results/antecedentrule_e2e_${MODEL}_r{1,2,3}_${STAMP} \\"
+echo "  --arm s_linker123 ../results/shortlistmark_e2e_${MODEL}_r{1,2,3}_20260914 \\"
 echo "  --arm s_linker126 ../results/antecedentrule_e2e_${MODEL}_r{1,2,3}_${STAMP}"

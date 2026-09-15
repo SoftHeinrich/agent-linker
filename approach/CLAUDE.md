@@ -1807,3 +1807,42 @@ round asks what the shortlist is FOR, and ends by deleting it. Report:
   otherwise, and `s_linker126` stays a SUBCLASS until it clears -- the one-file policy is
   for the reported arm, and s124 is the standing reason not to standalone a file that a
   gate may refuse.
+- **THE E2E RAN ON 2026-09-15 AND IT CANNOT PRICE THE ARM. The run set is what it
+  produced, not a verdict.** Three runs a model, `s_linker126` alone
+  (`pilot/run_s126_e2e.sh`, `../results/antecedentrule_e2e_{terra,luna}_r{1,2,3}_20260915`),
+  the `s_linker123` control read CROSS-SET off `../results/shortlistmark_e2e_*_20260914`
+  by the in-set reuse decision. Link-level (`pilot/score_runs.py`): **terra** TP 180.7 ->
+  180.0, FP 13.0 -> 22.0, macro F1 95.11 -> 92.95, F2 94.80 -> 94.01, which the engine
+  calls QUALITY-CHANGING against the arm; **luna** TP 178.0 -> 180.3, FP 35.3 -> 48.0,
+  F1 89.91 -> 89.65, F2 91.87 -> 91.97, QUALITY-NEUTRAL. Calls 73 against 72.3 and 74.0
+  against 75.3.
+- **Every one of those deltas is at a stage the change cannot reach**
+  (`pilot/source_stats.py`, the same permutation test restricted to each linker's own
+  links). s126 touches the RESOLVER only, so `coreference` is the only row it can move.
+  **terra's coreference row is IDENTICAL -- TP 14.7 -> 14.7, FP 1.0 -> 1.0, both p =
+  1.00** -- while its whole FP +9.0 is `full_name` +8.0 and `partial_name` +1.0. Luna's
+  coreference row is TP -0.7 (p = 0.80) at **FP -1.0 (p = 0.60)**, the only favourable
+  precision movement in either model, while its FP +12.7 is `full_name` +6.0 and
+  `partial_name` +7.7. **The arm reads neutral-to-slightly-favourable on its own row on
+  both models and the batch reports a terra regression built entirely out of name-stage
+  resampling.**
+- **ALL THREE STAGE ROWS ARE QUALITY-NEUTRAL ON BOTH MODELS; ONLY THE POOLED ROW IS
+  NOT.** Terra's `ALL` verdict is QUALITY-CHANGING at FP p = 0.10 while `full_name`
+  (p = 0.30), `partial_name` (p = 0.70) and `coreference` (p = 1.00) are each neutral --
+  the pooled statistic manufactures a verdict none of its parts carries, by summing three
+  stages' independent sampling into one count. **Read the pooled row of a late-stage arm
+  as a summary, never as the verdict**; `s_linker50` is the precedent this script was
+  written for and s126 is its second instance.
+- **This is the s124 round's methodological finding reproduced against the very next
+  arm.** That entry ends "any future E2E comparing a late-stage arm must pin the earlier
+  stages across arms, or six runs a model minimum"; this batch did NEITHER -- cross-set at
+  n=3 -- and the runner's own note priced terra's name-stage noise at +12 FP over six runs,
+  larger than the effect under test. **The read to trust for this change stays the pinned
+  level-2 pilot**, by the round's own `pinned name links | kept coreference` identity
+  (symmetric difference 0), which is why a last-stage arm has level 2 IS level 4.
+- **What the batch is FOR, and it delivered that.** The RQ engines key an arm to its E2E
+  run directories (`rq34.py`'s `ARMS`), so an s126 row needs an s126 run set to exist;
+  it now does. `ARMS` still lists `s110`/`s92a`/`s120` only and **is deliberately not
+  extended here** -- registering the arm is reporting it, and **the doc-code gate
+  (`studies/compare_arms.py`, needing `rq12.py`-scored extracts) has NOT been run for
+  s126.** The paper arm stays `s_linker120`.
