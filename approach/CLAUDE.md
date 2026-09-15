@@ -56,9 +56,22 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
 - `s_linker26.py` … `s_linker124.py` — the rounds below. All `experimental=True`.
-  **THE HEAD IS `s_linker124` (the union arm, judged without the anchor block, one merged
-  evidence vocabulary, and the resolver's antecedent shortlist marked with that judge's
-  own verdicts) since 2026-09-14; the PAPER ARM is still `s_linker120`.** Three
+  **THE HEAD IS `s_linker126` (the union arm, judged without the anchor block, one merged
+  evidence vocabulary, NO antecedent shortlist in the resolver at all, and the contract
+  that shortlist used to assert enforced as a code predicate) since 2026-09-15; the
+  PAPER ARM is still `s_linker120`.** `s_linker124` was the head for one day and the
+  doc-code gate refused it (dc F1 -1.67, dc worst F1 -2.33, both 3/3 WORSE).
+  **`s_linker126` is promoted ON SIMPLICITY, by an explicit decision, and the ledger
+  states the cost rather than hiding it**: it deletes a whole mechanism (`_named_before`,
+  its prompt line, and the paragraph vouching for it -- up to 198 lines and 18 327 B off
+  the resolver a run on teammates) and adds a four-line predicate that reuses
+  `_written_as`, already computed for every judging case. Its stage read is terra's best
+  arm (F2 +0.40 against the head, TP 184 in 3 of 3 samples) and **luna's F2 -0.46 at
+  TP -1.0 -- a sign flip, which by this branch's own rule is inside noise and not a
+  quality claim.** The precedent for adopting on simplicity at a measured non-win is
+  `s_linker78`; the precedent for a one-model result not surviving is the unscoped s122
+  clause and the typed coreference judge. The doc-code gate is OWED and is what decides
+  whether it can ever be the reported arm. Three
   head-moves landed in one day and none of them cleared the reporting gate:
   `s_linker122` is link-level neutral at 21.5% less judging but reads WORSE on terra's
   doc-code metrics 3/3; `s_linker123` and the shortlist mark composed into `s_linker124`
@@ -72,7 +85,7 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   are subclasses, because the one-file policy is for the REPORTED arm and neither is one.
   The ledger below is chronological, so an earlier round's "X is the head" sentence is
   true of its own date and superseded by the next round that moves it:
-  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124.
+  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124 -> s125 -> s126.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
@@ -1709,3 +1722,70 @@ mark alone.
   not supposed to do; and the mark's *attributable* exchange rate is +7 gold against +14
   spurious (1 : 2), twice as bad as the pinned pilot's 1 : 1. **Any future E2E comparing a
   late-stage arm must pin the earlier stages across arms, or six runs a model minimum.**
+
+
+### The antecedent-contract round (s125, s126) — the shortlist's promise, kept in code (2026-09-15)
+
+`s_linker124`'s mark on the antecedent shortlist was refused by the doc-code gate. This
+round asks what the shortlist is FOR, and ends by deleting it. Report:
+`../results/coref_annot_round/README.md`; level 1 `pilot/coref_written_audit.py` and
+`pilot/coref_antecedent_dump.py`; level 2 `pilot/coref_shortlist_pilots.py` and
+`pilot/coref_exact_pilots.py`; invariants `pilot/test_s125.py` (33) and
+`pilot/test_s126.py` (30), no calls.
+
+- **WHY s124 FAILED, measured rather than argued.** The gold component was among the
+  resolver's own `candidates` in **0** of the surviving false positives, and **10 of the
+  mark's 15 extra FPs had a SINGLE candidate** -- no competition, only the decision
+  whether to attach (single-candidate precision 95.5% -> 77.4%, multi-candidate 84.9% ->
+  81.5%). It was over-attachment, not mis-discrimination. **The judge did not fail
+  either**: it rejects 86.2% against 87.6%, an unchanged rate -- but the mark made the
+  resolver propose 8.5% more, and that surplus passes the judge at **31.3% against a
+  12.4% base** while being gold only 33.3% of the time. **A fixed-rate sieve cannot
+  absorb a volume increase aimed at its blind spot.**
+- **THE SHORTLIST NEVER BOUGHT RECALL, and both models agree.** Removing it raises GOLD
+  PROPOSALS by 69% (terra 74.0 -> 125.0 a run) and 53% (luna 72.7 -> 111.0), and net gold
+  does not move (15.0 -> 14.7, 15.7 -> 14.7), because `link` merges by pair and the name
+  stage already holds those pairs. **The coreference stage contributes ~15 gold links a
+  run whatever the resolver is shown.** That is the structural reason s124 had no headroom
+  and could only move false positives, and it is why the list is a precision device.
+- **The fact that DOES separate is the antecedent's own surface.** Over six recorded runs,
+  surviving coreference links by what the cited antecedent sentence writes: whole name
+  142 gold / 14 FP, short form 39 / 3, **whole name (qualified) 0 / 10, one word or
+  off-list 0 / 7**. Seventeen false positives and zero gold in the two rows where the
+  sentence does not write the name AS A NAME, holding on each model alone. The manual
+  reading names them: a package path offered as a mention (`Package overview contains
+  storage.api, ...` for `Storage`) and a sentence that never writes the name
+  (`... bbb-html5 uses 2 "frontend" ...` for `HTML5 Server`, **six times**). Every gold
+  antecedent writes the name as a free-standing noun phrase.
+- **The same fact is negative in the prompt and positive in code — the design law, with a
+  number on each side.** `annotexact` (mark the offending entries) reads terra F1 -0.03 /
+  F2 -0.01 and luna F1 -0.33 / **F2 -0.47**; `refuse` (drop the resolution before the
+  judge) reads **TP identical to the decimal on BOTH models**, FP 13.0 -> 12.3 (terra) and
+  40.3 -> 38.3 (luna, -2 in 3 of 3 samples), F1 +0.11 / +0.20. **Third failure of
+  annotating this shortlist** after s124's verdict mark and its weighing clause.
+- **It may CLOSE a case where s124's mark may not.** `written` is GIVEN -- catalog plus
+  document, identical every run -- and a judge's verdict is DISCOVERED. `s_linker109`'s
+  rule, with its nesting predicate as the precedent.
+- **`s_linker125`** removes the shortlist and adds nothing: terra F1 95.92 -> 95.52, luna
+  90.13 -> 90.53. A sign flip, inside noise. Its one measured cost is net spurious
+  (terra 1.3 -> 2.7): a resolver with no list cites antecedents further afield.
+- **`s_linker126` = s125 + the predicate, and it is the HEAD by an explicit decision on
+  SIMPLICITY.** terra is its best case and the composition works exactly as predicted --
+  proposals 134.0 -> 171.0 with gold 77.7 -> 115.0, kept 32.3 -> 25.3, **net gold 15.0
+  and net spurious 1.3** against the head's 14.7 and 2.0; composed F1 95.76 -> **95.99**,
+  F2 95.78 -> **96.18**, TP 184 in 3 of 3 samples. **Luna refuses it: F2 92.94 -> 92.48,
+  TP 180.0 -> 179.0.** The mechanism breaks there because luna proposes 242.0 a run
+  against terra's 171.0 and keeps 62.0 -- **the predicate can reject an antecedent that
+  fails a lexical test, not a plausible-looking wrong one**, and the list was constraining
+  the search in a way the predicate does not replicate. **The list narrows what is
+  PROPOSED; the rule filters what was CITED. They are not interchangeable**, which is the
+  round's transferable result and the reason `refuse` (list AND rule) is the arm that
+  holds on both models.
+- **What the promotion is and is not.** Adopted as the head on the simplicity argument --
+  one method, one prompt paragraph and ~18 kB a run deleted against a four-line predicate
+  that reuses an existing computation, with `s_linker78` as the precedent for adopting a
+  cut at a measured non-win. **NOT adopted on quality: the F2 sign flip is recorded above
+  and is not a win.** The paper arm stays `s_linker120` until the doc-code gate says
+  otherwise, and `s_linker126` stays a SUBCLASS until it clears -- the one-file policy is
+  for the reported arm, and s124 is the standing reason not to standalone a file that a
+  gate may refuse.
