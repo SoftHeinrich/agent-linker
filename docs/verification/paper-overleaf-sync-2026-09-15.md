@@ -1,0 +1,104 @@
+# Paper/Overleaf synchronization verification
+
+**Date:** 2026-09-15
+**Package source before migration:** `4b6db31c8b0a77a08b8a699e82aae9a608b496fb`
+**Paper commit:** `26b4c584bc2d29be5c2743b3e6df56c44ca5b809`
+
+## Configuration checked
+
+- The parent repository records `paper/` as a submodule at
+  `git@github.com:SoftHeinrich/alinker-paper.git`, branch `main`.
+- The paper repository has local remotes named `origin` and `overleaf`.
+- The credential-bearing Overleaf URL is local Git configuration only and is
+  intentionally not recorded here.
+- Both repositories use a tracked `.githooks/post-commit` directory after
+  `./scripts/install-hooks.sh` sets `core.hooksPath=.githooks`.
+
+## Commands and results
+
+### Paper migration and remote identity
+
+The package paper tree was compared with the new submodule checkout using
+`rsync -rcn --delete`, excluding only LaTeX build outputs and Python cache
+directories.
+
+```text
+Paper source comparison: PASS (backup and submodule match outside ignored build artifacts).
+Submodule worktree: clean.
+```
+
+The remote heads were then checked with:
+
+```bash
+git -C paper ls-remote origin refs/heads/main
+git -C paper ls-remote overleaf refs/heads/main
+```
+
+```text
+26b4c584bc2d29be5c2743b3e6df56c44ca5b809  refs/heads/main
+26b4c584bc2d29be5c2743b3e6df56c44ca5b809  refs/heads/main
+```
+
+With `core.hooksPath=.githooks` enabled in a temporary paper checkout, the
+paper post-commit hook ran during the final paper commit and reported:
+
+```text
+Pushed 26b4c584bc2d29be5c2743b3e6df56c44ca5b809 to origin/main.
+Pushed 26b4c584bc2d29be5c2743b3e6df56c44ca5b809 to overleaf/main.
+```
+
+### Hook and sync checks
+
+```bash
+bash -n .githooks/post-commit paper/.githooks/post-commit \
+  paper/scripts/sync-paper.sh scripts/install-hooks.sh \
+  scripts/sync-paper-overleaf.sh
+./scripts/sync-paper-overleaf.sh --check
+./scripts/sync-paper-overleaf.sh --dry-run
+```
+
+```text
+PASS: hook and sync scripts parse
+origin/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
+overleaf/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
+origin/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
+overleaf/main already contains 26b4c584bc2d29be5c2743b3e6df56c44ca5b809.
+```
+
+### Deterministic package verification
+
+```bash
+./scripts/verify.sh
+```
+
+```text
+OK arm-default every generator reports arm 's120' (7/7 found)
+PASS: mini-src/metrics.py reproduces the frozen golden panel (10 cells, sad-code + sad-sam).
+Command exit status: 0
+```
+
+The run printed all five project rows for both tasks and completed without a
+data or evaluation change.
+
+### Local paper build
+
+```bash
+./scripts/build-paper.sh
+```
+
+```text
+latexmk is required to build the paper (install TeX Live with latexmk).
+Command exit status: 1
+```
+
+The local environment has no `latexmk`, `pdflatex`, `bibtex`, or `tectonic`
+executable. Local PDF compilation is therefore blocked by the missing TeX
+toolchain; this verification does not claim an Overleaf build result.
+
+### Non-gating whitespace check
+
+The staging check
+`git diff --cached --check` reported existing trailing whitespace in imported
+LaTeX/CSV content and binary-PDF noise. The scoped check for the new hook and
+configuration files passed. No paper wording or data files were rewritten to
+silence that diagnostic.
