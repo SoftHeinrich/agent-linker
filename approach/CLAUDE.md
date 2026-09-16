@@ -55,10 +55,10 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   fixed **name-evidence order** (full-name → partial-name → coreference), no controller.
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
-- `s_linker26.py` … `s_linker124.py` — the rounds below. All `experimental=True`.
-  **THE HEAD IS `s_linker126` (the union arm, judged without the anchor block, one merged
-  evidence vocabulary, NO antecedent shortlist in the resolver at all, and the contract
-  that shortlist used to assert enforced as a code predicate) since 2026-09-15; the
+- `s_linker26.py` … `s_linker126.py` — the rounds below. All `experimental=True`.
+  **THE HEAD IS `s_linker126` (greedy whole-name ownership, unresolved name ambiguity
+  discarded, no competitors field, NO antecedent shortlist in the resolver, and the
+  contract that shortlist used to assert enforced as a code predicate); the
   PAPER ARM is still `s_linker120`.** `s_linker124` was the head for one day and the
   doc-code gate refused it (dc F1 -1.67, dc worst F1 -2.33, both 3/3 WORSE).
   **`s_linker126` is promoted ON SIMPLICITY, by an explicit decision, and the ledger
@@ -1846,3 +1846,23 @@ round asks what the shortlist is FOR, and ends by deleting it. Report:
   extended here** -- registering the arm is reporting it, and **the doc-code gate
   (`studies/compare_arms.py`, needing `rq12.py`-scored extracts) has NOT been run for
   s126.** The paper arm stays `s_linker120`.
+
+### Greedy ownership with ambiguous groups discarded (s126 update, 2026-09-16)
+
+- The earlier merged-choice judge was removed. After whole catalog names claim their
+  contained words, a remaining surface that proposes several components is discarded;
+  it is not sent to a second judge. The deterministic contract has 27 passing checks.
+- Six paired flex-tier E2E runs compare s126 with an in-invocation s123 control: three
+  each on GPT-5.6-terra and GPT-5.6-luna, all five projects, arm order alternating.
+  Link-level means favour s126 on both backends: terra F1/F2 `+2.16/+1.98`, TP/FP
+  `+4.0/-4.7`; luna `+0.93/+0.48`, TP/FP `+1.0/-9.3`.
+- **The component-weighted reporting gate refuses promotion.** Against the same-run
+  control, terra doc-code file F2 is `+2.30` with 3/3 positive signs, while file F1 and
+  tail metrics have positive means with mixed signs. Luna is WORSE 3/3 on doc-code file
+  F1 (`-0.86`), file F2 (`-1.59`), and worst-component F1 (`-2.32`). The harmonic metric
+  is inside noise. These are backend-specific measured results, not evidence of a
+  general effect. Full provenance is in `../results/s127_greedy_merge/README.md` and
+  `../evaluation/reports/ARM_COMPARE_s126_vs_s123gctl.csv`.
+- **Conclusion:** s126 remains the experimental head because this update removes a
+  field and a judge call while enforcing conservative name ownership. It is not the
+  reported arm. The paper continues to use `s_linker120`.
