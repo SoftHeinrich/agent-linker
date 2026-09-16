@@ -71,3 +71,40 @@ git -C paper diff --check -- sections/approach.tex
 ```
 
 Result: exit code `0`, with no whitespace errors.
+
+## Follow-up: updated figure export
+
+The paper submodule later received updated artwork in commit `e7a4abd`. The
+parent initially still pointed to `04a5bfa`, so that child update was not
+included when the package was checked out. The updated PDFs also retained their
+full-page export margins. At full width, the named figure made its float 30.77
+pt too tall; LaTeX deferred both figures to pages 18--19.
+
+The updated artwork was cropped without changing its drawn content:
+
+```text
+pdfcrop --margins '6 6 6 6' paper/figures/named_link_approach.pdf <tmp>/named_link_approach.pdf
+pdfcrop --margins '6 6 6 6' paper/figures/coref-link-approach.pdf <tmp>/coref-link-approach.pdf
+```
+
+The resulting assets are one page each, sized `354 x 118.08 pt` and
+`364.08 x 121.92 pt`, respectively. They are committed in paper commit
+`934ead3`.
+
+Command:
+
+```text
+(cd paper && latexmk -g -pdf -interaction=nonstopmode -halt-on-error main.tex)
+```
+
+Result:
+
+```text
+Output written on main.pdf (17 pages, 817179 bytes).
+FORCED_BUILD_EXIT=0
+```
+
+The rebuilt output contains both figure captions and records
+`fig:approach-named` and `fig:approach-coref` on page 7. The final log contains
+no `Float too large` diagnostic. Existing `fig:example` and bibliography
+warnings remain unchanged.
