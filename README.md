@@ -71,7 +71,9 @@ of the new commit. A remote that is ahead or has diverged stops the sync and
 requires an explicit reconciliation. Use `./scripts/sync-paper-overleaf.sh
 --check` to inspect readiness or run the command without a hook.
 
-When the paper submodule pointer changes, commit that pointer in the parent
-repository as usual. The parent post-commit hook repeats the sync check for
-that pointer commit. Git does not clone hooks, so run `./scripts/install-hooks.sh`
-once in each fresh checkout.
+After a successful paper commit in an initialized submodule, the child hook
+stages only the `paper` gitlink and creates a parent commit named
+`chore: update paper submodule`. It refuses to overwrite a different staged
+pointer or an unresolved parent merge. The hook does not push the parent
+repository; push that parent commit explicitly. Git does not clone hooks, so
+run `./scripts/install-hooks.sh` once in each fresh checkout.
