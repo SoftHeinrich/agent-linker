@@ -2,6 +2,10 @@
 
 Date: 2026-09-16
 
+This record describes the original local-commit behavior. The parent auto-push
+extension and its verification are recorded in
+`verification/2026-09-17-auto-push-paper-pointer.md`.
+
 ## Configuration under test
 
 - `paper/.githooks/post-commit` synchronizes the paper remotes, locates the

@@ -74,6 +74,8 @@ requires an explicit reconciliation. Use `./scripts/sync-paper-overleaf.sh
 After a successful paper commit in an initialized submodule, the child hook
 stages only the `paper` gitlink and creates a parent commit named
 `chore: update paper submodule`. It refuses to overwrite a different staged
-pointer or an unresolved parent merge. The hook does not push the parent
-repository; push that parent commit explicitly. Git does not clone hooks, so
-run `./scripts/install-hooks.sh` once in each fresh checkout.
+pointer or an unresolved parent merge. It then pushes the current parent branch
+to `origin` without forcing; a detached parent or a remote that rejects the push
+stops the hook with the local pointer commit preserved. Set `PARENT_REMOTE` to
+use another parent remote. Git does not clone hooks, so run
+`./scripts/install-hooks.sh` once in each fresh checkout.

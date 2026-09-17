@@ -13,9 +13,18 @@ unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
 
 parent_root="$(git rev-parse --show-toplevel)"
 submodule_root="$parent_root/$submodule_path"
+parent_remote="${PARENT_REMOTE:-origin}"
 
 git -C "$parent_root" ls-files --error-unmatch -- "$submodule_path" >/dev/null
 git -C "$submodule_root" rev-parse --show-toplevel >/dev/null
+if ! parent_branch="$(git -C "$parent_root" symbolic-ref --quiet --short HEAD)"; then
+  echo "Parent repository has a detached HEAD; refusing to push $submodule_path." >&2
+  exit 1
+fi
+if ! git -C "$parent_root" remote get-url "$parent_remote" >/dev/null 2>&1; then
+  echo "Parent remote '$parent_remote' is not configured; refusing to update $submodule_path." >&2
+  exit 1
+fi
 submodule_head="$(git -C "$submodule_root" rev-parse HEAD)"
 parent_head="$(git -C "$parent_root" rev-parse --verify HEAD)"
 parent_gitlink="$(git -C "$parent_root" rev-parse --verify ":$submodule_path" 2>/dev/null || true)"
@@ -41,3 +50,4 @@ fi
 git -C "$parent_root" add -- "$submodule_path"
 git -C "$parent_root" commit --only --no-verify \
   -m "chore: update $submodule_path submodule" -- "$submodule_path"
+git -C "$parent_root" push "$parent_remote" "HEAD:refs/heads/$parent_branch"
