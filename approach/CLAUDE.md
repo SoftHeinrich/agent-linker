@@ -56,36 +56,58 @@ verdict and the number, and those READMEs carry the narrative. `python run_ablat
   **The reference band, N=6: macro F1 96.4 ± 0.4, F2 95.4 ± 0.6, TP/FP 180.8 / 4.8.**
   Everything from s26 on is measured against this design or a descendant of it.
 - `s_linker26.py` … `s_linker126.py` — the rounds below. All `experimental=True`.
-  **THE HEAD IS `s_linker126` (greedy whole-name ownership, unresolved name ambiguity
-  discarded, no competitors field, NO antecedent shortlist in the resolver, and the
-  contract that shortlist used to assert enforced as a code predicate); the
-  PAPER ARM is still `s_linker120`.** `s_linker124` was the head for one day and the
-  doc-code gate refused it (dc F1 -1.67, dc worst F1 -2.33, both 3/3 WORSE).
-  **`s_linker126` is promoted ON SIMPLICITY, by an explicit decision, and the ledger
-  states the cost rather than hiding it**: it deletes a whole mechanism (`_named_before`,
-  its prompt line, and the paragraph vouching for it -- up to 198 lines and 18 327 B off
-  the resolver a run on teammates) and adds a four-line predicate that reuses
-  `_written_as`, already computed for every judging case. Its stage read is terra's best
-  arm (F2 +0.40 against the head, TP 184 in 3 of 3 samples) and **luna's F2 -0.46 at
-  TP -1.0 -- a sign flip, which by this branch's own rule is inside noise and not a
-  quality claim.** The precedent for adopting on simplicity at a measured non-win is
-  `s_linker78`; the precedent for a one-model result not surviving is the unscoped s122
-  clause and the typed coreference judge. The doc-code gate is OWED and is what decides
-  whether it can ever be the reported arm. Three
-  head-moves landed in one day and none of them cleared the reporting gate:
-  `s_linker122` is link-level neutral at 21.5% less judging but reads WORSE on terra's
-  doc-code metrics 3/3; `s_linker123` and the shortlist mark composed into `s_linker124`
-  were each priced at the LINK-LEVEL grain (`score_runs.py`) and **neither has been put
-  to the gate at all**, which is `studies/compare_arms.py` — the component-weighted
-  doc-code read, needing `rq12.py`-scored E2E run directories that do not exist for them.
-  **A cut that is free at the grain you are not reporting is not free**: s122 is the
-  standing instance, and s124's whole delta is *which components* a handful of links land
-  on, which is precisely what the link-level grain cannot see. `s_linker122` is a
-  standalone file like `s_linker120` and `s_linker110`; `s_linker123` and `s_linker124`
-  are subclasses, because the one-file policy is for the REPORTED arm and neither is one.
+  **THE PAPER ARM IS `s_linker126`** (greedy whole-name ownership, unresolved name
+  ambiguity discarded, no competitors field, NO antecedent shortlist in the resolver,
+  the contract that shortlist used to assert enforced as a code predicate), promoted
+  on **2026-09-16 by explicit author decision on simplicity, overriding the
+  component-weighted doc-code gate's refusal rather than waiting for it to clear.**
+  `s_linker124` was the head for one day and the doc-code gate refused it (dc F1 -1.67,
+  dc worst F1 -2.33, both 3/3 WORSE).
+  **What the override costs, stated rather than hidden.** The reported E2E batch
+  (`results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20260916v2`, six paired flex-tier
+  runs against the in-invocation `s_linker123` control, rerun on 2026-09-16 to also
+  carry the `antecedent_form_rejected` decision-logging fix so RQ3's NoCitation
+  ablation reads correctly) reads doc-model link F1/F2 deltas over the in-set
+  `s123gctl` control of terra `+1.06`/`+1.85` and luna `+0.72`/`-0.07`. The
+  component-weighted doc-code gate (`studies/compare_arms.py`,
+  `evaluation/reports/ARM_COMPARE_s126_vs_s123gctl.csv`) reads a mixed signal, not a
+  clearance: **terra** doc-code file F2 `+0.90` (3/3 BETTER) alongside doc-code
+  worst-component F1 `-2.43` (3/3 WORSE); **luna** doc-code file F1 `-0.43` (3/3
+  WORSE), every other tracked doc-code/CMR metric on both backends INSIDE NOISE.
+  This supersedes the numbers an earlier same-day entry cited from the pre-rerun
+  batch (terra dc F2 +2.30, luna WORSE 3/3 on dc F1/F2/worst-F1) — that batch's
+  actual output links were fine, but its RQ3 logging gap meant a rerun was needed
+  regardless, and the fresh independent sample reads differently: some of luna's
+  clean-worse signals softened into noise, while terra picked up a clean-worse
+  signal (doc-code worst-component F1) that the original batch did not show. Read
+  this as this project's own noise warning demonstrated, not resolved by rerunning
+  once more.
+  **The promotion is on simplicity, not on this result**: it deletes a whole
+  mechanism (`_named_before`, its prompt line, and the paragraph vouching for it --
+  up to 198 lines and 18 327 B off the resolver a run on teammates) and adds a
+  four-line predicate that reuses `_written_as`, already computed for every judging
+  case. The precedent for adopting on simplicity at a measured non-win is
+  `s_linker78`; the precedent for a one-model (here, one-metric) result not
+  surviving a rerun is the unscoped s122 clause and the typed coreference judge.
+  **`s_linker126` is now the standalone file** (2026-09-16), same policy as
+  `s_linker120`/`s_linker110`/`s_linker122` before it: the `s122 -> s123 -> s125 ->
+  s126` subclass chain is flattened into one file, no sibling `s_linkerNNN` import,
+  verified by `pilot/test_s126.py` (27 checks) plus a byte-identity check of every
+  resolved method/prompt constant against the pre-flatten subclassed form on all
+  five projects. `s_linker123` and `s_linker124` remain subclasses -- neither
+  cleared a gate, so neither gets the one-file treatment.
+  Three head-moves before this one landed in one day and none of them cleared the
+  reporting gate: `s_linker122` is link-level neutral at 21.5% less judging but
+  reads WORSE on terra's doc-code metrics 3/3; `s_linker123` and the shortlist mark
+  composed into `s_linker124` were each priced at the LINK-LEVEL grain
+  (`score_runs.py`) and **were never put to the gate at all** -- the component-weighted
+  doc-code read, needing `rq12.py`-scored E2E run directories that did not exist for
+  them. **A cut that is free at the grain you are not reporting is not free**: s122
+  is the standing instance, and s124's whole delta is *which components* a handful of
+  links land on, which is precisely what the link-level grain cannot see.
   The ledger below is chronological, so an earlier round's "X is the head" sentence is
   true of its own date and superseded by the next round that moves it:
-  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124 -> s125 -> s126.
+  s92a -> s109/s110 -> s120 -> s121 -> s122 -> s123 -> s124 -> s125 -> s126 (PAPER ARM).
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py`, `ilinker3.py` —
   shared runtime.
 - `linkers/experimental/linker_infra.py` — the linker plumbing, **functions and one
@@ -1866,3 +1888,62 @@ round asks what the shortlist is FOR, and ends by deleting it. Report:
 - **Conclusion:** s126 remains the experimental head because this update removes a
   field and a judge call while enforcing conservative name ownership. It is not the
   reported arm. The paper continues to use `s_linker120`.
+
+### s126 promoted to the PAPER ARM, overriding the gate (2026-09-16, later same day)
+
+- **The gate above was never cleared. It was overridden by explicit author decision
+  on simplicity**, on the same precedent as `s_linker78`: adopting a cut at a
+  measured non-win rather than at a win. This entry exists so the override is
+  greppable and its numbers are the ones actually on disk, not the ones cited at
+  the moment the decision was made.
+- **The batch above could not stand as reported anyway.** `_validate_coref_links`
+  filtered antecedent-form-rejected candidates out of `coref_links` before they ever
+  reached the judge, so they never got a `judge_decisions` entry — invisible to
+  `rq34.py`'s `NoCitation` reconstruction (`_judged_sets`, which reads
+  `judge_decisions` alone). That is not a bookkeeping nicety: `NoCitation`'s
+  reconstructed kept/rejected sets are exactly what lands in the paper's RQ3 table,
+  so the published NoCitation column would have been a real result computed from an
+  incomplete log. Fixed by logging a `path: antecedent_form_rejected` decision for
+  each predicate-rejected candidate, the same accounting `_judge_union`'s
+  ambiguous-group discard already gives its own rejections. Confirmed on one project
+  alone: 23 of 57 raw coreference candidates were previously invisible to the
+  ablation.
+- **The fix cannot be applied retroactively to already-completed runs** (judge
+  decisions are logged at LLM-call time), so the reported batch was rerun in full:
+  `results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20260916v2`, same shape as the
+  original (six paired flex-tier runs, in-invocation `s_linker123` control, arm order
+  alternating). The in-set control (`s123gctl`) was rebuilt from the SAME v2
+  invocations rather than reused from the earlier batch, so the comparison stays
+  same-invocation-set throughout.
+- **The rerun reads a different gate picture than the one the override decision
+  above was made against — stated plainly rather than smoothed over.** Doc-model
+  link F1/F2 deltas over `s123gctl`: terra `+1.06`/`+1.85`, luna `+0.72`/`-0.07`
+  (`evaluation/reports/ARM_COMPARE_s126_vs_s123gctl.csv`, regenerated from the v2
+  batch). Doc-code gate: **terra** file F2 `+0.90` (3/3 BETTER) *alongside*
+  worst-component F1 `-2.43` (3/3 WORSE, not flagged in the original batch); **luna**
+  file F1 `-0.43` (3/3 WORSE, same direction as before but smaller), file F2 and
+  worst-component F1 both softened from 3/3 WORSE to INSIDE NOISE. Net: still no
+  clearance, still a real per-backend cost, but not the *same* cost the original
+  decision cited. This is the project's own "read the pooled row as a summary, never
+  as the verdict" / cross-run-noise warning demonstrated on itself — a second
+  independent sample does not settle the question, it relocates it.
+- **The RQ4 "No knowledge" row** (`s_linker126_noknow`, registered in
+  `run_ablation.py` mirroring `s_linker120_noknow`) was measured fresh
+  (`results/greedymerge_noknow_e2e_{terra,luna}_r{1,2,3}_20260916v2`) rather than
+  left dropped, since `rq_tables.py` omits the row rather than borrow another arm's
+  and the arm actually reported needs its own sweep.
+- **`s_linker126` is now the standalone file**, same one-file policy as
+  `s_linker120`/`s_linker110`/`s_linker122`: the `s122 -> s123 -> s125 -> s126`
+  subclass chain is flattened into one file, no sibling `s_linkerNNN` import, every
+  resolved method and prompt constant verified byte-identical to the pre-flatten
+  subclassed form on all five projects, `pilot/test_s126.py` (27 checks) unchanged
+  and passing.
+- **Every paper table (RQ1-RQ4, appendix big-tables) was regenerated and synced**
+  from this v2 batch (`evaluation/mini-src/{rq12,rq34,rq34_rq2,rq_tables,csv_to_tex,sync_paper}.py`,
+  all seven `DEFAULT_ARM` declarations flipped to `s126`, `check.py` confirms
+  agreement). The RQ4 one-call floor stays absent, exactly as it was for `s120` --
+  `s_linker126_onecall` was never built either.
+- **What did not move:** the mechanism itself, the deterministic contract (27
+  checks), and the design rationale in the entries above. Only the reported-arm
+  pointer, the standalone-file status, and the honesty of the RQ3 NoCitation column
+  changed today.

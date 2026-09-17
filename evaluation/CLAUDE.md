@@ -27,17 +27,22 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
   `metrics.PANELS` → `rq12.COLUMNS` → `rq_tables` → `csv_to_tex.SPECS`; a lone F1
   column is a bug. `csv_to_tex.check_specs()` runs on import and will refuse a
   spec whose `\multicolumn` bands no longer cover its columns.
-  The canonical arm is **s_linker120** (terra = paper body, luna = mirror), the
-  union arm promoted on 2026-09-11; `s110` and the in-set `s110ctl` keep their
-  suffixed CSVs so the promotion stays reproducible. The s21 / s20union arms were
-  retired from the roster on 2026-08-26. Seven modules declare `DEFAULT_ARM` and
-  `check.py` fails if any two disagree, so an arm cannot be promoted by halves.
-  **Two things are per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s120
-  has two judges, every earlier arm three) and its `FORM_SETS` (RQ4 prices three
-  proposal forms on every arm, splitting s120's one name phase by the stage label
-  each link carries). An arm with no one-call floor sweep of its own has no floor
-  table: `rq4_floor.py` refuses, `rq_tables.py` drops it, `csv_to_tex.py` skips it
-  and `sync_paper.py` removes the previous arm's copy from the paper.
+  The canonical arm is **s_linker126** (terra = paper body, luna = mirror), the
+  greedy-merge arm promoted on 2026-09-16 by explicit author decision on
+  simplicity, overriding the component-weighted doc-code gate's refusal (see
+  `../approach/CLAUDE.md`'s status header for the numbers and rationale). `s120`
+  (the arm it replaced, promoted 2026-09-11), `s110` and the in-set `s110ctl` keep
+  their suffixed CSVs so every promotion stays reproducible. The s21 / s20union
+  arms were retired from the roster on 2026-08-26. Seven modules declare
+  `DEFAULT_ARM` and `check.py` fails if any two disagree, so an arm cannot be
+  promoted by halves.
+  **Two things are per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s126,
+  like s120 before it, has two judges, every earlier arm three) and its
+  `FORM_SETS` (RQ4 prices three proposal forms on every arm, splitting s126's one
+  name phase by the stage label each link carries). An arm with no one-call floor
+  sweep of its own has no floor table: `rq4_floor.py` refuses, `rq_tables.py`
+  drops it, `csv_to_tex.py` skips it and `sync_paper.py` removes the previous
+  arm's copy from the paper -- true of s126 exactly as it was of s120.
 - `mini-inequality/` — RQ2 motivation (gold-link concentration inequality).
   `motivation.py` writes `paper/table/gold_concentration.tex`, which is why the
   engine lives here; `sync_paper.py` imports it lazily. A self-contained GSD

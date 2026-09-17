@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import io
 import sys
+from types import SimpleNamespace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,9 +14,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from llm_sad_sam.linkers.experimental.s_linker125 import SLinker125  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker126 import (            # noqa: E402
-    SLinker126, TRACE_LINK_RULE,
+    NAMING_OF, SLinker126, TRACE_LINK_RULE,
 )
-from coref_exact_pilots import NAMES_IT, load                           # noqa: E402
+from coref_exact_pilots import load                                       # noqa: E402
 from reading_pilots import DATASETS                                    # noqa: E402
 
 RUN = ROOT.parent / "results/shortlistmark_e2e_terra_r1_20260914"
@@ -56,7 +57,30 @@ def candidates(linker, data):
 
 def main():
     check("variant name", SLinker126._VARIANT_NAME == "s_linker126")
-    check("antecedent forms retained", tuple(SLinker126.ANTECEDENT_FORMS) == tuple(NAMES_IT))
+    check("written labels follow approach", SLinker126.WRITTEN == (
+        "exact", "alias", "part", "qualified name"))
+    check("judge prompt defines written labels", all(
+        label in TRACE_LINK_RULE for label in (
+            "exact", "alias", "part", "qualified name")))
+    check("antecedent forms use written labels",
+          SLinker126.ANTECEDENT_FORMS == ("exact", "alias"))
+    check("naming projection remains stable", NAMING_OF == {
+        "exact": "whole name",
+        "qualified name": "whole name",
+        "alias": "alias",
+        "part": "word only",
+    })
+
+    label_probe = SLinker126.__new__(SLinker126)
+    label_probe.doc_knowledge = SimpleNamespace(aliases={"DB": "Database"})
+    check("written exact", label_probe._written_as(
+        "The Database component stores records.", "Database") == "exact")
+    check("written alias", label_probe._written_as(
+        "The DB component stores records.", "Database") == "alias")
+    check("written part", label_probe._written_as(
+        "Each client connects here.", "HTML5 Client") == "part")
+    check("written qualified name", label_probe._written_as(
+        "pkg.db.read() is called.", "DB") == "qualified name")
     check("competitors rule removed", "competitors --" not in TRACE_LINK_RULE)
 
     for project in sorted(DATASETS):

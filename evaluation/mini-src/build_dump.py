@@ -45,7 +45,7 @@ _HERE = Path(__file__).resolve().parent              # .../evaluation/mini-src
 _REPO = _HERE.parents[1]                              # .../alinker-replication-package
 # The reported arm; check.py reads this literal out of every generator and fails if any
 # two disagree, so an arm cannot be promoted by halves.
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 # Defaults are in-tree, so a bare run works; the env vars are for an out-of-tree dump or
 # extracts set. (Until 2026-09-02 they pointed at the pre-nesting sibling layout, i.e. at

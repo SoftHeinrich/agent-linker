@@ -43,7 +43,7 @@ REPORTS = EVAL / "reports"
 # instead of editing four paths. $ALINKER_ARM selects the arm (default below is the arm
 # the paper reports; check.py asserts every generator declares the same DEFAULT_ARM).
 # $RQ34_REPORTS still names the RQ3/RQ4 directory outright, for one named off-pattern.
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"   # matches rq12.py's output naming
 
@@ -80,6 +80,7 @@ BASELINE_RUN = "average"
 JUDGE_SETS = {
     "s110": ["full_name", "partial_name", "coref"],
     "s120": ["name", "coref"],
+    "s126": ["name", "coref"],
 }
 JUDGES = JUDGE_SETS.get(ARM, JUDGE_SETS["s110"])
 # The *forms* RQ4 prices, which are the same three for every arm: the links carry the

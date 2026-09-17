@@ -1,0 +1,230 @@
+========================================================================================================================
+ABLATION STUDY: Retained ILinker and S-Linker Variants
+Backend: openai (gpt-5.6-luna)
+Datasets: mediastore, teammates, teastore, bigbluebutton, jabref
+Variants: s_linker126_noknow
+========================================================================================================================
+
+========================================================================================================================
+DATASET: mediastore
+========================================================================================================================
+  Components: 14, Sentences: 37
+  Gold links: 31, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker126_noknow ---
+SLinker122 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 14 components, 37 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 17 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S3 -> Facade
+    Coref reject: S4 -> UserManagement
+    Coref reject: S28 -> MediaAccess
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_mediastore_20260916_160855.json
+  LLM call trace saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_mediastore_20260916_160855_calls.json (6 calls)
+
+Final: 18 links (26.5s, 6 LLM calls)
+  s_linker126_noknow: P=100.0% R=58.1% F1=73.5% F2=63.4% TP=18 FP=0 FN=13 (27s)
+    Sources: {'full_name': 17, 'coreference': 1}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: teammates
+========================================================================================================================
+  Components: 8, Sentences: 198
+  Gold links: 57, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker126_noknow ---
+SLinker122 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 8 components, 198 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 85 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref batch 2: empty response, retrying...
+    Coref skip (no antecedent): S182 -> UI
+    Coref skip (no antecedent): S187 -> Test Driver
+    Coref reject: S4 -> UI
+    Coref reject: S5 -> UI
+    Coref reject: S7 -> UI
+    Coref reject: S30 -> UI
+    Coref reject: S44 -> Logic
+    Coref reject: S68 -> Logic
+    Coref reject: S81 -> UI
+    Coref reject: S85 -> Logic
+    Coref reject: S96 -> Logic
+    Coref reject: S96 -> Logic
+    Coref reject: S97 -> Logic
+    Coref reject: S121 -> Storage
+    Coref reject: S131 -> Storage
+    Coref reject: S138 -> GAE Datastore
+    Coref reject: S141 -> GAE Datastore
+    Coref reject: S144 -> GAE Datastore
+    Coref reject: S146 -> GAE Datastore
+    Coref reject: S147 -> GAE Datastore
+    Coref reject: S149 -> GAE Datastore
+    Coref reject: S187 -> E2E
+    Coref reject: S187 -> E2E
+    Coref reject: S187 -> E2E
+    Coref reject: S187 -> E2E
+    Coref reject: S187 -> E2E
+    Coref reject: S188 -> E2E
+    Coref reject: S189 -> E2E
+    Coref reject: S190 -> E2E
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_teammates_20260916_161158.json
+  LLM call trace saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_teammates_20260916_161158_calls.json (29 calls)
+
+Final: 69 links (182.3s, 29 LLM calls)
+  s_linker126_noknow: P=78.3% R=94.7% F1=85.7% F2=90.9% TP=54 FP=15 FN=3 (182s)
+    Sources: {'full_name': 54, 'partial_name': 12, 'coreference': 3}
+    FP by source: {'partial_name': 8, 'full_name': 6, 'coreference': 1}
+
+========================================================================================================================
+DATASET: teastore
+========================================================================================================================
+  Components: 11, Sentences: 43
+  Gold links: 27, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker126_noknow ---
+SLinker122 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 11 components, 43 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 15 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S8 -> WebUI
+    Coref reject: S18 -> Auth
+    Coref reject: S21 -> Auth
+    Coref reject: S26 -> Persistence
+    Coref reject: S28 -> Recommender
+    Coref reject: S37 -> Registry
+    Coref reject: S39 -> Registry
+    Coref reject: S40 -> Registry
+    Coref reject: S41 -> Registry
+    Coref reject: S43 -> Registry
+    Coref reject: S43 -> Registry
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_teastore_20260916_161250.json
+  LLM call trace saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_teastore_20260916_161250_calls.json (7 calls)
+
+Final: 17 links (52.0s, 7 LLM calls)
+  s_linker126_noknow: P=100.0% R=63.0% F1=77.3% F2=68.0% TP=17 FP=0 FN=10 (52s)
+    Sources: {'full_name': 14, 'coreference': 3}
+    FP by source: {}
+
+========================================================================================================================
+DATASET: bigbluebutton
+========================================================================================================================
+  Components: 12, Sentences: 87
+  Gold links: 62, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker126_noknow ---
+SLinker122 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 12 components, 87 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 35 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S7 -> HTML5 Client
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S9 -> HTML5 Server
+    Coref reject: S10 -> HTML5 Server
+    Coref reject: S11 -> HTML5 Client
+    Coref reject: S12 -> HTML5 Server
+    Coref reject: S13 -> HTML5 Server
+    Coref reject: S47 -> Apps
+    Coref reject: S58 -> FSESL
+    Coref reject: S72 -> FreeSWITCH
+    Coref reject: S73 -> FreeSWITCH
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_bigbluebutton_20260916_161434.json
+  LLM call trace saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_bigbluebutton_20260916_161434_calls.json (14 calls)
+
+Final: 51 links (104.7s, 14 LLM calls)
+  s_linker126_noknow: P=86.3% R=71.0% F1=77.9% F2=73.6% TP=44 FP=7 FN=18 (105s)
+    Sources: {'full_name': 32, 'partial_name': 18, 'coreference': 1}
+    FP by source: {'partial_name': 6, 'full_name': 1}
+
+========================================================================================================================
+DATASET: jabref
+========================================================================================================================
+  Components: 6, Sentences: 13
+  Gold links: 18, TransArc baseline: 0
+  TransArc baseline: (CSV not available)
+
+  --- Variant: s_linker126_noknow ---
+SLinker122 (name scan -> one evidence-graded judge -> coreference; one rule, per-case antecedent shortlist)
+  Backend: openai (gpt-5.6-luna)
+Loaded 6 components, 13 sentences
+
+[Knowledge] Document aliases
+  Checkpoint: knowledge saved
+
+[Linker] name
+    Extracted: 20 (scan, 0 calls)
+  Checkpoint: linker_name saved
+
+[Linker] coreference
+    Coref reject: S11 -> preferences
+    Coref reject: S12 -> model
+    Coref reject: S13 -> model
+  Checkpoint: linker_coreference saved
+  Checkpoint: final saved
+  Phase log saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_jabref_20260916_161449.json
+  LLM call trace saved: ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/llm_logs/s_linker126_openai_jabref_20260916_161449_calls.json (4 calls)
+
+Final: 18 links (14.7s, 4 LLM calls)
+  s_linker126_noknow: P=100.0% R=100.0% F1=100.0% F2=100.0% TP=18 FP=0 FN=0 (15s)
+    Sources: {'full_name': 18}
+    FP by source: {}
+
+========================================================================================================================
+SUMMARY
+========================================================================================================================
+Dataset          |     s_linker126_noknow     
+-----------------+----------------------------
+mediastore       | F1 73.5% F2 63.4% FP   0
+teammates        | F1 85.7% F2 90.9% FP  15
+teastore         | F1 77.3% F2 68.0% FP   0
+bigbluebutton    | F1 77.9% F2 73.6% FP   7
+jabref           | F1 100.0% F2 100.0% FP   0
+-----------------+----------------------------
+Macro avg        | F1 82.9% F2 79.2% FP  22
+Pooled           | F1 82.1% F2 79.2% FP  22
+
+Results saved to ../results/greedymerge_noknow_e2e_luna_r1_20260916v2/ablation_20260916_161449.json

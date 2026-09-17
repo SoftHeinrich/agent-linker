@@ -1,0 +1,1234 @@
+{
+  "mediastore": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.90625,
+      "R": 0.9354838709677419,
+      "F1": 0.9206349206349206,
+      "F2": 0.9294871794871795,
+      "tp": 29,
+      "fp": 3,
+      "fn": 2,
+      "n_links": 32,
+      "time": 56.4775390625,
+      "sources": {
+        "full_name": 30,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        },
+        {
+          "sentence": 27,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The MediaAccess component encapsulates database access for meta-data of audio files."
+        },
+        {
+          "sentence": 29,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 9,
+          "component": "MediaManagement",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 9
+    },
+    "s_linker126": {
+      "variant": "s_linker126",
+      "P": 0.90625,
+      "R": 0.9354838709677419,
+      "F1": 0.9206349206349206,
+      "F2": 0.9294871794871795,
+      "tp": 29,
+      "fp": 3,
+      "fn": 2,
+      "n_links": 32,
+      "time": 43.39984440803528,
+      "sources": {
+        "full_name": 29,
+        "coreference": 3
+      },
+      "fp_by_source": {
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 12,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The UserDBAdapter component queries the database."
+        },
+        {
+          "sentence": 27,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The MediaAccess component encapsulates database access for meta-data of audio files."
+        },
+        {
+          "sentence": 29,
+          "component": "DB",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "By contrast, the UserDBAdapter component provides all functions required in order to encapsulate database access for the"
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 25,
+          "component": "MediaAccess",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 33,
+          "component": "DB",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 9
+    }
+  },
+  "teammates": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.56,
+      "R": 0.9824561403508771,
+      "F1": 0.7133757961783439,
+      "F2": 0.8536585365853658,
+      "tp": 56,
+      "fp": 44,
+      "fn": 1,
+      "n_links": 100,
+      "time": 151.6712145805359,
+      "sources": {
+        "full_name": 74,
+        "partial_name": 18,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "full_name": 24,
+        "partial_name": 17,
+        "coreference": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 2,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "TEAMMATES is a Web application that runs on Google App Engine (GAE)."
+        },
+        {
+          "sentence": 11,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "TEAMMATES makes heavy use of automated regression testing."
+        },
+        {
+          "sentence": 13,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "TestNG is used for Java testing (all levels) and Jest for JavaScript unit-testing."
+        },
+        {
+          "sentence": 14,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "HttpUnit is used to set up a simulated web server in servlet-level tests, where an actual web server is not required."
+        },
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 18,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The Client component can connect to the back end directly without using a Web browser."
+        },
+        {
+          "sentence": 22,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic, ui.website, ui.controller represent an application of Model-View-Controller pattern."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 83,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+        },
+        {
+          "sentence": 85,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "logic.api provides the API of the component to be accessed by the UI."
+        },
+        {
+          "sentence": 86,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "logic.core contains the core logic of the system."
+        },
+        {
+          "sentence": 94,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It connects to GAE's task queue API."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 127,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "These datatransfer classes are in common.datatransfer package, to be explained later."
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 132,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.entity contains classes that represent persistable entities."
+        },
+        {
+          "sentence": 133,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.search contains classes for dealing with searching and indexing."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 157,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.util contains utility classes."
+        },
+        {
+          "sentence": 158,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.exceptions contains custom exceptions."
+        },
+        {
+          "sentence": 159,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer contains data transfer objects."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 170,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.driver contains infrastructure and helpers needed for running the tests."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        },
+        {
+          "sentence": 174,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.datatransfer contains component test cases for testing the datatransfer objects from the Common component."
+        },
+        {
+          "sentence": 175,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.util contains component test cases for testing the utility classes from the Common component."
+        },
+        {
+          "sentence": 176,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.logic contains component test cases for testing the Logic component."
+        },
+        {
+          "sentence": 177,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.storage contains component test cases for testing the Storage component."
+        },
+        {
+          "sentence": 178,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.search contains component test cases for testing the search functions."
+        },
+        {
+          "sentence": 179,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.webapi contains system test cases for testing the user-invoked actions."
+        },
+        {
+          "sentence": 180,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.automated contains system test cases for testing the system-automated actions (manually invoked during testing)."
+        },
+        {
+          "sentence": 181,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Some Component tests are pure unit tests (i.e. testing one component in isolation) while others are integration tests th"
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 182,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 183,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The test cases are found in x.spec.ts files."
+        },
+        {
+          "sentence": 184,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This is how TEAMMATES testing maps to standard types of testing."
+        },
+        {
+          "sentence": 190,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "e2e.cases contains test cases."
+        },
+        {
+          "sentence": 196,
+          "component": "Client",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.util contains helpers needed for client scripts."
+        },
+        {
+          "sentence": 197,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.remoteapi classes needed to connect to the back end directly."
+        },
+        {
+          "sentence": 198,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "client.scripts scripts that deal with the back end data for administrative purposes."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 32
+    },
+    "s_linker126": {
+      "variant": "s_linker126",
+      "P": 0.6206896551724138,
+      "R": 0.9473684210526315,
+      "F1": 0.75,
+      "F2": 0.8571428571428571,
+      "tp": 54,
+      "fp": 33,
+      "fn": 3,
+      "n_links": 87,
+      "time": 148.80694246292114,
+      "sources": {
+        "full_name": 70,
+        "partial_name": 12,
+        "coreference": 5
+      },
+      "fp_by_source": {
+        "partial_name": 12,
+        "full_name": 19,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 11,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "TEAMMATES makes heavy use of automated regression testing."
+        },
+        {
+          "sentence": 13,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "TestNG is used for Java testing (all levels) and Jest for JavaScript unit-testing."
+        },
+        {
+          "sentence": 14,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "HttpUnit is used to set up a simulated web server in servlet-level tests, where an actual web server is not required."
+        },
+        {
+          "sentence": 16,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Its primary function is for E2E tests."
+        },
+        {
+          "sentence": 17,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 17,
+          "component": "E2E",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Selenium Java is used to automate E2E testing with actual Web browsers."
+        },
+        {
+          "sentence": 24,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It is a conceptual package representing the front-end of the application."
+        },
+        {
+          "sentence": 50,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sixth, WebApiServlet sends the result back to the browser which will then process it on the front-end."
+        },
+        {
+          "sentence": 56,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Special keys (csrf key and backdoor key) can be used to bypass each of the checks, typically for testing purpose."
+        },
+        {
+          "sentence": 64,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This is particularly useful in testing the actions associated with those requests."
+        },
+        {
+          "sentence": 83,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Connecting to GAE-provided or third-party APIs, e.g. for adding tasks to the task queue and for sending emails with thir"
+        },
+        {
+          "sentence": 94,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "It connects to GAE's task queue API."
+        },
+        {
+          "sentence": 96,
+          "component": "Logic",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Although this component provides methods to perform access control, the API itself is not access controlled."
+        },
+        {
+          "sentence": 125,
+          "component": "Storage",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Classes in the storage.entity package are not visible outside this component to hide information specific to data persis"
+        },
+        {
+          "sentence": 131,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.api provides the API of the component to be accessed by the logic component."
+        },
+        {
+          "sentence": 132,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.entity contains classes that represent persistable entities."
+        },
+        {
+          "sentence": 133,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "storage.search contains classes for dealing with searching and indexing."
+        },
+        {
+          "sentence": 139,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "This is not enough to compensate for eventual consistency involving multiple servers in the GAE production environment."
+        },
+        {
+          "sentence": 140,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "However, it is expected to avoid test failures caused by eventual consistency in dev server and reduce such problems in "
+        },
+        {
+          "sentence": 144,
+          "component": "GAE Datastore",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Implementation of Transaction Control has been minimized due to limitations of GAE environment and the nature of our dat"
+        },
+        {
+          "sentence": 156,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Package overview contains common.util, common.exceptions, common.datatransfer."
+        },
+        {
+          "sentence": 157,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.util contains utility classes."
+        },
+        {
+          "sentence": 158,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.exceptions contains custom exceptions."
+        },
+        {
+          "sentence": 159,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer contains data transfer objects."
+        },
+        {
+          "sentence": 160,
+          "component": "Common",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "common.datatransfer package contains lightweight data transfer object classes for transferring data among components."
+        },
+        {
+          "sentence": 169,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Package overview contains test.driver, test.cases and subpackages."
+        },
+        {
+          "sentence": 170,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.driver contains infrastructure and helpers needed for running the tests."
+        },
+        {
+          "sentence": 171,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "test.cases contains test cases."
+        },
+        {
+          "sentence": 172,
+          "component": "Logic",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sub-packages contains x.testdriver, x.datatransfer, x.util, x.logic, x.storage, x.search, x.webapi, x.automated."
+        },
+        {
+          "sentence": 172,
+          "component": "Storage",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Sub-packages contains x.testdriver, x.datatransfer, x.util, x.logic, x.storage, x.search, x.webapi, x.automated."
+        },
+        {
+          "sentence": 173,
+          "component": "Test Driver",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "x.testdriver contains component test cases for testing the test driver infrastructure and helpers."
+        },
+        {
+          "sentence": 182,
+          "component": "UI",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Front-end files (particularly TypeScript) are tested separately with Jest."
+        },
+        {
+          "sentence": 193,
+          "component": "Test Driver",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "x.lnp contains load and performance tests (experimental)."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 19,
+          "component": "Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 168,
+          "component": "Test Driver",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 185,
+          "component": "Logic",
+          "name_in_text": true,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 32
+    }
+  },
+  "teastore": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.9,
+      "R": 1.0,
+      "F1": 0.9473684210526316,
+      "F2": 0.9782608695652174,
+      "tp": 27,
+      "fp": 3,
+      "fn": 0,
+      "n_links": 30,
+      "time": 49.92732882499695,
+      "sources": {
+        "full_name": 22,
+        "coreference": 8
+      },
+      "fp_by_source": {
+        "full_name": 1,
+        "coreference": 2
+      },
+      "fp_details": [
+        {
+          "sentence": 32,
+          "component": "SlopeOneRecommender",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        },
+        {
+          "sentence": 33,
+          "component": "SlopeOneRecommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "We implemented two versions of the algorithm."
+        },
+        {
+          "sentence": 36,
+          "component": "Recommender",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "Its recommendation time is dependent on the number of items in the current cart as well as the total number of stored or"
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 11
+    },
+    "s_linker126": {
+      "variant": "s_linker126",
+      "P": 0.9285714285714286,
+      "R": 0.9629629629629629,
+      "F1": 0.9454545454545454,
+      "F2": 0.9558823529411765,
+      "tp": 26,
+      "fp": 2,
+      "fn": 1,
+      "n_links": 28,
+      "time": 52.59147524833679,
+      "sources": {
+        "full_name": 21,
+        "coreference": 7
+      },
+      "fp_by_source": {
+        "coreference": 1,
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 9,
+          "component": "WebUI",
+          "source": "coreference",
+          "confidence": 1.0,
+          "text": "The status view lists the instance count and hosts for all registered service instances."
+        },
+        {
+          "sentence": 32,
+          "component": "SlopeOneRecommender",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If the user is known, Slope One as item-based collaborative filtering is applied to calculate the recommendations."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 26,
+          "component": "Persistence",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 11
+    }
+  },
+  "bigbluebutton": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 0.8153846153846154,
+      "R": 0.8548387096774194,
+      "F1": 0.8346456692913387,
+      "F2": 0.8466453674121406,
+      "tp": 53,
+      "fp": 12,
+      "fn": 9,
+      "n_links": 65,
+      "time": 127.32102489471436,
+      "sources": {
+        "full_name": 47,
+        "partial_name": 16,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 9,
+        "full_name": 3
+      },
+      "fp_details": [
+        {
+          "sentence": 27,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Frontends handle completely the Streamer redis events, i.e., Cursor, Annotations, External video share."
+        },
+        {
+          "sentence": 31,
+          "component": "Redis PubSub",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "So individual backends only process redis events for the meetings matching the associated instanceId."
+        },
+        {
+          "sentence": 43,
+          "component": "Recording Service",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When using a learning management system (LMS) such as Moodle, teachers can setup BigBlueButton rooms within their course"
+        },
+        {
+          "sentence": 50,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 77,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "When the uploaded presentation is an Office document, it needs to be converted into PDF using LibreOffice."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 82,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "We take in consideration the configuration for enabling and disabling SWF, SVG and PNG conversion."
+        },
+        {
+          "sentence": 83,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Then below the SVG conversion flow."
+        },
+        {
+          "sentence": 84,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It covers the conversion fallback."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 12,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 19,
+          "component": "HTML5 Client",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 19
+    },
+    "s_linker126": {
+      "variant": "s_linker126",
+      "P": 0.7936507936507936,
+      "R": 0.8064516129032258,
+      "F1": 0.7999999999999999,
+      "F2": 0.8038585209003215,
+      "tp": 50,
+      "fp": 13,
+      "fn": 12,
+      "n_links": 63,
+      "time": 116.1095597743988,
+      "sources": {
+        "full_name": 42,
+        "partial_name": 19,
+        "coreference": 2
+      },
+      "fp_by_source": {
+        "partial_name": 7,
+        "full_name": 6
+      },
+      "fp_details": [
+        {
+          "sentence": 16,
+          "component": "HTML5 Client",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.2 used a single nodejs process for all client-side communication."
+        },
+        {
+          "sentence": 19,
+          "component": "BBB web",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 towards multiple nodejs processes handling incom"
+        },
+        {
+          "sentence": 20,
+          "component": "BBB web",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "This means that bbb-html5 could use multiple CPU cores for processing messages and handling browser sessions (each nodej"
+        },
+        {
+          "sentence": 30,
+          "component": "HTML5 Server",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "If more than one backend is running, bbb-web splits the load in round-robin fashion by assigning an instanceId."
+        },
+        {
+          "sentence": 50,
+          "component": "Recording Service",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "When the meeting ends, the Recording Processor will take all the recorded events as well as the different raw (PDF, WAV,"
+        },
+        {
+          "sentence": 60,
+          "component": "FreeSWITCH",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Communication between apps and FreeSWITCH Event Socket Layer (fsels) uses messages through redis pubsub."
+        },
+        {
+          "sentence": 68,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Kurento Media Server KMS is a media server that implements both SFU and MCU models."
+        },
+        {
+          "sentence": 74,
+          "component": "WebRTC-SFU",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "WebRTC provides the user with high-quality audio with lower delay."
+        },
+        {
+          "sentence": 76,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Uploaded presentations go through a conversion process in order to be displayed inside the client."
+        },
+        {
+          "sentence": 78,
+          "component": "HTML5 Server",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The PDF document is then converted into scalable vector graphics (SVG) via bbb-web."
+        },
+        {
+          "sentence": 79,
+          "component": "Presentation Conversion",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "The conversion process sends progress messages to the client through the Redis pubsub."
+        },
+        {
+          "sentence": 83,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "Then below the SVG conversion flow."
+        },
+        {
+          "sentence": 84,
+          "component": "Presentation Conversion",
+          "source": "partial_name",
+          "confidence": 1.0,
+          "text": "It covers the conversion fallback."
+        }
+      ],
+      "fn_details": [
+        {
+          "sentence": 6,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 10,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 20,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 21,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 26,
+          "component": "Apps",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 30,
+          "component": "BBB web",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 39,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 47,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 59,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 61,
+          "component": "FreeSWITCH",
+          "name_in_text": true,
+          "transarc_had": false
+        },
+        {
+          "sentence": 65,
+          "component": "WebRTC-SFU",
+          "name_in_text": false,
+          "transarc_had": false
+        },
+        {
+          "sentence": 73,
+          "component": "HTML5 Server",
+          "name_in_text": false,
+          "transarc_had": false
+        }
+      ],
+      "llm_calls": 17
+    }
+  },
+  "jabref": {
+    "s_linker123": {
+      "variant": "s_linker123",
+      "P": 1.0,
+      "R": 1.0,
+      "F1": 1.0,
+      "F2": 1.0,
+      "tp": 18,
+      "fp": 0,
+      "fn": 0,
+      "n_links": 18,
+      "time": 32.14002561569214,
+      "sources": {
+        "full_name": 18
+      },
+      "fp_by_source": {},
+      "fp_details": [],
+      "fn_details": [],
+      "llm_calls": 6
+    },
+    "s_linker126": {
+      "variant": "s_linker126",
+      "P": 0.9473684210526315,
+      "R": 1.0,
+      "F1": 0.972972972972973,
+      "F2": 0.989010989010989,
+      "tp": 18,
+      "fp": 1,
+      "fn": 0,
+      "n_links": 19,
+      "time": 30.717479467391968,
+      "sources": {
+        "full_name": 19
+      },
+      "fp_by_source": {
+        "full_name": 1
+      },
+      "fp_details": [
+        {
+          "sentence": 7,
+          "component": "preferences",
+          "source": "full_name",
+          "confidence": 1.0,
+          "text": "Only the gui knows the user and his preferences and can interact with him to help him solve tasks."
+        }
+      ],
+      "fn_details": [],
+      "llm_calls": 6
+    }
+  }
+}

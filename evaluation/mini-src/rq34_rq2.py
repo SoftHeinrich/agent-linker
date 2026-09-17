@@ -34,7 +34,7 @@ import rq34 as rq  # noqa: E402  (same directory; phase-cache reader)
 # The *reported arm*: it only names the output directory. Declared per module rather
 # than imported, matching rq12/rq_tables/csv_to_tex -- check.py reads the literal out of
 # each file's source text and fails if any two disagree.
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 
 
 

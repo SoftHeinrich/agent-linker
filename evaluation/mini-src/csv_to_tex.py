@@ -26,7 +26,7 @@ EVAL = HERE.parent
 # in step with rq12.py / rq_tables.py.
 import os
 
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 ARM_SUFFIX = "" if ARM == DEFAULT_ARM else f"_{ARM}"
 
@@ -216,7 +216,7 @@ BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
 
 #: How many judges this arm has, in words -- the `all_combined` row and the RQ3
 #: caption both name it, and s120 has two where every arm before it had three.
-JUDGE_COUNT_WORD = {"s120": "both"}.get(ARM, "all three")
+JUDGE_COUNT_WORD = {"s120": "both", "s126": "both"}.get(ARM, "all three")
 JUDGE_MAP = {"full_name": "\\entValidator{}", "partial_name": "\\partValidator{}",
              "name": "\\nameValidator{}",
              "coref": "\\corefValidator{}", "all_combined": JUDGE_COUNT_WORD}

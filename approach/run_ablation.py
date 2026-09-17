@@ -239,6 +239,7 @@ CANONICAL_VARIANTS = [
     "s_linker124",  # s123 + the antecedent shortlist marked with the judge's own verdicts
     "s_linker125",  # s123 with the resolver's antecedent shortlist removed entirely
     "s_linker126",  # s125 + greedy unambiguous names + exact-antecedent contract
+    "s_linker126_noknow",  # RQ4 knowledge A/B for the greedy-merge arm: s126, alias table off
 
     "s_linker20_aliasa",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES few-shot CUT; NOT canonical
     "s_linker20_aliasb",  # v2.6.5 quick-260610-lio: s20 + ANTECEDENT_ALIAS_RULES hardware-domain example (non-SE); NOT canonical
@@ -2507,6 +2508,27 @@ VARIANT_SPECS = {
             "unchanged. Mirrors s_linker110_noknow one variant over. "
             "LANDMINE: _VARIANT_NAME stays 's_linker120', so its phase states nest under "
             "phase_states/s_linker120/ -- give every run its own PHASE_CACHE_DIR or it "
+            "clobbers the Full arm's states."
+        ),
+        canonical=False,
+        experimental=True,
+        kwargs=dict(no_knowledge=True),
+    ),
+    "s_linker126_noknow": dict(
+        aliases=("greedymergenoknow",),
+        module="llm_sad_sam.linkers.experimental.s_linker126",
+        class_name="SLinker126",
+        description=(
+            "S-Linker126 NO-KNOWLEDGE - RQ4's knowledge A/B on the greedy-merge arm "
+            "(experimental=True, NOT canonical). s_linker126 with no_knowledge=True: the "
+            "document-alias stage is skipped and an empty DocumentKnowledge is set "
+            "directly, so the name scan sees canonical component names only and the "
+            "union's `writes` evidence can never read `alias`. All other phases run "
+            "unchanged, including the greedy ownership scan, the ambiguous-surface "
+            "discard, and the antecedent-form predicate. Mirrors s_linker120_noknow one "
+            "arm over. "
+            "LANDMINE: _VARIANT_NAME stays 's_linker126', so its phase states nest under "
+            "phase_states/s_linker126/ -- give every run its own PHASE_CACHE_DIR or it "
             "clobbers the Full arm's states."
         ),
         canonical=False,

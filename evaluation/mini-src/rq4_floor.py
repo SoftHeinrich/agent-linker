@@ -59,7 +59,7 @@ import metrics as m  # noqa: E402  (shared core: benchmark layout, gold, F-measu
 # The *reported arm*: it only names the output directory. Declared per module rather
 # than imported, matching rq12/rq_tables/csv_to_tex -- check.py reads the literal out of
 # each file's source text and fails if any two disagree.
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 
 #: Which arms have a one-call floor sweep recorded, and where. The floor's control is
 #: the arm itself, so an arm with no sweep of its own has NO floor -- borrowing another

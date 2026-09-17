@@ -32,7 +32,7 @@ sys.path.insert(0, 'src')
 sys.path.insert(0, 'pilot')
 
 TARGET = sys.argv[1] if len(sys.argv) > 1 else \
-    'src/llm_sad_sam/linkers/experimental/s_linker120.py'
+    'src/llm_sad_sam/linkers/experimental/s_linker126.py'
 
 
 class Norm(ast.NodeTransformer):

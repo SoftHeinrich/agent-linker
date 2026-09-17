@@ -16,7 +16,7 @@ import ast, sys
 from collections import defaultdict
 
 TARGET = sys.argv[1] if len(sys.argv) > 1 else \
-    'src/llm_sad_sam/linkers/experimental/s_linker120.py'
+    'src/llm_sad_sam/linkers/experimental/s_linker126.py'
 src = open(TARGET).read()
 tree = ast.parse(src)
 cls = [n for n in tree.body if isinstance(n, ast.ClassDef)

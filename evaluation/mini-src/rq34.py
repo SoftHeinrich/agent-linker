@@ -87,11 +87,12 @@ RUNS = ["run1", "run2", "run3"]
 # override one field each, which is what the no-knowledge A/B needs (HOWTO §4).
 # check.py reads the DEFAULT_ARM literal out of every generator and fails if any two
 # disagree, so an arm cannot be promoted by halves.
-DEFAULT_ARM = "s120"
+DEFAULT_ARM = "s126"
 ARMS = {                       # reported arm -> (phase-state variant, run-sweep template)
     "s110": ("s_linker110", "consolidation_e2e_{model}_r{i}_20260825"),
     "s92a": ("s_linker92a", "regex_e2e_{model}_r{i}_20260822"),
     "s120": ("s_linker120", "union_e2e_{model}_r{i}_20260911"),
+    "s126": ("s_linker126", "greedymerge_e2e_{model}_r{i}_20260916v2"),
 }
 REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 
@@ -115,8 +116,10 @@ REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 #: The phase layout an arm records. Every s25-lineage arm through s110 writes the
 #: three-phase `s92` shape; `s120` unions the two name judges, so it writes two phases
 #: and its RQ3 has two judges. The layout is a property of the arm, not a second knob --
-#: $RQ34_ARM still overrides it, which is what scoring a retired arm needs.
-ARM_LAYOUT = {"s120": "s120"}
+#: $RQ34_ARM still overrides it, which is what scoring a retired arm needs. `s126`
+#: descends from `s120`'s union (via s122/s123/s125) and writes the identical
+#: `linker_name.pkl` + `linker_coreference.pkl` two-phase shape, so it shares the layout.
+ARM_LAYOUT = {"s120": "s120", "s126": "s120"}
 LAYOUT = os.environ.get("RQ34_ARM", ARM_LAYOUT.get(REPORTED_ARM, "s92"))
 #: Layouts that keep their phase state in `<rundir>/phase_states/<variant>/openai/...`.
 #: Only the retired `s21` layout does not.
