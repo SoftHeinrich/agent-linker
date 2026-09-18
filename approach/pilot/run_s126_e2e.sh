@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# `s_linker126` against `s_linker123`, paired end to end on flex tier.
+# `s_linker126`, paired end to end on flex tier.
 #
-# TWO arms are in every invocation because the name-stage change can starve coreference.
-# The arm
-# ORDER alternates by run -- control first on odd runs, arm first on even -- per the
-# finetune round's warning that a batch could not separate its arm from its slot.
-#
-# No in-set null: the floor is measured (`CLAUDE.md`, measurement policy).
+# NO LIVE CONTROL ARM: `s_linker123` (the in-invocation control this script used to
+# run alongside s126) was archived along with the rest of the ancestor chain in the
+# s126-only consolidation, so this batch runs s126 alone. If you need a paired
+# control again, restore `s_linker123.py` and its `run_ablation.py` registry entry
+# from `origin/archive/master-pre-s126-consolidation` first -- this departs from the
+# measurement policy's own no-in-set-null rule (`CLAUDE.md`) until that is done.
 #
 #     pilot/run_s126_e2e.sh terra
 #     pilot/run_s126_e2e.sh luna 3
@@ -37,13 +37,8 @@ for i in $(seq 1 "${RUNS}"); do
   if [ -f "${RUN}/s_linker126_jabref_links.csv" ]; then
     echo "run ${i} already complete -- skipping"; continue
   fi
-  if [ $((i % 2)) -eq 1 ]; then
-    ARMS="s_linker123 s_linker126"
-  else
-    ARMS="s_linker126 s_linker123"
-  fi
   mkdir -p "${RUN}"
-  echo "=== ${MODEL} run ${i} (${ARMS}) -> ${RUN}"
+  echo "=== ${MODEL} run ${i} (s_linker126) -> ${RUN}"
   LLM_BACKEND=openai \
   OPENAI_MODEL_NAME=gpt-5.6-${MODEL} \
   OPENAI_REASONING_EFFORT=none \
@@ -51,10 +46,9 @@ for i in $(seq 1 "${RUNS}"); do
   PHASE_CACHE_DIR="${RUN}/phase_states" \
   LLM_LOG_DIR="${RUN}/llm_logs" \
     "${PY}" run_ablation.py \
-    --variants ${ARMS} \
+    --variants s_linker126 \
     --datasets mediastore teammates teastore bigbluebutton jabref \
     --results-dir "${RUN}" 2>&1 | tee "${RUN}.log"
 done
 echo "score with: ${PY} pilot/score_runs.py \\"
-echo "  --arm s_linker123 ../results/greedymerge_e2e_${MODEL}_r{1,2,3}_${STAMP} \\"
 echo "  --arm s_linker126 ../results/greedymerge_e2e_${MODEL}_r{1,2,3}_${STAMP}"

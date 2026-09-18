@@ -79,8 +79,9 @@ VARIANT_SPECS = {
             "measured with the list still present costs ZERO true positives on both "
             "models (terra FP 13.0 -> 12.3, luna 40.3 -> 38.3 with -2 in 3 of 3 samples). "
             "The name-stage change can starve coreference, so promotion requires paired "
-            "end-to-end evaluation (pilot/test_s126.py and "
-            "pilot/s127_greedy_merge_audit.py). Promoted to the paper arm on 2026-09-16 "
+            "end-to-end evaluation (pilot/test_s126.py; the deterministic audit that "
+            "sized the greedy-merge removal is archived, see approach/CLAUDE.md). "
+            "Promoted to the paper arm on 2026-09-16 "
             "by explicit author decision on simplicity, overriding the component-weighted "
             "doc-code gate's refusal; see approach/CLAUDE.md for the full ledger."),
         canonical=True,
