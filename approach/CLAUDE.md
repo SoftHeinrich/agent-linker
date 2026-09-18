@@ -69,7 +69,7 @@ pre-flatten subclassed form on all five projects
   rule constant or a scan in here — that is the variant's own file, by
   policy.
 - `pilot/` — only the s126 validation chain remains:
-  `test_s126.py` (27 checks), `test_s126_standalone.py`,
+  `test_s126.py` (34 checks), `test_s126_standalone.py` (7 checks),
   `s127_greedy_merge_audit.py`, `coref_exact_pilots.py`, `reading_pilots.py`
   (trimmed to the benchmark/gold-loading helpers this chain still uses — its
   old multi-variant stage-pilot comparison was archived with the variants it
