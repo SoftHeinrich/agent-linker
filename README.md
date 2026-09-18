@@ -20,10 +20,13 @@ and is pinned here as the `paper/` submodule.
 The exact upstream revisions and vendoring policy are recorded in
 [`docs/SOURCE_MANIFEST.md`](docs/SOURCE_MANIFEST.md). For a complete, runnable
 workflow and its limits, see [`docs/REPLICATION.md`](docs/REPLICATION.md).
-For the distinction between S21, the router, and the S23 verification variants,
-see [`docs/VARIANT_COMPARISON.md`](docs/VARIANT_COMPARISON.md).
-The next deliberately narrow recall experiment is specified in
-[`docs/S24_PROPOSAL.md`](docs/S24_PROPOSAL.md).
+
+This branch carries only the paper arm, `s_linker126`, and the modules its own
+validation suite depends on (`s_linker122`/`123`/`125`/`25`); the earlier
+variant families (S21, the router, the S23 verification variants, and the
+s26-s125 exploration rounds) are preserved on
+`origin/archive/master-pre-s126-consolidation`. `approach/CLAUDE.md` carries
+the design rationale for how s126 was reached.
 
 ## Quick start
 
