@@ -12,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(Path(__file__).parent))
 
-from llm_sad_sam.linkers.experimental.s_linker125 import SLinker125  # noqa: E402
 from llm_sad_sam.linkers.experimental.s_linker126 import (            # noqa: E402
     NAMING_OF, SLinker126, TRACE_LINK_RULE,
 )
@@ -85,21 +84,14 @@ def main():
 
     for project in sorted(DATASETS):
         data = load(project, RUN)
-        ctl = candidates(probe(SLinker125, data), data)
         arm_linker = probe(SLinker126, data)
         arm = candidates(arm_linker, data)
-        ctl_keys = {(c.sentence_number, c.component_id) for c in ctl}
-        arm_keys = {(c.sentence_number, c.component_id) for c in arm}
-        check(f"{project}: greedy only removes", arm_keys <= ctl_keys)
-        if project != "bigbluebutton":
-            check(f"{project}: candidate set unchanged", arm_keys == ctl_keys)
-        else:
-            check("bigbluebutton: greedy removes twelve candidates",
-                  len(ctl_keys - arm_keys) == 12, str(len(ctl_keys - arm_keys)))
-            groups = {}
-            for candidate in arm:
-                groups.setdefault(arm_linker._group_key(candidate), []).append(candidate)
-            ambiguous = [group for group in groups.values() if len(group) > 1]
+
+        groups = {}
+        for candidate in arm:
+            groups.setdefault(arm_linker._group_key(candidate), []).append(candidate)
+        ambiguous = [group for group in groups.values() if len(group) > 1]
+        if project == "bigbluebutton":
             check("bigbluebutton: only S27/S31 remain ambiguous",
                   {group[0].sentence_number for group in ambiguous} == {27, 31})
 

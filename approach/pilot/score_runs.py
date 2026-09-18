@@ -12,8 +12,8 @@ five projects and the macro scores can be recomputed inside a quality callable f
 every relabelling.
 
     ../.venv/bin/python pilot/score_runs.py \
-        --arm s_linker25 ../results/s25_simplified_e2e_r*_20260810 \
-        --arm s_linker42 ../results/s42_threevalue_e2e_r*_20260812
+        --arm s_linker126 ../results/greedymerge_e2e_terra_r1_20260917 \
+        --arm s_linker123 ../results/greedymerge_e2e_terra_r1_20260917
 """
 from __future__ import annotations
 
@@ -27,13 +27,16 @@ sys.path.insert(0, "src")
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ab_stats import permutation_report                             # noqa: E402
-from design_audit import PROJECTS, load_gold                         # noqa: E402
+from reading_pilots import BENCH, DATASETS, gold_pairs                # noqa: E402
+
+PROJECTS = list(DATASETS)
 
 
 def gold_all():
     out = set()
     for project in PROJECTS:
-        out |= {(project, snum, cid) for snum, cid in load_gold(project)}
+        gold_path = DATASETS[project][2]
+        out |= {(project, snum, cid) for snum, cid in gold_pairs(BENCH / gold_path)}
     return out
 
 
