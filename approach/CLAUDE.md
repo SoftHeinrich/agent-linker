@@ -39,10 +39,20 @@ archived ledger).
 
 `s_linker126.py` is a **STANDALONE file**: the `s122 -> s123 -> s125 -> s126`
 subclass chain is flattened into it, verified byte-identical to the
-pre-flatten subclassed form on all five projects
-(`pilot/test_s126.py`, `pilot/test_s126_standalone.py`). It imports no other
-`s_linkerNNN` module at runtime — only `core/`, `pcm_parser{,_v2}.py`,
-`llm_client.py`, `helper_v3.py`, `linker_infra.py`.
+pre-flatten subclassed form on all five projects at the time of flattening
+(`pilot/test_s126.py`, and `pilot/test_s126_standalone.py` while it still
+existed — see below). It imports no other `s_linkerNNN` module at runtime —
+only `core/`, `pcm_parser{,_v2}.py`, `llm_client.py`, `helper_v3.py`,
+`linker_infra.py`.
+
+The ancestor modules this file was flattened from (`s_linker122`,
+`s_linker123`, `s_linker125`) and the retired `s_linker25`, along with the
+scripts that existed only to compare s126 against them
+(`pilot/test_s126_standalone.py`, `pilot/s127_greedy_merge_audit.py`,
+`pilot/design_audit.py`), were removed in a second consolidation pass: that
+comparison already ran and passed, is recorded here and in `git log`, and
+does not need live ancestor code to keep re-verifying. See
+`origin/archive/master-pre-s126-consolidation` to resurrect any of it.
 
 ## Active Surface
 
@@ -50,15 +60,6 @@ pre-flatten subclassed form on all five projects
   and `s_linker126_noknow` (RQ4 knowledge A/B, same module, `no_knowledge=True`).
   `python run_ablation.py --list-variants` prints both.
 - `s_linker126.py` — the paper arm, standalone (see above).
-- `{s_linker122,s_linker123,s_linker125}.py` — kept only because s126's own
-  validation suite compares against them (`pilot/test_s126.py` imports
-  `SLinker125` as a baseline; `pilot/test_s126_standalone.py` imports
-  `s_linker122` as the pre-flatten ancestor; `pilot/s127_greedy_merge_audit.py`
-  imports both). Neither cleared a promotion gate of its own — see the
-  archived ledger if you need why.
-- `s_linker25.py` — kept because `pilot/design_audit.py` imports it, and
-  that module is a transitive dependency of `pilot/test_s126.py` via
-  `pilot/score_runs.py` -> `pilot/coref_exact_pilots.py`.
 - `core/`, `llm_client.py`, `pcm_parser{,_v2}.py`, `helper_v3.py` — shared
   runtime.
 - `linker_infra.py` — the linker plumbing, functions and one wrapper class,
@@ -68,13 +69,14 @@ pre-flatten subclassed form on all five projects
   self-contained file stays readable without an MRO. Do not put a prompt, a
   rule constant or a scan in here — that is the variant's own file, by
   policy.
-- `pilot/` — only the s126 validation chain remains:
-  `test_s126.py` (34 checks), `test_s126_standalone.py` (7 checks),
-  `s127_greedy_merge_audit.py`, `coref_exact_pilots.py`, `reading_pilots.py`
-  (trimmed to the benchmark/gold-loading helpers this chain still uses — its
-  old multi-variant stage-pilot comparison was archived with the variants it
-  compared), `score_runs.py`, `ab_stats.py`, `design_audit.py`, and the two
-  E2E runners `run_s126_e2e.sh` / `run_s126_e2e_noknow.sh`.
+- `pilot/` — only the s126 validation chain remains: `test_s126.py`
+  (24 checks, self-contained against `SLinker126` alone),
+  `coref_exact_pilots.py` (trimmed to the fixture loader `test_s126.py`
+  uses — its stage-pilot arms comparing s126 against the retired
+  `s_linker123` were archived with it), `reading_pilots.py` (trimmed to the
+  benchmark/gold-loading helpers this chain still uses), `score_runs.py`,
+  `ab_stats.py`, and the two E2E runners `run_s126_e2e.sh` /
+  `run_s126_e2e_noknow.sh`.
 
 The router-pilot investigation and every other retired round's pilot/study
 material live only in `origin/archive/master-pre-s126-consolidation` now.

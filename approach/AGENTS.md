@@ -1,44 +1,43 @@
 # AGENTS.md
 
 This is the **s126-only consolidation**: `master` was pruned down to the paper
-arm (`s_linker126`) and the modules its own validation suite depends on. The
-full variant history (every other linker family: i1/i2, s_linker through
-s_linker125, the router, the S23 verification family, s26-s125 exploration
-rounds) is preserved on `origin/archive/master-pre-s126-consolidation` —
-check that branch out if you need to see or resurrect a retired variant.
+arm (`s_linker126`) alone. The full variant history (every other linker
+family: i1/i2, s_linker through s_linker125, the router, the S23
+verification family, s26-s125 exploration rounds) is preserved on
+`origin/archive/master-pre-s126-consolidation` — check that branch out if
+you need to see or resurrect a retired variant, including the ancestor
+modules (`s_linker122`, `s_linker123`, `s_linker125`, `s_linker25`) and the
+audit scripts that compared s126 against them (`test_s126_standalone.py`,
+`s127_greedy_merge_audit.py`, `design_audit.py`) — those comparisons already
+ran and are recorded in `approach/CLAUDE.md`; they do not need to keep
+re-running against live ancestor code.
 
 ## Active Surface
 
-- `run_ablation.py` — ablation runner; registry now holds only `s_linker126`
+- `run_ablation.py` — ablation runner; registry holds only `s_linker126`
   (the paper arm) and `s_linker126_noknow` (RQ4 knowledge A/B, same module,
   `no_knowledge=True`). `python run_ablation.py --list-variants` prints both.
 - `src/llm_sad_sam/linkers/experimental/s_linker126.py` — the paper arm
   (`class SLinker126`), STANDALONE: the `s122 -> s123 -> s125 -> s126`
-  subclass chain is flattened into this one file, so it imports no other
-  `s_linkerNNN` module at runtime. Only shared infra: `core/`,
-  `pcm_parser{,_v2}.py`, `llm_client.py`, `helper_v3.py`, `linker_infra.py`.
-- `src/llm_sad_sam/linkers/experimental/{s_linker122,s_linker123,s_linker125}.py`
-  — kept only because s126's own validation suite compares against them:
-  `pilot/test_s126.py` imports `SLinker125` as a baseline and
-  `pilot/test_s126_standalone.py` imports `s_linker122` as the pre-flatten
-  ancestor to check the flattening is behaviour-preserving.
-  `pilot/s127_greedy_merge_audit.py` also imports `s_linker122`/`s_linker123`.
-- `src/llm_sad_sam/linkers/experimental/s_linker25.py` — kept because
-  `pilot/design_audit.py` imports it, and `design_audit.py` is a dependency
-  of `pilot/score_runs.py`, which `pilot/coref_exact_pilots.py` imports,
-  which `pilot/test_s126.py` imports.
-- `pilot/{test_s126,test_s126_standalone,s127_greedy_merge_audit,
-  coref_exact_pilots,reading_pilots,score_runs,ab_stats,design_audit}.py`
-  and `pilot/{run_s126_e2e,run_s126_e2e_noknow}.sh` — the s126 validation
-  chain. `reading_pilots.py` was trimmed to just the benchmark/gold-loading
-  helpers this chain uses (its old multi-variant stage-pilot comparison was
-  archived with the variants it compared).
+  subclass chain was flattened into this one file, so it imports no other
+  `s_linkerNNN` module at runtime, and nothing else in the package does
+  either. Only shared infra: `core/`, `pcm_parser{,_v2}.py`, `llm_client.py`,
+  `helper_v3.py`, `linker_infra.py`.
+- `pilot/test_s126.py` — the s126 contract checks (24), now self-contained
+  against `SLinker126` alone (its earlier ancestor-baseline comparison
+  against `SLinker125` was archived along with `s_linker125.py`, see above).
+- `pilot/{coref_exact_pilots,reading_pilots,score_runs,ab_stats}.py` and
+  `pilot/{run_s126_e2e,run_s126_e2e_noknow}.sh` — fixture-loading and
+  scoring helpers `test_s126.py`/the E2E runners use. Both
+  `coref_exact_pilots.py` and `reading_pilots.py` were trimmed to just the
+  benchmark/gold-loading surface still in use; their old stage-pilot
+  comparisons against retired ancestors were archived with those ancestors.
 - `src/llm_sad_sam/linkers/experimental/{helper_v3,linker_infra,__init__}.py`
 - `src/llm_sad_sam/core/`, `src/llm_sad_sam/{llm_client,pcm_parser,pcm_parser_v2}.py`
 
-`experimental/__init__.py` exports `SLinker25`, `SLinker122`, `SLinker123`,
-`SLinker125`, `SLinker126`. `run_ablation.py` also imports by full module
-path via `importlib`, so no other namespace-level re-export is required.
+`experimental/__init__.py` exports only `SLinker126`. `run_ablation.py` also
+imports by full module path via `importlib`, so no other namespace-level
+re-export is required.
 
 ## Build & Run
 
