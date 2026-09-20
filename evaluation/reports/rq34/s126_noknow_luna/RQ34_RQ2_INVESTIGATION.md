@@ -10,8 +10,7 @@ Method: SAD-SAM phase-cache link sets are composed through recovered SAM-CODE li
 
 ## RQ4 Linker Sets
 
-- **luna FullNameOnly vs Full:** file-F1 -0.042860, file-F2 -0.061355, worst-component F1 -0.011963.
-- **luna PartialNameOnly vs Full:** file-F1 -0.743757, file-F2 -0.704628, worst-component F1 -0.407407.
+- **luna NameOnly vs Full:** file-F1 -0.046182, file-F2 -0.048488, worst-component F1 +0.000000.
 - **luna CorefOnly vs Full:** file-F1 -0.588851, file-F2 -0.598395, worst-component F1 -0.407407.
 
 Reading rule: negative deltas mean the counterfactual/linker-only set is worse than Full.

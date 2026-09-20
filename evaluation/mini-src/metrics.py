@@ -496,7 +496,21 @@ def compute_sad_sam(project, res):
     """
     gold = load_gs_sad_sam(project)
     lp, lr, lf1 = prf(gold, res)
+    return {
+        "project": project,
+        "link_p": lp, "link_r": lr, "link_f1": lf1, "link_f2": fbeta(lp, lr),
+        "component_miss_rate": component_miss_rate(gold, res),
+    }
 
+
+def component_miss_rate(gold, res):
+    """CMR (%) for one doc-to-model link set. Both sets are ``(component, sentence)``.
+
+    Split out of ``compute_sad_sam`` so the RQ3/RQ4 engines can price CMR for a
+    counterfactual link set they hold in memory (a judge switched off, one linker
+    alone) without re-reading the gold standard through the project-level scorer --
+    one implementation, as with every other metric in this module.
+    """
     # Group gold assignments by component, then retain only exact gold hits. A
     # component is abandoned when its set of correct sentences remains empty.
     gold_sentences_by_component = defaultdict(set)
@@ -519,14 +533,8 @@ def compute_sad_sam(project, res):
     total_assignment_count = sum(
         len(sentences) for sentences in gold_sentences_by_component.values()
     )
-    cmr = (abandoned_assignment_count / total_assignment_count * 100
-           if total_assignment_count else 0.0)
-
-    return {
-        "project": project,
-        "link_p": lp, "link_r": lr, "link_f1": lf1, "link_f2": fbeta(lp, lr),
-        "component_miss_rate": cmr,
-    }
+    return (abandoned_assignment_count / total_assignment_count * 100
+            if total_assignment_count else 0.0)
 
 
 # ── CLI / output ──────────────────────────────────────────────────────────────

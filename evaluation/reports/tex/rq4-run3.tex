@@ -4,23 +4,21 @@
 \caption{RQ4 module ablation, run 3, both backends.}
 \label{tab:rq4-run3}
 \centering\small
-\begin{tabular}{@{}ll rrrrrrrrrr@{}}
+\begin{tabular}{@{}ll rrrrrrrrrrrrr@{}}
 \toprule
- &  & \multicolumn{2}{c}{doc-model} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{2}{c}{worst comp.} & \multicolumn{2}{c}{harm. comp.} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}
-Backend & Variant & \fone & \ftwo & P & R & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo \\
+ &  & \multicolumn{5}{c}{doc-model} & \multicolumn{4}{c}{doc-code (file)} & \multicolumn{2}{c}{worst comp.} & \multicolumn{2}{c}{harm. comp.} \\
+\cmidrule(lr){3-7}\cmidrule(lr){8-11}\cmidrule(lr){12-13}\cmidrule(lr){14-15}
+Backend & Variant & P & R & \fone & \ftwo & CMR\% & P & R & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo \\
 \midrule
-GPT-5.6-terra & Full & \textbf{.939} & \textbf{.953} & .87 & .91 & \textbf{.883} & \textbf{.897} & \textbf{.78} & \textbf{.78} & \textbf{.91} & .91 \\
- & \linkerB{} only & .876 & .851 & .90 & .81 & .847 & .822 & .69 & .63 & .86 & .82 \\
- & \linkerD{} only & .064 & .049 & .05 & .02 & .031 & .025 & .00 & .00 & .00 & .00 \\
- & \linkerC{} only & .311 & .225 & \textbf{.98} & .20 & .324 & .236 & .00 & .00 & .00 & .00 \\
- & No knowledge & .873 & .840 & .92 & .71 & .774 & .730 & .45 & .42 & .52 & .51 \\
+GPT-5.6-terra & Full & .92 & \textbf{.96} & \textbf{.939} & \textbf{.953} & \textbf{0.0} & .87 & \textbf{.91} & \textbf{.883} & \textbf{.897} & \textbf{.78} & \textbf{.78} & \textbf{.91} & \textbf{.91} \\
+ & \linkerN{} only & .92 & .88 & .894 & .885 & \textbf{0.0} & .86 & .82 & .835 & .826 & .70 & .65 & .86 & .84 \\
+ & \linkerC{} only & \textbf{.98} & .19 & .311 & .225 & 27.3 & \textbf{.98} & .20 & .324 & .236 & .00 & .00 & .00 & .00 \\
+ & No knowledge & .95 & .82 & .873 & .840 & 10.8 & .92 & .71 & .774 & .730 & .45 & .42 & .52 & .51 \\
 \addlinespace[2pt]
-GPT-5.6-luna & Full & .897 & .931 & .83 & \textbf{.91} & .868 & .891 & .66 & .77 & .88 & \textbf{.91} \\
- & \linkerB{} only & .858 & .852 & .85 & .82 & .829 & .822 & .66 & .63 & .85 & .83 \\
- & \linkerD{} only & .024 & .016 & .06 & .01 & .011 & .007 & .00 & .00 & .00 & .00 \\
- & \linkerC{} only & .374 & .294 & .69 & .21 & .316 & .242 & .09 & .07 & .17 & .13 \\
- & No knowledge & .853 & .819 & .95 & .71 & .789 & .738 & .43 & .43 & .52 & .52 \\
+GPT-5.6-luna & Full & .85 & \textbf{.96} & .897 & .931 & \textbf{0.0} & .83 & \textbf{.91} & .868 & .891 & .66 & .77 & .88 & \textbf{.91} \\
+ & \linkerN{} only & .85 & .86 & .851 & .857 & \textbf{0.0} & .84 & .82 & .822 & .820 & .60 & .64 & .84 & .84 \\
+ & \linkerC{} only & .74 & .26 & .374 & .294 & 37.2 & .69 & .21 & .316 & .242 & .09 & .07 & .17 & .13 \\
+ & No knowledge & .94 & .80 & .853 & .819 & 10.8 & .95 & .71 & .789 & .738 & .43 & .43 & .52 & .52 \\
 \bottomrule
 \end{tabular}
 \end{table*}

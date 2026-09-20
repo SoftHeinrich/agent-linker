@@ -36,10 +36,12 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
   arms were retired from the roster on 2026-08-26. Seven modules declare
   `DEFAULT_ARM` and `check.py` fails if any two disagree, so an arm cannot be
   promoted by halves.
-  **Two things are per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s126,
-  like s120 before it, has two judges, every earlier arm three) and its
-  `FORM_SETS` (RQ4 prices three proposal forms on every arm, splitting s126's one
-  name phase by the stage label each link carries). An arm with no one-call floor
+  **One thing is per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s126,
+  like s120 before it, has two judges, every earlier arm three). RQ3 and RQ4 both
+  price that same phase list, one row per linker; the `FORM_SETS` split that kept
+  RQ4 at three proposal forms by re-reading the stage label on each link was
+  retired on 2026-09-19, because this arm ships one name linker and a standalone
+  partial-name row prices a component the pipeline no longer has. An arm with no one-call floor
   sweep of its own has no floor table: `rq4_floor.py` refuses, `rq_tables.py`
   drops it, `csv_to_tex.py` skips it and `sync_paper.py` removes the previous
   arm's copy from the paper -- true of s126 exactly as it was of s120.

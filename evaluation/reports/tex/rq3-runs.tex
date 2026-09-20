@@ -4,43 +4,45 @@
 \caption{RQ3 per judge, per run and averaged, both backends (the runs behind body \autoref{tab:rq3-confusion}).}
 \label{tab:rq3-runs}
 \centering\small
-\begin{tabular}{@{}lll cc @{\hskip 1.4em} cc @{\hskip 1.4em} cc@{}}
+\adjustbox{max width=\columnwidth}{
+\begin{tabular}{@{}lll cc @{\hskip 1.4em} cc @{\hskip 1.4em} ccccc@{}}
 \toprule
- &  &  & \multicolumn{2}{c}{rejects} & \multicolumn{2}{c}{keeps} & \multicolumn{2}{c}{judge off (pp)} \\
-\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
-Backend & Run & Judge & FP & TP & TP & FP & $\Delta$\fone & $\Delta$\ftwo \\
+ &  &  & \multicolumn{2}{c}{rejects} & \multicolumn{2}{c}{keeps} & \multicolumn{5}{c}{judge off (pp)} \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-12}
+Backend & Run & Judge & FP & TP & TP & FP & $\Delta$P & $\Delta$R & $\Delta$\fone & $\Delta$\ftwo & $\Delta$CMR \\
 \midrule
-GPT-5.6-terra & Run 1 & \nameValidator{} & 99 & 9 & 167 & 23 & -9.8 & -3.5 \\
- &  & \corefValidator{} & 51 & 4 & 36 & 3 & -7.1 & -1.9 \\
- &  & both & 141 & 12 & 182 & 26 & -13.5 & -4.4 \\
+GPT-5.6-terra & Run 1 & \nameValidator{} & 99 & 9 & 167 & 23 & -16.1 & +3.0 & -9.8 & -3.5 & 0.0 \\
+ &  & \corefValidator{} & 51 & 4 & 36 & 3 & -13.9 & +2.3 & -7.1 & -1.9 & -1.9 \\
+ &  & both & 141 & 12 & 182 & 26 & -22.9 & +4.9 & -13.5 & -4.4 & -1.9 \\
 \addlinespace[2pt]
- & Run 2 & \nameValidator{} & 102 & 9 & 171 & 20 & -10.4 & -3.8 \\
- &  & \corefValidator{} & 58 & 1 & 31 & 2 & -8.9 & -3.8 \\
- &  & both & 153 & 9 & 186 & 22 & -16.4 & -7.0 \\
+ & Run 2 & \nameValidator{} & 102 & 9 & 171 & 20 & -17.4 & +3.0 & -10.4 & -3.8 & 0.0 \\
+ &  & \corefValidator{} & 58 & 1 & 31 & 2 & -15.2 & +0.4 & -8.9 & -3.8 & 0.0 \\
+ &  & both & 153 & 9 & 186 & 22 & -26.0 & +3.0 & -16.4 & -7.0 & 0.0 \\
 \addlinespace[2pt]
- & Run 3 & \nameValidator{} & 99 & 11 & 169 & 23 & -9.6 & -3.0 \\
- &  & \corefValidator{} & 51 & 2 & 36 & 1 & -8.3 & -3.3 \\
- &  & both & 143 & 11 & 184 & 24 & -15.2 & -5.9 \\
+ & Run 3 & \nameValidator{} & 99 & 11 & 169 & 23 & -16.5 & +3.7 & -9.6 & -3.0 & 0.0 \\
+ &  & \corefValidator{} & 51 & 2 & 36 & 1 & -14.8 & +0.7 & -8.3 & -3.3 & 0.0 \\
+ &  & both & 143 & 11 & 184 & 24 & -24.6 & +3.7 & -15.2 & -5.9 & 0.0 \\
 \addlinespace[2pt]
- & \textbf{Avg} & \textbf{\nameValidator{}} & \textbf{100} & \textbf{9.7} & \textbf{169} & \textbf{22} & \textbf{-9.9} & \textbf{-3.4} \\
- &  & \textbf{\corefValidator{}} & \textbf{53.3} & \textbf{2.3} & \textbf{34.3} & \textbf{2} & \textbf{-8.1} & \textbf{-3.0} \\
- &  & \textbf{both} & \textbf{145.7} & \textbf{10.7} & \textbf{184} & \textbf{24} & \textbf{-15.0} & \textbf{-5.8} \\
+ & \textbf{Avg} & \textbf{\nameValidator{}} & \textbf{100} & \textbf{9.7} & \textbf{169} & \textbf{22} & \textbf{-16.7} & \textbf{+3.2} & \textbf{-9.9} & \textbf{-3.4} & \textbf{0.0} \\
+ &  & \textbf{\corefValidator{}} & \textbf{53.3} & \textbf{2.3} & \textbf{34.3} & \textbf{2} & \textbf{-14.6} & \textbf{+1.1} & \textbf{-8.1} & \textbf{-3.0} & \textbf{-0.6} \\
+ &  & \textbf{both} & \textbf{145.7} & \textbf{10.7} & \textbf{184} & \textbf{24} & \textbf{-24.5} & \textbf{+3.9} & \textbf{-15.0} & \textbf{-5.8} & \textbf{-0.6} \\
 \addlinespace[2pt]
-GPT-5.6-luna & Run 1 & \nameValidator{} & 73 & 16 & 163 & 49 & -4.7 & 0.5 \\
- &  & \corefValidator{} & 135 & 5 & 55 & 5 & -13.9 & -6.2 \\
- &  & both & 192 & 17 & 177 & 52 & -15.7 & -5.4 \\
+GPT-5.6-luna & Run 1 & \nameValidator{} & 73 & 16 & 163 & 49 & -10.1 & +5.9 & -4.7 & +0.5 & 0.0 \\
+ &  & \corefValidator{} & 135 & 5 & 55 & 5 & -21.5 & +2.1 & -13.9 & -6.2 & 0.0 \\
+ &  & both & 192 & 17 & 177 & 52 & -25.2 & +6.6 & -15.7 & -5.4 & 0.0 \\
 \addlinespace[2pt]
- & Run 2 & \nameValidator{} & 95 & 18 & 162 & 27 & -7.5 & -0.3 \\
- &  & \corefValidator{} & 119 & 10 & 45 & 2 & -13.0 & -4.3 \\
- &  & both & 198 & 19 & 176 & 29 & -17.4 & -5.6 \\
+ & Run 2 & \nameValidator{} & 95 & 18 & 162 & 27 & -15.4 & +6.6 & -7.5 & -0.3 & 0.0 \\
+ &  & \corefValidator{} & 119 & 10 & 45 & 2 & -22.8 & +4.1 & -13.0 & -4.3 & 0.0 \\
+ &  & both & 198 & 19 & 176 & 29 & -29.4 & +7.3 & -17.4 & -5.6 & 0.0 \\
 \addlinespace[2pt]
- & Run 3 & \nameValidator{} & 81 & 12 & 165 & 42 & -6.0 & -1.0 \\
- &  & \corefValidator{} & 129 & 2 & 50 & 4 & -13.7 & -6.8 \\
- &  & both & 196 & 12 & 183 & 45 & -16.3 & -7.0 \\
+ & Run 3 & \nameValidator{} & 81 & 12 & 165 & 42 & -10.8 & +4.3 & -6.0 & -1.0 & 0.0 \\
+ &  & \corefValidator{} & 129 & 2 & 50 & 4 & -20.3 & +0.7 & -13.7 & -6.8 & 0.0 \\
+ &  & both & 196 & 12 & 183 & 45 & -24.3 & +4.3 & -16.3 & -7.0 & 0.0 \\
 \addlinespace[2pt]
- & \textbf{Avg} & \textbf{\nameValidator{}} & \textbf{83} & \textbf{15.3} & \textbf{163.3} & \textbf{39.3} & \textbf{-6.1} & \textbf{-0.3} \\
- &  & \textbf{\corefValidator{}} & \textbf{127.7} & \textbf{5.7} & \textbf{50} & \textbf{3.7} & \textbf{-13.5} & \textbf{-5.8} \\
- &  & \textbf{both} & \textbf{195.3} & \textbf{16} & \textbf{178.7} & \textbf{42} & \textbf{-16.4} & \textbf{-6.0} \\
+ & \textbf{Avg} & \textbf{\nameValidator{}} & \textbf{83} & \textbf{15.3} & \textbf{163.3} & \textbf{39.3} & \textbf{-12.1} & \textbf{+5.6} & \textbf{-6.1} & \textbf{-0.3} & \textbf{0.0} \\
+ &  & \textbf{\corefValidator{}} & \textbf{127.7} & \textbf{5.7} & \textbf{50} & \textbf{3.7} & \textbf{-21.5} & \textbf{+2.3} & \textbf{-13.5} & \textbf{-5.8} & \textbf{0.0} \\
+ &  & \textbf{both} & \textbf{195.3} & \textbf{16} & \textbf{178.7} & \textbf{42} & \textbf{-26.3} & \textbf{+6.1} & \textbf{-16.4} & \textbf{-6.0} & \textbf{0.0} \\
 \bottomrule
 \end{tabular}
+}
 \end{table}

@@ -139,8 +139,8 @@ def add_average(rows: List[Dict[str, str]], keys: List[str],
 
 
 # RQ4 doc-to-code set names, in display order: the pipeline output then each linker alone.
-# RQ4's unit is the proposal form (rq34.FORMS), which is the phase list for every arm
-# through s110 and three forms behind two judges for s120.
+# RQ4's unit is the linker (rq34.FORMS), which is the phase list on every arm; the s120
+# split that priced three proposal forms behind two judges was retired on 2026-09-19.
 LINKER_SET_NAMES = ["Full"] + [f"{fm['linker']}Only" for fm in rq.FORMS]
 
 

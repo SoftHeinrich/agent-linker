@@ -143,11 +143,10 @@ PHASE_SETS = {
         {"key": "coref", "linker": "Coref", "file": "linker_coreference.pkl",
          "variant": "NoCitation"},
     ],
-    # s120 unions the two name judges: both scans propose into one stream, one judge
-    # rules on it, and the links keep the stage label the two scans gave them. So the
-    # arm has TWO judges (this list) and still THREE proposal forms (FORM_SETS below) --
-    # RQ3 counts judges, RQ4 counts what each form contributes, and after the union
-    # those are no longer the same list.
+    # s120 unions the two name judges: both scans propose into one stream and one judge
+    # rules on it, so the arm has TWO judges (this list). RQ3 counts judges and RQ4
+    # counts linkers, and on this arm those are the same list -- see FORMS below for
+    # the three-proposal-form split that retirement replaced.
     "s120": [
         {"key": "name", "linker": "Name", "file": "linker_name.pkl",
          "variant": "NoNameValid"},
@@ -158,27 +157,14 @@ PHASE_SETS = {
 PHASES = PHASE_SETS[LAYOUT]
 PHASE_KEYS = [ph["key"] for ph in PHASES]
 
-#: RQ4's unit is the **proposal form**, not the judge. Through s110 the two are the
-#: same list: one form per linker, one judge per linker. s120 unions the two name
-#: judges while both scans keep proposing, so its RQ4 still has three forms behind two
-#: judges -- the links carry the stage label their scan gave them (`_stage_of`), which
-#: is what makes the split readable off the phase state rather than re-derived.
-#: A form names the phase it is read from and, where a phase carries more than one,
-#: the link `source` values that belong to it.
-FORM_SETS = {
-    layout: [{"key": ph["key"], "linker": ph["linker"], "phase": ph["key"],
-              "sources": None}
-             for ph in phases]
-    for layout, phases in PHASE_SETS.items()
-}
-FORM_SETS["s120"] = [
-    {"key": "full_name", "linker": "FullName", "phase": "name",
-     "sources": {"full_name"}},
-    {"key": "partial_name", "linker": "PartialName", "phase": "name",
-     "sources": {"partial_name"}},
-    {"key": "coref", "linker": "Coref", "phase": "coref", "sources": None},
-]
-FORMS = FORM_SETS[LAYOUT]
+#: RQ4's unit is the LINKER -- one row per phase, the same list RQ3 counts judges over.
+#: s120 briefly priced the two name *proposers* separately, splitting its single name
+#: phase on the stage label each link carries; that split was retired on 2026-09-19
+#: because the arm ships one name linker, so a standalone partial-name row prices a
+#: component the pipeline no longer has. RQ3 and RQ4 therefore read the same two rows
+#: again (\linkerN{}, \linkerC{}), and the `source` labels the links still carry are
+#: no longer read here.
+FORMS = [{"key": ph["key"], "linker": ph["linker"], "phase": ph["key"]} for ph in PHASES]
 LINKERS = [fm["linker"] for fm in FORMS]
 KEY_OF_LINKER = {ph["linker"]: ph["key"] for ph in PHASES}
 
@@ -337,6 +323,25 @@ def prf3(pred: Set[LinkKey], gold: Set[LinkKey]) -> Tuple[float, float, float, f
     return p, r, f1, m.fbeta(p, r)
 
 
+def dm_vector(pred: Set[LinkKey], gold: Set[LinkKey]) -> Tuple[float, ...]:
+    """(precision, recall, f1, f2, CMR%) -- the doc-model suite RQ3/RQ4 report.
+
+    The same five numbers RQ1/RQ2 print for a whole system, computed here for a
+    counterfactual link set (a judge switched off, one linker alone). CMR comes from
+    ``metrics.component_miss_rate``, the module that defines it; only the key order
+    is flipped, since RQ3/RQ4 key links (sentence, component) and it takes
+    (component, sentence).
+    """
+    p, r, f1, f2 = prf3(pred, gold)
+    flip = lambda links: {(c, sent) for sent, c in links}
+    return p, r, f1, f2, m.component_miss_rate(flip(gold), flip(pred))
+
+
+#: Column order of ``dm_vector``, and the suffixes the RQ3/RQ4 CSVs give it.
+DM_VECTOR = ["macro_precision", "macro_recall", "macro_f1", "macro_f2",
+             "component_miss_rate"]
+
+
 def _key(obj) -> LinkKey:
     return (int(obj.sentence_number), str(obj.component_id))
 
@@ -363,9 +368,8 @@ class Cell:
         self.final: Set[LinkKey] = set()
         self.kept: Dict[str, Set[LinkKey]] = {k: set() for k in PHASE_KEYS}
         self.rejected: Dict[str, Set[LinkKey]] = {k: set() for k in PHASE_KEYS}
-        #: What each *form* kept, for RQ4. Equal to `kept` wherever one phase is one
-        #: form (every arm through s110); split by the link's own stage label where a
-        #: phase judges more than one form (s120).
+        #: What each linker kept, for RQ4 -- `kept` re-keyed by linker name, which is
+        #: the axis RQ4's tables and `rq34_rq2.py` index by.
         self.kept_form: Dict[str, Set[LinkKey]] = {fm["linker"]: set() for fm in FORMS}
         self.warnings: List[str] = []
 
@@ -375,7 +379,7 @@ class Cell:
             if len(PHASE_KEYS) > 1 else set()
 
     def other_forms(self, linker: str) -> Set[LinkKey]:
-        """Everything the OTHER forms kept -- the baseline for `unique to this form`."""
+        """Everything the OTHER linkers kept -- the baseline for `unique to this one`."""
         return set().union(*(self.kept_form[fm["linker"]] for fm in FORMS
                              if fm["linker"] != linker)) if len(FORMS) > 1 else set()
 
@@ -402,19 +406,6 @@ def _judged_sets(state: Dict) -> Tuple[Set[LinkKey], Set[LinkKey]]:
     return kept, rejected
 
 
-def _kept_by_source(state: Dict) -> Dict[str, Set[LinkKey]]:
-    """The phase's kept links grouped by the stage label each one carries.
-
-    s120's name phase emits both name forms; `SadSamLink.source` is `full_name` or
-    `partial_name` exactly as the two separate linkers set it, which is why RQ4 can
-    still price the forms after the judges were merged.
-    """
-    out: Dict[str, Set[LinkKey]] = {}
-    for link in state["links"]:
-        out.setdefault(getattr(link, "source", "") or "", set()).add(_key(link))
-    return out
-
-
 def compute_cell(slot: Path, run: str, backend: str, project: str) -> Cell:
     pdir = _phase_dir(slot, run, backend, project)
     cell = Cell(project)
@@ -422,32 +413,17 @@ def compute_cell(slot: Path, run: str, backend: str, project: str) -> Cell:
     with (pdir / "final.pkl").open("rb") as f:
         cell.final = {_key(x) for x in pickle.load(f)["final"]}
 
-    by_source: Dict[str, Dict[str, Set[LinkKey]]] = {}
     for ph in PHASES:
         with (pdir / ph["file"]).open("rb") as f:
             state = pickle.load(f)
         if LAYOUT in S92_LIKE:
             kept, rejected = _judged_sets(state)
-            by_source[ph["key"]] = _kept_by_source(state)
         else:
             kept, rejected = _validated_sets(state[ph["cand"]], state[ph["kept"]])
         cell.kept[ph["key"]], cell.rejected[ph["key"]] = kept, rejected
 
     for fm in FORMS:
-        kept = cell.kept[fm["phase"]]
-        if fm["sources"]:
-            labelled = by_source.get(fm["phase"], {})
-            kept = set().union(*(labelled.get(src, set()) for src in fm["sources"]))
-            if kept - cell.kept[fm["phase"]]:
-                cell.warnings.append(
-                    f"{fm['linker']}: {len(kept - cell.kept[fm['phase']])} links carry "
-                    f"its stage label but are not in the phase's kept set")
-        cell.kept_form[fm["linker"]] = kept
-    union_forms = set().union(*cell.kept_form.values()) if FORMS else set()
-    if union_forms != set().union(*cell.kept.values()):
-        cell.warnings.append(
-            f"forms({len(union_forms)}) != phases({len(set().union(*cell.kept.values()))}); "
-            f"a kept link carries a stage label no form claims")
+        cell.kept_form[fm["linker"]] = cell.kept[fm["phase"]]
 
     union = set().union(*cell.kept.values())
     if union != cell.final:
@@ -591,11 +567,10 @@ class BackendAgg:
     def __init__(self, backend: str, run: str):
         self.backend = backend
         self.run = run
-        # macro F1 and F2 per RQ3 variant, and per RQ4 single-linker set (both phase-keyed).
-        self.macro = {v: 0.0 for v in RQ3_VARIANTS}
-        self.macro_f2 = {v: 0.0 for v in RQ3_VARIANTS}
-        self.macro_only = {label: 0.0 for label in RQ4_SET_LABELS}
-        self.macro_only_f2 = {label: 0.0 for label in RQ4_SET_LABELS}
+        # The doc-model vector (DM_VECTOR: P, R, F1, F2, CMR%) macro-averaged over the
+        # projects, per RQ3 variant and per RQ4 single-linker set (both phase-keyed).
+        self.macro_dm = {v: (0.0,) * len(DM_VECTOR) for v in RQ3_VARIANTS}
+        self.macro_only_dm = {label: (0.0,) * len(DM_VECTOR) for label in RQ4_SET_LABELS}
         self.audit = {k: {"rejected_tp": 0, "unique_rejected_tp": 0,
                           "rejected_fp": 0, "kept_tp": 0, "kept_fp": 0}
                       for k in PHASE_KEYS}
@@ -604,8 +579,13 @@ class BackendAgg:
         self.linkers = {l: {"tps_caught": 0, "unique_tps": 0, "fps": 0, "delta_f1_sum": 0.0, "n": 0}
                         for l in LINKERS}
         self.upset = {c: 0 for c in UPSET_CELLS}
-        # per-project doc-to-model link P/R/F1, per single-linker set: {label: {project: (p, r, f1)}}
+        # per-project DM_VECTOR per single-linker set: {label: {project: (p, r, f1, f2, cmr)}}
         self.dm_pp = {label: {} for label in RQ4_SET_LABELS}
+
+    @property
+    def macro(self) -> Dict[str, float]:
+        """Macro-F1 per RQ3 variant -- the headline slice of ``macro_dm``."""
+        return {v: vec[2] for v, vec in self.macro_dm.items()}
 
     @property
     def macro_full(self) -> float:
@@ -619,11 +599,11 @@ def mean(vals):
 def average_aggs(backend: str, aggs: List[BackendAgg]) -> BackendAgg:
     avg = BackendAgg(backend, "average")
     for v in RQ3_VARIANTS:
-        avg.macro[v] = mean([a.macro[v] for a in aggs])
-        avg.macro_f2[v] = mean([a.macro_f2[v] for a in aggs])
+        avg.macro_dm[v] = tuple(mean([a.macro_dm[v][i] for a in aggs])
+                                for i in range(len(DM_VECTOR)))
     for label in RQ4_SET_LABELS:
-        avg.macro_only[label] = mean([a.macro_only[label] for a in aggs])
-        avg.macro_only_f2[label] = mean([a.macro_only_f2[label] for a in aggs])
+        avg.macro_only_dm[label] = tuple(mean([a.macro_only_dm[label][i] for a in aggs])
+                                         for i in range(len(DM_VECTOR)))
 
     for v in PHASE_KEYS:
         for k in avg.audit[v]:
@@ -643,7 +623,8 @@ def average_aggs(backend: str, aggs: List[BackendAgg]) -> BackendAgg:
         projects = {p for a in aggs for p in a.dm_pp[label]}
         for p in projects:
             vecs = [a.dm_pp[label][p] for a in aggs if p in a.dm_pp[label]]
-            avg.dm_pp[label][p] = tuple(mean([v[i] for v in vecs]) for i in range(4))
+            avg.dm_pp[label][p] = tuple(mean([v[i] for v in vecs])
+                                        for i in range(len(DM_VECTOR)))
     return avg
 
 
@@ -694,25 +675,21 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
     def aggregate_run(run: str, write_drilldowns: bool) -> BackendAgg:
         nonlocal checked
         agg = BackendAgg(backend, run)
-        variant_f1: Dict[str, List[float]] = {v: [] for v in RQ3_VARIANTS}
-        variant_f2: Dict[str, List[float]] = {v: [] for v in RQ3_VARIANTS}
-        only_f1: Dict[str, List[float]] = {label: [] for label in RQ4_SET_LABELS}
-        only_f2: Dict[str, List[float]] = {label: [] for label in RQ4_SET_LABELS}
+        variant_dm: Dict[str, List[Tuple[float, ...]]] = {v: [] for v in RQ3_VARIANTS}
+        only_dm: Dict[str, List[Tuple[float, ...]]] = {label: [] for label in RQ4_SET_LABELS}
 
         for project in PROJECTS:
             cell = per_run[run][project]
             warns.extend(f"  [{backend}/{run}/{project}] {w}" for w in cell.warnings)
 
             variants = rq3_variant_sets(cell)
-            v_f1 = {}
             rq3_rows = []
-            v_f2 = {}
             for vname in RQ3_VARIANTS:
-                tp, fp, fn, f1 = prf(variants[vname], cell.gold)
-                f2 = prf3(variants[vname], cell.gold)[3]
-                v_f1[vname], v_f2[vname] = f1, f2
+                tp, fp, fn, _f1 = prf(variants[vname], cell.gold)
+                vec = dm_vector(variants[vname], cell.gold)
+                variant_dm[vname].append(vec)
                 rq3_rows.append({"variant": vname, "project": project, "tp": tp, "fp": fp,
-                                 "fn": fn, "f1": f"{f1:.6f}", "f2": f"{f2:.6f}"})
+                                 "fn": fn, "f1": f"{vec[2]:.6f}", "f2": f"{vec[3]:.6f}"})
 
             audit = rq3_audit(cell)
             combined_audit = rq3_combined_audit(cell)
@@ -736,18 +713,13 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
                 _write_csv(base / "rq4_upset.csv", ["cell", "count"],
                            [{"cell": c, "count": upset[c]} for c in UPSET_CELLS])
 
-            for vname in RQ3_VARIANTS:
-                variant_f1[vname].append(v_f1[vname])
-                variant_f2[vname].append(v_f2[vname])
-            agg.dm_pp["full"][project] = prf3(cell.final, cell.gold)
-            only_f1["full"].append(agg.dm_pp["full"][project][2])
-            only_f2["full"].append(agg.dm_pp["full"][project][3])
+            agg.dm_pp["full"][project] = dm_vector(cell.final, cell.gold)
+            only_dm["full"].append(agg.dm_pp["full"][project])
             for fm in FORMS:
                 label = f"{fm['key']}_only"
-                agg.dm_pp[label][project] = prf3(
+                agg.dm_pp[label][project] = dm_vector(
                     cell.kept_form[fm["linker"]], cell.gold)
-                only_f1[label].append(agg.dm_pp[label][project][2])
-                only_f2[label].append(agg.dm_pp[label][project][3])
+                only_dm[label].append(agg.dm_pp[label][project])
             for v in PHASE_KEYS:
                 for k in agg.audit[v]:
                     agg.audit[v][k] += audit[v][k]
@@ -775,12 +747,13 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
                     raise SystemExit(f"[{backend}/{run}/{project}] missing required "
                                      "ablation_*.json reference")
 
+        def macro_vec(vecs):
+            return tuple(statistics.fmean(v[i] for v in vecs) for i in range(len(DM_VECTOR)))
+
         for vname in RQ3_VARIANTS:
-            agg.macro[vname] = statistics.fmean(variant_f1[vname])
-            agg.macro_f2[vname] = statistics.fmean(variant_f2[vname])
+            agg.macro_dm[vname] = macro_vec(variant_dm[vname])
         for label in RQ4_SET_LABELS:
-            agg.macro_only[label] = statistics.fmean(only_f1[label])
-            agg.macro_only_f2[label] = statistics.fmean(only_f2[label])
+            agg.macro_only_dm[label] = macro_vec(only_dm[label])
         return agg
 
     selected_runs = [run_override] if run_override else list(RUNS)
@@ -827,30 +800,35 @@ def write_aggregates(csv_root: Path, aggs: Dict[str, List[BackendAgg]]) -> None:
                ["backend", "run", "linker", "tps_caught", "unique_tps", "fps",
                 "delta_f1_if_removed"], rows)
 
-    # rq3_variants.csv -- macro-F1 per RQ3 variant (the "validator removed" sets).
+    # rq3_variants.csv -- the doc-model suite per RQ3 variant (the "judge removed" sets).
+    # P/R and CMR ride along with F1/F2 so the body table can price what a judge costs
+    # on each of them, not just on the two F-scores.
     rows = []
     for backend, backend_aggs in aggs.items():
         for agg in backend_aggs:
             for variant in RQ3_VARIANTS:
                 rows.append({"backend": backend, "run": agg.run, "variant": variant,
-                             "macro_f1": f"{agg.macro[variant]:.6f}",
-                             "macro_f2": f"{agg.macro_f2[variant]:.6f}"})
+                             **{c: f"{v:.6f}"
+                                for c, v in zip(DM_VECTOR, agg.macro_dm[variant])}})
     _write_csv(csv_root / "rq3_variants.csv",
-               ["backend", "run", "variant", "macro_f1", "macro_f2"], rows)
+               ["backend", "run", "variant"] + DM_VECTOR, rows)
 
-    # rq4_variants.csv -- single-linker macro-F1 (entity-only / coref-only / full).
+    # rq4_variants.csv -- the same suite per single-linker set (name-only / coref-only / full).
     rows = []
     for backend, backend_aggs in aggs.items():
         for agg in backend_aggs:
             for label in RQ4_SET_LABELS:
                 rows.append({"backend": backend, "run": agg.run, "linker_set": label,
-                             "macro_f1": f"{agg.macro_only[label]:.6f}",
-                             "macro_f2": f"{agg.macro_only_f2[label]:.6f}"})
+                             **{c: f"{v:.6f}"
+                                for c, v in zip(DM_VECTOR, agg.macro_only_dm[label])}})
     _write_csv(csv_root / "rq4_variants.csv",
-               ["backend", "run", "linker_set", "macro_f1", "macro_f2"], rows)
+               ["backend", "run", "linker_set"] + DM_VECTOR, rows)
 
-    # rq4_variants_perproject.csv -- per-project doc-to-model link P/R/F1 backing the
-    # single-linker macro-F1 above (entity-only / coref-only / full).
+    # rq4_variants_perproject.csv -- the per-project doc-model suite backing the
+    # single-linker macros above (name-only / coref-only / full).
+    pp_cols = ["doc_to_model_link_precision", "doc_to_model_link_recall",
+               "doc_to_model_link_f1", "doc_to_model_link_f2",
+               "doc_to_model_component_miss_rate"]
     rows = []
     for backend, backend_aggs in aggs.items():
         for agg in backend_aggs:
@@ -858,16 +836,12 @@ def write_aggregates(csv_root: Path, aggs: Dict[str, List[BackendAgg]]) -> None:
                 for project in PROJECTS:
                     if project not in agg.dm_pp[label]:
                         continue
-                    p, r, f1, f2 = agg.dm_pp[label][project]
                     rows.append({"backend": backend, "run": agg.run, "linker_set": label,
-                                 "project": project, "doc_to_model_link_precision": f"{p:.6f}",
-                                 "doc_to_model_link_recall": f"{r:.6f}",
-                                 "doc_to_model_link_f1": f"{f1:.6f}",
-                                 "doc_to_model_link_f2": f"{f2:.6f}"})
+                                 "project": project,
+                                 **{c: f"{v:.6f}" for c, v
+                                    in zip(pp_cols, agg.dm_pp[label][project])}})
     _write_csv(csv_root / "rq4_variants_perproject.csv",
-               ["backend", "run", "linker_set", "project", "doc_to_model_link_precision",
-                "doc_to_model_link_recall", "doc_to_model_link_f1",
-                "doc_to_model_link_f2"], rows)
+               ["backend", "run", "linker_set", "project"] + pp_cols, rows)
 
 
 # --------------------------------------------------------------------------- #

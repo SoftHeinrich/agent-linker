@@ -13,8 +13,10 @@ named `s123gctl`; the arm's own slots are named `s126`.
 
 **Two per-arm SHAPES, not just per-arm paths.** `rq34.py`'s `PHASE_SETS` gives this arm
 **two** judges (`linker_name.pkl`, `linker_coreference.pkl`) where the pre-union arms have
-three, so RQ3 has two rows; its `FORM_SETS` keeps RQ4 at **three** proposal forms by
-splitting the name phase on the stage label each link carries. An arm with no one-call
+three, so RQ3 has two rows; RQ4 prices the same two phases, one row per linker. (Until
+2026-09-19 `FORM_SETS` split the name phase on the stage label each link carries, to keep
+RQ4 at three proposal forms; the split was retired because this arm ships a single name
+linker, so a standalone partial-name row prices a component the pipeline no longer has.) An arm with no one-call
 floor sweep of its own -- `s126` has none, `s_linker126_onecall` was never built -- has
 no floor table at all: `rq4_floor.py` refuses, `rq_tables.py` drops the CSV,
 `csv_to_tex.py` skips the table and `sync_paper.py` deletes the previous arm's copy from
@@ -420,24 +422,48 @@ top of the CSVs above:
 
 ```bash
 # (a) reshape the wide CSVs into one small "this is the table" CSV per float
-python3 evaluation/mini-src/rq_tables.py       # -> reports/tex_src/*.csv (12 files)
+python3 evaluation/mini-src/rq_tables.py       # -> reports/tex_src/*.csv (14 files)
 
 # (b) render each tex_src CSV into a booktabs .tex via the SPECS registry
-python3 evaluation/mini-src/csv_to_tex.py      # -> reports/tex/*.tex (12 files)
+python3 evaluation/mini-src/csv_to_tex.py      # -> reports/tex/*.tex (13 files)
 ```
 
 `rq_tables.py` does NO metric math — it only selects rows/columns from the CSVs in
-§2–§4 (it reads the no-knowledge `rq34_rq2_*` for the RQ4 "No knowledge" row, so
-run §4 first). `csv_to_tex.py` is a declarative renderer: edit the `SPECS` list to
+§2–§4 (it reads the no-knowledge `rq34_rq2_*` for the RQ4 "No knowledge" row **and for
+the whole knowledge-off half of the judges x knowledge grid**, so run §4 first; without
+it `build_rq5` skips `rq5.csv` and the table is not rendered). `csv_to_tex.py` is a declarative renderer: edit the `SPECS` list to
 change columns, headers, precision, bolding, or captions. Re-running is
 byte-identical.
 
+**Two bolding rules, one per table orientation.** Both are computed at render
+time from the CSV — no winner is ever written into a spec or a `.tex` by hand.
+A table whose systems are the *rows* bolds down a column: `{"bold": "max"|"min"}`
+on a column marks the best row for that metric (`extrema`). A table whose systems
+are the *columns* — the body RQ1 float — bolds across a row instead, with
+`"row_bold": "by_position"`: `position_groups()` reads the comparison groups off
+the spec's own columns (every column prints the same metric tuple in the same
+order, so position 0 is precision against precision, position 1 recall against
+recall, …), and `row_winners()` takes the argmax per group per row. Add or drop a
+system column and the groups follow; nothing restates the system or metric list.
+`{"by": "position", "mode": "min"}` flips the direction, and an explicit list of
+`{"fields": [...], "kind":, "mode":}` groups still works for columns that are not
+positionally aligned.
+
+The argmax runs on the rounded value the reader sees, so two systems differing
+only below the last shown decimal are both bolded rather than one carrying an
+invisible lead; genuine ties bold every tied cell. A spec that uses `row_bold`
+also sets `"summary_bold_values": False`, so the Average row's numbers carry
+winner bold only (its row *labels* stay bold). On import `check_specs()` resolves
+`row_bold`, rejecting a ragged column set (`by_position`) or a group naming a
+field the table does not print.
+
 | Paper float (label) | tex_src CSV | rendered .tex | grain |
 |---------------------|-------------|---------------|-------|
-| body RQ1 `tab:rq1` | `rq1.csv` | `rq1-results.tex` | terra, macro |
+| body RQ1 `tab:rq1` | `rq1_transposed.csv` | `rq1-results.tex` | terra, per project + Average |
 | body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, macro size-aware |
 | body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |
+| body RQ4 `tab:judges-knowledge` | `rq5.csv` | `rq5-knowledge-judges.tex` | terra, judges x knowledge, mean of 3 runs |
 | appendix `tab:rq3-runs` | `rq3_runs.csv` | `rq3-runs.tex` | both backends, per run + avg |
 | appendix `tab:detailed-perproject` | `bigtable_rq12_perproject.csv` | `big-table-perproject.tex` | both backends, per project + Average |
 | appendix `tab:detailed-perrun` | `bigtable_rq12_perrun.csv` | `big-table-perrun.tex` | both backends, per run + avg |
@@ -445,8 +471,8 @@ byte-identical.
 | appendix `tab:rq4-run{1,2,3}` / `tab:rq4-runavg` | `rq4_run{1,2,3}.csv`, `rq4_runavg.csv` | `rq4-run{1,2,3}.tex`, `rq4-runavg.tex` | both backends, per run |
 
 **Sync into the paper.** `sync_paper.py` is the single bridge: it copies every
-generated `.tex` and its `tex_src` companion `.csv` into the paper (the four body
-tables to `table/`, the rest to `appendix/`) and refreshes
+generated `.tex` and its `tex_src` companion `.csv` into the paper (the body tables
+listed in `sync_paper.BODY` to `table/`, the rest to `appendix/`) and refreshes
 `gold_concentration.{tex,csv}` too. The file set is derived from
 `csv_to_tex.SPECS`, so it tracks table adds/removes automatically.
 
