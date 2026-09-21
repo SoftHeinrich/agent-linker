@@ -9,7 +9,7 @@ Updated: 2026-09-21
 - Five projects plus the five-project Average; precision and recall are omitted. F scores use two decimal places; CMR remains a percentage with one decimal place.
 - The body has two large task columns. Each contains a metric-by-approach matrix with explicit metric and approach headers. Doc-model places CMR on the link-score row and formats each approach cell as `F1/F2 (CMR%)`; doc-code uses separate link, worst-component, and harmonic-component F1/F2 rows.
 - The deterministic pipeline is represented by SWATTR under doc-model and TransArc under doc-code.
-- The LaTeX fragment uses `tabular*{\linewidth}`, `\footnotesize`, 2 pt `\tabcolsep`, and nested fixed-width matrices. Doc-model receives 38% and doc-code 43% of `\linewidth`. Its wrapper uses the paper's exact `acmsmall,screen,review,anonymous` class options and top-matter settings and imports `paper/abbrev.tex`.
+- The LaTeX fragment uses `tabular*{\linewidth}`, `\small` throughout, 2 pt `\tabcolsep`, and nested fixed-width matrices. Doc-model receives 38% and doc-code 43% of `\linewidth`. Its wrapper uses the paper's exact `acmsmall,screen,review,anonymous` class options and top-matter settings and imports `paper/abbrev.tex`.
 - The visual preview uses a conservative five-inch table width, DejaVu Serif 6.4 pt body text, and 300 dpi raster output. It is a layout approximation, not a LaTeX render.
 
 ## Commands and text results

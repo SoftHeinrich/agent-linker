@@ -105,7 +105,7 @@ def write_tex(rows: dict[tuple[str, str], dict[str, str]]) -> None:
         "\\begin{table}[t]",
         "\\caption{RQ2 per-project results on GPT-5.6-terra. The doc-model task reports link \\fone/\\ftwo and component miss rate (CMR); the doc-code task reports link, worst-component, and harmonic-component \\fone/\\ftwo. \\approach{} and \\Artemis{} are means of three runs. SWATTR and \\TransArc{} are the respective stages of one deterministic pipeline.}",
         "\\label{tab:rq2-wide-test}",
-        "\\centering\\footnotesize",
+        "\\centering\\small",
         "\\setlength{\\tabcolsep}{2pt}",
         "\\renewcommand{\\arraystretch}{0.98}",
         "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}p{.38\\linewidth}p{.43\\linewidth}@{}}",
