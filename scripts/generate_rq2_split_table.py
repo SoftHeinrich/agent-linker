@@ -31,9 +31,9 @@ PROJECT_LABELS = {
     "Average": "Average",
 }
 SYSTEMS = (
-    ("approach (GPT-5.6-terra)", "ArchLinker"),
-    ("Artemis (GPT-5.6-terra)", "Artemis"),
-    ("TransArC", "Pipeline"),
+    ("approach (GPT-5.6-terra)", "AL"),
+    ("Artemis (GPT-5.6-terra)", "AT"),
+    ("TransArC", "S/T"),
 )
 METRICS = (
     "doc_to_model_link_f1",
@@ -147,14 +147,14 @@ def write_csv(path: Path, rows: list[DisplayRow]) -> None:
 
 def latex_approach(name: str) -> str:
     return {
-        "ArchLinker": r"\approach{}",
-        "Artemis": r"\Artemis{}",
-        "Pipeline": r"Pipeline$^{\dagger}$",
+        "AL": "AL",
+        "AT": "AT",
+        "S/T": "S/T",
     }[name]
 
 
 def latex_row(row: DisplayRow) -> str:
-    cells = [*row.left_values, latex_approach(row.approach), *row.right_values]
+    cells = [latex_approach(row.approach), *row.left_values, *row.right_values]
     return " & ".join(cells) + r" \\"
 
 
@@ -168,8 +168,8 @@ def render_tex(source: Path, csv_output: Path, rows: list[DisplayRow]) -> str:
             if previous_left is not None:
                 body.append(r"\addlinespace[1.5pt]")
             body.append(
-                rf"\multicolumn{{9}}{{@{{}}l}}{{\textit{{{row.left_project}}}}}"
-                rf" & & \multicolumn{{9}}{{l@{{}}}}{{\textit{{{row.right_project}}}}} \\[-1pt]"
+                rf"& \multicolumn{{9}}{{l|}}{{\textit{{{row.left_project}}}}}"
+                rf" & \multicolumn{{9}}{{l@{{}}}}{{\textit{{{row.right_project}}}}} \\[-1pt]"
             )
         body.append(latex_row(row))
         previous_left = row.left_project
@@ -179,25 +179,25 @@ def render_tex(source: Path, csv_output: Path, rows: list[DisplayRow]) -> str:
 % Intermediate data: {relative_csv}
 % Do not edit by hand; rerun the generator.
 \begin{{table}}[t]
-\caption{{Alternative RQ2 per-project layout on GPT-5.6-terra. Each half reports doc-model link \fone/\ftwo and component miss rate (CMR), followed by doc-code link, worst-component, and harmonic-component \fone/\ftwo. \approach{{}} and \Artemis{{}} are means of three runs. Pipeline denotes SWATTR for doc-model and \TransArc{{}} for doc-code.}}
+\caption{{Alternative RQ2 per-project layout on GPT-5.6-terra. Each panel reports doc-model link \fone/\ftwo and component miss rate (CMR), followed by doc-code link, worst-component, and harmonic-component \fone/\ftwo. \approach{{}} and \Artemis{{}} are means of three runs.}}
 \label{{tab:rq2-wide-comparison}}
 \centering\small
 \setlength{{\tabcolsep}}{{1pt}}
 \renewcommand{{\arraystretch}}{{0.96}}
-\begin{{tabular*}}{{\linewidth}}{{@{{}}r@{{\extracolsep{{\fill}}}}*{{8}}{{r}}c*{{9}}{{r}}@{{}}}}
+\begin{{tabular*}}{{\linewidth}}{{@{{}}l@{{\extracolsep{{\fill}}}}*{{9}}{{r}}|*{{9}}{{r}}@{{}}}}
 \toprule
-\multicolumn{{3}}{{c}}{{doc-model}} & \multicolumn{{6}}{{c}}{{doc-code}}
-& & \multicolumn{{3}}{{c}}{{doc-model}} & \multicolumn{{6}}{{c}}{{doc-code}} \\
-\cmidrule(lr){{1-3}}\cmidrule(lr){{4-9}}\cmidrule(lr){{11-13}}\cmidrule(l){{14-19}}
-\multicolumn{{2}}{{c}}{{Link}} & CMR & \multicolumn{{2}}{{c}}{{Link}} & \multicolumn{{2}}{{c}}{{Worst}} & \multicolumn{{2}}{{c}}{{Harm.}}
-& Approach & \multicolumn{{2}}{{c}}{{Link}} & CMR & \multicolumn{{2}}{{c}}{{Link}} & \multicolumn{{2}}{{c}}{{Worst}} & \multicolumn{{2}}{{c}}{{Harm.}} \\
-\fone & \ftwo & \% & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo
-& & \fone & \ftwo & \% & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo \\
+& \multicolumn{{3}}{{c}}{{doc-model}} & \multicolumn{{6}}{{c|}}{{doc-code}}
+& \multicolumn{{3}}{{c}}{{doc-model}} & \multicolumn{{6}}{{c}}{{doc-code}} \\
+\cmidrule(lr){{2-4}}\cmidrule(lr){{5-10}}\cmidrule(lr){{11-13}}\cmidrule(l){{14-19}}
+Approach & \multicolumn{{2}}{{c}}{{Link}} & CMR & \multicolumn{{2}}{{c}}{{Link}} & \multicolumn{{2}}{{c}}{{Worst}} & \multicolumn{{2}}{{c|}}{{Harm.}}
+& \multicolumn{{2}}{{c}}{{Link}} & CMR & \multicolumn{{2}}{{c}}{{Link}} & \multicolumn{{2}}{{c}}{{Worst}} & \multicolumn{{2}}{{c}}{{Harm.}} \\
+& \fone & \ftwo & \% & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo
+& \fone & \ftwo & \% & \fone & \ftwo & \fone & \ftwo & \fone & \ftwo \\
 \midrule
 {chr(10).join(body)}
 \bottomrule
 \end{{tabular*}}
-\par\smallskip\footnotesize $^{{\dagger}}$The pipeline row uses SWATTR for doc-model and \TransArc{{}} for doc-code.
+\par\smallskip\footnotesize AL = \approach{{}}; AT = \Artemis{{}}; S/T = SWATTR for doc-model and \TransArc{{}} for doc-code.
 \end{{table}}
 """
 

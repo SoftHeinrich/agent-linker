@@ -13,8 +13,9 @@ block contains BigBlueButton, JabRef, and the reported macro average.
 
 Each data row contains 18 separate numeric columns: doc-model link F1/F2 and
 CMR for both aligned projects, plus doc-code link, worst-component, and
-harmonic-component F1/F2 for both projects. The shared center approach column
-avoids repeating the system label.
+harmonic-component F1/F2 for both projects. A single leftmost approach column
+uses AL, AT, and S/T; the table legend expands these abbreviations. A vertical
+rule separates the two nine-metric project panels.
 
 ## Generation and deterministic replay
 
@@ -42,8 +43,8 @@ cmp /tmp/rq2-split.tex paper/table/rq2-wide-comparison.tex
 Both comparisons exited 0 with no output. Final SHA-256 digests:
 
 ```text
-e3f55e890a3003219de5156044efde1dde0a1b9321eb26998879f54c64597d5f  paper/table/rq2-wide-comparison.csv
-34d68a23270657f394f77067c9366dca2265fa92883496086d029dead5e897ec  paper/table/rq2-wide-comparison.tex
+e605d6ff41f549c1176da70d06c36fe20d2c549be8c66e804a66eb2b4c2ead42  paper/table/rq2-wide-comparison.csv
+a1c4070c714e95bbbdaef9a91fa5ac6092863e656a2af834b93d5a2b9c1381c2  paper/table/rq2-wide-comparison.tex
 ```
 
 The generator also passed a syntax check:
@@ -62,7 +63,7 @@ Command, from `verification/`:
 /tmp/rq2-tectonic.grZsvV/tectonic rq2-split-table-test.tex
 ```
 
-Result: exit 0; Tectonic wrote `rq2-split-table-test.pdf` (45.26 KiB). The
+Result: exit 0; Tectonic wrote `rq2-split-table-test.pdf` (45,160 bytes). The
 log contained no overfull or underfull box warning. The rendered table page is
 preserved as `verification/rq2-split-table-test-page2.png`.
 
