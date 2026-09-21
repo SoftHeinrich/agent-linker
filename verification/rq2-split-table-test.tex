@@ -1,0 +1,20 @@
+% Isolated ACM-template check for the generated paired-panel RQ2 table.
+% Compile from verification/ with:
+%   /tmp/rq2-tectonic.grZsvV/tectonic rq2-split-table-test.tex
+\documentclass[acmsmall,screen,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\setcopyright{none}
+\citestyle{acmnumeric}
+\usepackage{booktabs}
+\usepackage{xspace}
+\usepackage[nohyperlinks,nolist]{acronym}
+\input{../paper/abbrev.tex}
+\newcommand{\fone}{F\textsubscript{1}\xspace}
+\newcommand{\ftwo}{F\textsubscript{2}\xspace}
+\title{RQ2 Paired-Panel Table Test}
+\author{Anonymous Author(s)}
+\affiliation{\institution{Anonymous Institution}}
+\begin{document}
+\maketitle
+\input{../paper/table/rq2-wide-comparison.tex}
+\end{document}
