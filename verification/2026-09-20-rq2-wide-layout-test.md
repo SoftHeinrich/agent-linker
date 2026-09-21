@@ -7,12 +7,20 @@ Updated: 2026-09-21
 - Source: `evaluation/reports/tex_src/bigtable_rq12_perproject.csv`.
 - GPT-5.6-terra body arm: ArchLinker and Artemis mean of three runs; deterministic SWATTR and TransArc are treated as one pipeline, with the stage named under its respective task.
 - Five projects plus the five-project Average; precision and recall are omitted. F scores use two decimal places; CMR remains a percentage with one decimal place.
-- The body has two large task columns. Each contains a metric-by-approach matrix with explicit metric and approach headers: link F1/F2 and CMR for doc-model; link, worst-component, and harmonic-component F1/F2 for doc-code.
+- The body has two large task columns. Each contains a metric-by-approach matrix with explicit metric and approach headers. Doc-model places CMR on the link-score row and formats each approach cell as `F1/F2 (CMR%)`; doc-code uses separate link, worst-component, and harmonic-component F1/F2 rows.
 - The deterministic pipeline is represented by SWATTR under doc-model and TransArc under doc-code.
-- The LaTeX fragment uses `tabular*{\linewidth}`, `\footnotesize`, 2 pt `\tabcolsep`, and nested fixed-width matrices. Its wrapper uses the paper's exact `acmsmall,screen,review,anonymous` class options and top-matter settings and imports `paper/abbrev.tex`.
+- The LaTeX fragment uses `tabular*{\linewidth}`, `\footnotesize`, 2 pt `\tabcolsep`, and nested fixed-width matrices. Doc-model receives 38% and doc-code 43% of `\linewidth`. Its wrapper uses the paper's exact `acmsmall,screen,review,anonymous` class options and top-matter settings and imports `paper/abbrev.tex`.
 - The visual preview uses a conservative five-inch table width, DejaVu Serif 6.4 pt body text, and 300 dpi raster output. It is a layout approximation, not a LaTeX render.
 
 ## Commands and text results
+
+An initial same-row form retained a separate `Link F1/F2 (CMR%)` metric column beside the three approach values. The ACM build rejected that width:
+
+```text
+Overfull \hbox (30.73558pt--38.17558pt too wide) in all six doc-model rows
+```
+
+The accepted form moves the common format label into the doc-model header and leaves three approach values in each body row.
 
 ```text
 $ python3 verification/rq2-wide-layout-test.py

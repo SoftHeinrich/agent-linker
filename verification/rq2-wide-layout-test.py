@@ -56,8 +56,14 @@ def task_values(rows: dict[tuple[str, str], dict[str, str]], project: str, task:
     selected = [rows[(system, project)] for system, _, _ in SYSTEMS]
     if task == "dm":
         return [
-            ["Link \\fone/\\ftwo", *[pair(row, "doc_to_model_link_f1", "doc_to_model_link_f2") for row in selected]],
-            ["CMR\\%", *[f"{float(row['doc_to_model_component_miss_rate']):.1f}" for row in selected]],
+            [
+                "Link \\fone/\\ftwo (CMR\\%)",
+                *[
+                    pair(row, "doc_to_model_link_f1", "doc_to_model_link_f2")
+                    + f" ({float(row['doc_to_model_component_miss_rate']):.1f})"
+                    for row in selected
+                ],
+            ],
         ]
     return [
         ["Link \\fone/\\ftwo", *[pair(row, "doc_to_code_file_f1", "doc_to_code_file_f2") for row in selected]],
@@ -67,11 +73,26 @@ def task_values(rows: dict[tuple[str, str], dict[str, str]], project: str, task:
 
 
 def inner_header(task: str) -> str:
-    third = "SWATTR" if task == "dm" else "\\TransArc{}"
-    return "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}ccc@{}}Metric & \\approach{} & \\Artemis{} & " + third + "\\end{tabular*}"
+    if task == "dm":
+        return (
+            "\\begin{tabular*}{\\linewidth}{@{}@{\\extracolsep{\\fill}}ccc@{}}"
+            "\\multicolumn{3}{c}{Link \\fone/\\ftwo (CMR\\%)}\\\\"
+            "\\approach{} & \\Artemis{} & SWATTR\\end{tabular*}"
+        )
+    return (
+        "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}ccc@{}}"
+        "\\multicolumn{4}{c}{\\fone/\\ftwo}\\\\"
+        "Metric & \\approach{} & \\Artemis{} & \\TransArc{}\\end{tabular*}"
+    )
 
 
-def inner_body(values: list[list[str]]) -> str:
+def inner_body(values: list[list[str]], task: str) -> str:
+    if task == "dm":
+        return (
+            "\\begin{tabular*}{\\linewidth}[t]{@{}@{\\extracolsep{\\fill}}ccc@{}}"
+            + " & ".join(values[0][1:])
+            + "\\end{tabular*}"
+        )
     rows = [" & ".join(row) for row in values]
     return "\\begin{tabular*}{\\linewidth}[t]{@{}l@{\\extracolsep{\\fill}}ccc@{}}" + "\\\\".join(rows) + "\\end{tabular*}"
 
@@ -87,7 +108,7 @@ def write_tex(rows: dict[tuple[str, str], dict[str, str]]) -> None:
         "\\centering\\footnotesize",
         "\\setlength{\\tabcolsep}{2pt}",
         "\\renewcommand{\\arraystretch}{0.98}",
-        "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}p{.34\\linewidth}p{.43\\linewidth}@{}}",
+        "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}p{.38\\linewidth}p{.43\\linewidth}@{}}",
         "\\toprule",
         "Project & \\centering doc-model & \\centering\\arraybackslash doc-code \\\\",
         "\\cmidrule(lr){2-2}\\cmidrule(l){3-3}",
@@ -100,9 +121,9 @@ def write_tex(rows: dict[tuple[str, str], dict[str, str]]) -> None:
         lines.append(
             DISPLAY[project]
             + " & "
-            + inner_body(task_values(rows, project, "dm"))
+            + inner_body(task_values(rows, project, "dm"), "dm")
             + " & "
-            + inner_body(task_values(rows, project, "dc"))
+            + inner_body(task_values(rows, project, "dc"), "dc")
             + " \\\\")
         if project != "Average":
             lines.append("\\addlinespace[0.5pt]")
@@ -122,44 +143,54 @@ def write_preview(rows: dict[tuple[str, str], dict[str, str]]) -> tuple[int, int
         artists.append(ax.text(x, y, value, ha=ha, va="center", fontsize=size, weight=weight))
 
     left, project_right, gap, right = 0.02, 0.17, 0.018, 0.98
-    task_width = (right - project_right - gap) / 2
-    task_lefts = [project_right, project_right + task_width + gap]
-    metric_widths = [0.27 * task_width, 0.30 * task_width]
+    available = right - project_right - gap
+    task_widths = [available * 0.38 / 0.81, available * 0.43 / 0.81]
+    task_lefts = [project_right, project_right + task_widths[0] + gap]
     centers_by_task = []
     for task_index, task_left in enumerate(task_lefts):
-        metric_width = metric_widths[task_index]
-        approach_width = (task_width - metric_width) / 3
-        centers_by_task.append([
-            task_left + metric_width / 2,
-            *[task_left + metric_width + (i + 0.5) * approach_width for i in range(3)],
-        ])
+        task_width = task_widths[task_index]
+        if task_index == 0:
+            centers_by_task.append([task_left + (i + 0.5) * task_width / 3 for i in range(3)])
+        else:
+            metric_width = 0.30 * task_width
+            approach_width = (task_width - metric_width) / 3
+            centers_by_task.append([
+                task_left + metric_width / 2,
+                *[task_left + metric_width + (i + 0.5) * approach_width for i in range(3)],
+            ])
     label(left, 0.973, "RQ2 wide layout test · GPT-5.6-terra · F scores rounded to two decimals", ha="left", size=7.4, weight="bold")
     ax.plot([left, right], [0.925, 0.925], color="black", lw=0.6)
     label(left, 0.88, "Project", ha="left", weight="bold")
-    label(task_lefts[0] + task_width / 2, 0.88, "doc-model", size=7.4, weight="bold")
-    label(task_lefts[1] + task_width / 2, 0.88, "doc-code", size=7.4, weight="bold")
-    ax.plot([task_lefts[0], task_lefts[0] + task_width], [0.85, 0.85], color="black", lw=0.35)
+    label(task_lefts[0] + task_widths[0] / 2, 0.88, "doc-model", size=7.4, weight="bold")
+    label(task_lefts[1] + task_widths[1] / 2, 0.88, "doc-code", size=7.4, weight="bold")
+    ax.plot([task_lefts[0], task_lefts[0] + task_widths[0]], [0.85, 0.85], color="black", lw=0.35)
     ax.plot([task_lefts[1], right], [0.85, 0.85], color="black", lw=0.35)
-    for task_index, centers in enumerate(centers_by_task):
-        label(centers[0], 0.815, "Metric", size=5.8)
-        label(centers[1], 0.815, "ArchLinker", size=5.8)
-        label(centers[2], 0.815, "Artemis", size=5.8)
-        label(centers[3], 0.815, "SWATTR" if task_index == 0 else "TransArc", size=5.8)
-    ax.plot([left, right], [0.78, 0.78], color="black", lw=0.4)
+    dm_centers, dc_centers = centers_by_task
+    label(task_lefts[0] + task_widths[0] / 2, 0.815, "Link F₁/F₂ (CMR%)", size=5.6)
+    label(task_lefts[1] + task_widths[1] / 2, 0.815, "F₁/F₂", size=5.6)
+    for center, heading in zip(dm_centers, ("ArchLinker", "Artemis", "SWATTR")):
+        label(center, 0.775, heading, size=5.8)
+    for center, heading in zip(dc_centers, ("Metric", "ArchLinker", "Artemis", "TransArc")):
+        label(center, 0.775, heading, size=5.8)
+    ax.plot([left, right], [0.745, 0.745], color="black", lw=0.4)
 
     for row_index, project in enumerate(PROJECTS):
-        y = 0.708 - row_index * 0.113
+        y = 0.68 - row_index * 0.108
         label(left, y, DISPLAY[project], ha="left", weight="bold" if project == "Average" else "normal")
         dm_values = task_values(rows, project, "dm")
         dc_values = task_values(rows, project, "dc")
-        for task_index, (values, offsets) in enumerate(((dm_values, (0.022, -0.022)), (dc_values, (0.032, 0.0, -0.032)))):
+        for task_index, (values, offsets) in enumerate(((dm_values, (0.0,)), (dc_values, (0.032, 0.0, -0.032)))):
             centers = centers_by_task[task_index]
             for offset, row in zip(offsets, values):
-                metric = row[0].replace("\\fone/\\ftwo", "F₁/F₂").replace("\\%", "%")
-                label(centers[0], y + offset, metric, ha="center", size=5.3)
-                for value_index, value in enumerate(row[1:]):
-                    label(centers[value_index + 1], y + offset, value, size=6.1)
-    ax.plot([left, right], [0.196, 0.196], color="black", lw=0.4)
+                if task_index == 0:
+                    for value_index, value in enumerate(row[1:]):
+                        label(centers[value_index], y + offset, value, size=5.9)
+                else:
+                    metric = row[0].replace("\\fone/\\ftwo", "F₁/F₂").replace("\\%", "%")
+                    label(centers[0], y + offset, metric, ha="center", size=5.3)
+                    for value_index, value in enumerate(row[1:]):
+                        label(centers[value_index + 1], y + offset, value, size=6.1)
+    ax.plot([left, right], [0.194, 0.194], color="black", lw=0.4)
     ax.plot([left, right], [0.085, 0.085], color="black", lw=0.6)
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
