@@ -1,0 +1,41 @@
+% RQ2 alternative: system rows use the three-line project block on both tasks.
+% Source: evaluation/reports/tex_src/bigtable_rq12_perproject.csv.
+\begin{table}[t]
+\caption{RQ2 per-project comparison on GPT-5.6-terra. Each project uses one row per approach. Link, worst-component, and harmonic-component cells report \fone/\ftwo; CMR is the component miss rate in percent. \approach{} and \Artemis{} are means of three runs.}
+\label{tab:rq2-system-rows-test}
+\centering\small
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.98}
+\begin{tabular*}{\linewidth}{@{}ll@{\extracolsep{\fill}}ccccc@{}}
+\toprule
+ & & \multicolumn{2}{c}{doc-model} & \multicolumn{3}{c}{doc-code} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-7}
+Project & Approach & Link \fone/\ftwo & CMR\% & Link \fone/\ftwo & Worst \fone/\ftwo & Harm. \fone/\ftwo \\
+\midrule
+\multirow{3}{*}{MediaStore} & \approach{} & .95/.95 & 3.2 & .88/.88 & .77/.76 & .96/.96 \\
+ & \Artemis{} & .93/.95 & 0.0 & .93/.93 & .75/.85 & .96/.97 \\
+ & SWATTR$\rightarrow$\TransArc{} & .69/.60 & 35.5 & .59/.48 & .00/.00 & .00/.00 \\
+\addlinespace[1pt]
+\multirow{3}{*}{TeaStore} & \approach{} & 1.00/1.00 & 0.0 & 1.00/1.00 & 1.00/1.00 & 1.00/1.00 \\
+ & \Artemis{} & .72/.85 & 0.0 & .73/.86 & .43/.65 & .67/.82 \\
+ & SWATTR$\rightarrow$\TransArc{} & .85/.78 & 0.0 & .83/.75 & .67/.56 & .84/.77 \\
+\addlinespace[1pt]
+\multirow{3}{*}{Teammates} & \approach{} & .87/.91 & 0.0 & .77/.75 & .72/.61 & .80/.78 \\
+ & \Artemis{} & .76/.68 & 11.7 & .73/.65 & .41/.33 & .50/.44 \\
+ & SWATTR$\rightarrow$\TransArc{} & .71/.79 & 0.0 & .82/.87 & .54/.65 & .76/.82 \\
+\addlinespace[1pt]
+\multirow{3}{*}{BigBlueButton} & \approach{} & .89/.89 & 0.0 & .78/.86 & .44/.56 & .81/.83 \\
+ & \Artemis{} & .75/.72 & 1.1 & .76/.81 & .22/.19 & .45/.45 \\
+ & SWATTR$\rightarrow$\TransArc{} & .79/.74 & 0.0 & .83/.84 & .57/.45 & .84/.80 \\
+\addlinespace[1pt]
+\multirow{3}{*}{JabRef} & \approach{} & .97/.99 & 0.0 & .97/.99 & .94/.97 & .98/.99 \\
+ & \Artemis{} & .89/.93 & 3.7 & .92/.96 & .53/.61 & .61/.64 \\
+ & SWATTR$\rightarrow$\TransArc{} & .95/.98 & 0.0 & .94/.98 & .80/.91 & .94/.98 \\
+\midrule
+\multirow{3}{*}{Average} & \approach{} & .93/.95 & 0.6 & .88/.90 & .77/.78 & .91/.91 \\
+ & \Artemis{} & .81/.83 & 3.3 & .81/.84 & .47/.52 & .63/.66 \\
+ & SWATTR$\rightarrow$\TransArc{} & .80/.78 & 7.1 & .80/.78 & .51/.51 & .68/.67 \\
+\bottomrule
+\end{tabular*}
+\par\smallskip\footnotesize SWATTR supplies the pipeline's doc-model values; \TransArc{} supplies its doc-code values.
+\end{table}
