@@ -2,6 +2,11 @@
 
 Date: 2026-09-21
 
+Superseded on 2026-09-21 by `2026-09-21-rq2-body-table-panel-layout.md`: this layout became the RQ2
+body table (`tab:rq2`), rendered by `mini-src/csv_to_tex.py`. The generator
+script and the `rq2-wide-comparison` files named below no longer exist; the
+record is kept for the layout's own verification.
+
 ## Scope
 
 The generator selects the GPT-5.6-terra ArchLinker and Artemis rows and the

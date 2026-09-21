@@ -19,7 +19,7 @@ Run the upstream generators first (see HOWTO-REGENERATE-RQ.md):
     #   + the two no-knowledge rq34_rq2 runs (see HOWTO §4) for the RQ4 "No knowledge" row
 
 Outputs (reports/tex_src/):
-    rq1.csv  rq2.csv  rq3.csv  rq4.csv  rq5.csv        -- the BODY tables (body backend; rq3/rq5 = mean of 3 runs)
+    rq1.csv  rq2.csv  rq3.csv  rq4.csv             -- the BODY tables (body backend; rq3 = mean of 3 runs)
     rq3_runs.csv                   -- RQ3 appendix: both backends, each run + avg in ONE table
     bigtable_rq12_perproject.csv   -- RQ1+RQ2 appendix: per-project + Average row, both backends
     bigtable_rq12_perrun.csv       -- RQ1+RQ2 appendix: per-run + avg (approach), both backends
@@ -169,49 +169,64 @@ def build_rq1(big):
     write_csv("rq1.csv", ["system"] + cols, rows)
 
 
+RQ2_PANEL_SYSTEMS = [  # (row label, per-project system name, (system, run) average key)
+    ("approach", BODY_SYSTEM, (BODY_SYSTEM, "average")),
+    ("Artemis", BASELINE_SYSTEM, (BASELINE_SYSTEM, BASELINE_RUN)),
+    # The bundled pipeline row: SWATTR supplies the doc-model half, TransArc proper the
+    # doc-code one. Unlike the earlier macro RQ2 shape, it is NOT split into two rows --
+    # a per-project panel has one row per system, and each half of this row is scored by
+    # the stage that produces it. The table's legend names both stages.
+    ("TransArC", "TransArC", ("TransArC", "single")),
+]
+#: display column -> the RQ12 column it copies, in the order each panel prints them.
+RQ2_PANEL_METRIC_OF = {
+    "dm_link_f1": "doc_to_model_link_f1",
+    "dm_link_f2": "doc_to_model_link_f2",
+    "dm_cmr": "doc_to_model_component_miss_rate",
+    "dc_file_f1": "doc_to_code_file_f1",
+    "dc_file_f2": "doc_to_code_file_f2",
+    "dc_worst_f1": "doc_to_code_worst_component_f1",
+    "dc_worst_f2": "doc_to_code_worst_component_f2",
+    "dc_harm_f1": "doc_to_code_harmonic_component_f1",
+    "dc_harm_f2": "doc_to_code_harmonic_component_f2",
+}
+
+
 def build_rq2(big):
-    """RQ2 size-aware suite clustered by task: doc-model (link \\fone/\\ftwo + CMR)
-    and doc-code (file \\fone/\\ftwo + the doc-code size-aware metrics, each also as
-    an \\ftwo), body backend."""
+    """RQ2 size-aware suite per project, as the two panels the float prints side by side.
+
+    One row per (project pair, system): the size-aware suite of both tasks for the
+    left panel's project, then the same suite for the right panel's project. The
+    projects are the five benchmark projects plus the five-project macro average,
+    split in halves so both panels carry the same number of project blocks; the
+    pairing is written here, rather than in the renderer, so the CSV stays row-for-row
+    what the table prints. Body backend.
+    """
+    per_project = index(read_csv(RQ12_PERPROJECT), "system", "project")
+    columns = [*PROJECTS, "Average"]
+    if len(columns) % 2:
+        raise SystemExit(f"[rq_tables] RQ2 panels need an even number of columns, "
+                         f"got {len(columns)}: {columns}")
+    half = len(columns) // 2
+    pairs = list(zip(columns[:half], columns[half:]))
+
+    def values(system, average_key, project):
+        src = big[average_key] if project == "Average" else per_project[(system, project)]
+        return {short: src[column] for short, column in RQ2_PANEL_METRIC_OF.items()}
+
     rows = []
+    for left, right in pairs:
+        for label, system, average_key in RQ2_PANEL_SYSTEMS:
+            row = {"left_project": left, "system": label, "right_project": right}
+            for side, project in (("left", left), ("right", right)):
+                for short, value in values(system, average_key, project).items():
+                    row[f"{side}_{short}"] = value
+            rows.append(row)
 
-    def row(label, s, dm=True, dc=True):
-        """One display row. ``dm``/``dc`` blank the task the system does not do.
-
-        The ``TransArC`` entry of RQ12_BIGTABLE bundles two systems -- SWATTR supplies
-        its doc-model stage, TransArc proper the doc-code one -- so printing it whole
-        would credit TransArc with SWATTR's doc-model \fone/\ftwo and CMR. ``build_rq1``
-        splits it for exactly this reason; RQ2 splits it the same way, and results.tex
-        attributes the CMR to SWATTR in prose.
-        """
-        return {"system": label,
-                "dm_link_p": s["doc_to_model_link_precision"] if dm else "",
-                "dm_link_r": s["doc_to_model_link_recall"] if dm else "",
-                "dm_link_f1": s["doc_to_model_link_f1"] if dm else "",
-                "dm_link_f2": s["doc_to_model_link_f2"] if dm else "",
-                "component_miss_rate": s["doc_to_model_component_miss_rate"] if dm else "",
-                "dc_file_p": s["doc_to_code_file_precision"] if dc else "",
-                "dc_file_r": s["doc_to_code_file_recall"] if dc else "",
-                "dc_file_f1": s["doc_to_code_file_f1"] if dc else "",
-                "dc_file_f2": s["doc_to_code_file_f2"] if dc else "",
-                "worst_component_f1": s["doc_to_code_worst_component_f1"] if dc else "",
-                "worst_component_f2": s["doc_to_code_worst_component_f2"] if dc else "",
-                "harmonic_component_f1": s["doc_to_code_harmonic_component_f1"] if dc else "",
-                "harmonic_component_f2": s["doc_to_code_harmonic_component_f2"] if dc else ""}
-
-    tx = big[("TransArC", "single")]
-    rows = [
-        row("approach", big[(BODY_SYSTEM, "average")]),
-        row("Artemis", big[(BASELINE_SYSTEM, BASELINE_RUN)]),
-        row("SWATTR", tx, dm=True, dc=False),       # TransArc's deterministic doc-model stage
-        row("TransArC", tx, dm=False, dc=True),     # TransArc proper = doc-code only
-    ]
+    shorts = list(RQ2_PANEL_METRIC_OF)
     write_csv("rq2.csv",
-              ["system", "dm_link_p", "dm_link_r", "dm_link_f1", "dm_link_f2",
-               "component_miss_rate",
-               "dc_file_p", "dc_file_r", "dc_file_f1", "dc_file_f2",
-               "worst_component_f1", "worst_component_f2",
-               "harmonic_component_f1", "harmonic_component_f2"],
+              ["left_project", "system"] + [f"left_{s}" for s in shorts]
+              + ["right_project"] + [f"right_{s}" for s in shorts],
               rows)
 
 
@@ -244,77 +259,115 @@ def build_rq1_transposed(big):
 
 
 # --------------------------------------------------------------------------- #
-# RQ3 confusion matrix (per-judge): mean over the three runs for the body table
-# and the mirror backend, plus a per-run breakdown for the appendix. Both backends.
+# RQ3 judging layer (one row per configuration): mean over the three runs for the body
+# table and the mirror backend, plus a per-run breakdown for the appendix. Both backends.
 # --------------------------------------------------------------------------- #
 RQ3_RUNS = ["run1", "run2", "run3"]
-# One row per judge (plus the whole stack); counts then the \fone/\ftwo the pipeline
-# loses when that judge is switched off.
+# One row per judging configuration -- the shipped pipeline first, then each judge
+# switched off, then the whole layer off -- carrying the kills/keeps of the judge(s) that
+# row is about and the metrics the pipeline actually scores in that configuration.
 RQ3_COLS = ["rej_fp", "rej_tp", "keep_tp", "keep_fp",
-            "d_p", "d_r", "d_f1", "d_f2", "d_cmr"]
-#: judge-off delta -> the rq3_variants.csv column it is measured on.
-RQ3_DELTA_OF = {"d_p": "macro_precision", "d_r": "macro_recall", "d_f1": "macro_f1",
-                "d_f2": "macro_f2", "d_cmr": "component_miss_rate"}
-#: F-scores are fractions scaled to percentage points; CMR is stored in percent already,
-#: so its delta is a plain difference.
-RQ3_DELTA_SCALE = {"d_cmr": 1.0}
-# judge key -> (display key, the rq3_variants row that switches it off)
-RQ3_ROW_ORDER = JUDGES + ["all_combined"]
-# judge key -> the rq3_variants row that switches it off. Scoped to THIS arm's judges:
-# the map is read by `.values()` in two places, so carrying another arm's keys asks
-# rq3_variants.csv for a row it does not have.
-_OFF_VARIANT = {"full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
+            "dm_p", "dm_r", "dm_f1", "dm_f2", "cmr",
+            "dc_p", "dc_r", "dc_f1", "dc_f2",
+            "dc_worst_f1", "dc_worst_f2", "dc_harm_f1", "dc_harm_f2"]
+#: output column -> the rq3_validators.csv (audit) column it copies. ``rej_tp`` is the
+#: *unique* rejected true positives -- the ones no other linker recovers -- so it is the
+#: recall that judge costs outright, not the raw count it dropped.
+RQ3_COUNT_OF = {"rej_fp": "rejected_fp", "rej_tp": "unique_rejected_tp",
+                "keep_tp": "kept_tp", "keep_fp": "kept_fp"}
+RQ3_DM_OF = {"dm_p": "macro_precision", "dm_r": "macro_recall", "dm_f1": "macro_f1",
+             "dm_f2": "macro_f2", "cmr": "component_miss_rate"}
+#: output column -> the rq34_rq2_variants.csv (doc-code) column it copies. The judging
+#: layer is priced on both tasks: it rejects doc-model links, and every doc-code link is
+#: composed through one, so a rejection there propagates.
+RQ3_DC_OF = {"dc_p": "doc_to_code_file_precision", "dc_r": "doc_to_code_file_recall",
+             "dc_f1": "doc_to_code_file_f1", "dc_f2": "doc_to_code_file_f2",
+             "dc_worst_f1": "doc_to_code_worst_component_f1",
+             "dc_worst_f2": "doc_to_code_worst_component_f2",
+             "dc_harm_f1": "doc_to_code_harmonic_component_f1",
+             "dc_harm_f2": "doc_to_code_harmonic_component_f2"}
+#: The full pipeline: the reference row, every judge on.
+RQ3_FULL_ROW = "full_on"
+RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["all_combined"]
+# row key -> the rq3_validators.csv row its counts come from. The counts stay per JUDGE:
+# each judge-off row prints that judge's own distinct kills and keeps (what it does while
+# it is on), the \fullVariant{} row prints the judges together (the union, not the sum --
+# two judges can reject the same link), and the all-off row prints the no-judge audit:
+# nothing rejected, the whole candidate pool kept. The metrics beside them are per
+# CONFIGURATION, which is the point of the table -- what each judging setup costs.
+RQ3_AUDIT_ROW = {RQ3_FULL_ROW: "all_combined",
+                 "full_name": "full_name", "partial_name": "partial_name",
+                 "name": "name", "coref": "coref",
+                 "all_combined": "none"}
+# row key -> the rq3_variants / rq34_rq2_variants row that scores it. Scoped to THIS
+# arm's judges: the map is read by `.values()` in two places, so carrying another arm's
+# keys asks rq3_variants.csv for a row it does not have.
+_OFF_VARIANT = {RQ3_FULL_ROW: "Full",
+                "full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
                 "name": "NoNameValid",
                 "coref": "NoCitation", "all_combined": "NoValidator"}
 RQ3_OFF_VARIANT = {key: _OFF_VARIANT[key] for key in RQ3_ROW_ORDER}
 
 
-def _rq3_rows(audits, variants, extra=None):
-    """One row per judge: what it rejected and kept, and what switching it off costs.
+def _rq3_rows(audits, variants, dc_variants, extra=None):
+    """One row per judging configuration: whose kills it prints, and what it then scores.
 
-    ``audits`` maps judge key -> its rq3_validators row; ``variants`` maps RQ3 variant
-    name -> its rq3_variants row. ``rej_tp`` is the *unique* rejected true positives --
-    the ones no other linker recovers -- so it is the recall the judge costs outright,
-    and the all_combined row is measured on the union, not summed (two judges can reject
-    the same link). The ``d_*`` columns are percentage points against \fullVariant{} on
-    each metric of the doc-model suite: negative means the judge is worth that much on
-    precision, F1 and F2, positive means it costs that much recall. ``d_cmr`` runs the
-    other way round -- CMR is a miss rate, so negative there means switching the judge
-    off abandons LESS documented mass. ``extra`` prepends fixed columns.
+    ``audits`` maps rq3_validators.csv row name -> that row; ``variants`` and
+    ``dc_variants`` map RQ3 variant name -> its rq3_variants (doc-model) /
+    rq34_rq2_variants (doc-code) row. Counts and metrics are read at their own grain:
+    the counts are the judge-level audit picked by ``RQ3_AUDIT_ROW`` (each off-row keeps
+    the distinct set of that judge, \fullVariant{} the union over the judges, all-off the
+    empty judge set), while the metrics are the pipeline's own scores in that
+    configuration on both tasks -- not deltas, with the doc-code half carrying its
+    size-aware pair (worst and harmonic component) beside the file-level reference.
+    ``extra`` prepends fixed columns.
     """
-    full = variants["Full"]
     rows = []
     for j in RQ3_ROW_ORDER:
-        a = audits[j]
-        off = variants[RQ3_OFF_VARIANT[j]]
+        a = audits[RQ3_AUDIT_ROW[j]]
+        var = variants[RQ3_OFF_VARIANT[j]]
+        dc = dc_variants[RQ3_OFF_VARIANT[j]]
         rows.append({**(extra or {}), "judge": j,
-                     "rej_fp": a["rejected_fp"], "rej_tp": a["unique_rejected_tp"],
-                     "keep_tp": a["kept_tp"], "keep_fp": a["kept_fp"],
-                     **{d: RQ3_DELTA_SCALE.get(d, 100.0) * (float(off[c]) - float(full[c]))
-                        for d, c in RQ3_DELTA_OF.items()}})
+                     **{o: a[c] for o, c in RQ3_COUNT_OF.items()},
+                     **{o: var[c] for o, c in RQ3_DM_OF.items()},
+                     **{o: dc[c] for o, c in RQ3_DC_OF.items()}})
     return rows
 
 
+def _rq3_sources():
+    """The three CSVs an RQ3 row reads: per-judge audit, doc-model, doc-code."""
+    return (index(read_csv(RQ34 / "rq3_validators.csv"), "backend", "run", "validator"),
+            index(read_csv(RQ34 / "rq3_variants.csv"), "backend", "run", "variant"),
+            index(read_csv(RQ34 / "rq34_rq2_variants.csv"), "backend", "run", "variant"))
+
+
+def _rq3_slice(indexed, keys, backend, run):
+    return {k: indexed[(backend, run, k)] for k in keys}
+
+
 def build_rq3(backend, out):
-    """Per-judge table for one backend, averaged over the three runs (the body table)."""
-    val = index(read_csv(RQ34 / "rq3_validators.csv"), "backend", "run", "validator")
-    var = index(read_csv(RQ34 / "rq3_variants.csv"), "backend", "run", "variant")
-    rows = _rq3_rows({j: val[(backend, "average", j)] for j in RQ3_ROW_ORDER},
-                     {v: var[(backend, "average", v)] for v in ["Full"] + list(RQ3_OFF_VARIANT.values())})
+    """Per-configuration table for one backend, averaged over the three runs (body table)."""
+    val, var, dcvar = _rq3_sources()
+    audits = {RQ3_AUDIT_ROW[j] for j in RQ3_ROW_ORDER}
+    variants = list(RQ3_OFF_VARIANT.values())
+    rows = _rq3_rows(_rq3_slice(val, audits, backend, "average"),
+                     _rq3_slice(var, variants, backend, "average"),
+                     _rq3_slice(dcvar, variants, backend, "average"))
     write_csv(out, ["judge"] + RQ3_COLS, rows)
 
 
 def build_rq3_runs(out):
     """The same table, both backends, every run plus the average in ONE table."""
-    val = index(read_csv(RQ34 / "rq3_validators.csv"), "backend", "run", "validator")
-    var = index(read_csv(RQ34 / "rq3_variants.csv"), "backend", "run", "variant")
+    val, var, dcvar = _rq3_sources()
+    audits = {RQ3_AUDIT_ROW[j] for j in RQ3_ROW_ORDER}
+    variants = list(RQ3_OFF_VARIANT.values())
     rows = []
     for backend in BACKENDS:
         for run in RQ3_RUNS + ["average"]:
-            rows += _rq3_rows(
-                {j: val[(backend, run, j)] for j in RQ3_ROW_ORDER},
-                {v: var[(backend, run, v)] for v in ["Full"] + list(RQ3_OFF_VARIANT.values())},
-                extra={"backend": backend, "run": run})
+            rows += _rq3_rows(_rq3_slice(val, audits, backend, run),
+                              _rq3_slice(var, variants, backend, run),
+                              _rq3_slice(dcvar, variants, backend, run),
+                              extra={"backend": backend, "run": run})
     write_csv(out, ["backend", "run", "judge"] + RQ3_COLS, rows)
 
 
@@ -391,60 +444,6 @@ def build_rq4():
     # Body table shows only the headline tail metrics (each as \fone + \ftwo).
     rows = [{k: r[k] for k in fields} for r in rows]
     write_csv("rq4.csv", fields, rows)
-
-
-# --------------------------------------------------------------------------- #
-# RQ4 knowledge x judge grid (body backend): the two ablation axes crossed.
-# --------------------------------------------------------------------------- #
-#: Judge configuration -> (display key, the rq3_variants/rq34_rq2_variants row).
-#: The grid crosses TWO axes and only two: the judging layer as a whole against the
-#: knowledge layer as a whole, with every linker of the full pipeline in place on both
-#: sides. Per-judge rows are RQ3's job and per-linker rows are tab:rq4's; splitting them
-#: again here would make the table a third ablation instead of the interaction of the
-#: two. Both rows reuse sets that are already scored, so the grid costs nothing new.
-RQ5_ROWS = [("both", "Full"), ("none", RQ3_OFF_VARIANT["all_combined"])]
-#: (output prefix, doc-model column, doc-code column) for one knowledge setting.
-RQ5_METRICS = [("dm_p", "macro_precision", "doc_to_code_file_precision"),
-               ("dm_r", "macro_recall", "doc_to_code_file_recall"),
-               ("dm_f1", "macro_f1", "doc_to_code_file_f1"),
-               ("dm_f2", "macro_f2", "doc_to_code_file_f2")]
-
-
-def build_rq5(backend, out):
-    """Judges x knowledge on the body backend: does a judge still pay off with the
-    knowledge layer switched off?
-
-    RQ3 prices the judges with knowledge ON and the RQ4 "No knowledge" row prices the
-    knowledge layer with both judges ON. Neither says whether the two ablations are
-    independent, and they are not: with the alias table withheld the judging layer is
-    worth about half as much on doc-model and slightly negative on doc-code. Every cell
-    is already scored -- this crosses the two report directories rather than measuring
-    anything new.
-    """
-    if not noknow_available(backend):
-        print(f"[rq_tables] NOTE: no no-knowledge run on {backend}; rq5.csv not written.")
-        (TEX_SRC / out).unlink(missing_ok=True)
-        return
-    src = {"kn": RQ34, "nk": RQ34_NOKNOW[backend]}
-    dm = {k: index(read_csv(d / "rq3_variants.csv"), "backend", "run", "variant")
-          for k, d in src.items()}
-    dc = {k: index(read_csv(d / "rq34_rq2_variants.csv"), "backend", "run", "variant")
-          for k, d in src.items()}
-    rows = []
-    for judges, variant in RQ5_ROWS:
-        row = {"judges": judges}
-        for k in ("kn", "nk"):
-            m_dm = dm[k][(backend, "average", variant)]
-            m_dc = dc[k][(backend, "average", variant)]
-            for name, dm_col, dc_col in RQ5_METRICS:
-                row[f"{k}_{name}"] = m_dm[dm_col]
-                row[f"{k}_{name.replace('dm_', 'dc_')}"] = m_dc[dc_col]
-            row[f"{k}_cmr"] = m_dm["component_miss_rate"]
-        rows.append(row)
-    fields = ["judges"] + [f"{k}_{pre}" for k in ("kn", "nk")
-                           for pre in [n for n, _, _ in RQ5_METRICS] + ["cmr"]
-                           + [n.replace("dm_", "dc_") for n, _, _ in RQ5_METRICS]]
-    write_csv(out, fields, rows)
 
 
 def floor_available():
@@ -630,7 +629,6 @@ def main():
               f"({RQ34_FLOOR / 'rq4_floor.csv'} absent): rq4_floor.csv not written"
               + note, file=sys.stderr)
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
-    build_rq5(BODY_BACKEND, "rq5.csv")             # knowledge x judge grid (body backend)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()
     build_bigtable_rq12_perproject(big)             # RQ1/RQ2 per-project + Average (both backends)

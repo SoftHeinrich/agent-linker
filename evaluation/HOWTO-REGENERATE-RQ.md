@@ -296,7 +296,7 @@ TransArC/SWATTR), and two `Delta (approach - Artemis)` rows.
 | Paper table | CSV | Columns |
 |-------------|-----|---------|
 | body RQ1 (`tab:rq1`) | `RQ12_BIGTABLE.csv` | `doc_to_model_link_{precision,recall,f1,f2}`, `doc_to_code_file_{precision,recall,f1,f2}` |
-| body RQ2 (`tab:rq2`) | `RQ12_BIGTABLE.csv` | `doc_to_model_link_{f1,f2}`, `doc_to_model_component_miss_rate`, `doc_to_code_file_{f1,f2}`, `doc_to_code_{worst,harmonic}_component_{f1,f2}` |
+| body RQ2 (`tab:rq2`) | `RQ12_PERPROJECT.csv` (+ `RQ12_BIGTABLE.csv` for the Average panel) | `doc_to_model_link_{f1,f2}`, `doc_to_model_component_miss_rate`, `doc_to_code_file_{f1,f2}`, `doc_to_code_{worst,harmonic}_component_{f1,f2}` |
 | appendix per-project / per-run | `RQ12_PERPROJECT.csv` / `RQ12_BIGTABLE.csv` | the whole suite |
 
 ---
@@ -435,6 +435,19 @@ it `build_rq5` skips `rq5.csv` and the table is not rendered). `csv_to_tex.py` i
 change columns, headers, precision, bolding, or captions. Re-running is
 byte-identical.
 
+**One float is rendered outside the column registry.** The body RQ2 float prints
+the same metric block twice across the page -- two projects side by side,
+separated by a vertical rule, each project block introduced by a row naming both
+of its projects -- so every header band repeats once per panel, which a list of
+columns does not express. Its spec says `"render": "panels"` and carries one
+panel's bands (`groups`, `subgroups`, `headers`) and `metrics` in place of
+`cols`; `render_panels()` renders it and `check_specs()` checks those bands
+against one panel's width. The pairing itself is data, not layout: `rq_tables.py`
+writes `rq2.csv` with a `left_*`/`right_*` column pair per metric, so the CSV
+stays row-for-row what the table prints. The spec still names the same
+csv/out/label triple, so `sync_paper.py` and the missing-CSV skip treat it like
+every other table.
+
 **Two bolding rules, one per table orientation.** Both are computed at render
 time from the CSV — no winner is ever written into a spec or a `.tex` by hand.
 A table whose systems are the *rows* bolds down a column: `{"bold": "max"|"min"}`
@@ -460,7 +473,7 @@ field the table does not print.
 | Paper float (label) | tex_src CSV | rendered .tex | grain |
 |---------------------|-------------|---------------|-------|
 | body RQ1 `tab:rq1` | `rq1_transposed.csv` | `rq1-results.tex` | terra, per project + Average |
-| body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, macro size-aware |
+| body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, per project in two panels + Average |
 | body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |
 | body RQ4 `tab:judges-knowledge` | `rq5.csv` | `rq5-knowledge-judges.tex` | terra, judges x knowledge, mean of 3 runs |
