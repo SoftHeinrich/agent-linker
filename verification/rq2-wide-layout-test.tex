@@ -2,29 +2,29 @@
 % Source: evaluation/reports/tex_src/bigtable_rq12_perproject.csv.
 % Input this fragment from paper/main.tex to test it in the paper class.
 \begin{table}[t]
-\caption{RQ2 full-width layout test on GPT-5.6-terra. Each doc-model cell shows link \fone/\ftwo and CMR\%; each doc-code cell shows link, worst-component, and harmonic-component \fone/\ftwo from top to bottom. The two deterministic headings are stages of one SWATTR$\rightarrow$\TransArc{} pipeline.}
+\caption{RQ2 per-project results on GPT-5.6-terra. The doc-model task reports link \fone/\ftwo and component miss rate (CMR); the doc-code task reports link, worst-component, and harmonic-component \fone/\ftwo. \approach{} and \Artemis{} are means of three runs. SWATTR and \TransArc{} are the respective stages of one deterministic pipeline.}
 \label{tab:rq2-wide-test}
-\centering\scriptsize
+\centering\footnotesize
 \setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.05}
-\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}cccccc@{}}
+\renewcommand{\arraystretch}{0.98}
+\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}p{.34\linewidth}p{.43\linewidth}@{}}
 \toprule
- & \multicolumn{3}{c}{doc-model} & \multicolumn{3}{c}{doc-code} \\
-\cmidrule(lr){2-4}\cmidrule(l){5-7}
-Project & \approach{} & \Artemis{} & SWATTR & \approach{} & \Artemis{} & \TransArc{} \\
+Project & \centering doc-model & \centering\arraybackslash doc-code \\
+\cmidrule(lr){2-2}\cmidrule(l){3-3}
+ & \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}ccc@{}}Metric & \approach{} & \Artemis{} & SWATTR\end{tabular*} & \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}ccc@{}}Metric & \approach{} & \Artemis{} & \TransArc{}\end{tabular*} \\
 \midrule
-MediaStore & \shortstack[c]{.946/.953\\CMR 3.2} & \shortstack[c]{.933/.954\\CMR 0.0} & \shortstack[c]{.694/.599\\CMR 35.5} & \shortstack[c]{.884/.875\\.77/.76\\.96/.96} & \shortstack[c]{.927/.930\\.75/.85\\.96/.97} & \shortstack[c]{.588/.477\\.00/.00\\.00/.00} \\
-\addlinespace[1pt]
-TeaStore & \shortstack[c]{1.000/1.000\\CMR 0.0} & \shortstack[c]{.721/.855\\CMR 0.0} & \shortstack[c]{.851/.781\\CMR 0.0} & \shortstack[c]{1.000/1.000\\1.00/1.00\\1.00/1.00} & \shortstack[c]{.726/.860\\.43/.65\\.67/.82} & \shortstack[c]{.830/.752\\.67/.56\\.84/.77} \\
-\addlinespace[1pt]
-Teammates & \shortstack[c]{.868/.911\\CMR 0.0} & \shortstack[c]{.755/.684\\CMR 11.7} & \shortstack[c]{.710/.793\\CMR 0.0} & \shortstack[c]{.770/.754\\.72/.61\\.80/.78} & \shortstack[c]{.731/.652\\.41/.33\\.50/.44} & \shortstack[c]{.821/.868\\.54/.65\\.76/.82} \\
-\addlinespace[1pt]
-BigBlueButton & \shortstack[c]{.886/.893\\CMR 0.0} & \shortstack[c]{.747/.718\\CMR 1.1} & \shortstack[c]{.793/.741\\CMR 0.0} & \shortstack[c]{.784/.863\\.44/.56\\.81/.83} & \shortstack[c]{.764/.811\\.22/.19\\.45/.45} & \shortstack[c]{.831/.837\\.57/.45\\.84/.80} \\
-\addlinespace[1pt]
-JabRef & \shortstack[c]{.973/.989\\CMR 0.0} & \shortstack[c]{.889/.932\\CMR 3.7} & \shortstack[c]{.947/.978\\CMR 0.0} & \shortstack[c]{.972/.988\\.94/.97\\.98/.99} & \shortstack[c]{.916/.963\\.53/.61\\.61/.64} & \shortstack[c]{.943/.977\\.80/.91\\.94/.98} \\
-\addlinespace[1pt]
+MediaStore & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .95/.95 & .93/.95 & .69/.60\\CMR\% & 3.2 & 0.0 & 35.5\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .88/.88 & .93/.93 & .59/.48\\Worst \fone/\ftwo & .77/.76 & .75/.85 & .00/.00\\Harm. \fone/\ftwo & .96/.96 & .96/.97 & .00/.00\end{tabular*} \\
+\addlinespace[0.5pt]
+TeaStore & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & 1.00/1.00 & .72/.85 & .85/.78\\CMR\% & 0.0 & 0.0 & 0.0\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & 1.00/1.00 & .73/.86 & .83/.75\\Worst \fone/\ftwo & 1.00/1.00 & .43/.65 & .67/.56\\Harm. \fone/\ftwo & 1.00/1.00 & .67/.82 & .84/.77\end{tabular*} \\
+\addlinespace[0.5pt]
+Teammates & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .87/.91 & .76/.68 & .71/.79\\CMR\% & 0.0 & 11.7 & 0.0\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .77/.75 & .73/.65 & .82/.87\\Worst \fone/\ftwo & .72/.61 & .41/.33 & .54/.65\\Harm. \fone/\ftwo & .80/.78 & .50/.44 & .76/.82\end{tabular*} \\
+\addlinespace[0.5pt]
+BigBlueButton & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .89/.89 & .75/.72 & .79/.74\\CMR\% & 0.0 & 1.1 & 0.0\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .78/.86 & .76/.81 & .83/.84\\Worst \fone/\ftwo & .44/.56 & .22/.19 & .57/.45\\Harm. \fone/\ftwo & .81/.83 & .45/.45 & .84/.80\end{tabular*} \\
+\addlinespace[0.5pt]
+JabRef & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .97/.99 & .89/.93 & .95/.98\\CMR\% & 0.0 & 3.7 & 0.0\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .97/.99 & .92/.96 & .94/.98\\Worst \fone/\ftwo & .94/.97 & .53/.61 & .80/.91\\Harm. \fone/\ftwo & .98/.99 & .61/.64 & .94/.98\end{tabular*} \\
+\addlinespace[0.5pt]
 \midrule
-Average & \shortstack[c]{.935/.949\\CMR 0.6} & \shortstack[c]{.809/.828\\CMR 3.3} & \shortstack[c]{.799/.778\\CMR 7.1} & \shortstack[c]{.882/.896\\.77/.78\\.91/.91} & \shortstack[c]{.813/.844\\.47/.52\\.63/.66} & \shortstack[c]{.803/.782\\.51/.51\\.68/.67} \\
+Average & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .93/.95 & .81/.83 & .80/.78\\CMR\% & 0.6 & 3.3 & 7.1\end{tabular*} & \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}ccc@{}}Link \fone/\ftwo & .88/.90 & .81/.84 & .80/.78\\Worst \fone/\ftwo & .77/.78 & .47/.52 & .51/.51\\Harm. \fone/\ftwo & .91/.91 & .63/.66 & .68/.67\end{tabular*} \\
 \bottomrule
 \end{tabular*}
 \end{table}

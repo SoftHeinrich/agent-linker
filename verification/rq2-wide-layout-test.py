@@ -1,6 +1,8 @@
 """Generate an isolated, full-width RQ2 table test from the tracked project CSV.
 
-The PNG/PDF are a five-inch visual mock-up, not a LaTeX compilation.
+The table has two large task columns. Each contains a metric-by-approach matrix.
+The PNG/PDF are a conservative five-inch visual mock-up; the companion document
+uses the paper's acmsmall class and options for an exact build when TeX is present.
 """
 
 from __future__ import annotations
@@ -42,27 +44,36 @@ def read_rows() -> dict[tuple[str, str], dict[str, str]]:
     return rows
 
 
-def f3(value: str) -> str:
-    return f"{float(value):.3f}".removeprefix("0")
-
-
 def f2(value: str) -> str:
     return f"{float(value):.2f}".removeprefix("0")
 
 
-def dm_lines(row: dict[str, str]) -> list[str]:
+def pair(row: dict[str, str], f1: str, f2_name: str) -> str:
+    return f"{f2(row[f1])}/{f2(row[f2_name])}"
+
+
+def task_values(rows: dict[tuple[str, str], dict[str, str]], project: str, task: str) -> list[list[str]]:
+    selected = [rows[(system, project)] for system, _, _ in SYSTEMS]
+    if task == "dm":
+        return [
+            ["Link \\fone/\\ftwo", *[pair(row, "doc_to_model_link_f1", "doc_to_model_link_f2") for row in selected]],
+            ["CMR\\%", *[f"{float(row['doc_to_model_component_miss_rate']):.1f}" for row in selected]],
+        ]
     return [
-        f"{f3(row['doc_to_model_link_f1'])}/{f3(row['doc_to_model_link_f2'])}",
-        f"CMR {float(row['doc_to_model_component_miss_rate']):.1f}",
+        ["Link \\fone/\\ftwo", *[pair(row, "doc_to_code_file_f1", "doc_to_code_file_f2") for row in selected]],
+        ["Worst \\fone/\\ftwo", *[pair(row, "doc_to_code_worst_component_f1", "doc_to_code_worst_component_f2") for row in selected]],
+        ["Harm. \\fone/\\ftwo", *[pair(row, "doc_to_code_harmonic_component_f1", "doc_to_code_harmonic_component_f2") for row in selected]],
     ]
 
 
-def dc_lines(row: dict[str, str]) -> list[str]:
-    return [
-        f"{f3(row['doc_to_code_file_f1'])}/{f3(row['doc_to_code_file_f2'])}",
-        f"{f2(row['doc_to_code_worst_component_f1'])}/{f2(row['doc_to_code_worst_component_f2'])}",
-        f"{f2(row['doc_to_code_harmonic_component_f1'])}/{f2(row['doc_to_code_harmonic_component_f2'])}",
-    ]
+def inner_header(task: str) -> str:
+    third = "SWATTR" if task == "dm" else "\\TransArc{}"
+    return "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}ccc@{}}Metric & \\approach{} & \\Artemis{} & " + third + "\\end{tabular*}"
+
+
+def inner_body(values: list[list[str]]) -> str:
+    rows = [" & ".join(row) for row in values]
+    return "\\begin{tabular*}{\\linewidth}[t]{@{}l@{\\extracolsep{\\fill}}ccc@{}}" + "\\\\".join(rows) + "\\end{tabular*}"
 
 
 def write_tex(rows: dict[tuple[str, str], dict[str, str]]) -> None:
@@ -71,36 +82,37 @@ def write_tex(rows: dict[tuple[str, str], dict[str, str]]) -> None:
         "% Source: evaluation/reports/tex_src/bigtable_rq12_perproject.csv.",
         "% Input this fragment from paper/main.tex to test it in the paper class.",
         "\\begin{table}[t]",
-        "\\caption{RQ2 full-width layout test on GPT-5.6-terra. Each doc-model cell shows link \\fone/\\ftwo and CMR\\%; each doc-code cell shows link, worst-component, and harmonic-component \\fone/\\ftwo from top to bottom. The two deterministic headings are stages of one SWATTR$\\rightarrow$\\TransArc{} pipeline.}",
+        "\\caption{RQ2 per-project results on GPT-5.6-terra. The doc-model task reports link \\fone/\\ftwo and component miss rate (CMR); the doc-code task reports link, worst-component, and harmonic-component \\fone/\\ftwo. \\approach{} and \\Artemis{} are means of three runs. SWATTR and \\TransArc{} are the respective stages of one deterministic pipeline.}",
         "\\label{tab:rq2-wide-test}",
-        "\\centering\\scriptsize",
+        "\\centering\\footnotesize",
         "\\setlength{\\tabcolsep}{2pt}",
-        "\\renewcommand{\\arraystretch}{1.05}",
-        "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}cccccc@{}}",
+        "\\renewcommand{\\arraystretch}{0.98}",
+        "\\begin{tabular*}{\\linewidth}{@{}l@{\\extracolsep{\\fill}}p{.34\\linewidth}p{.43\\linewidth}@{}}",
         "\\toprule",
-        " & \\multicolumn{3}{c}{doc-model} & \\multicolumn{3}{c}{doc-code} \\\\",
-        "\\cmidrule(lr){2-4}\\cmidrule(l){5-7}",
-        "Project & \\approach{} & \\Artemis{} & SWATTR & \\approach{} & \\Artemis{} & \\TransArc{} \\\\",
+        "Project & \\centering doc-model & \\centering\\arraybackslash doc-code \\\\",
+        "\\cmidrule(lr){2-2}\\cmidrule(l){3-3}",
+        " & " + inner_header("dm") + " & " + inner_header("dc") + " \\\\",
         "\\midrule",
     ]
     for project in PROJECTS:
-        cells = []
-        for system, _, _ in SYSTEMS:
-            cells.append("\\shortstack[c]{" + "\\\\".join(dm_lines(rows[(system, project)])) + "}")
-        for system, _, _ in SYSTEMS:
-            cells.append("\\shortstack[c]{" + "\\\\".join(dc_lines(rows[(system, project)])) + "}")
         if project == "Average":
             lines.append("\\midrule")
-        lines.append(DISPLAY[project] + " & " + " & ".join(cells) + " \\\\")
+        lines.append(
+            DISPLAY[project]
+            + " & "
+            + inner_body(task_values(rows, project, "dm"))
+            + " & "
+            + inner_body(task_values(rows, project, "dc"))
+            + " \\\\")
         if project != "Average":
-            lines.append("\\addlinespace[1pt]")
+            lines.append("\\addlinespace[0.5pt]")
     lines += ["\\bottomrule", "\\end{tabular*}", "\\end{table}"]
     STEM.with_suffix(".tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_preview(rows: dict[tuple[str, str], dict[str, str]]) -> tuple[int, int]:
-    plt.rcParams.update({"font.family": "DejaVu Serif", "font.size": 7})
-    fig = plt.figure(figsize=(5.0, 3.45), dpi=300)
+    plt.rcParams.update({"font.family": "DejaVu Serif", "font.size": 6.4})
+    fig = plt.figure(figsize=(5.0, 3.2), dpi=300)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set(xlim=(0, 1), ylim=(0, 1))
     ax.axis("off")
@@ -109,32 +121,46 @@ def write_preview(rows: dict[tuple[str, str], dict[str, str]]) -> tuple[int, int
     def label(x: float, y: float, value: str, *, ha: str = "center", size: float = 7, weight: str = "normal") -> None:
         artists.append(ax.text(x, y, value, ha=ha, va="center", fontsize=size, weight=weight))
 
-    left, split, right = 0.02, 0.18, 0.98
-    width = (right - split) / 6
-    centers = [split + (i + 0.5) * width for i in range(6)]
-    label(left, 0.977, "RQ2 wide layout test · GPT-5.6-terra", ha="left", size=8, weight="bold")
-    label(left, 0.935, "Doc-model: link F₁/F₂, CMR%.  Doc-code: link, worst, harmonic F₁/F₂ (top to bottom).", ha="left", size=5.6)
-    ax.plot([left, right], [0.898, 0.898], color="black", lw=0.6)
-    label((centers[0] + centers[2]) / 2, 0.86, "doc-model", size=8)
-    label((centers[3] + centers[5]) / 2, 0.86, "doc-code", size=8)
-    ax.plot([split, split + 3 * width - 0.01], [0.832, 0.832], color="black", lw=0.35)
-    ax.plot([split + 3 * width + 0.01, right], [0.832, 0.832], color="black", lw=0.35)
-    label(left, 0.788, "Project", ha="left", weight="bold")
-    for i, (_, dm_head, dc_head) in enumerate(SYSTEMS):
-        label(centers[i], 0.788, dm_head)
-        label(centers[i + 3], 0.788, dc_head)
-    ax.plot([left, right], [0.746, 0.746], color="black", lw=0.4)
+    left, project_right, gap, right = 0.02, 0.17, 0.018, 0.98
+    task_width = (right - project_right - gap) / 2
+    task_lefts = [project_right, project_right + task_width + gap]
+    metric_widths = [0.27 * task_width, 0.30 * task_width]
+    centers_by_task = []
+    for task_index, task_left in enumerate(task_lefts):
+        metric_width = metric_widths[task_index]
+        approach_width = (task_width - metric_width) / 3
+        centers_by_task.append([
+            task_left + metric_width / 2,
+            *[task_left + metric_width + (i + 0.5) * approach_width for i in range(3)],
+        ])
+    label(left, 0.973, "RQ2 wide layout test · GPT-5.6-terra · F scores rounded to two decimals", ha="left", size=7.4, weight="bold")
+    ax.plot([left, right], [0.925, 0.925], color="black", lw=0.6)
+    label(left, 0.88, "Project", ha="left", weight="bold")
+    label(task_lefts[0] + task_width / 2, 0.88, "doc-model", size=7.4, weight="bold")
+    label(task_lefts[1] + task_width / 2, 0.88, "doc-code", size=7.4, weight="bold")
+    ax.plot([task_lefts[0], task_lefts[0] + task_width], [0.85, 0.85], color="black", lw=0.35)
+    ax.plot([task_lefts[1], right], [0.85, 0.85], color="black", lw=0.35)
+    for task_index, centers in enumerate(centers_by_task):
+        label(centers[0], 0.815, "Metric", size=5.8)
+        label(centers[1], 0.815, "ArchLinker", size=5.8)
+        label(centers[2], 0.815, "Artemis", size=5.8)
+        label(centers[3], 0.815, "SWATTR" if task_index == 0 else "TransArc", size=5.8)
+    ax.plot([left, right], [0.78, 0.78], color="black", lw=0.4)
 
     for row_index, project in enumerate(PROJECTS):
-        y = 0.668 - row_index * 0.108
+        y = 0.708 - row_index * 0.113
         label(left, y, DISPLAY[project], ha="left", weight="bold" if project == "Average" else "normal")
-        for system_index, (system, _, _) in enumerate(SYSTEMS):
-            for offset, value in zip((0.027, -0.027), dm_lines(rows[(system, project)])):
-                label(centers[system_index], y + offset, value)
-            for offset, value in zip((0.035, 0.0, -0.035), dc_lines(rows[(system, project)])):
-                label(centers[system_index + 3], y + offset, value)
-    ax.plot([left, right], [0.182, 0.182], color="black", lw=0.4)
-    ax.plot([left, right], [0.072, 0.072], color="black", lw=0.6)
+        dm_values = task_values(rows, project, "dm")
+        dc_values = task_values(rows, project, "dc")
+        for task_index, (values, offsets) in enumerate(((dm_values, (0.022, -0.022)), (dc_values, (0.032, 0.0, -0.032)))):
+            centers = centers_by_task[task_index]
+            for offset, row in zip(offsets, values):
+                metric = row[0].replace("\\fone/\\ftwo", "F₁/F₂").replace("\\%", "%")
+                label(centers[0], y + offset, metric, ha="center", size=5.3)
+                for value_index, value in enumerate(row[1:]):
+                    label(centers[value_index + 1], y + offset, value, size=6.1)
+    ax.plot([left, right], [0.196, 0.196], color="black", lw=0.4)
+    ax.plot([left, right], [0.085, 0.085], color="black", lw=0.6)
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     pixel_width = fig.get_figwidth() * fig.dpi
@@ -152,7 +178,7 @@ if __name__ == "__main__":
     data = read_rows()
     write_tex(data)
     pixels = write_preview(data)
-    print(f"PASS: 6 project rows x 6 approach cells; five-inch preview {pixels[0]}x{pixels[1]} px; no text extends past page width")
+    print(f"PASS: 6 project rows x 2 task matrices x 3 approaches; all F scores have two decimals; five-inch preview {pixels[0]}x{pixels[1]} px; no text extends past page width")
     print(f"Wrote {STEM.with_suffix('.tex').relative_to(ROOT)}")
     print(f"Wrote {STEM.with_suffix('.png').relative_to(ROOT)}")
     print(f"Wrote {STEM.with_suffix('.pdf').relative_to(ROOT)}")

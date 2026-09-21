@@ -1,11 +1,14 @@
-% Standalone paper-class wrapper for rq2-wide-layout-test.tex.
+% Standalone wrapper using the paper's document class and top-matter options.
 % Compile from verification/ with latexmk -pdf rq2-wide-layout-test-document.tex.
 \documentclass[acmsmall,screen,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\setcopyright{none}
+\citestyle{acmnumeric}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{xspace}
-\newcommand{\approach}{ArchLinker\xspace}
-\newcommand{\Artemis}{Artemis\xspace}
-\newcommand{\TransArc}{TransArc\xspace}
+\usepackage[nohyperlinks,nolist]{acronym}
+\input{../paper/abbrev.tex}
 \newcommand{\fone}{F\textsubscript{1}\xspace}
 \newcommand{\ftwo}{F\textsubscript{2}\xspace}
 \title{RQ2 Table Layout Test}
