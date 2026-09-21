@@ -91,10 +91,12 @@
 \maketitle
 
 \section*{Citation map}
-The 13 Crossref bibliography entries in \texttt{draft-api.bib} are copied
-verbatim from Crossref's BibTeX transform API.  The five arXiv entries were
-mechanically constructed only from fields returned by the official arXiv API;
-their API URLs and response statuses are recorded above each entry.
+The original 18 entries in \texttt{draft-api.bib} came from individual
+Crossref or arXiv API records. The 14 additional entries in
+\texttt{draft-rw-extra.bib} were fetched individually from the same APIs.
+For Crossref records, the draft uses the API's print or published year when
+it differs from the BibTeX transform's online year; the differences and
+source responses are preserved in the metadata report.
 
 \begin{longtable}{p{0.13\linewidth}p{0.70\linewidth}p{0.12\linewidth}}
 \toprule
@@ -119,14 +121,32 @@ their API URLs and response statuses are recorded above each entry.
 \texttt{CIT-16} & De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative Grounding & C3 \\
 \texttt{CIT-17} & On Mitigating Code LLM Hallucinations with API Documentation & C3 \\
 \texttt{CIT-18} & Using Software Architecture for Code Testing & C1 \\
+% BEGIN API RW EXTRA ROWS
+\texttt{E007} & Viability for codifying and documenting architectural design decisions with tool support & C1 \\
+\texttt{E009} & 10 years of software architecture knowledge management: Practice and future & C1 \\
+\texttt{E010} & Toward Architectural Knowledge Sustainability. New Opportunities to Extend the Longevity of Systems & C1 \\
+\texttt{E022} & Practical Guidelines for the Selection and Evaluation of Natural Language Processing Techniques in Requirements Engineering & C2 \\
+\texttt{E030} & Improving Requirements Completeness: Automated Assistance through Large Language Models & C2 \\
+\texttt{E031} & Using Language Models for Enhancing the Completeness of Natural-language Requirements & C2 \\
+\texttt{E039} & Enhancing software artefact traceability recovery processes with link count information & C2 \\
+\texttt{E040} & Recovering test-to-code traceability using slicing and textual analysis & C2 \\
+\texttt{E041} & Evaluating test‐to‐code traceability recovery methods through controlled experiments & C2 \\
+\texttt{E059} & Detecting outdated code element references in software repository documentation & C3 \\
+\texttt{E060} & 18 million links in commit messages: purpose, evolution, and decay & C3 \\
+\texttt{E062} & Generative AI for Pull Request Descriptions: Adoption, Impact, and Developer Interventions & C3 \\
+\texttt{E063} & Large language models for qualitative research in software engineering: exploring opportunities and challenges & C3 \\
+\texttt{E065} & Code Review Automation: Strengths and Weaknesses of the State of the Art & C3 \\
+% END API RW EXTRA ROWS
 \bottomrule
 \end{longtable}
 
 \nocite{Lago_2009,Capilla_2011,Bucchiarone_2009,Antoniol_2017,Arora_2017,Ezzini_2022,Moran_2020,
-McMillan_2009,Haiduc_2013,Arora_2015,Tufano_2024,Hou_2024,Bacchelli_2017,
-Treude_2025,Pradel_2020,Eghbali_2024,Jain_2024,Muccini_2004}
+McMillan_2009,Haiduc_2013,Arora_2015,Tufano_2024,Hou_2024,Bacchelli_2017,Treude_2025,
+Pradel_2020,Eghbali_2024,Jain_2024,Muccini_2004,RW_E007,Capilla_2016,RW_E010,
+RW_E022,RW_E030,RW_E031,Bavota_2014,Qusef_2014,RW_E041,RW_E059,
+Xiao_2023,Xiao_2024,RW_E063,RW_E065}
 \bibliographystyle{plain}
-\bibliography{draft-api}
+\bibliography{draft-api,draft-rw-extra}
 
 % Verification record (2026-09-14 UTC):
 % Batch command: curl --fail --silent --show-error --location --retry 3
