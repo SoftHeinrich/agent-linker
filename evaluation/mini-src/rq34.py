@@ -446,6 +446,22 @@ def rq3_variant_sets(cell: Cell) -> Dict[str, Set[LinkKey]]:
     return sets
 
 
+def rq3_none_audit(cell: Cell, variants: Dict[str, Set[LinkKey]]) -> Dict[str, int]:
+    """The audit row for the configuration with NO judge: rejects nothing, keeps all.
+
+    Same schema and same grain as ``rq3_audit`` / ``rq3_combined_audit`` -- a judge's
+    own kills and keeps -- for the degenerate judge set. ``kept`` is therefore the whole
+    candidate pool the linkers propose (the ``NoValidator`` set, every rejection put
+    back), which is the one number the per-judge rows cannot supply.
+    """
+    kept = variants["NoValidator"]
+    return {"rejected_tp": 0, "unique_rejected_tp": 0, "rejected_fp": 0,
+            "kept_tp": len(kept & cell.gold), "kept_fp": len(kept - cell.gold)}
+
+
+NO_JUDGE = "none"
+
+
 def rq3_audit(cell: Cell) -> Dict[str, Dict[str, int]]:
     # A candidate link is a TP if it is in the gold standard, an FP otherwise.
     # "rejected" = the validator dropped the link; "kept" = it survived to the output.
@@ -576,6 +592,9 @@ class BackendAgg:
                       for k in PHASE_KEYS}
         self.combined_audit = {"rejected_tp": 0, "unique_rejected_tp": 0,
                                "rejected_fp": 0, "kept_tp": 0, "kept_fp": 0}
+        # The no-judge row: nothing rejected, the whole candidate pool kept.
+        self.none_audit = {"rejected_tp": 0, "unique_rejected_tp": 0,
+                           "rejected_fp": 0, "kept_tp": 0, "kept_fp": 0}
         self.linkers = {l: {"tps_caught": 0, "unique_tps": 0, "fps": 0, "delta_f1_sum": 0.0, "n": 0}
                         for l in LINKERS}
         self.upset = {c: 0 for c in UPSET_CELLS}
@@ -610,6 +629,8 @@ def average_aggs(backend: str, aggs: List[BackendAgg]) -> BackendAgg:
             avg.audit[v][k] = mean([a.audit[v][k] for a in aggs])
     for k in avg.combined_audit:
         avg.combined_audit[k] = mean([a.combined_audit[k] for a in aggs])
+    for k in avg.none_audit:
+        avg.none_audit[k] = mean([a.none_audit[k] for a in aggs])
     for l in LINKERS:
         avg.linkers[l]["tps_caught"] = mean([a.linkers[l]["tps_caught"] for a in aggs])
         avg.linkers[l]["unique_tps"] = mean([a.linkers[l]["unique_tps"] for a in aggs])
@@ -692,6 +713,7 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
                                  "fn": fn, "f1": f"{vec[2]:.6f}", "f2": f"{vec[3]:.6f}"})
 
             audit = rq3_audit(cell)
+            none_audit = rq3_none_audit(cell, variants)
             combined_audit = rq3_combined_audit(cell)
             linkers = rq4_linkers(cell)
             upset = rq4_upset(cell)
@@ -725,6 +747,8 @@ def process_backend(backend: str, csv_root: Path, run_override: Optional[str],
                     agg.audit[v][k] += audit[v][k]
             for k in agg.combined_audit:
                 agg.combined_audit[k] += combined_audit[k]
+            for k in agg.none_audit:
+                agg.none_audit[k] += none_audit[k]
             for l in LINKERS:
                 agg.linkers[l]["tps_caught"] += linkers[l]["tps_caught"]
                 agg.linkers[l]["unique_tps"] += linkers[l]["unique_tps"]
@@ -777,6 +801,8 @@ def write_aggregates(csv_root: Path, aggs: Dict[str, List[BackendAgg]]) -> None:
                              **{k: fmt_count(a[k]) for k in a}})
             rows.append({"backend": backend, "run": agg.run, "validator": "all_combined",
                          **{k: fmt_count(agg.combined_audit[k]) for k in agg.combined_audit}})
+            rows.append({"backend": backend, "run": agg.run, "validator": NO_JUDGE,
+                         **{k: fmt_count(agg.none_audit[k]) for k in agg.none_audit}})
     _write_csv(csv_root / "rq3_validators.csv",
                ["backend", "run", "validator", "rejected_tp", "unique_rejected_tp",
                 "rejected_fp", "kept_tp", "kept_fp"], rows)

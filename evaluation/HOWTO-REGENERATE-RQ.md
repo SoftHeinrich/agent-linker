@@ -310,7 +310,8 @@ the same arm — so neither takes a path argument.
 
 ```bash
 python3 evaluation/mini-src/rq34.py
-#   -> reports/rq34/s110/rq3_validators.csv, rq3_variants.csv
+#   -> reports/rq34/s110/rq3_validators.csv (per-judge audit + all_combined + none rows)
+#   -> reports/rq34/s110/rq3_variants.csv    (doc-model suite per configuration)
 #   -> reports/rq34/s110/rq4_linkers.csv,    rq4_variants.csv, rq4_variants_perproject.csv
 #   -> reports/rq34/s110/<backend>/<project>/{rq3,rq3_audit,rq4,rq4_upset}.csv
 #   -> reports/rq34/s110/<backend>/runs_summary.csv
@@ -422,16 +423,23 @@ top of the CSVs above:
 
 ```bash
 # (a) reshape the wide CSVs into one small "this is the table" CSV per float
-python3 evaluation/mini-src/rq_tables.py       # -> reports/tex_src/*.csv (14 files)
+python3 evaluation/mini-src/rq_tables.py       # -> reports/tex_src/*.csv (13 files)
 
 # (b) render each tex_src CSV into a booktabs .tex via the SPECS registry
-python3 evaluation/mini-src/csv_to_tex.py      # -> reports/tex/*.tex (13 files)
+python3 evaluation/mini-src/csv_to_tex.py      # -> reports/tex/*.tex (12 files)
 ```
 
 `rq_tables.py` does NO metric math — it only selects rows/columns from the CSVs in
-§2–§4 (it reads the no-knowledge `rq34_rq2_*` for the RQ4 "No knowledge" row **and for
-the whole knowledge-off half of the judges x knowledge grid**, so run §4 first; without
-it `build_rq5` skips `rq5.csv` and the table is not rendered). `csv_to_tex.py` is a declarative renderer: edit the `SPECS` list to
+§2–§4 (it reads the no-knowledge `rq34_rq2_*` for the RQ4 "No knowledge" row, so run §4
+first; without it that row is dropped and the absence is printed). RQ3 reads three of
+them at once, one row per judging configuration (`Full`, each judge off, `No judge`):
+`rq3_validators.csv` for the reject/keep counts, `rq3_variants.csv` for the doc-model
+metrics and `rq34_rq2_variants.csv` for the doc-code ones (file-level reference plus the
+size-aware worst/harmonic pair). The two halves sit at different grains on purpose --
+the counts stay per JUDGE (the named judge's own distinct kills and keeps on an off-row,
+the union over the judges on `Full`, and the `none` audit row -- nothing rejected, the
+whole candidate pool kept -- on `No judge`), while the metrics are what the pipeline
+scores in that configuration. `rq_tables.RQ3_AUDIT_ROW` is the map. `csv_to_tex.py` is a declarative renderer: edit the `SPECS` list to
 change columns, headers, precision, bolding, or captions. Re-running is
 byte-identical.
 
@@ -474,9 +482,8 @@ field the table does not print.
 |---------------------|-------------|---------------|-------|
 | body RQ1 `tab:rq1` | `rq1_transposed.csv` | `rq1-results.tex` | terra, per project + Average |
 | body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, per project in two panels + Average |
-| body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, mean of 3 runs |
+| body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, judging configurations, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |
-| body RQ4 `tab:judges-knowledge` | `rq5.csv` | `rq5-knowledge-judges.tex` | terra, judges x knowledge, mean of 3 runs |
 | appendix `tab:rq3-runs` | `rq3_runs.csv` | `rq3-runs.tex` | both backends, per run + avg |
 | appendix `tab:detailed-perproject` | `bigtable_rq12_perproject.csv` | `big-table-perproject.tex` | both backends, per project + Average |
 | appendix `tab:detailed-perrun` | `bigtable_rq12_perrun.csv` | `big-table-perrun.tex` | both backends, per run + avg |

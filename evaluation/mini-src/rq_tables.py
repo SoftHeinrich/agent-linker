@@ -288,7 +288,7 @@ RQ3_DC_OF = {"dc_p": "doc_to_code_file_precision", "dc_r": "doc_to_code_file_rec
              "dc_harm_f2": "doc_to_code_harmonic_component_f2"}
 #: The full pipeline: the reference row, every judge on.
 RQ3_FULL_ROW = "full_on"
-RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["all_combined"]
+RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["no_judge"]
 # row key -> the rq3_validators.csv row its counts come from. The counts stay per JUDGE:
 # each judge-off row prints that judge's own distinct kills and keeps (what it does while
 # it is on), the \fullVariant{} row prints the judges together (the union, not the sum --
@@ -298,14 +298,14 @@ RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["all_combined"]
 RQ3_AUDIT_ROW = {RQ3_FULL_ROW: "all_combined",
                  "full_name": "full_name", "partial_name": "partial_name",
                  "name": "name", "coref": "coref",
-                 "all_combined": "none"}
+                 "no_judge": "none"}
 # row key -> the rq3_variants / rq34_rq2_variants row that scores it. Scoped to THIS
 # arm's judges: the map is read by `.values()` in two places, so carrying another arm's
 # keys asks rq3_variants.csv for a row it does not have.
 _OFF_VARIANT = {RQ3_FULL_ROW: "Full",
                 "full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
                 "name": "NoNameValid",
-                "coref": "NoCitation", "all_combined": "NoValidator"}
+                "coref": "NoCitation", "no_judge": "NoValidator"}
 RQ3_OFF_VARIANT = {key: _OFF_VARIANT[key] for key in RQ3_ROW_ORDER}
 
 

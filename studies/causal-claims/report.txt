@@ -1,0 +1,347 @@
+wrote /mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/items.csv (294 rows, 195 of them gold)
+
+====================================================================================================
+0. REPRODUCTION GATE -- this module's own numbers against the committed tables
+====================================================================================================
+  OK    macro F1, Full (rq3_variants.csv)                    got    0.935  committed    0.935
+  OK    macro F2, Full                                       got    0.949  committed    0.949
+  OK    macro F1, NoValidator                                got    0.784  committed    0.784
+  OK    macro F1, NoNameValid                                got    0.835  committed    0.835
+  OK    macro F1, NoCitation                                 got    0.854  committed    0.854
+  OK    coref rejected-FP  (rq3_validators.csv)              got   53.333  committed   53.330
+  OK    coref rejected-TP                                    got   84.333  committed   84.330
+  OK    coref unique rejected-TP                             got    2.333  committed    2.330
+  OK    both judges, distinct FP rejected                    got  145.667  committed  145.670
+  OK    both judges, TP lost outright                        got   10.667  committed   10.670
+  OK    unique TPs, FullName (rq4_linkers.csv)               got  136.667  committed  136.670
+  OK    unique TPs, PartialName (rq4_linkers.csv)            got   13.000  committed   13.000
+  OK    unique TPs, Coref (rq4_linkers.csv)                  got   15.000  committed   15.000
+  OK    doc-code worst-component F1, Full (tab:rq4)          got    0.773  committed    0.770
+  OK    doc-code worst-component F1, no-knowledge            got    0.442  committed    0.440
+  OK    doc-code file F1 delta, no-knowledge (pp)            got  -10.850  committed  -10.900
+
+  GATE PASSED -- the analysis below is on the paper's own basis.
+
+====================================================================================================
+1. RQ1 (results.tex L38-39) -- is the gain over Artemis carried by ALIAS mentions?
+====================================================================================================
+A. the 195 gold doc-model links, by how the sentence refers to the component
+     canonical   135  (69.2%)
+     alias        22  (11.3%)
+     partial_d     5  ( 2.6%)
+     partial_g    13  ( 6.7%)
+     none         20  (10.3%)
+
+B. recall by surface class, majority of 3 runs
+     class       gold  approach  Artemis  SWATTR   gain
+     canonical    135       133      122     134    +11
+     alias         22        21       17       5     +4
+     partial_d      5         2        1       3     +1
+     partial_g     13        10        1       6     +9
+     none          20        20       16       0     +4
+     TOTAL        195       186      157     148    +29
+
+C. THE GAIN SET -- 30 gold links \approach recovers and Artemis does not
+     canonical   12  (40.0% of the gain)
+     partial_g    9  (30.0% of the gain)
+     alias        4  (13.3% of the gain)
+     none         4  (13.3% of the gain)
+     partial_d    1  ( 3.3% of the gain)
+     proposer form: {'full_name': 16, 'coreference': 4, 'partial_name': 10}
+
+     every item (audit by hand against items.csv):
+       1 bigbluebutton  s10   HTML5 Client         partial_g partial_name  | The MongoDB database contains information about all meetings on the server
+       2 bigbluebutton  s10   HTML5 Server         partial_g partial_name  | The MongoDB database contains information about all meetings on the server
+       3 bigbluebutton  s11   HTML5 Client         partial_g partial_name  | Each user's client is only aware of the their meeting's state, such the us
+       4 bigbluebutton  s12   HTML5 Client         partial_g partial_name  | The client side subscribes to the published collections on the server side
+       5 bigbluebutton  s12   HTML5 Server         partial_g partial_name  | The client side subscribes to the published collections on the server side
+       6 bigbluebutton  s13   HTML5 Client         partial_g partial_name  | Updates to MongoDB on the server side are automatically pushed to MiniMong
+       7 bigbluebutton  s13   HTML5 Server         partial_g partial_name  | Updates to MongoDB on the server side are automatically pushed to MiniMong
+       8 bigbluebutton  s19   HTML5 Client         partial_d partial_name  | BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 to
+       9 bigbluebutton  s69   kurento              alias     full_name     | KMS is responsible for streaming of webcams, listen-only audio, and screen
+      10 bigbluebutton  s70   WebRTC-SFU           canonical full_name     | The WebRTC-SFU acts as the media controller handling negotiations and to m
+      11 bigbluebutton  s76   HTML5 Client         partial_g partial_name  | Uploaded presentations go through a conversion process in order to be disp
+      12 bigbluebutton  s79   HTML5 Client         partial_g partial_name  | The conversion process sends progress messages to the client through the R
+      13 mediastore     s33   DB                   alias     full_name     | By contrast, all audio files are stored in a specific location (e.g., a de
+      14 teammates      s7    Logic                canonical full_name     | In the UI Server the entry point for the application back end logic is des
+      15 teammates      s8    Logic                canonical full_name     | The main logic of the application is in POJOs (Plain Old Java Objects).
+      16 teammates      s9    Storage              canonical full_name     | The storage layer of the application uses the persistence framework provid
+      17 teammates      s9    GAE Datastore        canonical full_name     | The storage layer of the application uses the persistence framework provid
+      18 teammates      s19   Client               none      coreference   | It is used for administrative purposes, e.g. migrating data to a new schem
+      19 teammates      s20   Common               canonical full_name     | The Common component contains utility code (data transfer objects, helper 
+      20 teammates      s78   Logic                none      coreference   | In particular, it is responsible for the following.
+      21 teammates      s85   UI                   canonical full_name     | logic.api provides the API of the component to be accessed by the UI.
+      22 teammates      s97   Logic                canonical full_name     | The UI is expected to check access control (using GateKeeper class) before
+      23 teammates      s101  Storage              canonical full_name     | Entity already exists throws EntityAlreadyExistsException (escalated from 
+      24 teammates      s119  Storage              none      coreference   | It contains minimal logic beyond what is directly relevant to CRUD operati
+      25 teammates      s120  Storage              none      coreference   | In particular, it is reponsible for the following.
+      26 teammates      s131  Logic                canonical full_name     | storage.api provides the API of the component to be accessed by the logic 
+      27 teammates      s137  GAE Datastore        canonical full_name     | These classes act as the bridge to the GAE Datastore.
+      28 teammates      s138  GAE Datastore        alias     full_name     | Add and Delete operations try to wait until data is persisted in the datas
+      29 teammates      s141  GAE Datastore        alias     full_name     | Eventual consistency here means it takes some time for a database operatio
+      30 teastore       s10   WebUI                canonical full_name     | The Image Provider delivers images to the WebUI as base64 encoded strings 
+
+D. THE LOSS SET -- 1 gold links Artemis recovers and \approach does not
+       teammates      s7    UI                   canonical | In the UI Server the entry point for the application back end logic is des
+
+E. false positives, majority of 3 runs -- 'the plausible-but-wrong links an LLM produces'
+     \approach  25  by surface {'alias': 12, 'canonical': 6, 'partial_g': 1, 'partial_d': 5, 'none': 1}
+     Artemis    44  by surface {'none': 35, 'canonical': 4, 'partial_d': 5}
+
+====================================================================================================
+2. RQ1 L43 / RQ3 L128-134 -- does the scan-plus-judge split buy BOTH precision and recall?
+====================================================================================================
+  system                         P       R      F1      F2
+  Full (scan+judges)         0.913   0.959   0.935   0.949
+  scan only (no judge)       0.668   0.998   0.784   0.891
+  Artemis (same backend)     0.805   0.850   0.809   0.828
+  SWATTR (lexical)           0.869   0.772   0.799   0.778
+
+  L131 'a judge ... can never add recall' -- per (run, project) cell,
+  is the judges-on TP set a SUBSET of the judges-off TP set?
+     15/15 cells hold. Violations: 0
+
+====================================================================================================
+3. RQ3 L126/L132 -- do the two judges read a different KIND OF CASE, and is the coref judge's input 'the least precise'?
+====================================================================================================
+  nameValidator    candidates  300.7  survive  191.0 (63.5%)   INPUT precision vs gold 59.4%   (on its EXCLUSIVE 187.0 candidates: 40.6%)
+  corefValidator   candidates  174.0  survive   36.3 (20.9%)   INPUT precision vs gold 68.2%   (on its EXCLUSIVE  60.3 candidates: 26.5%)
+
+  same (sentence, component) pair seen by BOTH judges: 113.7  = 65.3% of the coref judge's input, 37.8% of the name judge's
+  on those shared cases the two judges agree 28.3 / disagree 85.3  (75.1% disagreement)
+
+  per-case weight: name 0.0330 pp F1 per candidate, coref 0.0466 pp F1 per candidate
+
+====================================================================================================
+4. RQ4 L166 -- do the two smaller forms reach mentions the FullName scan 'cannot quote in full'?
+====================================================================================================
+  FullName     unique TPs/run  136.7   surface classes (3 runs pooled): {'alias': 62, 'canonical': 348}
+  PartialName  unique TPs/run   13.0   surface classes (3 runs pooled): {'partial_g': 27, 'partial_d': 6, 'canonical': 5, 'none': 1}
+  Coref        unique TPs/run   15.0   surface classes (3 runs pooled): {'none': 45}
+
+  the two smaller forms, deduplicated over runs -- does the sentence write the whole name?
+    PartialName bigbluebutton  s9    HTML5 Client         partial_d | The HTML5 server is built upon Meteor.js in ECMA2015 for communication b
+    PartialName bigbluebutton  s10   HTML5 Client         partial_g | The MongoDB database contains information about all meetings on the serv
+    PartialName bigbluebutton  s10   HTML5 Server         partial_g | The MongoDB database contains information about all meetings on the serv
+    PartialName bigbluebutton  s11   HTML5 Client         partial_g | Each user's client is only aware of the their meeting's state, such the 
+    PartialName bigbluebutton  s12   HTML5 Client         partial_g | The client side subscribes to the published collections on the server si
+    PartialName bigbluebutton  s12   HTML5 Server         partial_g | The client side subscribes to the published collections on the server si
+    PartialName bigbluebutton  s13   HTML5 Server         partial_g | Updates to MongoDB on the server side are automatically pushed to MiniMo
+    PartialName bigbluebutton  s13   HTML5 Client         partial_g | Updates to MongoDB on the server side are automatically pushed to MiniMo
+    PartialName bigbluebutton  s19   HTML5 Client         partial_d | BigBlueButton 2.3 moves away from a single nodejs process for bbb-html5 
+    PartialName bigbluebutton  s30   BBB web              canonical | If more than one backend is running, bbb-web splits the load in round-ro
+    PartialName bigbluebutton  s76   HTML5 Client         partial_g | Uploaded presentations go through a conversion process in order to be di
+    PartialName bigbluebutton  s78   BBB web              canonical | The PDF document is then converted into scalable vector graphics (SVG) v
+    PartialName bigbluebutton  s79   HTML5 Client         partial_g | The conversion process sends progress messages to the client through the
+    PartialName teammates      s168  Test Driver          none      | This component automates the testing of TEAMMATES.
+    Coref       bigbluebutton  s38   BBB web              none      | It implements the BigBlueButton API and holds a copy of the meeting stat
+    Coref       bigbluebutton  s53   Apps                 none      | It provides the list of users, chat, whiteboard, presentations in a meet
+    Coref       mediastore     s9    MediaManagement      none      | Furthermore, it fetches audio files from a specific location (e.g., a de
+    Coref       mediastore     s24   DB                   none      | It stores user information and meta-data of audio files such as the name
+    Coref       mediastore     s28   MediaAccess          none      | Furthermore, it fetches a list of all available audio files.
+    Coref       teammates      s19   Client               none      | It is used for administrative purposes, e.g. migrating data to a new sch
+    Coref       teammates      s78   Logic                none      | In particular, it is responsible for the following.
+    Coref       teammates      s119  Storage              none      | It contains minimal logic beyond what is directly relevant to CRUD opera
+    Coref       teammates      s120  Storage              none      | In particular, it is reponsible for the following.
+    Coref       teastore       s6    WebUI                none      | It contains logic to save and retireve values from cookies.
+    Coref       teastore       s11   ImageProvider        none      | It matches the provided product ID or UI name (the filename for images n
+    Coref       teastore       s23   Persistence          none      | It maps the relational entities to the JSON entity objects passed betwee
+    Coref       teastore       s24   Persistence          none      | It features endpoints for general CRUD-Operations (Create, Read, Update,
+    Coref       teastore       s26   Persistence          none      | As such, it also acts as a caching layer.
+    Coref       teastore       s28   Recommender          none      | It is trained using all existing orders.
+
+====================================================================================================
+5. RQ4 L178 -- 'an alias is the only route to a component the document never names canonically, and those components are small'
+====================================================================================================
+A. gold doc-model links the FULL arm has and the NO-KNOWLEDGE arm loses
+   83 losses over 3 runs, by surface class: {'alias': 59, 'none': 11, 'canonical': 12, 'partial_g': 1}
+     [1/3] bigbluebutton  s10   HTML5 Server         partial_g server            
+     [3/3] bigbluebutton  s19   HTML5 Server         alias     bbb-html5         
+     [3/3] bigbluebutton  s20   HTML5 Server         alias     bbb-html5         
+     [3/3] bigbluebutton  s21   HTML5 Server         alias     bbb-html5         
+     [3/3] bigbluebutton  s38   BBB web              none                        
+     [2/3] bigbluebutton  s60   FSESL                alias     FreeSWITCH Event S
+     [2/3] bigbluebutton  s78   BBB web              canonical BBB web           
+     [3/3] mediastore     s20   Reencoding           alias     ReEncoder         
+     [3/3] mediastore     s23   DB                   alias     Database          
+     [3/3] mediastore     s24   DB                   none                        
+     [3/3] mediastore     s25   DB                   alias     Database          
+     [2/3] mediastore     s25   MediaAccess          alias     AudioAccess       
+     [3/3] mediastore     s31   DB                   alias     Database          
+     [3/3] mediastore     s32   DB                   alias     Database          
+     [3/3] mediastore     s33   DB                   alias     Database          
+     [2/3] mediastore     s33   FileStorage          alias     DataStorage       
+     [3/3] mediastore     s34   DB                   alias     Database          
+     [2/3] mediastore     s35   FileStorage          alias     DataStorage       
+     [2/3] mediastore     s36   FileStorage          alias     DataStorage       
+     [2/3] teammates      s4    UI                   canonical UI                
+     [3/3] teammates      s7    Logic                canonical Logic             
+     [3/3] teammates      s8    Logic                canonical Logic             
+     [2/3] teammates      s9    Storage              canonical Storage           
+     [1/3] teammates      s138  GAE Datastore        alias     datastore         
+     [1/3] teammates      s141  GAE Datastore        alias     Google's distribut
+     [2/3] teammates      s168  Test Driver          none                        
+     [3/3] teastore       s2    ImageProvider        alias     Image Provider    
+     [3/3] teastore       s4    Persistence          alias     PersistenceProvide
+     [3/3] teastore       s7    ImageProvider        alias     Image Provider    
+     [2/3] teastore       s8    WebUI                alias     UI                
+     [3/3] teastore       s10   ImageProvider        alias     Image Provider    
+     [3/3] teastore       s11   ImageProvider        none                        
+     [3/3] teastore       s12   ImageProvider        alias     Image Provider    
+
+B. does the SAD ever write the canonical name of the components that collapse?
+     mediastore   AudioWatermarking          canonical name in the SAD? NO
+     mediastore   Cache                      canonical name in the SAD? NO
+     mediastore   DB                         canonical name in the SAD? NO
+     mediastore   DownloadLoadBalancer       canonical name in the SAD? NO
+     mediastore   Facade                     canonical name in the SAD? YES [1, 3, 6]
+     mediastore   FileStorage                canonical name in the SAD? NO
+     mediastore   MediaAccess                canonical name in the SAD? YES [26, 27, 34]
+     mediastore   MediaManagement            canonical name in the SAD? YES [7, 8, 17]
+     mediastore   Packaging                  canonical name in the SAD? YES [19]
+     mediastore   ParallelWatermarking       canonical name in the SAD? NO
+     mediastore   Reencoding                 canonical name in the SAD? NO
+     mediastore   TagWatermarking            canonical name in the SAD? YES [16, 17]
+     mediastore   UserDBAdapter              canonical name in the SAD? YES [12, 29, 30]
+     mediastore   UserManagement             canonical name in the SAD? YES [11, 13]
+     teastore     Auth                       canonical name in the SAD? YES [3, 18]
+     teastore     DummyRecommender           canonical name in the SAD? NO
+     teastore     ImageProvider              canonical name in the SAD? NO
+     teastore     OrderBasedRecommender      canonical name in the SAD? NO
+     teastore     Persistence                canonical name in the SAD? YES [22, 25]
+     teastore     PopularityBasedRecommender canonical name in the SAD? NO
+     teastore     PreprocessedSlopeOneRecomm canonical name in the SAD? NO
+     teastore     Recommender                canonical name in the SAD? YES [4, 27]
+     teastore     Registry                   canonical name in the SAD? YES [1, 37, 38, 41, 43]
+     teastore     SlopeOneRecommender        canonical name in the SAD? NO
+     teastore     WebUI                      canonical name in the SAD? YES [2, 5, 7, 10]
+
+C. per-component doc-code F1, Full vs no-knowledge, WITH component size
+   project        component                  gold links  share   Full  noknow   delta
+   mediastore     Reencoding                          1   1.7%  1.000   0.000  -1.000
+   mediastore     DB                                 28  47.5%  0.768   0.000  -0.768
+   mediastore     MediaAccess                        10  16.9%  0.963   0.889  -0.074
+   teastore       ImageProvider                     320  45.3%  1.000   0.000  -1.000
+   teastore       Persistence                       180  25.5%  1.000   0.909  -0.091
+   teastore       WebUI                             114  16.1%  1.000   0.939  -0.061
+   teammates      Test Driver                        68   0.8%  0.843   0.750  -0.093
+   teammates      UI                               3622  45.0%  0.748   0.826  +0.078
+   teammates      Client                            172   2.1%  0.882   0.964  +0.082
+   bigbluebutton  BBB web                           165   6.5%  0.765   0.613  -0.152
+   bigbluebutton  HTML5 Server                      320  12.7%  0.915   0.857  -0.058
+   bigbluebutton  HTML5 Client                      320  12.7%  0.915   0.857  -0.058
+   bigbluebutton  Presentation Conversion           140   5.6%  0.444   0.711  +0.267
+   jabref         logic                            3888  47.0%  0.963   0.889  -0.074
+
+   components LOSING >5pp without the alias table: n=11, gold-link share min 0.8% median 16.1% max 47.5%
+   components not hurt:                            n=27, median share 5.6%
+
+D. per-project effect of removing the alias table (mean of 3 runs)
+   project          DM F1       d   DM F2       d |   DC F1       d   worst       d
+   mediastore       0.946  -0.186   0.953  -0.288 |   0.884  -0.240   0.768  -0.768
+   teastore         1.000  -0.141   1.000  -0.208 |   1.000  -0.345   1.000  -1.000
+   teammates        0.868  +0.015   0.911  -0.042 |   0.770  +0.033   0.716  +0.000
+   bigbluebutton    0.886  -0.014   0.893  -0.052 |   0.784  +0.041   0.444  +0.159
+   jabref           0.973  -0.009   0.989  -0.004 |   0.972  -0.032   0.937  -0.048
+
+====================================================================================================
+6. RQ1 L62 -- does the doc-code advantage 'inherit' the doc-model one? and RQ2 L92 -- is the link-level gap driven by the large components?
+====================================================================================================
+  project         DM appr  DM Art  DM gain |  DC appr  DC Art  DC gain
+  mediastore        0.946   0.933   +0.013 |    0.884   0.927   -0.044
+  teastore          1.000   0.721   +0.279 |    1.000   0.726   +0.274
+  teammates         0.868   0.755   +0.113 |    0.770   0.731   +0.039
+  bigbluebutton     0.886   0.747   +0.139 |    0.784   0.764   +0.020
+  jabref            0.973   0.889   +0.084 |    0.972   0.916   +0.056
+  Pearson r(doc-model gain, doc-code gain) = +0.941  (n=5, no significance)
+  doc-model gain positive on 5/5, doc-code gain positive on 4/5
+
+  gold doc-code link mass by component size, and the per-component gap vs Artemis
+  (BOTH systems composed through the SAME sam-code map here, so this isolates the
+   doc-model difference; Artemis's own released doc-code dump is what the table above uses)
+    mediastore     top-2 carry  64.4% of link mass, mean per-component gap there -0.026; on the other 7 components +0.032
+    teastore       top-2 carry  70.7% of link mass, mean per-component gap there +0.167; on the other 4 components +0.337
+    teammates      top-2 carry  61.6% of link mass, mean per-component gap there +0.101; on the other 5 components +0.063
+    bigbluebutton  top-2 carry  56.6% of link mass, mean per-component gap there +0.002; on the other 8 components +0.099
+    jabref         top-2 carry  81.2% of link mass, mean per-component gap there +0.056; on the other 4 components +0.153
+
+====================================================================================================
+7. CH1 -- do the gold links really span the reference forms, and does each module reach the form it was designed for?
+====================================================================================================
+  the sentence writes     gold |    SWATTR   Artemis  approach | proposed by
+  the whole name           135 |  134/135   122/135   133/135  | {'full_name': 131, 'partial_name': 2}
+  a document alias          22 |    5/22     17/22     21/22   | {'full_name': 21}
+  a distinctive word         5 |    3/5       1/5       2/5    | {'partial_name': 2}
+  a generic word            13 |    6/13      1/13     10/13   | {'partial_name': 10}
+  no name at all            20 |    0/20     16/20     20/20   | {'coreference': 15, 'full_name': 4, 'partial_name': 1}
+
+  gold links that do NOT write the canonical name: 60/195 = 30.8%
+    recall there: SWATTR     14/60 =  23.3%
+    recall there: Artemis    35/60 =  58.3%
+    recall there: approach   53/60 =  88.3%
+
+  NOTE the `alias` row is classified with run 1's knowledge table, which is
+  rediscovered per run; four mediastore links read `none` here and `alias` under
+  their own run's table (AudioAccess, DataStorage).
+
+====================================================================================================
+8. CH2 -- what shape are the links the judges remove?
+====================================================================================================
+  rejected false positives per run: 153.3, by what the sentence contains
+    the whole name           39.7  (25.9%)
+    a document alias         19.3  (12.6%)
+    a distinctive word       34.0  (22.2%)
+    a generic word            1.7  ( 1.1%)
+    no name at all           58.7  (38.3%)
+  a surface form of the component IS present for 61.7% of them -- the 'plausible' shape CH2 names
+    corefValidator  {'none': 43.7, 'alias': 3.3, 'canonical': 3.7, 'partial_d': 2.7}
+    nameValidator   {'alias': 16.0, 'canonical': 36.0, 'partial_d': 31.3, 'none': 15.0, 'partial_g': 1.7}
+
+  the running example of motivation.tex (fig:example), mediastore:
+    S27 The MediaAccess component encapsulates database access for meta-data of audio files.
+        gold: ['MediaAccess']  -- the DB link is the paper's false-positive example
+        r1: rejected [] | emitted ['DB', 'MediaAccess']
+        r2: rejected ['DB'] | emitted ['MediaAccess']
+        r3: rejected [] | emitted ['DB', 'MediaAccess']
+    S24 It stores user information and meta-data of audio files such as the name and the genre.
+        gold: ['DB']  -- the pronoun example
+        r1: emitted by ['Coref']
+        r2: emitted by ['Coref']
+        r3: emitted by ['Coref']
+
+====================================================================================================
+9. CH1 honest datum -- the weakest cell: a distinctive word of a multi-word name
+====================================================================================================
+  bigbluebutton  s6    HTML5 Server       writes 'html5'; SWATTR gets it: True; whole names also in the sentence: ['HTML5 Client']
+  bigbluebutton  s65   WebRTC-SFU         writes 'webrtc'; SWATTR gets it: True; whole names also in the sentence: []
+  bigbluebutton  s73   WebRTC-SFU         writes 'webrtc'; SWATTR gets it: True; whole names also in the sentence: []
+  The word scan skips any sentence that already writes a whole name (fig:approach-overview),
+  which is exactly what costs bigbluebutton s6.
+
+====================================================================================================
+10. MECHANISM ATTRIBUTION -- doc-model, macro over 5 projects, mean of 3 runs
+====================================================================================================
+  configuration                            P       R      F1      F2
+  alias table ON, judges ON            0.913   0.959   0.935   0.949
+  alias table ON, judges OFF           0.668   0.998   0.784   0.891
+  alias table OFF, judges ON           0.953   0.810   0.868   0.830
+  alias table OFF, judges OFF          0.701   0.958   0.784   0.868
+  Artemis (same backend)               0.805   0.850   0.809   0.828
+  SWATTR (lexical)                     0.869   0.772   0.799   0.778
+
+  F1 main effects and interaction
+    judges, WITH the alias table :  +15.0pp
+    judges, without it           :   +8.3pp
+    alias table, WITH judges     :   +6.7pp
+    alias table, without judges  :   +0.0pp   <-- the whole point
+    interaction (non-additivity) :   +6.7pp
+    i.e. the alias table's ENTIRE F1 contribution is interaction with the judges:
+    on its own it trades recall for precision at par.
+
+  where each mechanism's recall contribution lands, by reference form
+  the sentence writes     gold  alias ON  alias OFF  Artemis  SWATTR
+  the whole name           135       133        128      122     134
+  a document alias          22        21          4       17       5
+  a distinctive word         5         2          3        1       3
+  a generic word            13        10         10        1       6
+  no name at all            20        20         12       16       0
