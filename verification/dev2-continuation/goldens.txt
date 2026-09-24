@@ -1,0 +1,16 @@
+$ python3 evaluation/mini-src/check.py
+OK    arm-default   every generator reports arm 's126' (7/7 found)
+OK    sad-code mediastore     file_p=0.9615  file_r=0.4237  file_f1=0.5882  file_f2=0.4771  component_f1=0.7391  component_f2=0.6538  worst_component_f1=0.0000  worst_component_f2=0.0000  harmonic_component_f1=0.0000  harmonic_component_f2=0.0000
+OK    sad-code teastore       file_p=1.0000  file_r=0.7086  file_f1=0.8295  file_f2=0.7525  component_f1=0.8511  component_f2=0.7812  worst_component_f1=0.6667  worst_component_f2=0.5556  harmonic_component_f1=0.8421  harmonic_component_f2=0.7692
+OK    sad-code teammates      file_p=0.7531  file_r=0.9024  file_f1=0.8211  file_f2=0.8680  component_f1=0.7158  component_f2=0.6501  worst_component_f1=0.5366  worst_component_f2=0.6548  harmonic_component_f1=0.7570  harmonic_component_f2=0.8156
+OK    sad-code bigbluebutton  file_p=0.8203  file_r=0.8417  file_f1=0.8309  file_f2=0.8373  component_f1=0.8322  component_f2=0.8031  worst_component_f1=0.5714  worst_component_f2=0.4545  harmonic_component_f1=0.8377  harmonic_component_f2=0.8029
+OK    sad-code jabref         file_p=0.8927  file_r=1.0000  file_f1=0.9433  file_f2=0.9765  component_f1=0.9565  component_f2=0.9821  worst_component_f1=0.8000  worst_component_f2=0.9091  harmonic_component_f1=0.9412  harmonic_component_f2=0.9756
+OK    sad-sam  mediastore     link_p=0.9444  link_r=0.5484  link_f1=0.6939  link_f2=0.5986  component_miss_rate=35.4839
+OK    sad-sam  teastore       link_p=1.0000  link_r=0.7407  link_f1=0.8511  link_f2=0.7812  component_miss_rate=0.0000
+OK    sad-sam  teammates      link_p=0.6049  link_r=0.8596  link_f1=0.7101  link_f2=0.7929  component_miss_rate=0.0000
+OK    sad-sam  bigbluebutton  link_p=0.8980  link_r=0.7097  link_f1=0.7928  link_f2=0.7407  component_miss_rate=0.0000
+OK    sad-sam  jabref         link_p=0.9000  link_r=1.0000  link_f1=0.9474  link_f2=0.9783  component_miss_rate=0.0000
+
+PASS: mini-src/metrics.py reproduces the frozen golden panel (10 cells, sad-code + sad-sam).
+
+Exit: 0

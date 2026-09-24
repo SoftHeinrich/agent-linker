@@ -65,6 +65,11 @@ def fmt(val, kind):
         # A delta that rounds to nothing is printed unsigned: `+0.0` reads as a gain
         # too small to show, and the judge whose CMR does not move made no gain.
         return "0.0" if abs(f) < 0.05 else f"{f:+.1f}"
+    if kind == "sd_score":
+        return f"{float(val):.3f}"
+    if kind == "sd":
+        f = float(val) * 100
+        return f"{f:.1f}" if abs(f) >= 0.05 else "0.0"
     dp = SCORE_DP                     # f2/f3 alike: one precision for every score cell
     s = f"{float(val):.{dp}f}"
     if s.startswith("0."):
@@ -307,8 +312,14 @@ def render(spec):
         for c in cols:
             # Pair F1/F2 in one cell when a table needs many per-project rows.
             if "lines" in c:
+                def cell_value(field, kind):
+                    shown = value(field, kind)
+                    if field in c.get("sd_fields", {}):
+                        shown += r"$\pm$" + fmt(r[c["sd_fields"][field]], "sd_score")
+                    return shown
+
                 parts = [
-                    "/".join(value(field, kind) for field, kind, *_ in line)
+                    "/".join(cell_value(field, kind) for field, kind, *_ in line)
                     for line in c["lines"]]
                 if c.get("multiline"):
                     linebreak = r"\\[-1pt]"
@@ -393,7 +404,7 @@ def render_panels(spec):
     ``render`` prints one metric block per row under a single band row. This layout
     repeats the same metric block twice across the page -- two projects side by side,
     separated by a vertical rule, each panel naming its project in a column of its
-    own (abbreviated; \\autoref{tab:rq1} spells the names out) -- so it needs two
+    own (abbreviated; the gold table spells the names out) -- so it needs two
     stacked band rows, and is rendered here. The registry entry still carries the csv/out/label
     triple, so ``sync_paper.py`` and ``main`` treat it like any other table.
     """
@@ -481,8 +492,7 @@ PROJECT_MAP = {"mediastore": "MediaStore", "teastore": "TeaStore",
 #: The short form used where a project has to fit inside a column.
 PROJECT_ABBR = {"mediastore": "MS", "teastore": "TS", "teammates": "TM",
                 "bigbluebutton": "BBB", "jabref": "JR", "Average": "Avg"}
-#: Full name + its short form. tab:rq1 is the first table with a project column, so
-#: it is where the abbreviations the later tables use are introduced.
+#: Full name + its short form for tables that have room to show both.
 PROJECT_LONG_MAP = {k: (v if k == "Average" else f"{v} ({PROJECT_ABBR[k]})")
                     for k, v in PROJECT_MAP.items()}
 BACKEND_MAP = {"terra": "GPT-5.6-terra", "luna": "GPT-5.6-luna"}
@@ -537,32 +547,43 @@ def pair(f1, f2, header, kind="f2", mode="max"):
 # Spec registry
 # --------------------------------------------------------------------------- #
 SPECS = [
-    # ---- RQ1 body: primary-backend comparison, transposed by project ----
+    # ---- RQ1 body: transposed, two rows per project (DM / DC) ----
     {"csv": "rq1_transposed.csv", "out": "rq1-results.tex", "label": "tab:rq1",
      "star": True, "colsep": "3pt", "no_bold": True,
-     # systems are the columns here: compare each metric across the row (argmax over
-     # the printed value, computed per row at render time), not down the column.
-     "row_bold": "by_position", "summary_bold_values": False,
-     "summary": {"field": "project", "value": "Average"}, "block_by": ["project"],
+     "row_bold": [{"fields": [f"{system}_{metric}"
+                              for system in ("approach", "Artemis", "pipeline")],
+                   "kind": "f2", "mode": "max"}
+                  for metric in ("p", "r", "f1", "f2")],
+     "summary_bold_values": False,
+     "summary": {"field": "project", "value": "Average"},
+     "summary_label": "project",
+     "block_by": ["project"],
      "colspec": "@{}llccc@{}",
      "caption": "RQ1 link metrics by project on GPT-5.6-terra.",
-     "labels": [{"field": "project", "header": "Project", "group_by": True,
-                 "map": PROJECT_LONG_MAP},
-                {"field": "task", "header": "Task", "map": {"DM": "doc-model", "DC": "doc-code"}}],
-     "subheaders": ["Prec./Rec.; \\fone/\\ftwo", "Prec./Rec.; \\fone/\\ftwo", "Prec./Rec.; \\fone/\\ftwo"],
-     "cols": [
-         {"header": "\\approach{}", "line_separator": "\\,;\\,", "lines": [
-             [("approach_p", "f3"), ("approach_r", "f3")],
-             [("approach_f1", "f3"), ("approach_f2", "f3")]]},
-         {"header": "\\Artemis{}", "line_separator": "\\,;\\,", "lines": [
-             [("Artemis_p", "f3"), ("Artemis_r", "f3")],
-             [("Artemis_f1", "f3"), ("Artemis_f2", "f3")]]},
-         {"header": "SWATTR$\\rightarrow$\\TransArc{}", "line_separator": "\\,;\\,", "lines": [
-             [("pipeline_p", "f3"), ("pipeline_r", "f3")],
-             [("pipeline_f1", "f3"), ("pipeline_f2", "f3")]]},
-     ],
-     "footnote": "SWATTR is the deterministic doc-model stage of \\TransArc{}; \\TransArc{} has no "
-                 "standalone doc-model output."},
+     "labels": [{"field": "project", "header": "Proj.", "map": PROJECT_ABBR, "group_by": True},
+                {"field": "task", "header": "Task"}],
+     "cols": [dict(compact(f"{system}_p", f"{system}_r", f"{system}_f1", f"{system}_f2",
+                           header=header), multiline=True,
+                   sd_fields={f"{system}_{metric}": f"{system}_{metric}_sd" for metric in ("p", "r")}
+                             if system != "pipeline" else {})
+              for system, header in (("approach", "\\approach{}"), ("Artemis", "\\Artemis{}"),
+                                     ("pipeline", "SWATTR / \\TransArc{}"))],
+     "footnote": "Cells show P/R; \\fone/\\ftwo. P and R include sample SD across three runs "
+                 "on the score scale; Average SD uses the three per-run project means. "
+                 "SWATTR supplies deterministic DM results and \\TransArc{} deterministic DC results."},
+
+    {"csv": "inference_cost.csv", "out": "inference-cost.tex", "label": "tab:inference-cost",
+     "star": True, "colsep": "4pt", "no_bold": True,
+     "caption": "Recorded inference usage per project, averaged over three runs.",
+     "labels": [{"field": "project", "header": "Project", "map": PROJECT_ABBR}],
+     "groups": [("\\approach{} (GPT-5.6-terra)", 2), ("\\Artemis{} (GPT-5.6-luna)", 2)],
+     "cols": [{"field": f"{system}_{metric}", "header": header, "kind": "f1"}
+              for system in ("approach", "Artemis")
+              for metric, header in (("input_k", "Input (k)"), ("output_k", "Output (k)"))],
+     "summary": {"field": "project", "value": "Total"},
+     "footnote": "Tokens are in thousands. Total sums project means. "
+                 "Models and collection dates differ; these are unpaired usage observations. "
+                 "SWATTR and \\TransArc{} consume no LLM tokens."},
 
     # ---- RQ2 body (size-aware suite, per project) ----
     # Two project panels side by side, one row per system: the per-project shape the
@@ -791,6 +812,9 @@ def check_specs():
             span = sum(n for _, n in spec["groups"])
             assert span == ncol, (
                 f"{spec['out']}: bands cover {span} columns but there are {ncol}")
+        if spec.get("subheaders"):
+            assert len(spec["subheaders"]) == ncol, (
+                f"{spec['out']}: {len(spec['subheaders'])} subheaders for {ncol} columns")
         z = spec.get("colspec", "").count("Z")
         assert not z or z == ncol, (
             f"{spec['out']}: colspec has {z} Z columns but there are {ncol}")

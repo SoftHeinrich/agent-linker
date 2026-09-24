@@ -480,7 +480,7 @@ field the table does not print.
 
 | Paper float (label) | tex_src CSV | rendered .tex | grain |
 |---------------------|-------------|---------------|-------|
-| body RQ1 `tab:rq1` | `rq1_transposed.csv` | `rq1-results.tex` | terra, per project + Average |
+| body RQ1 `tab:rq1` | `rq1_side_by_side.csv` | `rq1-results.tex` | terra, one row per project + Average; doc-model and doc-code panels |
 | body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, per project in two panels + Average |
 | body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, judging configurations, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |
@@ -576,3 +576,34 @@ no agent-linker install is needed to read the phase states.
 
 The raw LLM logs and checkpoints under `results/` are recorded too, but no paper
 number depends on them.
+
+## September 24 continuation: replacement runs, RQ1 SD, token usage
+
+The three s126/terra MediaStore slots now use the complete replacement runs
+in `results/ms_replacement_run{,2,3}_20260924`. Their original JSON, link CSV,
+and phase-state files are retained beside the canonical slots with
+`.bak_20260924` or `mediastore_old_20260924` names. The other projects retain
+September 16 runs. This replacement was selected after observing the original
+results; a network fault was suspected but not established. It is a selection
+threat, not evidence that the old observation was invalid. No-knowledge runs
+were not replaced and must be described as a separate invocation set.
+
+`rq12.py` also emits `RQ12_PERPROJECT_PERRUN.csv` and `RQ12_SD.csv`.
+Sample SD uses three runs (N−1 denominator); the Average row uses per-run
+project means, not an average of project SDs. Reshape and rendering copy the
+engine output. RQ1 shows DM/DC rows with P±SD/R±SD and F1/F2; deterministic
+systems have no SD.
+
+The token table uses the replacement MediaStore logs and the remaining
+s126/terra logs, versus the three September 24 Artemis/luna logs. Only input
+and output tokens are shown, with per-project means and their total. These
+are different model/date cohorts. Usage is counted once per recorded response,
+including any logged repair calls. The per-run report records source paths
+and hashes. Regenerate it before the render/sync stages:
+
+```bash
+python3 evaluation/mini-src/inference_cost.py
+python3 evaluation/mini-src/rq_tables.py
+python3 evaluation/mini-src/csv_to_tex.py
+PAPER_DIR=$PWD/paper python3 evaluation/mini-src/sync_paper.py --only rq
+```

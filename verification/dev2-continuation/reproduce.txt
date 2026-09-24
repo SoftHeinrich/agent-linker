@@ -1,0 +1,124 @@
+$ python3 evaluation/mini-src/gen_csv_to_temp.py
+
+[rq12] wrote /tmp/rq-csv-walkthrough/rq12/RQ12_BIGTABLE.csv
+[rq12] wrote /tmp/rq-csv-walkthrough/rq12/RQ12_PERPROJECT.csv
+[rq12] wrote /tmp/rq-csv-walkthrough/rq12/RQ12_PERPROJECT_PERRUN.csv
+                                                                             doc-model (link + CMR%)                                 doc-code (file + per-component)
+system                                                            run       P       R      F1      F2    CMR%       P       R      F1      F2     cF1     cF2     wF1     wF2     hF1     hF2
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+approach (GPT-5.6-terra)                                         run1  0.9057  0.9701  0.9359  0.9559  0.0000  0.8601  0.9116  0.8818  0.8984  0.8928  0.8857  0.7615  0.7749  0.9131  0.9169
+approach (GPT-5.6-terra)                                         run2  0.9010  0.9701  0.9336  0.9550  0.0000  0.8403  0.9110  0.8706  0.8934  0.8848  0.8812  0.7547  0.7718  0.9086  0.9148
+approach (GPT-5.6-terra)                                         run3  0.9176  0.9634  0.9391  0.9533  0.0000  0.8661  0.9077  0.8832  0.8968  0.8927  0.8819  0.7769  0.7813  0.9098  0.9088
+approach (GPT-5.6-terra)                                      average  0.9081  0.9679  0.9362  0.9548  0.0000  0.8555  0.9101  0.8785  0.8962  0.8901  0.8829  0.7644  0.7760  0.9105  0.9135
+approach (GPT-5.6-luna)                                          run1  0.8393  0.9305  0.8778  0.9071  0.0000  0.8526  0.8838  0.8665  0.8764  0.8612  0.8569  0.6327  0.6886  0.8588  0.8821
+approach (GPT-5.6-luna)                                          run2  0.9004  0.9267  0.9108  0.9196  0.0000  0.8809  0.8935  0.8859  0.8901  0.8808  0.8649  0.7461  0.7354  0.9036  0.9014
+approach (GPT-5.6-luna)                                          run3  0.8499  0.9566  0.8972  0.9310  0.0000  0.8346  0.9086  0.8680  0.8913  0.8765  0.8804  0.6644  0.7701  0.8848  0.9106
+approach (GPT-5.6-luna)                                       average  0.8632  0.9379  0.8953  0.9192  0.0000  0.8561  0.8953  0.8735  0.8860  0.8728  0.8674  0.6811  0.7313  0.8824  0.8980
+Artemis (GPT-5.6-terra)                                          run1  0.8230  0.8325  0.8089  0.8178  3.9766  0.7972  0.8698  0.8064  0.8374  0.7666  0.7710  0.4057  0.4494  0.6016  0.6173
+Artemis (GPT-5.6-terra)                                          run2  0.7928  0.8384  0.7956  0.8155  3.5088  0.8023  0.8699  0.8113  0.8397  0.7713  0.7844  0.4457  0.5345  0.6434  0.6882
+Artemis (GPT-5.6-terra)                                          run3  0.7998  0.8781  0.8235  0.8514  2.3995  0.7862  0.8828  0.8206  0.8533  0.8008  0.8145  0.5537  0.5891  0.6590  0.6873
+Artemis (GPT-5.6-terra)                                       average  0.8052  0.8496  0.8093  0.8282  3.2950  0.7953  0.8742  0.8127  0.8435  0.7796  0.7900  0.4684  0.5243  0.6347  0.6642
+Artemis (GPT-5.4)                                              single  0.9297  0.7631  0.8355  0.7900  4.6218  0.9412  0.7779  0.8488  0.8043  0.8090  0.7475  0.4110  0.3489  0.5062  0.4718
+TransArC                                                       single  0.8695  0.7717  0.7990  0.7783  7.0968  0.8855  0.7753  0.8026  0.7823  0.8189  0.7741  0.5149  0.5148  0.6756  0.6727
+Delta (approach (GPT-5.6-terra) - Artemis (GPT-5.6-terra))      delta  0.1029  0.1182  0.1269  0.1265 -3.2950  0.0602  0.0360  0.0658  0.0527  0.1105  0.0929  0.2960  0.2517  0.2758  0.2493
+Delta (approach (GPT-5.6-luna) - Artemis (GPT-5.6-terra))       delta  0.0580  0.0883  0.0860  0.0910 -3.2950  0.0608  0.0211  0.0607  0.0425  0.0933  0.0774  0.2127  0.2070  0.2477  0.2338
+
+Provenance: /mnt/hostshare/ardoco-home/agent-linker/sota-links  arm=s126  (approach rows = run1/run2/run3 plus average)
+Columns: P/R/F1/F2 = link (doc-model) resp. file (doc-code) scores; CMR% = component miss rate;
+         cF1/cF2 = per-component micro, wF1/wF2 = worst component, hF1/hF2 = harmonic-mean component.
+RQ1 = the two P/R/F1/F2 blocks. RQ2 size-aware = CMR% (doc-model) and w*/h* + file F1/F2 (doc-code).
+[rq34] benchmark = /mnt/hostshare/ardoco-home/agent-linker/benchmark
+[rq34] runs-from = greedymerge_e2e_{model}_r{i}_20260916v2  (variant s_linker126)
+[rq34] csv-root  = /tmp/rq-csv-walkthrough/rq34
+[rq34] terra: canonical=run1 macro-F1[run1=0.9359, run2=0.9336, run3=0.9391, average=0.9362] validate=OK (15 checked, 0 no-ref)
+[rq34] luna: canonical=run3 macro-F1[run1=0.8778, run2=0.9108, run3=0.8972, average=0.8953] validate=OK (15 checked, 0 no-ref)
+[rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + rq4_linkers.csv + rq4_variants.csv under /tmp/rq-csv-walkthrough/rq34
+[rq34-rq2] runs-from = greedymerge_e2e_{model}_r{i}_20260916v2  (variant s_linker126)
+[rq34-rq2] wrote /tmp/rq-csv-walkthrough/rq34_rq2/rq34_rq2_variants.csv
+[rq34-rq2] wrote /tmp/rq-csv-walkthrough/rq34_rq2/rq34_rq2_linkers.csv
+[rq34-rq2] wrote /tmp/rq-csv-walkthrough/rq34_rq2/rq34_rq2_variants_perproject.csv
+[rq34-rq2] wrote /tmp/rq-csv-walkthrough/rq34_rq2/rq34_rq2_linkers_perproject.csv
+[rq34-rq2] wrote /tmp/rq-csv-walkthrough/rq34_rq2/RQ34_RQ2_INVESTIGATION.md
+PASS: 30 project/run usage records; means of three runs written to /tmp/rq-csv-walkthrough/cost
+eval repo : /mnt/hostshare/ardoco-home/agent-linker/evaluation
+temp out  : /tmp/rq-csv-walkthrough  (repo working tree is never written)
+
+=== rq12  (RQ1 + RQ2) ===
+  $ /home/dev/miniconda3/bin/python3 mini-src/rq12.py --csv /tmp/rq-csv-walkthrough/rq12/RQ12_BIGTABLE.csv --perproject-csv /tmp/rq-csv-walkthrough/rq12/RQ12_PERPROJECT.csv
+  [identical] RQ12_BIGTABLE.csv
+  [identical] RQ12_PERPROJECT.csv
+  [identical] RQ12_PERPROJECT_PERRUN.csv
+  [identical] RQ12_SD.csv
+
+=== rq34  (RQ3 + RQ4) ===
+  $ /home/dev/miniconda3/bin/python3 mini-src/rq34.py --csv-root /tmp/rq-csv-walkthrough/rq34
+  [identical] luna/bigbluebutton/rq3.csv
+  [identical] luna/bigbluebutton/rq3_audit.csv
+  [identical] luna/bigbluebutton/rq4.csv
+  [identical] luna/bigbluebutton/rq4_upset.csv
+  [identical] luna/jabref/rq3.csv
+  [identical] luna/jabref/rq3_audit.csv
+  [identical] luna/jabref/rq4.csv
+  [identical] luna/jabref/rq4_upset.csv
+  [identical] luna/mediastore/rq3.csv
+  [identical] luna/mediastore/rq3_audit.csv
+  [identical] luna/mediastore/rq4.csv
+  [identical] luna/mediastore/rq4_upset.csv
+  [identical] luna/runs_summary.csv
+  [identical] luna/teammates/rq3.csv
+  [identical] luna/teammates/rq3_audit.csv
+  [identical] luna/teammates/rq4.csv
+  [identical] luna/teammates/rq4_upset.csv
+  [identical] luna/teastore/rq3.csv
+  [identical] luna/teastore/rq3_audit.csv
+  [identical] luna/teastore/rq4.csv
+  [identical] luna/teastore/rq4_upset.csv
+  [identical] rq3_validators.csv
+  [identical] rq3_variants.csv
+  [identical] rq4_linkers.csv
+  [identical] rq4_variants.csv
+  [identical] rq4_variants_perproject.csv
+  [identical] terra/bigbluebutton/rq3.csv
+  [identical] terra/bigbluebutton/rq3_audit.csv
+  [identical] terra/bigbluebutton/rq4.csv
+  [identical] terra/bigbluebutton/rq4_upset.csv
+  [identical] terra/jabref/rq3.csv
+  [identical] terra/jabref/rq3_audit.csv
+  [identical] terra/jabref/rq4.csv
+  [identical] terra/jabref/rq4_upset.csv
+  [identical] terra/mediastore/rq3.csv
+  [identical] terra/mediastore/rq3_audit.csv
+  [identical] terra/mediastore/rq4.csv
+  [identical] terra/mediastore/rq4_upset.csv
+  [identical] terra/runs_summary.csv
+  [identical] terra/teammates/rq3.csv
+  [identical] terra/teammates/rq3_audit.csv
+  [identical] terra/teammates/rq4.csv
+  [identical] terra/teammates/rq4_upset.csv
+  [identical] terra/teastore/rq3.csv
+  [identical] terra/teastore/rq3_audit.csv
+  [identical] terra/teastore/rq4.csv
+  [identical] terra/teastore/rq4_upset.csv
+
+=== rq34_rq2  (RQ3/RQ4 size-aware) ===
+  $ /home/dev/miniconda3/bin/python3 mini-src/rq34_rq2.py --csv-root /tmp/rq-csv-walkthrough/rq34_rq2
+  [identical] RQ34_RQ2_INVESTIGATION.md
+  [identical] rq34_rq2_linkers.csv
+  [identical] rq34_rq2_linkers_perproject.csv
+  [identical] rq34_rq2_variants.csv
+  [identical] rq34_rq2_variants_perproject.csv
+
+=== inference cost ===
+  $ /home/dev/miniconda3/bin/python3 mini-src/inference_cost.py --out /tmp/rq-csv-walkthrough/cost
+  [identical] INFERENCE_COST_PERRUN.csv
+  [identical] tex_src/inference_cost.csv
+
+RESULT: all generated CSVs reproduce the committed repo copies. Repo untouched.
+
+Exit: 0
+
+After LF-only CSV serialization change:
+$ python3 evaluation/mini-src/inference_cost.py --out <temporary-directory>
+PASS: 30 project/run usage records; means of three runs written to /tmp/tmpzwc_1z5l
+PASS: both token CSVs reproduce byte for byte; other engines unchanged.
+Exit: 0

@@ -68,6 +68,9 @@ def jobs(eval_root: Path, out: Path):
         ("rq34_rq2  (RQ3/RQ4 size-aware)",
          [py, "mini-src/rq34_rq2.py", "--csv-root", str(out / "rq34_rq2")],
          out / "rq34_rq2", eval_root / "reports" / "rq34" / ARM),
+        ("inference cost",
+         [py, "mini-src/inference_cost.py", "--out", str(out / "cost")],
+         out / "cost", eval_root / "reports"),
     ] + ([
         ("rq4_floor  (RQ4 one-call floor)",
          [py, "mini-src/rq4_floor.py", "--csv-root", str(out / "rq4_floor")],
@@ -141,7 +144,7 @@ def main(argv=None):
             continue
         for rel, status in diff_tree(temp_base, repo_base):
             print(f"  [{status:9}] {rel}")
-            if status == "DIFFERS":
+            if status in ("DIFFERS", "new"):
                 differs += 1
         print()
 
