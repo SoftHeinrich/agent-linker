@@ -66,7 +66,7 @@ def fmt(val, kind):
         # too small to show, and the judge whose CMR does not move made no gain.
         return "0.0" if abs(f) < 0.05 else f"{f:+.1f}"
     if kind == "sd_score":
-        return f"{float(val):.3f}"
+        return f"{float(val):.2f}".removeprefix("0")
     if kind == "sd":
         f = float(val) * 100
         return f"{f:.1f}" if abs(f) >= 0.05 else "0.0"
@@ -547,7 +547,7 @@ def pair(f1, f2, header, kind="f2", mode="max"):
 # Spec registry
 # --------------------------------------------------------------------------- #
 SPECS = [
-    # ---- RQ1 body: transposed, two rows per project (DM / DC) ----
+    # ---- RQ1 body: one printed row per task, two tasks per project ----
     {"csv": "rq1_transposed.csv", "out": "rq1-results.tex", "label": "tab:rq1",
      "star": True, "colsep": "3pt", "no_bold": True,
      "row_bold": [{"fields": [f"{system}_{metric}"
@@ -560,17 +560,17 @@ SPECS = [
      "block_by": ["project"],
      "colspec": "@{}llccc@{}",
      "caption": "RQ1 link metrics by project on GPT-5.6-terra.",
-     "labels": [{"field": "project", "header": "Proj.", "map": PROJECT_ABBR, "group_by": True},
-                {"field": "task", "header": "Task"}],
+     "labels": [{"field": "project", "header": "Project", "map": PROJECT_ABBR, "group_by": True},
+                {"field": "task", "header": "Task", "map": {"DM": "doc-model", "DC": "doc-code"}}],
      "cols": [dict(compact(f"{system}_p", f"{system}_r", f"{system}_f1", f"{system}_f2",
-                           header=header), multiline=True,
+                           header=header),
                    sd_fields={f"{system}_{metric}": f"{system}_{metric}_sd" for metric in ("p", "r")}
                              if system != "pipeline" else {})
               for system, header in (("approach", "\\approach{}"), ("Artemis", "\\Artemis{}"),
                                      ("pipeline", "SWATTR / \\TransArc{}"))],
-     "footnote": "Cells show P/R; \\fone/\\ftwo. P and R include sample SD across three runs "
-                 "on the score scale; Average SD uses the three per-run project means. "
-                 "SWATTR supplies deterministic DM results and \\TransArc{} deterministic DC results."},
+     "footnote": "Cells show P/R; \\fone/\\ftwo. P and R include sample SD across three runs, "
+                 "rounded to two decimals on the score scale; Average SD uses the three per-run project means. "
+                 "SWATTR supplies deterministic doc-model results and \\TransArc{} deterministic doc-code results."},
 
     {"csv": "inference_cost.csv", "out": "inference-cost.tex", "label": "tab:inference-cost",
      "star": True, "colsep": "4pt", "no_bold": True,
