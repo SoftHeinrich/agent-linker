@@ -134,3 +134,34 @@ ledger's digest and line scopes already conflict with active Introduction,
 Motivation, Discussion, and other prose. Results summary lines are also outside
 its current scope. Its failure means those lines need a separate review before
 the ledger can be refreshed; it does not contradict the table arithmetic above.
+
+## Author wording correction
+
+The author's MediaStore sentence was restored in the working paper. The other
+Results sentences using "tabulated" were returned to their prior structure,
+with the displayed-value differences and ratios retained.
+
+```bash
+python3 - <<'PY'
+from decimal import Decimal, ROUND_HALF_UP
+from pathlib import Path
+text = Path('paper/sections/results.tex').read_text()
+assert 'tabulated' not in text.lower()
+assert 'The gain is smallest on MediaStore, where the doc-model' in text
+for numerator, denominator, expected in [(30, 7, '4.3'), (7, 4, '1.8')]:
+    shown = (Decimal(numerator) / Decimal(denominator)).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+    assert str(shown) == expected
+    print(f'{numerator}/{denominator} -> {shown} times')
+print('PASS: Results wording has no "tabulated"; both displayed-value ratios match')
+PY
+git -C paper diff --check -- sections/results.tex
+python3 evaluation/mini-src/check.py | tail -2
+```
+
+```text
+30/7 -> 4.3 times
+7/4 -> 1.8 times
+PASS: Results wording has no "tabulated"; both displayed-value ratios match
+git -C paper diff --check: exit 0, no output
+PASS: mini-src/metrics.py reproduces the frozen golden panel (10 cells, sad-code + sad-sam).
+```
