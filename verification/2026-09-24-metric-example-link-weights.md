@@ -24,8 +24,9 @@ top3 = 100 * sum(sorted(links, reverse=True)[:3]) / sum(links)
 print(f'harmonic={harmonic_mean(scores):.6f}')
 print(f'arithmetic={mean(scores):.6f}')
 print(f'link-count-weighted arithmetic={weighted:.6f}')
+print(f'link-count-weighted arithmetic (paper precision)={weighted:.4f}')
 print(f'illustrative top-three share={top3:.1f}%; observed maximum={observed:.1f}%')
-assert (round(harmonic_mean(scores), 2), round(mean(scores), 2), round(weighted, 2)) == (0.53, 0.76, 0.90)
+assert (round(harmonic_mean(scores), 2), round(mean(scores), 2), round(weighted, 4)) == (0.53, 0.76, 0.8983)
 assert round(top3, 1) == observed == 99.3
 print('PASS: displayed values and concentration comparison')
 PY
@@ -35,6 +36,7 @@ PY
 harmonic=0.529412
 arithmetic=0.760000
 link-count-weighted arithmetic=0.898305
+link-count-weighted arithmetic (paper precision)=0.8983
 illustrative top-three share=99.3%; observed maximum=99.3%
 PASS: displayed values and concentration comparison
 ```
