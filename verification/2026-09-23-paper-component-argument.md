@@ -42,3 +42,23 @@ exit=1
 The two edited sentences contain no new numeric result. The full audit needs
 an evidence review and updated line classifications for the current paper;
 this narrow wording edit does not resolve that existing policy failure.
+
+## Follow-up correction, 2026-09-24
+
+The project-average distinction was off topic for the within-project argument.
+The opening sentence of `paper/sections/metric.tex` was restored to its
+original component-coverage wording. Concurrent edits in the introduction and
+elsewhere in the paper were left intact. This correction adds no numeric claim.
+
+Run from the repository root:
+
+```text
+$ python3 evaluation/mini-inequality/inequality.py --check-only
+SANITY CHECK PASSED (tol: Gini<=0.005, counts exact)
+
+$ python3 evaluation/mini-src/sync_paper.py --check --only gold paper
+IN SYNC: all 2 paper file(s) match the generated output.
+
+$ git -C paper diff --check -- sections/metric.tex
+(no output; exit 0)
+```
