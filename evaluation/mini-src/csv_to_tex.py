@@ -559,16 +559,17 @@ SPECS = [
      "summary_label": "project",
      "block_by": ["project"],
      "colspec": "@{}llccc@{}",
-     "caption": "RQ1 link metrics by project on GPT-5.6-terra.",
+     "caption": "RQ1 link scores by project on GPT-5.6-terra.",
      "labels": [{"field": "project", "header": "Project", "map": PROJECT_ABBR, "group_by": True},
                 {"field": "task", "header": "Task", "map": {"DM": "doc-model", "DC": "doc-code"}}],
+     "subheaders": ["Precision/Recall; \\fone/\\ftwo"] * 3,
      "cols": [dict(compact(f"{system}_p", f"{system}_r", f"{system}_f1", f"{system}_f2",
                            header=header),
                    sd_fields={f"{system}_{metric}": f"{system}_{metric}_sd" for metric in ("p", "r")}
                              if system != "pipeline" else {})
               for system, header in (("approach", "\\approach{}"), ("Artemis", "\\Artemis{}"),
                                      ("pipeline", "SWATTR / \\TransArc{}"))],
-     "footnote": "Cells show P/R; \\fone/\\ftwo. P and R include sample SD across three runs, "
+     "footnote": "Precision and recall include sample SD across three runs, "
                  "rounded to two decimals on the score scale; Average SD uses the three per-run project means. "
                  "SWATTR supplies deterministic doc-model results and \\TransArc{} deterministic doc-code results."},
 

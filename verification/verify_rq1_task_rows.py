@@ -4,6 +4,7 @@ Run from the repository root: python3 verification/verify_rq1_task_rows.py
 """
 
 import csv
+import re
 from pathlib import Path
 
 
@@ -41,6 +42,10 @@ with SOURCE.open(newline="") as source:
 tex = GENERATED.read_text()
 assert GENERATED.read_bytes() == PAPER.read_bytes()
 assert "Project & Task &" in tex
+assert " &  & " + " & ".join([r"Precision/Recall; \fone/\ftwo"] * 3) + r" \\" in tex
+caption = re.search(r"\\caption\{([^{}]+)\}", tex).group(1)
+assert len(caption.split()) < 15
+assert len(re.findall(r"[.!?](?:\s|$)", caption)) == 1
 assert r"\makecell" not in tex
 body = [line for line in tex.splitlines()
         if line.startswith(("MS &", "TS &", "TM &", "BBB &", "JR &",
@@ -58,4 +63,13 @@ for index, (row, line) in enumerate(zip(rows, body)):
         assert shown(cell) == expected(row, system), (index, system, shown(cell))
         checked += 1
 assert "rounded to two decimals" in tex
-print(f"PASS RQ1: {len(body)} single-line task rows; {checked} system cells match source scores and two-decimal SD")
+results = (ROOT / "paper/sections/results.tex").read_text()
+rq1 = results.index(r"\subsection{Answer to RQ1}")
+rq2 = results.index(r"\subsection{Answer to RQ2}")
+cost = results.index(r"\input{table/inference-cost}")
+explanation = results.index(r"\autoref{tab:inference-cost}")
+assert rq1 < cost < explanation < rq2
+assert results.count(r"\input{table/inference-cost}") == 1
+assert (ROOT / "evaluation/reports/tex/inference-cost.tex").read_bytes() == (
+    PAPER.parent / "inference-cost.tex").read_bytes()
+print(f"PASS RQ1: {len(body)} single-line task rows; {checked} system cells match source scores and two-decimal SD; metric headers, short caption, and cost placement verified")
