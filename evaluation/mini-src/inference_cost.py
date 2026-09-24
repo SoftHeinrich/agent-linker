@@ -91,6 +91,15 @@ def main():
                 row[f'{system}_{metric}'] = f'{statistics.mean(per_run):.6f}'
         summary.append(row)
     write(args.out/'tex_src/inference_cost.csv', summary)
+    compact = []
+    for system in ('approach', 'Artemis'):
+        row = {'system': system}
+        for project_row in summary:
+            project = project_row['project']
+            for metric in METRICS:
+                row[f'{project}_{metric}'] = project_row[f'{system}_{metric}']
+        compact.append(row)
+    write(args.out/'tex_src/inference_cost_by_system.csv', compact)
     print(f'PASS: {len(rows)} project/run usage records; means of three runs written to {args.out}')
 
 
