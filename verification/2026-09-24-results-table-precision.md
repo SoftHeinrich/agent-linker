@@ -11,14 +11,10 @@ run or a comparison between different invocation sets.
 
 The paper subagent independently audited `paper/sections/results.tex` against
 `paper/table/rq1-results.tex` through `rq4-results.tex`, the source CSVs, and
-the committed causal-claims report. It confirmed the corrected project-count
-claims and found three further inconsistencies: MediaStore `DB` and
-`Reencoding` had exchanged gold-link shares; weighted CMR was described as a
-component count; and the no-knowledge link-level loss was called negligible.
-It also found that the named route's unique true-link count is a three-run mean
-of 149.67, so the prose now says "about 150" per run. The RQ4 table does not
-isolate either route without knowledge, so the corresponding causal assertion
-was removed.
+the committed causal-claims report. It confirmed the project-count claims and
+found several inconsistencies outside the requested rounding scope. At the
+author's direction, edits to those claims were rolled back; the findings are
+reported separately and remain for author review.
 
 ## Displayed-value arithmetic
 
@@ -97,6 +93,21 @@ named-route-only doc-code F1 `0.88 - 0.84 = 4` pp. MediaStore's gold doc-code
 link shares are `DB` 47.5% and `Reencoding` 1.7%; TeaStore's
 `ImageProvider` share is 45.3% (committed causal-claims report, lines 194–198).
 
+## Scope rollback
+
+The follow-up removed edits unrelated to rounding from the Results prose,
+retaining only percentage-point arithmetic based on displayed values. The
+subagent's other findings remain observations: the prose exchanges the `DB`
+and `Reencoding` shares and calls gold-link shares file shares; CMR is a
+weighted missed-component share rather than a component count; the no-knowledge
+variant loses 11 pp doc-code link-level F1 at table precision despite the
+prose saying this barely moves; the RQ4 table does not isolate a route without
+knowledge; the judges' aggregate counts do not demonstrate disagreement on an
+individual candidate; and the named route's unique true-link count is a
+three-run mean of 149.67, reported as 150 in the prose. The Results summary's
+"every granularity" claim also exceeds the five-project average and ignores
+the MediaStore doc-code reversal already stated in Results.
+
 ## Checks and limits
 
 ```bash
@@ -115,7 +126,7 @@ git -C paper diff --check: exit 0, no output
 git diff --check: exit 0, no output
 latexmk is required to build the paper (install TeX Live with latexmk).
 PASS self-test: TeX comments, numeric tokens, citation stripping, and change detection
-FAIL paper numeric-claim audit: 51 error(s); 211 active statements
+FAIL paper numeric-claim audit: 50 error(s); 209 active statements
 ```
 
 The PDF build is blocked by missing `latexmk`. The manuscript-wide numeric
