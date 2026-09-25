@@ -56,6 +56,7 @@ RQ34_NOKNOW = {                                     # backend -> no-knowledge rq
 # rq12.py writes the incumbent arm to the unsuffixed name and any candidate beside it.
 RQ12_BIGTABLE = REPORTS / f"RQ12_BIGTABLE{ARM_SUFFIX}.csv"
 RQ12_PERPROJECT = REPORTS / f"RQ12_PERPROJECT{ARM_SUFFIX}.csv"
+RQ12_PERPROJECT_PERRUN = REPORTS / f"RQ12_PERPROJECT_PERRUN{ARM_SUFFIX}.csv"
 TEX_SRC = REPORTS / f"tex_src{ARM_SUFFIX}"    # csv_to_tex.py derives the same path
 
 PROJECTS = m.PROJECTS
@@ -231,8 +232,16 @@ def build_rq2(big):
 
 
 def build_rq1_transposed(big):
-    """Expanded body RQ1 table, transposed for project-wise comparison."""
+    """Expanded body RQ1 table, transposed for project-wise comparison.
+
+    Includes per-project SD of precision and recall across the three runs for
+    stochastic systems (approach, Artemis).  The engine supplies RQ12_SD; the Average row uses the SD of per-run
+    project means. This stage only copies engine output.
+    """
     per_project = index(read_csv(RQ12_PERPROJECT), "system", "project")
+    sd_rows = read_csv(REPORTS / f"RQ12_SD{ARM_SUFFIX}.csv")
+    sd = {(r["system"], r["project"], r["metric"]): r["sd"] for r in sd_rows}
+
     systems = [
         ("approach", BODY_SYSTEM, (BODY_SYSTEM, "average")),
         ("Artemis", BASELINE_SYSTEM, (BASELINE_SYSTEM, BASELINE_RUN)),
@@ -252,10 +261,38 @@ def build_rq1_transposed(big):
                 values = big[average_key] if project == "Average" else per_project[(source, project)]
                 for short, column in zip(("p", "r", "f1", "f2"), columns):
                     row[f"{label}_{short}"] = values[column]
+                if label != "pipeline":
+                    p_col, r_col = columns[0], columns[1]
+                    row[f"{label}_p_sd"] = sd[(source, project, p_col)]
+                    row[f"{label}_r_sd"] = sd[(source, project, r_col)]
+                else:
+                    row[f"{label}_p_sd"] = ""
+                    row[f"{label}_r_sd"] = ""
             rows.append(row)
     fields = ["project", "task"] + [f"{label}_{short}"
-             for label, _, _ in systems for short in ("p", "r", "f1", "f2")]
+             for label, _, _ in systems
+             for short in ("p", "r", "f1", "f2", "p_sd", "r_sd")]
     write_csv("rq1_transposed.csv", fields, rows)
+
+
+def build_rq1_side_by_side():
+    """Pivot the RQ1 task rows into one project row with two task panels."""
+    source = index(read_csv(TEX_SRC / "rq1_transposed.csv"), "project", "task")
+    systems = ("approach", "Artemis", "pipeline")
+    metrics = ("p", "r", "f1", "f2")
+    fields = ["project"] + [f"{task}_{system}_{metric}"
+                            for task in ("dm", "dc")
+                            for system in systems for metric in metrics]
+    rows = []
+    for project in [*PROJECTS, "Average"]:
+        row = {"project": project}
+        for task, source_task in (("dm", "DM"), ("dc", "DC")):
+            task_row = source[(project, source_task)]
+            for system in systems:
+                for metric in metrics:
+                    row[f"{task}_{system}_{metric}"] = task_row[f"{system}_{metric}"]
+        rows.append(row)
+    write_csv("rq1_side_by_side.csv", fields, rows)
 
 
 # --------------------------------------------------------------------------- #
@@ -288,7 +325,7 @@ RQ3_DC_OF = {"dc_p": "doc_to_code_file_precision", "dc_r": "doc_to_code_file_rec
              "dc_harm_f2": "doc_to_code_harmonic_component_f2"}
 #: The full pipeline: the reference row, every judge on.
 RQ3_FULL_ROW = "full_on"
-RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["all_combined"]
+RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["no_judge"]
 # row key -> the rq3_validators.csv row its counts come from. The counts stay per JUDGE:
 # each judge-off row prints that judge's own distinct kills and keeps (what it does while
 # it is on), the \fullVariant{} row prints the judges together (the union, not the sum --
@@ -298,14 +335,14 @@ RQ3_ROW_ORDER = [RQ3_FULL_ROW] + JUDGES + ["all_combined"]
 RQ3_AUDIT_ROW = {RQ3_FULL_ROW: "all_combined",
                  "full_name": "full_name", "partial_name": "partial_name",
                  "name": "name", "coref": "coref",
-                 "all_combined": "none"}
+                 "no_judge": "none"}
 # row key -> the rq3_variants / rq34_rq2_variants row that scores it. Scoped to THIS
 # arm's judges: the map is read by `.values()` in two places, so carrying another arm's
 # keys asks rq3_variants.csv for a row it does not have.
 _OFF_VARIANT = {RQ3_FULL_ROW: "Full",
                 "full_name": "NoFullNameValid", "partial_name": "NoPartialNameValid",
                 "name": "NoNameValid",
-                "coref": "NoCitation", "all_combined": "NoValidator"}
+                "coref": "NoCitation", "no_judge": "NoValidator"}
 RQ3_OFF_VARIANT = {key: _OFF_VARIANT[key] for key in RQ3_ROW_ORDER}
 
 
@@ -616,6 +653,7 @@ def main():
     build_rq1(big)
     build_rq2(big)
     build_rq1_transposed(big)
+    build_rq1_side_by_side()
     if floor_available():
         build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
     else:

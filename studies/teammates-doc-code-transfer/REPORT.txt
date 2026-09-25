@@ -1,0 +1,102 @@
+== teammates, s126 terra: the link sets the paper scores ==
+  approach run1    doc-model P=0.794 R=0.947 F1=0.864 |pred|= 68  |  doc-code P=0.795 R=0.746 F1=0.770 |pred|=7599
+  approach run2    doc-model P=0.818 R=0.947 F1=0.878 |pred|= 66  |  doc-code P=0.800 R=0.744 F1=0.771 |pred|=7528
+  approach run3    doc-model P=0.803 R=0.930 F1=0.862 |pred|= 66  |  doc-code P=0.800 R=0.742 F1=0.770 |pred|=7511
+  SWATTR/TransArC  doc-model P=0.605 R=0.860 F1=0.710 |pred|= 81  |  doc-code P=0.753 R=0.902 F1=0.821 |pred|=9702
+  gold: 57 doc-model links, 8097 doc-code (sentence,file) pairs
+
+== is the doc-code gold the closure of the doc-model gold? ==
+project        |gold DM| |gold DC| |closure|  closure in gold  gold DC beyond closure
+mediastore            31        59        52          100.0%             11.9% (7 pairs)
+teastore              27       707       707          100.0%              0.0% (0 pairs)
+teammates             57      8097      6380          100.0%             21.2% (1717 pairs)
+bigbluebutton         62      1529      1746           84.0%              4.1% (63 pairs)
+jabref                18      8268      8272          100.0%              0.0% (0 pairs)
+
+== per component: size, gold links at each grain, and who recovers them ==
+component              files  gDM    gDC  app DM  sw DM  app DC  ta DC
+Component: UI            348    9   3622     8.0      9    2786   3257
+Component: Common        150    5   1345     5.0      5     750   1264
+Component: E2E           123    5    861     5.0      5     615    861
+Component: Logic          71   15   1243    14.0     14    1043   1138
+Component: Storage        59   10    746    10.0      8     604    604
+Component: Client         40    4    172     4.0      3     164    132
+Component: Test Driver    17    4     68     3.7      3      62     51
+
+== doc-code recall, split by the two halves of the gold ==
+  approach run1 inside closure  93.4%   beyond closure   4.8%   (83/1717 pairs)
+  approach run2 inside closure  93.4%   beyond closure   3.6%   (62/1717 pairs)
+  approach run3 inside closure  93.2%   beyond closure   3.6%   (62/1717 pairs)
+  TransArC     inside closure  96.1%   beyond closure  68.3%   (1173/1717 pairs)
+  gap (run1 vs TransArC): +2.1pp inside, +13.5pp beyond
+
+== are the doc-model false positives wrong at the file grain too? ==
+  approach run1: 14 doc-model FPs -> 83 gold doc-code pairs recovered, 1555 spurious file links
+      FP sentence   22 -> Component: Logic          42/  71 of its files are gold doc-code links
+      FP sentence   85 -> Component: Logic          21/  71 of its files are gold doc-code links
+      FP sentence  125 -> Component: Storage        14/  59 of its files are gold doc-code links
+      FP sentence  196 -> Component: Client          4/  40 of its files are gold doc-code links
+      FP sentence   50 -> Component: UI              2/ 348 of its files are gold doc-code links
+      FP sentence  182 -> Component: UI              0/ 348 of its files are gold doc-code links
+  SWATTR: 32 doc-model FPs -> 1173 gold doc-code pairs recovered, 2395 spurious file links
+      FP sentence  156 -> Component: Common        150/ 150 of its files are gold doc-code links
+      FP sentence   22 -> Component: UI            125/ 348 of its files are gold doc-code links
+      FP sentence  187 -> Component: E2E           123/ 123 of its files are gold doc-code links
+      FP sentence  188 -> Component: E2E           123/ 123 of its files are gold doc-code links
+      FP sentence  127 -> Component: Common        107/ 150 of its files are gold doc-code links
+      FP sentence  159 -> Component: Common        107/ 150 of its files are gold doc-code links
+
+== 50 sentences carry gold doc-code links but no gold doc-model link (1664 pairs) ==
+  gold doc-model covers 45 sentences, gold doc-code 92
+  s  22 ( 167 file links; Logic, UI): logic, ui.website, ui.controller represent an application of Model-View-Controller pattern.
+  s  32 (   2 file links; UI): Second, custom filters are applied according to the order specified in web.xml, e.g. OriginCheck
+  s  39 (   2 file links; UI): First, request forwarded to WebPageServlet.
+  s  40 (   2 file links; UI): Second, WebPageServlet returns the built single web page (index.html).
+  s  43 (   2 file links; UI): First, request forwarded to the WebApiServlet.
+  s  44 (   6 file links; UI): Second, WebApiServlet uses the ActionFactory to generate the matching Action object, e.g. Instru
+  s  45 (   2 file links; UI): Third, WebApiServlet executes the action.
+  s  46 (   1 file links; UI): Fourth, the Action object checks the access rights of the user.
+  s  48 (   3 file links; UI): Fifth, the Action packages and processes the result into an ActionResult object.
+  s  49 (   1 file links; UI): The most common format is JsonResult (requests for obtaining data or processing existing data), 
+  s  50 (   2 file links; UI): Sixth, WebApiServlet sends the result back to the browser which will then process it on the fron
+  s  52 ( 125 file links; UI): The Web API is protected by two layers of access control check.
+  ... 38 more
+  beyond-closure pairs by component: Common 595, UI 490, E2E 246, Logic 178, Storage 156, Client 12
+
+== teammates: doc-code per component, largest first ==
+component        files  gold DC   app R    ta R      dR  app F1   ta F1  pairs lost
+UI                 348     3622   76.9%   89.9%   -13.0   0.748   0.835        +471
+Common             150     1345   55.8%   94.0%   -38.2   0.716   0.844        +514
+E2E                123      861   71.4%  100.0%   -28.6   0.769   0.824        +246
+Logic               71     1243   85.0%   91.6%    -6.5   0.816   0.832         +81
+Storage             59      746   81.0%   81.0%    +0.0   0.866   0.798          +0
+Client              40      172   95.3%   76.7%   +18.6   0.882   0.537         -32
+Test Driver         17       68  100.0%   75.0%   +25.0   0.889   0.750         -17
+
+== teammates: the same link sets, scored at four grains ==
+system             file R  file F1  (sent,comp) F1  macro comp R  worst C F1  harm C F1
+approach run1       0.746    0.770           0.636         0.808       0.716      0.807
+approach run2       0.744    0.771           0.628         0.805       0.716      0.808
+approach run3       0.742    0.770           0.620         0.770       0.716      0.789
+TransArC            0.902    0.821           0.716         0.869       0.537      0.757
+
+== teammates: file mass of one doc-model link ==
+component        files/link  app DM  sw DM  app mass  sw mass
+UI                      348      11     12      3828     4176
+Common                  150       5     11       750     1650
+E2E                     123       6     10       738     1230
+Logic                    71      19     21      1349     1491
+Storage                  59      11     13       649      767
+Client                   40       5      8       200      320
+Test Driver              17       5      4        85       68
+  approach run1   68 doc-model links ->  7599 composed file links  (112 files per link on average)
+  SWATTR          81 doc-model links ->  9702 composed file links  (120 files per link on average)
+
+== across projects: per-component recall gap (approach run1 - TransArC) vs component size ==
+project        comps  app>ta  app<ta  median size won  median size lost  spearman(size,dR)
+mediastore         9       4       0                2                --               0.12
+teastore           6       4       0               30                --               0.62
+teammates          7       2       4               40               150              -0.89
+bigbluebutton     10       5       1               16                 6               0.28
+jabref             6       0       0               --                --                nan
+  pooled over 38 gold components: spearman(size, recall gap) = -0.23

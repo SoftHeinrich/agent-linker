@@ -58,6 +58,7 @@ are only meaningful next to the run set they came from.
 import argparse
 import csv
 import os
+import statistics
 import sys
 from pathlib import Path
 
@@ -187,6 +188,7 @@ METRIC_FIELDS = [name for name, _task, _key in COLUMNS]
 BIGTABLE_FIELDS = ["system", "backend", "run",
                    "doc_to_model_projects", "doc_to_code_projects"] + METRIC_FIELDS
 PERPROJECT_FIELDS = ["system", "backend", "project"] + METRIC_FIELDS
+PERPROJECT_PERRUN_FIELDS = ["system", "backend", "run", "project"] + METRIC_FIELDS
 
 
 def score_cells(system, task):
@@ -303,6 +305,25 @@ def build_perproject_rows(system):
         row = {"system": system["label"], "backend": system["backend"], "project": proj}
         row.update(metric_columns(dm[proj], dc[proj]))
         rows.append(row)
+    return rows
+
+
+def build_perproject_perrun_rows(system):
+    """One row per (system, run, project): the full suite, no averaging.
+
+    Preserves the per-run per-project detail that ``build_perproject_rows``
+    collapses.  Downstream consumers (``rq_tables.py``) use this to compute
+    per-project standard deviation across runs.
+    """
+    dm_cells = score_cells(system, SS)
+    dc_cells = score_cells(system, SC)
+    rows = []
+    for (run, dm_by_proj), (_run, dc_by_proj) in zip(dm_cells, dc_cells):
+        for proj in m.PROJECTS:
+            row = {"system": system["label"], "backend": system["backend"],
+                   "run": run, "project": proj}
+            row.update(metric_columns(dm_by_proj[proj], dc_by_proj[proj]))
+            rows.append(row)
     return rows
 
 
@@ -479,12 +500,40 @@ def main():
         perproject_csv = big_csv.parent / f"RQ12_PERPROJECT{suffix}.csv"
 
     perproject_rows = []
+    perproject_perrun_rows = []
     for system in ROSTER:
         perproject_rows.extend(build_perproject_rows(system))
+        perproject_perrun_rows.extend(build_perproject_perrun_rows(system))
+
+    perproject_perrun_csv = big_csv.parent / f"RQ12_PERPROJECT_PERRUN{suffix}.csv"
+
+    sd_metrics = ("doc_to_model_link_precision", "doc_to_model_link_recall",
+                  "doc_to_code_file_precision", "doc_to_code_file_recall")
+    buckets = {}
+    for row in perproject_perrun_rows:
+        if row["run"] not in ("run1", "run2", "run3"):
+            continue
+        for metric in sd_metrics:
+            buckets.setdefault((row["system"], row["project"], metric), []).append(float(row[metric]))
+    for row in big:
+        if row["run"] not in ("run1", "run2", "run3"):
+            continue
+        for metric in sd_metrics:
+            buckets.setdefault((row["system"], "Average", metric), []).append(float(row[metric]))
+    sd_rows = []
+    for (system, project, metric), values in buckets.items():
+        if len(values) != 3:
+            raise ValueError(f"Expected three runs for SD: {system}/{project}/{metric}")
+        sd_rows.append(dict(system=system, project=project, metric=metric,
+                            sd=f"{statistics.stdev(values):.6f}"))
+    write_csv(sd_rows, ["system", "project", "metric", "sd"],
+              big_csv.parent / f"RQ12_SD{suffix}.csv")
 
     write_csv(big, BIGTABLE_FIELDS, big_csv)
     write_csv(perproject_rows, PERPROJECT_FIELDS, perproject_csv)
-    print(f"\n[rq12] wrote {big_csv}\n[rq12] wrote {perproject_csv}", file=sys.stderr)
+    write_csv(perproject_perrun_rows, PERPROJECT_PERRUN_FIELDS, perproject_perrun_csv)
+    print(f"\n[rq12] wrote {big_csv}\n[rq12] wrote {perproject_csv}"
+          f"\n[rq12] wrote {perproject_perrun_csv}", file=sys.stderr)
 
 
 if __name__ == "__main__":

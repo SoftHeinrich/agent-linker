@@ -1,0 +1,49 @@
+$ python3 scripts/check-paper-numeric-claims.py --self-test
+PASS self-test: TeX comments, numeric tokens, citation stripping, and change detection
+FAIL paper numeric-claim audit: 44 error(s); 201 active statements
+- numeric-statement inventory changed: expected f035029e85319fbaae8338758a65c175829e0054625394ad3d801c38a2307dd7, found 7b6f3d0a7f4d9704bc4bc0c98f689c2b46a12c9cdbca77e3eee5b1c0d9a09303; review the full --report output before accepting the new digest
+- paper/sections/intro.tex:52: UNREVIEWED one: Trace links tie these artifacts together, so a change in one can be followed into the others.
+- paper/sections/intro.tex:55: UNREVIEWED 84\%: Recent \ac{LLM}-based approaches push recovery scores up to 84\% \fone.
+- paper/sections/intro.tex:58: UNREVIEWED three | 69.3 | 99.3\%: the three largest components hold $69.3$--$99.3\%$ of per-component link assignments.
+- paper/sections/intro.tex:64: UNREVIEWED two: Prior work follows two lines.
+- paper/sections/intro.tex:66: UNREVIEWED one: The \ac{LLM} line, such as LiSSA~\cite{fuchs_lissa_2025}, classifies each documentation-and-target pair with one \ac{LLM} call.
+- paper/sections/intro.tex:68: UNREVIEWED one | single: These approaches share one root cause: each link is decided in a single unchecked step, by matching names rather than weighing the evidence the sentence gives.
+- paper/sections/intro.tex:71: UNREVIEWED one: Common word that happens to name a component gets linked, a plainly named mention and an indirect one are handled alike, and a link the evidence does not back is never caught.
+- paper/sections/intro.tex:81: UNREVIEWED one: \textbf{Rather than working in one unchecked prompting, \approach makes a link earn its place: grounded in learned architectural documentation knowledge, reached through a route matched to how the reference is phrased, and confirmed by a judge that can reject it.}
+- paper/sections/intro.tex:82: UNREVIEWED first: We present \approach, the first multi-stage \ac{LLM} workflow for doc-model trace-link recovery that carries an ambiguity-aware knowledge layer into its decisions and combines deterministic evidence checks with context-augmented \ac{LLM}-as-a-judge decisions.
+- paper/sections/intro.tex:83: UNREVIEWED Three | two: Three parts work together: a shared alias-discovery stage and two recovery routes, each with a candidate generator and a judge.
+- paper/sections/intro.tex:87: UNREVIEWED one | second: Splitting the reference forms expands candidate coverage, not the standards: both written forms are judged under \emph{one} rule, and what separates them is a field of the evidence rather than a second rubric.
+- paper/sections/intro.tex:89: UNREVIEWED 0.936 | 12.7 | 0.955 | 12.7: On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.936$, $12.7$ percentage points above the strongest baseline \Artemis{} re-run on the same backend, and $0.955$ \avgftwo, $12.7$pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+- paper/sections/intro.tex:90: UNREVIEWED 0.879 | +6.6 | 0.896 | +5.3: On doc-code it reaches an \avgfone of $0.879$ ($+6.6$pp) and an \avgftwo of $0.896$ ($+5.3$pp).
+- paper/sections/intro.tex:99: UNREVIEWED second: Our second contribution starts from a measured property of doc-code links: they are highly concentrated across components.
+- paper/sections/intro.tex:101: UNREVIEWED three | 69.3 | 99.3\%: On the benchmark, the three largest components hold $69.3$-$99.3\%$ of the doc-code per-component links (\autoref{sec:motivation}).
+- paper/sections/intro.tex:106: UNREVIEWED three: We therefore add an architecture-driven evaluation suite of three size-aware metrics that measure how the small components fare: worst-component \fone\ and the harmonic mean of per-component \fone\ on doc-code, and the \cmrname\ (CMR) on doc-model (\autoref{sec:metric}).
+- paper/sections/intro.tex:108: UNREVIEWED 1.0 | 4.7 | 4.1: \Artemis{}, the \ac{LLM} pipeline reported to beat \TransArc{} at the link level, does so on our re-run too,by $1.0$pp of link-level \fone, yet scores $4.7$pp lower on the worst component and $4.1$pp lower on the harmonic per-component \fone.
+- paper/sections/intro.tex:112: UNREVIEWED 25.8 | 23.6 | 7.9: On doc-code \approach{} clears it: it leads \TransArc{} by $25.8$pp on the worst component and $23.6$pp on the harmonic per-component \fone, against $7.9$pp at the link level.
+- paper/sections/intro.tex:120: UNREVIEWED one | one | three | two | three | single: On doc-model, CMR tells the same story: \approach{} abandons one documented component in one of three runs, while \Artemis{} abandons two per run and SWATTR abandons three on a single project.
+- paper/sections/intro.tex:124: UNREVIEWED three: This work makes three contributions:
+- paper/sections/intro.tex:127: UNREVIEWED three: \item an \textbf{architecture-driven evaluation suite} of three size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
+- paper/sections/intro.tex:128: UNREVIEWED five | 12.7 | 12.7 | 6.6 | 5.3: \item an \textbf{empirical study} on five projects with ablations, where \approach improves the strongest baseline by $12.7$pp \fone\ ($12.7$pp \ftwo) on doc-model and $6.6$pp \fone\ ($5.3$pp \ftwo) on doc-code, with far larger gains on the worst-component and harmonic per-component measures (\autoref{sec:exp-design}, \autoref{sec:results}).
+- paper/sections/motivation.tex:7: UNREVIEWED 23 | 24 | 27 | 28: \Description{A MediaStore ground-truth example with documentation sentences on the left, architecture components in the middle, and code-file counts on the right. Sentence 23 links Database to DB, and Sentence 24 refers back to DB with It. Sentence 27 links MediaAccess but not DB because database access describes a responsibility rather than the DB component. Sentence 28 refers back to MediaAccess with it.}
+- paper/sections/motivation.tex:56: UNREVIEWED 27: Sentence~27 shows the false-positive risk.
+- paper/sections/motivation.tex:58: UNREVIEWED 27: Here, however, the phrase names a responsibility of \texttt{MediaAccess}; the gold standard links Sentence~27 only to that component.
+- paper/sections/motivation.tex:92: UNREVIEWED 20\% | 46\times: Yet \texttt{preferences} is described by $20\%$ of the documented sentences, $46\times$ its
+- paper/sections/motivation.tex:93: UNREVIEWED 17.6\% | 40\times: share of links, and $17.6\%$ of the code's cross-component dependencies point at it, $40\times$ its share of links.
+- paper/sections/motivation.tex:94: UNREVIEWED one | five | sixth: A component that a reader meets in one sentence out of five, and that a sixth of the code depends on, is nearly invisible to the score.
+- paper/sections/motivation.tex:117: UNREVIEWED 17.6 | 0.80 | 0.53: sentences, 17.6 percent of code dependencies, and F1 of 0.80 for TransArc and 0.53 for Artemis.}
+- paper/sections/motivation.tex:129: UNREVIEWED 0.53 | 0.800 | one | three: On JabRef, \Artemis{} is weakest on exactly this component: it scores $0.53$ on \texttt{preferences} against \TransArc{}'s $0.800$, and abandons it outright in one run of three (\autoref{fig:motivation}, right axis).
+- paper/sections/approach.tex:122: UNREVIEWED 6 | 5: In the rejected case, ``This'' in local Sentence~6 denotes the conversion operation described in local Sentence~5 rather than unambiguously denoting \texttt{Reencoding}.
+- paper/sections/metric.tex:20: UNREVIEWED 768 | 3{,}888: on JabRef the ratio is $768$ to $3{,}888$.
+- paper/sections/metric.tex:21: UNREVIEWED three | 69.3\% | 99.3\%: Overall, the three largest components hold between $69.3\%$ (BigBlueButton) and $99.3\%$ (JabRef) of the doc-code per-component link assignments.
+- paper/sections/metric.tex:33: UNREVIEWED Second: Second, it stays complementary beside link-level $F_\beta$, so a reader can see what the standard metric hides rather than replacing it.
+- paper/sections/metric.tex:34: UNREVIEWED Third: Third, the suite requires no additional manual annotation beyond the benchmark.
+- paper/sections/metric.tex:95: UNREVIEWED 0: \cmr{} = 0 means every documented component is linked at least once, so no component's documentation is silently lost.
+- paper/sections/metric.tex:98: UNREVIEWED 1 | 2: On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$.
+- paper/sections/results.tex:177: UNREVIEWED 26 | three: The \approach{} observations use the s126/terra quality runs, including the replacement MediaStore runs; the \Artemis{} observations use three new luna runs with token logging.
+- paper/sections/results.tex:181: UNREVIEWED three: The replacement MediaStore results agree across three runs; this agreement does not establish deterministic behavior.
+- paper/sections/discussion.tex:24: UNREVIEWED three: The LLM systems are stochastic; their reported quality scores average three runs per project.
+- paper/sections/discussion.tex:25: UNREVIEWED 26 | three: For s126/terra, all three MediaStore runs were replaced after an anomalous original result prompted investigation.
+- paper/sections/discussion.tex:38: UNREVIEWED five | one: We measure on the five Java systems of the ARDoCo benchmark, the largest curated one we know of~\cite{fuchs_establishing_2023}; results may not transfer to other languages, industrial systems, or differently written documents.
+- paper/sections/discussion.tex:39: UNREVIEWED five | two: We mitigate this by using all five projects, which span two orders of magnitude in size and several domains, and by keeping \approach{} training-free with no benchmark-specific tuning.
+
+Exit: 1

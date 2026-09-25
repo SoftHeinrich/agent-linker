@@ -114,3 +114,33 @@ The repository virtual environment points to the unavailable interpreter
 python3 -m py_compile src/llm_sad_sam/linkers/experimental/s_linker126.py run_ablation.py pilot/test_s126.py pilot/test_s126_standalone.py
 bash -n pilot/run_s126_e2e_noknow.sh
 ```
+
+## Paper prose corrections
+
+The live prose was corrected to match the regenerated `s126` evidence:
+
+- Terra run 1 has doc-model CMR `1.9355%`, while runs 2 and 3 have `0%`;
+  therefore the paper now reports one abandoned component in one of three runs.
+- The aggregate precision and recall claims are kept at the aggregate grain.
+- Per-project claims now state that doc-model F1 leads on five of five projects,
+  doc-code F1 leads on four of five, and both doc-model F-measures improve on
+  four of five.
+
+Verification commands:
+
+```bash
+python3 evaluation/mini-src/check.py
+python3 evaluation/mini-src/gen_csv_to_temp.py
+PAPER_DIR="$PWD/paper" python3 evaluation/mini-src/sync_paper.py --check
+git -C paper diff --check -- sections/intro.tex sections/results.tex
+```
+
+Results:
+
+```text
+OK    arm-default   every generator reports arm 's126' (7/7 found)
+PASS: mini-src/metrics.py reproduces the frozen golden panel (10 cells, sad-code + sad-sam).
+RESULT: all generated CSVs reproduce the committed repo copies. Repo untouched.
+IN SYNC: all 26 paper file(s) match the generated output. (2 absent for this arm)
+git diff --check: exit 0, no output
+```

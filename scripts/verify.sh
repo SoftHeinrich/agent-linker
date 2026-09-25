@@ -12,3 +12,4 @@ test -d "$TRANSARC_RESULTS_DIR" || { echo "Missing vendored evaluation results."
 python3 "$root/evaluation/mini-src/check.py"
 python3 "$root/evaluation/mini-src/metrics.py" --task sad-code
 python3 "$root/evaluation/mini-src/metrics.py" --task sad-sam
+python3 "$root/scripts/check-paper-numeric-claims.py" --self-test

@@ -1,0 +1,317 @@
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 1 modules
+[INFO] Installing Central Publishing features
+[INFO] 
+[INFO] Using the MultiThreadedBuilder implementation with a thread count of 12
+[INFO] 
+[INFO] -------------------< io.github.ardoco.tlr:tests-tlr >-------------------
+[INFO] Building tests-tlr 2.0.0-taas25
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ tests-tlr ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/hostshare/ardoco-home/sota/Replication-Package-TAAS25_LLM-assisted-Software-Traceability-with-Architecture-Entity-Recognition/Replication-Package-TAAS25/tlr/tests-tlr/src/main/resources
+[INFO] 
+[INFO] --- flatten-maven-plugin:1.7.3:flatten (flatten) @ tests-tlr ---
+[INFO] Generating flattened POM of project io.github.ardoco.tlr:tests-tlr:jar:2.0.0-taas25...
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ tests-tlr ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ tests-tlr ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ tests-tlr ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.2.5:test (default-test) @ tests-tlr ---
+[INFO] 
+[INFO] --- maven-jar-plugin:3.4.2:jar (default-jar) @ tests-tlr ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] 
+[INFO] --- maven-javadoc-plugin:3.7.0:jar (attach-javadocs) @ tests-tlr ---
+[INFO] Skipping javadoc generation
+[INFO] 
+[INFO] --- maven-source-plugin:3.3.1:jar-no-fork (attach-sources) @ tests-tlr ---
+[INFO] No sources in project. Archive not created.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.4.2:test-jar (default) @ tests-tlr ---
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.2.5:integration-test (default) @ tests-tlr ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running edu.kit.kastel.mcse.ardoco.tlr.tests.integration.RawTraceLinksIT
+464 [main] INFO edu.kit.kastel.mcse.ardoco.core.common.util.Environment - No .env file found, using system environment variables
+1256 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting mediastore
+1257 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SimpleTextPreprocessingAgent
+1257 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Starting SimpleTextPreprocessingAgent - SimpleTextProvider
+1262 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Finished SimpleTextPreprocessingAgent - SimpleTextProvider in 0.003 s
+1263 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SimpleTextPreprocessingAgent in 0.005 s
+1263 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - ModelProviderAgent
+1263 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor PcmExtractor
+1264 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.informants.ModelProviderInformant - Extracting code model.
+1433 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor PcmExtractor in 0.169 s
+1433 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor File
+1755 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.connectors.generators.code.CodeExtractor - Reading in existing code model.
+1988 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor File in 0.555 s
+1988 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.725 s
+1988 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - NerConnectionGenerator
+1990 [main] INFO edu.kit.kastel.mcse.ardoco.core.data.PipelineStepData - Building connection states for 2 metamodels
+2133 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerAgent
+2133 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Starting NerAgent - NerInformant
+2134 [main] WARN edu.kit.kastel.mcse.ardoco.naer.model.SoftwareArchitectureDocumentation - no filePath given
+2732 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.NamedEntityRecognizer - calling LLM...
+2733 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt one to get components unstructured...
+21860 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt1 tokens: input=1490, output=1945, total=3435
+21861 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt two to transform answer to structured JSON array...
+29963 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt2 tokens: input=1165, output=1091, total=2256
+30100 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Finished NerAgent - NerInformant in 27.965 s
+30100 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerAgent in 27.966 s
+30100 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerConnectionAgent
+30101 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Starting NerConnectionAgent - NerConnectionInformant
+49809 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Finished NerConnectionAgent - NerConnectionInformant in 19.707 s
+49809 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerConnectionAgent in 19.708 s
+49810 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - NerConnectionGenerator in 47.821 s
+49810 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+49814 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+49815 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+51709 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 1.893 s
+51709 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 1.894 s
+51709 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 1.898 s
+51709 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+51709 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+51710 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+51996 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.286 s
+51997 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.287 s
+51997 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.287 s
+51998 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting to write output...
+52003 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+52014 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+52020 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+52020 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+52031 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+52031 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+52033 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished to write output.
+52033 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - 00:50.740
+52064 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting teastore
+52064 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SimpleTextPreprocessingAgent
+52065 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Starting SimpleTextPreprocessingAgent - SimpleTextProvider
+52066 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Finished SimpleTextPreprocessingAgent - SimpleTextProvider in 0.001 s
+52066 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SimpleTextPreprocessingAgent in 0.001 s
+52066 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - ModelProviderAgent
+52066 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor PcmExtractor
+52066 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.informants.ModelProviderInformant - Extracting code model.
+52086 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor PcmExtractor in 0.019 s
+52086 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor File
+52086 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.connectors.generators.code.CodeExtractor - Reading in existing code model.
+52142 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor File in 0.055 s
+52142 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.075 s
+52142 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - NerConnectionGenerator
+52143 [main] INFO edu.kit.kastel.mcse.ardoco.core.data.PipelineStepData - Building connection states for 2 metamodels
+52143 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerAgent
+52143 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Starting NerAgent - NerInformant
+52143 [main] WARN edu.kit.kastel.mcse.ardoco.naer.model.SoftwareArchitectureDocumentation - no filePath given
+52146 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.NamedEntityRecognizer - calling LLM...
+52146 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt one to get components unstructured...
+73757 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt1 tokens: input=1576, output=2534, total=4110
+73757 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt two to transform answer to structured JSON array...
+83066 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt2 tokens: input=1302, output=1231, total=2533
+83166 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Finished NerAgent - NerInformant in 31.023 s
+83167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerAgent in 31.023 s
+83167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerConnectionAgent
+83167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Starting NerConnectionAgent - NerConnectionInformant
+83178 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Finished NerConnectionAgent - NerConnectionInformant in 0.011 s
+83178 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerConnectionAgent in 0.011 s
+83178 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - NerConnectionGenerator in 31.035 s
+83178 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+83179 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+83179 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 2.627 s
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 2.628 s
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 2.628 s
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+85807 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+85814 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.006 s
+85814 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.007 s
+85814 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.007 s
+85814 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting to write output...
+85814 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+85815 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+85852 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+85852 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+85852 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+85852 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+85853 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished to write output.
+85853 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - 00:33.749
+85888 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting teammates
+85888 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SimpleTextPreprocessingAgent
+85888 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Starting SimpleTextPreprocessingAgent - SimpleTextProvider
+85890 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Finished SimpleTextPreprocessingAgent - SimpleTextProvider in 0.001 s
+85890 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SimpleTextPreprocessingAgent in 0.001 s
+85890 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - ModelProviderAgent
+85890 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor PcmExtractor
+85890 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.informants.ModelProviderInformant - Extracting code model.
+85894 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor PcmExtractor in 0.003 s
+85894 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor File
+85894 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.connectors.generators.code.CodeExtractor - Reading in existing code model.
+86038 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor File in 0.144 s
+86038 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.148 s
+86039 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - NerConnectionGenerator
+86039 [main] INFO edu.kit.kastel.mcse.ardoco.core.data.PipelineStepData - Building connection states for 2 metamodels
+86039 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerAgent
+86039 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Starting NerAgent - NerInformant
+86039 [main] WARN edu.kit.kastel.mcse.ardoco.naer.model.SoftwareArchitectureDocumentation - no filePath given
+86042 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.NamedEntityRecognizer - calling LLM...
+86042 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt one to get components unstructured...
+122779 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt1 tokens: input=4015, output=4766, total=8781
+122780 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt two to transform answer to structured JSON array...
+147666 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt2 tokens: input=3816, output=4232, total=8048
+147969 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Finished NerAgent - NerInformant in 01:01.929
+147969 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerAgent in 01:01.929
+147969 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerConnectionAgent
+147969 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Starting NerConnectionAgent - NerConnectionInformant
+168468 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Finished NerConnectionAgent - NerConnectionInformant in 20.498 s
+168468 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerConnectionAgent in 20.499 s
+168469 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - NerConnectionGenerator in 01:22.429
+168469 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+168469 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+168469 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 15.524 s
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 15.524 s
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 15.525 s
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+183994 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+184039 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.045 s
+184040 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.045 s
+184040 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.045 s
+184040 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting to write output...
+184040 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+184041 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+184177 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+184177 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+184177 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+184177 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+184178 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished to write output.
+184178 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - 01:38.151
+184249 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting bigbluebutton
+184249 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SimpleTextPreprocessingAgent
+184249 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Starting SimpleTextPreprocessingAgent - SimpleTextProvider
+184252 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Finished SimpleTextPreprocessingAgent - SimpleTextProvider in 0.003 s
+184252 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SimpleTextPreprocessingAgent in 0.003 s
+184252 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - ModelProviderAgent
+184252 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor PcmExtractor
+184252 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.informants.ModelProviderInformant - Extracting code model.
+184257 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor PcmExtractor in 0.004 s
+184257 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor File
+184257 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.connectors.generators.code.CodeExtractor - Reading in existing code model.
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor File in 0.054 s
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.059 s
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - NerConnectionGenerator
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.core.data.PipelineStepData - Building connection states for 2 metamodels
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerAgent
+184312 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Starting NerAgent - NerInformant
+184312 [main] WARN edu.kit.kastel.mcse.ardoco.naer.model.SoftwareArchitectureDocumentation - no filePath given
+184315 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.NamedEntityRecognizer - calling LLM...
+184315 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt one to get components unstructured...
+212989 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt1 tokens: input=2379, output=3670, total=6049
+212990 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt two to transform answer to structured JSON array...
+231926 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt2 tokens: input=2605, output=2769, total=5374
+232087 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Finished NerAgent - NerInformant in 47.774 s
+232087 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerAgent in 47.774 s
+232087 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerConnectionAgent
+232087 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Starting NerConnectionAgent - NerConnectionInformant
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Finished NerConnectionAgent - NerConnectionInformant in 10.022 s
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerConnectionAgent in 10.023 s
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - NerConnectionGenerator in 57.798 s
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+242110 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+256942 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 14.831 s
+256942 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 14.832 s
+256942 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 14.832 s
+256942 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+256943 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+256943 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+256948 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.005 s
+256948 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.005 s
+256948 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.005 s
+256948 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting to write output...
+256948 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+256949 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+256977 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+256977 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+256977 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+256977 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+256977 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished to write output.
+256977 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - 01:12.699
+257017 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting jabref
+257017 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SimpleTextPreprocessingAgent
+257017 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Starting SimpleTextPreprocessingAgent - SimpleTextProvider
+257018 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.text.providers.SimpleTextPreprocessingAgent - Finished SimpleTextPreprocessingAgent - SimpleTextProvider in 0.000 s
+257018 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SimpleTextPreprocessingAgent in 0.000 s
+257018 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - ModelProviderAgent
+257018 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor PcmExtractor
+257018 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.informants.ModelProviderInformant - Extracting code model.
+257020 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor PcmExtractor in 0.002 s
+257020 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Starting ModelProviderAgent - Extractor File
+257020 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.connectors.generators.code.CodeExtractor - Reading in existing code model.
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.models.agents.ModelProviderAgent - Finished ModelProviderAgent - Extractor File in 0.206 s
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - ModelProviderAgent in 0.209 s
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - NerConnectionGenerator
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.core.data.PipelineStepData - Building connection states for 2 metamodels
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerAgent
+257227 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Starting NerAgent - NerInformant
+257227 [main] WARN edu.kit.kastel.mcse.ardoco.naer.model.SoftwareArchitectureDocumentation - no filePath given
+257229 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.NamedEntityRecognizer - calling LLM...
+257229 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt one to get components unstructured...
+276572 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt1 tokens: input=1028, output=1734, total=2762
+276572 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - send prompt two to transform answer to structured JSON array...
+284092 [main] INFO edu.kit.kastel.mcse.ardoco.naer.recognizer.TwoPartPrompt - prompt2 tokens: input=954, output=869, total=1823
+284103 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerAgent - Finished NerAgent - NerInformant in 26.876 s
+284104 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerAgent in 26.876 s
+284104 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Starting NerConnectionGenerator - NerConnectionAgent
+284104 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Starting NerConnectionAgent - NerConnectionInformant
+288166 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.agents.NerConnectionAgent - Finished NerConnectionAgent - NerConnectionInformant in 4.062 s
+288167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.connectiongenerator.ner.NerConnectionGenerator - Finished NerConnectionGenerator - NerConnectionAgent in 4.062 s
+288167 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - NerConnectionGenerator in 30.939 s
+288167 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SamCodeTraceabilityLinkRecovery
+288167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Starting SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent
+288167 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Starting InitialCodeTraceabilityAgent - ArCoTLInformant
+403220 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.InitialCodeTraceabilityAgent - Finished InitialCodeTraceabilityAgent - ArCoTLInformant in 01:55.052
+403221 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SamCodeTraceabilityLinkRecovery - Finished SamCodeTraceabilityLinkRecovery - InitialCodeTraceabilityAgent in 01:55.053
+403221 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SamCodeTraceabilityLinkRecovery in 01:55.053
+403221 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting ArDoCo - SadSamCodeTraceabilityLinkRecovery
+403221 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Starting SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent
+403221 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Starting TransitiveTraceabilityAgent - TraceLinkCombiner
+403253 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.agents.TransitiveTraceabilityAgent - Finished TransitiveTraceabilityAgent - TraceLinkCombiner in 0.031 s
+403253 [main] INFO edu.kit.kastel.mcse.ardoco.tlr.codetraceability.SadSamCodeTraceabilityLinkRecovery - Finished SadSamCodeTraceabilityLinkRecovery - TransitiveTraceabilityAgent in 0.032 s
+403253 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished ArDoCo - SadSamCodeTraceabilityLinkRecovery in 0.032 s
+403253 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Starting to write output...
+403254 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+403254 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No ConnectionState found.
+403352 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+403352 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+403352 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+403352 [main] WARN edu.kit.kastel.mcse.ardoco.core.api.output.ArDoCoResult - No InconsistencyState found.
+403352 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - Finished to write output.
+403352 [main] INFO edu.kit.kastel.mcse.ardoco.core.execution.ArDoCo - 02:26.236
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 403.0 s -- in edu.kit.kastel.mcse.ardoco.tlr.tests.integration.RawTraceLinksIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- maven-failsafe-plugin:3.2.5:verify (default) @ tests-tlr ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  06:50 min (Wall Clock)
+[INFO] Finished at: 2026-09-24T15:04:21Z
+[INFO] ------------------------------------------------------------------------
