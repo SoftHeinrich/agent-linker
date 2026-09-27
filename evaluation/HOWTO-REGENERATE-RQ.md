@@ -480,7 +480,7 @@ field the table does not print.
 
 | Paper float (label) | tex_src CSV | rendered .tex | grain |
 |---------------------|-------------|---------------|-------|
-| body RQ1 `tab:rq1` | `rq1_side_by_side.csv` | `rq1-results.tex` | terra, one row per project + Average; doc-model and doc-code panels |
+| body RQ1 `tab:rq1` | `rq1_transposed.csv` | `rq1-results.tex` | terra, two rows per project (DM/DC) + Average; P/R ±σ columns |
 | body RQ2 `tab:rq2` | `rq2.csv` | `rq2-results.tex` | terra, per project in two panels + Average |
 | body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, judging configurations, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |

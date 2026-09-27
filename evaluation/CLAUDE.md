@@ -27,29 +27,17 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
   `metrics.PANELS` → `rq12.COLUMNS` → `rq_tables` → `csv_to_tex.SPECS`; a lone F1
   column is a bug. `csv_to_tex.check_specs()` runs on import and will refuse a
   spec whose `\multicolumn` bands no longer cover its columns.
-  The canonical arm is **s_linker126** (terra = paper body, luna = mirror), the
-  greedy-merge arm promoted on 2026-09-16 by explicit author decision on
-  simplicity, overriding the component-weighted doc-code gate's refusal (see
-  `../approach/CLAUDE.md`'s status header for the numbers and rationale). `s120`
-  (the arm it replaced, promoted 2026-09-11), `s110` and the in-set `s110ctl` keep
-  their suffixed CSVs so every promotion stays reproducible. The s21 / s20union
-  arms were retired from the roster on 2026-08-26. Seven modules declare
-  `DEFAULT_ARM` and `check.py` fails if any two disagree, so an arm cannot be
-  promoted by halves.
-  **One thing is per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS` (s126,
-  like s120 before it, has two judges, every earlier arm three). RQ3 and RQ4 both
-  price that same phase list, one row per linker; the `FORM_SETS` split that kept
-  RQ4 at three proposal forms by re-reading the stage label on each link was
-  retired on 2026-09-19, because this arm ships one name linker and a standalone
-  partial-name row prices a component the pipeline no longer has. An arm with no one-call floor
-  sweep of its own has no floor table: `rq4_floor.py` refuses, `rq_tables.py`
-  drops it, `csv_to_tex.py` skips it and `sync_paper.py` removes the previous
-  arm's copy from the paper -- true of s126 exactly as it was of s120.
+  The canonical arm is **s_linker126** (terra = paper body, luna = mirror).
+  Seven modules declare `DEFAULT_ARM` and `check.py` fails if any two disagree.
+  **One thing is per-arm and not just per-path**: `rq34.py`'s `PHASE_SETS`
+  (s126 has two judges). RQ3 and RQ4 both price that same phase list, one row
+  per linker. s126 has no one-call floor sweep, so there is no floor table:
+  `rq4_floor.py` refuses, `rq_tables.py` drops it, `csv_to_tex.py` skips it
+  and `sync_paper.py` removes it from the paper.
 - `mini-inequality/` — RQ2 motivation (gold-link concentration inequality).
   `motivation.py` writes `paper/table/gold_concentration.tex`, which is why the
   engine lives here; `sync_paper.py` imports it lazily. A self-contained GSD
-  sub-project with its **own** `mini-inequality/.planning/`. The retired claim
-  audit and the back-compat table guard moved to `../studies/mini-inequality/`.
+  sub-project with its **own** `mini-inequality/.planning/`.
 - `reports/` — every engine's output. RQ1/RQ2 land directly here; RQ3/RQ4 are
   arm-scoped under `reports/rq34/<arm>/` (plus `<arm>_floor`, `<arm>_noknow`).
   `reports/tex_src/` holds the per-float CSVs and `reports/tex/` the rendered
@@ -57,11 +45,6 @@ tools go in `../studies/` (see `../studies/README.md`) — do not add them back 
 - `mini-data/` — pruned canonical data: the 15 TransArc result CSVs the studies
   read (`<project>/{sad-code,sad-sam,sam-code}/...Tlr_*.csv`, 5 projects).
 
-> **Legacy lives on `master`.** The full two-pillar history — the retired `src/`
-> metrics pipeline, benchmark-bias analyses, all result snapshots, and
-> `writing/eval.tex` — is preserved on the `master` (legacy) branch. Nothing was
-> deleted; this branch only tracks the mini studies. To consult or revive any of
-> it: `git show master:<path>` or `git checkout master -- <path>`.
 
 ## Stack
 

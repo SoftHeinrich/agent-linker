@@ -23,6 +23,7 @@ import random
 import sys
 from collections import defaultdict
 from pathlib import Path
+from xml.etree import ElementTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mini-src"))
 import inequality as ineq     # noqa: E402  (this study's gold engine)
@@ -277,38 +278,76 @@ def write_motivation(rows):
 
 
 # ── OUT-02 paper-ready table + Lorenz figure ──────────────────────────────────
-# Component grain: the prestudy unit is the architectural component the suite
-# weights equally. The table reports enrolled DOC-TO-CODE links grouped by gold
-# component (via the SAM-CODE model->code mapping) -- the distribution link-level
-# F1 is actually dominated by. comp_n is the suite's component universe (D-12: the
-# Component-typed model elements, interfaces dropped), so the table matches RQ2.
+# The displayed component count is the full PCM repository count, as in the
+# benchmark overview used by ArTEMiS. Each task's link distribution still uses
+# its own gold-reachable component universe: doc-model uses scorer IDs; doc-code
+# uses the SAM-CODE mapping after the interface exclusion.
 #
-# The .tex output is PAPER-READY (full project names + thousands separators baked in)
-# so reports/out02_concentration.tex is copied VERBATIM into the paper's
-# table/gold_concentration.tex; sync_paper.py --check guards that they stay equal.
-# Both paper-side artifacts are copied into alinker-paper/table/ and guarded byte-
-# for-byte by sync_paper.py --check.  The displayed component count is the
-# gold-reachable set K: the same universe used by the size-aware metrics.
-OUT02_CSV_COLS = ["project", "sentences", "components", "lines_of_code_thousands",
-                  "links", "median", "max", "gini", "top3_pct"]
+# The .tex output is PAPER-READY (project names, abbreviations, and separators).
+# sync_paper.py copies both generated artifacts into the paper and checks them
+# byte-for-byte with --check.
+OUT02_METRIC_NAMES = ("links", "median", "max", "gini", "top3_pct")
+OUT02_TASKS = ("doc_model", "doc_code")
+OUT02_CSV_COLS = ["project", "sentences", "lines_of_code_thousands", "components"] + [
+    f"{task}_{metric}" for task in OUT02_TASKS for metric in OUT02_METRIC_NAMES
+]
 
 FULL_NAMES = {"mediastore": "MediaStore", "teastore": "TeaStore",
               "teammates": "Teammates", "bigbluebutton": "BigBlueButton",
               "jabref": "JabRef"}
+PROJECT_ABBR = {"mediastore": "MS", "teastore": "TS", "teammates": "TM",
+                "bigbluebutton": "BBB", "jabref": "JR"}
 
-# Rounded thousands of lines of code, summed across the primary programming
-# languages reported in Table 1 of Fuchß et al., "Establishing a Benchmark Dataset for Traceability
-# Link Recovery Between Software Architecture Documentation and Models"
-# (ECSA 2022). The benchmark's project README files retain the corresponding
-# cloc measurements.  Keep the published values so Table 1 remains comparable
-# with TransArC and ArTEMiS evaluations that use this benchmark.
-LINES_OF_CODE_THOUSANDS = {
-    "mediastore": 4,
-    "teastore": 12,
-    "teammates": 145,
-    "bigbluebutton": 159,
-    "jabref": 157,
+# Canonical PCM repositories used for the model input to this evaluation.
+# Teammates also ships a separate details model; this table uses the base model.
+PCM_REPOSITORIES = {
+    "mediastore": "mediastore/model_2016/pcm/ms.repository",
+    "teastore": "teastore/model_2020/pcm/teastore.repository",
+    "teammates": "teammates/model_2021/pcm/teammates.repository",
+    "bigbluebutton": "bigbluebutton/model_2021/pcm/bbb.repository",
+    "jabref": "jabref/model_2021/pcm/jabref.repository",
 }
+
+
+def _component_count(project):
+    """Count all component elements in the benchmark's base PCM repository."""
+    path = ineq.BENCHMARK / PCM_REPOSITORIES[project]
+    root = ElementTree.parse(path).getroot()
+    ids = [element.get("id") for element in root.iter()
+           if element.tag.rsplit("}", 1)[-1] == "components__Repository"]
+    if not ids or None in ids or len(ids) != len(set(ids)):
+        raise ValueError(f"invalid component IDs in {path}")
+    return len(ids)
+
+
+# Language selection used by the existing table, matching the primary-language
+# columns reported in Table 1 of the benchmark paper. The code counts themselves
+# are read from each checked-in benchmark README's cloc table.
+PRIMARY_LANGUAGES = {
+    "mediastore": ("Java",),
+    "teastore": ("Java",),
+    "teammates": ("Java", "TypeScript"),
+    "bigbluebutton": ("Java", "JavaScript", "JSX", "Scala"),
+    "jabref": ("Java",),
+}
+
+
+def _lines_of_code_thousands(project):
+    """Sum individually rounded cloc code counts for the selected languages."""
+    selected = set(PRIMARY_LANGUAGES[project])
+    counts = {}
+    path = ineq.BENCHMARK / project / "README.md"
+    for line in path.read_text().splitlines():
+        parts = line.rsplit(maxsplit=4)
+        if len(parts) != 5 or parts[0] not in selected:
+            continue
+        if parts[0] in counts:
+            raise ValueError(f"duplicate cloc language {parts[0]} in {path}")
+        counts[parts[0]] = int(parts[-1])
+    if counts.keys() != selected:
+        raise ValueError(f"missing cloc languages {selected - counts.keys()} in {path}")
+    return sum(round(counts[language] / 1000) for language in selected)
+
 
 def _sentence_count(project):
     """# sentences in the architecture documentation (ARDoCo = one sentence/line)."""
@@ -319,13 +358,13 @@ def _sentence_count(project):
 def _out02_rows():
     rows = []
     for p in P:
-        lc = ineq.compute_sadcode_link_conc(p)
         rows.append({
-            "project": p, "sentences": _sentence_count(p),
-            "comp_n": lc["comp_n"],
-            "links_total": lc["links_total"],
-            "link_median": lc["link_median"], "link_max": lc["link_max"],
-            "link_gini": lc["link_gini"], "link_top3_pct": lc["link_top3_pct"],
+            "project": p,
+            "sentences": _sentence_count(p),
+            "loc_thousands": _lines_of_code_thousands(p),
+            "components": _component_count(p),
+            "doc_model": ineq.compute_sadsam_link_conc(p),
+            "doc_code": ineq.compute_sadcode_link_conc(p),
         })
     return rows
 
@@ -342,11 +381,14 @@ def write_out02_concentration():
         w = csv.writer(f, lineterminator="\n")
         w.writerow(OUT02_CSV_COLS)
         for r in rows:
-            w.writerow([FULL_NAMES.get(r["project"], r["project"]),
-                        r["sentences"], r["comp_n"],
-                        LINES_OF_CODE_THOUSANDS[r["project"]],
-                        r["links_total"], csv_num(r["link_median"]), r["link_max"],
-                        f"{r['link_gini']:.3f}", f"{r['link_top3_pct']:.1f}"])
+            cells = [FULL_NAMES.get(r["project"], r["project"]),
+                     r["sentences"], r["loc_thousands"], r["components"]]
+            for task in OUT02_TASKS:
+                lc = r[task]
+                cells.extend([lc["links_total"], csv_num(lc["link_median"]),
+                              lc["link_max"],
+                              f"{lc['link_gini']:.3f}", f"{lc['link_top3_pct']:.1f}"])
+            w.writerow(cells)
 
     def tex_sep(v):
         # integer-or-half value -> LaTeX with thousands separators, e.g.
@@ -366,38 +408,53 @@ def write_out02_concentration():
 
     L = [
         "% GENERATED by evaluation/mini-inequality/motivation.py (OUT-02).",
-        "% Do not edit by hand: rerun motivation.py, then re-copy into the paper.",
+        "% Do not edit by hand: regenerate with motivation.py and sync_paper.py.",
         "% Dataset overview + gold-standard link concentration for sec:metric:prestudy",
         "% (also the dataset table referenced from eval.tex sec:dataset).",
         "% Generated from the benchmark SAD text, the PCM (SAM) repository, and",
-        "% inequality.compute_sadcode_link_conc. Components = gold-reachable components",
-        "% (the set K scored by the size-aware suite). Links, median, maximum, Gini, and",
-        "% Top-3 share describe enrolled doc-code link concentration over those",
-        "% components. Lines of code are the sums of the rounded primary-language cloc",
-        "% values reported in Table 1 of the original benchmark paper (Fuchß et al., ECSA 2022).",
-        "% PAPER-READY (full project names + thousands separators baked in): copy verbatim",
-        "% into working/table/gold_concentration.tex. DO NOT hand-edit -- regenerate; the",
-        "% two files are kept identical by mini-src/sync_paper.py --check.",
+        "% inequality.compute_sadsam_link_conc and compute_sadcode_link_conc.",
+        "% Components counts all base-PCM components. Link distributions use",
+        "% task-specific gold-reachable component subsets. Doc-code links are",
+        "% enrolled file links; shared files count under each mapped",
+        "% component for median, maximum, Gini, and Top-3 share. Lines of code",
+        "% come from the checked-in benchmark cloc reports, summing individually",
+        "% rounded primary-language values as in Table 1 of the original benchmark",
+        "% paper (Fuchß et al., ECSA 2022).",
+        "% PAPER-READY (project names and abbreviations + thousands separators baked in):",
+        "% mini-src/sync_paper.py copies this generated file into the paper and",
+        "% --check verifies that the two files are byte-identical.",
         "% Companion data (machine-readable): table/gold_concentration.csv",
-        "\\begin{table*}[t]", f"\\centering{TABLE_SIZE}\\setlength{{\\tabcolsep}}{{3pt}}",
-        "\\caption{The ardoco-benchmark statistics.}",
+        "\\begin{table*}[t]", f"\\centering{TABLE_SIZE}\\setlength{{\\tabcolsep}}{{2pt}}",
+        "\\caption{Gold link concentration by task. Sent. counts document sentences; kLOC sums the selected primary-language cloc counts in thousands. Comp. counts all components in the base architecture model. Each Links column counts distinct gold pairs; Med., Max., Gini, and Top-3 share (\\%) use that task's gold-reachable components. Shared doc-code files contribute to each mapped component; unmapped files contribute only to Links.}",
         "\\label{tab:gold_concentration}",
-        "\\begin{tabular}{lrrlrrrrr}", "\\toprule",
-        "\\textbf{Project} & \\textbf{Sentences} & \\textbf{Components} & "
-        "\\textbf{\\makecell[c]{Lines of code\\\\(thousands)}} & "
-        "\\textbf{Links} & \\textbf{Median} & \\textbf{Maximum} & "
-        "\\textbf{Gini} & \\textbf{Top-3 (\\%)} \\\\", "\\midrule",
+        "\\adjustbox{max width=\\textwidth}{%",
+        "\\begin{tabular}{lrrr@{\\hspace{4pt}}rrrrr@{\\hspace{8pt}}rrrrr}",
+        "\\toprule",
+        "\\textbf{Project} & \\textbf{Sent.} & \\textbf{kLOC} & "
+        "\\textbf{Comp.} & \\multicolumn{5}{c}{\\textbf{Doc-model}} & "
+        "\\multicolumn{5}{c}{\\textbf{Doc-code}} \\\\",
+        "\\cmidrule(lr){5-9}\\cmidrule(lr){10-14}",
+        "& & & & \\textbf{Links} & \\textbf{Med.} & "
+        "\\textbf{Max.} & \\textbf{Gini} & \\textbf{Top-3} & "
+        "\\textbf{Links} & \\textbf{Med.} & "
+        "\\textbf{Max.} & \\textbf{Gini} & \\textbf{Top-3} \\\\",
+        "\\midrule",
     ]
     for r in rows:
-        L.append(" & ".join([
-            FULL_NAMES.get(r["project"], r["project"]),
-            tex_sep(r["sentences"]), tex_sep(r["comp_n"]),
-            tex_sep(LINES_OF_CODE_THOUSANDS[r["project"]]),
-            tex_sep(r["links_total"]), tex_sep(r["link_median"]),
-            tex_sep(r["link_max"]), f"{r['link_gini']:.3f}",
-            f"{r['link_top3_pct']:.1f}",
-        ]) + " \\\\")
-    L += ["\\bottomrule", "\\end{tabular}", "\\end{table*}"]
+        cells = [
+            f'{FULL_NAMES[r["project"]]} ({PROJECT_ABBR[r["project"]]})',
+            tex_sep(r["sentences"]),
+            tex_sep(r["loc_thousands"]),
+            tex_sep(r["components"]),
+        ]
+        for task in OUT02_TASKS:
+            lc = r[task]
+            cells.extend([tex_sep(lc["links_total"]), tex_sep(lc["link_median"]),
+                          tex_sep(lc["link_max"]),
+                          f"{lc['link_gini']:.2f}".removeprefix("0"),
+                          f"{lc['link_top3_pct']:.1f}"])
+        L.append(" & ".join(cells) + " \\\\")
+    L += ["\\bottomrule", "\\end{tabular}", "}", "\\end{table*}"]
     (REPORTS / "out02_concentration.tex").write_text("\n".join(L) + "\n")
 
 

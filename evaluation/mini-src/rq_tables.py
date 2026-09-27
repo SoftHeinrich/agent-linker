@@ -19,7 +19,7 @@ Run the upstream generators first (see HOWTO-REGENERATE-RQ.md):
     #   + the two no-knowledge rq34_rq2 runs (see HOWTO §4) for the RQ4 "No knowledge" row
 
 Outputs (reports/tex_src/):
-    rq1.csv  rq2.csv  rq3.csv  rq4.csv             -- the BODY tables (body backend; rq3 = mean of 3 runs)
+    rq1_transposed.csv  rq2.csv  rq3.csv  rq4.csv  -- the BODY tables (body backend; rq3 = mean of 3 runs)
     rq3_runs.csv                   -- RQ3 appendix: both backends, each run + avg in ONE table
     bigtable_rq12_perproject.csv   -- RQ1+RQ2 appendix: per-project + Average row, both backends
     bigtable_rq12_perrun.csv       -- RQ1+RQ2 appendix: per-run + avg (approach), both backends
@@ -141,35 +141,6 @@ def i(v):
 # --------------------------------------------------------------------------- #
 # RQ1 / RQ2 body tables (body backend)
 # --------------------------------------------------------------------------- #
-def build_rq1(big):
-    """One row per display system; SWATTR/TransArC split the bundled TransArc row."""
-    ap = big[(BODY_SYSTEM, "average")]
-    ar = big[(BASELINE_SYSTEM, BASELINE_RUN)]
-    tx = big[("TransArC", "single")]
-    cols = ["dm_p", "dm_r", "dm_f1", "dm_f2", "dc_p", "dc_r", "dc_f1", "dc_f2"]
-
-    def row(label, src, dm=True, dc=True):
-        return {
-            "system": label,
-            "dm_p": src["doc_to_model_link_precision"] if dm else "",
-            "dm_r": src["doc_to_model_link_recall"] if dm else "",
-            "dm_f1": src["doc_to_model_link_f1"] if dm else "",
-            "dm_f2": src["doc_to_model_link_f2"] if dm else "",
-            "dc_p": src["doc_to_code_file_precision"] if dc else "",
-            "dc_r": src["doc_to_code_file_recall"] if dc else "",
-            "dc_f1": src["doc_to_code_file_f1"] if dc else "",
-            "dc_f2": src["doc_to_code_file_f2"] if dc else "",
-        }
-
-    rows = [
-        row("approach", ap),
-        row("Artemis", ar),
-        row("SWATTR", tx, dm=True, dc=False),       # TransArc's deterministic doc-to-model stage
-        row("TransArC", tx, dm=False, dc=True),     # TransArc proper = doc-to-code only
-    ]
-    write_csv("rq1.csv", ["system"] + cols, rows)
-
-
 RQ2_PANEL_SYSTEMS = [  # (row label, per-project system name, (system, run) average key)
     ("approach", BODY_SYSTEM, (BODY_SYSTEM, "average")),
     ("Artemis", BASELINE_SYSTEM, (BASELINE_SYSTEM, BASELINE_RUN)),
@@ -273,26 +244,6 @@ def build_rq1_transposed(big):
              for label, _, _ in systems
              for short in ("p", "r", "f1", "f2", "p_sd", "r_sd")]
     write_csv("rq1_transposed.csv", fields, rows)
-
-
-def build_rq1_side_by_side():
-    """Pivot the RQ1 task rows into one project row with two task panels."""
-    source = index(read_csv(TEX_SRC / "rq1_transposed.csv"), "project", "task")
-    systems = ("approach", "Artemis", "pipeline")
-    metrics = ("p", "r", "f1", "f2")
-    fields = ["project"] + [f"{task}_{system}_{metric}"
-                            for task in ("dm", "dc")
-                            for system in systems for metric in metrics]
-    rows = []
-    for project in [*PROJECTS, "Average"]:
-        row = {"project": project}
-        for task, source_task in (("dm", "DM"), ("dc", "DC")):
-            task_row = source[(project, source_task)]
-            for system in systems:
-                for metric in metrics:
-                    row[f"{task}_{system}_{metric}"] = task_row[f"{system}_{metric}"]
-        rows.append(row)
-    write_csv("rq1_side_by_side.csv", fields, rows)
 
 
 # --------------------------------------------------------------------------- #
@@ -572,8 +523,6 @@ def build_bigtable_rq12_perrun(big):
 # --------------------------------------------------------------------------- #
 # RQ4 big tables (whole suite, both backends): average + per-project
 # --------------------------------------------------------------------------- #
-RQ4_DISPLAY = [(v, v) for v in RQ4_VARIANTS]
-
 DM_SUITE = ["link_precision", "link_recall", "link_f1", "link_f2",
             "component_miss_rate"]
 
@@ -602,7 +551,7 @@ def build_bigtable_rq4_perproject():
                           "backend", "run", "linker_set", "project") if has_noknow else {}
         avg = {r["variant"]: r
                for r in _rq4_variant_cells(backend, "average", *_load_rq4_sources(backend))}
-        for variant, _ in RQ4_DISPLAY:
+        for variant in RQ4_VARIANTS:
             if variant not in avg:
                 continue
             dm_acc = {c: [] for c in DM_SUITE}
@@ -650,10 +599,8 @@ def build_rq4_perrun():
 # --------------------------------------------------------------------------- #
 def main():
     big = index(read_csv(RQ12_BIGTABLE), "system", "run")
-    build_rq1(big)
     build_rq2(big)
     build_rq1_transposed(big)
-    build_rq1_side_by_side()
     if floor_available():
         build_rq4_floor(BODY_BACKEND, "rq4_floor.csv")
     else:

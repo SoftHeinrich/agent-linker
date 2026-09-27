@@ -92,7 +92,7 @@ print("PASS offline: 461 roster rows; 461 unique official profiles")
 print("PASS offline: role counts Chair=2, Area Chair=19, Member=440")
 print("PASS offline: 33 shortlisted reviewers across C1-C5")
 print("PASS offline: 67 paper-evidence rows; counts and score aggregation checked")
-print("PASS offline: 18 citation candidates; PC-author and HTTPS checks passed")
+print(f"PASS offline: {len(citations)} citation candidates; PC-author and HTTPS checks passed")
 print("PASS offline: local BibTeX PRESENT/ABSENT statuses and conflict flag checked")
 
 if "--live" in sys.argv:

@@ -149,46 +149,11 @@ def bold_specs(col):
     return []
 
 
-def position_groups(cols, mode="max"):
-    """Row-wise comparison groups read off the spec's columns, one per metric.
-
-    In a systems-as-columns table every column prints the same tuple of metrics in
-    the same order, so the fields sharing a position are one metric's competitors:
-    position 0 is precision against precision, position 1 recall against recall,
-    and so on. Deriving the groups from the columns keeps the comparison tied to
-    what the table actually prints -- add or drop a system column and the groups
-    follow, with no metric or system list restated by hand.
-    """
-    shapes = [col_fields(c) for c in cols]
-    widths = {len(sh) for sh in shapes}
-    if len(widths) != 1:
-        raise ValueError(f"row_bold by position needs columns of one shape, got {sorted(widths)}")
-    groups = []
-    for pos in zip(*shapes):                      # one (field, kind) per column
-        kinds = {kind for _, kind in pos}
-        if len(kinds) != 1:
-            raise ValueError(
-                f"row_bold by position compares one precision per metric, got {sorted(kinds)}")
-        groups.append({"fields": [f for f, _ in pos], "kind": kinds.pop(), "mode": mode})
-    return groups
-
-
 def row_bold_groups(spec, cols):
-    """Resolve a spec's ``row_bold`` into comparison groups (None when unset).
-
-    ``"by_position"`` (or ``{"by": "position", "mode": ...}``) derives them from the
-    columns; an explicit list of ``{"fields": [...], "kind":, "mode":}`` is taken as
-    written, for a table whose competitors are not positionally aligned.
-    """
+    """Resolve a spec's ``row_bold`` into comparison groups (None when unset)."""
     rb = spec.get("row_bold")
     if not rb:
         return None
-    if rb == "by_position":
-        return position_groups(cols)
-    if isinstance(rb, dict):
-        if rb.get("by") != "position":
-            raise ValueError(f"unknown row_bold spec: {rb}")
-        return position_groups(cols, rb.get("mode", "max"))
     return rb
 
 

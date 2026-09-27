@@ -214,6 +214,25 @@ def compute_sadcode_link_conc(project):
     }
 
 
+def compute_sadsam_link_conc(project):
+    """Gold doc-model links per gold-reachable component, keyed as in the scorer.
+
+    Each (model element, sentence) pair contributes one assignment. Model-element
+    IDs stay distinct even when their display names are the same.
+    """
+    gold = load_gs_sad_sam(project)
+    counts = list(Counter(c for c, _s in gold).values())
+    ss = summary_stats(counts)
+    return {
+        "project": project,
+        "links_total": len(gold),
+        "comp_n": ss["n"],
+        "link_median": ss["median"], "link_max": ss["max"],
+        "link_gini": _gini(counts),
+        "link_top3_pct": 100 * top_k_share(counts, 3),
+    }
+
+
 def compute_sad_sam_dist(project):
     """INEQ-01: per-component (#distinct sentences per model element) gold
     concentration for sad-sam (by name where SAM-CODE provides one)."""
