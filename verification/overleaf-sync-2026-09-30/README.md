@@ -56,3 +56,15 @@ bash scripts/test-submodule-pointer-hook.sh
   verification commands with their results and exit statuses.
 
 This verification covers Git synchronization. It does not verify PDF compilation.
+
+After the successful live check and initial parent commit, concurrent tracked
+edits appeared in `paper/agent-linker.bib` and
+`paper/scripts/verify-bibliography-build.py`. The hook on a subsequent parent
+commit amendment correctly reported:
+
+```text
+Paper has uncommitted tracked changes; commit the paper before syncing.
+```
+
+These edits were left untouched. Both remotes had already received the repaired
+paper commit; publishing subsequent paper work requires committing those edits.
