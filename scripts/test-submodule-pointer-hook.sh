@@ -53,6 +53,7 @@ git -C "$parent" remote add origin "$parent_origin"
 git -C "$parent" push -q origin HEAD:main
 git --git-dir="$parent_origin" symbolic-ref HEAD refs/heads/main
 
+printf 'local verification scratch file\n' > "$parent/paper/untracked.txt"
 git -C "$parent/paper" commit --allow-empty -q -m "child update"
 
 child_head="$(git -C "$parent/paper" rev-parse HEAD)"
@@ -67,8 +68,26 @@ test "$child_head" = "$child_origin_head"
 test "$child_head" = "$child_overleaf_head"
 test "$child_head" = "$parent_origin_pointer"
 test "$(git -C "$parent" rev-parse HEAD)" = "$parent_origin_head"
-test -z "$(git -C "$parent" status --porcelain)"
-test -z "$(git -C "$parent/paper" status --porcelain)"
+test -z "$(git -C "$parent" status --porcelain --untracked-files=no)"
+test "$(git -C "$parent/paper" status --porcelain)" = '?? untracked.txt'
+if git --git-dir="$child_overleaf" cat-file -e refs/heads/main:untracked.txt 2>/dev/null; then
+  echo 'FAIL: untracked file was published' >&2
+  exit 1
+fi
+printf 'PASS: untracked file does not block hook sync and is not published\n'
+
+printf '\n# local tracked edit\n' >> "$parent/paper/scripts/sync-paper.sh"
+if "$parent/scripts/sync-paper-overleaf.sh" --check; then
+  echo 'FAIL: unstaged tracked edit was accepted' >&2
+  exit 1
+fi
+git -C "$parent/paper" add scripts/sync-paper.sh
+if "$parent/scripts/sync-paper-overleaf.sh" --check; then
+  echo 'FAIL: staged tracked edit was accepted' >&2
+  exit 1
+fi
+test "$(git --git-dir="$child_overleaf" rev-parse refs/heads/main)" = "$child_head"
+printf 'PASS: staged and unstaged tracked edits block sync\n'
 
 printf 'submodule pointer hook fixture passed: child=%s local_parent=%s child_origin=%s child_overleaf=%s remote_parent=%s\n' \
   "$child_head" "$parent_pointer" "$child_origin_head" "$child_overleaf_head" \

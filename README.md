@@ -73,6 +73,8 @@ the commit to `origin/main` and `overleaf/main` when each remote is an ancestor
 of the new commit. A remote that is ahead or has diverged stops the sync and
 requires an explicit reconciliation. Use `./scripts/sync-paper-overleaf.sh
 --check` to inspect readiness or run the command without a hook.
+Untracked local files do not block synchronization and are not published.
+Uncommitted changes to tracked paper files must be committed before syncing.
 
 After a successful paper commit in an initialized submodule, the child hook
 stages only the `paper` gitlink and creates a parent commit named

@@ -1,0 +1,15 @@
+$ bash -n .githooks/post-commit paper/.githooks/post-commit paper/scripts/sync-paper.sh scripts/sync-paper-overleaf.sh scripts/test-submodule-pointer-hook.sh
+exit: 0
+
+$ git diff --check
+exit: 0
+
+$ git -C paper diff 287371b HEAD --stat
+ scripts/sync-paper.sh | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+exit: 0
+
+$ git -C paper ls-tree HEAD .githooks/post-commit scripts/sync-paper.sh
+100755 blob 13f8a4a0e8ded6a73a11dfdfc03df19e7ae9664d	.githooks/post-commit
+100755 blob 8c970c7482e386d098fe32d03ca1dabba759b17a	scripts/sync-paper.sh
+exit: 0
