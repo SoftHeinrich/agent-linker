@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Recorded call usage for s126/terra and the September 24 Artemis/luna runs.
+"""Recorded call usage for the s126/terra sweep of 2026-10-02 and the September 24
+Artemis/luna runs.
 
 Counts successful responses with reported usage, including logged repair calls.
 This is a token-usage report, not a monetary estimate.
@@ -31,8 +32,7 @@ def collect():
     rows = []
     for run in (1, 2, 3):
         for project in PROJECTS:
-            directory = ROOT / 'results' / (f'ms_replacement_run{run if run > 1 else ""}_20260924'
-                if project == 'mediastore' else f'greedymerge_e2e_terra_r{run}_20260916v2')
+            directory = ROOT / 'results' / f'greedymerge_e2e_terra_r{run}_20261002'
             files = list(directory.glob(f'llm_logs/s_linker126_openai_{project}_*_calls.json'))
             assert len(files) == 1, files
             calls = json.loads(files[0].read_text())

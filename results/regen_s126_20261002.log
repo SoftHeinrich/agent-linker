@@ -1,0 +1,44 @@
+wrote 30 cells for s_linker126 into results/s126_extracts
+wrote 15 model-doc + 15 doc-code(composed) entries into /mnt/hostshare/ardoco-home/agent-linker/sota-links.
+rebuilt UNIFIED_MANIFEST.csv: 1205 rows (all per-task manifests aggregated).
+wrote 15 model-doc + 15 doc-code(composed) entries into /mnt/hostshare/ardoco-home/agent-linker/sota-links.
+rebuilt UNIFIED_MANIFEST.csv: 1205 rows (all per-task manifests aggregated).
+
+[rq12] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/RQ12_BIGTABLE.csv
+[rq12] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/RQ12_PERPROJECT.csv
+[rq12] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/RQ12_PERPROJECT_PERRUN.csv
+Provenance: /mnt/hostshare/ardoco-home/agent-linker/sota-links  arm=s126  (approach rows = run1/run2/run3 plus average)
+Columns: P/R/F1/F2 = link (doc-model) resp. file (doc-code) scores; CMR% = component miss rate;
+         cF1/cF2 = per-component micro, wF1/wF2 = worst component, hF1/hF2 = harmonic-mean component.
+RQ1 = the two P/R/F1/F2 blocks. RQ2 size-aware = CMR% (doc-model) and w*/h* + file F1/F2 (doc-code).
+[rq34] benchmark = /mnt/hostshare/ardoco-home/agent-linker/benchmark
+[rq34] runs-from = greedymerge_e2e_{model}_r{i}_20261002  (variant s_linker126)
+[rq34] csv-root  = /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/rq34/s126
+[rq34] terra: canonical=run3 macro-F1[run1=0.9395, run2=0.9499, run3=0.9433, average=0.9442] validate=OK (15 checked, 0 no-ref)
+[rq34] luna: canonical=run2 macro-F1[run1=0.9135, run2=0.8947, run3=0.8918, average=0.9000] validate=OK (15 checked, 0 no-ref)
+[rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + rq4_linkers.csv + rq4_variants.csv under /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/rq34/s126
+[rq34-rq2] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/rq34/s126/rq34_rq2_linkers_perproject.csv
+[rq34-rq2] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/rq34/s126/RQ34_RQ2_INVESTIGATION.md
+[rq34] benchmark = /mnt/hostshare/ardoco-home/agent-linker/benchmark
+[rq34] runs-from = greedymerge_noknow_e2e_{model}_r{i}_20261002  (variant s_linker126)
+[rq34] csv-root  = evaluation/reports/rq34/s126_noknow
+[rq34] terra: canonical=run2 macro-F1[run1=0.8716, run2=0.8682, run3=0.8664, average=0.8687] validate=OK (15 checked, 0 no-ref)
+[rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + rq4_linkers.csv + rq4_variants.csv under evaluation/reports/rq34/s126_noknow
+[rq34-rq2] wrote evaluation/reports/rq34/s126_noknow/RQ34_RQ2_INVESTIGATION.md
+[rq34] benchmark = /mnt/hostshare/ardoco-home/agent-linker/benchmark
+[rq34] runs-from = greedymerge_noknow_e2e_{model}_r{i}_20261002  (variant s_linker126)
+[rq34] csv-root  = evaluation/reports/rq34/s126_noknow_luna
+[rq34] luna: canonical=run1 macro-F1[run1=0.8260, run2=0.8207, run3=0.8333, average=0.8267] validate=OK (15 checked, 0 no-ref)
+[rq34] wrote per-project CSVs + rq3_validators.csv + rq3_variants.csv + rq4_linkers.csv + rq4_variants.csv under evaluation/reports/rq34/s126_noknow_luna
+[rq34-rq2] wrote evaluation/reports/rq34/s126_noknow_luna/RQ34_RQ2_INVESTIGATION.md
+PASS: 30 project/run usage records; means of three runs written to /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports
+rq4_floor.py: error: arm s126 has no one-call floor sweep (FLOOR_SWEEPS has no row for it), so there is nothing to score. Record one and add its row, or pass --head-runs/--arm-runs and --csv-root explicitly. The floor's control is the arm itself, so another arm's sweep is not a substitute.
+[rq_tables] no one-call floor for arm s126 (/mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/rq34/s126_floor/rq4_floor.csv absent): rq4_floor.csv not written
+
+[rq_tables] table CSVs written under /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex_src
+[rq_tables] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex_src/rq4_run2.csv
+[rq_tables] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex_src/rq4_run3.csv
+[rq_tables] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex_src/rq4_runavg.csv
+[csv2tex] wrote /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex/rq4-runavg.tex
+
+[csv2tex] 13 tables written under /mnt/hostshare/ardoco-home/agent-linker/evaluation/reports/tex, 1 skipped (no source CSV for arm s126)

@@ -92,7 +92,7 @@ ARMS = {                       # reported arm -> (phase-state variant, run-sweep
     "s110": ("s_linker110", "consolidation_e2e_{model}_r{i}_20260825"),
     "s92a": ("s_linker92a", "regex_e2e_{model}_r{i}_20260822"),
     "s120": ("s_linker120", "union_e2e_{model}_r{i}_20260911"),
-    "s126": ("s_linker126", "greedymerge_e2e_{model}_r{i}_20260916v2"),
+    "s126": ("s_linker126", "greedymerge_e2e_{model}_r{i}_20261002"),
 }
 REPORTED_ARM = os.environ.get("ALINKER_ARM", DEFAULT_ARM)
 

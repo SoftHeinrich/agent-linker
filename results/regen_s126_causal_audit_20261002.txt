@@ -1,0 +1,32 @@
+wrote /mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/items.csv (286 rows, 195 of them gold)
+
+====================================================================================================
+0. REPRODUCTION GATE -- this module's own numbers against the committed tables
+====================================================================================================
+  FAIL  macro F1, Full (rq3_variants.csv)                    got    0.944  committed    0.935
+  FAIL  macro F2, Full                                       got    0.954  committed    0.949
+  FAIL  macro F1, NoValidator                                got    0.787  committed    0.784
+  FAIL  macro F1, NoNameValid                                got    0.842  committed    0.835
+  FAIL  macro F1, NoCitation                                 got    0.857  committed    0.854
+  FAIL  coref rejected-FP  (rq3_validators.csv)              got   60.000  committed   53.330
+  FAIL  coref rejected-TP                                    got  100.333  committed   84.330
+  FAIL  coref unique rejected-TP                             got    3.667  committed    2.330
+  FAIL  both judges, distinct FP rejected                    got  150.000  committed  145.670
+  FAIL  both judges, TP lost outright                        got   12.000  committed   10.670
+Traceback (most recent call last):
+  File "/mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/audit.py", line 927, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/audit.py", line 915, in main
+    gate()
+    ~~~~^^
+  File "/mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/audit.py", line 409, in gate
+    f = kept_by_form(RUNDIR[r], p)
+  File "/mnt/hostshare/ardoco-home/agent-linker/studies/causal-claims/audit.py", line 105, in kept_by_form
+    by_src = rq34._kept_by_source(st)
+             ^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'rq34' has no attribute '_kept_by_source'
+
+NOTE (2026-10-02): this gate also FAILS at HEAD on its own 20260916v2 sweep (constants predate the
+2026-09-24 MediaStore correction), so the audit is a historical study and was left pinned to that
+sweep. The "got" values above match the regenerated 2026-10-02 tables (rq3_variants/rq3_validators).
