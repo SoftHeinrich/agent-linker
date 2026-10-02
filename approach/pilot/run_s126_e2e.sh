@@ -42,7 +42,7 @@ for i in $(seq 1 "${RUNS}"); do
   LLM_BACKEND=openai \
   OPENAI_MODEL_NAME=gpt-5.6-${MODEL} \
   OPENAI_REASONING_EFFORT=none \
-  OPENAI_SERVICE_TIER=flex \
+  OPENAI_SERVICE_TIER=${OPENAI_SERVICE_TIER:-flex} \
   PHASE_CACHE_DIR="${RUN}/phase_states" \
   LLM_LOG_DIR="${RUN}/llm_logs" \
     "${PY}" run_ablation.py \

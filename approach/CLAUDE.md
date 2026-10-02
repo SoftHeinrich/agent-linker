@@ -24,7 +24,7 @@ every union-judging case, so the contract adds no new computation.
 - `linker_infra.py` — linker plumbing: `TracingLLMClient`, `ask_json`,
   checkpoint/log/metrics writers, batching and log views. No prompts,
   rule constants, or scans — those belong in the variant file.
-- `pilot/` — s126 validation: `test_s126.py` (24 checks),
+- `pilot/` — s126 validation: `test_s126.py` (26 checks),
   `coref_exact_pilots.py` (fixture loader), `reading_pilots.py`
   (benchmark/gold-loading helpers), `score_runs.py`, `ab_stats.py`,
   and the two E2E runners `run_s126_e2e.sh` / `run_s126_e2e_noknow.sh`.

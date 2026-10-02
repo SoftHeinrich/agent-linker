@@ -315,3 +315,18 @@ No-knowledge Full macro-F1, RQ4 (control 0.867 / 0.835):
   clause already means a participant in the described architecture. Paper prose can say
   so by quoting the definition. It should not render the clause as "architectural
   participant", because that is a different prompt and was measured here as weaker.
+
+---
+
+## Promotion and where the scripts went
+
+`REFERENCE_CLAIM` (the `corollary` wording) replaced `MENTION_COUNTS` in
+`s_linker126.py` on 2026-10-02. That was the author's decision after round 3. The
+rule's bytes differ from the pre-promotion head by that one sentence only.
+
+Both pilot scripts were moved out of the active pilot surface into `scripts/` here.
+They replay arms against the **pre-promotion** head: `nomention` and `corollary`
+substitute into `MENTION_COUNTS`, which no longer exists. To re-run them, check out
+commit `20eecbb5` and run them from `approach/pilot/`, where they were written.
+The paper numbers come from fresh end-to-end runs of the promoted code, not from these
+replays.

@@ -9,7 +9,7 @@
 # than borrow another arm's. This batch fills it on the arm actually reported.
 #
 # The comparison is IN-SET: the control is
-# `results/greedymerge_e2e_{model}_r{1,2,3}_20260916v2`, the same variant at the
+# `results/greedymerge_e2e_{model}_r{1,2,3}_20261002`, the same variant at the
 # same model with the alias table on, run on the same benchmark.
 #
 # LANDMINE: s_linker126_noknow's _VARIANT_NAME is "s_linker126" (same as Full), so
@@ -51,7 +51,7 @@ for i in $(seq 1 "${RUNS}"); do
   LLM_BACKEND=openai \
   OPENAI_MODEL_NAME=gpt-5.6-${MODEL} \
   OPENAI_REASONING_EFFORT=none \
-  OPENAI_SERVICE_TIER=flex \
+  OPENAI_SERVICE_TIER=${OPENAI_SERVICE_TIER:-flex} \
   PHASE_CACHE_DIR="${RUN}/phase_states" \
   LLM_LOG_DIR="${RUN}/llm_logs" \
     "${PY}" run_ablation.py \

@@ -126,17 +126,6 @@ COREF_VALIDATION_FOCUS = (
 #: calls a five-project run makes, and cutting it is composed-neutral on both models.
 COREF_RULES = """Resolve when the surrounding sentences make one component the clear antecedent, under any form the document uses for it. Avoid resolving when two or more equally plausible antecedents exist."""
 
-#: Full-name gate -- lenient: a stated name is a link unless a reject signal fires.
-#: The four numbered reject-conditions this replaces are grounded elsewhere in the
-#: same prompt: (1) in `QUALIFIED_CLAUSE`, (3) and (4) in `STRICTER_CLAUSE`, (2),
-#: negation, in the last clause here.
-LAYERED_ENTITY_RULES = (
-    "Approve the link by default: the component is named here and the document treats "
-    "it as part of the system. A mention that says nothing further about the component "
-    "still counts as a valid link. Reject only on a positive ground -- that the sentence "
-    "asserts nothing of this component, because the name is doing some other job here, "
-    "or because the sentence denies what it would otherwise say of it."
-)
 
 #: Coreference gate -- strict: the component is NOT named in the sentence, so a
 #: genuine referring expression plus an architectural claim is demanded.
@@ -201,24 +190,15 @@ STRICTER_CLAUSE = (
 # The union rule. One rule for every candidate: what a trace link is, and how to
 # read each piece of evidence the match computed. No row, no default, no second
 # rubric — what differs between candidates is the value of the evidence fields.
-#
-# Every clause that states a criterion is a **slice of a rule constant above**,
-# computed rather than retyped, so quotation is mechanical and a drift in a rule
-# constant is a drift in the rule (`pilot/s121_defensibility.py` checks each slice
-# against the constant it was computed from).
 # ─────────────────────────────────────────────────────────────────────────────
 
-_ENTITY_SENTENCES = [s.strip() for s in LAYERED_ENTITY_RULES.split(". ") if s.strip()]
-
-#: "A mention that says nothing further about the component still counts as a valid
-#: link." Carried because it is the one thing the lenient rubric says that is about
-#: links rather than about a stream's default.
-MENTION_COUNTS = _ENTITY_SENTENCES[1] + ". "
-
-#: "Reject only on a positive ground -- that the sentence asserts nothing of this
-#: component, because the name is doing some other job here, or because the sentence
-#: denies what it would otherwise say of it."
-POSITIVE_GROUND = _ENTITY_SENTENCES[2] if len(_ENTITY_SENTENCES) > 2 else ""
+#: The two grounds for rejecting: the name is doing some other job here (the
+#: grounds `QUALIFIED_CLAUSE` and `STRICTER_CLAUSE` spell out), or the sentence
+#: denies what it would otherwise say of the component.
+POSITIVE_GROUND = ("Reject only on a positive ground -- that the sentence asserts "
+                   "nothing of this component, because the name is doing some other "
+                   "job here, or because the sentence denies what it would otherwise "
+                   "say of it.")
 
 #: The reference clause of the strict gate: what an expression denotes when the
 #: component is the actor. It is about reference, not about coreference, so it is
@@ -228,16 +208,24 @@ ACTS_ON = ("An expression denoting what a component acts on or produces refers t
            "the one acting on it.")
 assert ACTS_ON in LAYERED_COREF_RULES
 
-#: `LAYERED_ENTITY_RULES`' first sentence is deliberately absent: "Approve the link by
-#: default" is a *stream's* default, and this rule judges one stream.
-assert _ENTITY_SENTENCES[0] not in MENTION_COUNTS + POSITIVE_GROUND
-
-#: What a trace link is. The only authored sentence of the rule that states a
-#: criterion, and it states the architectural definition and nothing else.
+#: What a trace link is: the architectural definition and nothing else.
 _DEFINITION = ("A trace link holds between a sentence and a component when the "
                "sentence makes an architectural claim about that component -- when it "
                "says something about that component as a participant in the system "
                "this document describes. ")
+
+#: A consequence of `_DEFINITION`, not an exception to it: referring to a component
+#: as a participant already places it in the described system, so a sentence that
+#: only names it -- and predicates nothing further -- still makes the claim. Stated
+#: as reference, it does not license an expression that merely contains a word of
+#: the name. It replaces "a mention that says nothing further about the component
+#: still counts as a valid link", which held bare references but also admitted such
+#: coincident words; deleting that sentence cost recall on both models, and this
+#: replacement read BETTER 3/3 on terra in two samples
+#: (`results/mention_counts_round`). "Participant" is the definition's own word;
+#: qualifying it as "architectural participant" was measured weaker (round 3).
+REFERENCE_CLAIM = ("Referring to the component as a participant is itself such a "
+                   "claim, even when the sentence says nothing further about it. ")
 
 #: The input contract: what a case contains. Not a criterion — the shape of the
 #: input, and every case has the same shape.
@@ -268,7 +256,7 @@ _WRITTEN_LINE = (
 #: then the two grounds for rejecting. `STRICTER_CLAUSE` carries no scope guard here —
 #: it is about an ordinary word coinciding with a component's name, and every case
 #: names a component, so it has a subject in all of them.
-TRACE_LINK_RULE = f"""{_DEFINITION}{MENTION_COUNTS}
+TRACE_LINK_RULE = f"""{_DEFINITION}{REFERENCE_CLAIM}
 
 {_FORMAT} The evidence says what the expression is doing here; none of it is a verdict.
 
@@ -284,7 +272,7 @@ TRACE_LINK_RULE = f"""{_DEFINITION}{MENTION_COUNTS}
 #: and the rule text itself does not state: a shorter surface is not, by itself,
 #: evidence the case is right. SCOPED to the rows where the sentence does not write the
 #: name in full -- an unscoped form was measured and reached the whole-name row, where
-#: it contradicts `MENTION_COUNTS`, costing seven gold links on one bare enumeration of
+#: it contradicts `REFERENCE_CLAIM`, costing seven gold links on one bare enumeration of
 #: component names on luna. Scoped, the two clauses cannot meet: a whole-name case is
 #: out of this one's reach. Ground: general -- use versus mention, which holds for any
 #: text and names no surface form, no component and no document shape (GATE-06/07).

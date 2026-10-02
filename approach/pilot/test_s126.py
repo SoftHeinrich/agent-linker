@@ -81,6 +81,10 @@ def main():
     check("written qualified name", label_probe._written_as(
         "pkg.db.read() is called.", "DB") == "qualified name")
     check("competitors rule removed", "competitors --" not in TRACE_LINK_RULE)
+    check("reference clause follows the definition",
+          "this document describes. Referring to the component as a participant is "
+          "itself such a claim" in TRACE_LINK_RULE)
+    check("mention licence removed", "A mention that says nothing" not in TRACE_LINK_RULE)
 
     for project in sorted(DATASETS):
         data = load(project, RUN)
