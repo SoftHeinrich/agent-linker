@@ -58,23 +58,55 @@ PROJECTS = ("mediastore", "teammates", "teastore", "bigbluebutton", "jabref")
 MODELS = ("terra", "luna")
 
 assert s126.TRACE_LINK_RULE.count(s126.MENTION_COUNTS) == 1
+assert s126.TRACE_LINK_RULE.count(s126._DEFINITION + s126.MENTION_COUNTS) == 1
+
+#: The reference criterion: a trace link is about what an expression in the sentence
+#: refers to, not about whether the sentence predicates anything of it. Stated as the
+#: definition itself, so a bare reference needs no exception to the definition.
+REFERENCE_DEFINITION = (
+    "A trace link holds between a sentence and a component when an expression in the "
+    "sentence refers to that component as a participant in the system this document "
+    "describes, whether or not the sentence says anything further about it. ")
+
+#: The same criterion as a corollary of the existing definition instead of an
+#: exception to it: referring to a participant already places it in the system.
+REFERENCE_COROLLARY = (
+    "Referring to the component as a participant is itself such a claim, even when the "
+    "sentence says nothing further about it. ")
+
+#: The quote demand restated for the reference criterion: the quote is the referring
+#: expression, plus whatever the sentence says of the component if it says anything.
+REFERENCE_DEMAND = (
+    'For each case, first quote the EXACT words from the sentence the verdict rests on '
+    '-- the expression that refers to the component, together with what the sentence '
+    'says of it if it says anything, or "none" if no expression in the sentence refers '
+    'to the component -- then decide approve true/false based on that quote.')
+
+#: Each arm is a list of (head bytes, arm bytes) substitutions on the union prompt.
+#: Every head-byte string must occur exactly once in every prompt.
 RULES = {
-    "control": s126.TRACE_LINK_RULE,
-    "nomention": s126.TRACE_LINK_RULE.replace(s126.MENTION_COUNTS, "", 1),
+    "control": [],
+    "nomention": [(s126.MENTION_COUNTS, "")],
+    "corollary": [(s126.MENTION_COUNTS, REFERENCE_COROLLARY)],
+    "refdef": [(s126._DEFINITION + s126.MENTION_COUNTS, REFERENCE_DEFINITION)],
+    "refdemand": [(s126._DEFINITION + s126.MENTION_COUNTS, REFERENCE_DEFINITION),
+                  (s126.UNION_DEMAND, REFERENCE_DEMAND)],
 }
 
 
 class ReplayLinker(s126.SLinker126):
-    """s126 with the union prompt's rule swapped for one arm's rule, nothing else."""
+    """s126 with one arm's substitutions applied to the union prompt, nothing else."""
 
-    def __init__(self, rule: str, **kwargs):
+    def __init__(self, substitutions, **kwargs):
         super().__init__(**kwargs)
-        self.rule = rule
+        self.substitutions = substitutions
 
     def _prompt_union(self, comp_names, sentence_table, cases) -> str:
         prompt = super()._prompt_union(comp_names, sentence_table, cases)
-        assert prompt.count(s126.TRACE_LINK_RULE) == 1
-        return prompt.replace(s126.TRACE_LINK_RULE, self.rule, 1)
+        for head, arm in self.substitutions:
+            assert prompt.count(head) == 1, head
+            prompt = prompt.replace(head, arm, 1)
+        return prompt
 
 
 def recorded_dir(model: str, i: int, noknow: bool) -> Path:
@@ -179,7 +211,6 @@ def main(argv=None):
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args(argv)
 
-    print("rule delta (nomention removes):", repr(s126.MENTION_COUNTS))
     tasks = [(arm, model, i, kn == "noknow", project, args.stamp)
              for kn in args.knowledge for model in args.models for i in args.runs
              for project in args.projects for arm in args.arms]

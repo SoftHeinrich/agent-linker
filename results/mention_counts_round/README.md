@@ -148,3 +148,110 @@ final ΔTP is smaller than the name-stage loss.
   at one recorded sample. The deltas are against an in-set control and are not
   comparable to the paper's committed s126 numbers, which come from a different
   invocation set.
+
+---
+
+# Round 2: what the diff set shows, and three reference-criterion replacements
+
+## The diff set (`diff_set_20261002.tsv`, made by `approach/pilot/mention_counts_diff.py`)
+
+Over 60 project-runs, the control and nomention judges disagree on 225 verdicts,
+covering 94 distinct (sentence, component) pairs. The most stable flips, those lost in
+6–8 of the 12 cells, fall into two groups:
+
+1. **Gold links lost: bare references.** These are sentences that only name the
+   component: a title, a list entry, a sentence whose subject is the component but
+   whose predicate is about something else. bigbluebutton S61 "FreeSWITCH.", S67
+   "Kurento and WebRTC-SFU." and S80 "Presentation conversion flow." are examples, as
+   is teammates S168 "This component automates the testing of TEAMMATES." Under
+   control, the judge's quoted claim is the reference itself. Under nomention it is
+   `none`. The cause is that `_DEFINITION` asks for "an architectural claim" and
+   `UNION_DEMAND` asks for "the words that state the architectural claim". A bare
+   reference predicates nothing, so without `MENTION_COUNTS` the judge has nothing
+   it may quote.
+2. **Non-gold links lost: one-word coincidences.** Examples are bigbluebutton
+   S82/S83/S84 "…SVG conversion flow", "the conversion fallback" →
+   `Presentation Conversion`, and teammates S13/S14/S17 "…testing…" → `Test Driver`.
+   Under control the judge approves these because "a mention … still counts": it
+   reads an occurrence of one word of the name as a mention of the component.
+
+Interpretation: `MENTION_COUNTS` is an exception attached to a predication-based
+definition, and its word "mention" does not separate *referring to the component*
+from *a surface of its name occurring*. That is the use–mention distinction
+`SURFACE_NOT_EVIDENCE` already draws for the shorter rows. The deletion removes the
+exception's benefit (group 1) together with its cost (group 2), and that is why
+recall falls while luna's precision rises.
+
+## Arms (`approach/pilot/mention_counts_replay.py`, `RULES`)
+
+| arm | change to the union prompt |
+|---|---|
+| `corollary` | `MENTION_COUNTS` → "Referring to the component as a participant is itself such a claim, even when the sentence says nothing further about it." |
+| `refdef` | `_DEFINITION + MENTION_COUNTS` → "A trace link holds … when an expression in the sentence refers to that component as a participant in the system this document describes, whether or not the sentence says anything further about it." |
+| `refdemand` | `refdef`, plus `UNION_DEMAND` asks for "the expression that refers to the component, together with what the sentence says of it if it says anything, or "none" if no expression in the sentence refers to the component" |
+
+Each arm states one general distinction, reference versus predication, and names no
+surface form, document shape or component.
+
+```bash
+OPENAI_REASONING_EFFORT=none OPENAI_SERVICE_TIER=default LLM_BACKEND=openai \
+  python3 approach/pilot/mention_counts_replay.py --stamp 20261002b \
+  --arms corollary refdef refdemand --workers 12          # 180 replays
+# then the same extracts -> build_dump -> rq12 --arm mc<arm> -> rq34/rq34_rq2 loop as
+# round 1 with stamp 20261002b and --csv-root evaluation/reports/rq34/mcreplay_20261002b/
+python3 studies/compare_arms.py mc<arm> --base mccontrol \
+  --csv evaluation/reports/ARM_COMPARE_mc<arm>_vs_mccontrol.csv
+python3 approach/pilot/mention_counts_diff.py --stamp 20261002 --arms control corollary \
+  --cand-stamp 20261002b > results/mention_counts_round/diff_set_corollary_20261002b.tsv
+```
+
+**Control reuse.** The control is round 1's `mccontrol`, run a few hours earlier on
+2026-10-02 over the same recorded inputs (the project's 3-day control-reuse rule).
+These arms therefore ran in a *different invocation* from their control. Same-day API
+drift is not excluded.
+
+## Results (N = 3 runs per backend; points vs `mccontrol`)
+
+| metric | corollary terra | corollary luna | refdef terra | refdef luna | refdemand terra | refdemand luna |
+|---|---|---|---|---|---|---|
+| dm F1 | **+1.34 BETTER 3/3** | +0.41 noise | −1.18 WORSE | +0.62 noise | −1.20 WORSE | +1.72 BETTER |
+| dm F2 | **+1.86 BETTER 3/3** | −0.37 noise | −0.71 WORSE | −0.10 noise | −1.14 WORSE | +0.70 noise |
+| dc F1 | −0.39 noise | +0.25 noise | −3.08 WORSE | −0.36 noise | −2.83 WORSE | +0.66 noise |
+| dc F2 | +0.39 noise | −0.40 noise | −1.76 WORSE | −0.81 WORSE | −1.77 WORSE | −0.23 noise |
+| dc worst F1 | **+3.56 BETTER** | +1.58 WEAK | −1.49 WORSE | −1.59 noise | −2.12 WORSE | +4.22 BETTER |
+| dc harm F1 | **+1.93 BETTER** | +0.55 BETTER | −0.53 noise | +0.08 noise | −0.89 WORSE | +1.34 BETTER |
+
+Final links (3 runs × 5 projects, with knowledge), Δ TP / Δ FP vs control:
+corollary terra +19 / −1, luna −5 / −18; refdef terra −3 / +9, luna −4 / −32;
+refdemand terra −9 / −2, luna −2 / −45.
+
+RQ4 no-knowledge Full macro-F1 (control → corollary): terra 0.867 → 0.868, luna
+0.835 → 0.827 (per run 0.821/0.848/0.837 → 0.817/0.826/0.838). Corollary's knowledge
+gain is therefore terra +5.6 → +6.8 points and luna +6.1 → +7.3 points.
+
+Corollary diff set (`diff_set_corollary_20261002b.tsv`). With knowledge, on the
+whole-name row it gains 31 gold approvals and loses 11. That includes the teammates S1
+enumeration ("Architecture contains UI Component, Logic Component, …"), gained in 3
+cells, which `results/s121_ablations` recorded as the sentence the old exception and
+an unscoped weighing fought over. It still sheds some one-word coincidences
+(bigbluebutton S82–S84). Without knowledge it loses 21 gold word-only approvals
+against 4 gained, and that is the luna no-knowledge regression.
+
+## Reading
+
+- Measured: `corollary` is the only arm that is not worse than control on any RQ1/RQ2
+  headline metric on either backend with knowledge. On terra it is better 3/3 on
+  doc-model F1/F2 and on both size-aware doc-code metrics. On luna it is inside noise,
+  except harmonic F1, which is better 3/3. `refdef` and `refdemand` replace the
+  definition itself, and both are worse 3/3 on terra on every headline metric.
+- Interpretation: keeping the predication definition and stating the reference as a
+  *consequence* of it ("referring to a participant is itself such a claim") holds the
+  link on bare references without "mention" licensing a coincident word.
+  Rewriting the definition into a pure reference criterion lowers the bar on terra
+  more than the judge can safely use. This is the same direction as `v14mention`:
+  the precise register of this one clause moves the result.
+- Open: corollary costs one-word recall on luna without knowledge (RQ4 no-knowledge
+  F1 −0.8, 2 of 3 runs lower). The evidence is a stage replay with the other stages
+  held at one recorded sample, read against a control from an earlier same-day
+  invocation, N = 3. Promoting it to `s_linker126` would need a paired end-to-end run
+  with an in-set control before any paper number moves.
