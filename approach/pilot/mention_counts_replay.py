@@ -74,6 +74,12 @@ REFERENCE_COROLLARY = (
     "Referring to the component as a participant is itself such a claim, even when the "
     "sentence says nothing further about it. ")
 
+#: `REFERENCE_COROLLARY` with the participant named in the term the coreference judge
+#: already uses (`COREF_VALIDATION_FOCUS`: "as an architectural participant").
+REFERENCE_COROLLARY_ARCH = (
+    "Referring to the component as an architectural participant is itself such a "
+    "claim, even when the sentence says nothing further about it. ")
+
 #: The quote demand restated for the reference criterion: the quote is the referring
 #: expression, plus whatever the sentence says of the component if it says anything.
 REFERENCE_DEMAND = (
@@ -88,6 +94,7 @@ RULES = {
     "control": [],
     "nomention": [(s126.MENTION_COUNTS, "")],
     "corollary": [(s126.MENTION_COUNTS, REFERENCE_COROLLARY)],
+    "corollaryarch": [(s126.MENTION_COUNTS, REFERENCE_COROLLARY_ARCH)],
     "refdef": [(s126._DEFINITION + s126.MENTION_COUNTS, REFERENCE_DEFINITION)],
     "refdemand": [(s126._DEFINITION + s126.MENTION_COUNTS, REFERENCE_DEFINITION),
                   (s126.UNION_DEMAND, REFERENCE_DEMAND)],

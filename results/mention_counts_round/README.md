@@ -255,3 +255,63 @@ against 4 gained, and that is the luna no-knowledge regression.
   held at one recorded sample, read against a control from an earlier same-day
   invocation, N = 3. Promoting it to `s_linker126` would need a paired end-to-end run
   with an in-set control before any paper number moves.
+
+---
+
+# Round 3: "as a participant" vs "as an architectural participant"
+
+Question: can `corollary` say "architectural participant" (the term
+`COREF_VALIDATION_FOCUS` already uses) without losing performance?
+
+| arm | sentence replacing `MENTION_COUNTS` |
+|---|---|
+| `corollary` (repeat) | "Referring to the component as a participant is itself such a claim, even when the sentence says nothing further about it." |
+| `corollaryarch` | "Referring to the component as an architectural participant is itself such a claim, even when the sentence says nothing further about it." |
+
+Both arms ran in one invocation (`--stamp 20261002c`, 120 replays), so the
+arch-vs-plain read is paired. Each is also read against round 1's `mccontrol`
+(not re-run, under the 3-day reuse rule). Slots are `mccorollaryc` and
+`mccorollaryarch`. RQ3/RQ4 output is in `evaluation/reports/rq34/mcreplay_20261002c/`,
+and every `rq34.py` call reported `validate=OK`.
+
+```bash
+OPENAI_REASONING_EFFORT=none OPENAI_SERVICE_TIER=default LLM_BACKEND=openai \
+  python3 approach/pilot/mention_counts_replay.py --stamp 20261002c \
+  --arms corollary corollaryarch --workers 12
+python3 studies/compare_arms.py mccorollaryarch --base mccorollaryc \
+  --csv evaluation/reports/ARM_COMPARE_mccorollaryarch_vs_mccorollaryc.csv
+```
+
+## Results (N = 3 per backend, points)
+
+| metric | corollary repeat vs control: terra | luna | arch vs control: terra | luna | **arch vs corollary (paired): terra** | **luna** |
+|---|---|---|---|---|---|---|
+| dm F1 | +0.80 BETTER | +1.54 BETTER | +0.22 BETTER | +1.26 noise | **−0.58 WORSE 3/3** | −0.28 noise |
+| dm F2 | +1.62 BETTER | +0.23 noise | +1.65 BETTER | −0.45 noise | +0.03 noise | −0.68 noise |
+| dc F1 | −0.28 noise | +0.58 noise | −1.18 WORSE | −0.01 noise | **−0.90 WORSE 3/3** | −0.59 noise |
+| dc F2 | +0.68 BETTER | −0.69 noise | +0.71 BETTER | −1.52 WORSE | +0.02 noise | −0.83 WORSE 3/3 |
+| dc worst F1 | +3.70 BETTER | +3.02 noise | −0.10 noise | +5.49 BETTER | **−3.80 WORSE 3/3** | +2.47 noise |
+| dc harm F1 | +1.73 BETTER | +0.79 noise | +1.18 BETTER | +1.43 BETTER | **−0.55 WORSE 3/3** | +0.64 BETTER |
+
+No-knowledge Full macro-F1, RQ4 (control 0.867 / 0.835):
+`corollary` repeat 0.873 / 0.833, `corollaryarch` 0.867 / 0.832 (terra / luna).
+
+## Reading
+
+- Measured: the `corollary` result replicates. Its second sample is again better 3/3 on
+  terra's doc-model F1/F2 and size-aware doc-code metrics, and luna doc-model F1 is
+  better 3/3 this time. Its luna no-knowledge cost shrinks from −0.8 to −0.2 points.
+  The two samples bracket the effect size; neither is the estimate.
+- Measured: adding "architectural" is worse than the plain wording on terra in 3/3
+  paired runs (dm F1, dc F1, worst, harmonic). On luna it is mixed (dc F2 worse 3/3,
+  harmonic better 3/3). It stays above control on most terra metrics, so it is not
+  harmful compared with the head, only weaker than the plain wording.
+- Interpretation: this is the `v14mention` mechanism (`labelrule_round`) at smaller
+  size. The adjective makes the judge test the reference for architectural
+  significance, which is the bar the sentence exists to lower.
+- Defensibility does not need the adjective in the prompt. "Participant" in the clause
+  refers back to the definition directly before it ("an architectural claim about that
+  component -- … as a participant in the system this document describes"), so the
+  clause already means a participant in the described architecture. Paper prose can say
+  so by quoting the definition. It should not render the clause as "architectural
+  participant", because that is a different prompt and was measured here as weaker.
