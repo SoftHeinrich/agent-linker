@@ -1,0 +1,2286 @@
+=== PAGE 1 ===
+1    ArchLinker: An LLM Workflow for Software Architectural
+2   Traceability Link Recovery
+3
+
+4
+   ANONYMOUS AUTHOR(S)
+5
+6     Trace links between software architecture artifacts and code support impact analysis, change propagation,
+7     and compliance review, yet they are the hardest to recover: the artifacts describe the system on a higher
+8       level of abstraction and rarely directly match the names in the code. Lexical recovery overlooks aliases and
+9       implicit references, while a per-sentence Large Language Model (LLM) rebuilds that knowledge on every call
+      and accepts plausible-but-wrong links. We present ArchLinker, a multi-stage LLM workflow for architecture
+10
+      document-architecture model traceability link recovery that keeps shared alias knowledge separate from
+11
+     two recovery routes. The first stage derives an alias table over the document and component set. The two
+12
+       routes then generate candidates from written names or references to earlier sentences, derive evidence for
+13     each candidate, and apply a route-specific judge. One judge handles all written-name forms, while another
+14     judge handles resolved references. On five open-source benchmark projects, we evaluate ArchLinker against
+15     the state of the art. ArchLinker improves performance in comparison to the strongest baseline, run on the
+16    same LLM backend, by 13 percentage points (pp) in architecture doc-model average F1, and by 13 pp in the
+17     recall-weighted average F2. This gain carries through to 7 pp of average F1 on the downstream doc-code task.
+18    Under an architecture-driven suite that adds per-component measures, the gap widens to 30 and 28 pp. A
+19     replication package provides prompts, code, raw LLM responses, and per-project results.
+20     Additional Key Words and Phrases: Documentation, large language models, natural language processing,
+21     software architecture, software maintenance, traceability
+22
+23    1  INTRODUCTION
+24
+     Beyond code, software systems are described by architecture documentation and architecture
+25
+      models. Trace links tie these artifacts together, so a change in one can be followed into the others.
+26
+     They support impact analysis, change propagation, and compliance review, and without them
+27
+      architectural knowledge erodes as the system ages [17, 32, 46]. Recovering these links automat-
+28
+       ically is a long-standing open problem. Recent LLM-based approaches show success, with the
+29
+      strongest reaching 84% F1 [30]. However, can practitioners rely on these links? On an established
+30
+     benchmark [28], we found that doc-code gold links are highly concentrated across components: the
+31
+      three largest components hold 69.3–99.3% of component-code links. A tool can therefore top the
+32
+     benchmark yet never link a whole component that the documentation describes, and the score fails
+33
+       to present this miss sufficiently. This paper answers the question with both an improved traceability
+34
+       link recovery method and a measure that exposes these misses.
+35
+      We study this in architecture traceability: linking a documentation sentence to model components
+36
+      (doc-model), and through them to code (doc-code). Prior work follows two lines. The lexical line,
+37
+     such as SWATTR [39], scores each candidate link with linguistic patterns. The LLM line, such
+38
+      as LiSSA [29], classifies each documentation-and-target pair with one LLM call. The strongest
+39
+      approach, Artemis, combines lexical and LLM technique, uses an LLM to extract architecture
+40
+       entities with their aliases, then matches them to the model by name and embedding similarity [30].
+41
+      In practice, these approaches both miss true links and produce false ones. Components whose
+42
+      documentation never uses their model name receive few or no links, and components whose name
+43
+      overlaps with common words receive links the text does not support. Furthermore, we found
+44
+      that on the benchmark, baselines abandon up to 7.1% of documented components entirely. These
+45
+      approaches share one root cause: they mainly treat word overlap as the signal for a link. SWATTR
+46
+47      2026. ACM XXXX-XXXX/2026/9-ART
+48      https://doi.org/10.1145/nnnnnnn.nnnnnnn
+
+49
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 2 ===
+       2                                                                                               Anon.
+
+
+50     accepts a link when a name scores above a similarity threshold. LiSSA classifies each pair in one
+51   LLM call that discards its own chain of thought. Artemis extracts entities and aliases for computing
+52     similarity score, then similar to SWATTR, it accepts a link when the score is above a threshold.
+53   When a word matches, but the sentence is not about the component, no step catches the false link.
+54   When a sentence refers to a component without using its name, the reference is seldom considered.
+55    A trace link between an architecture document and a model component is established when that
+56    sentence discusses the architectural role of a component. A sentence can mention a component
+57    without being about it, and be about a component without mentioning it. For example, “database
+58     access” mentions DB but describes a responsibility of another component, while “It” mentions no
+59    component but refers to DB through the preceding sentence (Figure 1). Our insight is that TLR is
+60     therefore not about deciding whether a sentence matches a component. It is to find the specific
+61    evidence in the document that supports or refutes each candidate link, and to judge the candidate
+62     against that evidence.
+63    We present ArchLinker, a training-free LLM workflow that recovers trace links by
+64    finding and judging textual evidence. It discovers each document’s component vocabulary,
+65    generates candidates through how each reference is written, and judges each candidate against
+66    the evidence that produced it. Three parts work together: a shared alias-discovery stage and two
+67    recovery routes, each with a candidate generator and a judge. The named-reference route uses
+68    the name candidate generator to find complete names, approved aliases, and name words; the
+69     coreference route uses the coreference candidate generator to resolve an implicit reference against
+70      its antecedent. Each judge is a context-augmented LLM-as-a-judge: a plain judge scores an output
+71     alone, but ours receives the evidence the candidate rests on, such as the matched span, how the
+72    sentence writes the name, and, for an implicit reference, the antecedent sentence. So, it can reject
+73     trace links the evidence does not support. Splitting the reference forms expands candidate coverage
+74    without adding a second judging criterion: both written forms are judged under one rule, and what
+75     separates them is a field of the evidence rather than a second rubric.
+76       Percentage-point (pp) gaps below are rounded from the underlying scores. On the ArDoCo
+77    benchmark[28], ArchLinker reaches a doc-model average F1 of 0.936, 13 pp above the strongest
+78     baseline Artemis re-run on the same backend, and 0.955 average F2, 13 pp above it [2, 30, 38]. On
+79    doc-code it reaches an average F1 of 0.879 (+7 pp) and an average F2 of 0.896 (+5 pp).
+80      These gains are measured by standard link-level metrics, but do those metrics tell the full
+81     story? Our second contribution starts from a measured property of doc-code links: they are highly
+82    concentrated across components. On the benchmark, excluding the largest three architectural
+83    components, the remaining components hold between 0.7% and 30.7% of trace links. Within each
+84     project, link-level F1 pools link across components, so components with fewer links have less
+85     influence on that score. If a tool misses that component entirely, the score barely moves, but
+86    the architect has a gap they will not see. This makes link-level average too coarse to evaluate
+87   how recovery varies for the whole architecture model. We therefore introduce an architecture-
+88    driven evaluation suite that measures how recovery covers the full architecture model, not just
+89    the aggregate link count (Section 4). Its key idea is to make every documented component visible
+90     in the score, regardless of how many links it holds. This metric suite also revealed that although
+91    Artemis improves over TransArc[30] on average, it scores lower on small components than the
+92     lexical approach. In addition, it shows the strength of ArchLinker. On doc-model, ArchLinker
+93    covers components that every prior tool drops. On doc-code, ArchLinker leads TransArc by 23 pp
+94    on the per-component harmonic mean, against 8 pp at the link level.
+95       This work makes three contributions:
+
+96
+
+97
+
+98
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 3 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                              3
+
+
+99               Documentation                     Architecture model                  Code
+
+100     S23 "The Database component represents
+101      an actual database (e.g., MySQL)."
+102                                                DB                      4 code files
+         S24 "It stores user information and meta-data
+103         of audio files such as the name and the genre."
+104           ⋮                            rejected
+105         S27 "The MediaAccess component encapsulates
+106       database access for meta-data of audio files."
+                                                  MediaAccess                 2 code files
+107
+        S28 "Furthermore, it fetches a list of all
+108       available audio files."
+109                                                                 written name · coreference · evidence check
+
+110
+
+111                                                               doc-code links (direct)
+
+112
+113     Fig. 1. MediaStore ground-truth trace example. Solid arrows are recorded links; the dashed arrow is a
+114    candidate rejected by the recorded judge.
+
+115
+
+116
+     • ArchLinker, a training-free, multi-stage LLM workflow for doc-model trace-link recovery
+117
+         (Section 3).
+118
+     • an architecture-driven evaluation suite of three size-aware metrics for architecture trace-link
+119
+         recovery. (Section 4).
+120
+     • An empirical study showing that ArchLinker improves over the strongest baseline by 13 pp F1
+121
+         (13 pp F2) on doc-model and 7 pp F1 (5 pp F2) on doc-code, with larger gains on the size-aware
+122
+        measures.
+123
+124      Section 2 motivates the task and the concentration of its doc-code links. Section 3 presents
+125    ArchLinker. Section 4 defines the evaluation suite. Section 5.2 and Section 6 give the experimental
+126    design and results.
+
+127
+     2 BACKGROUND AND MOTIVATION
+128
+129    2.1  Motivating Example
+130  A trace link connects a documentation sentence to an architecture component (doc-model) or to
+131   code (doc-code). Figure 1 uses four sentences and their links from the MediaStore benchmark.
+132    Sentence 23 writes “The Database component” for what the model calls DB, and Sentence 24 refers
+133   back to it only as “It”. Sentence 27 names MediaAccess and contains “database access”, but the
+134    gold standard assigns no DB link because the phrase describes a responsibility rather than the
+135   component. Sentence 28 then refers back to MediaAccess as “it”. The excerpt therefore shows three
+136    problems: a component whose document name differs from its model name, two sentences that
+137    refer to components without naming them, and a false candidate that the sentence’s evidence does
+138    not support.
+139     The next two subsections develop these problems in detail.
+
+140
+141    2.2  Challenges of Trace-Link Recovery
+142    Lexical similarity approaches catch a link only when the sentence contains the component’s name.
+143   Documentation does not always work that way. After a component is introduced, later sentences
+144   can refer to it by aliases and pronouns, not by its full name. This gap between how a document
+145    refers and how a name match works causes two problems: it misses true links and accepts false
+146    ones.
+
+147
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 4 ===
+       4                                                                                               Anon.
+
+
+148      Recovering these links presents three challenges shown in Figure 1.
+149       (1) The document and the model can use different terms for the same component. The model
+150   component is DB, but Sentence 23 writes “The Database component.” A method must discover that
+151    “Database” names DB. (2) Different reference forms provide different kinds of evidence. Sentence 23
+152    writes the component name via paraphrasing. Sentence 24 uses “It,” which can only be resolved
+153   from the surrounding context: sentence 23 introduces DB. Likewise, Sentence 28 uses “it” for the
+154   MediaAccess named in Sentence 27.
+155       (3) Finding a plausible candidate does not establish a trace link.
+156     Even when a sentence does refer to a component, the resolution can be wrong. A referring
+157    expression such as “this” may denote an operation or a data object rather than a component. Once
+158   “Database” is known as a form of DB, a match on “database access” in Sentence 27 proposes a DB
+159     link. But the phrase describes a responsibility of MediaAccess, not the DB component.
+160    A recovery method must therefore (i) learn document specific vocabulary to understand coined
+161    terms in context, (ii) analyze references across different types of sentences, and (iii) reduce false-
+162    positive links by re-evaluating candidate links.
+
+163
+164    2.3  Architecture-Driven Evaluation
+165  We conducted an empirical study and found doc-code gold links are highly concentrated across
+166   components. The components with the most links account for most link assignments, leaving
+167    smaller components with little weight in link-level metrics. The standard metrics like precision,
+168     recall, and F-measure averaged over all links pool links across components. Component link counts
+169     differ widely, and the resulting concentration is what the standard metric can hide.
+170    On JabRef, directories map to files ranging from a single file to hundreds. Three large com-
+171   ponents expand into 99.3% of the gold links, while preferences component expands into only
+172    0.44% (Figure 2, left axis). Link-level F1 is therefore dominated by those three. Yet 20% of the
+173   documented sentences describe preferences, 46x its share of links. Similarly, 17.6% of the code’s
+174    cross-component dependencies point at it, 40x its link share. A component that a reader meets in
+175   one sentence out of five, and that a sixth of the code depends on, is nearly invisible to the score.
+176
+177                       Gold link pairs                                                      TransArc F1
+178                     Documented sentences                                            Artemis F1
+179                     Code dependencies
+
+180
+181           100                                                                                   1.0
+182
+183            80                                                                                   0.8F1                                                                     0.80
+184
+185        (%) 60                                                                                   0.6
+186
+187             Share 40        47.0          34.2                          0.53                             0.4188                                                  20%                                                                                                                     Per-component
+189            20                                   18.1                                              0.2
+                                                     17.6%
+190                                                                   0.44          0.19          0.05
+191             0                                                                                   0.0
+192                    logic       gui     model preferences          cli     globals
+193
+
+194
+195                              Fig. 2. JabRef component importance and per-component F1.
+
+196
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 5 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                              5
+
+
+197        Input
+
+198          Architecture                     ② Candidate                ③ Candidate
+199       Document                             Generation                         Judging
+
+200
+                                                                  Name                                         Name                                                             Candidate                                                                                   Candidate201               ① Alias Discovery                                                                   Name Judge                                                           Generator                                                                                       with                                                                                     Evidence                                                                                            Trace
+202
+                                      Alias                                                              Links
+203                                Table
+                                                          Coreference          Coreference
+204                                                       Candidate             Candidate
+205     Component Set                                  Generator            with Evidence        CoreferenceJudge
+206
+
+207
+
+208
+        Fig. 3. Workflow overview for ArchLinker. It builds one shared alias table, then generates and judges candi-
+209
+       dates through separate named-reference and coreference routes.
+210
+
+211
+212      This concentration also affects comparisons of existing tools. On JabRef, Artemis is weakest on
+213    exactly this component: it scores 0.53 on preferences against TransArc’s 0.800, and abandons it
+214    entirely in one run of three (Figure 2, right axis). Its F1 on the three large components stays near
+215     0.9, so the link-level average barely changes because preferences only carries 0.44% of the links.
+216   Across the benchmark this reverses the ranking: Artemis leads TransArc by 1.0pp of link-level F1
+217   while behind it by 4.7pp on the worst component and 4.1pp on the harmonic mean. Link-level F1
+218   can therefore rank a tool that covers fewer architectural components above one that covers more
+219   This motivates us to quantify doc-code link concentration across all five projects and introduce
+220    size-aware metrics that expose dropped components.
+
+221
+222   3  ARCHLINKER
+223  We propose ArchLinker, an LLM workflow that requires no task-specific model fine-tuning or
+224    labeled training data and recovers trace links between an architecture document and an archi-
+225    tectural model. Its input is a document 𝐷with sentences 𝑆= {𝑠1, . . . ,𝑠𝑛} and a component set
+226  𝐶= {𝑐1, . . . ,𝑐𝑚}. Its output is a link set 𝐿⊆𝑆× 𝐶. Each link (𝑠𝑖,𝑐𝑗) ∈𝐿asserts that sentence 𝑠𝑖
+227   makes an architectural claim about component 𝑐𝑗as a participant in the documented system.
+228      Recovering these links presents three challenges: (1) vocabulary mismatch between document
+229   and model; (2) different reference forms require different evidence; (3) finding a plausible candidate
+230   does not establish a trace link. A known term may serve another purpose in the sentence, and a
+231    referring expression may denote an operation or data object rather than a component.
+232     Design of ArchLinker. Three design decisions address the three challenges. First, ArchLinker
+233    builds shared document-specific knowledge to address the vocabulary mismatch between the
+234   document and model. Second, ArchLinker separates recovery into the named-reference route and
+235    coreference route because different reference forms require separate tailored solutions. Third, every
+236    candidate is evaluated with the evidence for that case, forming a evidence-backed judging.
+237      Figure 3 organizes these decisions along two axes. The columns are three functional stages: alias
+238    discovery, candidate generation, and candidate judging. The rows after alias discovery are the
+239   two end-to-end recovery routes. Stage 1 builds an alias table shared by both routes. In Stage 2,
+240   name candidate generator finds candidates supported by text written in the target sentence, while
+241    coreference candidate generator resolves references that depend on surrounding sentences. In
+242    Stage 3, name judge and coreference judge evaluate the candidates from their respective routes.
+243   The workflow associates each candidate with a structured evidence bundle—the matched span, how
+244    the sentence writes the component name, and for implicit references, the antecedent sentence—and
+
+245
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 6 ===
+       6                                                                                               Anon.
+
+
+246                              Named Links
+          (a) Link cases                                            Approved alias: database -> DB
+247
+          Case 1                                           Case 2
+248       S1 The DB component represents an actual         S2 The MediaAccess component encapsulates
+249       database (e.g., MySQL).                          database access for meta-data of audio files.
+250       (b) Judge Input: candidate link & evidence
+251      Case 1: "S1" → database                           Case 2: "database" → database
+        Span=DB, Evidence: written=alias                  Span=database, Evidence: written=exact252
+253       (c) Judge Output:
+254     claim="The database componen writen in alias      claim=none, approve=false
+        is discussed architectural responsibility"        objection="database" describes the kind of
+255     approve=true, objection=none                      data access, not the database component.
+
+256
+
+257
+258                                Fig. 4. Accepted and rejected named-reference candidates.
+
+259
+
+260
+
+261
+262   each evidence-backed judge receives that bundle with the candidate. The final output is the set
+263   union of accepted links from both routes.
+
+264
+265    3.1  Alias Discovery
+266    Stage 1 identifies document-specific terms that refer to model components. These terms can include
+267    abbreviations, alternate names, and words of multi-word names when the document uses the word
+268    for the complete component. For example, one document can write both “BigBlueButton web
+269    application” and “the web app” for the model component BBB web. This stage is inspired by prior
+270   work on glossary-term extraction [5, 31], software vocabulary mining [26, 35], and architecture-
+271    entity extraction in Artemis [30].
+272    An LLM first proposes candidate aliases from the document and component set. An internal alias
+273    judge then evaluates whether the document establishes each proposed mapping. It rejects a term
+274   when the term is generic vocabulary or identifies something other than one named component. If
+275   an approved term maps to multiple components, ArchLinker discards the term because it does not
+276    identify a unique component. The remaining mappings form the alias table used during candidate
+277    generation and candidate judging. In summary, alias discovery builds one shared table that both
+278    recovery routes use during candidate generation and judging.
+279
+
+280
+      3.2  Named-Reference Route
+281
+282   The named-reference route handles candidates supported by written evidence in the target sentence.
+283     Its name candidate generator combines two deterministic lexical scans. The first finds complete
+284   component names and approved aliases. The second, the name-word scan, finds individual words of
+285    multi-word component names even when the sentence uses a different grammatical form, via NLP
+286    lemmatization.
+287     The two scans produce one candidate stream. The generator records the matched span for each
+288    remaining candidate, and derives a factual written value from the sentence, component name, and
+289   approved aliases. The value is exact when the sentence writes the complete catalog name. It is
+290   alias when the sentence writes an approved alias. It is part when the name-word scan finds a
+291   name word in the same or a different grammatical form. Or it is qualified name when the name
+292    occurs inside a code identifier, such as “storage” in storage.api for the component Storage. Such
+293   an occurrence may denote a code path rather than the architectural component itself.
+
+294
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 7 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                              7
+
+
+
+295
+            (a) Link cases                    Coreference Links
+296
+            S3 The Database component represents an          S5 The ReEncoder component converts the bit297
+            actual database (e.g., MySQL).                   rates of audio files.
+298         S4 It stores user information and meta-data      S6 This can result in reduction of file sizes.
+            of audio files.
+299
+            (b) Judge Input: candidate link & evidence
+300           Case 3: pronoun/role-ref → DB                    Case 4: pronoun/role-ref → Reencoding
+301        reference="It", antecedent_sentence=S3           reference="This", antecedent_sentence=S5
+302          (c) Judge Output
+
+303        claim= "It" refers to Database component and       claim=none, approve=false
+           describe its architectural responsibilities,       objection= "This" refers to the conversion
+304        approve=true, objection=none;                      operation, not unambiguously to the component.
+305
+
+306
+307                                   Fig. 5. Accepted and rejected coreference candidates.
+
+308
+
+309
+
+310
+       The name judge evaluates each candidate together with its evidence bundle. It accepts a candidate
+311
+     when the sentence makes an architectural claim about the proposed component as a participant. It
+312
+       rejects a candidate when the matched expression serves another purpose in the sentence.
+313
+        Figure 4 illustrates this distinction. In the accepted case, the approved alias denotes the proposed
+314
+      component, so name judge accepts the candidate. In the rejected case, “database” modifies the access
+315
+      responsibility of MediaAccess rather than denoting the proposed component. The same lexical
+316
+     term generates both candidates, but their sentence-level evidence leads to different judgments.
+317
+       To sum up, the named-reference route recovers links supported by written evidence in the target
+318
+      sentence, and the name judge rejects candidates where the matched expression serves another
+319
+      purpose.
+320
+
+321
+      3.3  Coreference Route322
+323   The coreference route handles sentences that refer to a component without writing its name. Such
+324   a sentence may use a pronoun or noun phrase whose antecedent appears in the surrounding
+325    discourse. Because a lexical scan cannot determine what this expression denotes, coreference
+326    candidate generator uses an LLM to propose the resolution.
+327      For each proposal, coreference candidate generator records the target sentence, the referring
+328    expression, the proposed component, the antecedent sentence, and the antecedent text. These
+329    candidates then enter into the judge. First, to ensure the antecedent is reliable for the reference,
+330    a pre-hook verifies that the cited antecedent sentence writes either the component’s exact name
+331    or via alias. A candidate that fails this condition is rejected before coreference judge is called. For
+332    each remaining candidate, coreference judge receives the referring expression, the cited antecedent,
+333    the target sentence, and its preceding sentence. It accepts the candidate only when the referring
+334    expression unambiguously denotes the proposed component and the target sentence makes an
+335    architectural claim about that component.
+336     The two cases in Figure 5 illustrate the coreference judgment. In Sentence 4, “It” refers to the
+337   DB component introduced in local Sentence 3, and the target sentence states an architectural
+338    responsibility of that component. The coreference judge therefore accepts the candidate. In the
+339    rejected case, “This” in local Sentence 6 denotes the conversion operation described in local
+340    Sentence 5 rather than unambiguously denoting Reencoding. The surrounding discourse concerns
+341    reencoding, but that context alone does not establish the proposed component reference. The
+342    coreference judge therefore rejects the candidate.
+
+343
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 8 ===
+       8                                                                                               Anon.
+
+
+344    Table 1. Gold link concentration by task. Sent. counts document sentences; kLOC sums the selected primary-
+345    language cloc counts in thousands. Comp. counts all components in the base architecture model. Each Links
+      column counts distinct gold pairs; Med., Max., Gini, and Top-3 share (%) use that task’s gold-reachable346
+      components. Shared doc-code files contribute to each mapped component; unmapped files contribute only to
+347
+       Links.
+348
+
+349
+          Project             Sent. kLOC Comp.          Doc-model                  Doc-code
+350
+351                                           Links Med. Max. Gini Top-3  Links Med. Max. Gini Top-3
+
+352       MediaStore (MS)        37      4     14     31     3     7    .31    51.6      59     4    28    .54    74.6
+353        TeaStore (TS)           43     12     11     27     5     6    .18    63.0     707    78   320    .47    86.8
+354       Teammates (TM)      198    145      8     57     5    15    .26    59.6    8,097   861  3,622    .48    77.1
+          BigBlueButton (BBB)    87    159     12     62     4    14    .37    54.8    1,529 152.5   732    .53    69.3
+355
+           JabRef (JR)             13    157      6     18     4     6    .22    77.8    8,268   768  3,888    .59    99.3
+356
+
+357
+358      Altogether, the coreference route recovers links from implicit references, under a structural
+359    constraint that the antecedent sentence writes the component’s name.
+
+360
+361   4 AN ARCHITECTURE-DRIVEN METRIC SUITE
+362   Doc-code gold links are highly concentrated across components, so link-level averaged metrics
+363   can hide whether a system covers every documented component. This section quantifies that
+364    concentration across all five projects and builds a metric suite that exposes the components a
+365   system leaves untraced.
+
+366
+367    4.1  Link Concentration in the Benchmark
+368    Breaking down by components, document to code trace links have a highly unequal distribution.
+369    Table 1 compares gold links per component at both task grains using the Gini coefficient (0 =
+370    uniform, and larger values indicate greater concentration). Doc-code Gini ranges from 0.47 on
+371    TeaStore to 0.59 on JabRef; doc-model ranges from 0.18 on TeaStore to 0.37 on BigBlueButton.
+372   Doc-code has the higher per-component Gini in each of the five projects. To make this concrete: a
+373    Gini of 0.59 means that if all trace links were income, the richest component would earn roughly
+374   what the bottom 80% components earn combined. The median and maximum link counts also show
+375    the concentration: on Teammates the median component has 861 trace links while the largest has
+376    3,622; on JabRef the ratio is 768 to 3,888. Overall, the three largest components hold between 69.3%
+377    (BigBlueButton) and 99.3% (JabRef) of the doc-code per-component link assignments. Link-level
+378    metrics mainly reflect these few large components, hiding whether the system recovers the rest.
+379   An architect’s primary job is not reading the benchmark average score. They read the architecture
+380   document with models, and a hole in it is relevant regardless of the benchmark score. We therefore
+381    define a suite that gives components explicit visibility and reports what the link-level average
+382    buries.
+
+383
+384    4.2  The Metric Suite
+385   Our suite has three design goals: adjust the weight of every component, stay complementary beside
+386    link-level 𝐹𝛽so a reader can see what the standard metric hides, and require no additional manual
+387    annotation beyond the benchmark. It adapts established evaluation principles of concentration
+388   measurement to the architecture trace-link recovery setting. The contribution is on the application
+389    side: connecting the unequal link distribution measured above to a concrete evaluation gap that
+390   none of the existing TLR benchmarks address. (i) worst-component 𝐹𝛽reports the component a
+391   system recovers worst on the doc-code task; (ii) harmonic-mean 𝐹𝛽aggregates per-component
+
+392
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 9 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                              9
+
+
+393    performance while emphasizing low-scoring components; and (iii) the component miss rate reports
+394    the weighted fraction of components a system never recovers on the doc-model task. For the
+395    doc-code metrics, we define the family over the 𝐹𝛽score,
+396                                                (1 + 𝛽2) 𝑃𝑅
+397                             𝐹𝛽=                        ,                                           (1)
+                                                 𝛽2 𝑃+ 𝑅
+398
+399   where 𝐹1 (𝛽= 1) weights precision and recall equally, and 𝐹2 (𝛽= 2) weights recall more. Previous
+400    studies have suggested that both are essential in the trace-link recovery task and have recommended
+401    reporting 𝐹2 when recall is more important than precision [1, 21].
+402      Doc-code: worst-component and harmonic-mean 𝐹𝛽. On the doc-code task, the concentration of
+403   component-code files lets a system score high on link-level 𝐹𝛽while missing a whole component.
+404    Therefore, we propose two finer-grained metrics at the component level. Let K be the components
+405    in the architecture model with at least one trace link; Each component 𝑘is linked to a set of code
+406     files; 𝐹𝛽(𝑘) denotes 𝐹𝛽computed over only the links whose target belongs to component 𝑘. The
+407   worst-component 𝐹𝛽is the minimum over the components:
+408
+                                           𝐹min                                                   𝛽  = min 𝐹𝛽(𝑘).                                           (2)409                                          𝑘∈K
+410
+    A single missed component drives it to zero, even when link-level 𝐹𝛽stays high. Like 𝐹𝛽, Worst-
+411
+     component 𝐹𝛽ranges in [0, 1] and is a floor. It reports the score of a system’s weakest component
+412
+     and says nothing about how many components sit near it. A missed component is invisible to
+413
+       link-level average 𝐹𝛽in proportion to how small it is, so a small component contributes relatively
+414
+     few outcomes to the aggregate. The minimum changes that weighting. Because minimum is
+415
+      determined by a single component and potentially noisy, we also report the harmonic mean of the
+416
+     per-component 𝐹𝛽:
+417                                                |K|
+418                               𝐹𝐻𝛽=                             .                                         (3)
+                         Í𝑘∈K 1/𝐹𝛽(𝑘)419
+420     It is built on the insight that a low score should be expensive to average away. It gives low component
+421    scores greater influence on the aggregated result. When any component scores 𝐹𝛽(𝑘) = 0, the
+                                                  𝐹𝐻𝛽= 0 in that case, so a system that422   harmonic mean is undefined (division by zero); we define
+423   abandons a component cannot recover the harmonic mean by scoring well everywhere else. For
+424    example, suppose five components have (20, 40, 1500, 2800, 3900) links, reflecting the concentration
+425    in Table 1, and their per component 𝐹𝛽(𝑘) scores are (0.2, 0.9, 0.9, 0.9, 0.9). On component level,
+426    the harmonic mean by component is about 0.53, versus about 0.8983 for the link-count-weighted
+427    arithmetic mean of these component scores. With harmonic mean, 𝐹𝛽of one component at 0.2
+428    pulls the mean further than four components at 0.9 can restore it.
+429      Doc-model: component miss rate. Doc-model per-component link counts have lower Gini than doc-
+430    code counts (Table 1), so their links are less concentrated. But a system can still miss a component
+431     entirely, leaving its documented sentences with no correct link. Let 𝑅𝑘denote recall on component 𝑘
+432   and S𝑘for the linked sentences. A component is abandoned when 𝑅𝑘= 0, that is, when the system
+433    recovers none of its correct links.
+434    A component the system abandons still has documentation describing it, and CMR is built on
+435    this idea: it weights the miss by the sentences describing the component.
+436
+                        Í𝑘:𝑅𝑘=0 |S𝑘|437                        CMR =            ∈[0, 1],                                    (4)
+438                        Í𝑘∈K |S𝑘|
+439  CMR = 0 means every documented component is linked at least once, so no component’s documen-
+440    tation is silently lost.
+
+441
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 10 ===
+       10                                                                                              Anon.
+
+442    On doc-code the suite reports worst-component 𝐹𝛽and harmonic-mean 𝐹𝛽, each at both 𝛽= 1
+443   and 𝛽= 2. On doc-model it reports the component miss rate. Section 5.2.2 applies this suite to all
+444    systems on the benchmark.
+
+445
+446   5  EXPERIMENTAL EVALUATION
+447  We study four research questions:
+448
+449    5.1  Research Questions
+450   RQ1: Does ArchLinker recover trace links better than existing approaches?
+451   Motivation: Existing approaches either match component names lexically [39] or recover com-
+452    bining a single LLM call with similarity matching [30]. ArchLinker instead separates candidate
+453    generation by reference form and uses an evidence-backed judge to check the generated candidates.
+454  We evaluate whether this workflow improves recovery on both doc-model recovery task and the
+455   downstream doc-code task.
+456   RQ2: What component-level behavior do architecture-driven metrics tell beyond standard link-level
+457
+             metrics?
+458
+      Motivation: Link-level precision, recall, and 𝐹𝛽weight every link equally. We found that doc-code
+459
+       links are highly concentrated across components, so components with many links can dominate
+460
+      these aggregate scores. The link-level average is too coarse to show how recovery varies across
+461
+      components. We therefore examine whether proposed size-aware metrics reveal component-level
+462
+      misses which is difficult to see in the standard metrics.
+463
+464   RQ3: How much do the judges inside ArchLinker contribute to the final result?
+465    Motivation: One key feature of ArchLinker is that each recovery route pairs candidate generation
+466   with a corresponding evidence-backed judge. The judges can remove such false positives, but they
+467   may also reject true links. We therefore measure which true and false links each judge rejects and
+468   how disabling the judges changes the final precision-recall trade-off.
+469   RQ4: What does each module of ArchLinker contribute on its own?
+470   Motivation: ArchLinker recovers links through two reference forms: named mentions and coref-
+471    erence mentions. The two recovery routes share the alias table constructed before candidate
+472    generation. We examine whether the reference forms recover complementary links and measure
+473   how recovery changes when the shared knowledge is unavailable.
+474
+475    5.2  Experiment Design
+476   To answer the four research questions, we run four families of experiments on the ArDoCo bench-
+477   mark, the largest benchmark to the best of our knowledge [28]. It contains five Java open-source
+478    systems with hand-curated architecture docs, architecture models, and gold standard trace-links
+479    at two grains, document-to-component and document-to-code. We use the released configura-
+480    tions of the deterministic baselines. Because ArchLinker and Artemis are LLM-based therefore
+481    non-deterministic, we run each three times and report the mean. The deterministic baselines are
+482   run once. To avoid depending on one model, we run ArchLinker on two language-model backends,
+483    GPT-5.6-terra and GPT-5.6-luna. Prompts, configurations, raw model responses, and experiment
+484    outputs are included in the replication package [2].
+485
+486     5.2.1  Experiments for RQ1. We evaluate recovery at two grains.
+487     (1) Doc-model. For every sentence in the architecture document, a system recovers links between
+488       the architecture model components described by that sentence. We compare recovered links
+489       with the doc-model gold standard. We compare ArchLinker with two baselines: SWATTR [39],
+
+490
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 11 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             11
+
+
+491       a prior lexical string-similarity pipeline; and Artemis [30], the strongest directly comparable
+492      LLM-based baseline. This is the task where ArchLinker can directly show its strength.
+493     (2) Doc-code. Following prior evaluations [30, 38], we compose recovered doc-component links
+494       with component-to-file links to obtain sentence-to-file links. The component-to-file links are
+495       recovered from the same approach ArCoTL [38].
+496     We compare ArchLinker with two baselines: TransArc [38], the strongest lexical-based approach;
+497      and Artemis composed through the ArCoTL links, as an LLM baseline at the doc-code grain.
+498     We do not compare with a simple few shot basline LiSSA [29] because it has been shown less
+499        effective than Artemis and costs significantly more.
+500    For both tasks, we report precision, recall, F1, and F2 per project and macro-averaged across the five
+501    projects. We also report input and output tokens for each project. We average token counts across
+502    runs for each project. RQ1 uses the standard metrics the baselines were originally evaluated by.
+503
+504     5.2.2  Experiments for RQ2. The previous RQ evaluates systems with the standard link-level metrics.
+505   RQ2 focuses on how recovery varies across components within those projects. We evaluate the
+506   same recovered links with the size-aware suite defined in Section 4.2. The recovered links remain
+507    fixed, and only the view used to evaluate them changes.
+508    On doc-model, the suite adds the component miss rate (CMR, Equation 4), which measures the
+509   weighted rate of components where a system recovers no correct link. Missed components are
+510   weighted by the number of sentences describing it.
+511    On doc-code, we add worst-component and harmonic-mean per-component F1 and F2. These
+512    metrics give each component explicit visibility rather than weighting components by their number
+513    of links.
+
+514
+        5.2.3  Experiments for RQ3. We build three ablations of ArchLinker that remove judges: one without
+515
+      the name judge, one without the coreference judge, and one without either judge.
+516
+517     (1) NoName: accept every candidate retained by the deterministic checks in the named-reference
+518       route without applying the name judge.
+519     (2) NoCitation: accept every candidate retained by the deterministic checks in the coreference
+520       route without applying the coreference judge.
+521     (3) NoValidator: accept candidates retained by the deterministic checks in both routes without
+522        either judge.
+523      For each judge, we count the true and false links it keeps and rejects. We also compare the
+524    resulting F1 and F2 with the full approach to quantify the judge’s net effect on the final results.
+525
+526     5.2.4  Experiments for RQ4. We analyze the contribution of the recovery routes and the shared alias
+527   knowledge in two complementary ways. First, we measure the overlap between the two recovery
+528    routes: the named-reference route and the coreference route. For each route, we count the true
+529    links recovered uniquely by that route and evaluate the links produced when that form is used
+530   on its own. This measures each route’s scope and whether the two routes recover complementary
+531    parts of the gold standard.
+532      Second, we perform an ablation of the shared knowledge module. We disable alias discovery,
+533    re-run the workflow, and compare the resulting links with the full workflow. Both routes remain
+534   unchanged, isolating the contribution of the shared alias knowledge.
+
+535
+536   6  RESULTS
+537   The quality tables report arm s126 on the five ARDoCo projects with GPT-5.6-terra; detailed results
+538   and the GPT-5.6-luna mirror are in Appendix A. For the stochastic systems ArchLinker and Artemis,
+
+539
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 12 ===
+       12                                                                                              Anon.
+
+
+540    Table 2. RQ1 link scores by project on GPT-5.6-terra. Project abbreviations: MS=MediaStore, TS=TeaStore,
+541   TM=Teammates, BBB=BigBlueButton, JR=JabRef.
+
+542
+543              Project  Task               ArchLinker                 Artemis       SWATTR / TransArc
+544                                         Precision/Recall; F1/F2       Precision/Recall; F1/F2   Precision/Recall; F1/F2
+545         MS     doc-model     .91±.00/1.00±.00 ; .95/.98     .90±.06/.97±.00 ; .93/.95       .94/.55 ; .69/.60
+546                     doc-code        .85±.00/.88±.00 ; .87/.88     .92±.05/.93±.00 ; .93/.93      .96/.42 ; .59/.48
+547           TS     doc-model   1.00±.00/1.00±.00 ; 1.00/1.00   .57±.01/.98±.02 ; .72/.85      1.00/.74 ; .85/.78
+                       doc-code    1.00±.00/1.00±.00 ; 1.00/1.00   .58±.00/.98±.02 ; .73/.86      1.00/.71 ; .83/.75548
+          TM     doc-model     .81±.01/.94±.01 ; .87/.91     .92±.07/.64±.06 ; .76/.68       .60/.86 ; .71/.79549
+                       doc-code        .80±.00/.74±.00 ; .77/.75     .93±.09/.61±.06 ; .73/.65      .75/.90 ; .82/.87
+550
+            BBB    doc-model     .87±.00/.90±.01 ; .89/.89     .80±.08/.70±.06 ; .75/.72       .90/.71 ; .79/.74
+551
+                       doc-code       .68±.00/.93±.01 ; .78/.86     .70±.12/.85±.02 ; .76/.81       .82/.84 ; .83/.84
+552
+                JR      doc-model     .95±.05/1.00±.00 ; .97/.99    .83±.06/.96±.06 ; .89/.93      .90/1.00 ; .95/.98
+553                     doc-code      .95±.07/1.00±.00 ; .97/.99    .85±.10/1.00±.00 ; .92/.96     .89/1.00 ; .94/.98
+554          Avg    doc-model    .91±.01/.97±.00 ; .94/.95     .81±.02/.85±.02 ; .81/.83       .87/.77 ; .80/.78
+555          Avg    doc-code      .86±.01/.91±.00 ; .88/.90     .80±.01/.87±.01 ; .81/.84       .89/.78 ; .80/.78
+556     Precision and recall include sample SD across three runs, rounded to two decimals on the score scale; Average SD uses the
+557       three per-run project means. SWATTR supplies deterministic doc-model results and TransArc deterministic doc-code
+558                                                                     results.
+
+559
+560    scores are means of three runs. The inference-usage table separately identifies its models and run
+561     sets. Percentage-point gaps below are rounded from the underlying scores.
+
+562
+563    6.1  Answer to RQ1
+564    Table 2 reports precision, recall, F1, and F2 for every system per project on both tasks, doc-model
+565   and doc-code. The gain is smallest on MediaStore, where the doc-model F1 differs by +2pp and F2
+566   by +3pp. On the other four projects the F1 lead ranges from +8pp (JabRef) to +28pp (TeaStore).
+567   On average, ArchLinker lifts the average F1 from Artemis’s 0.81 to 0.94, a gain of +13pp after
+568    rounding; the lexical SWATTR pipeline reaches 0.80. The recall-weighted average F2 moves by a
+569    similar margin: 0.83 →0.95 (+13pp).
+570     The gain is through both precision and recall improvement. On doc-model ArchLinker leads on
+571   both metrics of the score, precision 0.91 against 0.81 (+10pp) and recall 0.97 against 0.85 (+12pp);
+572   on doc-code it leads by +6pp precision and +4pp recall.
+573     The same picture holds on the downstream doc-code task, where ArchLinker reaches code files
+574    transitively. ArchLinker lifts the doc-code average F1 from Artemis’s 0.81 to 0.88 (+7pp) and the
+575    average F2 from 0.84 to 0.90 (+5pp), where the heuristic TransArc pipeline reaches 0.80 and 0.78.
+576   These are observed downstream scores; composition need not preserve the doc-model ranking.
+577     The direction holds on four of the five projects over Artemis and three over TransArc. On
+578   MediaStore over Artemis, a +2pp doc-model F1 gain becomes a −6pp doc-code F1 decrease. A
+579   doc-model advantage does not necessarily persist after transitive composition. This is because
+580    ArchLinker’s recall is focused on small components which transitively link to fewer doc-code links.
+581      Table 3 reports mean input and output tokens across three runs per project. Across five projects,
+582   ArchLinker used 98.6 thousand input tokens. Its output total was 22.7 thousand tokens. Artemis
+583   used 20.0 thousand input tokens and 23.4 thousand output tokens. These two approaches use
+584    similar amounts of output tokens, while ArchLinker consumes 4.9× more input tokens because
+585    of the multi-stage judge workflow. At the GPT-5.6-terra pricing used here (US$2/12 per million
+586    input/output tokens, as of September 2026), the five-project total costs approximately US$0.47 for
+587   ArchLinker and US$0.32 for Artemis.
+
+588
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 13 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             13
+
+
+589            Table 3. Averaged cost per project, with estimated cost at list pricing as of September 2026.
+
+590
+
+591                                                 Input/Output (k tokens)
+592                    System      MS      TS    TM    BBB      JR      Total  Cost (US$)
+593
+                       ArchLinker   9.9/2.1   11.4/3.5   43.8/7.7   27.4/7.3   6.0/2.1   98.6/22.7         0.47
+594
+                       Artemis      2.6/2.8    2.9/3.5    7.7/8.6    4.8/6.1   2.0/2.5   20.0/23.4         0.32
+595
+
+596
+597                          Table 4. RQ2 size-aware metrics by project on GPT-5.6-terra.
+
+598
+
+599                      doc-model               doc-code                   doc-model           doc-code
+600    Approach Proj.    Link   CMR    Link     Worst    Harm.    Proj.   Link  CMR   Link   Worst   Harm.
+601                        F1    F2    %   F1    F2    F1    F2    F1    F2         F1   F2    %  F1   F2   F1   F2   F1   F2
+602
+     AL     MS     .95   .98    0.0   .87   .88   .72   .74   .96   .96 BBB  .89  .89    0.0  .78  .86  .44  .56  .81  .83
+603   AT                 .93   .95    0.0   .93   .93   .75   .85   .96   .97         .75  .72    1.1  .76  .81  .22  .19  .45  .45
+604    S/T                .69   .60   35.5   .59   .48   .00   .00   .00   .00         .79  .74    0.0  .83  .84  .57  .45  .84  .80
+605   AL      TS    1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00  1.00  JR     .97  .99    0.0  .97  .99  .94  .97  .98  .99
+     AT                 .72   .85    0.0   .73   .86   .43   .65   .67   .82         .89  .93    3.7  .92  .96  .53  .61  .61  .64
+606
+       S/T                .85   .78    0.0   .83   .75   .67   .56   .84   .77         .95  .98    0.0  .94  .98  .80  .91  .94  .98
+607
+     AL     TM    .87   .91    0.0   .77   .75   .72   .61   .80   .78  Avg   .94  .95    0.0  .88  .90  .76  .78  .91  .91
+608   AT                 .76   .68   11.7   .73   .65   .41   .33   .50   .44         .81  .83    3.3  .81  .84  .47  .52  .63  .66
+609    S/T                .71   .79    0.0   .82   .87   .54   .65   .76   .82         .80  .78    7.1  .80  .78  .51  .51  .68  .67
+
+610              AL = ArchLinker; AT = Artemis; S/T = SWATTR for doc-model and TransArc for doc-code.
+611
+
+612
+
+613
+        Answer to RQ1. ArchLinker leads Artemis by 13pp doc-model and 7pp doc-code average F1614
+        after rounding. Corresponding gaps to SWATTR and TransArc are 14pp and 8pp.
+615
+
+616
+617    6.2  Answer to RQ2
+618    Table 4 reports the size-aware suite for ArchLinker, TransArc, and Artemis on both tasks. On
+619    doc-model, the component miss rate separates the systems: 0.0% for ArchLinker against 3.3% and
+620    7.1%. This means ArchLinker covers more components than previous approaches: it reaches 0%
+621  CMR on all five projects. Artemis loses in three projects (up to 11.7% on Teammates) and SWATTR
+622    in one (35.5% on MediaStore). A component the CMR notices is one a developer would notice as
+623    entirely missing from the traceability matrix.
+624    On doc-code, the standard link-level F1 shows the smaller gap: ArchLinker leads Artemis by
+625   +7pp after rounding, while each size-aware measure gives components a different weighting. The
+626    size-aware metrics open it. ArchLinker reaches a worst-component F1 of 0.76 against Artemis’s 0.47
+627    (+30pp), and a harmonic per-component F1 of 0.91 against 0.63 (+28pp). Against the deterministic
+628   TransArc pipeline the same pattern holds with a smaller spread: +8pp link-level, +25pp worst-
+629   component, +23pp harmonic.
+630     The size-aware metrics also reveal room for improvement that the standard average hides. Even
+631   ArchLinker, despite a doc-code average F1 of 0.88, reaches a worst-component F1 of only 0.44
+632   on BigBlueButton and 0.72 on Teammates. All three systems share this pattern: high link-level
+633    averages coexist with weak component-level scores, and the per-component scores expose these
+634    differences.
+635     The rankings can also disagree: on Teammates, TransArc exceeds ArchLinker on file F1 (0.82
+636    versus 0.77), but trails on worst-component F1 (0.54 versus 0.72). At the macro level, Artemis
+
+637
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 14 ===
+       14                                                                                              Anon.
+
+
+638                                     Table 5. RQ3 judging configurations
+
+639
+
+640                                rejects       keeps           doc-model                      doc-code
+641       Judges           FP  TP   TP   FP    Prec./Rec.; F1/F2 CMR%  Prec./Rec.; F1/F2  worst F1/F2  harm. F1/F2
+642
+           Full               144.3  9.7  185.3  25.0    .91/.97 ; .94/.95    0.0    .86/.91 ; .88/.90     .76/.78      .91/.91
+643
+        name judge         99.0   9.7  170.3  23.0   .75/1.00 ; .84/.92    0.0     .76/.96 ; .84/.90      .56/.70        .82/.90
+644       coreference judge  53.0   1.3   34.3    2.0     .76/.97 ; .85/.92    0.0     .77/.92 ; .83/.88      .66/.76        .85/.89
+645     No judge            0.0   0.0  195.0  166.0   .67/1.00 ; .79/.89    0.0     .71/.96 ; .81/.89      .53/.69        .78/.88
+
+646
+
+647
+648    exceeds TransArc on file F1 (0.81 versus 0.80), but trails on worst-component F1 (0.47 versus 0.51).
+649   These observed reversals show that the measures need not rank systems identically.
+650
+651      Answer to RQ2. On doc-model, ArchLinker reaches a 0.0% component miss rate, versus
+652     Artemis’s 3.3% and SWATTR’s 7.1%. On doc-code the standard F1 gap is +7pp; the size-aware suite
+653    opens it to +30pp worst-component and +28pp harmonic-mean F1, exposing weak component
+654     coverage in the baselines.
+655
+656    6.3  Answer to RQ3
+657
+      Table 5 reports rejected and kept links alongside four judging configurations. Each row reports for
+658
+      each judge, the number of links it rejects and keeps. It further shows its impact on final results if
+659
+      they are disabled.
+660
+       The name judge rejects 99.0 false positives while costing 9.7 true trace links; the coreference
+661
+      judge rejects 53.0 against 1.3. Together the two judges reject 144.3 distinct false positives and lose
+662    9.7 true links. Their link counts overlap and therefore do not sum. This is because each judge reads
+663
+      a different kind of evidence about many overlapping candidates: the name judge reads the evidence
+664
+      supporting named links, and the coreference judge reads evidence for coreference resolution. These
+665
+      aggregate counts do not identify disagreements on individual candidates.
+666
+       The judges make the generated link candidates more precise. Switching both offdrops link-level
+667
+      F1 from 0.94 to 0.79, a loss of 15pp, but link-level F2 only from 0.95 to 0.89, a loss of 6pp. Removing
+668
+     them one at a time costs 10 and 8pp of F1 (name judge, coreference judge) against 3 and 3pp of
+669
+      F2 after rounding. This is because a judge only removes links: it is supposed to improve precision
+670
+       only, so a metric that weights recall four times as heavily as precision sees a smaller effect.
+671
+       The judge-offblock shows that trade directly: with both judges off, doc-model precision falls by
+672
+     24pp (0.91 →0.67) while recall rises by only 3pp (0.97 →1.00), so candidate generation is already
+673
+      near the recall ceiling and the judges are buying the precision that is missing. On the size-aware
+674
+       side, judging does not cause any additional component miss: the component miss rate is 0.0% with
+675
+     and without judging.
+676
+        Therefore the judges turn high-recall candidates into a more precise result.
+677
+
+678
+        Answer to RQ3. The two judges together reject 144.3 distinct false positives while losing 9.7679
+       true links; removing both costs 15pp link-level F1 but only 6pp link-level F2 after rounding. Thus,680
+       judging primarily exchanges a small amount of recall for substantially higher precision.681
+
+682
+683    6.4  Answer to RQ4
+684   ArchLinker links through two recovery routes over one shared alias table, so it is ablated by route
+685   and by shared knowledge: named-reference route, coreference route, and the alias table. Table 6
+
+686
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 15 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             15
+
+
+687                                        Table 6. RQ4 module ablation
+
+688
+
+689                                           doc-model                       doc-code
+690                 Variant                   Prec./Rec.; F1/F2 CMR%  Prec./Rec.; F1/F2  worst F1/F2  harm. F1/F2
+691
+                      Full                       .91/.97 ; .94/.95    0.0    .86/.91 ; .88/.90     .76/.78      .91/.91
+692
+               name linker only          .91/.88 ; .90/.89    0.0     .85/.83 ; .83/.83      .69/.66        .86/.84
+693                 coreference linker only   .89/.17 ; .28/.20    36.3     .89/.17 ; .27/.20      .01/.01        .03/.02
+694            No knowledge            .95/.81 ; .87/.83    10.8    .92/.71 ; .77/.73      .44/.41        .52/.51
+
+695
+
+696
+
+697
+698    reports the four variants on both tasks, each on the reference metrics and on that task’s size-aware
+699    metric.
+700      named-reference route alone reaches a doc-model average F1 of 0.90 and average F2 of 0.89,
+701    already above SWATTR’s 0.80: the named route for written names beats the lexical baseline on its
+702   own. Adding coreference route raises them to 0.94 and 0.95, and what it adds is recall: doc-model
+703    recall rises from 0.88 to 0.97 while precision is 0.91 in both configurations after rounding. Its 7pp
+704    F2 gain is about 1.6 times its 4pp F1 gain. named-reference route contributes 151 true positives no
+705    other route reaches and coreference route another 15. The component-level scores move with it.
+706   With named-reference route alone the worst-component F1 falls from 0.76 to 0.69 and the harmonic
+707   per-component F1 from 0.91 to 0.86, against 5pp of doc-code file F1 after rounding. When scored
+708    alone against the full gold standard, coreference route scores far lower, 0.28 average F1 at a 36.3%
+709   component miss rate. That is because its scope: it is supposed to fire on coreference links, and they
+710    are rare.
+711     The no-knowledge variant disables alias discovery while retaining both linkers. The separately
+712   run no-knowledge configuration is 7 pp lower in average F1 (0.94 →0.87) and 12 pp average F2
+713    (0.95 →0.83) on doc-model, in these recorded run sets. The F2 penalty is disproportionately larger
+714    because without the alias table, recall falls from 0.97 to 0.81 as components whose document names
+715     differ from their model names lose all links; F2 weights recall four times as heavily as precision, so
+716    this recall drop hits F2 harder than F1. The component-level differences are larger: worst-component
+717    F1 falls from 0.76 to 0.44 (−32pp) and the harmonic per-component F1 from 0.91 to 0.52 (−39pp),
+718    against −11pp of doc-code file F1, and the component miss rate rises from 0.0% to 10.8%. The effect
+719     is concentrated rather than spread: the three components whose doc-code F1 falls to 0 without
+720    the table, MediaStore’s DB and "Reencoding", and TeaStore’s ImageProvider, account for 47.5%,
+721   1.7% and 45.3% of their project’s gold doc-code links, respectively. Therefore the modules are
+722   complementary rather than interchangeable, and the knowledge module raises component-level
+723    scores that the standard metric shows little of.
+724
+725      Answer to RQ4. named-reference route alone beats SWATTR; coreference route lifts average
+726     F1 from 0.90 to 0.94 and average F2 from 0.89 to 0.95. The separate no-knowledge comparison
+727      differs by 7pp average F1 and 12pp average F2 after rounding. The full configuration exceeds the
+728    no-knowledge configuration by 32pp of worst-component F1.
+729
+
+730
+      6.5  Summary
+731
+732    Together, RQ1–RQ4 show that the workflow, the judges, and the shared alias table each contribute
+733    to the final result, and that the size-aware suite exposes component-level differences the standard
+734    metric hides. We discuss the threats to validity in Section 7.3.
+
+735
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 16 ===
+       16                                                                                              Anon.
+
+
+736   7  DISCUSSION
+737    7.1  Implications
+738
+         For researchers. Architectural traceability research should account for uneven link distributions
+739
+      across components, documents, artifact types, and other relevant groupings. As tracing extends
+740
+      across abstraction levels and into larger or more fine-grained artifact spaces, aggregate results can be
+741
+      dominated by densely represented regions and conceal failures in sparsely represented groups. Our
+742
+     framework supports studying this behavior by evaluating recovery at multiple scopes and inspecting
+743
+      candidate generation, contextual judgment, and downstream mapping separately. Researchers can
+744
+      therefore locate where performance changes as distributions become more uneven or the tracing
+745
+      scope broadens, and report results for relevant subsets alongside aggregate performance.
+746
+747      For practitioners. ArchLinker lets practitioners configure the precision–recall trade-offby en-
+748    abling or disabling the judges. Disabling both judges raises recall by 3 pp but lowers precision by
+749    24 pp (RQ3); practitioners whose cost of missing a link is high can run the unjudged variant and re-
+750   view the extra candidates. On the five benchmark projects, the total inference cost is approximately
+751    US$0.47 at current GPT-5.6-terra pricing, comparable to Artemis’s US$0.32 (Table 3).
+752     The size-aware metrics require no extra annotation beyond the existing gold standard and can
+753    serve as a diagnostic: they show which components a tool under-serves, directing human review
+754   where it is most needed.
+755
+756    7.2  Remaining Weaknesses
+757   ArchLinker does not solve the whole task. Its macro-averaged worst-component F1 on doc-code
+758     is 0.76, and on BigBlueButton it falls to 0.44. BigBlueButton has the highest doc-model Gini
+759    coefficient among the five projects (0.37, Table 1), meaning its doc-model links are the most
+760    unevenly distributed; its 12 components and 87 documentation sentences make uniform coverage
+761     difficult. On Teammates, the worst-component F1 is 0.72, well below the link-level F1 of 0.77.
+762   The size-aware suite makes this headroom visible where the link-level average would suggest
+763    near-saturation.
+764     The MediaStore doc-code result illustrates a limitation of transitive trace link: ArchLinker
+765    gains 2 pp of doc-model F1 over Artemis but loses 6 pp on doc-code F1. A doc-model advantage
+766    concentrated on small components does not survive transitive composition when those components
+767   expand into fewer code files.
+768
+769    7.3  Threats to Validity
+770       Internal validity. The LLM systems are stochastic. So we report scores across three runs per project.
+771    All five benchmark projects are public open-source systems whose source code and documentation
+772    are available on GitHub. The LLM backend has very likely encountered them during pre-training. We
+773    therefore re-ran baseline approach Artemis on the same LLM backend ArchLinker uses. Therefore,
+774   two systems then share the same exposure and use the same model, so what separates them is
+775    the workflow. Secondly, the improvement could come from the extra LLM calls rather than the
+776   workflow itself. The ablations (RQ3, RQ4) rule this out by attributing it to specific modules, each
+777    contributing a non-redundant slice of links. Alias discovery and coreference resolution may benefit
+778      if the model has internalized project-specific vocabulary. A definitive memorization test would
+779    require projects the model has not seen, which is difficult to guarantee for any public system.
+780
+781      External validity. We measure on the five Java systems of the ARDoCo benchmark, the largest
+782    curated one we know of [28]. Results may not transfer to other languages, industrial systems, or
+783    differently written documents. We mitigate this by using all five projects, which span two orders of
+
+784
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 17 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             17
+
+
+785   magnitude in size and several domains, and by keeping ArchLinker free of any benchmark-specific
+786    tuning.
+
+787
+        Construct validity. RQ2 assumes that recovering every component matters to developers; our788
+      size-aware metrics express this through worst-component and harmonic-mean per-component F1789
+     on doc-code, and the component miss rate (CMR) on doc-model, weighted missed component rates.790
+     These are proxies, so we keep the standard link-level F1 as the reference and report the size-aware791
+     view beside it.792
+
+793
+     8  RELATED WORK
+794
+795   ArchLinker sits at the intersection of four areas: traceability link recovery, NLP for requirements
+796    engineering, LLM-based software engineering, and hallucination control in LLM workflows.
+797       Traceability link recovery. Automated traceability link recovery grew out of the requirements-
+798    traceability problem [32, 59], and it is still a long-standing open problem for the community [4].
+799    Lago, Muccini, and van Vliet showed that traces can be maintained to the activities stakeholders
+800   must carry out [40]. For two decades, the main family of trace link recovery methods scored each
+801    artifact pair by textual similarity from information retrieval methods [9, 19]. Examples include
+802    vector-space and probabilistic models [3], latent-semantic indexing [48], artifact-management
+803    variants [18], and test-to-code recovery [57, 58]. On the practical side, previous work estimated
+804   how many links are still missing [25], showed that the links pay off during maintenance [46],
+805   and identified the factors behind successful traceability maintenance [49]. manage traceability
+806    information models in practice [50]. Links embedded in commit messages also evolve and decay over
+807    time [69]. The learning-based ones include fused textual and structural signals [52], hierarchical
+808    Bayesian networks [53], multi-layered bug-to-fix recovery [55], and pre-trained BERT encoders [42].
+809   On the architecture side, the documentation, model, and code must stay consistent [13, 15, 41],
+810   and an architecture-centric lifecycle frames how requirements reach code [10]. Design-decision
+811    rationale can be codified with tool support [12], and the community has examined how to sustain this
+812   knowledge over time [14]. Architecture-based testing checks the code against the description [54].
+813   The ARDoCo line sets the benchmark and the doc-model-code pipeline we compare against [38, 39].
+814   Artemis extends it with LLM-based entity extraction: it builds an entity list from the document and
+815   matches entities to the model by name and embedding similarity [30]. Although Artemis extracts
+816    knowledge, its link decision is a similarity threshold, not a judgment against the sentence’s evidence.
+817   So a plausible match that the sentence does not support still becomes a link. LiSSA classifies each
+818    documentation-and-target pair with one LLM call augmented by retrieval [29]. The classification is
+819    also unverified. ArchLinker differs from both by pairing each candidate generator with a judge that
+820    receives the evidence the candidate rests on.
+821
+822      NLP4RE.. The recurring obstacle for trace-link recovery is the vocabulary gap: a single concept
+823   can appear under many surface forms. The requirements-engineering community addresses this
+824   with NLP techniques. Examples include glossary-term extraction [5], NLP-based change-impact
+825    analysis over natural-language requirements [6], and practical guidelines for selecting NLP tech-
+826    niques in requirements engineering [60]. Recent work applies LLMs to improve requirements
+827    completeness [44, 45]. Mahmoud and Niu found that only focused semantic relationships help close
+828    the vocabulary gap for IR-based tracing [47], and text-retrieval work rewrites queries to bridge
+829    the same kind of mismatch [33]. Island parsing extracts structured fragments from the same noisy
+830    artifacts [7]. Polysemy in identifier and requirement terms further hinders automated tracing [66],
+831   and domain-specific corpora improve how ambiguity is handled [24]. AI-based question answering
+832   has been applied to analyze natural-language requirements [23], and collaborative traceability
+
+833
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 18 ===
+       18                                                                                              Anon.
+
+
+834   management studies show the organizational factors that determine whether traces survive in
+835    practice [68]. Prior work also treats implicit references as a defect to flag [22].
+
+836
+837     LLM4SE. LLMs now drive many software-engineering tasks [8, 27, 34]. Practitioners have begun
+838    to adopt these models in practice [65, 70], including for code review [64]. The closest task is code
+839    search, which aims to match natural-language text like requirement or documentation to the
+840   code that implements it [51]. Neural models add code summarization [36] and learned semantic
+841    search [11, 61]. Spec2Code maps protocol specifications to function-level code using LLM-guided
+842    search [67]. Etezadi et al. showed that LLM prompting can match fine-tuned classifiers on legal
+843    requirements traceability [21]. Surveys show the move from IR-based to neural code search [43],
+844   and retrieval-augmented search now calls LLMs directly [16]. Outdated code-element references in
+845    repository documentation compound the evaluation challenge [62]. Treude and Storey note that
+846    generative AI raises new evaluation challenges for this entire line of work [63].
+847
+848      Hallucination control in LLM workflows. The main risk of LLM workflows is hallucination. Prior
+849   work addresses this through grounding and detection. Retrieval grounding supplies supporting
+850   documents before the call [20, 37], generate-then-validate predicts types and checks them post
+851   hoc [56], and metamorphic detection compares outputs under input perturbations [71]. Similar to
+852    these approaches, judges of ArchLinker reject a hallucinated link using the specific evidence the
+853    link rests on.
+854
+
+855
+         Position of ArchLinker. ArchLinker is the first architecture-to-code traceability link recovery
+856
+      approach that (i) separates a reusable knowledge layer from the linker, (ii) uses implicit references
+857
+      as link evidence under a structural earlier-sentence constraint, and (iii) matches how hard each LLM
+858
+      judge checks a link to how the link was matched. We compare against SWATTR [39], the lexical-
+859
+      pattern line; TransArc [38], the ARDoCo doc-code pipeline; and Artemis [30], the single-pass-LLM
+860
+       line. [67] [21]
+861
+
+862
+863   9 CONCLUSION
+864   This paper presents ArchLinker, to our knowledge the first multi-stage LLM workflow for archi-
+865    tecture document-to-model traceability link recovery that requires no task-specific fine-tuning.
+866   ArchLinker derives an alias table once, then reuses it in two recovery routes—a named-reference
+867    route for written names and name words, and a coreference route for implicit references. Each
+868    route pairs a candidate generator with an evidence-backed judge that rejects links the evidence
+869    does not support. The alias table is critical: without it, worst-component F1 falls by 32 pp and three
+870   components lose all recovery. Alongside the approach we introduce an architecture-driven evalua-
+871    tion suite that adds per-component measures to the standard link-level metric on doc-code, and
+872    the component miss rate (CMR) on doc-model. On the ARDoCo benchmark, ArchLinker reaches a
+873   doc-model average F1 of 0.936, 13 pp above the strongest baseline run on the same backend, and
+874    carries this gain through to a doc-code average F1 of 0.879 (+7 pp). Under the size-aware suite
+875    this lead widens to +30 pp worst-component F1 and +28 pp harmonic-mean per-component F1.
+876    ArchLinker’s macro-averaged worst-component F1 is 0.76, well below its link-level F1, so the suite
+877    also keeps this headroom visible where the standard metric alone would not.
+878
+
+879
+    DATA AVAILABILITY STATEMENT
+880
+881   Code, data, and results are in the replication package [2].
+
+882
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 19 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             19
+
+
+883   REFERENCES
+884      [1] Orlando Amaral, Sallam Abualhaija, Damiano Torre, Mehrdad Sabetzadeh, and Lionel C. Briand. 2022. AI-Enabled
+885         Automation for Completeness Checking of Privacy Policies . IEEE Transactions on Software Engineering 48, 11 (Nov.
+886           2022), 4647–4674.  https://doi.org/10.1109/TSE.2021.3124332
+         [2] Anonymous. 2025. Replication Package: TODOTODO. todo todo.
+887
+         [3] Giuliano Antoniol, Gerardo Canfora, Gerardo Casazza, Andrea De Lucia, and Ettore Merlo. 2002. Recovering Trace-
+888           ability Links between Code and Documentation. IEEE Transactions on Software Engineering 28, 10 (2002), 970–983.
+889          https://doi.org/10.1109/TSE.2002.1041053
+890      [4] G. Antoniol, J. Cleland-Huang, J. H. Hayes, and M. Vierhauser. 2017. Grand Challenges of Traceability: The Next Ten
+891           Years. arXiv preprint arXiv:1710.03129. https://doi.org/10.48550/arXiv.1710.03129 arXiv:1710.03129
+         [5] Chetan Arora, Mehrdad Sabetzadeh, Lionel Briand, and Frank Zimmer. 2017. Automated Extraction and Clustering of
+892
+            Requirements Glossary Terms. IEEE Transactions on Software Engineering 43, 10 (2017), 918–945.  https://doi.org/10.
+893          1109/TSE.2016.2635134
+894      [6] Chetan Arora, Mehrdad Sabetzadeh, Arda Göknil, Lionel C. Briand, and Frank Zimmer. 2015. Change Impact Analysis
+895           for Natural Language Requirements: An NLP Approach. In IEEE International Requirements Engineering Conference
+896           (RE). IEEE, 6–15. https://doi.org/10.1109/RE.2015.7320403
+         [7] Alberto Bacchelli, Andrea Mocci, Anthony Cleve, and Michele Lanza. 2017. Mining Structured Data in Natural
+897
+           Language Artifacts with Island Parsing. Science of Computer Programming 150 (2017), 31–55.  https://doi.org/10.1016/j.
+898           scico.2017.06.009
+899      [8] Muneera Bano, Rashina Hoda, Didar Zowghi, and Christoph Treude. 2024. Large language models for qualitative
+900          research in software engineering: exploring opportunities and challenges. Automated Software Engineering 31, 1,
+901           Article 8 (2024). https://doi.org/10.1007/s10515-023-00407-8
+         [9] Gabriele Bavota, Andrea De Lucia, Rocco Oliveto, and Genoveffa Tortora. 2014. Enhancing software artefact traceability
+902
+            recovery processes with link count information. Information and Software Technology 56, 2 (2014), 163–182.  https:
+903           //doi.org/10.1016/j.infsof.2013.08.004
+904     [10] Antonio Bucchiarone, Davide Di Ruscio, Henry Muccini, and Patrizio Pelliccione. 2009. From Requirements to Java
+905         Code: An Architecture-Centric Approach for Producing Quality Systems. In Model-Driven Software Development:
+906           Integrating Quality Assurance. IGI Global, 263–301.  https://doi.org/10.4018/978-1-60566-006-6.ch011
+        [11] N. D. Q. Bui, Y. Yu, and L. Jiang. 2021. Self-Supervised Contrastive Learning for Code Retrieval and Summarization via
+907
+             Semantic-Preserving Transformations. In ACM SIGIR Conference on Research and Development in Information Retrieval
+908           (SIGIR). ACM, New York, NY, USA, 511–521. https://doi.org/10.1145/3404835.3462840
+909     [12]  Rafael Capilla, Juan C. Dueñas, and Francisco Nava. 2010. Viability for codifying and documenting architectural design
+910          decisions with tool support. Journal of Software Maintenance and Evolution: Research and Practice 22, 2 (2010), 81–119.
+911           https://doi.org/10.1002/smr.419
+        [13] Rafael Capilla, Anton Jansen, Antony Tang, Paris Avgeriou, and Muhammad Ali Babar. 2016. 10 years of software
+912
+             architecture knowledge management: Practice and future. Journal of Systems and Software 116 (2016), 191–205.
+913           https://doi.org/10.1016/j.jss.2015.08.054
+914     [14]  Rafael Capilla, Elisa Yumi Nakagawa, Uwe Zdun, and Carlos Carrillo. 2017. Toward Architecture Knowledge Sustain-
+915            ability: Extending System Longevity. IEEE Software 34, 2 (2017), 108–111. https://doi.org/10.1109/ms.2017.54
+916     [15]  R. Capilla, O. Zimmermann, U. Zdun, P. Avgeriou, and J. M. Küster. 2011. An Enhanced Architectural Knowledge
+           Metamodel Linking Architectural Design Decisions to other Artifacts in the Software Engineering Lifecycle. In
+917
+            European Conference on Software Architecture (ECSA). Springer Berlin Heidelberg, Berlin, Heidelberg, 303–318.  https:
+918          //doi.org/10.1007/978-3-642-23798-0_33
+919     [16]  J. Chen, X. Hu, Z. Li, C. Gao, X. Xia, and D. Lo. 2024. Code Search is All You Need? Improving Code Suggestions with
+920        Code Search. In IEEE/ACM International Conference on Software Engineering (ICSE). ACM, New York, NY, USA, 1–13.
+921          https://doi.org/10.1145/3597503.3639085
+        [17] Jane Cleland-Huang, Orlena Gotel, and Andrea Zisman (Eds.). 2012. Software and Systems Traceability. Springer,
+922
+            London.  https://doi.org/10.1007/978-1-4471-2239-5
+923     [18] Andrea De Lucia, Fausto Fasano, Rocco Oliveto, and Genoveffa Tortora. 2007. Recovering Traceability Links in Software
+924           Artifact Management Systems Using Information Retrieval Methods. ACM Transactions on Software Engineering and
+925         Methodology 16, 4, Article 13 (2007). https://doi.org/10.1145/1276933.1276934
+926     [19] Andrea De Lucia, Rocco Oliveto, and Genoveffa Tortora. 2009. Assessing IR-Based Traceability Recovery Tools through
+             Controlled Experiments. Empirical Software Engineering 14, 1 (2009), 57–92. https://doi.org/10.1007/s10664-008-9090-8
+927
+        [20] A. Eghbali and M. Pradel. 2024. De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative
+928         Grounding. arXiv preprint arXiv:2401.01701. https://doi.org/10.48550/arXiv.2401.01701 arXiv:2401.01701
+929     [21] Romina Etezadi, Sallam Abualhaija, Chetan Arora, and Lionel Briand. 2026. Classifier or prompt: A case study on legal
+930          requirements traceability. Empirical Software Engineering 31, 4, Article 85 (July 2026).  https://doi.org/10.1007/s10664-
+
+931
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 20 ===
+       20                                                                                              Anon.
+
+
+932         026-10827-1
+933     [22] Saad Ezzini, Sallam Abualhaija, Chetan Arora, and Mehrdad Sabetzadeh. 2022. Automated Handling of Anaphoric
+           Ambiguity in Requirements: A Multi-Solution Study. In Proc. 44th IEEE/ACM Int. Conf. on Software Engineering (ICSE).934
+         ACM, New York, NY, USA, 187–199. https://doi.org/10.1145/3510003.3510157
+935
+        [23] Saad Ezzini, Sallam Abualhaija, Chetan Arora, and Mehrdad Sabetzadeh. 2023. AI-based Question Answering Assistance
+936           for Analyzing Natural-language Requirements. In IEEE/ACM International Conference on Software Engineering (ICSE).
+937          IEEE, 1277–1289. https://doi.org/10.1109/ICSE48619.2023.00113
+938     [24] Saad Ezzini, Sallam Abualhaija, Chetan Arora, Mehrdad Sabetzadeh, and Lionel C. Briand. 2021. Using Domain-Specific
+           Corpora for Improved Handling of Ambiguity in Requirements. In IEEE/ACM International Conference on Software939
+             Engineering (ICSE). IEEE, 1485–1497. https://doi.org/10.1109/ICSE43902.2021.00133
+940
+        [25] D. Falessi, M. Di Penta, G. Canfora, and G. Cantone. 2017. Estimating the number of remaining links in traceability
+941          recovery. Empirical Software Engineering 22, 3 (2017), 996–1027. https://doi.org/10.1007/s10664-016-9460-6
+942     [26] Jean-Rémy Falleri, Marianne Huchard, Mathieu Lafourcade, Clémentine Nebut, Violaine Prince, and Michel Dao. 2010.
+943         Automatic Extraction of a WordNet-Like Identifier Network from Software. In Proc. 18th IEEE Int. Conf. on Program
+            Comprehension (ICPC). IEEE, 4–13. https://doi.org/10.1109/ICPC.2010.12944
+        [27] A. Fan, B. Gokkaya, M. Harman, M. Lyubarskiy, S. Sengupta, S. Yoo, and J. M. Zhang. 2023. Large Language Models
+945
+              for Software Engineering: Survey and Open Problems. In IEEE/ACM International Conference on Software Engineering:
+946          Future of Software Engineering (ICSE-FoSE). IEEE, 31–53. https://doi.org/10.1109/ICSE-FoSE59343.2023.00008
+947     [28] Dominik Fuchß, Sophie Corallo, Jan Keim, Janek Speit, and Anne Koziolek. 2023. Establishing a Benchmark Dataset
+948           for Traceability Link Recovery Between Software Architecture Documentation and Models. In Software Architecture.
+          ECSA 2022 Tracks and Workshops, Thais Batista, Tomáš Bureš, Claudia Raibulet, and Henry Muccini (Eds.). Springer949
+             International Publishing, Cham, 455–464.  https://doi.org/10.1007/978-3-031-36889-9_30
+950
+        [29] Dominik Fuchß, Tobias Hey, Jan Keim, Haoyu Liu, Niklas Ewald, Tobias Thirolf, and Anne Koziolek. 2025. LiSSA: Toward
+951         Generic Traceability Link Recovery Through Retrieval-Augmented Generation. In 2025 IEEE/ACM 47th International
+952          Conference on Software Engineering (ICSE). IEEE, 1396–1408. https://doi.org/10.1109/ICSE55347.2025.00186
+953     [30] Dominik Fuchß, Haoyu Liu, Sophie Corallo, Tobias Hey, Jan Keim, Johannes von Geisau, and Anne Koziolek. 2026. Who’s
+         Who? LLM-assisted Software Traceability with Architecture Entity Recognition. ACM Transactions on Autonomous954
+           and Adaptive Systems (April 2026). https://doi.org/10.1145/3807453
+955
+        [31] Tim Gemkow, Miro Conzelmann, Kerstin Hartig, and Andreas Vogelsang. 2018. Automatic Glossary Term Extraction
+956         from Large-Scale Requirements Specifications. In Proc. 26th IEEE Int. Requirements Engineering Conf. (RE). IEEE,
+957          412–417. https://doi.org/10.1109/RE.2018.00052
+958     [32] Orlena C. Z. Gotel and Anthony C. W. Finkelstein. 1994. An Analysis of the Requirements Traceability Problem. In
+               Proc. 1st Int. Conf. on Requirements Engineering (ICRE). IEEE Comput. Soc. Press, 94–101. https://doi.org/10.1109/ICRE.959
+            1994.292398
+960
+        [33]  S. Haiduc, G. Bavota, A. Marcus, R. Oliveto, A. De Lucia, and T. Menzies. 2013. Automatic Query Reformulations for
+961         Text Retrieval in Software Engineering. In International Conference on Software Engineering (ICSE). IEEE, 842–851.
+962          https://doi.org/10.1109/ICSE.2013.6606630
+963     [34] Xinyi Hou, Yanjie Zhao, Yue Liu, Zhou Yang, Kailong Wang, Li Li, Xiapu Luo, David Lo, John Grundy, and Haoyu
+           Wang. 2024. Large Language Models for Software Engineering: A Systematic Literature Review. ACM Transactions on964
+             Software Engineering and Methodology 33, 8, Article 220 (2024), 79 pages. https://doi.org/10.1145/3695988
+965
+        [35] Matthew J. Howard, Samir Gupta, Lori Pollock, and K. Vijay-Shanker. 2013. Automatically Mining Software-Based,
+966          Semantically-Similar Words from Comment-Code Mappings. In Proc. 10th Working Conf. on Mining Software Repositories
+967          (MSR). IEEE, 377–386. https://doi.org/10.1109/MSR.2013.6624052
+968     [36] X. Hu, G. Li, X. Xia, D. Lo, and Z. Jin. 2018. Deep Code Comment Generation. In IEEE/ACM International Conference
+           on Program Comprehension (ICPC). ACM, New York, NY, USA, 200–210. https://doi.org/10.1145/3196321.3196334969
+        [37] N. Jain, R. Kwiatkowski, B. Ray, M. K. Ramanathan, and V. Kumar. 2024. On Mitigating Code LLM Hallucinations with
+970
+           API Documentation. arXiv preprint arXiv:2407.09726. https://doi.org/10.48550/arXiv.2407.09726 arXiv:2407.09726
+971     [38] Jan Keim, Sophie Corallo, Dominik Fuchß, Tobias Hey, Tobias Telge, and Anne Koziolek. 2024. Recovering Trace Links
+972         Between Software Documentation And Code. In Proceedings of the IEEE/ACM 46th International Conference on Software
+973          Engineering (ICSE ’24). Association for Computing Machinery, New York, NY, USA, 1–13.  https://doi.org/10.1145/
+            3597503.3639130974
+        [39] Jan Keim, Sophie Schulz, Dominik Fuchß, Claudius Kocher, Janek Speit, and Anne Koziolek. 2021.  Trace Link
+975
+            Recovery for Software Architecture Documentation. In Software Architecture, Stefan Biffl, Elena Navarro, Welf Löwe,
+976         Marjan Sirjani, Raffaela Mirandola, and Danny Weyns (Eds.). Springer International Publishing, Cham, 101–116.
+977          https://doi.org/10.1007/978-3-030-86044-8_7
+978     [40]  Patricia Lago, Henry Muccini, and Hans van Vliet. 2009. A scoped approach to traceability management. Journal of
+            Systems and Software 82, 1 (2009), 168–182.  https://doi.org/10.1016/j.jss.2008.08.026979
+
+980
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 21 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             21
+
+
+981     [41]  R. Li, P. Liang, M. Soliman, and P. Avgeriou. 2022. Understanding software architecture erosion: A systematic mapping
+982           study. Journal of Software: Evolution and Process 34, 3, Article e2423 (2022). https://doi.org/10.1002/smr.2423
+        [42]  J. Lin, Y. Liu, Q. Zeng, M. Jiang, and J. Cleland-Huang. 2021. Traceability Transformed: Generating More Accurate983
+            Links with Pre-Trained BERT Models. In IEEE/ACM International Conference on Software Engineering (ICSE). IEEE,
+984
+            324–335. https://doi.org/10.1109/ICSE43902.2021.00040
+985     [43] C. Liu, X. Xia, D. Lo, C. Gao, X. Yang, and J. Grundy. 2022. Opportunities and Challenges in Code Search Tools. Comput.
+986          Surveys 54, 9 (2022), 1–40. https://doi.org/10.1145/3480027
+987     [44] Dipeeka Luitel, Shabnam Hassani, and Mehrdad Sabetzadeh. 2023.  Using Language Models for Enhancing the
+           Completeness of Natural-Language Requirements. In Requirements Engineering: Foundation for Software Quality.988
+             Springer Nature Switzerland, Cham, 87–104. https://doi.org/10.1007/978-3-031-29786-1_7
+989
+        [45] Dipeeka Luitel, Shabnam Hassani, and Mehrdad Sabetzadeh. 2024. Improving requirements completeness: automated
+990           assistance through large language models. Requirements Engineering 29, 1 (2024), 73–95. https://doi.org/10.1007/s00766-
+991         024-00416-3
+992     [46]  Patrick Mäder and Alexander Egyed. 2015. Do Developers Benefit from Requirements Traceability When Evolving and
+            Maintaining a Software System? Empirical Software Engineering 20, 2 (2015), 413–441.  https://doi.org/10.1007/s10664-993
+            014-9314-z
+994
+        [47] Anas Mahmoud and Nan Niu. 2015. On the Role of Semantics in Automated Requirements Tracing. Requirements
+995          Engineering 20, 3 (2015), 281–300. https://doi.org/10.1007/s00766-013-0199-y
+996     [48] Andrian Marcus and Jonathan I. Maletic. 2003.  Recovering Documentation-to-Source-Code Traceability Links
+997         Using Latent Semantic Indexing. In Proc. 25th Int. Conf. on Software Engineering (ICSE). IEEE, 125–135.   https:
+             //doi.org/10.1109/ICSE.2003.1201194998
+        [49] Salome Maro, Anthony Anjorin, Rebekka Wohlrab, and Jan-Philipp Steghöfer. 2016. Traceability Maintenance: Factors
+999
+           and Guidelines. In IEEE/ACM International Conference on Automated Software Engineering (ASE). ACM, New York, NY,
+1000        USA, 414–425. https://doi.org/10.1145/2970276.2970314
+1001    [50]  S. Maro, J.-P. Steghöfer, E. Knauss, J. Horkoff, R. Kasauli, R. Wohlrab, J. L. Korsgaard, F. Wartenberg, N. J. Strøm, and R.
+1002         Alexandersson. 2021. Managing Traceability Information Models: Not Such a Simple Task After All? IEEE Software 38,
+            5 (2021), 101–109. https://doi.org/10.1109/MS.2020.30206511003
+        [51] C. McMillan, M. Grechanik, D. Poshyvanyk, Q. Xie, and C. Fu. 2011.  Portfolio: Finding Relevant Functions and
+1004
+            Their Usage. In International Conference on Software Engineering (ICSE). ACM, New York, NY, USA, 111–120.  https:
+1005         //doi.org/10.1145/1985793.1985809
+1006    [52] C. McMillan, D. Poshyvanyk, and M. Revelle. 2009. Combining textual and structural analysis of software artifacts for
+1007          traceability link recovery. In ICSE Workshop on Traceability in Emerging Forms of Software Engineering (TEFSE). IEEE,
+             41–48. https://doi.org/10.1109/TEFSE.2009.50695821008
+        [53] K. Moran, D. N. Palacio, C. Bernal-Cárdenas, D. McCrystal, D. Poshyvanyk, C. Shenefiel, and J. Johnson. 2020. Improving
+1009
+             the Effectiveness of Traceability Link Recovery using Hierarchical Bayesian Networks. In ACM/IEEE International
+1010         Conference on Software Engineering (ICSE). ACM, New York, NY, USA, 873–885. https://doi.org/10.1145/3377811.3380418
+1011    [54] H. Muccini, A. Bertolino, and P. Inverardi. 2004. Using Software Architecture for Code Testing. IEEE Transactions on
+1012         Software Engineering 30, 3 (2004), 160–171. https://doi.org/10.1109/TSE.2004.1271170
+        [55] A. T. Nguyen, T. T. Nguyen, H. A. Nguyen, and T. N. Nguyen. 2012. Multi-layered approach for recovering links1013
+           between bug reports and fixes. In ACM SIGSOFT International Symposium on the Foundations of Software Engineering
+1014
+              (FSE). ACM, New York, NY, USA, 1–11. https://doi.org/10.1145/2393596.2393671
+1015    [56] M. Pradel, G. Gousios, J. Liu, and S. Chandra. 2020. TypeWriter: Neural Type Prediction with Search-based Validation.
+1016         In ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering
+1017         (ESEC/FSE). ACM, New York, NY, USA, 209–220. https://doi.org/10.1145/3368089.3409715
+        [57] Abdallah Qusef, Gabriele Bavota, Rocco Oliveto, Andrea De Lucia, and David Binkley. 2013. Evaluating test-to-code1018
+               traceability recovery methods through controlled experiments. Journal of Software: Evolution and Process 25, 11 (2013),
+1019
+            1167–1191. https://doi.org/10.1002/smr.1573
+1020    [58] Abdallah Qusef, Gabriele Bavota, Rocco Oliveto, Andrea De Lucia, and Dave Binkley. 2014. Recovering test-to-
+1021        code traceability using slicing and textual analysis. Journal of Systems and Software 88 (2014), 147–168.  https:
+1022          //doi.org/10.1016/j.jss.2013.10.019
+        [59] Balasubramaniam Ramesh and Matthias Jarke. 2001. Toward Reference Models for Requirements Traceability. IEEE1023
+             Transactions on Software Engineering 27, 1 (2001), 58–93. https://doi.org/10.1109/32.895989
+1024
+        [60] Mehrdad Sabetzadeh and Chetan Arora. 2025. Practical Guidelines for the Selection and Evaluation of Natural Language
+1025         Processing Techniques in Requirements Engineering. In Handbook on Natural Language Processing for Requirements
+1026         Engineering. Springer Nature Switzerland, Cham, 407–433. https://doi.org/10.1007/978-3-031-73143-3_15
+1027    [61]  Y. Shi, Y. Yin, Z. Wang, D. Lo, T. Zhang, X. Xia, Y. Zhao, and B. Xu. 2022. How to Better Utilize Code Graphs in
+            Semantic Code Search?. In ACM Joint European Software Engineering Conference and Symposium on the Foundations of1028
+
+1029
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 22 ===
+       22                                                                                              Anon.
+
+
+1030         Software Engineering (ESEC/FSE). ACM, New York, NY, USA, 722–733. https://doi.org/10.1145/3540250.3549087
+1031    [62] Wen Siang Tan, Markus Wagner, and Christoph Treude. 2024. Detecting outdated code element references in software
+             repository documentation. Empirical Software Engineering 29, 1, Article 5 (2024). https://doi.org/10.1007/s10664-023-1032
+            10397-6
+1033
+        [63] Christoph Treude and Margaret-Anne Storey. 2025. Generative AI and Empirical Software Engineering: A Paradigm
+1034           Shift. In IEEE/ACM International Conference on AI-powered Software (AIware). IEEE, 233–239.  https://doi.org/10.1109/
+1035         AIware69974.2025.00033
+1036    [64] Rosalia Tufano, Ozren Dabić, Antonio Mastropaolo, Matteo Ciniselli, and Gabriele Bavota. 2024. Code Review
+            Automation: Strengths and Weaknesses of the State of the Art. IEEE Transactions on Software Engineering 50, 2 (2024),1037
+            338–353. https://doi.org/10.1109/TSE.2023.3348172
+1038
+        [65]  Rosalia Tufano, Antonio Mastropaolo, Federica Pepe, Ozren Dabić, Massimiliano Di Penta, and Gabriele Bavota. 2024.
+1039         Unveiling ChatGPT’s Usage in Open Source Projects: A Mining-based Study. In International Conference on Mining
+1040         Software Repositories (MSR). ACM, New York, NY, USA, 571–583. https://doi.org/10.1145/3643991.3644918
+1041    [66] Wentao Wang, Nan Niu, Hui Liu, and Zhendong Niu. 2018. Enhancing Automated Requirements Traceability by
+             Resolving Polysemy. In IEEE International Requirements Engineering Conference (RE). IEEE, 40–51.  https://doi.org/10.1042
+             1109/RE.2018.00-53
+1043
+        [67] Yuekun Wang, Lili Quan, Xiaofei Xie, Junjie Wang, and Jianjun Chen. 2025. Spec2Code: Mapping Protocol Specification
+1044         to Function-Level Code Implementation. In 2025 40th IEEE/ACM International Conference on Automated Software
+1045         Engineering (ASE). IEEE, 2096–2108. https://doi.org/10.1109/ASE63991.2025.00174
+1046    [68] Rebekka Wohlrab, Eric Knauss, Jan-Philipp Steghöfer, Salome Maro, Anthony Anjorin, and Patrizio Pelliccione. 2020.
+             Collaborative Traceability Management: A Multiple Case Study from the Perspectives of Organization, Process, and1047
+             Culture. Requirements Engineering 25, 1 (2020), 21–45. https://doi.org/10.1007/s00766-018-0306-1
+1048
+        [69] Tao Xiao, Sebastian Baltes, Hideaki Hata, Christoph Treude, Raula Gaikovina Kula, Takashi Ishio, and Kenichi
+1049        Matsumoto. 2023. 18 million links in commit messages: purpose, evolution, and decay. Empirical Software Engineering
+1050          28, 4, Article 91 (2023). https://doi.org/10.1007/s10664-023-10325-8
+1051    [70] Tao Xiao, Hideaki Hata, Christoph Treude, and Kenichi Matsumoto. 2024. Generative AI for Pull Request Descriptions:
+            Adoption, Impact, and Developer Interventions.  Proceedings of the ACM on Software Engineering 1, FSE (2024),1052
+            1043–1065. https://doi.org/10.1145/3643773
+1053
+        [71]  B. Yang, M. A. Al Mamun, J. M. Zhang, and G. Uddin. 2025. Hallucination Detection in Large Language Models with
+1054        Metamorphic Relations. Proceedings of the ACM on Software Engineering 2, FSE (2025), 425–445.  https://doi.org/10.
+1055         1145/3715735
+
+1056
+
+1057
+
+1058
+
+1059
+
+1060
+
+1061
+
+1062
+
+1063
+
+1064
+
+1065
+
+1066
+
+1067
+
+1068
+
+1069
+
+1070
+
+1071
+
+1072
+
+1073
+
+1074
+
+1075
+
+1076
+
+1077
+
+1078
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 23 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             23
+
+
+1079               Table 7. Detailed per-run per-project results for ArchLinker across both backends.
+
+1080
+
+1081                                                doc-model (link)          doc-code (file)     worst comp.  harm. comp.
+
+1082    System                Run    Project   P   R   F1    F2 CMR   P   R   F1    F2    F1      F2    F1       F2
+1083
+        ArchLinker (GPT-5.6-terra) Run 1 MS       .91  1.00   .95   .98    0.0   .85   .88   .87   .88   .72      .74   .96       .96
+1084                               TS      1.00  1.00  1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+1085                        TM       .79   .95   .86   .91    0.0   .80   .75   .77   .76   .72      .61   .81       .79
+                                BBB      .88   .90   .89   .90    0.0   .68   .93   .79   .87   .44      .56   .81       .841086
+                                         JR        .95  1.00   .97   .99    0.0   .97  1.00   .98   .99   .92      .97   .99       .99
+1087
+                            Run 2 MS       .91  1.00   .95   .98    0.0   .85   .88   .87   .88   .72      .74   .96       .96
+1088                               TS      1.00  1.00  1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+1089                        TM       .82   .95   .88   .92    0.0   .80   .74   .77   .75   .72      .61   .81       .79
+1090                             BBB      .88   .90   .89   .90    0.0   .68   .93   .78   .87   .44      .56   .81       .83
+                                         JR        .90  1.00   .95   .98    0.0   .87  1.00   .93   .97   .89      .95   .97       .99
+1091
+                            Run 3 MS       .91  1.00   .95   .98    0.0   .85   .88   .87   .88   .72      .74   .96       .96
+1092
+                                  TS      1.00  1.00  1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+1093                        TM       .80   .93   .86   .90    0.0   .80   .74   .77   .75   .72      .61   .79       .77
+1094                             BBB      .87   .89   .88   .88    0.0   .68   .92   .78   .86   .44      .56   .80       .82
+1095                                     JR       1.00  1.00  1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+        ArchLinker (GPT-5.6-luna)  Run 1 MS       .91   .94   .92   .93    0.0   .84   .80   .82   .80   .65      .65   .93       .921096
+                                  TS        .93   .96   .95   .96    0.0   .97   .96   .96   .96   .91      .86   .97       .97
+1097                        TM       .62   .95   .75   .86    0.0   .77   .84   .80   .82   .30      .47   .66       .73
+1098                             BBB      .79   .81   .80   .80    0.0   .69   .83   .75   .80   .50      .56   .78       .80
+1099                                     JR        .95  1.00   .97   .99    0.0  1.00  1.00  1.00  1.00   .80      .91   .96       .98
+1100                         Run 2 MS       .91   .94   .92   .93    0.0   .84   .80   .82   .80   .65      .65   .93       .92
+                                  TS        .96   .96   .96   .96    0.0  1.00   .96   .98   .97   .91      .86   .98       .97
+1101
+                          TM       .72   .91   .81   .87    0.0   .79   .80   .80   .80   .50      .61   .75       .77
+1102                             BBB      .91   .82   .86   .84    0.0   .77   .91   .84   .88   .67      .56   .85       .84
+1103                                     JR       1.00  1.00  1.00  1.00    0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+1104                         Run 3 MS       .91   .97   .94   .96    0.0   .84   .83   .84   .83   .65      .65   .94       .94
+                                  TS        .93  1.00   .96   .99    0.0   .97  1.00   .99   .99   .92      .97   .99       .991105
+                          TM       .63   .91   .75   .84    0.0   .75   .78   .77   .78   .44      .61   .70       .75
+1106
+                                BBB      .88   .90   .89   .90    0.0   .71   .93   .81   .87   .50      .71   .85       .89
+1107                                     JR        .90  1.00   .95   .98    0.0   .89  1.00   .94   .98   .80      .91   .94       .98
+
+1108
+
+1109
+    A  DETAILED RESULTS
+1110
+1111  We run two language-model backends, GPT-5.6-terra and GPT-5.6-luna, three runs each: both
+1112   ArchLinker and the re-run Artemis baseline are stochastic. The body reports GPT-5.6-terra and the
+1113   five-project, three-run average.
+
+1114
+     A.1  RQ1 and RQ2: Comparison and Architecture-Driven Metrics
+1115
+1116   Table 7 gives the per-run per-project breakdown for ArchLinker on both backends. Table 8 gives
+1117   the corresponding Artemis results, together with the released GPT-5.4 and deterministic TransArc
+1118   reference results.
+
+1119
+
+1120
+
+1121
+
+1122
+
+1123
+
+1124
+
+1125
+
+1126
+
+1127
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 24 ===
+       24                                                                                              Anon.
+
+
+1128   Table 8. Detailed per-run per-project results for Artemis across both backends, with released GPT-5.4 and
+1129    deterministic TransArc reference results.
+
+1130
+1131                                            doc-model (link)         doc-code (file)     worst comp.  harm. comp.
+
+1132    System              Run    Project   P   R  F1  F2 CMR   P   R   F1    F2  F1       F2  F1        F2
+1133
+        Artemis (GPT-5.6-terra) Run 1 MS       .97   .97  .97  .97    0.0   .98   .93   .96   .94  .67       .83  .94        .96
+1134                             TS        .57   .96  .71  .84    0.0   .57   .97   .72   .85  .43       .65  .66        .82
+1135                      TM     1.00   .65  .79  .70    8.8  1.00   .58   .74   .64  .60       .48  .73        .63
+1136                          BBB      .78   .69  .73  .71    0.0   .64   .86   .74   .81  .33       .28  .68        .67
+                                      JR        .80   .89  .84  .87   11.1   .79  1.00   .88   .95  .00       .00  .00        .001137
+                         Run 2 MS       .86   .97  .91  .94    0.0   .89   .93   .91   .92  .67       .83  .94        .961138
+                                TS        .57  1.00  .73  .87    0.0   .58  1.00   .73   .87  .43       .65  .67        .84
+1139
+                        TM       .89   .58  .70  .62   17.5   .95   .56   .71   .62  .00       .00  .00        .00
+1140                          BBB      .74   .65  .69  .66    0.0   .63   .85   .72   .80  .33       .28  .66        .66
+1141                                  JR        .90  1.00  .95  .98    0.0   .97  1.00   .98   .99  .80       .91  .95        .98
+1142                      Run 3 MS       .88   .97  .92  .95    0.0   .90   .93   .92   .93  .92       .88  .99        .99
+1143                             TS        .58   .96  .72  .85    0.0   .58   .97   .73   .86  .43       .65  .67        .82
+                        TM       .87   .70  .78  .73    8.8   .83   .68   .75   .70  .62       .50  .75        .681144
+                             BBB      .89   .76  .82  .78    3.2   .84   .83   .83   .83  .00       .00  .00        .00
+1145
+                                      JR        .78  1.00  .88  .95    0.0   .79  1.00   .88   .95  .80       .91  .88        .95
+1146
+        Artemis (GPT-5.6-luna)  Run 1 MS      1.00   .97  .98  .97    0.0  1.00   .93   .96   .94  .92       .88  .99        .99
+1147                             TS        .57  1.00  .73  .87    0.0   .56  1.00   .72   .87  .43       .65  .67        .83
+1148                      TM       .46   .72  .56  .64    8.8   .58   .73   .64   .69  .57       .60  .67        .74
+1149                          BBB      .65   .66  .66  .66    0.0   .57   .86   .68   .78  .33       .28  .62        .65
+                                      JR        .86  1.00  .92  .97    0.0   .94  1.00   .97   .99  .80       .91  .94        .97
+1150
+                         Run 2 MS      1.00   .94  .97  .95    0.0  1.00   .86   .93   .89  .83       .76  .98        .97
+1151
+                                TS        .57  1.00  .73  .87    0.0   .58  1.00   .74   .88  .43       .65  .67        .83
+1152
+                        TM       .51   .70  .59  .65    0.0   .71   .66   .68   .67  .57       .45  .67        .69
+1153                          BBB      .87   .66  .75  .69    3.2   .84   .76   .80   .78  .00       .00  .00        .00
+1154                                  JR        .75  1.00  .86  .94    0.0   .71  1.00   .83   .92  .73       .87  .83        .93
+1155                      Run 3 MS       .97   .97  .97  .97    0.0   .93   .93   .93   .93  .86       .86  .98        .98
+1156                             TS        .57  1.00  .73  .87    0.0   .58  1.00   .74   .88  .43       .65  .67        .83
+                        TM       .59   .65  .62  .64    8.8   .80   .57   .66   .60  .52       .43  .68        .67
+1157
+                             BBB      .77   .65  .70  .67    0.0   .74   .85   .79   .82  .25       .25  .65        .65
+1158                                  JR        .86  1.00  .92  .97    0.0   .89  1.00   .94   .98  .80       .91  .91        .96
+1159    Artemis (GPT-5.4)      –    MS      1.00   .87  .93  .89    0.0  1.00   .78   .88   .82  .73       .62  .94        .91
+1160                             TS        .95   .74  .83  .78    0.0   .99   .71   .83   .75  .67       .56  .83        .77
+1161                      TM       .77   .70  .73  .71    8.8   .86   .67   .75   .70  .66       .56  .76        .68
+1162                          BBB      .93   .61  .74  .66    3.2   .85   .74   .79   .76  .00       .00  .00        .00
+                                      JR       1.00   .89  .94  .91   11.1  1.00  1.00  1.00  1.00  .00       .00  .00        .00
+1163
+        TransArc†              MS       .94   .55  .69  .60   35.5   .96   .42   .59   .48  .00       .00  .00        .00
+1164
+                                TS      1.00   .74  .85  .78    0.0  1.00   .71   .83   .75  .67       .56  .84        .77
+1165                      TM       .60   .86  .71  .79    0.0   .75   .90   .82   .87  .54       .65  .76        .82
+1166                          BBB      .90   .71  .79  .74    0.0   .82   .84   .83   .84  .57       .45  .84        .80
+1167                                  JR        .90  1.00  .95  .98    0.0   .89  1.00   .94   .98  .80       .91  .94        .98
+1168     †The doc-model columns for TransArc are SWATTR, its deterministic doc-model stage (TransArc has no standalone
+1169                                               doc-model system).
+
+1170
+
+1171
+
+1172
+
+1173
+
+1174
+
+1175
+
+1176
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 25 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             25
+
+
+1177                           Table 9. RQ3 judging configurations by run and backend.
+
+1178
+1179                                                          rejects         keeps            doc-model                       doc-code
+1180     Backend     Run   Judges             FP   TP    TP    FP     Prec./Rec.; F1/F2 CMR%  Prec./Rec.; F1/F2  worst F1/F2  harm. F1/F2
+
+1181     GPT-5.6-terra Run 1  Full                143    9     186    26       .91/.97 ; .94/.96     0.0     .86/.91 ; .88/.90      .76/.77        .91/.92
+                        name judge          99     9     171    23      .74/1.00 ; .84/.92     0.0     .76/.96 ; .84/.90      .56/.70        .82/.90
+1182                                coreference judge     53     1      36     3        .76/.97 ; .85/.92     0.0     .76/.92 ; .83/.88      .63/.75        .84/.89
+1183                   No judge             0     0     195    164      .67/1.00 ; .78/.89     0.0     .71/.96 ; .80/.89      .50/.67        .77/.87
+1184               Run 2  Full                147    9     186    25       .90/.97 ; .93/.96     0.0     .84/.91 ; .87/.89      .75/.77        .91/.91
+                        name judge          99     9     171    23      .74/1.00 ; .84/.92     0.0     .76/.96 ; .84/.90      .56/.70        .82/.90
+1185                           coreference judge     55     1      31     2        .77/.97 ; .85/.92     0.0     .76/.92 ; .83/.88      .68/.77        .87/.90
+1186                   No judge             0     0     195    169      .67/1.00 ; .79/.89     0.0     .72/.96 ; .81/.89      .55/.70        .79/.88
+                   Run 3  Full                143    11     184    24       .92/.96 ; .94/.95     0.0     .87/.91 ; .88/.90      .78/.78        .91/.91
+1187
+                        name judge          99    11     169    23      .75/1.00 ; .84/.92     0.0     .77/.96 ; .84/.90      .56/.70        .82/.90
+1188                           coreference judge     51     2      36     1        .77/.97 ; .86/.92     0.0     .78/.92 ; .84/.88      .68/.76        .86/.89
+                       No judge             0     0     195    165      .67/1.00 ; .79/.89     0.0     .71/.96 ; .81/.89      .55/.70        .78/.88
+1189
+                  Avg   Full               144.3  9.7    185.3   25      .91/.97 ; .94/.95    0.0    .86/.91 ; .88/.90     .76/.78      .91/.91
+1190                   name judge        99    9.7    170.3   23     .75/1.00 ; .84/.92   0.0    .76/.96 ; .84/.90     .56/.70      .82/.90
+1191                        coreference judge   53    1.3    34.3    2      .76/.97 ; .85/.92    0.0    .77/.92 ; .83/.88     .66/.76      .85/.89
+                     No judge           0    0     195   166    .67/1.00 ; .79/.89   0.0    .71/.96 ; .81/.89     .53/.69      .78/.88
+1192
+         GPT-5.6-luna  Run 1  Full                192    17     177    52       .84/.93 ; .88/.91     0.0     .85/.88 ; .87/.88      .63/.69        .86/.88
+1193                     name judge          73    16     163    49       .74/.99 ; .83/.91     0.0     .76/.95 ; .84/.90      .55/.69        .81/.89
+1194                           coreference judge    135    5      55     5        .62/.95 ; .74/.84     0.0     .63/.91 ; .74/.83      .54/.69        .75/.84
+                       No judge             0     0     194    233      .59/1.00 ; .72/.85     0.0     .60/.96 ; .72/.84      .50/.68        .71/.84
+1195               Run 2  Full                198    19     176    29       .90/.93 ; .91/.92     0.0     .88/.89 ; .89/.89      .75/.74        .90/.90
+1196                     name judge          95    18     162    27       .75/.99 ; .84/.92     0.0     .77/.95 ; .84/.90      .56/.69        .82/.90
+                                coreference judge    119    10     45     2        .67/.97 ; .78/.88     0.0     .66/.92 ; .76/.84      .57/.70        .78/.86
+1197
+                       No judge             0     0     195    222      .61/1.00 ; .74/.86     0.0     .60/.96 ; .73/.85      .50/.68        .72/.85
+1198               Run 3  Full                196    12     183    45       .85/.96 ; .90/.93     0.0     .83/.91 ; .87/.89      .66/.77        .88/.91
+1199                     name judge          81    12     165    42      .74/1.00 ; .84/.92     0.0     .76/.96 ; .84/.90      .55/.69        .82/.90
+                                coreference judge    129    2      50     4        .65/.96 ; .76/.86     0.0     .63/.92 ; .74/.84      .56/.69        .77/.86
+1200                   No judge             0     0     195    231      .61/1.00 ; .73/.86     0.0     .61/.96 ; .73/.85      .50/.68        .73/.85
+1201               Avg   Full               195.3  16    178.7   42      .86/.94 ; .90/.92    0.0    .86/.90 ; .87/.89     .68/.73      .88/.90
+                      name judge        83   15.3   163.3  39.3     .74/.99 ; .83/.92    0.0    .76/.95 ; .84/.90     .56/.69      .82/.89
+1202
+                             coreference judge  127.7  5.7    50    3.7     .65/.96 ; .76/.86    0.0    .64/.92 ; .75/.84     .56/.70      .76/.85
+1203                  No judge           0    0    194.7  228.7   .60/1.00 ; .73/.86   0.0    .60/.96 ; .73/.84     .50/.68      .72/.84
+
+1204
+
+1205
+     A.2  RQ3: Judge Contribution
+1206
+1207   Table 9 reports the judge confusion matrix for each run and the average, on both backends.
+
+1208
+
+1209
+
+1210
+
+1211
+
+1212
+
+1213
+
+1214
+
+1215
+
+1216
+
+1217
+
+1218
+
+1219
+
+1220
+
+1221
+
+1222
+
+1223
+
+1224
+
+1225
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 26 ===
+       26                                                                                              Anon.
+
+
+1226                           Table 10. RQ4 ablation by project across both backends.
+
+1227
+
+1228                                                         doc-model             doc-code (file)     worst comp.  harm. comp.
+
+1229    Backend       Variant                    Project   P   R   F1    F2 CMR%   P   R   F1    F2    F1      F2    F1       F2
+1230     GPT-5.6-terra  Full               MS       .91  1.00   .95   .98      0.0   .85   .88   .87   .88   .72      .74   .96       .96
+1231                                     TS      1.00  1.00  1.00  1.00      0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+                              TM       .81   .94   .87   .91      0.0   .80   .74   .77   .75   .72      .61   .80       .78
+1232
+                                     BBB      .87   .90   .89   .89      0.0   .68   .93   .78   .86   .44      .56   .81       .83
+1233                                           JR        .95  1.00   .97   .99      0.0   .95  1.00   .97   .99   .94      .97   .98       .99
+1234                   Full                 Avg     .91   .97   .94   .95     0.0   .86   .91   .88   .90   .76     .78   .91      .91
+1235               name linker only       MS       .90   .90   .90   .90      0.0   .84   .78   .81   .79   .65      .65   .92       .90
+                                        TS      1.00   .78   .88   .81      0.0  1.00   .74   .85   .78   .67      .56   .86       .79
+1236                            TM       .81   .87   .84   .86      0.0   .80   .71   .75   .73   .72      .61   .77       .73
+1237                                  BBB      .87   .87   .87   .87      0.0   .67   .90   .77   .84   .44      .52   .79       .79
+                                               JR        .98  1.00   .99  1.00      0.0   .96  1.00   .98   .99   .96      .98   .99      1.001238
+                name linker only      Avg     .91   .88   .90   .89     0.0   .85   .83   .83   .83   .69     .66   .86      .84
+1239
+                        coreference linker only   MS      1.00   .10   .18   .12     48.4  1.00   .10   .18   .12   .00      .00   .00       .00
+1240                                     TS      1.00   .27   .43   .32     19.8  1.00   .30   .46   .35   .00      .00   .00       .00
+1241                            TM       .90   .22   .34   .25     19.3   .96   .18   .30   .22   .07      .05   .14       .10
+                                     BBB     1.00   .16   .28   .19     38.7   .90   .13   .22   .15   .00      .00   .00       .00
+1242
+                                               JR        .56   .09   .16   .11     55.6   .60   .12   .19   .14   .00      .00   .00       .00
+1243                  coreference linker only Avg     .89   .17   .28   .20    36.3   .89   .17   .27   .20   .01     .01   .03      .02
+
+1244              No knowledge        MS      1.00   .61   .76   .66     35.5  1.00   .47   .64   .53   .00      .00   .00       .00
+                                        TS      1.00   .75   .86   .79     18.5  1.00   .49   .65   .54   .00      .00   .00       .001245
+                              TM       .91   .86   .88   .87      0.0   .96   .69   .80   .73   .72      .61   .80       .75
+1246                                  BBB      .93   .82   .87   .84      0.0   .78   .88   .83   .86   .60      .49   .83       .80
+1247                                           JR        .93  1.00   .96   .99      0.0   .89  1.00   .94   .98   .89      .95   .98       .99
+                No knowledge        Avg     .95   .81   .87   .83    10.8   .92   .71   .77   .73   .44     .41   .52      .511248
+         GPT-5.6-luna  Full               MS       .91   .95   .93   .94      0.0   .84   .81   .82   .81   .65      .65   .94       .93
+1249
+                                        TS        .94   .98   .96   .97      0.0   .98   .97   .98   .97   .91      .90   .98       .98
+1250                            TM       .66   .92   .77   .85      0.0   .77   .81   .79   .80   .41      .56   .70       .75
+1251                                  BBB      .86   .84   .85   .85      0.0   .72   .89   .80   .85   .56      .61   .83       .84
+                                               JR        .95  1.00   .97   .99      0.0   .96  1.00   .98   .99   .87      .94   .97       .99
+1252
+                       Full                 Avg     .86   .94   .90   .92     0.0   .86   .90   .87   .89   .68     .73   .88      .90
+1253               name linker only       MS       .90   .85   .87   .86      0.0   .82   .71   .76   .73   .58      .55   .89       .86
+1254                                     TS        .95   .77   .85   .80      0.0  1.00   .73   .84   .77   .67      .56   .85       .79
+                              TM       .66   .86   .75   .81      0.0   .78   .78   .78   .78   .41      .56   .68       .711255
+                                     BBB      .85   .80   .82   .81      0.0   .72   .86   .78   .83   .55      .52   .80       .80
+1256                                           JR        .95  1.00   .97   .99      0.0   .96  1.00   .98   .99   .87      .94   .97       .99
+1257             name linker only      Avg     .86   .85   .85   .85     0.0   .86   .81   .83   .82   .61     .63   .84      .83
+1258                    coreference linker only   MS      1.00   .37   .53   .42     35.5  1.00   .32   .48   .37   .00      .00   .00       .00
+                                        TS        .95   .42   .57   .47      4.9   .96   .38   .53   .43   .11      .08   .19       .16
+1259
+                              TM       .85   .23   .36   .27     14.0   .93   .21   .34   .25   .11      .08   .22       .16
+1260                                  BBB      .96   .22   .36   .26     33.3   .68   .13   .22   .16   .00      .00   .00       .00
+1261                                           JR        .33   .02   .04   .02     92.6   .33   .04   .07   .05   .00      .00   .00       .00
+                     coreference linker only Avg     .82   .25   .37   .29    36.1   .78   .22   .33   .25   .04     .03   .08      .06
+1262
+                 No knowledge        MS      1.00   .59   .74   .64     35.5  1.00   .45   .62   .51   .00      .00   .00       .00
+1263                                     TS      1.00   .70   .82   .75     18.5  1.00   .43   .60   .49   .00      .00   .00       .00
+1264                            TM       .74   .96   .83   .90      0.0   .93   .80   .86   .83   .48      .62   .75       .77
+                                     BBB      .91   .72   .80   .75      0.0   .79   .86   .82   .85   .56      .52   .81       .78
+1265
+                                               JR       1.00  1.00  1.00  1.00      0.0  1.00  1.00  1.00  1.00  1.00    1.00  1.00      1.00
+1266             No knowledge        Avg     .93   .79   .84   .81    10.8   .94   .71   .78   .73   .41     .43   .51      .51
+1267
+
+1268
+     A.3  RQ4: Module Ablation1269
+1270   Table 10 gives the per-project module ablation on both backends. Table 11, Table 12, Table 13, and
+1271   Table 14 give the per-run and average ablation.
+
+1272
+
+1273
+
+1274
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 27 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             27
+
+
+1275                            Table 11. RQ4 module ablation, run 1, both backends.
+
+1276
+
+1277                                                 doc-model               doc-code (file)      worst comp.   harm. comp.
+1278   Backend        Variant                P   R    F1    F2  CMR%    P   R    F1    F2    F1       F2    F1        F2
+1279
+        GPT-5.6-terra   Full                        .91   .97   .94   .96      0.0    .86   .91   .88   .90   .76      .77   .91       .92
+1280
+                  name linker only          .92    .89    .90    .89      0.0    .86    .83    .84    .83    .70       .67    .87         .85
+1281                    coreference linker only    .91    .17    .28    .20      36.5   .94    .17    .28    .20    .04       .03    .08         .06
+1282              No knowledge           .95    .80    .86    .82      10.8    .92    .71    .77    .73    .44       .40    .52         .51
+1283    GPT-5.6-luna    Full                        .84    .93    .88    .91      0.0    .85    .88    .87    .88    .63       .69    .86         .88
+1284               name linker only          .84    .85    .84    .84      0.0    .85    .80    .82    .81    .56       .58    .81         .81
+                       coreference linker only    .94    .27    .40    .31      32.0    .90    .24    .36    .28    .04       .03    .08         .06
+1285
+                 No knowledge             .93    .77    .83    .79      10.8    .93    .70    .76    .72    .40       .45    .51         .51
+1286
+1287                            Table 12. RQ4 module ablation, run 2, both backends.
+1288
+
+1289
+                                                    doc-model               doc-code (file)      worst comp.   harm. comp.
+1290
+       Backend        Variant                P   R    F1    F2  CMR%    P   R    F1    F2    F1       F2    F1        F21291
+1292    GPT-5.6-terra   Full                        .90   .97   .93   .96      0.0    .84   .91    .87   .89   .75      .77   .91       .91
+1293               name linker only          .91    .89    .89    .89      0.0    .84    .83    .82    .82    .67       .66    .86         .85
+                       coreference linker only    .78    .14    .24    .17      45.3    .76    .13    .21    .15    .00       .00    .00         .00
+1294
+                 No knowledge           .96    .81    .87    .83      10.8    .93    .70    .77    .72    .44       .40    .52         .51
+1295
+       GPT-5.6-luna    Full                        .90    .93    .91    .92      0.0    .88    .89   .89   .89   .75       .74    .90         .90
+1296               name linker only          .90    .85    .87    .86      0.0    .88    .82    .84    .83    .68       .65    .86         .83
+1297                    coreference linker only    .77    .23    .34    .26      39.0    .74    .20    .30    .23    .00       .00    .00         .00
+1298              No knowledge             .92    .81    .84    .82      10.8   .95    .72    .79    .75    .39       .41    .50         .50
+
+1299
+                                Table 13. RQ4 module ablation, run 3, both backends.1300
+
+1301
+1302                                                 doc-model               doc-code (file)      worst comp.   harm. comp.
+
+1303   Backend        Variant                P   R    F1    F2  CMR%    P   R    F1    F2    F1       F2    F1        F2
+1304
+        GPT-5.6-terra   Full                        .92   .96   .94   .95      0.0    .87   .91   .88   .90   .78      .78   .91       .91
+1305               name linker only          .92    .88    .89    .88      0.0    .86    .82    .83    .83    .70       .65    .86         .84
+1306                    coreference linker only   .98    .19    .31    .22      27.3   .98    .20    .32    .24    .00       .00    .00         .00
+1307              No knowledge             .95    .82    .87    .84      10.8    .92    .71    .77    .73    .45       .42    .52         .51
+1308    GPT-5.6-luna    Full                        .85   .96    .90    .93      0.0    .83   .91    .87    .89    .66       .77    .88       .91
+                  name linker only          .85    .86    .85    .86      0.0    .84    .82    .82    .82    .60       .64    .84         .84
+1309
+                       coreference linker only    .74    .26    .37    .29      37.2    .69    .21    .32    .24    .09       .07    .17         .13
+1310
+                 No knowledge             .94    .80    .85    .82      10.8    .95    .71    .79    .74    .43       .43    .52         .52
+1311
+
+1312
+
+1313
+
+1314
+
+1315
+
+1316
+
+1317
+
+1318
+
+1319
+
+1320
+
+1321
+
+1322
+
+1323
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 28 ===
+       28                                                                                              Anon.
+
+
+1324                   Table 14. RQ4 module ablation, average of the three runs, both backends.
+
+1325
+
+1326                                                 doc-model               doc-code (file)      worst comp.   harm. comp.
+1327   Backend        Variant                P   R    F1    F2  CMR%    P   R    F1    F2    F1       F2    F1        F2
+1328
+        GPT-5.6-terra   Full                        .91   .97   .94   .95      0.0    .86   .91   .88   .90   .76      .78   .91       .91
+1329
+                  name linker only          .91    .88    .90    .89      0.0    .85    .83    .83    .83    .69       .66    .86         .84
+1330                    coreference linker only    .89    .17    .28    .20      36.3    .89    .17    .27    .20    .01       .01    .03         .02
+1331              No knowledge           .95    .81    .87    .83      10.8    .92    .71    .77    .73    .44       .41    .52         .51
+1332    GPT-5.6-luna    Full                        .86    .94    .90    .92      0.0    .86    .90    .87    .89    .68       .73    .88         .90
+1333               name linker only          .86    .85    .85    .85      0.0    .86    .81    .83    .82    .61       .63    .84         .83
+                       coreference linker only    .82    .25    .37    .29      36.1    .78    .22    .33    .25    .04       .03    .08         .06
+1334
+                 No knowledge             .93    .79    .84    .81      10.8   .94    .71    .78    .73    .41       .43    .51         .51
+1335
+
+1336
+
+1337
+
+1338
+
+1339
+
+1340
+
+1341
+
+1342
+
+1343
+
+1344
+
+1345
+
+1346
+
+1347
+
+1348
+
+1349
+
+1350
+
+1351
+
+1352
+
+1353
+
+1354
+
+1355
+
+1356
+
+1357
+
+1358
+
+1359
+
+1360
+
+1361
+
+1362
+
+1363
+
+1364
+
+1365
+
+1366
+
+1367
+
+1368
+
+1369
+
+1370
+
+1371
+
+1372
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 29 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             29
+
+
+1373  B PROMPT TEMPLATES
+1374   ArchLinker uses five LLM prompts across its three stages. Placeholders are shown in {braces}.
+1375
+1376   B.1  Alias Discovery
+1377      Alias extraction.
+1378
+             Find all alternative names used for these components in the document.
+1379
+             COMPONENTS: {component names}1380
+1381          Find surface forms the document uses to refer to a single named component
+1382          (introduced short forms, alternate names, or words of multi-word names when
+1383          they alone clearly mean the full name). Reject terms whose ordinary English
+             use dominates.1384
+1385          A fragment of a longer identifier is not an alias: if a term appears only
+1386          as part of a compound or qualified name, do not include it.
+
+1387          DOCUMENT:
+1388         {document sentences, one per line}
+1389          Return JSON:
+1390         {"abbreviations": [{"term": "short_form", "component": "FullComponent"}],
+1391           "synonyms": [{"term": "specific_alternative_name", "component":
+1392          "FullComponent"}]}
+1393          JSON only:
+
+1394
+         Alias judge.
+1395
+             JUDGE: Review these component name mappings for correctness.
+1396
+1397          COMPONENTS: {component names}
+
+1398          PROPOSED MAPPINGS:
+1399         {proposals as JSON}
+1400          An alias is valid when the document establishes an equivalence between a
+1401          phrase and a single named component. It is invalid when the phrase is
+1402          generic vocabulary or identifies anything other than that one component.
+1403          When uncertain, prefer APPROVE.
+1404
+             Return JSON, echoing each approved mapping in full:
+1405         {"approved": [{"term": "term1", "component": "FullComponent"}]}
+1406          JSON only:
+1407
+1408   B.2  named-reference route
+1409    name judge (name judge).
+1410          Validate components in a document.
+1411
+             COMPONENTS: {component names}
+1412
+1413          A trace link holds when a sentence makes an architectural claim about a
+1414          component. A mention that says nothing further about the component still
+1415          counts.
+1416          Each case gives: the expression the sentence uses, the sentence itself,
+1417          supporting evidence, and the target component. The evidence describes what
+1418          the expression is doing; it is not a verdict.
+
+1419            written: how the sentence writes the component’s name. Values: exact
+1420          (full catalog name written as a name), alias (document-established
+
+1421
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 30 ===
+       30                                                                                              Anon.
+
+
+1422          alternate form), part (one word of a multi-word name), qualified name (full
+1423          name inside a longer joined or dotted identifier). A shorter surface leaves
+1424          more readings open but does not make the reading wrong.
+
+1425          Reject only on a positive ground: the sentence asserts nothing of this
+1426          component because the name is doing some other job, or the sentence denies
+1427          what it would otherwise say.
+1428          Some sentences use an ordinary English word that coincides with a
+1429          component’s name. Approve only when the sentence uses that word as the name
+1430          of the component. Capitalization is evidence but not decisive.
+1431          An expression occurring only as part of a longer joined or dotted
+1432          identifier names a piece of that identifier, not a participant in the
+1433          sentence. An expression denoting what a component acts on or produces
+1434          refers to that thing, not to the component.
+1435         {SENTENCES table, included when partial-name cases are present}
+1436
+            Where the sentence does not write the name in full, that a surface can name
+1437
+             this component is not evidence that it does here.
+1438
+1439          For each case, first quote the EXACT words from the sentence the verdict
+1440          rests on, then decide approve true/false.
+1441          CASES:
+1442          Case {i}: "{span}" -> {component name}
+1443            {previous sentence, if any} "{sentence text}"
+1444            Evidence: written={exact|alias|part|qualified name}
+1445          Return JSON:
+1446         {"validations": [{"case": 1, "claim": "<exact quote or none>", "approve":
+1447          true}]}
+1448          JSON only:
+
+1449
+     B.3  coreference route
+1450
+1451      Coreference resolver.
+1452          Resolve references (pronouns and noun phrases that refer back) to
+1453          components.
+1454          COMPONENTS: {component names}
+1455          SENTENCES (the document text the cases are drawn from)
+1456         {sentence table as JSON}
+1457
+             For each TARGET sentence, identify any pronoun or noun phrase in THAT
+1458
+             sentence that refers back to a listed component. Read the TARGET’s context
+1459          in SENTENCES. If a target sentence has no such reference, return no
+1460          resolution for it. Be conservative: only include resolutions you are
+1461          certain about.
+1462
+             Quote the referring expression first, then name the component it points to.
+1463
+1464          Case {i}:
+            TARGET S{sentence number}: {sentence text}
+1465
+1466          Resolve when the surrounding sentences make one component the clear
+1467          antecedent. Avoid resolving when two or more equally plausible antecedents
+1468          exist.
+1469          Return JSON:
+
+1470
+
+               , Vol. 1, No. 1, Article . Publication date: September 2026.
+
+=== PAGE 31 ===
+       ArchLinker: An LLM Workflow for Software Architectural Traceability Link Recovery                             31
+
+
+1471         {"resolutions": [{"case": 1, "sentence": N, "reference": "the server",
+1472          "candidates": ["Name", "OtherName"], "component": "Name",
+1473          "antecedent_sentence": M, "antecedent_text": "exact quote with component
+1474          name"}]}
+            JSON only:1475
+1476      coreference judge (coreference judge).
+1477          Validate coreference links: does the referring expression in this sentence
+1478          actually refer to the named component as an architectural participant?
+1479
+             COMPONENTS: {component names}
+1480
+            Approve only when the sentence contains a genuine referring expression that1481
+             unambiguously points to THIS component and makes an architectural claim
+1482
+             about it. Reject when there is no such expression or when the antecedent
+1483
+             could equally be a different component. An expression denoting what a
+1484          component acts on or produces refers to that thing, not to the component.
+1485          When uncertain, reject.
+1486
+             For each case, first quote the EXACT words that state the architectural
+1487
+             claim (or "none"), then state the strongest ground for rejecting (or
+1488          "none"), then decide.
+1489
+             CASES:
+1490
+             Case {i}: pronoun/role-ref -> {component name}
+1491
+               Claimed reference: "{reference}"
+1492            Claimed antecedent (S{n}): "{antecedent text}"
+1493            {previous sentence, if any} "{sentence text}"
+1494
+             Return JSON:
+1495
+            {"validations": [{"case": 1, "claim": "<exact quote or none>", "objection":
+1496          "<strongest ground to reject, or none>", "approve": true}]}
+1497          JSON only:
+1498
+
+1499
+
+1500
+
+1501
+
+1502
+
+1503
+
+1504
+
+1505
+
+1506
+
+1507
+
+1508
+
+1509
+
+1510
+
+1511
+
+1512
+
+1513
+
+1514
+
+1515
+
+1516
+
+1517
+
+1518
+
+1519
+
+                                                                                                                                      , Vol. 1, No. 1, Article . Publication date: September 2026.

@@ -7,9 +7,13 @@ Python 3** — no `pip install`, no `requirements.txt`.
 
 The canonical arm is **`s_linker126`** on two GPT-5.6 backends:
 **terra = paper body, luna = mirror**. Every engine below defaults to it. Its E2E sweep
-is `results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20260916v2`, which scored the
-`s_linker123` in-set control in the same invocations. The normalized control slots are
-named `s123gctl`; the arm's own slots are named `s126`.
+is `results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20261002` (no-knowledge:
+`greedymerge_noknow_e2e_*_20261002`), run after the name judge's mention clause was
+replaced by `REFERENCE_CLAIM` (`results/mention_counts_round/README.md`). That sweep
+runs s126 alone. The pre-change sweep, `greedymerge_e2e_*_20260916v2`, scored the
+`s_linker123` in-set control in the same invocations; its normalized control slots
+are named `s123gctl`, and they belong to the 09-16 promotion decision, not to the
+reported numbers. The arm's own slots are named `s126`.
 
 **Two per-arm SHAPES, not just per-arm paths.** `rq34.py`'s `PHASE_SETS` gives this arm
 **two** judges (`linker_name.pkl`, `linker_coreference.pkl`) where the pre-union arms have
@@ -44,8 +48,8 @@ export TRANSARC_RESULTS_DIR=$PWD/evaluation/mini-data
 | what | where |
 |---|---|
 | doc-model / doc-code link dumps | `sota-links/{model-doc/aalinker,doc-code/aalinker-composed}/{terra,luna}_s126/run{1,2,3}/` |
-| per-phase state (RQ3/RQ4) | `results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20260916v2/phase_states/s_linker126/` |
-| no-knowledge sweep | `results/greedymerge_noknow_e2e_{terra,luna}_r{1,2,3}_20260916v2/` |
+| per-phase state (RQ3/RQ4) | `results/greedymerge_e2e_{terra,luna}_r{1,2,3}_20261002/phase_states/s_linker126/` |
+| no-knowledge sweep | `results/greedymerge_noknow_e2e_{terra,luna}_r{1,2,3}_20261002/` |
 | RQ4 floor sweep | none on this arm (s110's is `results/onecall_e2e_*_20260902/`) |
 | RQ1/RQ2 output | `evaluation/reports/RQ12_{BIGTABLE,PERPROJECT}.csv` |
 | RQ3/RQ4 output | `evaluation/reports/rq34/s126/` (+ `s126_noknow`, `s126_noknow_luna`) |
@@ -65,8 +69,8 @@ fails if any two disagree.
 # (a) sota slots for this arm, if absent: run CSVs -> extracts -> dump
 python3 evaluation/mini-src/build_alinker_extracts.py --variant s_linker126 \
     --out results/s126_extracts \
-    --model terra results/greedymerge_e2e_terra_r{1,2,3}_20260916v2 \
-    --model luna  results/greedymerge_e2e_luna_r{1,2,3}_20260916v2
+    --model terra results/greedymerge_e2e_terra_r{1,2,3}_20261002 \
+    --model luna  results/greedymerge_e2e_luna_r{1,2,3}_20261002
 EXTRACTS_DIR=$PWD/results/s126_extracts SOTA_LINKS=$PWD/sota-links \
   DUMP_CONFIG=terra_s126 DUMP_MANIFEST_TAG=s126_terra \
   python3 evaluation/mini-src/build_dump.py                       # terra_s126
@@ -352,7 +356,7 @@ a subset of the backends) makes `--csv-root` required, so this run cannot land o
 the arm's reported numbers:
 
 ```bash
-RUNS='greedymerge_noknow_e2e_{model}_r{i}_20260916v2'
+RUNS='greedymerge_noknow_e2e_{model}_r{i}_20261002'
 python3 evaluation/mini-src/rq34.py     --runs-from "$RUNS" --ablation-key s_linker126_noknow \
     --backends terra --csv-root evaluation/reports/rq34/s126_noknow
 python3 evaluation/mini-src/rq34_rq2.py --runs-from "$RUNS" \
@@ -485,8 +489,8 @@ field the table does not print.
 | body RQ3 `tab:rq3-confusion` | `rq3.csv` | `rq3-confusion.tex` | terra, judging configurations, mean of 3 runs |
 | body RQ4 `tab:rq4` | `rq4.csv` | `rq4-results.tex` | terra, macro |
 | appendix `tab:rq3-runs` | `rq3_runs.csv` | `rq3-runs.tex` | both backends, per run + avg |
-| appendix `tab:detailed-perproject` | `bigtable_rq12_perproject.csv` | `big-table-perproject.tex` | both backends, per project + Average |
-| appendix `tab:detailed-perrun` | `bigtable_rq12_perrun.csv` | `big-table-perrun.tex` | both backends, per run + avg |
+| appendix `tab:detailed-approach` | `bigtable_rq12_approach.csv` | `big-table-approach.tex` | approach, both backends, per run × project |
+| appendix `tab:detailed-artemis` | `bigtable_rq12_artemis.csv` | `big-table-artemis.tex` | Artemis, both backends, per run × project; released Artemis and TransArC references |
 | appendix `tab:rq4-perproject` | `bigtable_rq4_perproject.csv` | `rq4-bigtable-perproject.tex` | both backends, per project + Average |
 | appendix `tab:rq4-run{1,2,3}` / `tab:rq4-runavg` | `rq4_run{1,2,3}.csv`, `rq4_runavg.csv` | `rq4-run{1,2,3}.tex`, `rq4-runavg.tex` | both backends, per run |
 

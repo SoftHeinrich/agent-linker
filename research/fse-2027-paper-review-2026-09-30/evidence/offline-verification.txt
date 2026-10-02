@@ -1,0 +1,104 @@
+OK    arm-default   every generator reports arm 's126' (7/7 found)
+OK    sad-code mediastore     file_p=0.9615  file_r=0.4237  file_f1=0.5882  file_f2=0.4771  component_f1=0.7391  component_f2=0.6538  worst_component_f1=0.0000  worst_component_f2=0.0000  harmonic_component_f1=0.0000  harmonic_component_f2=0.0000
+OK    sad-code teastore       file_p=1.0000  file_r=0.7086  file_f1=0.8295  file_f2=0.7525  component_f1=0.8511  component_f2=0.7812  worst_component_f1=0.6667  worst_component_f2=0.5556  harmonic_component_f1=0.8421  harmonic_component_f2=0.7692
+OK    sad-code teammates      file_p=0.7531  file_r=0.9024  file_f1=0.8211  file_f2=0.8680  component_f1=0.7158  component_f2=0.6501  worst_component_f1=0.5366  worst_component_f2=0.6548  harmonic_component_f1=0.7570  harmonic_component_f2=0.8156
+OK    sad-code bigbluebutton  file_p=0.8203  file_r=0.8417  file_f1=0.8309  file_f2=0.8373  component_f1=0.8322  component_f2=0.8031  worst_component_f1=0.5714  worst_component_f2=0.4545  harmonic_component_f1=0.8377  harmonic_component_f2=0.8029
+OK    sad-code jabref         file_p=0.8927  file_r=1.0000  file_f1=0.9433  file_f2=0.9765  component_f1=0.9565  component_f2=0.9821  worst_component_f1=0.8000  worst_component_f2=0.9091  harmonic_component_f1=0.9412  harmonic_component_f2=0.9756
+OK    sad-sam  mediastore     link_p=0.9444  link_r=0.5484  link_f1=0.6939  link_f2=0.5986  component_miss_rate=35.4839
+OK    sad-sam  teastore       link_p=1.0000  link_r=0.7407  link_f1=0.8511  link_f2=0.7812  component_miss_rate=0.0000
+OK    sad-sam  teammates      link_p=0.6049  link_r=0.8596  link_f1=0.7101  link_f2=0.7929  component_miss_rate=0.0000
+OK    sad-sam  bigbluebutton  link_p=0.8980  link_r=0.7097  link_f1=0.7928  link_f2=0.7407  component_miss_rate=0.0000
+OK    sad-sam  jabref         link_p=0.9000  link_r=1.0000  link_f1=0.9474  link_f2=0.9783  component_miss_rate=0.0000
+
+PASS: mini-src/metrics.py reproduces the frozen golden panel (10 cells, sad-code + sad-sam).
+project            file_P     file_R    file_F1    file_F2    comp_F1    comp_F2 worst_C_F1 worst_C_F2  harm_C_F1  harm_C_F2
+----------------------------------------------------------------------------------------------------------------------------
+mediastore         0.9615     0.4237     0.5882     0.4771     0.7391     0.6538     0.0000     0.0000     0.0000     0.0000
+teastore           1.0000     0.7086     0.8295     0.7525     0.8511     0.7812     0.6667     0.5556     0.8421     0.7692
+teammates          0.7531     0.9024     0.8211     0.8680     0.7158     0.6501     0.5366     0.6548     0.7570     0.8156
+bigbluebutton      0.8203     0.8417     0.8309     0.8373     0.8322     0.8031     0.5714     0.4545     0.8377     0.8029
+jabref             0.8927     1.0000     0.9433     0.9765     0.9565     0.9821     0.8000     0.9091     0.9412     0.9756
+----------------------------------------------------------------------------------------------------------------------------
+Average (n=5)      0.8855     0.7753     0.8026     0.7823     0.8189     0.7741     0.5149     0.5148     0.6756     0.6727
+project           link_P    link_R   link_F1   link_F2      CMR%
+----------------------------------------------------------------
+mediastore        0.9444    0.5484    0.6939    0.5986   35.4839
+teastore          1.0000    0.7407    0.8511    0.7812    0.0000
+teammates         0.6049    0.8596    0.7101    0.7929    0.0000
+bigbluebutton     0.8980    0.7097    0.7928    0.7407    0.0000
+jabref            0.9000    1.0000    0.9474    0.9783    0.0000
+----------------------------------------------------------------
+Average (n=5)     0.8695    0.7717    0.7990    0.7783    7.0968
+PASS self-test: TeX comments, numeric tokens, citation stripping, and change detection
+FAIL paper numeric-claim audit: 71 error(s); 219 active statements
+- numeric-statement inventory changed: expected f035029e85319fbaae8338758a65c175829e0054625394ad3d801c38a2307dd7, found c22ea5dcfbcd1142742e5c6bfc73356f7ba8b0eb4a6ff99c15aa177965ceaccc; review the full --report output before accepting the new digest
+- paper/main.tex:159: UNREVIEWED 30 | 28\,pp: Under an architecture-driven suite that adds per-component measures, the gap widens to 30 and 28\,pp.
+- paper/sections/intro.tex:52: UNREVIEWED one: Trace links tie these artifacts together, so a change in one can be followed into the others.
+- paper/sections/intro.tex:55: UNREVIEWED 84\%: Recent \ac{LLM}-based approaches show success, with the strongest reaching 84\% \fone~\cite{fuchs_whos_2025}.
+- paper/sections/intro.tex:58: UNREVIEWED three | 69.3 | 99.3\%: the three largest components hold $69.3$--$99.3\%$ of component-code links.
+- paper/sections/intro.tex:66: UNREVIEWED two: Prior work follows two lines.
+- paper/sections/intro.tex:68: UNREVIEWED one: The \ac{LLM} line, such as LiSSA~\cite{fuchs_lissa_2025}, classifies each documentation-and-target pair with one \ac{LLM} call.
+- paper/sections/intro.tex:74: UNREVIEWED 7.1\%: Furthermore, we found that on the benchmark, baselines abandon up to $7.1\%$ of documented components entirely.
+- paper/sections/intro.tex:84: UNREVIEWED one: These approaches share one root cause: they mainly treat word overlap as the signal for a link.
+- paper/sections/intro.tex:86: UNREVIEWED one: LiSSA classifies each pair in one \ac{LLM} call that discards its own chain of thought.
+- paper/sections/intro.tex:113: UNREVIEWED Three | two: Three parts work together: a shared alias-discovery stage and two recovery routes, each with a candidate generator and a judge.
+- paper/sections/intro.tex:117: UNREVIEWED second | one | second: Splitting the reference forms expands candidate coverage without adding a second judging criterion: both written forms are judged under \emph{one} rule, and what separates them is a field of the evidence rather than a second rubric.
+- paper/sections/intro.tex:121: UNREVIEWED 0.936 | 13 | 0.955 | 13: On the ArDoCo benchmark\cite{fuchs_establishing_2023}, \approach reaches a doc-model \avgfone of $0.936$, $13$\,pp above the strongest baseline \Artemis{} re-run on the same backend, and $0.955$ \avgftwo, $13$\,pp above it~\cite{fuchs_whos_2025,keim_recovering_2024,replication}.
+- paper/sections/intro.tex:122: UNREVIEWED 0.879 | +7 | 0.896 | +5: On doc-code it reaches an \avgfone of $0.879$ ($+7$\,pp) and an \avgftwo of $0.896$ ($+5$\,pp).
+- paper/sections/intro.tex:128: UNREVIEWED second: Our second contribution starts from a measured property of doc-code links: they are highly concentrated across components.
+- paper/sections/intro.tex:130: UNREVIEWED three | 0.7\% | 30.7\%: On the benchmark, excluding the largest three architectural components, the remaining components hold between $0.7\%$ and $30.7\%$ of trace links.
+- paper/sections/intro.tex:147: UNREVIEWED 23 | 8: On doc-code, \approach{} leads \TransArc{} by $23$\,pp on the per-component harmonic mean, against $8$\,pp at the link level.
+- paper/sections/intro.tex:150: UNREVIEWED three: This work makes three contributions:
+- paper/sections/intro.tex:153: UNREVIEWED three: \item an \textbf{architecture-driven evaluation suite} of three size-aware metrics for architecture trace-link recovery. (\autoref{sec:metric}).
+- paper/sections/intro.tex:154: UNREVIEWED 13 | 13 | 7 | 5: \item An \textbf{empirical study} showing that \approach{} improves over the strongest baseline by $13$\,pp \fone\ ($13$\,pp \ftwo) on doc-model and $7$\,pp \fone\ ($5$\,pp \ftwo) on doc-code, with larger gains on the size-aware measures.
+- paper/sections/motivation.tex:7: UNREVIEWED 23 | 24 | 27 | 28: \Description{A MediaStore ground-truth example with documentation sentences on the left, architecture components in the middle, and code-file counts on the right. Sentence 23 links Database to DB, and Sentence 24 refers back to DB with It. Sentence 27 links MediaAccess but not DB because database access describes a responsibility rather than the DB component. Sentence 28 refers back to MediaAccess with it.}
+- paper/sections/motivation.tex:13: UNREVIEWED four: \autoref{fig:example} uses four sentences and their links from the MediaStore benchmark.
+- paper/sections/motivation.tex:15: UNREVIEWED 23 | 24: Sentence~23 writes ``The Database component'' for what the model calls \texttt{DB}, and Sentence~24 refers back to it only as ``It''.
+- paper/sections/motivation.tex:16: UNREVIEWED 27: Sentence~27 names \texttt{MediaAccess} and contains ``database access'', but the gold standard assigns no \texttt{DB} link because the phrase describes a responsibility rather than the component.
+- paper/sections/motivation.tex:17: UNREVIEWED 28: Sentence~28 then refers back to \texttt{MediaAccess} as ``it''.
+- paper/sections/motivation.tex:18: UNREVIEWED three: The excerpt therefore shows three problems: a component whose document name differs from its model name,
+- paper/sections/motivation.tex:19: UNREVIEWED two: two sentences that refer to components without naming them,
+- paper/sections/motivation.tex:79: UNREVIEWED single | hundreds: On JabRef, directories map to files ranging from a single file to hundreds.
+- paper/sections/motivation.tex:80: UNREVIEWED Three | 99.3\%: Three large components expand into $99.3\%$ of the gold links, while
+- paper/sections/motivation.tex:81: UNREVIEWED 0.44\%: \texttt{preferences} component expands into only $0.44\%$ (\autoref{fig:motivation}, left axis).
+- paper/sections/motivation.tex:82: UNREVIEWED three: Link-level \fone\ is therefore dominated by those three.
+- paper/sections/motivation.tex:83: UNREVIEWED 20\% | 46x: Yet 20\% of the documented sentences describe \texttt{preferences}, 46x its share of links.
+- paper/sections/motivation.tex:84: UNREVIEWED 17.6\% | 40x: Similarly, 17.6\% of the code's cross-component dependencies point at it, 40x its link share.
+- paper/sections/motivation.tex:92: UNREVIEWED six: \Description{A combined chart with six JabRef components on a shared horizontal axis.
+- paper/sections/motivation.tex:96: UNREVIEWED three | 5.6: as red squares; Artemis is the mean of three GPT-5.6-terra runs.
+- paper/sections/motivation.tex:97: UNREVIEWED 0.44 | 20: The shaded preferences column has 0.44 percent of gold links, 20 percent of documented
+- paper/sections/motivation.tex:98: UNREVIEWED 17.6 | 0.80 | 0.53: sentences, 17.6 percent of code dependencies, and F1 of 0.80 for TransArc and 0.53 for Artemis.}
+- paper/sections/motivation.tex:103: UNREVIEWED 0.53 | 0.800 | one | three: On JabRef, \Artemis{} is weakest on exactly this component: it scores $0.53$ on \texttt{preferences} against \TransArc{}'s $0.800$, and abandons it entirely in one run of three (\autoref{fig:motivation}, right axis).
+- paper/sections/motivation.tex:104: UNREVIEWED three | 0.9 | 0.44\%: Its \fone\ on the three large components stays near $0.9$, so the link-level average barely changes because \texttt{preferences} only carries $0.44\%$ of the links.
+- paper/sections/motivation.tex:105: UNREVIEWED 1.0 | 4.7 | 4.1: Across the benchmark this reverses the ranking: \Artemis{} leads \TransArc{} by $1.0$pp of link-level \fone\ while behind it by $4.7$pp on the worst component and $4.1$pp on the harmonic mean.
+- paper/sections/motivation.tex:106: UNREVIEWED one: Link-level F1 can therefore rank a tool that covers fewer architectural components above one that covers more
+- paper/sections/motivation.tex:117: UNREVIEWED five: This motivates us to quantify doc-code link concentration across all five projects and introduce size-aware metrics
+- paper/sections/approach.tex:111: UNREVIEWED First: First, to ensure the antecedent is reliable for the reference,
+- paper/sections/approach.tex:121: UNREVIEWED Two | 4 | 3 | 6 | 5: \Description{Two coreference cases shown side by side. The accepted case resolves It in local Sentence 4 to DB using local Sentence 3 as its antecedent. The rejected case treats This in local Sentence 6 as a proposed reference to Reencoding, but the expression instead denotes the conversion operation introduced in local Sentence 5.}
+- paper/sections/approach.tex:125: UNREVIEWED two: The two cases in \autoref{fig:approach-coref} illustrate the coreference judgment.
+- paper/sections/approach.tex:126: UNREVIEWED 4 | 3: In Sentence~4, ``It'' refers to the \texttt{DB} component introduced in local Sentence~3, and the target sentence states an architectural responsibility of that component.
+- paper/sections/approach.tex:128: UNREVIEWED 6 | 5: In the rejected case, ``This'' in local Sentence~6 denotes the conversion operation described in local Sentence~5 rather than unambiguously denoting \texttt{Reencoding}.
+- paper/sections/metric.tex:20: UNREVIEWED 768 | 3{,}888: on JabRef the ratio is $768$ to $3{,}888$.
+- paper/sections/metric.tex:21: UNREVIEWED three | 69.3\% | 99.3\%: Overall, the three largest components hold between $69.3\%$ (BigBlueButton) and $99.3\%$ (JabRef) of the doc-code per-component link assignments.
+- paper/sections/metric.tex:39: UNREVIEWED 1 | 2 | 2: F_\beta = \frac{(1+\beta^2)\,P\,R}{\beta^2\,P + R},
+- paper/sections/metric.tex:94: UNREVIEWED 1 | 2: On doc-code the suite reports worst-component $F_\beta$ and harmonic-mean $F_\beta$, each at both $\beta = 1$ and $\beta = 2$.
+- paper/sections/results.tex:176: UNREVIEWED 0.90 | 0.94 | 0.89 | 0.95: \routeOne{} alone beats SWATTR; \routeTwo{} lifts \avgfone\ from $0.90$ to $0.94$ and \avgftwo\ from $0.89$ to $0.95$.
+- paper/sections/results.tex:177: UNREVIEWED 7 | 12: The separate no-knowledge comparison differs by $7$pp \avgfone\ and $12$pp \avgftwo{} after rounding.
+- paper/sections/results.tex:178: UNREVIEWED 32: The full configuration exceeds the no-knowledge configuration by $32$pp of worst-component \fone.
+- paper/sections/discussion.tex:23: UNREVIEWED 0.76 | 0.44: Its macro-averaged worst-component \fone{} on doc-code is $0.76$, and on BigBlueButton it falls to $0.44$.
+- paper/sections/discussion.tex:24: UNREVIEWED five | 0.37 | 12 | 87: BigBlueButton has the highest doc-model Gini coefficient among the five projects ($0.37$, \autoref{tab:gold_concentration}), meaning its doc-model links are the most unevenly distributed; its $12$ components and $87$ documentation sentences make uniform coverage difficult.
+- paper/sections/discussion.tex:25: UNREVIEWED 0.72 | 0.77: On Teammates, the worst-component \fone{} is $0.72$, well below the link-level \fone{} of $0.77$.
+- paper/sections/discussion.tex:28: UNREVIEWED 2 | 6: The MediaStore doc-code result illustrates a limitation of transitive trace link: \approach{} gains $2$\,pp of doc-model \fone{} over \Artemis{} but loses $6$\,pp on doc-code \fone{}.
+- paper/sections/discussion.tex:36: UNREVIEWED three: The LLM systems are stochastic. So we report scores across three runs per project.
+- paper/sections/discussion.tex:37: UNREVIEWED five: All five benchmark projects are public open-source systems whose source code and documentation are available on GitHub.
+- paper/sections/discussion.tex:40: UNREVIEWED two: Therefore, two systems then share the same exposure and use the same model, so what separates them is the workflow.
+- paper/sections/discussion.tex:48: UNREVIEWED five | one: We measure on the five Java systems of the ARDoCo benchmark, the largest curated one we know of~\cite{fuchs_establishing_2023}.
+- paper/sections/discussion.tex:50: UNREVIEWED five | two: We mitigate this by using all five projects, which span two orders of magnitude in size and several domains, and by keeping \approach{} free of any benchmark-specific tuning.
+- paper/sections/rw.tex:3: UNREVIEWED four: \approach sits at the intersection of four areas: traceability link recovery, NLP for requirements engineering, LLM-based software engineering, and hallucination control in LLM workflows.
+- paper/sections/rw.tex:8: UNREVIEWED two: For two decades, the main family of trace link recovery methods scored each artifact pair by textual similarity from information retrieval methods~\cite{delucia2009assessing,Bavota_2014}.
+- paper/sections/rw.tex:21: UNREVIEWED one: LiSSA classifies each documentation-and-target pair with one \ac{LLM} call augmented by retrieval~\cite{fuchs_lissa_2025}.
+- paper/sections/rw.tex:26: UNREVIEWED single: The recurring obstacle for trace-link recovery is the vocabulary gap: a single concept can appear under many surface forms.
+- paper/sections/rw.tex:58: UNREVIEWED first: \approach is the first architecture-to-code traceability link recovery approach that
+- paper/sections/rw.tex:63: UNREVIEWED single: \TransArc~\cite{keim_recovering_2024}, the ARDoCo doc-code pipeline; and \Artemis~\cite{fuchs_whos_2025}, the single-pass-\ac{LLM} line.
+- paper/sections/conclusion.tex:4: UNREVIEWED first: This paper presents \approach, to our knowledge the first multi-stage \ac{LLM} workflow for architecture document-to-model traceability link recovery that requires no task-specific fine-tuning.
+- paper/sections/conclusion.tex:5: UNREVIEWED two: \approach{} derives an alias table once, then reuses it in two recovery routes---a named-reference route for written names and name words, and a coreference route for implicit references.

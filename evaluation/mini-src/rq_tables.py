@@ -21,8 +21,7 @@ Run the upstream generators first (see HOWTO-REGENERATE-RQ.md):
 Outputs (reports/tex_src/):
     rq1_transposed.csv  rq2.csv  rq3.csv  rq4.csv  -- the BODY tables (body backend; rq3 = mean of 3 runs)
     rq3_runs.csv                   -- RQ3 appendix: both backends, each run + avg in ONE table
-    bigtable_rq12_perproject.csv   -- RQ1+RQ2 appendix: per-project + Average row, both backends
-    bigtable_rq12_perrun.csv       -- RQ1+RQ2 appendix: per-run + avg (approach), both backends
+    bigtable_rq12_{approach,artemis}.csv -- RQ1+RQ2 appendix: separate per-run x per-project tables
     bigtable_rq4_perproject.csv    -- RQ4 appendix: per-project + Average row, both backends
     rq4_run{1,2,3}.csv  rq4_runavg.csv  -- RQ4 appendix: four per-run aggregate tables (both backends)
 """
@@ -69,6 +68,7 @@ MIRROR_SYSTEM = "approach (GPT-5.6-luna)"
 # ArTEMiS on the body backend is the baseline the body tables compare against; the
 # released GPT-5.4 arm stays in the appendix big tables (see BIG_SYSTEMS).
 BASELINE_SYSTEM = "Artemis (GPT-5.6-terra)"
+BASELINE_MIRROR = "Artemis (GPT-5.6-luna)"
 BASELINE_RELEASED = "Artemis (GPT-5.4)"
 # The re-run baseline is stochastic exactly like \approach, so it is scored the same way:
 # three runs, and the tables read their mean. The released GPT-5.4 arm is a single
@@ -479,45 +479,42 @@ BIG_SYSTEMS = [  # (display label, (system, run) key into RQ12_BIGTABLE)
     (BODY_SYSTEM,          (BODY_SYSTEM, "average")),
     (MIRROR_SYSTEM,        (MIRROR_SYSTEM, "average")),
     (BASELINE_SYSTEM,      (BASELINE_SYSTEM, BASELINE_RUN)),
+    (BASELINE_MIRROR,      (BASELINE_MIRROR, "average")),
     (BASELINE_RELEASED,    (BASELINE_RELEASED, "single")),
     ("TransArC",           ("TransArC", "single")),
 ]
 
 
-def build_bigtable_rq12_perproject(big):
-    """Per-project suite for every system, both backends, with a per-system ``Average``
-    summary row carrying the five-project aggregate (the former standalone avg table)."""
-    pp = index(read_csv(RQ12_PERPROJECT), "system", "project")
-    rows = []
-    for label, key in BIG_SYSTEMS:
-        for proj in PROJECTS:
-            s = pp[(label, proj)]
-            rows.append({"system": label, "project": proj, **{c: s[c] for c in SUITE_COLS}})
-        avg = big[key]
-        rows.append({"system": label, "project": "Average", **{c: avg[c] for c in SUITE_COLS}})
-    write_csv("bigtable_rq12_perproject.csv", ["system", "project"] + SUITE_COLS, rows)
-
-
-# (display label, key, runs) -- \approach and the re-run \Artemis{} baseline are both
-# stochastic and run three times; TransArC and the released GPT-5.4 arm are single runs.
 PERRUN_SYSTEMS = [
-    (BODY_SYSTEM,          BODY_SYSTEM,          ["run1", "run2", "run3", "average"]),
-    (MIRROR_SYSTEM,        MIRROR_SYSTEM,        ["run1", "run2", "run3", "average"]),
-    (BASELINE_SYSTEM,      BASELINE_SYSTEM,      ["run1", "run2", "run3", "average"]),
+    (BODY_SYSTEM,          BODY_SYSTEM,          ["run1", "run2", "run3"]),
+    (MIRROR_SYSTEM,        MIRROR_SYSTEM,        ["run1", "run2", "run3"]),
+    (BASELINE_SYSTEM,      BASELINE_SYSTEM,      ["run1", "run2", "run3"]),
+    (BASELINE_MIRROR,      BASELINE_MIRROR,      ["run1", "run2", "run3"]),
     (BASELINE_RELEASED,    BASELINE_RELEASED,    ["single"]),
     ("TransArC",           "TransArC",           ["single"]),
 ]
 
 
-def build_bigtable_rq12_perrun(big):
-    """Whole suite per run for the stochastic systems (the approach on both backends and
-    the re-run \\Artemis{} baseline), each with its mean, plus the single-run baselines. Aggregate over the five projects."""
+def build_bigtable_rq12_split():
+    """Per-run per-project suite for every system, both backends. The body tables
+    already report the per-project averages; this table shows the full run x project
+    grid so the run-to-run spread per project is visible. Split the approach from
+    Artemis and the deterministic reference to keep each float within a page."""
+    pp = index(read_csv(RQ12_PERPROJECT_PERRUN), "system", "run", "project")
     rows = []
     for label, sys_key, runs in PERRUN_SYSTEMS:
         for run in runs:
-            s = big[(sys_key, run)]
-            rows.append({"system": label, "run": run, **{c: s[c] for c in SUITE_COLS}})
-    write_csv("bigtable_rq12_perrun.csv", ["system", "run"] + SUITE_COLS, rows)
+            for proj in PROJECTS:
+                s = pp[(label, run, proj)]
+                rows.append({"system": label, "run": run, "project": proj,
+                             **{c: s[c] for c in SUITE_COLS}})
+    fields = ["system", "run", "project"] + SUITE_COLS
+    approach_systems = {BODY_SYSTEM, MIRROR_SYSTEM}
+    write_csv("bigtable_rq12_approach.csv", fields,
+              [r for r in rows if r["system"] in approach_systems])
+    write_csv("bigtable_rq12_artemis.csv", fields,
+              [r for r in rows if r["system"] not in approach_systems])
+    (TEX_SRC / "bigtable_rq12_combined.csv").unlink(missing_ok=True)
 
 
 # --------------------------------------------------------------------------- #
@@ -616,8 +613,7 @@ def main():
     build_rq3(BODY_BACKEND, "rq3.csv")             # body confusion (body backend, mean of 3)
     build_rq3_runs("rq3_runs.csv")                  # appendix: both backends, each run + avg in one table
     build_rq4()
-    build_bigtable_rq12_perproject(big)             # RQ1/RQ2 per-project + Average (both backends)
-    build_bigtable_rq12_perrun(big)                 # RQ1/RQ2 per-run + avg (both backends)
+    build_bigtable_rq12_split()                  # RQ1/RQ2 per-run x per-project (both backends)
     build_bigtable_rq4_perproject()                 # RQ4 per-project + Average (both backends)
     build_rq4_perrun()                              # RQ4 four per-run tables (run1/2/3 + avg)
     print(f"\n[rq_tables] table CSVs written under {TEX_SRC}", file=sys.stderr)

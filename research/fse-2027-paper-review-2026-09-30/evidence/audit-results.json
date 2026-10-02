@@ -1,0 +1,3757 @@
+{
+  "headline_deltas_pp": {
+    "terra": {
+      "doc_to_model_link_f1": 12.690000000000001,
+      "doc_to_model_link_f2": 12.659999999999993,
+      "doc_to_code_file_f1": 6.5799999999999965,
+      "doc_to_code_file_f2": 5.269999999999997,
+      "doc_to_code_worst_component_f1": 29.599999999999998,
+      "doc_to_code_harmonic_component_f1": 27.579999999999995
+    },
+    "luna": {
+      "doc_to_model_link_f1": 11.609999999999998,
+      "doc_to_model_link_f2": 9.720000000000006,
+      "doc_to_code_file_f1": 7.180000000000009,
+      "doc_to_code_file_f2": 4.539999999999999,
+      "doc_to_code_worst_component_f1": 11.61000000000001,
+      "doc_to_code_harmonic_component_f1": 15.359999999999996
+    }
+  },
+  "gold_counts": {
+    "mediastore": 31,
+    "teastore": 27,
+    "teammates": 57,
+    "bigbluebutton": 62,
+    "jabref": 18
+  },
+  "composition_limits": {
+    "mediastore": {
+      "gold_doc_code": 59,
+      "gold_doc_model_composed": 52,
+      "gold_outside_composition": 7,
+      "composition_outside_gold": 0,
+      "doc_code_recall_of_perfect_doc_model": 0.8813559322033898
+    },
+    "teastore": {
+      "gold_doc_code": 707,
+      "gold_doc_model_composed": 707,
+      "gold_outside_composition": 0,
+      "composition_outside_gold": 0,
+      "doc_code_recall_of_perfect_doc_model": 1.0
+    },
+    "teammates": {
+      "gold_doc_code": 8097,
+      "gold_doc_model_composed": 6380,
+      "gold_outside_composition": 1717,
+      "composition_outside_gold": 0,
+      "doc_code_recall_of_perfect_doc_model": 0.7879461528961343
+    },
+    "bigbluebutton": {
+      "gold_doc_code": 1529,
+      "gold_doc_model_composed": 1746,
+      "gold_outside_composition": 63,
+      "composition_outside_gold": 280,
+      "doc_code_recall_of_perfect_doc_model": 0.9587965990843689
+    },
+    "jabref": {
+      "gold_doc_code": 8268,
+      "gold_doc_model_composed": 8272,
+      "gold_outside_composition": 0,
+      "composition_outside_gold": 4,
+      "doc_code_recall_of_perfect_doc_model": 1.0
+    }
+  },
+  "judge_audit_per_project_run": [
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "mediastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 8
+      },
+      "gate_only_restored_links": 2,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 2,
+      "full": [
+        0.9117647058823529,
+        1.0,
+        0.9538461538461539,
+        0.9810126582278481,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8157894736842105,
+        1.0,
+        0.898550724637681,
+        0.9567901234567899,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8611111111111112,
+        1.0,
+        0.9253731343283582,
+        0.9687499999999999,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 4
+      },
+      "gate_only_restored_links": 4,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 4,
+      "full": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "published_no_judge": [
+        0.75,
+        1.0,
+        0.8571428571428571,
+        0.9375,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.84375,
+        1.0,
+        0.9152542372881356,
+        0.9642857142857143,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 14
+      },
+      "gate_only_restored_links": 9,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 9,
+      "full": [
+        0.7941176470588235,
+        0.9473684210526315,
+        0.864,
+        0.9121621621621621,
+        0.0
+      ],
+      "published_no_judge": [
+        0.36538461538461536,
+        1.0,
+        0.5352112676056338,
+        0.7421874999999999,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.3877551020408163,
+        1.0,
+        0.5588235294117647,
+        0.76,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 3
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 23
+      },
+      "gate_only_restored_links": 12,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 12,
+      "full": [
+        0.875,
+        0.9032258064516129,
+        0.8888888888888888,
+        0.8974358974358975,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5794392523364486,
+        1.0,
+        0.7337278106508875,
+        0.8732394366197183,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6526315789473685,
+        1.0,
+        0.7898089171974523,
+        0.9037900874635569,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "jabref",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9473684210526315,
+        1.0,
+        0.972972972972973,
+        0.989010989010989,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "mediastore",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9117647058823529,
+        1.0,
+        0.9538461538461539,
+        0.9810126582278481,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8857142857142857,
+        1.0,
+        0.9393939393939393,
+        0.9748427672955976,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8857142857142857,
+        1.0,
+        0.9393939393939393,
+        0.9748427672955976,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 7
+      },
+      "gate_only_restored_links": 7,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 7,
+      "full": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "published_no_judge": [
+        0.6923076923076923,
+        1.0,
+        0.8181818181818181,
+        0.9183673469387755,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.84375,
+        1.0,
+        0.9152542372881356,
+        0.9642857142857143,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 17
+      },
+      "gate_only_restored_links": 11,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 11,
+      "full": [
+        0.8181818181818182,
+        0.9473684210526315,
+        0.8780487804878049,
+        0.9183673469387754,
+        0.0
+      ],
+      "published_no_judge": [
+        0.35403726708074534,
+        1.0,
+        0.5229357798165137,
+        0.7326478149100257,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.38,
+        1.0,
+        0.5507246376811594,
+        0.753968253968254,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 22
+      },
+      "gate_only_restored_links": 13,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 13,
+      "full": [
+        0.875,
+        0.9032258064516129,
+        0.8888888888888888,
+        0.8974358974358975,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5740740740740741,
+        1.0,
+        0.7294117647058824,
+        0.8707865168539326,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6526315789473685,
+        1.0,
+        0.7898089171974523,
+        0.9037900874635569,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 1
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9,
+        1.0,
+        0.9473684210526316,
+        0.9782608695652175,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8571428571428571,
+        1.0,
+        0.923076923076923,
+        0.9677419354838709,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8571428571428571,
+        1.0,
+        0.923076923076923,
+        0.9677419354838709,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "mediastore",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9117647058823529,
+        1.0,
+        0.9538461538461539,
+        0.9810126582278481,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8611111111111112,
+        1.0,
+        0.9253731343283582,
+        0.9687499999999999,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8611111111111112,
+        1.0,
+        0.9253731343283582,
+        0.9687499999999999,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 4
+      },
+      "gate_only_restored_links": 4,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 4,
+      "full": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "published_no_judge": [
+        0.75,
+        1.0,
+        0.8571428571428571,
+        0.9375,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.84375,
+        1.0,
+        0.9152542372881356,
+        0.9642857142857143,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 14
+      },
+      "gate_only_restored_links": 8,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 8,
+      "full": [
+        0.803030303030303,
+        0.9298245614035088,
+        0.8617886178861788,
+        0.9013605442176871,
+        0.0
+      ],
+      "published_no_judge": [
+        0.36774193548387096,
+        1.0,
+        0.5377358490566038,
+        0.7441253263707572,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.3877551020408163,
+        1.0,
+        0.5588235294117647,
+        0.76,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 20
+      },
+      "gate_only_restored_links": 13,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 13,
+      "full": [
+        0.873015873015873,
+        0.8870967741935484,
+        0.88,
+        0.8842443729903539,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5585585585585585,
+        1.0,
+        0.7167630057803467,
+        0.8635097493036212,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6326530612244898,
+        1.0,
+        0.775,
+        0.8959537572254336,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "mediastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 4
+      },
+      "gate_only_restored_links": 3,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 3,
+      "full": [
+        0.90625,
+        0.9354838709677419,
+        0.9206349206349206,
+        0.9294871794871794,
+        0.0
+      ],
+      "published_no_judge": [
+        0.775,
+        1.0,
+        0.8732394366197184,
+        0.9451219512195123,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8378378378378378,
+        1.0,
+        0.911764705882353,
+        0.9627329192546585,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 7
+      },
+      "gate_only_restored_links": 7,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 7,
+      "full": [
+        0.9285714285714286,
+        0.9629629629629629,
+        0.9454545454545454,
+        0.9558823529411764,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5625,
+        1.0,
+        0.72,
+        0.8653846153846154,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6585365853658537,
+        1.0,
+        0.7941176470588235,
+        0.9060402684563759,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 48
+      },
+      "gate_only_restored_links": 37,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 37,
+      "full": [
+        0.6206896551724138,
+        0.9473684210526315,
+        0.75,
+        0.8571428571428571,
+        0.0
+      ],
+      "published_no_judge": [
+        0.27860696517412936,
+        0.9824561403508771,
+        0.4341085271317829,
+        0.6526806526806527,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.34146341463414637,
+        0.9824561403508771,
+        0.5067873303167421,
+        0.7142857142857144,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 8
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 21
+      },
+      "gate_only_restored_links": 13,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 13,
+      "full": [
+        0.7936507936507936,
+        0.8064516129032258,
+        0.7999999999999999,
+        0.8038585209003215,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5391304347826087,
+        1.0,
+        0.7005649717514124,
+        0.8539944903581267,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6078431372549019,
+        1.0,
+        0.7560975609756097,
+        0.8857142857142857,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9473684210526315,
+        1.0,
+        0.972972972972973,
+        0.989010989010989,
+        0.0
+      ],
+      "published_no_judge": [
+        0.782608695652174,
+        1.0,
+        0.878048780487805,
+        0.9473684210526316,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.782608695652174,
+        1.0,
+        0.878048780487805,
+        0.9473684210526316,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 1
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 3
+      },
+      "gate_only_restored_links": 3,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 3,
+      "full": [
+        0.90625,
+        0.9354838709677419,
+        0.9206349206349206,
+        0.9294871794871794,
+        0.0
+      ],
+      "published_no_judge": [
+        0.7948717948717948,
+        1.0,
+        0.8857142857142858,
+        0.9509202453987731,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8611111111111112,
+        1.0,
+        0.9253731343283582,
+        0.9687499999999999,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 3
+      },
+      "gate_only_restored_links": 3,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 3,
+      "full": [
+        0.9629629629629629,
+        0.9629629629629629,
+        0.9629629629629629,
+        0.9629629629629628,
+        0.0
+      ],
+      "published_no_judge": [
+        0.627906976744186,
+        1.0,
+        0.7714285714285715,
+        0.8940397350993378,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.675,
+        1.0,
+        0.8059701492537313,
+        0.9121621621621622,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 44
+      },
+      "gate_only_restored_links": 35,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 35,
+      "full": [
+        0.7222222222222222,
+        0.9122807017543859,
+        0.8062015503875969,
+        0.8666666666666667,
+        0.0
+      ],
+      "published_no_judge": [
+        0.29081632653061223,
+        1.0,
+        0.450592885375494,
+        0.6721698113207547,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.35403726708074534,
+        1.0,
+        0.5229357798165137,
+        0.7326478149100257,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 3
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 13
+      },
+      "gate_only_restored_links": 5,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 5,
+      "full": [
+        0.9107142857142857,
+        0.8225806451612904,
+        0.864406779661017,
+        0.8388157894736843,
+        0.0
+      ],
+      "published_no_judge": [
+        0.5344827586206896,
+        1.0,
+        0.6966292134831461,
+        0.8516483516483516,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.5585585585585585,
+        1.0,
+        0.7167630057803467,
+        0.8635097493036212,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "jabref",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 1
+      },
+      "gate_only_restored_links": 1,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 1,
+      "full": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "published_no_judge": [
+        0.782608695652174,
+        1.0,
+        0.878048780487805,
+        0.9473684210526316,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 3
+      },
+      "gate_only_restored_links": 3,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 3,
+      "full": [
+        0.9090909090909091,
+        0.967741935483871,
+        0.9374999999999999,
+        0.9554140127388535,
+        0.0
+      ],
+      "published_no_judge": [
+        0.7948717948717948,
+        1.0,
+        0.8857142857142858,
+        0.9509202453987731,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8611111111111112,
+        1.0,
+        0.9253731343283582,
+        0.9687499999999999,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teastore",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 7
+      },
+      "gate_only_restored_links": 6,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 6,
+      "full": [
+        0.9310344827586207,
+        1.0,
+        0.9642857142857143,
+        0.9854014598540146,
+        0.0
+      ],
+      "published_no_judge": [
+        0.6,
+        1.0,
+        0.7499999999999999,
+        0.8823529411764706,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.6923076923076923,
+        1.0,
+        0.8181818181818181,
+        0.9183673469387755,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 1
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 46
+      },
+      "gate_only_restored_links": 38,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 38,
+      "full": [
+        0.6341463414634146,
+        0.9122807017543859,
+        0.748201438848921,
+        0.8387096774193549,
+        0.0
+      ],
+      "published_no_judge": [
+        0.2766990291262136,
+        1.0,
+        0.4334600760456273,
+        0.6566820276497696,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.3392857142857143,
+        1.0,
+        0.5066666666666666,
+        0.7196969696969697,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 7
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "gate_decision_counts": {
+        "antecedent_form_rejected": 9
+      },
+      "gate_only_restored_links": 5,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 5,
+      "full": [
+        0.875,
+        0.9032258064516129,
+        0.8888888888888888,
+        0.8974358974358975,
+        0.0
+      ],
+      "published_no_judge": [
+        0.543859649122807,
+        1.0,
+        0.7045454545454546,
+        0.8563535911602209,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.5688073394495413,
+        1.0,
+        0.7251461988304093,
+        0.8683473389355743,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 2
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "jabref",
+      "gate_decision_counts": {},
+      "gate_only_restored_links": 0,
+      "gate_only_restored_tp": 0,
+      "gate_only_restored_fp": 0,
+      "full": [
+        0.9,
+        1.0,
+        0.9473684210526316,
+        0.9782608695652175,
+        0.0
+      ],
+      "published_no_judge": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.8181818181818182,
+        1.0,
+        0.9,
+        0.9574468085106381,
+        0.0
+      ],
+      "rejected_fp_still_in_final": 0
+    }
+  ],
+  "mediastore_s27_decisions": [
+    {
+      "run": "run1",
+      "sentence": 27,
+      "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "alias",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    },
+    {
+      "run": "run1",
+      "sentence": 27,
+      "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "whole name",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    },
+    {
+      "run": "run2",
+      "sentence": 27,
+      "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "alias",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    },
+    {
+      "run": "run2",
+      "sentence": 27,
+      "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "whole name",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    },
+    {
+      "run": "run3",
+      "sentence": 27,
+      "component_id": "_5LN7MLg2EeSNPorBlo7x9g",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "alias",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    },
+    {
+      "run": "run3",
+      "sentence": 27,
+      "component_id": "_9eK7YHDrEeSqnN80MQ2uGw",
+      "approved": true,
+      "claim": "The MediaAccess component encapsulates database access for meta-data of audio files",
+      "naming": "whole name",
+      "path": "full_name_judged",
+      "stage": "name_union_judge"
+    }
+  ],
+  "non_earlier_antecedents": [
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "mediastore",
+      "sentence": 19,
+      "antecedent_sentence": 19,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 3,
+      "antecedent_sentence": 3,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 5,
+      "antecedent_sentence": 5,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 22,
+      "antecedent_sentence": 22,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 32,
+      "antecedent_sentence": 32,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 35,
+      "antecedent_sentence": 35,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 15,
+      "antecedent_sentence": 15,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 20,
+      "antecedent_sentence": 20,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 31,
+      "antecedent_sentence": 31,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 47,
+      "antecedent_sentence": 47,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 67,
+      "antecedent_sentence": 68,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 68,
+      "antecedent_sentence": 68,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 101,
+      "antecedent_sentence": 101,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 122,
+      "antecedent_sentence": 122,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 122,
+      "antecedent_sentence": 122,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 123,
+      "antecedent_sentence": 123,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 127,
+      "antecedent_sentence": 127,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 128,
+      "antecedent_sentence": 128,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 129,
+      "antecedent_sentence": 129,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 155,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 168,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 174,
+      "antecedent_sentence": 174,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 175,
+      "antecedent_sentence": 175,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 176,
+      "antecedent_sentence": 176,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 177,
+      "antecedent_sentence": 177,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 8,
+      "antecedent_sentence": 8,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 14,
+      "antecedent_sentence": 14,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 33,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 78,
+      "antecedent_sentence": 78,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 79,
+      "antecedent_sentence": 79,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 11,
+      "antecedent_sentence": 11,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 3,
+      "antecedent_sentence": 3,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 5,
+      "antecedent_sentence": 5,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 22,
+      "antecedent_sentence": 22,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 32,
+      "antecedent_sentence": 32,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 35,
+      "antecedent_sentence": 35,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 15,
+      "antecedent_sentence": 15,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 20,
+      "antecedent_sentence": 20,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 31,
+      "antecedent_sentence": 31,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 101,
+      "antecedent_sentence": 101,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 122,
+      "antecedent_sentence": 122,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 127,
+      "antecedent_sentence": 127,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 155,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 163,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 168,
+      "antecedent_sentence": 168,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 174,
+      "antecedent_sentence": 174,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 175,
+      "antecedent_sentence": 175,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 176,
+      "antecedent_sentence": 176,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 177,
+      "antecedent_sentence": 177,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 185,
+      "antecedent_sentence": 185,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 14,
+      "antecedent_sentence": 14,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 33,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 79,
+      "antecedent_sentence": 79,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 5,
+      "antecedent_sentence": 5,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 11,
+      "antecedent_sentence": 11,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 31,
+      "antecedent_sentence": 31,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 33,
+      "antecedent_sentence": 33,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 3,
+      "antecedent_sentence": 3,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 5,
+      "antecedent_sentence": 5,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 22,
+      "antecedent_sentence": 22,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 32,
+      "antecedent_sentence": 32,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 35,
+      "antecedent_sentence": 35,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 15,
+      "antecedent_sentence": 15,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 20,
+      "antecedent_sentence": 20,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 31,
+      "antecedent_sentence": 31,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 47,
+      "antecedent_sentence": 47,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 101,
+      "antecedent_sentence": 101,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 122,
+      "antecedent_sentence": 122,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 122,
+      "antecedent_sentence": 122,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 123,
+      "antecedent_sentence": 123,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 127,
+      "antecedent_sentence": 127,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 128,
+      "antecedent_sentence": 128,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 129,
+      "antecedent_sentence": 129,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 155,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 163,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 168,
+      "antecedent_sentence": 168,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 174,
+      "antecedent_sentence": 174,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 175,
+      "antecedent_sentence": 175,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 176,
+      "antecedent_sentence": 176,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 177,
+      "antecedent_sentence": 177,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 8,
+      "antecedent_sentence": 8,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 14,
+      "antecedent_sentence": 14,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 78,
+      "antecedent_sentence": 78,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 79,
+      "antecedent_sentence": 79,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 5,
+      "antecedent_sentence": 5,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 10,
+      "antecedent_sentence": 10,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 11,
+      "antecedent_sentence": 11,
+      "accepted": false
+    },
+    {
+      "backend": "terra",
+      "run": "run3",
+      "project": "jabref",
+      "sentence": 12,
+      "antecedent_sentence": 12,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "mediastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "mediastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "mediastore",
+      "sentence": 33,
+      "antecedent_sentence": 35,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 22,
+      "antecedent_sentence": 22,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 22,
+      "antecedent_sentence": 25,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 23,
+      "antecedent_sentence": 25,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 25,
+      "antecedent_sentence": 25,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 29,
+      "antecedent_sentence": 29,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 31,
+      "antecedent_sentence": 31,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 58,
+      "antecedent_sentence": 58,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 66,
+      "antecedent_sentence": 68,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 83,
+      "antecedent_sentence": 83,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 91,
+      "antecedent_sentence": 91,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 93,
+      "antecedent_sentence": 94,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 94,
+      "antecedent_sentence": 94,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 101,
+      "antecedent_sentence": 101,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 137,
+      "antecedent_sentence": 138,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 163,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 168,
+      "antecedent_sentence": 168,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 174,
+      "antecedent_sentence": 174,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 175,
+      "antecedent_sentence": 175,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 176,
+      "antecedent_sentence": 176,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 177,
+      "antecedent_sentence": 177,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 185,
+      "antecedent_sentence": 185,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 8,
+      "antecedent_sentence": 8,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 21,
+      "antecedent_sentence": 21,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 34,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 50,
+      "antecedent_sentence": 50,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 68,
+      "antecedent_sentence": 68,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "bigbluebutton",
+      "sentence": 79,
+      "antecedent_sentence": 79,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 4,
+      "antecedent_sentence": 4,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 6,
+      "antecedent_sentence": 6,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 9,
+      "antecedent_sentence": 9,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 11,
+      "antecedent_sentence": 11,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run1",
+      "project": "jabref",
+      "sentence": 12,
+      "antecedent_sentence": 12,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 23,
+      "antecedent_sentence": 23,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 25,
+      "antecedent_sentence": 25,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 26,
+      "antecedent_sentence": 26,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 29,
+      "antecedent_sentence": 29,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 30,
+      "antecedent_sentence": 30,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "mediastore",
+      "sentence": 33,
+      "antecedent_sentence": 33,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 25,
+      "antecedent_sentence": 25,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 29,
+      "antecedent_sentence": 29,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 58,
+      "antecedent_sentence": 58,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 66,
+      "antecedent_sentence": 68,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 67,
+      "antecedent_sentence": 68,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 68,
+      "antecedent_sentence": 68,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 83,
+      "antecedent_sentence": 83,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 91,
+      "antecedent_sentence": 91,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 93,
+      "antecedent_sentence": 93,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 126,
+      "antecedent_sentence": 127,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 127,
+      "antecedent_sentence": 127,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 145,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 148,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 150,
+      "antecedent_sentence": 155,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 163,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 168,
+      "antecedent_sentence": 169,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 169,
+      "antecedent_sentence": 169,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 185,
+      "antecedent_sentence": 185,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 21,
+      "antecedent_sentence": 21,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 30,
+      "antecedent_sentence": 30,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 34,
+      "antecedent_sentence": 37,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 47,
+      "antecedent_sentence": 52,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 68,
+      "antecedent_sentence": 68,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run2",
+      "project": "jabref",
+      "sentence": 11,
+      "antecedent_sentence": 11,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 1,
+      "antecedent_sentence": 1,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 7,
+      "antecedent_sentence": 7,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 23,
+      "antecedent_sentence": 23,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 25,
+      "antecedent_sentence": 25,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 26,
+      "antecedent_sentence": 26,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 29,
+      "antecedent_sentence": 29,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 30,
+      "antecedent_sentence": 30,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "mediastore",
+      "sentence": 33,
+      "antecedent_sentence": 35,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 18,
+      "antecedent_sentence": 18,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 22,
+      "antecedent_sentence": 22,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 27,
+      "antecedent_sentence": 27,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teastore",
+      "sentence": 37,
+      "antecedent_sentence": 37,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 2,
+      "antecedent_sentence": 2,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 25,
+      "antecedent_sentence": 25,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 29,
+      "antecedent_sentence": 29,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 44,
+      "antecedent_sentence": 47,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 81,
+      "antecedent_sentence": 81,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 83,
+      "antecedent_sentence": 83,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 88,
+      "antecedent_sentence": 88,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 91,
+      "antecedent_sentence": 91,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 93,
+      "antecedent_sentence": 93,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 97,
+      "antecedent_sentence": 97,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 101,
+      "antecedent_sentence": 101,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 155,
+      "antecedent_sentence": 155,
+      "accepted": true
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 163,
+      "antecedent_sentence": 163,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 185,
+      "antecedent_sentence": 185,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "teammates",
+      "sentence": 194,
+      "antecedent_sentence": 194,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 21,
+      "antecedent_sentence": 21,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 36,
+      "antecedent_sentence": 36,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 47,
+      "antecedent_sentence": 52,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": false
+    },
+    {
+      "backend": "luna",
+      "run": "run3",
+      "project": "bigbluebutton",
+      "sentence": 72,
+      "antecedent_sentence": 72,
+      "accepted": true
+    }
+  ],
+  "judge_audit_means": {
+    "terra": {
+      "full": [
+        0.9080672119991006,
+        0.9678739860403698,
+        0.9362330021143885,
+        0.9547544036293683,
+        0.0
+      ],
+      "published_no_judge": [
+        0.669844317282807,
+        1.0,
+        0.7863098487680201,
+        0.8935254756169577,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.7150746283095907,
+        1.0,
+        0.8187979582594386,
+        0.9110225099185792,
+        0.0
+      ],
+      "gate_only_restored_links_five_project_total_mean": 27.666666666666668,
+      "gate_only_restored_tp_five_project_total_mean": 0.0,
+      "gate_only_restored_fp_five_project_total_mean": 27.666666666666668,
+      "rejected_fp_still_in_final_five_project_total_mean": 3.3333333333333335
+    },
+    "luna": {
+      "full": [
+        0.8631967668439788,
+        0.9379215661615209,
+        0.8953008743856729,
+        0.919235761005757,
+        0.0
+      ],
+      "published_no_judge": [
+        0.6001429959554001,
+        0.9988304093567252,
+        0.7308063512523593,
+        0.858963487274084,
+        0.0
+      ],
+      "llm_judges_off_gates_retained": [
+        0.651658140067535,
+        0.9988304093567252,
+        0.7728817274605023,
+        0.885551107182138,
+        0.0
+      ],
+      "gate_only_restored_links_five_project_total_mean": 53.0,
+      "gate_only_restored_tp_five_project_total_mean": 0.0,
+      "gate_only_restored_fp_five_project_total_mean": 53.0,
+      "rejected_fp_still_in_final_five_project_total_mean": 8.666666666666666
+    }
+  },
+  "cost_models": {
+    "approach": [
+      "gpt-5.6-terra"
+    ],
+    "Artemis": [
+      "gpt-5.6-luna"
+    ]
+  },
+  "component_metric_exclusions": [
+    {
+      "project": "mediastore",
+      "run": "run1",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 9
+    },
+    {
+      "project": "mediastore",
+      "run": "run2",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 9
+    },
+    {
+      "project": "mediastore",
+      "run": "run3",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 9
+    },
+    {
+      "project": "teastore",
+      "run": "run1",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 0
+    },
+    {
+      "project": "teastore",
+      "run": "run2",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 0
+    },
+    {
+      "project": "teastore",
+      "run": "run3",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 0
+    },
+    {
+      "project": "teammates",
+      "run": "run1",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 1555
+    },
+    {
+      "project": "teammates",
+      "run": "run2",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 1505
+    },
+    {
+      "project": "teammates",
+      "run": "run3",
+      "predictions_outside_evaluated_components": 0,
+      "fp_outside_evaluated_components": 0,
+      "all_fp": 1505
+    },
+    {
+      "project": "bigbluebutton",
+      "run": "run1",
+      "predictions_outside_evaluated_components": 192,
+      "fp_outside_evaluated_components": 192,
+      "all_fp": 662
+    },
+    {
+      "project": "bigbluebutton",
+      "run": "run2",
+      "predictions_outside_evaluated_components": 199,
+      "fp_outside_evaluated_components": 199,
+      "all_fp": 675
+    },
+    {
+      "project": "bigbluebutton",
+      "run": "run3",
+      "predictions_outside_evaluated_components": 192,
+      "fp_outside_evaluated_components": 192,
+      "all_fp": 662
+    },
+    {
+      "project": "jabref",
+      "run": "run1",
+      "predictions_outside_evaluated_components": 4,
+      "fp_outside_evaluated_components": 4,
+      "all_fp": 254
+    },
+    {
+      "project": "jabref",
+      "run": "run2",
+      "predictions_outside_evaluated_components": 4,
+      "fp_outside_evaluated_components": 4,
+      "all_fp": 1226
+    },
+    {
+      "project": "jabref",
+      "run": "run3",
+      "predictions_outside_evaluated_components": 4,
+      "fp_outside_evaluated_components": 4,
+      "all_fp": 4
+    }
+  ],
+  "gini_counterexamples": [
+    {
+      "values": [
+        1,
+        1,
+        1,
+        1,
+        15.047619047619047
+      ],
+      "gini": 0.59,
+      "largest_over_bottom_80pct": 3.761904761904762
+    },
+    {
+      "values": [
+        0.05,
+        0.1,
+        0.8,
+        1,
+        3.9547619047619045
+      ],
+      "gini": 0.59,
+      "largest_over_bottom_80pct": 2.0280830280830284
+    }
+  ],
+  "harmonic_example": 0.5294117647058824,
+  "weighted_arithmetic_example": 0.8983050847457628,
+  "cmr_counterexample": {
+    "gold_assignments": 1000,
+    "components": 10,
+    "correct_links_one_per_component": 10,
+    "CMR_percent": 0,
+    "recall": 0.01
+  },
+  "input_hashes": {
+    "evaluation/reports/INFERENCE_COST_PERRUN.csv": "d17d39bb536ff7115354efbdb0727e0bd389125ed830a753d5c150411ec1d56b",
+    "evaluation/reports/RQ12_BIGTABLE.csv": "2da8796354e960e16dd9dbe16a8d58ffad6b4f02ad489a72512f186884d650e8",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "31f869edb5aca149fe2e9daf8143a64bf1572146caa5b1e029c661510bcfaa80",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "520033a4e447893e0781822303dfd1fd1b3b19022942b1b84f379b0931faf39a",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "a4c86a0cc8e31ebd6781a1524a9469445c5abaf19786a8dcc8b0ec4e71de6cec",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "a4344440016459b8d2d8ae46547d3a71aa951c093104e30ccad3d50c162d8bb3",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "7e278311d9836db7db9df473a96bccc791dc6aa8d813e8e5f7ff8d882351a43a",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "fb20bc42639aca9472da33a98829d2e4c213e453114bbfcb1ab15c15d6faecf5",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "cacdd97e073242969b12eed4e01340b145dba560b24026c396ece8c52f26bb0a",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "be330dc95cbba343b4766b28982f125c1b3dcbe54412e5e2ffdf8e63badfc610",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "ce4b70a133e2274cf2f87de950309917b7f543f73f729a321919d6140f2e60e6",
+    "results/greedymerge_e2e_luna_r1_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "0d7679498e31172c0278df4f8db4076c2cab5ca96270f41b6abccc67c61c0a01",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "73706e9edd0ecb367675f7c53eb6ac0917b76fa3cd98afa6d9d834e2cc0716f8",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "331229dac577178164f3da1bf161d653e4b5063f33332df4dd103d8c75518f25",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "d78c873b09e5d11f59e81300fb0dd34d56333d248e2d1fe0d79d2d53e874b746",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "79520d1812823374bf68abf478871435a1f1f5e3ae37a191cd0cade65c0ce20e",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "5608fd9721d82532966be0dfcfdb65b67b6534834fa5e1220f0a5fa12b2b37e9",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "9ce5ba995c8b342dd8baa36c3e0df3eb8af89d4a8bb4893f6fdb100db20c9b28",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "383d77d8d54fbc65d13ba52229f33c217d242775dc761fab5d379e052ad0180a",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "1bb4f46f52d98552bc56f2aa6284a9913cadb4d455bb40e808af5e64b8dab9d6",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "25fee011bc0737c2fd52f7a7077c2fbd3dac06db77f432e115e7a725d4d51095",
+    "results/greedymerge_e2e_luna_r2_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "d6d67285a6c98602fe3d491f63d6edeb1fdc6830890463fa966d98b12d2ef258",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "807b3f0c37682e76b0b1d3b6c8919772d87d68fcc3c89da4c3d065a209804bfa",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "b306928dff1d496996488212f72d8c6af6de0e3dd5cead69b5b1a31a2acea842",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "1d342c7ea227d05f17c2ff9b12a77d281ee83b9d79d42b66130db840d921c7ee",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "2f678483d0e065d42993f4ac9d6cf66dd6a5a4be381c36bad6a2f67d4faf2874",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "41bc447503bca2f7890421534522db798b86d892cc103f086002998e6f5a315c",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "36032492b87d5c335d84d30c5eb67c267a83d008d56448d2c855d28789e22773",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "ea1850ffd42e2c3bbd9b75cf0b6ddb81670b23bb70f11f8dea12155823d1ea9b",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "60d456024c9395b3def0332f8a54b91d0a9bb9f50acb08947aa5557fc3391ab4",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "0e9be327604c0ea927ec3285986bac243d55cd7d6a8389ff8114832a99fe1515",
+    "results/greedymerge_e2e_luna_r3_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "d6d67285a6c98602fe3d491f63d6edeb1fdc6830890463fa966d98b12d2ef258",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "281a9ce3173e010dc71ff543fa1e771183f2b29c67dbaa73231c1417297b441a",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "275bed71c48e43532244259cc120ae7f6a00850f8de2aa6047ecfe563d19e0ac",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "a5a15a8ca1aafbd01520ded734a7662a11ee0a623fa488612cb5ee32fc97dc43",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "c0adc40ee9ea7e1b765ebc05152091cbb6b4b7071101b76aee3f2dafa4784331",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "08f5714c4adea62c1b5056d209bc26e91b49e96be8933f83b07880e2f3506b72",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "f91d8674dbf651ba9d9f3733594abe66fa11d17e3561a735aa566f71af9ac2bd",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "badd2b416f35bd1d2e3d826a4b76048a80832cceb3d63a05fc0c1d4f9186a2b9",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "a9bc66e9ee463242f5995b0ec2f2bfef3568d1bd4e64db088b9c3732115e61b6",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "2948ea22f9e8e90052feb911c11ac50ee7055b2a2eb58517a98d578d748e9e26",
+    "results/greedymerge_e2e_terra_r1_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "2e1fb60318cc07ff220e8facf85365bb3991f25fbc73176c721fae2b4628d04b",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "7b8b7fe193ca076093ad78b200fffe45d0f323f5618a37b642ce7d9854ba01d3",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "711ae93e1994d10227eaac423e6f217a3354aa792f6006740afd1935f6301398",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "086171ad05a05e0e89e675420e51d039abe193c9c810886fda6e8f923a769e67",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "4caddc211afbdb4c145a678c1661e029b8d01ec711f53e5526fa95e04e08bb9b",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "2adc75eef8d6bee74448f332a87ef22b6b895a0d542553f8f577cb0c60e6c0a7",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "9f45eec30ad6a5223d323dee7b6a3a3be59eefb8d067e71652fbc7a300cbb129",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "77df732792f399492b59f6640bf7ebbbb572a878a36b90237426ac3cbfa53a31",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "0b7282ef718071eda6e32ae8b50d94ac45c17a28bceb5680e7322670d58f0620",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "f670aa6044915b1c8a9d03223386dd78b429d332a9c2a508b9f40946bf944932",
+    "results/greedymerge_e2e_terra_r2_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "79a57c44e9c72e84b41d06561afd944bfd781f5a24f92f7c906a38d28cea543f",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_coreference.pkl": "6c163162304db10a23e01c94af64745ab6e1569c6d52de7f7d1750d7c4e95798",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/bigbluebutton/linker_name.pkl": "175e5ac5c58d2e34c74bbba29b0c5d0b6b7f0d7c15000f70fbf21ff5a1ffb783",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/jabref/linker_coreference.pkl": "4308fe5d660ea39ade42829e805f5f7d09ee02d8a5c4eaff24545e6a08e1d90b",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/jabref/linker_name.pkl": "8ed3b61f36f0c61c0fba79e5d90223abf4cd2299bd10034f80ddc366ea25d78a",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/mediastore/linker_coreference.pkl": "3cca2aad7a8f913624d972bde9ddf52ea1e93809eee98c9fc6f4183748faaafc",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/mediastore/linker_name.pkl": "2872876bd4bab522e55874f0153dcf571eae75c5ed4b461d479cfad77c2256f6",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/teammates/linker_coreference.pkl": "90e1390b37f8ad056539ea38f46ec386fb1ac3f84dfc516f659db91f9dc26423",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/teammates/linker_name.pkl": "6c1afce08a6de488d26483e19f76c221d82a120595435108c79bf6acd2a46be3",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/teastore/linker_coreference.pkl": "e93c9c98b1493580e47988ee774b963840358cba18a9504f1f5f2a363d5dad0c",
+    "results/greedymerge_e2e_terra_r3_20260916v2/phase_states/s_linker126/openai/teastore/linker_name.pkl": "79a57c44e9c72e84b41d06561afd944bfd781f5a24f92f7c906a38d28cea543f",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run1/bigbluebutton.csv": "11ba31feb0c7d7e155592ec6721360dfee201f7d0ddc3dbbc77daad98d0efd2f",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run1/jabref.csv": "620a61b3441d44258b0e3423bb097bbc4b7b439218bc9c2f77bae12096bb7940",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run1/mediastore.csv": "96009062703210fda8871bed3bc73e276f5dbb888ff1e8fbd8c0bb55c2efed2d",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run1/teammates.csv": "f9bbb9e8a9b08ccc4e3c6d21dfd6ae92629c09b17d6b274cd6fa3afe5d18afd2",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run1/teastore.csv": "12d2ab2ab786d94341abfd790b903a6c4a4ba5500b4a5a87855e3077e2bd6f67",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run2/bigbluebutton.csv": "380d2bf96d438f93dbdc7dd89cfaa16ecfbe817edd05896ceabc41b247f43fd5",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run2/jabref.csv": "100abb0f1b4215fe7a74f334e610f2df64af89706655723f8ca82d25fa3ee3f6",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run2/mediastore.csv": "96009062703210fda8871bed3bc73e276f5dbb888ff1e8fbd8c0bb55c2efed2d",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run2/teammates.csv": "adfdc461e322a1188b7f4f2cbb3e33ea49db95176aaf08458176e12c73099310",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run2/teastore.csv": "12d2ab2ab786d94341abfd790b903a6c4a4ba5500b4a5a87855e3077e2bd6f67",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run3/bigbluebutton.csv": "17654fa34624cda23032901589dd1ead2c94b6532e61d96ea41de73f3120761f",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run3/jabref.csv": "df5adbfee28c4548c19e2d5c0bd7865f79e3d5f0191b7a5723d671af13df931e",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run3/mediastore.csv": "96009062703210fda8871bed3bc73e276f5dbb888ff1e8fbd8c0bb55c2efed2d",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run3/teammates.csv": "28cca249d6af578fd448d979f2eacb6e5dab94caec6722edf222b693691932bb",
+    "sota-links/doc-code/aalinker-composed/terra_s126/run3/teastore.csv": "12d2ab2ab786d94341abfd790b903a6c4a4ba5500b4a5a87855e3077e2bd6f67"
+  }
+}

@@ -436,6 +436,7 @@ SYS_MAP = {"approach": "\\approach{}", "Artemis": "\\Artemis{}",
 BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
               "approach (GPT-5.6-luna)": "\\approach{} (GPT-5.6-luna)",
               "Artemis (GPT-5.6-terra)": "\\Artemis{} (GPT-5.6-terra)",
+              "Artemis (GPT-5.6-luna)": "\\Artemis{} (GPT-5.6-luna)",
               "Artemis (GPT-5.4)": "\\Artemis{} (GPT-5.4)", "TransArC": "\\TransArc{}$^{\\dagger}$"}
 
 #: How many judges this arm has, in words -- the RQ3 caption names it, and s120 has two
@@ -526,7 +527,7 @@ SPECS = [
      "summary_label": "project",
      "block_by": ["project"],
      "colspec": "@{}llccc@{}",
-     "caption": "RQ1 link scores by project on GPT-5.6-terra.",
+     "caption": "RQ1 link scores by project on GPT-5.6-terra. Project abbreviations: MS=MediaStore, TS=TeaStore, TM=Teammates, BBB=BigBlueButton, JR=JabRef.",
      "labels": [{"field": "project", "header": "Project", "map": PROJECT_ABBR, "group_by": True},
                 {"field": "task", "header": "Task", "map": {"DM": "doc-model", "DC": "doc-code"}}],
      "subheaders": ["Precision/Recall; \\fone/\\ftwo"] * 3,
@@ -543,7 +544,7 @@ SPECS = [
     {"csv": "inference_cost_by_system.csv", "out": "inference-cost.tex", "label": "tab:inference-cost",
      "star": True, "colsep": "4pt", "no_bold": True,
      "generate_with": "inference_cost.py + csv_to_tex.py",
-     "caption": "Recorded inference usage per project, averaged over three runs.",
+     "caption": "Averaged cost per project, with estimated cost at list pricing as of September~2026.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
      "groups": [("Input/Output (k tokens)", 6)],
      "cols": [{"fields": [f"{project}_{metric}" for metric in ("input_k", "output_k")],
@@ -595,7 +596,7 @@ SPECS = [
      # at TABLE_SIZE it fits natively, so `fit` is only a guard.
      "colsep": "3pt", "fit": True,
      "colspec": "@{}l cc @{\\hskip 1em} cc @{\\hskip 1em} cc @{\\hskip 0.8em} ccc@{}",
-     "caption": "RQ3 judging configurations on GPT-5.6-terra, averaged across three runs.",
+     "caption": "RQ3 judging configurations",
      "labels": [{"field": "judge", "header": "Judges", "map": JUDGE_MAP}],
      "groups": [("rejects", 2), ("keeps", 2), ("doc-model", 2), ("doc-code", 3)],
      "cols": [
@@ -637,7 +638,7 @@ SPECS = [
     # rule and the two component bands inside the doc-code one, on plain `c` columns.
     {"csv": "rq4.csv", "out": "rq4-results.tex", "label": "tab:rq4", "colsep": "3pt",
      "colspec": "@{}l cc @{\\hskip 0.8em} ccc@{}", "fit": True,
-     "caption": "RQ4 module ablation on GPT-5.6-terra, averaged across three runs.",
+     "caption": "RQ4 module ablation",
      "labels": [{"field": "variant", "header": "Variant", "map": VAR_MAP}],
      "groups": [("doc-model", 2), ("doc-code", 3)],
      "cols": [
@@ -666,35 +667,24 @@ SPECS = [
          {"field": "d_f1", "header": "$\\Delta$\\fone", "kind": "signed"},
      ]},
 
-    # ---- RQ1+RQ2 big table: per project + per-system Average row, both backends ----
-    {"csv": "bigtable_rq12_perproject.csv", "out": "big-table-perproject.tex",
-     "label": "tab:detailed-perproject", "star": True, "no_bold": True, "fit": True, "colsep": "3pt",
-     "summary": {"field": "project", "value": "Average"},
-     "caption": "Detailed per-project comparison across both backends.",
+    # ---- RQ1+RQ2: separate approach and baseline floats, both backends ----
+    *[{
+     "csv": f"bigtable_rq12_{system}.csv", "out": f"big-table-{system}.tex",
+     "label": f"tab:detailed-{system}", "star": True, "no_bold": True,
+     "fit": True, "colsep": "3pt", "caption": caption,
      "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
+                {"field": "run", "header": "Run", "map": RUN_MAP, "group_by": True},
                 {"field": "project", "header": "Project", "map": PROJECT_ABBR}],
      "groups": SUITE9_GROUPS,
      "cols": SUITE9,
-     "footnote": "$^{\\dagger}$The doc-model columns for \\TransArc{} are SWATTR, its deterministic "
-                 "doc-model stage (\\TransArc{} has no standalone doc-model system). The size-aware "
-                 "(doc-code) suite is the worst- and harmonic-component bands, each as "
-                 "\\fone/\\ftwo; the doc-model Component Miss Rate (CMR) sits with the doc-model "
-                 "columns."},
-
-    # ---- RQ1+RQ2 big table: per run + the average, both backends (CMR omitted here) ----
-    {"csv": "bigtable_rq12_perrun.csv", "out": "big-table-perrun.tex",
-     "label": "tab:detailed-perrun", "star": True, "no_bold": True, "fit": True, "colsep": "3pt",
-     "summary": {"field": "run", "value": "average"},
-     "caption": "Detailed per-run comparison across both backends.",
-     "labels": [{"field": "system", "header": "System", "map": BIGSYS_MAP, "group_by": True},
-                {"field": "run", "header": "Run", "map": RUN_MAP}],
-     "groups": SUITE_NOCMR_GROUPS,
-     "cols": SUITE_NOCMR,
-     "footnote": "$^{\\dagger}$The doc-model columns for \\TransArc{} are SWATTR, its deterministic "
-                 "doc-model stage (\\TransArc{} has no standalone doc-model system). The size-aware "
-                 "columns shown here are the doc-code component tail (worst and harmonic, each as "
-                 "\\fone/\\ftwo); CMR is the doc-model member, reported in \\autoref{tab:rq2} and "
-                 "\\autoref{tab:detailed-perproject}."},
+     "footnote": footnote,
+     } for system, caption, footnote in [
+         ("approach", r"Detailed per-run per-project results for \approach{} across both backends.", ""),
+         ("artemis", r"Detailed per-run per-project results for \Artemis{} across both backends, "
+          r"with released GPT-5.4 and deterministic \TransArc{} reference results.",
+          r"$^{\dagger}$The doc-model columns for \TransArc{} are SWATTR, its deterministic "
+          r"doc-model stage (\TransArc{} has no standalone doc-model system)."),
+     ]],
 
     # ---- RQ4 big table: per project + per-variant Average row, both backends ----
     {"csv": "bigtable_rq4_perproject.csv", "out": "rq4-bigtable-perproject.tex",
@@ -809,6 +799,7 @@ def main():
     # A table whose source CSV this arm does not have is SKIPPED and reported, not
     # rendered from another arm's data: `rq_tables.py` drops the one-call floor for an
     # arm with no floor sweep, exactly as it drops the no-knowledge row.
+    (TEX_OUT / "big-table-combined.tex").unlink(missing_ok=True)
     written = skipped = 0
     for spec in SPECS:
         if not (TEX_SRC / spec["csv"]).is_file():

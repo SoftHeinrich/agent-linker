@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/mnt/hostshare/ardoco-home/agent-linker/research/fse-2027-paper-review-2026-09-30/render_review.py", line 303, in <module>
+    render()
+    ~~~~~~^^
+  File "/mnt/hostshare/ardoco-home/agent-linker/research/fse-2027-paper-review-2026-09-30/render_review.py", line 273, in render
+    marker = page.add_freetext_annot(
+        pymupdf.Rect(page.rect.width-40, y, page.rect.width-1, y+11),
+        issue["id"], fontsize=5.8, text_color=color, fill_color=(1,1,1),
+        border_color=color, align=1)
+  File "/home/dev/miniconda3/lib/python3.13/site-packages/pymupdf/__init__.py", line 10589, in add_freetext_annot
+    annot = self._add_freetext_annot(
+            rect,
+    ...<14 lines>...
+            style=style,
+            )
+  File "/home/dev/miniconda3/lib/python3.13/site-packages/pymupdf/__init__.py", line 9781, in _add_freetext_annot
+    raise ValueError("cannot set border_color if rich_text is False")
+ValueError: cannot set border_color if rich_text is False

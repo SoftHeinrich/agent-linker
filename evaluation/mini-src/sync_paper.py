@@ -52,6 +52,21 @@ def rq_pairs():
         yield c2t.TEX_SRC / spec["csv"], subdir, Path(out).stem + ".csv"  # reviewable companion
 
 
+def remove_retired_rq_tables(paper, check):
+    """Retire the overflowing combined float after its two replacements are synced."""
+    drift = 0
+    for suffix in ("tex", "csv"):
+        stale = paper / "appendix" / f"big-table-combined.{suffix}"
+        if stale.exists():
+            if check:
+                print(f"DRIFT: retired table still exists: {stale}")
+                drift += 1
+            else:
+                stale.unlink()
+                print(f"removed retired table: {stale}")
+    return drift
+
+
 def gold_pairs(regenerate=True):
     """(generated_path, 'table', paper_filename) for the OUT-02 gold_concentration pair.
 
@@ -178,6 +193,7 @@ def main(argv=None):
 
     if args.only in ("all", "rq"):
         try:
+            drift += remove_retired_rq_tables(paper, args.check)
             drift += sync_rq1_cost_placement(paper, args.check)
         except ValueError as error:
             print(f"ERROR: {error}")

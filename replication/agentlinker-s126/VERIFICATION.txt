@@ -1,0 +1,13 @@
+Configuration: released s_linker126 (name-judge reference clause, 2026-10-02); five datasets; terra/luna; three recorded runs per model; full and no-knowledge
+Build command, from the parent repository: python3 scripts/build_replication_package.py --stamp 20261002
+Comment removal: Python tokenize.COMMENT tokens blanked in 10 runtime modules; each copy's parsed syntax tree asserted equal to the active runtime's; run.py and the empty core/__init__.py are static package files
+Result: PASS; zero Python comments in the rebuilt modules; parsed runtime code unchanged; only s_linker126.py differs from the previous package
+Prompt check: the recorded call logs and the live rerun's call log contain the reference clause and none contains the retired mention clause
+Full offline check: for every recorded directory, python3 run.py --from-cache recorded/<run> [--no-knowledge] --output <tmp>/<run>, then compare each exported CSV byte-for-byte against recorded output
+Full offline result: PASS; 60/60 CSVs match
+Live command, from this package directory: OPENAI_SERVICE_TIER=default python3 -u run.py --model terra --datasets mediastore --output rerun/mediastore-terra-default
+Live configuration: gpt-5.6-terra; reasoning effort none; default service tier; full knowledge
+Live result: PASS; 31 links, 9 model calls, four phase snapshots, two linker logs; see rerun/live-default.log
+Credential check: PASS; the session API key and any sk- token pattern are absent from packaged files
+Integrity command: sha256sum -c SHA256SUMS
+Integrity result: PASS; 463/463 packaged files match SHA256SUMS
