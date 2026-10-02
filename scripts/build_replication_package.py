@@ -16,9 +16,9 @@ What it does, in `replication/agentlinker-s126/`:
 
 `run.py`, `pyproject.toml`, `data/`, `nltk_data/`, `BENCHMARK-LICENSE` and the empty
 `src/llm_sad_sam/core/__init__.py` are the package's own static parts (the active
-`core/__init__.py` re-exports modules the package does not ship) and are left as they are. `README.md`, `VERIFICATION.txt`
-and `rerun/` are written by hand, because they describe checks that are run against
-the built package.
+`core/__init__.py` re-exports modules the package does not ship) and are left as they are. `README.md` and
+`VERIFICATION.txt` are written by hand, because they describe checks that are run
+against the built package.
 """
 from __future__ import annotations
 

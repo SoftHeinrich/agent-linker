@@ -7,7 +7,7 @@ Use Python 3.11 or newer. From this directory:
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e .
-OPENAI_API_KEY="$OAI_KEY" .venv/bin/python run.py --model terra --output run-output/terra-1
+OPENAI_API_KEY=<your-key> .venv/bin/python run.py --model terra --output run-output/terra-1
 ```
 
 The live command processes all five datasets. Use `--model luna` for the second recorded model, `--datasets mediastore` for one dataset, or `--no-knowledge` for the corresponding released setting. Give each run a separate output directory. The environment defaults are `OPENAI_REASONING_EFFORT=none` and `OPENAI_SERVICE_TIER=flex`. A live run needs network access and an OpenAI credential. Hosted model responses may differ from the recorded runs.
@@ -25,5 +25,3 @@ For no-knowledge snapshots, add `--no-knowledge` and select a `greedymerge_nokno
 The recorded runs are the 2026-10-02 sweep documented in the parent repository's `evaluation/HOWTO-REGENERATE-RQ.md`, made with this runtime after the name judge's mention clause was replaced by a reference clause; the paper's tables are computed from these runs. The five dataset paths match the released `approach/run_ablation.py`. `BENCHMARK-LICENSE` covers the vendored benchmark inputs; the WordNet archive contains its own `LICENSE` file.
 
 Run `sha256sum -c SHA256SUMS` from this directory to check the packaged files. `VERIFICATION.txt` records the offline package check.
-
-The small live MediaStore rerun is in `rerun/mediastore-terra-default/`, run on the default service tier; its log is `rerun/live-default.log`. It produced 31 links, as does the recorded terra run 1 CSV; a fresh hosted-model run is not expected to match a recorded run exactly in general.

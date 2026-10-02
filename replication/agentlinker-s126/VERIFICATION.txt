@@ -1,13 +1,13 @@
 Configuration: released s_linker126 (name-judge reference clause, 2026-10-02); five datasets; terra/luna; three recorded runs per model; full and no-knowledge
 Build command, from the parent repository: python3 scripts/build_replication_package.py --stamp 20261002
 Comment removal: Python tokenize.COMMENT tokens blanked in 10 runtime modules; each copy's parsed syntax tree asserted equal to the active runtime's; run.py and the empty core/__init__.py are static package files
-Result: PASS; zero Python comments in the rebuilt modules; parsed runtime code unchanged; only s_linker126.py differs from the previous package
-Prompt check: the recorded call logs and the live rerun's call log contain the reference clause and none contains the retired mention clause
-Full offline check: for every recorded directory, python3 run.py --from-cache recorded/<run> [--no-knowledge] --output <tmp>/<run>, then compare each exported CSV byte-for-byte against recorded output
+Result: PASS; zero Python comments in the rebuilt modules; parsed runtime code unchanged; build_replication_package.py --check-only reports no module differing from the active runtime
+Recorded runs: the 12 recorded/ directories are byte-identical to the parent repository's results/greedymerge{,_noknow}_e2e_{terra,luna}_r{1,2,3}_20261002 restricted to s_linker126 output; the 30 full-knowledge link CSVs equal, as link sets, the sota-links/model-doc/aalinker/{terra,luna}_s126 dumps the paper tables are computed from
+Prompt check: every recorded call log contains the reference clause and none contains the retired mention clause; every module-level prompt constant of s_linker126.py longer than 40 characters appears verbatim in the recorded prompts (no-knowledge runs omit only the three knowledge-phase constants)
+Inputs: the 15 files under data/ are byte-identical to the parent repository's benchmark/ inputs at the paths approach/run_ablation.py reads
+Full offline check: from a fresh copy of this directory, in a new virtual environment with OPENAI_API_KEY unset, for every recorded directory, python3 run.py --from-cache recorded/<run> [--no-knowledge] --output <tmp>/<run>, then compare each exported CSV byte-for-byte against recorded output
 Full offline result: PASS; 60/60 CSVs match
-Live command, from this package directory: OPENAI_SERVICE_TIER=default python3 -u run.py --model terra --datasets mediastore --output rerun/mediastore-terra-default
-Live configuration: gpt-5.6-terra; reasoning effort none; default service tier; full knowledge
-Live result: PASS; 31 links, 9 model calls, four phase snapshots, two linker logs; see rerun/live-default.log
+Live run: none packaged; the recorded runs are the only hosted-model output in this package
 Credential check: PASS; the session API key and any sk- token pattern are absent from packaged files
 Integrity command: sha256sum -c SHA256SUMS
-Integrity result: PASS; 463/463 packaged files match SHA256SUMS
+Integrity result: PASS; every packaged file is listed in SHA256SUMS and matches it
