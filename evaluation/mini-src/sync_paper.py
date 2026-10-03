@@ -6,7 +6,8 @@ HOWTO-REGENERATE-RQ.md). The RQ table set is derived from ``csv_to_tex.SPECS``, 
 table adds/removes automatically: each spec's rendered ``reports/tex/<out>.tex`` is copied into
 the paper, together with its ``reports/tex_src/<csv>`` companion (renamed to ``<out-stem>.csv``).
 The body tables land in ``<paper>/table``; every other table in ``<paper>/appendix``.
-``gold_concentration.{tex,csv}`` (the OUT-02 inequality artifacts) is synced too.
+``gold_concentration.{tex,csv}`` (the OUT-02 inequality artifacts) and the prompt appendix
+(``prompts_to_tex.py``) are synced too.
 The RQ1 cost-table include and its existing explanation belong in the RQ1 subsection;
 the RQ sync places that block there and ``--check`` detects any drift.
 
@@ -79,10 +80,17 @@ def gold_pairs(regenerate=True):
     yield mot.REPORTS / "out02_concentration.csv", "table", "gold_concentration.csv"
 
 
+def prompt_pairs():
+    """The prompt appendix, rendered verbatim from the linker by ``prompts_to_tex.py``."""
+    import prompts_to_tex as p2t
+    yield p2t.OUT, "appendix", "prompts.tex"
+
+
 def plan(only, regenerate_gold):
     items = []
     if only in ("all", "rq"):
         items += list(rq_pairs())
+        items += list(prompt_pairs())
     if only in ("all", "gold"):
         items += list(gold_pairs(regenerate=regenerate_gold))
     return items

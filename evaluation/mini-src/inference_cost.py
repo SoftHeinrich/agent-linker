@@ -4,7 +4,8 @@ September 24 Artemis/luna runs. The scored Artemis terra runs logged no token us
 so Artemis_terra comes from a separate token re-run on 2026-10-03 (replication/artemis/run.sh).
 
 Counts successful responses with reported usage, including logged repair calls.
-This is a token-usage report, not a monetary estimate.
+The cost column prices the five-project totals at the list prices in PRICES; a model
+without a recorded price gets no cost.
 """
 import argparse
 import csv
@@ -19,6 +20,13 @@ import metrics as m
 ROOT = Path(__file__).resolve().parents[2]
 PROJECTS = tuple(m.PROJECTS)
 METRICS = ('input_k', 'output_k')
+#: US$ per million input/output tokens, list prices as of September 2026.
+PRICES = {'gpt-5.6-terra': (2, 12)}
+#: The table's rows: (system key in the usage records, printed system, model).
+TABLE_ROWS = (('approach', 'approach', 'gpt-5.6-terra'),
+              ('Artemis_terra', 'Artemis', 'gpt-5.6-terra'),
+              ('approach_luna', 'approach', 'gpt-5.6-luna'),
+              ('Artemis', 'Artemis', 'gpt-5.6-luna'))
 
 
 def write(path, rows):
@@ -112,12 +120,20 @@ def main():
         summary.append(row)
     write(args.out/'tex_src/inference_cost.csv', summary)
     compact = []
-    for system in ('approach', 'approach_luna', 'Artemis', 'Artemis_terra'):
-        row = {'system': system}
+    for system, shown, model in TABLE_ROWS:
+        assert all(r['model'] == model for r in rows if r['system'] == system)
+        row = {'system': shown, 'backend': model.removeprefix('gpt-5.6-')}
         for project_row in summary:
             project = project_row['project']
             for metric in METRICS:
                 row[f'{project}_{metric}'] = project_row[f'{system}_{metric}']
+        price = PRICES.get(model)
+        if price is None:
+            row['cost_usd'] = ''
+        else:
+            cost = (float(row['Total_input_k']) * price[0]
+                    + float(row['Total_output_k']) * price[1]) / 1000
+            row['cost_usd'] = f'{cost:.6f}'
         compact.append(row)
     write(args.out/'tex_src/inference_cost_by_system.csv', compact)
     print(f'PASS: {len(rows)} project/run usage records; means of three runs written to {args.out}')

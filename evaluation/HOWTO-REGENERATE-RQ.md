@@ -611,3 +611,19 @@ python3 evaluation/mini-src/rq_tables.py
 python3 evaluation/mini-src/csv_to_tex.py
 PAPER_DIR=$PWD/paper python3 evaluation/mini-src/sync_paper.py --only rq
 ```
+
+`inference_cost.py` also prices the five-project totals: its `PRICES` table holds
+the GPT-5.6-terra list price (US$2/12 per million input/output tokens, September
+2026). A model without a recorded price, such as luna, gets `--` in the table.
+
+## Prompt appendix
+
+`paper/appendix/prompts.tex` is generated too. `prompts_to_tex.py` reads the
+reported arm's prompt builders with `ast` and copies their text verbatim; only
+per-call data becomes a placeholder. Each rendered template must match a recorded
+prompt of `results/greedymerge_e2e_terra_r1_20261002/llm_logs`, or nothing is
+written. `sync_paper.py` copies it, and `--check` covers it.
+
+```bash
+cd evaluation && python3 mini-src/prompts_to_tex.py && python3 mini-src/sync_paper.py ../paper
+```

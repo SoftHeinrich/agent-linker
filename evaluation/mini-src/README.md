@@ -12,6 +12,7 @@ one-off audit belongs in `../studies/`.
 | RQ3 / RQ4 | `rq34.py`, `rq34_rq2.py`, `rq4_floor.py` | `reports/rq34/<arm>/` |
 | reshape | `rq_tables.py` | one small CSV per paper float, under `reports/tex_src/` |
 | render | `csv_to_tex.py` | one booktabs `.tex` per float, under `reports/tex/` |
+| prompts | `prompts_to_tex.py` | the verbatim prompt appendix, checked against recorded prompts, under `reports/tex/` |
 | bridge | `sync_paper.py` | copies them into the paper; `--check` is the drift guard |
 | gates | `check.py`, `gen_csv_to_temp.py` | frozen metric goldens; a no-overwrite regeneration diff |
 

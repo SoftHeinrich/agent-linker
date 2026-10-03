@@ -58,6 +58,8 @@ def fmt(val, kind):
     if kind == "num":                     # integer if whole, else one decimal (mixed run + averaged counts)
         f = float(val)
         return str(round(f)) if abs(f - round(f)) < 1e-9 else f"{f:.1f}"
+    if kind == "usd":                     # US dollars, to the cent
+        return f"{float(val):.2f}"
     if kind == "f1":                      # one decimal, keep the leading zero (averaged counts)
         return f"{float(val):.1f}"
     if kind == "signed":                  # one decimal WITH its sign (delta columns)
@@ -245,7 +247,7 @@ def render(spec):
             out.append("\\midrule")
         block_key = tuple(r[f] for f in block_fields) if block_fields else None
         if block_key is not None and prev_block is not None and block_key != prev_block:
-            out.append("\\addlinespace[2pt]")
+            out.append(spec.get("block_rule", "\\addlinespace[2pt]"))
         prev_block = block_key
         is_summary = summary is not None and r.get(summary["field"]) == summary["value"]
         # Row-wise winners (systems as columns): bold the best cell of each metric
@@ -538,24 +540,26 @@ SPECS = [
               for system, header in (("approach", "\\approach{}"), ("Artemis", "\\Artemis{}"),
                                      ("pipeline", "SWATTR / \\TransArc{}"))],
      "footnote": "Precision and recall include sample SD across three runs, "
-                 "rounded to two decimals on the score scale; Average SD uses the three per-run project means. "
-                 "SWATTR supplies deterministic doc-model results and \\TransArc{} deterministic doc-code results."},
+                 "rounded to two decimals; Average SD uses the three per-run project means. "
+                 "SWATTR for deterministic doc-model results and \\TransArc{} for doc-code results."},
 
     {"csv": "inference_cost_by_system.csv", "out": "inference-cost.tex", "label": "tab:inference-cost",
-     "star": True, "colsep": "4pt", "no_bold": True,
+     "star": True, "colsep": "4pt", "no_bold": True, "colspec": "@{}ll rrrrrr r@{}",
      "generate_with": "inference_cost.py + csv_to_tex.py",
-     "caption": "Averaged cost per project, with estimated cost at list pricing as of September~2026.",
-     "labels": [{"field": "system", "header": "System", "map": SYS_MAP}],
-     "groups": [("Input/Output (k tokens)", 6)],
+     "caption": "Mean input/output tokens per project over three runs.",
+     "labels": [{"field": "system", "header": "System", "map": SYS_MAP},
+                {"field": "backend", "header": "Backend"}],
+     "block_by": ["backend"], "block_rule": "\\midrule",
+     "groups": [("Input/Output (k tokens)", 6), ("Cost", 1)],
      "cols": [{"fields": [f"{project}_{metric}" for metric in ("input_k", "output_k")],
                "header": abbr, "kind": "f1"}
               for project, abbr in [(project, PROJECT_ABBR[project])
                                     for project in PROJECT_ABBR if project != "Average"]
-                                   + [("Total", "Total")]],
-     "footnote": "\\approach{} uses GPT-5.6-terra; \\Artemis{} uses GPT-5.6-luna. "
-                 "Each cell shows input/output tokens in thousands; Total sums project means. "
-                 "Models and collection dates differ; these are unpaired usage observations. "
-                 "SWATTR and \\TransArc{} consume no LLM tokens."},
+                                   + [("Total", "Total")]]
+             + [{"field": "cost_usd", "header": "(US\\$)", "kind": "usd"}],
+     "footnote": "Each cell shows input/output tokens in thousands; Total sums project means. "
+                 "Cost is for all five projects at GPT-5.6-terra list prices "
+                 "(US\\$2/12 per million input/output tokens, September~2026)."},
 
     # ---- RQ2 body (size-aware suite, per project) ----
     # Two project panels side by side, one row per system: the per-project shape the
