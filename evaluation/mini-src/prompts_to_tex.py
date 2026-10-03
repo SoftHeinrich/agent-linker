@@ -62,18 +62,18 @@ PROMPTS = [
      "JUDGE: Review these component", {
          "', '.join(comp_names)": COMPONENTS,
          "json.dumps(proposals)": "<<proposed mappings as JSON>>"}),
-    (r"\routeOne", r"\judgeOne (name judge).", "_prompt_union",
+    ("Named-Reference Route", "Name judge.", "_prompt_union",
      "Validate components in a document.\n", {
          "', '.join(comp_names)": COMPONENTS,
          "table": "<<SENTENCES table of the nearby sentences, included when a case "
                   "writes only one word of a name>>",
          "chr(10).join(cases)": CASES["union"]}),
-    (r"\routeTwo", "Coreference resolver.", "_prompt_coref",
+    ("Coreference Route", "Coreference candidate generator.", "_prompt_coref",
      "Resolve references", {
          "', '.join(comp_names)": COMPONENTS,
          "json.dumps(sentence_table)": "<<document sentences as JSON>>",
          "chr(10).join(blocks)": CASES["coref"]}),
-    (r"\routeTwo", r"\judgeTwo (coreference judge).", "_prompt_coref_validation",
+    ("Coreference Route", "Coreference judge.", "_prompt_coref_validation",
      "Validate components in a document. Check coref", {
          "', '.join(comp_names)": COMPONENTS,
          # the coreference pass is the one caller and passes COREF_VALIDATION_FOCUS
