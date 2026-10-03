@@ -35,9 +35,9 @@ Return JSON, echoing each approved mapping in full:\\
 JSON only:
 \end{quote}
 
-\subsection{\routeOne}
+\subsection{Named-Reference Route}
 
-\paragraph{\judgeOne (name judge).}
+\paragraph{Name judge.}
 \begin{quote}\small\ttfamily\raggedright
 Validate components in a document.\\[\medskipamount]
 COMPONENTS: {\normalfont\itshape\{component names, comma-separated\}}\\[\medskipamount]
@@ -60,9 +60,9 @@ Return JSON:\\
 JSON only:
 \end{quote}
 
-\subsection{\routeTwo}
+\subsection{Coreference Route}
 
-\paragraph{Coreference resolver.}
+\paragraph{Coreference candidate generator.}
 \begin{quote}\small\ttfamily\raggedright
 Resolve references (pronouns and noun phrases that refer back) to components.\\[\medskipamount]
 COMPONENTS: {\normalfont\itshape\{component names, comma-separated\}}\\[\medskipamount]
@@ -82,7 +82,7 @@ Return JSON:\\
 JSON only:
 \end{quote}
 
-\paragraph{\judgeTwo (coreference judge).}
+\paragraph{Coreference judge.}
 \begin{quote}\small\ttfamily\raggedright
 Validate components in a document. Check coref resolution: does the referring expression in this sentence actually refer to the named component as an architectural participant?\\[\medskipamount]
 COMPONENTS: {\normalfont\itshape\{component names, comma-separated\}}\\[\medskipamount]

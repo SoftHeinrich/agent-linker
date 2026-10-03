@@ -1,0 +1,62 @@
+--- a/sections/approach.tex
++++ b/sections/approach.tex
+@@ -17,7 +17,7 @@
+ \end{enumerate*}
+ % The candidate must therefore be judged against the evidence that produced it.
+ 
+-\begin{figure*}[t]
++\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=\textwidth]{figures/approach-overview.pdf}
+   % \caption{Workflow overview for \approach.}
+@@ -26,7 +26,7 @@
+   \Description{A workflow with three functional stages. Alias discovery first builds a shared alias table from the document and component set. During candidate generation, the named-reference route finds written names and the coreference route resolves references using surrounding sentences. During candidate judging, a dedicated judge evaluates the candidates and evidence from each route. 
+   The accepted candidates from both routes are merged into the final trace-link set.}
+   \label{fig:approach-overview}
+-\end{figure*}
++\end{figure}
+ 
+ \textbf{Design of \approach.}
+ Three design decisions address the three challenges.
+@@ -89,13 +89,13 @@
+ such as ``storage'' in \texttt{storage.api} for the component \texttt{Storage}.
+ Such an occurrence may denote a code path rather than the architectural component itself.
+ 
+-\begin{figure*}[t]
++\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=\textwidth]{figures/named_link_approach.pdf}
+   \caption{Accepted and rejected named-reference candidates.}
+   \Description{Two named-reference cases shown side by side. The first uses an approved alias and is accepted. The second matches the component name in a sentence about MediaAccess database access and is rejected because the term does not identify the proposed component.}
+   \label{fig:approach-named}
+-\end{figure*}
++\end{figure}
+ 
+ The \judgeOne evaluates each candidate together with its evidence bundle and the preceding sentence.
+ When a candidate writes only one word of a name, the judge also receives the five sentences on either side.
+@@ -124,13 +124,13 @@
+ For each remaining candidate, \judgeTwo receives the referring expression, the cited antecedent, the target sentence, and the sentence preceding it.
+ It accepts the candidate only when the referring expression unambiguously denotes the proposed component and the target sentence makes an architectural claim about that component.
+ 
+-\begin{figure*}[t]
++\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=\textwidth]{figures/coref-link-approach.pdf}
+   \caption{Accepted and rejected coreference candidates.}
+   \Description{Two coreference cases shown side by side. The accepted case resolves It in Sentence 2 to Database using Sentence 1 as its antecedent. The rejected case treats This in Sentence 6 as a proposed reference to Reencoding, but the expression instead denotes the conversion operation introduced in Sentence 5.}
+   \label{fig:approach-coref}
+-\end{figure*}
++\end{figure}
+ 
+ The two cases in \autoref{fig:approach-coref} illustrate the coreference judgment.
+ In the accepted case, ``It'' in Sentence~2 refers to the \texttt{Database} component introduced in Sentence~1, and the target sentence states an architectural responsibility of that component.
+--- a/sections/motivation.tex
++++ b/sections/motivation.tex
+@@ -1,6 +1,6 @@
+ \section{Background and Motivation}
+ \label{sec:motivation}
+-\begin{figure}[t]
++\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=\linewidth]{figures/jabref_trace_example.pdf}
+ \caption{Trace example adapted from MediaStore. Solid arrows are gold-standard links; the dashed arrow is a candidate not present in the gold standard.}

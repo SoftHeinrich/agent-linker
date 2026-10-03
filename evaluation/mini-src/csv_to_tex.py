@@ -19,6 +19,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+from inference_cost import PRICES
+
 HERE = Path(__file__).resolve().parent
 EVAL = HERE.parent
 # Arm-scoped like rq_tables.py: the incumbent arm keeps the historical directories (the
@@ -472,7 +474,7 @@ PROJECT_LONG_MAP = {k: (v if k == "Average" else f"{v} ({PROJECT_ABBR[k]})")
 BACKEND_MAP = {"terra": "GPT-5.6-terra", "luna": "GPT-5.6-luna"}
 RUN_MAP = {"run1": "Run 1", "run2": "Run 2", "run3": "Run 3", "average": "Avg", "single": "--"}
 
-# the curated "whole suite" shown in the big tables (link P/R/F1 + file P/R/F1 + size-aware)
+# the curated "whole suite" shown in the big tables (link P/R/F1 + file P/R/F1 + architecture-driven)
 SUITE9 = [
     {"field": "doc_to_model_link_precision", "header": "P", "kind": "f2", "bold": "max"},
     {"field": "doc_to_model_link_recall", "header": "R", "kind": "f2", "bold": "max"},
@@ -488,7 +490,7 @@ SUITE9 = [
     {"field": "doc_to_code_harmonic_component_f1", "header": "\\fone", "kind": "f2", "bold": "max"},
     {"field": "doc_to_code_harmonic_component_f2", "header": "\\ftwo", "kind": "f2", "bold": "max"},
 ]
-# The size-aware pair gets one band each rather than a single 4-wide band: the
+# The architecture-driven pair gets one band each rather than a single 4-wide band: the
 # column headers are then just \fone/\ftwo, exactly as under the P/R bands, and
 # the band name says which component statistic they summarise.
 SUITE9_GROUPS = [("doc-model (link)", 5), ("doc-code (file)", 4),
@@ -505,7 +507,7 @@ def compact(p, r, f1, f2, kind="f3", mode="max", header="Prec./Rec.; \\fone/\\ft
     r"""One cell printing ``P/R\,;\,F1/F2``, each number still bolded down its column.
 
     The table-2 shape: folding four numbers into one cell is what lets a task band fit
-    beside its size-aware companions without the table shrinking to illegibility.
+    beside its architecture-driven companions without the table shrinking to illegibility.
     """
     return {"header": header, "line_separator": "\\,;\\,",
             "lines": [[(p, kind, mode), (r, kind, mode)],
@@ -513,7 +515,7 @@ def compact(p, r, f1, f2, kind="f3", mode="max", header="Prec./Rec.; \\fone/\\ft
 
 
 def pair(f1, f2, header, kind="f2", mode="max"):
-    """One cell printing ``F1/F2`` -- the size-aware bands, now inside the doc-code rule."""
+    """One cell printing ``F1/F2`` -- the architecture-driven bands, now inside the doc-code rule."""
     return {"header": header, "lines": [[(f1, kind, mode), (f2, kind, mode)]]}
 
 
@@ -550,9 +552,11 @@ SPECS = [
     {"csv": "inference_cost_by_system.csv", "out": "inference-cost.tex", "label": "tab:inference-cost",
      "star": True, "colsep": "4pt", "no_bold": True, "colspec": "@{}ll rrrrrr r@{}",
      "generate_with": "inference_cost.py + csv_to_tex.py",
-     "caption": "Mean input/output tokens per project over three runs.",
+     "caption": "Mean input/output tokens per project over three runs, with estimated total cost.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP},
-                {"field": "backend", "header": "Backend"}],
+                {"field": "backend", "header": "Backend (US\\$/Mt)",
+                 "map": {"terra": f"terra ({PRICES['gpt-5.6-terra'][0]:g}/{PRICES['gpt-5.6-terra'][1]:g})",
+                         "luna": f"luna ({PRICES['gpt-5.6-luna'][0]:g}/{PRICES['gpt-5.6-luna'][1]:g})"}}],
      "block_by": ["backend"], "block_rule": "\\midrule",
      "groups": [("Input/Output (k tokens)", 6), ("Cost", 1)],
      "cols": [{"fields": [f"{project}_{metric}" for metric in ("input_k", "output_k")],
@@ -562,10 +566,10 @@ SPECS = [
                                    + [("Total", "Total")]]
              + [{"field": "cost_usd", "header": "(US\\$)", "kind": "usd"}],
      "footnote": "Each cell shows input/output tokens in thousands; Total sums project means. "
-                 "Cost is for all five projects at GPT-5.6-terra list prices "
-                 "(US\\$2/12 per million input/output tokens, September~2026)."},
+                 "Rates are US\\$ per million input/output tokens "
+                 "(standard, October~2026); no caching or Flex discounts applied."},
 
-    # ---- RQ2 body (size-aware suite, per project) ----
+    # ---- RQ2 body (architecture-driven suite, per project) ----
     # Two project panels side by side, one row per system: the per-project shape the
     # macro table could not show, at the same vertical cost as the macro one. Rendered
     # by ``render_panels`` -- the band rows repeat once per panel, which the column
@@ -573,7 +577,7 @@ SPECS = [
     # with a Prec./Rec.; F1/F2 cell per task, was retired for this one on 2026-09-21).
     {"csv": "rq2.csv", "out": "rq2-results.tex", "label": "tab:rq2",
      "render": "panels", "colsep": "1pt", "arraystretch": "0.96",
-     "caption": "RQ2 size-aware metrics by project on GPT-5.6-terra.",
+     "caption": "RQ2 architecture-driven metrics by project on GPT-5.6-terra.",
      "label_column": {"field": "system", "header": "Approach", "map": RQ2_PANEL_SYS_MAP},
      "project_column": {"header": "Proj.", "map": PROJECT_ABBR},
      "groups": [("doc-model", 3), ("doc-code", 6)],
@@ -763,7 +767,7 @@ def check_specs():
 
     A band row that is one span short of the column count is not a TeX error -- it
     renders, shifted, and the wrong header sits over each number. Adding a column
-    without widening its band is the easy mistake (it happened when the size-aware
+    without widening its band is the easy mistake (it happened when the architecture-driven
     band split into worst/harmonic), so the registry checks itself on import.
     """
     for spec in SPECS:

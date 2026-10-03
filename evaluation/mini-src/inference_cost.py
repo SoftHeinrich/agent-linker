@@ -4,8 +4,9 @@ September 24 Artemis/luna runs. The scored Artemis terra runs logged no token us
 so Artemis_terra comes from a separate token re-run on 2026-10-03 (replication/artemis/run.sh).
 
 Counts successful responses with reported usage, including logged repair calls.
-The cost column prices the five-project totals at the list prices in PRICES; a model
-without a recorded price gets no cost.
+The cost column prices the five-project totals at the standard rates in PRICES.
+Logged billing amounts and service tiers do not affect these estimates; no Flex
+or prompt-caching discounts are applied. A model without a recorded price gets no cost.
 """
 import argparse
 import csv
@@ -20,8 +21,10 @@ import metrics as m
 ROOT = Path(__file__).resolve().parents[2]
 PROJECTS = tuple(m.PROJECTS)
 METRICS = ('input_k', 'output_k')
-#: US$ per million input/output tokens, list prices as of September 2026.
-PRICES = {'gpt-5.6-terra': (2, 12)}
+# US$ per million input/output tokens, standard uncached rates checked 2026-10-03.
+# https://developers.openai.com/api/docs/models/gpt-5.6-terra
+# https://developers.openai.com/api/docs/models/gpt-5.6-luna
+PRICES = {'gpt-5.6-terra': (2, 12), 'gpt-5.6-luna': (0.20, 1.20)}
 #: The table's rows: (system key in the usage records, printed system, model).
 TABLE_ROWS = (('approach', 'approach', 'gpt-5.6-terra'),
               ('Artemis_terra', 'Artemis', 'gpt-5.6-terra'),
