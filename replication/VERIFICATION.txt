@@ -1,11 +1,5 @@
-Build command, from the parent repository: python3 scripts/build_replication_package.py --stamp 20261002
-AgentLinker recorded runs: agentlinker/recorded/ is converted from the parent repository's results/greedymerge{,_noknow}_e2e_{terra,luna}_r{1,2,3}_20261002; prompts and responses are copied unchanged, phase labels are renamed, per-call bookkeeping is dropped, and the constant confidence column is dropped from the link CSVs
-AgentLinker replay (verification/replication_replay.sh, from a fresh copy in a new virtual environment from requirements.txt with OPENAI_API_KEY unset): for each of the 60 recorded dataset runs, python run.py --replay recorded/<model>/<setting>/run<i> [--no-aliases] --datasets <dataset> --output <tmp>, then compare <dataset>_links.csv byte for byte with the recorded CSV; repeated under PYTHONHASHSEED 0, 1 and 2
-AgentLinker replay result: 58/60 byte-identical under each seed; bigbluebutton in terra/full/run1 and luna/full/run2 stops at a name-judge prompt that differs from the recorded one in one case line (alias "fsels" instead of "FreeSWITCH Event Socket Layer" for FSESL); answering that call with its recorded response yields the recorded links with every recorded call used
-AgentLinker live check: OPENAI_SERVICE_TIER=default python run.py --model terra --datasets mediastore --output <tmp>; PASS: 9 calls in the recorded phase order, 34 links, F1 0.954 against the gold standard (recorded terra runs: 31 links, F1 1.000); this output is not packaged
-ArTEMiS source: artemis/taas25 is upstream commit ed07208 and artemis/ner is upstream commit 74ccb33, each overlaid with the changes listed in README.md; comments added by those changes are removed
-ArTEMiS build check: offline mvn compile of artemis/ner and offline mvn -f aggregator-pom.xml test-compile of artemis/taas25 (JDK 21, Maven 3.8.7); PASS: BUILD SUCCESS for both
-ArTEMiS recorded runs: artemis/recorded/ is copied from the parent repository's sota-links/{model-doc,doc-code}/artemis/{terra,luna}_5.6/run{1,2,3}; the TSV-to-CSV step of run.sh, applied to the raw dump left on disk by the last run (luna run 3), reproduces recorded/luna/run3 byte for byte
-Credential check: PASS; the session API key and any sk- token pattern are absent from packaged files
-Integrity command: sha256sum -c SHA256SUMS
-Integrity result: PASS; every packaged file is listed in SHA256SUMS and matches it
+AgentLinker replay: 58 of the 60 recorded dataset runs reproduce their link CSVs byte for byte. In bigbluebutton terra/full/run1 and luna/full/run2, one name-judge prompt shows FSESL's other alias ("fsels" instead of "FreeSWITCH Event Socket Layer"), because the recorded runs picked between the two aliases in an arbitrary order and this code uses a fixed one. If that one call is answered with its recorded response, these runs give the recorded links.
+AgentLinker live check: MediaStore with terra made 9 model calls and scored F1 0.954 against the gold standard.
+ArTEMiS build check: artemis/ner and artemis/taas25 compile offline (JDK 21, Maven 3.8.7).
+Credentials: none in the packaged files.
+Integrity: sha256sum -c SHA256SUMS passes.

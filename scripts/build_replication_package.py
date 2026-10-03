@@ -20,7 +20,7 @@ README.md / VERIFICATION.txt are maintained in place. This script writes:
   artemis/taas25/, artemis/ner/
       the ArTEMiS source (upstream TAAS25 replication package at TAAS_COMMIT) and its
       unpublished NER dependency (upstream at NER_COMMIT), each overlaid with the local
-      changes the re-run used. Comments those changes added are removed; upstream
+      changes the re-run used, without git files. Comments those changes added are removed; upstream
       code, including its licence headers, is left as published.
   SHA256SUMS
       every packaged file except itself.
@@ -129,7 +129,7 @@ def export_tree(repo: Path, commit: str, subdir: str, target: Path, changed: lis
                              check=True, capture_output=True).stdout
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         for member in tar.getmembers():
-            if not member.isfile():
+            if not member.isfile() or any(part.startswith(".git") for part in Path(member.name).parts):
                 continue
             relative = Path(member.name).relative_to(subdir) if subdir else Path(member.name)
             path = target / relative
