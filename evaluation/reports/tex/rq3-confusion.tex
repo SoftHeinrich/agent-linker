@@ -10,13 +10,14 @@
 \toprule
  & \multicolumn{2}{c}{rejects} & \multicolumn{2}{c}{keeps} & \multicolumn{2}{c}{doc-model} & \multicolumn{3}{c}{doc-code} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-10}
-Judges & FP & TP & TP & FP & Prec./Rec.; \fone/\ftwo & CMR\% & Prec./Rec.; \fone/\ftwo & worst\ \fone/\ftwo & harm.\ \fone/\ftwo \\
+Configuration & FP & TP & TP & FP & Prec./Rec.; \fone/\ftwo & CMR\% & Prec./Rec.; \fone/\ftwo & worst\ \fone/\ftwo & harm.\ \fone/\ftwo \\
 \midrule
 Full & 150.0 & 12.0 & 183.0 & 17.3 & \textbf{.93}/.96\,;\,\textbf{.94}/\textbf{.95} & \textbf{0.0} & \textbf{.90}/.91\,;\,\textbf{.90}/.90 & \textbf{.78}/\textbf{.78} & \textbf{.92}/\textbf{.91} \\
-\nameValidator{} & 100.7 & 11.7 & 168.3 & 15.3 & .75/\textbf{1.00}\,;\,.84/.92 & \textbf{0.0} & .78/\textbf{.96}\,;\,.85/\textbf{.91} & .56/.70 & .82/.90 \\
-\corefValidator{} & 60.0 & 3.7 & 28.7 & 2.0 & .77/.97\,;\,.86/.92 & \textbf{0.0} & .79/.92\,;\,.84/.88 & .67/.77 & .86/.90 \\
-No judge & 0.0 & 0.0 & 195.0 & 164.7 & .67/\textbf{1.00}\,;\,.79/.89 & \textbf{0.0} & .71/\textbf{.96}\,;\,.80/.89 & .54/.70 & .78/.88 \\
+\noNameValid{} & 100.7 & 11.7 & 168.3 & 15.3 & .75/\textbf{1.00}\,;\,.84/.92 & \textbf{0.0} & .78/\textbf{.96}\,;\,.85/\textbf{.91} & .56/.70 & .82/.90 \\
+\noCitation{} & 60.0 & 3.7 & 28.7 & 2.0 & .77/.97\,;\,.86/.92 & \textbf{0.0} & .79/.92\,;\,.84/.88 & .67/.77 & .86/.90 \\
+\noValidator{} & 0.0 & 0.0 & 195.0 & 164.7 & .67/\textbf{1.00}\,;\,.79/.89 & \textbf{0.0} & .71/\textbf{.96}\,;\,.80/.89 & .54/.70 & .78/.88 \\
 \bottomrule
 \end{tabular}
 }
+\par\smallskip\footnotesize Scores describe the named configuration. For each single-judge ablation, rejects/keeps describe the omitted judge when active, including deterministic exclusions. Full counts combine both judges; \noValidator{} counts describe unjudged candidates.
 \end{table}

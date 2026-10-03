@@ -446,9 +446,13 @@ BIGSYS_MAP = {"approach (GPT-5.6-terra)": "\\approach{} (GPT-5.6-terra)",
 JUDGE_COUNT_WORD = {"s120": "both", "s126": "both"}.get(ARM, "all three")
 #: The RQ3 rows are configurations. The last row has no active judge.
 JUDGE_MAP = {"full_on": "Full",
-             "full_name": "\\entValidator{}", "partial_name": "\\partValidator{}",
-             "name": "\\nameValidator{}",
-             "coref": "\\corefValidator{}", "no_judge": "No judge"}
+             "full_name": "w/o \\entValidator{}", "partial_name": "w/o \\partValidator{}",
+             "name": "\\noNameValid{}",
+             "coref": "\\noCitation{}", "no_judge": "\\noValidator{}"}
+RQ3_NOTE = ("Scores describe the named configuration. For each single-judge ablation, "
+            "rejects/keeps describe the omitted judge when active, including deterministic exclusions. "
+            f"Full counts combine {JUDGE_COUNT_WORD} judges; "
+            "\\noValidator{} counts describe unjudged candidates.")
 VAR_MAP = {"Full": "Full", "Name": "\\linkerN{} only", "Coref": "\\linkerC{} only",
            "FullName": "\\linkerB{} only", "PartialName": "\\linkerD{} only",
            "No knowledge": "No knowledge"}
@@ -601,7 +605,8 @@ SPECS = [
      "colsep": "3pt", "fit": True,
      "colspec": "@{}l cc @{\\hskip 1em} cc @{\\hskip 1em} cc @{\\hskip 0.8em} ccc@{}",
      "caption": "RQ3 judging configurations",
-     "labels": [{"field": "judge", "header": "Judges", "map": JUDGE_MAP}],
+     "labels": [{"field": "judge", "header": "Configuration", "map": JUDGE_MAP}],
+     "footnote": RQ3_NOTE,
      "groups": [("rejects", 2), ("keeps", 2), ("doc-model", 2), ("doc-code", 3)],
      "cols": [
          {"field": "rej_fp", "header": "FP", "kind": "f1"},
@@ -623,7 +628,8 @@ SPECS = [
      "caption": "RQ3 judging configurations by run and backend.",
      "labels": [{"field": "backend", "header": "Backend", "map": BACKEND_MAP, "group_by": True},
                 {"field": "run", "header": "Run", "map": RUN_MAP, "group_by": True},
-                {"field": "judge", "header": "Judges", "map": JUDGE_MAP}],
+                {"field": "judge", "header": "Configuration", "map": JUDGE_MAP}],
+     "footnote": RQ3_NOTE,
      "groups": [("rejects", 2), ("keeps", 2), ("doc-model", 2), ("doc-code", 3)],
      "cols": [
          {"field": "rej_fp", "header": "FP", "kind": "num"},
