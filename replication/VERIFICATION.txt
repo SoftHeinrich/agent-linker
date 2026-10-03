@@ -1,5 +1,0 @@
-AgentLinker replay: 58 of the 60 recorded dataset runs reproduce their link CSVs byte for byte. In bigbluebutton terra/full/run1 and luna/full/run2, one name-judge prompt shows FSESL's other alias ("fsels" instead of "FreeSWITCH Event Socket Layer"), because the recorded runs picked between the two aliases in an arbitrary order and this code uses a fixed one. If that one call is answered with its recorded response, these runs give the recorded links.
-AgentLinker live check: MediaStore with terra made 9 model calls and scored F1 0.954 against the gold standard.
-ArTEMiS build check: artemis/ner and artemis/taas25 compile offline (JDK 21, Maven 3.8.7).
-Credentials: none in the packaged files.
-Integrity: sha256sum -c SHA256SUMS passes.

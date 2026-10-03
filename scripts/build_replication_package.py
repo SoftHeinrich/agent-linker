@@ -5,7 +5,7 @@
 
 The package code (`agentlinker/agentlinker/`, `agentlinker/run.py`, `artemis/run.sh`),
 the static inputs (`agentlinker/data/`, `agentlinker/nltk_data/`) and the hand-written
-README.md / VERIFICATION.txt are maintained in place. This script writes:
+README.md are maintained in place. This script writes:
 
   agentlinker/recorded/{terra,luna}/{full,no-aliases}/run{1,2,3}/
       the s126 E2E sweep `results/greedymerge{,_noknow}_e2e_<model>_r<i>_<stamp>`,

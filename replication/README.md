@@ -17,6 +17,7 @@ OPENAI_API_KEY=<your-key> .venv/bin/python run.py --model terra --output run-out
 ```
 
 Use `--model luna` for the second model, `--datasets <name>` to run one dataset, and `--no-aliases` to disable alias discovery.
+you can use flex tier for reduced model cost, but the response time can be delayed.
 
 The recorded runs are in `recorded/<terra|luna>/<full|no-aliases>/run<1-3>/`. To replay a recorded run offline from its saved model responses:
 
@@ -24,7 +25,7 @@ The recorded runs are in `recorded/<terra|luna>/<full|no-aliases>/run<1-3>/`. To
 .venv/bin/python run.py --replay recorded/terra/full/run1 --output run-output/replay
 ```
 
-For a `no-aliases` run, add `--no-aliases`. `VERIFICATION.txt` explains why replay stops on bigbluebutton in `terra/full/run1` and `luna/full/run2`.
+For a `no-aliases` run, add `--no-aliases`.
 
 ## ArTEMiS
 
