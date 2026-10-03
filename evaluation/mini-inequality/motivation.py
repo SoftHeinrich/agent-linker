@@ -425,7 +425,7 @@ def write_out02_concentration():
         "% --check verifies that the two files are byte-identical.",
         "% Companion data (machine-readable): table/gold_concentration.csv",
         "\\begin{table*}[t]", f"\\centering{TABLE_SIZE}\\setlength{{\\tabcolsep}}{{2pt}}",
-        "\\caption{Gold link concentration by task. Sent. counts document sentences; kLOC sums the selected primary-language cloc counts in thousands. Comp. counts all components in the base architecture model. Each Links column counts distinct gold pairs; Med., Max., Gini, and Top-3 share (\\%) use that task's gold-reachable components. Shared doc-code files contribute to each mapped component; unmapped files contribute only to Links.}",
+        "\\caption{Gold link concentration by task. Sent. counts document sentences; kLOC sums the selected primary-language cloc counts in thousands. Comp. counts all components. Each Links column counts distinct gold pairs; Med., Max., Gini, and Top-3 share (\\%) use that task's gold-reachable components. Shared doc-code files contribute to each mapped component; unmapped files contribute only to Links.}",
         "\\label{tab:gold_concentration}",
         "\\adjustbox{max width=\\textwidth}{%",
         "\\begin{tabular}{lrrr@{\\hspace{4pt}}rrrrr@{\\hspace{8pt}}rrrrr}",

@@ -452,7 +452,7 @@ JUDGE_MAP = {"full_on": "Full",
              "name": "\\noNameValid{}",
              "coref": "\\noCitation{}", "no_judge": "\\noValidator{}"}
 RQ3_NOTE = ("Scores describe the named configuration. For each single-judge ablation, "
-            "rejects/keeps describe the omitted judge when active, including deterministic exclusions. "
+            "rejects/keeps describe the omitted judge, with its rule-based check, when active. "
             f"Full counts combine {JUDGE_COUNT_WORD} judges; "
             "\\noValidator{} counts describe unjudged candidates.")
 VAR_MAP = {"Full": "Full", "Name": "\\linkerN{} only", "Coref": "\\linkerC{} only",
@@ -554,9 +554,7 @@ SPECS = [
      "generate_with": "inference_cost.py + csv_to_tex.py",
      "caption": "Mean input/output tokens per project over three runs, with estimated total cost.",
      "labels": [{"field": "system", "header": "System", "map": SYS_MAP},
-                {"field": "backend", "header": "Backend (US\\$/Mt)",
-                 "map": {"terra": f"terra ({PRICES['gpt-5.6-terra'][0]:g}/{PRICES['gpt-5.6-terra'][1]:g})",
-                         "luna": f"luna ({PRICES['gpt-5.6-luna'][0]:g}/{PRICES['gpt-5.6-luna'][1]:g})"}}],
+                {"field": "backend", "header": "Backend"}],
      "block_by": ["backend"], "block_rule": "\\midrule",
      "groups": [("Input/Output (k tokens)", 6), ("Cost", 1)],
      "cols": [{"fields": [f"{project}_{metric}" for metric in ("input_k", "output_k")],
@@ -566,8 +564,10 @@ SPECS = [
                                    + [("Total", "Total")]]
              + [{"field": "cost_usd", "header": "(US\\$)", "kind": "usd"}],
      "footnote": "Each cell shows input/output tokens in thousands; Total sums project means. "
-                 "Rates are US\\$ per million input/output tokens "
-                 "(standard, October~2026); no caching or Flex discounts applied."},
+                 "Cost estimates cover all five projects at OpenAI standard rates "
+                 f"(terra: US\\${PRICES['gpt-5.6-terra'][0]:g}/{PRICES['gpt-5.6-terra'][1]:g}; "
+                 f"luna: US\\${PRICES['gpt-5.6-luna'][0]:g}/{PRICES['gpt-5.6-luna'][1]:g} "
+                 "per million input/output tokens, October~2026)."},
 
     # ---- RQ2 body (architecture-driven suite, per project) ----
     # Two project panels side by side, one row per system: the per-project shape the
