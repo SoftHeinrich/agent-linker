@@ -1,0 +1,50 @@
+# Replication package rebuild, 2026-10-03
+## python3 scripts/build_replication_package.py --stamp 20261002
+agentlinker/recorded/terra/full/run1 <- greedymerge_e2e_terra_r1_20261002
+agentlinker/recorded/terra/full/run2 <- greedymerge_e2e_terra_r2_20261002
+agentlinker/recorded/terra/full/run3 <- greedymerge_e2e_terra_r3_20261002
+agentlinker/recorded/terra/no-aliases/run1 <- greedymerge_noknow_e2e_terra_r1_20261002
+agentlinker/recorded/terra/no-aliases/run2 <- greedymerge_noknow_e2e_terra_r2_20261002
+agentlinker/recorded/terra/no-aliases/run3 <- greedymerge_noknow_e2e_terra_r3_20261002
+agentlinker/recorded/luna/full/run1 <- greedymerge_e2e_luna_r1_20261002
+agentlinker/recorded/luna/full/run2 <- greedymerge_e2e_luna_r2_20261002
+agentlinker/recorded/luna/full/run3 <- greedymerge_e2e_luna_r3_20261002
+agentlinker/recorded/luna/no-aliases/run1 <- greedymerge_noknow_e2e_luna_r1_20261002
+agentlinker/recorded/luna/no-aliases/run2 <- greedymerge_noknow_e2e_luna_r2_20261002
+agentlinker/recorded/luna/no-aliases/run3 <- greedymerge_noknow_e2e_luna_r3_20261002
+artemis/: taas25, ner, recorded, logs
+SHA256SUMS: 1089 files
+## replay, current runtime before simplification (s_linker126), PYTHONHASHSEED 0/1/2 (alias order follows set iteration)
+seed 0: 58/60 (fail: luna/full/run1, luna/full/run3 bigbluebutton); seed 1: 58/60 (fail: luna/full/run2, terra/full/run1 bigbluebutton); seed 2: 58/60 (fail: luna/full/run1, luna/full/run3 bigbluebutton)
+## replay, simplified package code, PYTHONHASHSEED 0/1/2
+FAIL terra/full/run1 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+FAIL luna/full/run2 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+replay seed 0: 58/60 byte-identical, 2 failed
+FAIL terra/full/run1 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+FAIL luna/full/run2 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+replay seed 1: 58/60 byte-identical, 2 failed
+FAIL terra/full/run1 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+FAIL luna/full/run2 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+replay seed 2: 58/60 byte-identical, 2 failed
+## replay, fresh copy + new venv from requirements.txt, OPENAI_API_KEY unset
+no unlisted files
+
+FAIL terra/full/run1 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+FAIL luna/full/run2 bigbluebutton: RuntimeError: name_judge: prompt not in the recorded calls
+replay seed 0: 58/60 byte-identical, 2 failed
+
+[exited with code 0]
+## the two replay stops: diff of the name-judge prompt
+terra/full/run1 bigbluebutton: Case 3: "FreeSWITCH Event Socket Layer" -> FSESL (recorded) vs "fsels" -> FSESL (package); with that call answered from the recording, links identical, 0 unused calls
+luna/full/run2 bigbluebutton: Case 24: same alias pair; links identical, 0 unused calls
+## live check: OPENAI_SERVICE_TIER=default run.py --model terra --datasets mediastore
+9 calls (alias_extract, alias_judge, name_judge x2, coreference x4, coreference_judge), 34 links, P=0.912 R=1.000 F1=0.954; recorded terra runs 31 links F1=1.000
+## artemis offline compile
+[INFO] BUILD SUCCESS
+[INFO] BUILD SUCCESS
+## artemis TSV->CSV converter on raw dump of luna run3: byte-identical to recorded/luna/run3
+## sha256sum -c
+PASS 1089
+## paper_number_audit / sync_paper --check
+PASS: every checked number matches the recomputed value
+IN SYNC: all 28 paper file(s) match the generated output. (2 absent for this arm)
