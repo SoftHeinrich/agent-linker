@@ -452,7 +452,7 @@ JUDGE_MAP = {"full_on": "Full",
              "name": "\\noNameValid{}",
              "coref": "\\noCitation{}", "no_judge": "\\noValidator{}"}
 RQ3_NOTE = ("Scores describe the named configuration. For each single-judge ablation, "
-            "rejects/keeps describe the omitted judge, with its rule-based check, when active. "
+            "rejects/keeps describe the omitted judge when active. "
             f"Full counts combine {JUDGE_COUNT_WORD} judges; "
             "\\noValidator{} counts describe unjudged candidates.")
 VAR_MAP = {"Full": "Full", "Name": "\\linkerN{} only", "Coref": "\\linkerC{} only",
